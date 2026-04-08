@@ -35,15 +35,15 @@ import io.goobi.viewer.controller.StringTools;
 public class FuzzySearchTerm {
 
     /**
-     * Don't use fuzzy search on search terms matching this pattern
+     * Don't use fuzzy search on search terms matching this pattern.
      */
     private static final String IGNORE_FUZZY_PATTERN = "\\d+";
     /**
-     * For search terms below this length, don't use fuzzy search
+     * For search terms below this length, don't use fuzzy search.
      */
     private static final int FUZZY_THRESHOLD_DISTANCE_1 = 4;
     /**
-     * For search terms of at least this length, use fuzzy distance 2
+     * For search terms of at least this length, use fuzzy distance 2.
      */
     private static final int FUZZY_THRESHOLD_DISTANCE_2 = 9;
     /**
@@ -110,7 +110,7 @@ public class FuzzySearchTerm {
     /**
      * Tests if a given text containing a single word.
      * 
-     * @param text
+     * @param text single word to test against this fuzzy search term
      * @return boolean
      */
     public boolean matches(final String text) {
@@ -138,7 +138,7 @@ public class FuzzySearchTerm {
 
     /**
      * 
-     * @param text
+     * @param text text to normalize for fuzzy matching
      * @return Cleaned-up text
      */
     private static String cleanup(final String text) {
@@ -157,7 +157,7 @@ public class FuzzySearchTerm {
 
     /**
      * 
-     * @param text
+     * @param text text from which to remove hyphenation characters
      * @return Cleaned-up text
      */
     private static String cleanHyphenations(String text) {

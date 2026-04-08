@@ -88,8 +88,8 @@ public class RelatedPIValidator extends PIValidator {
     /**
      * validatePi.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     * @param pi persistent identifier to validate
+     * @param user currently logged-in user; must be a CMS admin
      * @should return true if pi good
      * @should return false if pi empty, blank or null
      * @should return false if user is null

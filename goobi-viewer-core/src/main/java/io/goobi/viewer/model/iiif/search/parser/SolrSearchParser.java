@@ -55,8 +55,8 @@ public class SolrSearchParser extends AbstractSearchParser {
     /**
      * getPageSize.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param pageNo a {@link java.lang.Integer} object.
+     * @param pi persistent identifier of the record
+     * @param pageNo physical page order number to look up
      * @return a {@link java.awt.Dimension} object.
      */
     public Dimension getPageSize(String pi, Integer pageNo) {

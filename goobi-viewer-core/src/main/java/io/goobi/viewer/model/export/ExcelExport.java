@@ -29,6 +29,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 /**
+ * Holds an Apache POI streaming workbook and provides a method to write its content to an output stream.
  */
 public class ExcelExport {
 
@@ -38,7 +39,7 @@ public class ExcelExport {
     private String fileName;
 
     /**
-     * @param os
+     * @param os output stream to write the workbook to
      * @return True if successful; false otherwise
      */
     public boolean writeToResponse(OutputStream os) {

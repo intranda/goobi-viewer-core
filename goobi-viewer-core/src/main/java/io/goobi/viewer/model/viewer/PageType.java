@@ -306,7 +306,7 @@ public enum PageType {
     /**
      * getByName.
      *
-     * @param name a {@link java.lang.String} object.
+     * @param name page type name to look up
      * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
      * @should return correct type for raw names
      * @should return correct type for mapped names
@@ -372,7 +372,7 @@ public enum PageType {
     /**
      * getPageTypeForDocStructType.
      *
-     * @param docStructType a {@link java.lang.String} object.
+     * @param docStructType logical document structure type name
      * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
      */
     public static PageType getPageTypeForDocStructType(String docStructType) {
@@ -403,10 +403,10 @@ public enum PageType {
     /**
      * determinePageType.
      *
-     * @param docStructType a {@link java.lang.String} object.
-     * @param mimeType a {@link java.lang.String} object.
-     * @param anchorOrGroup a boolean.
-     * @param hasImages a boolean.
+     * @param docStructType logical document structure type name
+     * @param mimeType MIME type of the record's primary content
+     * @param anchorOrGroup true if the record is an anchor or group element
+     * @param hasImages true if the record has associated images
      * @param pageResolverUrl If this page type is for a page resolver url, ignore certain preferences
      * @should return configured page type correctly
      * @should return metadata page type for application mime type
@@ -442,7 +442,7 @@ public enum PageType {
     /**
      * matches.
      *
-     * @param pagePath a {@link java.lang.String} object.
+     * @param pagePath URL path segment to match against this page type
      * @return true if the given path equals either the intrinsic or configured name of this pageType Leading and trailing slashes are ignored.
      *         PageType other is never matched
      */
@@ -457,7 +457,7 @@ public enum PageType {
     /**
      * matches.
      *
-     * @param pagePath a {@link java.net.URI} object.
+     * @param pagePath URI whose path is matched against this page type
      * @return true if the given path starts with either the intrinsic or configured name of this pageType Leading and trailing slashes are ignored.
      *         PageType other is never matched
      */

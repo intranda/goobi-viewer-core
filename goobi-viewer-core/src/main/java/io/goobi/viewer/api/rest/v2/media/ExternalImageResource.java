@@ -85,12 +85,12 @@ public class ExternalImageResource extends ImageResource {
     private static final Logger logger = LogManager.getLogger(ExternalImageResource.class);
 
     /**
-     * @param context
-     * @param request
-     * @param response
-     * @param urls
-     * @param imageUrl
-     * @param cacheManager
+     * @param context JAX-RS container request context
+     * @param request current HTTP servlet request
+     * @param response current HTTP servlet response
+     * @param urls configured API URL manager
+     * @param imageUrl URL-encoded filename/URL of the external image
+     * @param cacheManager content server cache manager
      */
     public ExternalImageResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,

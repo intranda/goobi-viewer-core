@@ -52,8 +52,8 @@ public class PdfHandler {
     /**
      * Creates a new PdfHandler instance.
      *
-     * @param watermarkHandler a {@link io.goobi.viewer.controller.imaging.WatermarkHandler} object.
-     * @param configuration a {@link io.goobi.viewer.controller.Configuration} object.
+     * @param watermarkHandler handler used to add footer/watermark parameters
+     * @param configuration viewer configuration supplying the IIIF API base URL
      */
     public PdfHandler(WatermarkHandler watermarkHandler, Configuration configuration) {
         this.watermarkHandler = watermarkHandler;
@@ -64,8 +64,8 @@ public class PdfHandler {
     /**
      * Creates a new PdfHandler instance.
      *
-     * @param watermarkHandler a {@link io.goobi.viewer.controller.imaging.WatermarkHandler} object.
-     * @param urls
+     * @param watermarkHandler handler used to add footer/watermark parameters
+     * @param urls API URL manager used to build PDF download URLs
      */
     public PdfHandler(WatermarkHandler watermarkHandler, AbstractApiUrlManager urls) {
         this.watermarkHandler = watermarkHandler;
@@ -75,10 +75,10 @@ public class PdfHandler {
 
     /**
      * Return the pdf-download url for the given {@link io.goobi.viewer.model.viewer.StructElement} and
-     * {@link io.goobi.viewer.model.viewer.PhysicalElement}
+     * {@link io.goobi.viewer.model.viewer.PhysicalElement}.
      *
-     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @param doc struct element providing the logical section identifier
+     * @param page physical page whose image file is included in the PDF
      * @return a {@link java.lang.String} object.
      */
     public String getPdfUrl(StructElement doc, PhysicalElement page) {
@@ -89,8 +89,8 @@ public class PdfHandler {
      * Return the pdf-download url for the given {@link io.goobi.viewer.model.viewer.StructElement} and a number of
      * {@link io.goobi.viewer.model.viewer.PhysicalElement}s.
      *
-     * @param se a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @param pages an array of {@link io.goobi.viewer.model.viewer.PhysicalElement} objects.
+     * @param se struct element providing the logical section identifier
+     * @param pages array of physical pages whose image files are included in the PDF
      * @return a {@link java.lang.String} object.
      */
     public String getPdfUrl(StructElement se, PhysicalElement[] pages) {
@@ -138,8 +138,8 @@ public class PdfHandler {
     /**
      * Returns an existing pdf file from the media folder.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param filename a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record
+     * @param filename name of the existing PDF file in the media folder
      * @return a {@link java.lang.String} object.
      */
     public String getPdfUrl(String pi, String filename) {
@@ -156,7 +156,7 @@ public class PdfHandler {
      * given StructElement
      *
      * @param label The name for the output file (.pdf-extension excluded). If this is null or empty, the label will be generated from pi and divId
-     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param doc struct element determining the scope and PI of the PDF
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -171,7 +171,7 @@ public class PdfHandler {
      *
      * @param pi PI of the process from which to build pdf. Must be provided
      * @param label The name for the output file (.pdf-extension excluded). If this is null or empty, the label will be generated from pi and divId
-     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param doc struct element used to determine if a divID should be appended
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -184,11 +184,11 @@ public class PdfHandler {
     }
 
     /**
-     * Returns the url to a PDF build from the mets file for the given {@code pi}
+     * Returns the url to a PDF build from the mets file for the given {@code pi}.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param divID a {@link java.util.Optional} object.
-     * @param label a {@link java.util.Optional} object.
+     * @param pi persistent identifier of the record
+     * @param divID optional logical section ID to restrict the PDF to a struct element
+     * @param label optional output filename without the .pdf extension
      * @return a {@link java.lang.String} object.
      */
     public String getPdfUrl(String pi, final Optional<String> divID, Optional<String> label) {

@@ -29,10 +29,10 @@ public class XMLError {
 
     /**
      * 
-     * @param line
-     * @param column
-     * @param severity
-     * @param message
+     * @param line line number where the error occurred
+     * @param column column number where the error occurred
+     * @param severity severity level of the error (e.g. error, warning)
+     * @param message human-readable error message
      */
     public XMLError(int line, int column, String severity, String message) {
         this.line = line;

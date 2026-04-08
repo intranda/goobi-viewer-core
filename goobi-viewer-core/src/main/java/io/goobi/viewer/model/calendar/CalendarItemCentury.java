@@ -38,9 +38,9 @@ public class CalendarItemCentury extends AbstractCalendarItem implements Seriali
     /**
      * Creates a new CalendarItemYear instance.
      *
-     * @param name a {@link java.lang.String} object.
-     * @param value a int.
-     * @param hits a int.
+     * @param name display label for the century
+     * @param value numeric century value
+     * @param hits initial number of search hits
      */
     public CalendarItemCentury(String name, int value, int hits) {
         super(name, value, hits);

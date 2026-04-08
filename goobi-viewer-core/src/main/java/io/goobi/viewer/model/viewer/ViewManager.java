@@ -232,12 +232,12 @@ public class ViewManager implements Serializable {
     /**
      * Creates a new ViewManager instance.
      *
-     * @param topDocument a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @param pageLoader a {@link io.goobi.viewer.model.viewer.pageloader.IPageLoader} object.
-     * @param currentDocumentIddoc a long.
-     * @param logId a {@link java.lang.String} object.
-     * @param mimeType a {@link java.lang.String} object.
-     * @param imageDeliveryBean a {@link io.goobi.viewer.managedbeans.ImageDeliveryBean} object.
+     * @param topDocument top-level structure element of the record
+     * @param pageLoader page loader for accessing physical pages
+     * @param currentDocumentIddoc IDDOC of the currently active struct element
+     * @param logId logical ID used to select the current struct element
+     * @param mimeType MIME type of the main content resource
+     * @param imageDeliveryBean bean providing image delivery URLs
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
@@ -400,7 +400,7 @@ public class ViewManager implements Serializable {
     /**
      * getCurrentImageInfo.
      *
-     * @param pageType a {@link io.goobi.viewer.model.viewer.PageType} object.
+     * @param pageType page type used to determine image configuration
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -474,8 +474,8 @@ public class ViewManager implements Serializable {
 
     /**
      *
-     * @param page
-     * @param pageType
+     * @param page physical page to retrieve image info for
+     * @param pageType page type determining the image delivery context
      * @return Image URL
      * @throws ViewerConfigurationException
      * @throws IndexUnreachableException
@@ -543,7 +543,7 @@ public class ViewManager implements Serializable {
     /**
      * getWatermarkUrl.
      *
-     * @param pageType a {@link java.lang.String} object.
+     * @param pageType page type name for footer configuration lookup
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -583,7 +583,7 @@ public class ViewManager implements Serializable {
     /**
      * getCurrentImageUrl.
      *
-     * @param view a {@link io.goobi.viewer.model.viewer.PageType} object.
+     * @param view page type used to look up configured zoom scales
      * @return the iiif url to the image in a configured size
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -605,7 +605,7 @@ public class ViewManager implements Serializable {
     /**
      * getCurrentImageUrl.
      *
-     * @param size a int.
+     * @param size maximum image dimension in pixels
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -617,8 +617,8 @@ public class ViewManager implements Serializable {
     /**
      * getCurrentMasterImageUrl.
      *
-     * @param scale a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
-     * @param page
+     * @param scale scale transformation to apply to the master image
+     * @param page physical page whose master image URL is returned
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -663,8 +663,8 @@ public class ViewManager implements Serializable {
     /**
      * getCurrentThumbnailUrlForDownload.
      *
-     * @param scale a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
-     * @param page
+     * @param scale scale transformation to apply to the thumbnail
+     * @param page physical page whose thumbnail URL is returned
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -713,8 +713,8 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * @param view
-     * @param size
+     * @param view page type determining the image delivery context
+     * @param size maximum width and height in pixels
      * @return Image URL
      */
     private String getCurrentImageUrl(PageType view, int size) {
@@ -749,8 +749,8 @@ public class ViewManager implements Serializable {
     /**
      * getPageDownloadUrl.
      *
-     * @param option
-     * @param page
+     * @param option download option specifying format and box size
+     * @param page physical page to generate the download URL for
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -791,10 +791,10 @@ public class ViewManager implements Serializable {
 
     /**
      * 
-     * @param configuredOptions
-     * @param origImageSize
-     * @param configuredMaxSize
-     * @param imageFilename
+     * @param configuredOptions list of download options from configuration
+     * @param origImageSize original image dimensions, or null if unknown
+     * @param configuredMaxSize maximum allowed image dimensions from configuration
+     * @param imageFilename file name used to determine the actual image format
      * @return List<DownloadOption>
      */
     public static List<DownloadOption> getDownloadOptionsForImage(
@@ -848,7 +848,7 @@ public class ViewManager implements Serializable {
 
     /**
      * 
-     * @param page
+     * @param page physical page to retrieve download options for
      * @return List<DownloadOption>
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -876,8 +876,8 @@ public class ViewManager implements Serializable {
     /**
      * Return the current image format if argument is 'MASTER', or the argument itself otherwise.
      *
-     * @param format
-     * @param imageFilename
+     * @param format requested format string, e.g. "MASTER", "jpg"
+     * @param imageFilename file name used to resolve the actual master format
      * @return Image format
      */
     public static String getImageFormat(String format, String imageFilename) {
@@ -913,7 +913,7 @@ public class ViewManager implements Serializable {
 
     /**
      * 
-     * @param currentImg
+     * @param currentImg physical page to retrieve word coordinates for
      * @return List<String>
      * @throws ViewerConfigurationException
      */
@@ -1014,8 +1014,8 @@ public class ViewManager implements Serializable {
 
     /**
      *
-     * @param width
-     * @param height
+     * @param width desired thumbnail width in pixels
+     * @param height desired thumbnail height in pixels
      * @return URL to the representative image as {@link String}
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -1032,8 +1032,8 @@ public class ViewManager implements Serializable {
     /**
      * scaleToWidth.
      *
-     * @param imageSize a {@link java.awt.Dimension} object.
-     * @param scaledWidth a int.
+     * @param imageSize original image dimensions
+     * @param scaledWidth target width in pixels
      * @return a {@link java.awt.Dimension} object.
      */
     public static Dimension scaleToWidth(Dimension imageSize, int scaledWidth) {
@@ -1045,8 +1045,8 @@ public class ViewManager implements Serializable {
     /**
      * scaleToHeight.
      *
-     * @param imageSize a {@link java.awt.Dimension} object.
-     * @param scaledHeight a int.
+     * @param imageSize original image dimensions
+     * @param scaledHeight target height in pixels
      * @return a {@link java.awt.Dimension} object.
      */
     public static Dimension scaleToHeight(Dimension imageSize, int scaledHeight) {
@@ -1223,7 +1223,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * @param step
+     * @param step positive or negative offset from the current image order
      * @return {@link PhysicalElement}
      * @throws IndexUnreachableException
      */
@@ -1238,7 +1238,7 @@ public class ViewManager implements Serializable {
     /**
      * Returns the page with the given order number from the page loader, if exists.
      *
-     * @param order a int.
+     * @param order one-based page order number to retrieve
      * @return requested page if exists; null otherwise.
      * @should return correct page
      * @should return null if order less than zero
@@ -1306,7 +1306,7 @@ public class ViewManager implements Serializable {
     /**
      * Setter for the direct page number input field.
      *
-     * @param currentImageOrder a int.
+     * @param currentImageOrder one-based page order number to navigate to
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws IDDOCNotFoundException
@@ -1631,9 +1631,9 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * Fist thumbnail index +not+ on the current page anymore
+     * Fist thumbnail index +not+ on the current page anymore.
      * 
-     * @param thumbnailsPerPage
+     * @param thumbnailsPerPage number of thumbnails displayed per page
      * @return Index of the last thumbnail on the current page
      */
     private int getLastDisplayedThumbnailIndex(int thumbnailsPerPage) {
@@ -1641,7 +1641,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * @param thumbnailsPerPage
+     * @param thumbnailsPerPage number of thumbnails displayed per page
      * @return Index of the first thumbnail on the current page
      */
     private int getFirstDisplayedThumbnailIndex(int thumbnailsPerPage) {
@@ -1673,7 +1673,7 @@ public class ViewManager implements Serializable {
     /**
      * Setter for the field <code>currentThumbnailPage</code>.
      *
-     * @param currentThumbnailPage a int.
+     * @param currentThumbnailPage one-based thumbnail page number to display
      */
     public void setCurrentThumbnailPage(int currentThumbnailPage) {
         this.currentThumbnailPage = currentThumbnailPage;
@@ -1890,7 +1890,7 @@ public class ViewManager implements Serializable {
 
     /**
      * 
-     * @param language
+     * @param language language code for which to return the TEI URL
      * @return TEI URL for given language
      * @throws IndexUnreachableException
      */
@@ -2095,7 +2095,7 @@ public class ViewManager implements Serializable {
     /**
      * Returns the pdf download link for the current document, allowing to attach a number of query parameters to it.
      *
-     * @param queryParams
+     * @param queryParams additional URL query parameters to append
      * @return {@link java.lang.String}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -2143,7 +2143,7 @@ public class ViewManager implements Serializable {
     /**
      * Returns the pdf download link for the current struct element, allowing to add a number of query parameters to it.
      * 
-     * @param queryParams
+     * @param queryParams additional URL query parameters to append
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -2569,7 +2569,7 @@ public class ViewManager implements Serializable {
 
     /**
      *
-     * @param threshold
+     * @param threshold minimum percentage below which a warning is shown
      * @return true if percentage of pages with full-text is below given threshold; false otherwise
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -2749,7 +2749,7 @@ public class ViewManager implements Serializable {
 
     /**
      * 
-     * @param localFilesOnly
+     * @param localFilesOnly if true, excludes remote HTTP/HTTPS file paths
      * @return Map with mime type and file names for each
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -2781,7 +2781,7 @@ public class ViewManager implements Serializable {
 
     /**
      * 
-     * @param filename
+     * @param filename file path or name to determine mime type from
      * @return {@link String}
      */
     public String getMimeTypeViaFileName(String filename) {
@@ -2824,7 +2824,7 @@ public class ViewManager implements Serializable {
 
     /**
      * 
-     * @param language
+     * @param language language code to check for TEI availability
      * @return TEI mime type if TEI files are indexed; mime type from the loaded full-text of the current page otherwise
      * @throws ViewerConfigurationException
      */
@@ -2853,7 +2853,7 @@ public class ViewManager implements Serializable {
     /**
      * Setter for the field <code>zoomSlider</code>.
      *
-     * @param zoomSlider a int.
+     * @param zoomSlider zoom level value from the slider control
      */
     public void setZoomSlider(int zoomSlider) {
         this.zoomSlider = zoomSlider;
@@ -2869,7 +2869,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * List all files in {@link Configuration#getOrigContentFolder()} for which accecss is granted and which are not hidden per config
+     * List all files in {@link Configuration#getOrigContentFolder()} for which accecss is granted and which are not hidden per config.
      *
      * @return the list of downloadable filenames. If no downloadable resources exists, an empty list is returned
      * @throws PresentationException
@@ -3309,7 +3309,7 @@ public class ViewManager implements Serializable {
     /**
      * isRecordAddedToTranskribus.
      *
-     * @param session a {@link io.goobi.viewer.model.transkribus.TranskribusSession} object.
+     * @param session active Transkribus session with user credentials
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -3565,7 +3565,7 @@ public class ViewManager implements Serializable {
     /**
      * getDocumentTitle.
      *
-     * @param document a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param document structure element whose title to generate
      * @return a {@link java.lang.String} object.
      */
     public String getDocumentTitle(StructElement document) {
@@ -3597,7 +3597,7 @@ public class ViewManager implements Serializable {
     /**
      * Setter for the field <code>pageLoader</code>.
      *
-     * @param loader a {@link io.goobi.viewer.model.viewer.pageloader.IPageLoader} object.
+     * @param loader page loader to replace the current one
      */
     public void setPageLoader(IPageLoader loader) {
         this.pageLoader = loader;
@@ -3847,7 +3847,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * @param levelName
+     * @param levelName citation link level name, e.g. "record" or "docstruct"
      * @return List of configured citation links for the given levelName, populated with values
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -3915,7 +3915,7 @@ public class ViewManager implements Serializable {
      * Creates an instance of ViewManager loaded with the record with the given identifier.
      *
      * @param pi Record identifier
-     * @param loadPages
+     * @param loadPages if true, pages are loaded into the page loader
      * @return Created {@link ViewManager}
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -3946,8 +3946,10 @@ public class ViewManager implements Serializable {
      * <li>the list contains (2*range)+1 consecutive numbers, or all page numbers of the current record if it is less than that</li>
      * <li>the first number is not less than the first image order</li>
      * <li>the last number is not larger than the last image order</li>
-     * <li>the 'pageOrder' is as far in the middle of the list as possible without violating any of the other points</li></li> Used int
-     * thumbnailPaginator.xhtml to calculate the pages to display.
+     * <li>the 'pageOrder' is as far in the middle of the list as possible without violating any of the other points</li>
+     * </ul>
+     *
+     * <p>Used in thumbnailPaginator.xhtml to calculate the pages to display.
      * 
      * @param pageOrder The current page number around which to center the numbers
      * @param range The number of numbers to include above and below the current page number, if possible

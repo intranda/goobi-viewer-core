@@ -279,7 +279,7 @@ public class CMSPageTemplateEditBean implements Serializable {
     /**
      * Deletes given CMS page from the database.
      *
-     * @param template
+     * @param template CMS page template to delete
      * @return true if template deleted successfully; false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */

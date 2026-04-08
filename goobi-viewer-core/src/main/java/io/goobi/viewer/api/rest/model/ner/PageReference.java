@@ -52,7 +52,7 @@ public class PageReference implements TagGroup {
     /**
      * Creates a new PageReference instance.
      *
-     * @param pageOrder a int.
+     * @param pageOrder display order number of the referenced page
      */
     public PageReference(int pageOrder) {
         super();
@@ -76,7 +76,7 @@ public class PageReference implements TagGroup {
     /**
      * Setter for the field <code>tags</code>.
      *
-     * @param nerTags a {@link java.util.List} object.
+     * @param nerTags list of NER tag counts to assign to this page reference
      */
     public void setTags(List<TagCount> nerTags) {
         this.tags = nerTags;

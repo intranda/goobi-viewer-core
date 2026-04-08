@@ -83,8 +83,8 @@ public class WatermarkHandler implements Serializable {
     /**
      * Creates a new WatermarkHandler instance.
      *
-     * @param configuration a {@link io.goobi.viewer.controller.Configuration} object.
-     * @param servletPath a {@link java.lang.String} object.
+     * @param configuration viewer configuration supplying watermark settings
+     * @param servletPath base servlet path used to build PURL watermark texts
      */
     public WatermarkHandler(Configuration configuration, String servletPath) {
         this.watermarkTextConfiguration =
@@ -98,8 +98,8 @@ public class WatermarkHandler implements Serializable {
      * {@link io.goobi.viewer.model.viewer.PhysicalElement} page. If the watermark height of the given pageType and image is 0, an empty optional is
      * returned
      *
-     * @param page a {@link java.util.Optional} object.
-     * @param doc a {@link java.util.Optional} object.
+     * @param page optional physical page element for watermark text resolution
+     * @param doc optional top-level struct element for watermark ID resolution
      * @param pageType The pageType of the currentView. Taken into consideration for footer height, if not null
      * @return a {@link java.util.Optional} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -119,10 +119,10 @@ public class WatermarkHandler implements Serializable {
      * {@link io.goobi.viewer.model.viewer.PhysicalElement} page. If the watermark height of the given pageType and image is 0, an empty optional is
      * returned.
      *
-     * @param scale a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
+     * @param scale image scale to use in the watermark URL
      * @param viewAttributes a {@link ViewAttributes} object
-     * @param watermarkId a {@link java.util.Optional} object.
-     * @param watermarkText a {@link java.util.Optional} object.
+     * @param watermarkId optional footer image variant identifier to embed in the URL
+     * @param watermarkText optional text string to overlay on the watermark image
      * @return a {@link java.util.Optional} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -171,7 +171,7 @@ public class WatermarkHandler implements Serializable {
     /**
      * Optionally returns the watermark text for the given page. If the text is empty or none is configures, an empty optional is returned
      *
-     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @param page physical page element used to resolve URN, PURL, or Solr-based watermark text
      * @return a {@link java.util.Optional} object.
      */
     public Optional<String> getWatermarkTextIfExists(PhysicalElement page) {
@@ -228,7 +228,7 @@ public class WatermarkHandler implements Serializable {
     /**
      * Optionally returns the watermark text for the given pi. If the text is empty or none is configures, an empty optional is returned
      *
-     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param doc struct element used to resolve URN, PURL, or Solr-based watermark text
      * @return a {@link java.util.Optional} object.
      */
     public Optional<String> getWatermarkTextIfExists(StructElement doc) {
@@ -300,7 +300,7 @@ public class WatermarkHandler implements Serializable {
     /**
      * Returns the watermark id for the given {@link io.goobi.viewer.model.viewer.StructElement}.
      *
-     * @param topDocument a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param topDocument top-level struct element whose metadata fields supply the footer ID
      * @return a {@link java.util.Optional} object.
      */
     public Optional<String> getFooterIdIfExists(StructElement topDocument) {

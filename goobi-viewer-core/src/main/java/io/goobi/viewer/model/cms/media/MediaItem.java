@@ -70,7 +70,7 @@ public class MediaItem {
 
     /**
      * 
-     * @param imageURI
+     * @param imageURI URI of the image to display
      */
     public MediaItem(URI imageURI) {
         this.image = new ImageContent(imageURI);
@@ -87,8 +87,8 @@ public class MediaItem {
 
     /**
      * 
-     * @param source
-     * @param servletRequest
+     * @param source CMS media item providing the data
+     * @param servletRequest HTTP servlet request for link URI resolution
      */
     public MediaItem(CMSMediaItem source, HttpServletRequest servletRequest) {
         this.label = source.getTranslationsForName();
@@ -103,7 +103,7 @@ public class MediaItem {
     }
 
     /**
-     * @param source
+     * @param source CMS media item to build content from
      * @return {@link IContent}
      */
     public static IContent getMediaResource(CMSMediaItem source) {

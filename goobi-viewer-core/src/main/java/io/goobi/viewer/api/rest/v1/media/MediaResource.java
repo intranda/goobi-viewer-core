@@ -77,8 +77,8 @@ public class MediaResource {
     /**
      * serveMediaContent.
      *
-     * @param format a {@link java.lang.String} object.
-     * @param filename a {@link java.lang.String} object.
+     * @param format audio MIME subtype (e.g. mp3, ogg)
+     * @param filename name of the audio resource file
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -102,8 +102,8 @@ public class MediaResource {
     /**
      * serveMediaContent.
      *
-     * @param format a {@link java.lang.String} object.
-     * @param filename a {@link java.lang.String} object.
+     * @param format video MIME subtype (e.g. mp4, webm)
+     * @param filename name of the video resource file
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -154,9 +154,9 @@ public class MediaResource {
     /**
      * checkAccess.
      *
-     * @param action a {@link java.lang.String} object.
-     * @param pi a {@link java.lang.String} object.
-     * @param contentFilename a {@link java.lang.String} object.
+     * @param action media type used as access action key (e.g. audio, video)
+     * @param pi persistent identifier of the record
+     * @param contentFilename filename of the requested media file
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
      */
     public void checkAccess(String action, String pi, String contentFilename) throws WebApplicationException {

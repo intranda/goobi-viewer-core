@@ -59,7 +59,7 @@ public class ArchiveMetadataBean implements Serializable {
      *
      * <p>Receives custom config object of which only the method {@link Configuration#getArchiveMetadata()} is used.
      * 
-     * @param config
+     * @param config configuration object used to load archive metadata definitions
      */
     public ArchiveMetadataBean(Configuration config) {
         this.config = config;
@@ -81,7 +81,7 @@ public class ArchiveMetadataBean implements Serializable {
      * 
      * @param entry The entry which metadata to return
      * @return the metadata list for the given entry
-     * @throws PresentationException If the metadata list had to be created and an error occured while doing so
+     * @throws PresentationException If the metadata list had to be created and an error occurred while doing so
      */
     public ArchiveEntryMetadataList getMetadata(ArchiveEntry entry) throws PresentationException {
         if (!isMetadataLoaded(entry.getId())) {

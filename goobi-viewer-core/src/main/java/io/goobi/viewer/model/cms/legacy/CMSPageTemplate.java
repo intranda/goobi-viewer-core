@@ -90,7 +90,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Loads a page template from the given template file and returns the template object.
      *
-     * @param file a {@link java.nio.file.Path} object.
+     * @param file path to the XML template file to load
      * @return a {@link io.goobi.viewer.model.cms.legacy.CMSPageTemplate} object.
      * @throws java.lang.IllegalArgumentException if file is null
      * @should load template correctly
@@ -373,7 +373,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * getContentItem.
      *
-     * @param itemId a {@link java.lang.String} object.
+     * @param itemId identifier of the content item to retrieve
      * @return a {@link io.goobi.viewer.model.cms.legacy.CMSContentItemTemplate} object.
      */
     public CMSContentItemTemplate getContentItem(String itemId) {
@@ -413,7 +413,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Setter for the field <code>displaySortingField</code>.
      *
-     * @param displaySortingField a boolean.
+     * @param displaySortingField true to show the sorting field in the template UI
      */
     public void setDisplaySortingField(boolean displaySortingField) {
         this.displaySortingField = displaySortingField;
@@ -431,7 +431,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Setter for the field <code>themeTemplate</code>.
      *
-     * @param themeTemplate the themeTemplate to set
+     * @param themeTemplate true if this template originates from the theme
      */
     public void setThemeTemplate(boolean themeTemplate) {
         this.themeTemplate = themeTemplate;
@@ -472,8 +472,8 @@ public class CMSPageTemplate implements Serializable {
     /**
      * parseBoolean.
      *
-     * @param text a {@link java.lang.String} object.
-     * @param defaultValue a boolean.
+     * @param text string value to parse, expected "true" or "false" (case-insensitive)
+     * @param defaultValue value to return when text is neither "true" nor "false"
      * @return a boolean.
      */
     public static boolean parseBoolean(String text, boolean defaultValue) {
@@ -489,7 +489,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * parseBoolean.
      *
-     * @param text a {@link java.lang.String} object.
+     * @param text string value to parse, defaults to false if unrecognized
      * @return a boolean.
      */
     public static boolean parseBoolean(String text) {

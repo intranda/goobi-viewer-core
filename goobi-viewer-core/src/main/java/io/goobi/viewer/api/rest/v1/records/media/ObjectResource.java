@@ -109,11 +109,11 @@ public class ObjectResource {
     private final AbstractApiUrlManager urls;
 
     /**
-     * @param context
-     * @param request
-     * @param response
-     * @param pi
-     * @param filename
+     * @param context JAX-RS container request context
+     * @param request incoming HTTP servlet request
+     * @param response outgoing HTTP servlet response
+     * @param pi persistent identifier of the record
+     * @param filename filename of the 3D object file
      */
     public ObjectResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
@@ -129,8 +129,8 @@ public class ObjectResource {
     /**
      * getInfo.
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
+     * @param request incoming HTTP request providing the request URL
+     * @param response outgoing HTTP response (unused, injected by JAX-RS)
      * @return a {@link io.goobi.viewer.model.viewer.object.ObjectInfo} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -245,8 +245,8 @@ public class ObjectResource {
     /**
      * getObject.
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
+     * @param request incoming HTTP request (unused, injected by JAX-RS)
+     * @param response outgoing HTTP response for setting content headers
      * @return a {@link jakarta.ws.rs.core.StreamingOutput} object.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -294,11 +294,11 @@ public class ObjectResource {
     /**
      * getObjectResource.
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
-     * @param pi a {@link java.lang.String} object.
-     * @param subfolder a {@link java.lang.String} object.
-     * @param auxfilename a {@link java.lang.String} object.
+     * @param request incoming HTTP request (unused, injected by JAX-RS)
+     * @param response outgoing HTTP response (unused, injected by JAX-RS)
+     * @param pi persistent identifier of the record
+     * @param subfolder first-level subfolder under the media directory
+     * @param auxfilename filename of the auxiliary resource to serve
      * @return a {@link jakarta.ws.rs.core.StreamingOutput} object.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -329,11 +329,11 @@ public class ObjectResource {
     /**
      * getObjectResource2.
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
-     * @param pi a {@link java.lang.String} object.
-     * @param subfolder a {@link java.lang.String} object.
-     * @param auxfilename a {@link java.lang.String} object.
+     * @param request incoming HTTP request (unused, injected by JAX-RS)
+     * @param response outgoing HTTP response (unused, injected by JAX-RS)
+     * @param pi persistent identifier of the record
+     * @param subfolder first-level subfolder under the media directory
+     * @param auxfilename filename of the auxiliary resource to serve
      * @return a {@link jakarta.ws.rs.core.StreamingOutput} object.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -357,12 +357,12 @@ public class ObjectResource {
     /**
      * getObjectResource.
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
-     * @param pi a {@link java.lang.String} object.
-     * @param subfolder1 a {@link java.lang.String} object.
-     * @param subfolder2 a {@link java.lang.String} object.
-     * @param auxfilename a {@link java.lang.String} object.
+     * @param request incoming HTTP request (unused, injected by JAX-RS)
+     * @param response outgoing HTTP response (unused, injected by JAX-RS)
+     * @param pi persistent identifier of the record
+     * @param subfolder1 first-level subfolder under the media directory
+     * @param subfolder2 second-level subfolder under subfolder1
+     * @param auxfilename filename of the auxiliary resource to serve
      * @return a {@link jakarta.ws.rs.core.StreamingOutput} object.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -394,12 +394,12 @@ public class ObjectResource {
     /**
      * getObjectResource2.
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
-     * @param pi a {@link java.lang.String} object.
-     * @param subfolder1 a {@link java.lang.String} object.
-     * @param subfolder2 a {@link java.lang.String} object.
-     * @param auxfilename a {@link java.lang.String} object.
+     * @param request incoming HTTP request (unused, injected by JAX-RS)
+     * @param response outgoing HTTP response (unused, injected by JAX-RS)
+     * @param pi persistent identifier of the record
+     * @param subfolder1 first-level subfolder under the media directory
+     * @param subfolder2 second-level subfolder under subfolder1
+     * @param auxfilename filename of the auxiliary resource to serve
      * @return a {@link jakarta.ws.rs.core.StreamingOutput} object.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -442,9 +442,9 @@ public class ObjectResource {
     }
 
     /**
-     * @param baseFolder
-     * @param baseFilename
-     * @param baseURI
+     * @param baseFolder absolute path to the media directory
+     * @param baseFilename object filename without extension
+     * @param baseURI base URI used to construct resource URIs
      * @return List<URI>
      * @throws IOException
      * @throws URISyntaxException

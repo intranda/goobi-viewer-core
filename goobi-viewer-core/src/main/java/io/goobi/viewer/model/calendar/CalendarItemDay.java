@@ -39,9 +39,9 @@ public class CalendarItemDay extends AbstractCalendarItem implements Serializabl
     /**
      * Creates a new CalendarItemDay instance.
      *
-     * @param name a {@link java.lang.String} object.
-     * @param value a int.
-     * @param hits a int.
+     * @param name display label for the day
+     * @param value numeric day value (1–31)
+     * @param hits number of search hits for this day
      */
     public CalendarItemDay(String name, int value, int hits) {
         super(name, value, hits);

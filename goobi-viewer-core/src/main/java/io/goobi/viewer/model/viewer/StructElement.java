@@ -107,7 +107,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * Creates a new StructElement instance.
      *
-     * @param luceneId {@link java.lang.Long}
+     * @param luceneId Solr IDDOC of the document to load
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public StructElement(String luceneId) throws IndexUnreachableException {
@@ -118,8 +118,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * Creates a new StructElement instance.
      *
-     * @param luceneId a long.
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param luceneId Solr IDDOC of the document
+     * @param doc pre-fetched Solr document; may be null to trigger a fresh load
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public StructElement(String luceneId, SolrDocument doc) throws IndexUnreachableException {
@@ -130,7 +130,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * Like {@link #StructElement(String, SolrDocument)}, but get the lucene Id from the SolrDocument.
      *
-     * @param doc
+     * @param doc the Solr document to build the element from
      * @throws IndexUnreachableException
      */
     public StructElement(SolrDocument doc) throws IndexUnreachableException {
@@ -147,9 +147,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * Creates a new StructElement instance.
      *
-     * @param luceneId a long.
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
-     * @param docToMerge a {@link org.apache.solr.common.SolrDocument} object.
+     * @param luceneId Solr IDDOC of the document
+     * @param doc primary Solr document to initialize from
+     * @param docToMerge additional Solr document whose fields are merged into doc
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public StructElement(String luceneId, SolrDocument doc, SolrDocument docToMerge) throws IndexUnreachableException {
@@ -581,7 +581,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * generateEventElements.
      *
-     * @param locale a {@link java.util.Locale} object.
+     * @param locale locale used for translated metadata values
      * @param forSearchHit If true, only search hit metadata will be populated in the event; if false main and sidebar metadata
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -744,8 +744,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * 
-     * @param language
+     *
+     * @param language the ISO language code to check
      * @return true if a TEI file name is indexed for the given language; false otherwise
      */
     public boolean isHasTeiForLanguage(String language) {
@@ -840,7 +840,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @should return correct value
      * @should return null if StructElement not anchor
      * @should throw IllegalArgumentException if field is null
-     * @param field a {@link java.lang.String} object.
+     * @param field Solr field name to retrieve the value of
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -888,7 +888,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @should return correct value
      * @should return null if StructElement not anchor
      * @should throw IllegalArgumentException if field is null
-     * @param fields a {@link java.util.List} object.
+     * @param fields Solr field names to include in the child document query
      * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -941,7 +941,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * getFirstPageFieldValue.
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field Solr field name to retrieve the value of
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -1041,11 +1041,11 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
         private static final long serialVersionUID = -4043298882984117424L;
 
-        /** Display label */
+        /** Display label. */
         private final String label;
-        /** Type of shape (currently only RECT) */
+        /** Type of shape (currently only RECT). */
         private final String shape;
-        /** Shape coordinates */
+        /** Shape coordinates. */
         private final String coords;
         private final String logId;
         private final String structPi;
@@ -1054,12 +1054,12 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         /**
          * Constructor.
          *
-         * @param label
-         * @param shape
-         * @param coords
-         * @param pi
-         * @param pageNo
-         * @param logId
+         * @param label the human-readable label for this shape
+         * @param shape the type of shape (e.g. RECT)
+         * @param coords the shape's coordinate string
+         * @param pi the persistent identifier of the associated record
+         * @param pageNo the physical page number the shape is on
+         * @param logId the logical struct ID the shape belongs to
          */
         public ShapeMetadata(String label, String shape, String coords, String pi, int pageNo, String logId) {
             this.label = label;
@@ -1101,8 +1101,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         }
 
         /**
-         * 
-         * @param pageType
+         *
+         * @param pageType the page type used for URL building
          * @return Constructed URL
          */
         public String getUrl(PageType pageType) {

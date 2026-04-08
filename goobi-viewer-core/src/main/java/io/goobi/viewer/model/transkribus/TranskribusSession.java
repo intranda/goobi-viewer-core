@@ -40,9 +40,9 @@ public class TranskribusSession implements Serializable {
     /**
      * Creates a new TranskribusSession instance.
      *
-     * @param userId a {@link java.lang.String} object.
-     * @param userName a {@link java.lang.String} object.
-     * @param sessionId a {@link java.lang.String} object.
+     * @param userId internal Transkribus user account ID.
+     * @param userName login name (e-mail address) of the user.
+     * @param sessionId authentication token for subsequent API calls.
      */
     public TranskribusSession(String userId, String userName, String sessionId) {
         this.userId = userId;

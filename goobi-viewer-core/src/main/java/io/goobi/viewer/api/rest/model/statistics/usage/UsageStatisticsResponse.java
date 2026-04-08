@@ -37,8 +37,8 @@ public class UsageStatisticsResponse {
     private final List<StatisticsSummary> values;
 
     /**
-     * @param summary
-     * @param values
+     * @param summary aggregated summary across all date entries
+     * @param values list of individual date-based statistics summaries
      */
     public UsageStatisticsResponse(StatisticsSummary summary, List<StatisticsSummary> values) {
         super();

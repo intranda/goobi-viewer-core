@@ -103,7 +103,7 @@ public class CMSMediaImageResource3 extends ImageResource {
     }
 
     /**
-     * @param filename
+     * @param filename name of the CMS media image file
      * @return {@link URI}
      */
     private static URI getMediaFileUrl(String filename) {

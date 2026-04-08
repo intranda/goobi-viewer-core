@@ -67,8 +67,8 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
     /**
      * Package private constructor for LeanPageLoader.
      *
-     * @param topElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @param numPages a int.
+     * @param topElement top-level structure element of the record
+     * @param numPages total page count; -1 to derive lazily
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     LeanPageLoader(StructElement topElement, int numPages) throws IndexUnreachableException {
@@ -183,11 +183,11 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
 
     /**
      *
-     * @param labelTemplate
-     * @param pageNo
-     * @param nextPageNo
-     * @param orderLabel
-     * @param nextOderLabel
+     * @param labelTemplate template string with {order} and {orderlabel} placeholders
+     * @param pageNo physical page number
+     * @param nextPageNo physical page number of the next page; null for single page
+     * @param orderLabel order label of the page
+     * @param nextOderLabel order label of the next page; null for single page
      * @return {@link SelectItem}
      */
     static SelectItem buildPageSelectItem(String labelTemplate, int pageNo, Integer nextPageNo, String orderLabel, String nextOderLabel) {
@@ -248,8 +248,8 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
     /**
      * loadPage.
      *
-     * @param pageNumber a int.
-     * @param fileName a {@link java.lang.String} object.
+     * @param pageNumber physical page order number; -1 to ignore
+     * @param fileName file name to match; null to ignore
      * @should load page correctly via page number
      * @should load page correctly via file name
      * @should return null if page not found

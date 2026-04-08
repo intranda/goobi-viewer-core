@@ -115,8 +115,8 @@ public class GeoMapUpdate implements IModelUpdate {
 
     /**
      * 
-     * @param featureSets
-     * @param dao
+     * @param featureSets the map of GeoMap ID to feature set to add
+     * @param dao data access object
      * @return List<GeoMap>
      * @throws DAOException
      */
@@ -141,7 +141,7 @@ public class GeoMapUpdate implements IModelUpdate {
 
     /**
      * 
-     * @param dao
+     * @param dao data access object
      * @return Map<Long, FeatureSet>
      * @throws DAOException
      */

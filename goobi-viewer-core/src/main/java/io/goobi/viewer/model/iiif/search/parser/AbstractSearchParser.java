@@ -39,9 +39,9 @@ public abstract class AbstractSearchParser {
     /**
      * getPrecedingText.
      *
-     * @param text a {@link java.lang.String} object.
-     * @param hitStartIndex a int.
-     * @param maxLength a int.
+     * @param text full text to extract context from
+     * @param hitStartIndex character index where the hit begins
+     * @param maxLength maximum number of characters to return
      * @return a {@link java.lang.String} object.
      */
     public static String getPrecedingText(String text, int hitStartIndex, int maxLength) {
@@ -63,9 +63,9 @@ public abstract class AbstractSearchParser {
     /**
      * getSucceedingText.
      *
-     * @param text a {@link java.lang.String} object.
-     * @param hitEndIndex a int.
-     * @param maxLength a int.
+     * @param text full text to extract context from
+     * @param hitEndIndex character index immediately after the hit ends
+     * @param maxLength maximum number of characters to return
      * @return a {@link java.lang.String} object.
      */
     public static String getSucceedingText(String text, int hitEndIndex, int maxLength) {
@@ -87,7 +87,7 @@ public abstract class AbstractSearchParser {
     /**
      * getSingleWordRegex.
      *
-     * @param query a {@link java.lang.String} object.
+     * @param query search term or regex to match as a whole word
      * @return a regex matching a single word matching the given query regex (ignoring case)
      */
     public static String getSingleWordRegex(final String query) {
@@ -98,7 +98,7 @@ public abstract class AbstractSearchParser {
     /**
      * getContainedWordRegex.
      *
-     * @param query a {@link java.lang.String} object.
+     * @param query search term or regex to find as a whole word
      * @return a regex matching any text containing the given query regex as single word
      */
     public static String getContainedWordRegex(final String query) {
@@ -109,7 +109,7 @@ public abstract class AbstractSearchParser {
     /**
      * getQueryRegex.
      *
-     * @param query a {@link java.lang.String} object.
+     * @param query search query with optional '*' wildcard tokens
      * @return a regex matching any word or sequence of words of the given query with '*' matching any number of word characters and ignoring case
      */
     public static String getQueryRegex(final String query) {
@@ -137,7 +137,7 @@ public abstract class AbstractSearchParser {
      * Create a regular expression matching all anything starting with the given query followed by an arbitrary number of word characters and ignoring
      * case.
      *
-     * @param query a {@link java.lang.String} object.
+     * @param query prefix string to match at the start of words
      * @return the regular expression {@code (?i){query}[\w\d-]*}
      */
     public static String getAutoSuggestRegex(final String query) {

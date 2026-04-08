@@ -105,13 +105,13 @@ public abstract class PersistentAnnotation {
     private Long generatorId;
 
     /**
-     * JSON representation of the annotation body as String
+     * JSON representation of the annotation body as String.
      */
     @Column(name = "body", columnDefinition = "LONGTEXT")
     private String body;
 
     /**
-     * JSON representation of the annotation target as String
+     * JSON representation of the annotation target as String.
      */
     @Column(name = "target", columnDefinition = "LONGTEXT")
     private String target;
@@ -133,15 +133,15 @@ public abstract class PersistentAnnotation {
     private User creator = null;
 
     /**
-     * Empty constructor
+     * Empty constructor.
      */
     protected PersistentAnnotation() {
         this.dateCreated = LocalDateTime.now();
     }
 
     /**
-     * 
-     * @param source
+     *
+     * @param source annotation to copy all fields from
      */
     protected PersistentAnnotation(PersistentAnnotation source) {
         this.id = source.id;
@@ -160,12 +160,12 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * Creates a new PersistentAnnotation from a WebAnnotation
+     * Creates a new PersistentAnnotation from a WebAnnotation.
      *
      * @param source a {@link de.intranda.api.annotation.wa.WebAnnotation} object.
-     * @param id
-     * @param targetPI
-     * @param targetPage
+     * @param id database ID to assign to this annotation
+     * @param targetPI persistent identifier of the target record
+     * @param targetPage physical page order of the target page
      */
     protected PersistentAnnotation(AbstractAnnotation source, Long id, String targetPI, Integer targetPage) {
         this.dateCreated = source.getCreated();

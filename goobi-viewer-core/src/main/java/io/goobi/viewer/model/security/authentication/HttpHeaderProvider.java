@@ -46,7 +46,7 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
 
     private static final Logger logger = LogManager.getLogger(HttpHeaderProvider.class);
 
-    /** Constant <code>TYPE_OPENID="openId"</code> */
+    /** Constant <code>TYPE_OPENID="openId"</code>. */
     public static final String TYPE_HTTP_HEADER = "httpHeader";
 
     public static final String PARAMETER_TYPE_HEADER = "header";
@@ -62,14 +62,14 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
     private Object responseLock = new Object();
 
     /**
-     * 
-     * @param name
-     * @param label
-     * @param url
-     * @param image
-     * @param timeoutMillis
-     * @param parameterType
-     * @param parameterName
+     *
+     * @param name unique provider name/identifier
+     * @param label display label shown in the UI
+     * @param url redirect URL for the authentication endpoint
+     * @param image path to the provider icon image
+     * @param timeoutMillis maximum wait time in milliseconds for the login response
+     * @param parameterType type of the incoming parameter (e.g. "header")
+     * @param parameterName name of the header or request parameter carrying the user identifier
      */
     public HttpHeaderProvider(String name, String label, String url, String image, long timeoutMillis, String parameterType, String parameterName) {
         super(name, label, TYPE_HTTP_HEADER, url, image, timeoutMillis);
@@ -108,8 +108,8 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
     }
 
     /**
-     * 
-     * @param parameterValue
+     *
+     * @param parameterValue the value of the user-identifying parameter to look up
      * @return {@link User} if found; otherwise null
      */
     public User loadUser(String parameterValue) {

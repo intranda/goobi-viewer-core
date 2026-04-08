@@ -81,7 +81,7 @@ public class TextBean implements Serializable {
     /**
      * Returns the schoolbook abstract portion of the TEI document, converting TEI markup to HTML.
      * 
-     * @param topDocument
+     * @param topDocument top-level Solr document of the record
      * @param language ISO 639-1 language code
      * @return ProfileDescAbstractSchoolbook
      */
@@ -92,7 +92,7 @@ public class TextBean implements Serializable {
     /**
      * Returns the abstract portion of the TEI document, converting TEI markup to HTML.
      * 
-     * @param topDocument
+     * @param topDocument top-level Solr document of the record
      * @param language ISO 639-1 language code
      * @return ProfileDescAbstractLong
      */
@@ -103,9 +103,9 @@ public class TextBean implements Serializable {
     /**
      * Returns the abstract portion of the given type of the TEI document, converting TEI markup to HTML.
      * 
-     * @param topDocument
-     * @param abstractType
-     * @param language
+     * @param topDocument top-level Solr document of the record
+     * @param abstractType XML id attribute of the abstract element to retrieve
+     * @param language ISO 639-1 language code
      * @return Abstract of the given abstractType
      * @should return abstract correctly
      * @should throw IllegalArgumentException if language null
@@ -173,8 +173,8 @@ public class TextBean implements Serializable {
     /**
      * Loads and returns the TEI text for the given record and language if full-text access is granted to the client.
      * 
-     * @param topDocument
-     * @param language
+     * @param topDocument top-level Solr document of the record
+     * @param language ISO 639-1 language code for the TEI file variant
      * @return TEI full-text or access denied message
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -220,7 +220,7 @@ public class TextBean implements Serializable {
 
     /**
      * 
-     * @param topDocument
+     * @param topDocument top-level structure element of the record
      * @return List of ISO 639-2B language codes of languages available for the record
      * @should return return all tei languages
      */
@@ -243,7 +243,7 @@ public class TextBean implements Serializable {
      * Removes all
      * tags that contain no text.
      * 
-     * @param text
+     * @param text HTML text from which empty paragraph tags are removed
      * @return text without empty paragraphs
      * @should remove empty paragraph tags correctly
      */
@@ -254,7 +254,7 @@ public class TextBean implements Serializable {
     /**
      * Loads TEI full-text from the given file path. The text portion is cut out of the main document and its markup is converted to HTML.
      * 
-     * @param filePath
+     * @param filePath path to the TEI file to load
      * @return TEI from the given filePath as HTML text
      * @should load text correctly
      * @should return null if file not found

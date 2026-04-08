@@ -113,7 +113,7 @@ public class MessageQueueBean implements Serializable {
     /**
      * Creates a new MessageQueueBean instance.
      *
-     * @param broker a {@link io.goobi.viewer.controller.mq.MessageQueueManager} object
+     * @param broker message queue manager to use
      */
     public MessageQueueBean(MessageQueueManager broker) {
         this.messageBroker = broker;
@@ -251,7 +251,7 @@ public class MessageQueueBean implements Serializable {
     /**
      * getQueryMessages.
      *
-     * @param messageType a {@link java.lang.String} object
+     * @param messageType message type to filter by
      * @return List<ViewerMessage>
      */
     public List<ViewerMessage> getQueryMessages(String messageType) {
@@ -266,7 +266,7 @@ public class MessageQueueBean implements Serializable {
     /**
      * Remove all active messages of a given type from the queue.
      *
-     * @param type a {@link java.lang.String} object
+     * @param type message type to remove
      */
     public void removeMessagesFromQueue(String type) {
 
@@ -280,7 +280,7 @@ public class MessageQueueBean implements Serializable {
     /**
      * Deletes a single message from the queue.
      *
-     * @param ticket a {@link io.goobi.viewer.controller.mq.ViewerMessage} object
+     * @param ticket message to delete from queue
      */
     public void deleteMessage(ViewerMessage ticket) {
 
@@ -303,7 +303,7 @@ public class MessageQueueBean implements Serializable {
     /**
      * Setter for the field <code>messageType</code>.
      *
-     * @param messageType a {@link java.lang.String} object
+     * @param messageType message type to set as filter
      */
     public void setMessageType(String messageType) {
         this.messageType = messageType;

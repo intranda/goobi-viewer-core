@@ -56,12 +56,12 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
 
     private static final Logger logger = LogManager.getLogger(HttpAuthenticationProvider.class);
 
-    /** Constant <code>DEFAULT_EMAIL="{username}@nomail.com"</code> */
+    /** Constant <code>DEFAULT_EMAIL="{username}@nomail.com"</code>. */
     protected static final String DEFAULT_EMAIL = "{username}@nomail.com";
-    /** Constant <code>TYPE_USER_PASSWORD="userPassword"</code> */
+    /** Constant <code>TYPE_USER_PASSWORD="userPassword"</code>. */
     protected static final String TYPE_USER_PASSWORD = "userPassword";
 
-    /** Constant <code>connectionManager</code> */
+    /** Constant <code>connectionManager</code>. */
     protected static PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
 
     protected final String name;
@@ -77,12 +77,12 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     /**
      * Creates a new HttpAuthenticationProvider instance.
      *
-     * @param name a {@link java.lang.String} object.
-     * @param label a {@link java.lang.String} object.
-     * @param url a {@link java.lang.String} object.
-     * @param image a {@link java.lang.String} object.
-     * @param type a {@link java.lang.String} object.
-     * @param timeoutMillis a long.
+     * @param name unique identifier for this provider
+     * @param label display label shown to the user
+     * @param type provider type, e.g. userPassword
+     * @param url remote authentication endpoint URL
+     * @param image relative or absolute path to the provider logo
+     * @param timeoutMillis HTTP connection and socket timeout in milliseconds
      */
     protected HttpAuthenticationProvider(String name, String label, String type, String url, String image, long timeoutMillis) {
         super();
@@ -192,8 +192,8 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     /**
      * post.
      *
-     * @param url a {@link java.net.URI} object.
-     * @param requestEntity a {@link java.lang.String} object.
+     * @param url target endpoint URI for the POST request
+     * @param requestEntity JSON body to send in the POST request
      * @return a {@link java.lang.String} object.
      * @throws jakarta.ws.rs.WebApplicationException if any.
      */
@@ -223,7 +223,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     /**
      * get.
      *
-     * @param url a {@link java.net.URI} object.
+     * @param url target endpoint URI for the GET request
      * @return a {@link java.lang.String} object.
      * @throws jakarta.ws.rs.WebApplicationException if any.
      */

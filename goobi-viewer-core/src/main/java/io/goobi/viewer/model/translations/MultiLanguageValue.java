@@ -88,7 +88,7 @@ public class MultiLanguageValue implements IPolyglott {
 
     /**
      *
-     * @param locale
+     * @param locale locale to retrieve the translation for
      * @return the translation for the given language if one exists
      */
     public Translation getTranslation(Locale locale) {
@@ -136,7 +136,7 @@ public class MultiLanguageValue implements IPolyglott {
     }
 
     /**
-     * @param locale
+     * @param locale the locale to check
      * @return true if this list has an entry for the given locale
      */
     public boolean hasLocale(Locale locale) {

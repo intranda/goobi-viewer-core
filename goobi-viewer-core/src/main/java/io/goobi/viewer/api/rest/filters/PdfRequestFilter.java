@@ -134,10 +134,10 @@ public class PdfRequestFilter implements ContainerRequestFilter {
     /**
      * Sets watermarkText and watermarkId properties to request object.
      *
-     * @param pi
-     * @param divId
-     * @param imageName
-     * @param request
+     * @param pi record identifier
+     * @param divId structure element log ID, or null for full record
+     * @param imageName image file name, or null for chapter/record PDF
+     * @param request JAX-RS container request context to set properties on
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -184,7 +184,7 @@ public class PdfRequestFilter implements ContainerRequestFilter {
     /**
      * If the imageName is actually a list of names, return the first name.
      *
-     * @param imageName
+     * @param imageName potentially multi-value image name string separated by "$"
      * @return First image name
      */
     private static String getFirstImageName(String imageName) {
@@ -198,7 +198,7 @@ public class PdfRequestFilter implements ContainerRequestFilter {
      *
      * @param pi Record identifiers
      * @param divId Structure element ID
-     * @param contentFileName
+     * @param contentFileName image or PDF file name for page-level quota check, or null
      * @param request Servlet request
      * @throws ServiceNotAllowedException
      */
@@ -263,7 +263,7 @@ public class PdfRequestFilter implements ContainerRequestFilter {
      * @param pi Record identifier
      * @param pageFile Page file name
      * @param percentage Allowed percentage of pages for PDF download
-     * @param numTotalRecordPages
+     * @param numTotalRecordPages total number of pages in the record
      * @param request HTTP servlet request object
      * @return true if page allowed as part of the quota; false otherwise
      * @should return false if session unavailable
@@ -340,9 +340,9 @@ public class PdfRequestFilter implements ContainerRequestFilter {
     }
 
     /**
-     * @param pi
-     * @param divId
-     * @param privName
+     * @param pi record identifier to check access for
+     * @param divId structure element log ID, or null for full record
+     * @param privName name of the privilege required for access
      * @throws ServiceNotAllowedException
      * @throws IndexUnreachableException
      */

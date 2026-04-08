@@ -492,8 +492,8 @@ public class HarvestServlet extends HttpServlet implements Serializable {
     /**
      * convertToJSON.
      *
-     * @param totalCount a long.
-     * @param objects a {@link java.util.List} object.
+     * @param totalCount total number of matching records
+     * @param objects harvestable items to serialize
      * @return a {@link org.json.JSONArray} object.
      */
     protected static JSONArray convertToJSON(long totalCount, List<? extends Harvestable> objects) {

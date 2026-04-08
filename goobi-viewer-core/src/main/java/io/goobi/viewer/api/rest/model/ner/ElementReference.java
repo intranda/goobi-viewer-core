@@ -53,9 +53,9 @@ public class ElementReference {
     /**
      * Creates a new ElementReference instance.
      *
-     * @param id a {@link java.lang.String} object.
-     * @param coordinates a {@link java.awt.Rectangle} object.
-     * @param content a {@link java.lang.String} object.
+     * @param id XML element ID of the referenced NER token
+     * @param coordinates bounding box of the element on the page
+     * @param content text content of the NER element
      * @param uri Value of the URI attribute
      */
     public ElementReference(String id, Rectangle coordinates, String content, String uri) {
@@ -97,7 +97,7 @@ public class ElementReference {
     /**
      * Setter for the field <code>coordinates</code>.
      *
-     * @param coordinates a {@link java.awt.Rectangle} object.
+     * @param coordinates bounding box of the element on the page
      */
     public void setCoordinates(Rectangle coordinates) {
         this.coordinates = coordinates;
@@ -115,7 +115,7 @@ public class ElementReference {
     /**
      * Setter for the field <code>content</code>.
      *
-     * @param content a {@link java.lang.String} object.
+     * @param content text content of the NER element
      */
     public void setContent(String content) {
         this.content = content;
@@ -147,14 +147,14 @@ public class ElementReference {
     /**
      * Setter for the field <code>page</code>.
      *
-     * @param pageNo the pageNo to set
+     * @param pageNo 1-based page order number of the referenced element
      */
     public void setPage(int pageNo) {
         this.page = pageNo;
     }
 
     /**
-     * @param rect
+     * @param rect rectangle to convert to string
      * @return A String representation of the rectangle in the form of x1,y1,x2,y2
      */
     private static String getAsString(Rectangle rect) {

@@ -38,9 +38,9 @@ public class CalendarItemMonth extends AbstractCalendarItem implements Serializa
     /**
      * Creates a new CalendarItemMonth instance.
      *
-     * @param name a {@link java.lang.String} object.
-     * @param value a int.
-     * @param hits a int.
+     * @param name display name of the month (e.g. "January").
+     * @param value numeric month value (1-12).
+     * @param hits number of records for this month.
      */
     public CalendarItemMonth(String name, int value, int hits) {
         super(name, value, hits);
@@ -49,7 +49,7 @@ public class CalendarItemMonth extends AbstractCalendarItem implements Serializa
     /**
      * Getter for the field <code>daysOfMonth</code>.
      *
-     * @return a {@link java.util.List} object.
+     * @return list of calendar day items for this month.
      */
     public List<CalendarItemDay> getDaysOfMonth() {
         return daysOfMonth;
@@ -58,7 +58,7 @@ public class CalendarItemMonth extends AbstractCalendarItem implements Serializa
     /**
      * Setter for the field <code>daysOfMonth</code>.
      *
-     * @param daysOfMonth a {@link java.util.List} object.
+     * @param daysOfMonth list of calendar day items to set.
      */
     public void setDaysOfMonth(List<CalendarItemDay> daysOfMonth) {
         this.daysOfMonth = daysOfMonth;
@@ -67,7 +67,7 @@ public class CalendarItemMonth extends AbstractCalendarItem implements Serializa
     /**
      * Getter for the field <code>weeksOfMonth</code>.
      *
-     * @return a {@link java.util.List} object.
+     * @return list of calendar week items for this month.
      */
     public List<CalendarItemWeek> getWeeksOfMonth() {
         return weeksOfMonth;
@@ -76,7 +76,7 @@ public class CalendarItemMonth extends AbstractCalendarItem implements Serializa
     /**
      * Setter for the field <code>weeksOfMonth</code>.
      *
-     * @param weeksOfMonth a {@link java.util.List} object.
+     * @param weeksOfMonth list of calendar week items to set.
      */
     public void setWeeksOfMonth(List<CalendarItemWeek> weeksOfMonth) {
         this.weeksOfMonth = weeksOfMonth;

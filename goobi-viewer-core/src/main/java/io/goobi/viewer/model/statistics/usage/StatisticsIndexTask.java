@@ -77,7 +77,7 @@ public class StatisticsIndexTask {
     }
 
     /**
-     * Constructor using instances from {@link DataManager}
+     * Constructor using instances from {@link DataManager}.
      * 
      * @throws DAOException
      */

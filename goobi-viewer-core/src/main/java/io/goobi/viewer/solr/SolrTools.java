@@ -92,6 +92,7 @@ public final class SolrTools {
     private static Random random = new SecureRandom();
 
     /**
+     * Prevents instantiation of this utility class.
      */
     private SolrTools() {
         //
@@ -100,7 +101,7 @@ public final class SolrTools {
     /**
      * Returns the comma-separated sorting fields in <code>solrSortFields</code> as a List<StringPair>.
      *
-     * @param solrSortFields a {@link java.lang.String} object.
+     * @param solrSortFields comma-separated Solr sort field string to parse
      * @param splitFieldsBy String by which the individual field configurations are split
      * @param splitNameOrderBy String by which the field name and sorting order are split
      * @should split fields correctly
@@ -150,7 +151,7 @@ public final class SolrTools {
     /**
      * Parses a Solr-Field value in order to return it as String.
      *
-     * @param fieldValue a {@link java.lang.Object} object.
+     * @param fieldValue Solr field value to convert
      * @return a {@link java.lang.String} object.
      */
     public static String getAsString(Object fieldValue) {
@@ -159,7 +160,7 @@ public final class SolrTools {
 
     /**
      *
-     * @param fieldValue
+     * @param fieldValue Solr field value to convert
      * @return Boolean
      */
     public static Boolean getAsBoolean(Object fieldValue) {
@@ -174,8 +175,8 @@ public final class SolrTools {
 
     /**
      *
-     * @param fieldValue
-     * @param separator
+     * @param fieldValue Solr field value to convert
+     * @param separator string used to join multiple values
      * @return String
      */
     @SuppressWarnings("unchecked")
@@ -200,7 +201,7 @@ public final class SolrTools {
     /**
      * getAsInt.
      *
-     * @param fieldValue a {@link java.lang.Object} object.
+     * @param fieldValue Solr field value to convert
      * @return a {@link java.lang.Integer} object.
      * @should return int value correctly
      * @should parse int from string correctly
@@ -222,7 +223,7 @@ public final class SolrTools {
     /**
      * getAsLong.
      *
-     * @param fieldValue a {@link java.lang.Object} object.
+     * @param fieldValue Solr field value to convert
      * @return a {@link java.lang.Long} object.
      * @should return long value correctly
      * @should parse long from string correctly
@@ -244,8 +245,8 @@ public final class SolrTools {
     /**
      * getSingleFieldValue.
      *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
-     * @param field a {@link java.lang.String} object.
+     * @param doc Solr document to read from
+     * @param field Solr field name to retrieve
      * @return a {@link java.lang.Object} object.
      */
     public static Object getSingleFieldValue(SolrDocument doc, String field) {
@@ -267,8 +268,8 @@ public final class SolrTools {
     /**
      * getSingleFieldStringValue.
      *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
-     * @param field a {@link java.lang.String} object.
+     * @param doc Solr document to read from
+     * @param field Solr field name to retrieve
      * @should return value as string correctly
      * @should not return null as string if value is null
      * @return a {@link java.lang.String} object.
@@ -281,8 +282,8 @@ public final class SolrTools {
     /**
      * getSingleFieldIntegerValue.
      *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
-     * @param field a {@link java.lang.String} object.
+     * @param doc Solr document to read from
+     * @param field Solr field name to retrieve
      * @return a {@link java.lang.Integer} object.
      */
     public static Integer getSingleFieldIntegerValue(SolrDocument doc, String field) {
@@ -293,8 +294,8 @@ public final class SolrTools {
     /**
      * getSingleFieldLongValue.
      *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
-     * @param field a {@link java.lang.String} object.
+     * @param doc Solr document to read from
+     * @param field Solr field name to retrieve
      * @return a {@link java.lang.Long} object.
      */
     public static Long getSingleFieldLongValue(SolrDocument doc, String field) {
@@ -305,8 +306,8 @@ public final class SolrTools {
     /**
      * getSingleFieldBooleanValue.
      *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
-     * @param field a {@link java.lang.String} object.
+     * @param doc Solr document to read from
+     * @param field Solr field name to retrieve
      * @return a {@link java.lang.Boolean} object.
      */
     public static boolean getSingleFieldBooleanValue(SolrDocument doc, String field) {
@@ -325,8 +326,8 @@ public final class SolrTools {
     /**
      * Returns a list with all (string) values for the given field name in the given SolrDocument.
      *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
-     * @param fieldName a {@link java.lang.String} object.
+     * @param doc Solr document to read from
+     * @param fieldName Solr field name to retrieve values for
      * @return a {@link java.util.List} object.
      * @should return all values for the given field
      * @should parse dates correctly
@@ -358,7 +359,7 @@ public final class SolrTools {
      * Converts the given SolrDocument to a value map. IMAGEURN_OAI and PAGEURNS are not returned because they have no relevance in this application
      * and can get quite large.
      *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param doc Solr document to convert to a value map
      * @return a {@link java.util.Map} object.
      * @should return all fields in the given doc except page urns
      */
@@ -384,7 +385,7 @@ public final class SolrTools {
      * Converts the given SolrDocument to a value map. IMAGEURN_OAI and PAGEURNS are not returned because they have no relevance in this application
      * and can get quite large.
      *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param doc Solr document to convert to a multi-language value map
      * @return a {@link java.util.Map} object.
      * @should return all fields in the given doc except page urns
      */
@@ -412,7 +413,7 @@ public final class SolrTools {
     /**
      * getMultiLanguageMetadata.
      *
-     * @param mdValues a {@link java.util.Map} object.
+     * @param mdValues map of language codes to string value lists
      * @return a {@link java.util.List} object.
      */
     public static List<IMetadataValue> getMultiLanguageMetadata(Map<String, List<String>> mdValues) {
@@ -505,7 +506,7 @@ public final class SolrTools {
 
     /**
      *
-     * @param doc
+     * @param doc Solr document to inspect
      * @return true if doc contains DOCTYPE:GROUP; false otherwise
      */
     public static boolean isGroup(SolrDocument doc) {
@@ -518,7 +519,7 @@ public final class SolrTools {
 
     /**
      *
-     * @param doc
+     * @param doc metadata container to inspect
      * @return true if doc contains DOCTYPE:GROUP; false otherwise
      */
     public static boolean isGroup(MetadataContainer doc) {
@@ -531,7 +532,7 @@ public final class SolrTools {
 
     /**
      *
-     * @param doc
+     * @param doc Solr document to inspect
      * @return true if doc contains ISANCHOR:true; false otherwise
      */
     public static boolean isAnchor(SolrDocument doc) {
@@ -544,7 +545,7 @@ public final class SolrTools {
 
     /**
      *
-     * @param doc
+     * @param doc metadata container to inspect
      * @return true if doc contains ISANCHOR:true; false otherwise
      */
     public static boolean isAnchor(MetadataContainer doc) {
@@ -557,7 +558,7 @@ public final class SolrTools {
 
     /**
      *
-     * @param doc
+     * @param doc Solr document to inspect
      * @return true if doc contains ISWORK:true; false otherwise
      */
     public static boolean isWork(SolrDocument doc) {
@@ -570,7 +571,7 @@ public final class SolrTools {
 
     /**
      *
-     * @param doc
+     * @param doc metadata container to inspect
      * @return true if doc contains ISWORK:true; false otherwise
      */
     public static boolean isWork(MetadataContainer doc) {
@@ -582,7 +583,7 @@ public final class SolrTools {
     }
 
     /**
-     * @param fieldName
+     * @param fieldName Solr field name to check for language encoding
      * @return true if fieldName contains _LANG_; false otherwise
      */
     public static boolean isLanguageCodedField(String fieldName) {
@@ -591,8 +592,8 @@ public final class SolrTools {
 
     /**
      *
-     * @param field
-     * @param language
+     * @param field Solr field name potentially containing a language suffix
+     * @param language two- or three-letter language code to compare against
      * @return true if language code different
      * @should return true if language code different
      * @should return false if language code same
@@ -612,7 +613,7 @@ public final class SolrTools {
     /**
      * isQuerySyntaxError.
      *
-     * @param e a {@link java.lang.Exception} object.
+     * @param e exception thrown by Solr to inspect
      * @return a boolean.
      */
     public static boolean isQuerySyntaxError(Exception e) {
@@ -631,7 +632,7 @@ public final class SolrTools {
 
     /**
      *
-     * @param exceptionMessage
+     * @param exceptionMessage raw exception message string to parse
      * @return Extracted message
      * @should return empty string if exceptionMessage empty
      * @should return exceptionMessage if no pattern match found
@@ -654,8 +655,8 @@ public final class SolrTools {
     /**
      * getTranslations.
      *
-     * @param fieldName a {@link java.lang.String} object.
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param fieldName Solr field name to look up translations for
+     * @param doc Solr document containing the field values
      * @return a {@link java.util.Optional} object.
      */
     public static Optional<IMetadataValue> getTranslations(String fieldName, SolrDocument doc) {
@@ -672,9 +673,9 @@ public final class SolrTools {
     /**
      * getTranslations.
      *
-     * @param fieldName a {@link java.lang.String} object.
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
-     * @param combiner a {@link java.util.function.BinaryOperator} object.
+     * @param fieldName Solr field name to look up translations for
+     * @param doc Solr document containing the field values
+     * @param combiner function to merge multiple string values into one
      * @return a {@link java.util.Optional} object.
      */
     public static Optional<IMetadataValue> getTranslations(String fieldName, SolrDocument doc, BinaryOperator<String> combiner) {
@@ -691,9 +692,9 @@ public final class SolrTools {
     /**
      * getTranslations.
      *
-     * @param fieldName a {@link java.lang.String} object.
-     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @param combiner a {@link java.util.function.BinaryOperator} object.
+     * @param fieldName Solr field name to look up translations for
+     * @param doc structure element containing the field values
+     * @param combiner function to merge multiple string values into one
      * @return a {@link java.util.Optional} object.
      */
     public static Optional<IMetadataValue> getTranslations(String fieldName, StructElement doc, BinaryOperator<String> combiner) {
@@ -703,10 +704,10 @@ public final class SolrTools {
     /**
      * getTranslations.
      *
-     * @param fieldName a {@link java.lang.String} object.
-     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @param translationLocales
-     * @param combiner a {@link java.util.function.BinaryOperator} object.
+     * @param fieldName Solr field name to look up translations for
+     * @param doc structure element containing the field values
+     * @param translationLocales list of locales to use for translation lookup
+     * @param combiner function to merge multiple string values into one
      * @return a {@link java.util.Optional} object.
      */
     public static Optional<IMetadataValue> getTranslations(String fieldName, StructElement doc, List<Locale> translationLocales,
@@ -726,7 +727,7 @@ public final class SolrTools {
     /**
      * isHasImages.
      *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object. Needs to contain metadata fields
+     * @param doc Solr document to check; needs to contain metadata fields
      *            {@link io.goobi.viewer.solr.SolrConstants#FILENAME} and {@link io.goobi.viewer.solr.SolrConstants#THUMBNAIL}
      * @return true if record described by doc has images; false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -754,7 +755,7 @@ public final class SolrTools {
 
     /**
      *
-     * @param conditions
+     * @param conditions raw Solr condition string to process
      * @return conditions with NOW/YEAR replaced by current year
      */
     public static String getProcessedConditions(final String conditions) {
@@ -774,8 +775,8 @@ public final class SolrTools {
     /**
      * getAvailableValuesForField.
      *
-     * @param field a {@link java.lang.String} object.
-     * @param filterQuery a {@link java.lang.String} object.
+     * @param field Solr field name to retrieve facet values for
+     * @param filterQuery Solr filter query to restrict the search
      * @return List of facet values for the given field and query
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -789,8 +790,8 @@ public final class SolrTools {
     /**
      * getAvailableValuesForField.
      *
-     * @param field a {@link java.lang.String} object.
-     * @param filterQuery a {@link java.lang.String} object.
+     * @param field Solr field name to retrieve facet values for
+     * @param filterQuery Solr filter query to restrict the search
      * @param useFacetField If true, "FACET_" field variant is used for the actual search; Only use false for single-token values
      * @return List of facet values for the given field and query
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -951,7 +952,7 @@ public final class SolrTools {
 
     /**
      *
-     * @param query
+     * @param query Solr query string to clean up
      * @return cleaned up query
      * @should remove brace pairs
      * @should keep join parameter
@@ -967,7 +968,7 @@ public final class SolrTools {
 
     /**
      *
-     * @param fieldName
+     * @param fieldName Solr field name possibly containing a language suffix
      * @return fieldName without language suffix
      */
     public static String getBaseFieldName(String fieldName) {
@@ -979,7 +980,7 @@ public final class SolrTools {
 
     /**
      *
-     * @param fieldName
+     * @param fieldName Solr field name from which to extract the language code
      * @return language part of fieldName
      */
     public static String getLanguage(String fieldName) {
@@ -995,7 +996,7 @@ public final class SolrTools {
 
     /**
      *
-     * @param fieldName
+     * @param fieldName Solr field name from which to derive the locale
      * @return Locale based on the language part of fieldName
      */
     public static Locale getLocale(String fieldName) {
@@ -1008,8 +1009,8 @@ public final class SolrTools {
 
     /**
      *
-     * @param doc
-     * @param fieldNameFilter
+     * @param doc Solr document to extract metadata from
+     * @param fieldNameFilter predicate to select which field names to include
      * @return Map
      */
     public static Map<String, List<IMetadataValue>> getTranslatedMetadata(SolrDocument doc, Function<String, Boolean> fieldNameFilter) {
@@ -1018,10 +1019,10 @@ public final class SolrTools {
 
     /**
      *
-     * @param doc
-     * @param metadata
-     * @param documentLocale
-     * @param fieldNameFilter
+     * @param doc Solr document to extract metadata from
+     * @param metadata existing metadata map to merge results into
+     * @param documentLocale default locale to assign to non-language-coded fields
+     * @param fieldNameFilter predicate to select which field names to include
      * @return Map
      */
     public static Map<String, List<IMetadataValue>> getTranslatedMetadata(SolrDocument doc, Map<String, List<IMetadataValue>> metadata,
@@ -1070,7 +1071,7 @@ public final class SolrTools {
 
     /**
      *
-     * @param doc
+     * @param doc Solr document from which to read the reference ID
      * @return Value of MD_REFID in doc, if available
      */
     public static final String getReferenceId(SolrDocument doc) {

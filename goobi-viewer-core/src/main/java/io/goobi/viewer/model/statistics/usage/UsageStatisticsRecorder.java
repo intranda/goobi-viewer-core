@@ -46,11 +46,11 @@ public class UsageStatisticsRecorder {
     private static final Logger logger = LogManager.getLogger(UsageStatisticsRecorder.class);
 
     /**
-     * {@link IDAO} to write recorded request counts to
+     * {@link IDAO} to write recorded request counts to.
      */
     private final IDAO dao;
     /**
-     * {@link Configuration viewer configuration} to use for settings
+     * {@link Configuration viewer configuration} to use for settings.
      */
     private final Configuration config;
     /**
@@ -58,7 +58,7 @@ public class UsageStatisticsRecorder {
      */
     private final String viewerName;
     /**
-     * Locks all calls to {@link #recordRequest(RequestType, String, String, String, String)}
+     * Locks all calls to {@link #recordRequest(RequestType, String, String, String, String)}.
      */
     private final Object dailyStatisticsLock = new Object();
 
@@ -100,7 +100,7 @@ public class UsageStatisticsRecorder {
     }
 
     /**
-     * Add a request to the internal request counts
+     * Add a request to the internal request counts.
      * 
      * @param type the {@link RequestType} for which to count the request
      * @param recordIdentifier the record identifier requested by the request
@@ -132,22 +132,22 @@ public class UsageStatisticsRecorder {
     }
 
     /**
-     * Get the statistics for the given date from the database
+     * Get the statistics for the given date from the database.
      * 
-     * @param date
+     * @param date date for which to retrieve statistics
      * @return {@link DailySessionUsageStatistics}
-     * @throws DAOException If an error occured regarding the database
+     * @throws DAOException If an error occurred regarding the database
      */
     private DailySessionUsageStatistics getStatistics(LocalDate date) throws DAOException {
         return this.dao.getUsageStatistics(date);
     }
 
     /**
-     * Update the given statistics object in the database
+     * Update the given statistics object in the database.
      * 
-     * @param statistics
+     * @param statistics daily usage statistics object to persist
      * @return true if successful; false otherwise
-     * @throws DAOException If an error occured regarding the database
+     * @throws DAOException If an error occurred regarding the database
      * @throws IllegalArgumentException If no statistics object exists in the database for the date of the given statistics
      */
     private boolean updateStatistics(DailySessionUsageStatistics statistics) throws DAOException, IllegalArgumentException {
@@ -158,11 +158,11 @@ public class UsageStatisticsRecorder {
     }
 
     /**
-     * Create a new statistics object in the database for the given date
+     * Create a new statistics object in the database for the given date.
      * 
-     * @param date
+     * @param date date for which to create the statistics entry
      * @return the created statistics object
-     * @throws DAOException If an error occured regarding the database
+     * @throws DAOException If an error occurred regarding the database
      */
     private synchronized DailySessionUsageStatistics initStatistics(LocalDate date) throws DAOException {
 

@@ -233,12 +233,12 @@ public class RecordResource {
     /**
      * autoCompleteInManifest.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param query a {@link java.lang.String} object.
-     * @param motivation a {@link java.lang.String} object.
-     * @param date a {@link java.lang.String} object.
-     * @param user a {@link java.lang.String} object.
-     * @param page a {@link java.lang.Integer} object.
+     * @param pi persistent identifier of the record to search
+     * @param query partial query string for auto-completion
+     * @param motivation space-separated list of annotation motivations to filter
+     * @param date date filter (not supported; passed to 'ignored' property)
+     * @param user user filter (not supported; passed to 'ignored' property)
+     * @param page result page number; defaults to 1 if absent
      * @return a {@link de.intranda.api.iiif.search.AutoSuggestResult} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.

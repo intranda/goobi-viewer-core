@@ -135,7 +135,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
 
     /**
      * Default constructor, creating a Collection from the identifying fields {@link io.goobi.viewer.model.cms.collections.CMSCollection#solrField}
-     * and {@link io.goobi.viewer.model.cms.collections.CMSCollection#solrFieldValue}
+     * and {@link io.goobi.viewer.model.cms.collections.CMSCollection#solrFieldValue}.
      *
      * @param solrField The name of the SOLR field holding the values for the collection
      * @param solrFieldValue The value of the solrField identifying this collection
@@ -153,7 +153,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /**
      * Cloning constructor.
      *
-     * @param orig
+     * @param orig the CMSCollection to clone
      */
     public CMSCollection(CMSCollection orig) {
         this.solrField = orig.solrField;
@@ -220,7 +220,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /**
      * Setter for the field <code>collectionUrl</code>.
      *
-     * @param collectionUrl a {@link java.lang.String} object.
+     * @param collectionUrl custom URL overriding the default collection browse URL
      */
     public void setCollectionUrl(String collectionUrl) {
         this.collectionUrl = collectionUrl;
@@ -229,7 +229,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /**
      * Adds a translation for the collection label.
      *
-     * @param label a {@link io.goobi.viewer.model.cms.collections.CMSCollectionTranslation} object.
+     * @param label translation to add as a collection label
      */
     public void addLabel(CMSCollectionTranslation label) {
         label.setTag(LABEL_TAG);
@@ -240,7 +240,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /**
      * Adds a translation for the collection description.
      *
-     * @param description a {@link io.goobi.viewer.model.cms.collections.CMSCollectionTranslation} object.
+     * @param description translation to add as a collection description
      */
     public void addDescription(CMSCollectionTranslation description) {
         description.setTag(DESCRIPTION_TAG);
@@ -249,7 +249,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * returns all translations of this page with the tag {@link #LABEL_TAG}
+     * returns all translations of this page with the tag {@link #LABEL_TAG}.
      *
      * @return all labels for this collections
      */
@@ -258,7 +258,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * returns all translations of this page with the tag {@link #DESCRIPTION_TAG}
+     * returns all translations of this page with the tag {@link #DESCRIPTION_TAG}.
      *
      * @return all descriptions for this collections
      */
@@ -279,7 +279,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /**
      * getLabelAsTranslation.
      *
-     * @param language a {@link java.lang.String} object.
+     * @param language ISO language code to filter label translations by
      * @return a {@link io.goobi.viewer.model.cms.collections.CMSCollectionTranslation} object.
      */
     public CMSCollectionTranslation getLabelAsTranslation(String language) {
@@ -289,7 +289,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /**
      * getDescriptionAsTranslation.
      *
-     * @param language a {@link java.lang.String} object.
+     * @param language ISO language code to filter description translations by
      * @return a {@link io.goobi.viewer.model.cms.collections.CMSCollectionTranslation} object.
      */
     public CMSCollectionTranslation getDescriptionAsTranslation(String language) {
@@ -308,8 +308,8 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /**
      * setLabel.
      *
-     * @param language a {@link java.lang.String} object.
-     * @param value a {@link java.lang.String} object.
+     * @param language ISO language code identifying the label to update
+     * @param value new label text to set for the given language
      */
     public void setLabel(String value, String language) {
         getLabels().stream()
@@ -322,7 +322,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      * get the description for the given {@code language}, or an empty string if no matching description exists the language should be the language
      * code of a {@link java.util.Locale} and is case insensitive.
      *
-     * @param language a {@link java.lang.String} object.
+     * @param language ISO language code identifying the desired description
      * @return The string value of the description of the given language, or an empty string
      */
     public String getDescription(String language) {
@@ -358,8 +358,8 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /**
      * setDescription.
      *
-     * @param value a {@link java.lang.String} object.
-     * @param language a {@link java.lang.String} object.
+     * @param value new description text to set for the given language
+     * @param language ISO language code identifying the description to update
      */
     public void setDescription(String value, String language) {
         getDescriptions().stream()
@@ -424,7 +424,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
 
     /**
      *
-     * @param other
+     * @param other the other CMSCollection to compare content with
      * @return a boolean
      */
     public boolean contentEquals(CMSCollection other) {
@@ -437,8 +437,8 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * @param tr1
-     * @param tr2
+     * @param tr1 first list of translations to compare
+     * @param tr2 second list of translations to compare
      * @return true if translations equal; false otherwise
      */
     private static boolean translationsEquals(List<CMSCollectionTranslation> tr1, List<CMSCollectionTranslation> tr2) {
@@ -483,7 +483,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /**
      * populateDescriptions.
      *
-     * @param languages
+     * @param languages list of language codes to ensure descriptions exist for
      */
     public void populateDescriptions(List<String> languages) {
         logger.trace("populateDescriptions");

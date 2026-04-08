@@ -113,7 +113,7 @@ public class CmsSliderEditBean implements Serializable {
     /**
      * Sets the selected slider via id string.
      * 
-     * @param idString
+     * @param idString string representation of the slider's database ID
      * @throws DAOException
      */
     public void setSliderId(String idString) throws DAOException {
@@ -124,7 +124,7 @@ public class CmsSliderEditBean implements Serializable {
     /**
      * Sets the selected slider via id.
      * 
-     * @param id
+     * @param id database ID of the slider to select
      * @throws DAOException
      */
     public void setSliderId(long id) throws DAOException {

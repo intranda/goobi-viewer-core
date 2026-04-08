@@ -53,10 +53,10 @@ public interface IURLBuilder {
 
     /**
      * 
-     * @param pi
-     * @param imageNo
-     * @param logId
-     * @param pageType
+     * @param pi persistent identifier of the record
+     * @param imageNo physical image order number
+     * @param logId logical structure ID
+     * @param pageType viewer page type for the URL
      * @return Generated URL
      */
     public default String buildPageUrl(String pi, int imageNo, String logId, PageType pageType) {

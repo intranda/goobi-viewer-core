@@ -143,7 +143,7 @@ public final class StringTools {
     /**
      * decodeUrl.
      *
-     * @param string a {@link java.lang.String} object.
+     * @param string URL-encoded string to decode
      * @return a {@link java.lang.String} object.
      */
     public static String decodeUrl(final String string) {
@@ -169,7 +169,7 @@ public final class StringTools {
      *
      * @param text The String in which to search
      * @param regex The regex to search for
-     * @param group a int.
+     * @param group capture group index to return
      * @return An optional containing the first String within the {@code text} matched by {@code regex}, or an empty optional if no match was found
      */
     public static Optional<String> findFirstMatch(String text, String regex, int group) {
@@ -218,7 +218,7 @@ public final class StringTools {
     /**
      * Escapes special HTML characters in the given string.
      *
-     * @param str a {@link java.lang.String} object.
+     * @param str input string to escape
      * @return a {@link java.lang.String} object.
      * @should escape all characters correctly
      */
@@ -229,7 +229,7 @@ public final class StringTools {
     /**
      * Escapes &lt;&gt; in the given string.
      *
-     * @param str a {@link java.lang.String} object.
+     * @param str input string whose angle brackets should be escaped
      * @return a {@link java.lang.String} object.
      */
     public static String escapeHtmlLtGt(String str) {
@@ -239,9 +239,9 @@ public final class StringTools {
     /**
      * Replaces characters in included in <code>replace</code> with characters in <code>replaceWith</code> in the given string.
      *
-     * @param str
-     * @param replace
-     * @param replaceWith
+     * @param str Input string to perform replacements on
+     * @param replace Array of character sequences to search for
+     * @param replaceWith Array of replacement strings, parallel to replace
      * @return String with replaced characters.
      * @should replace characters correctly
      */
@@ -262,7 +262,7 @@ public final class StringTools {
     /**
      * Removed diacritical marks from each letter in the given String.
      *
-     * @param s a {@link java.lang.String} object.
+     * @param s input string to normalize
      * @return String without diacritical marks
      * @should remove diacritical marks correctly
      */
@@ -290,8 +290,8 @@ public final class StringTools {
     /**
      * Removes regular and HTML line breaks from the given String.
      *
-     * @param s a {@link java.lang.String} object.
-     * @param replaceWith a {@link java.lang.String} object.
+     * @param s input string to strip of line breaks
+     * @param replaceWith replacement string for each line break found
      * @return String without line breaks
      * @should remove line breaks correctly
      * @should remove html line breaks correctly
@@ -316,7 +316,7 @@ public final class StringTools {
     /**
      * stripJS.
      *
-     * @param s
+     * @param s String to strip of JavaScript blocks
      * @return String sans any script-tag blocks
      * @should remove JS blocks correctly
      */
@@ -349,7 +349,7 @@ public final class StringTools {
     /**
      * Return the length of the given string, or 0 if the string is null.
      *
-     * @param s a {@link java.lang.String} object.
+     * @param s string whose length should be determined
      * @return the length of the string if it exists, 0 otherwise
      */
     public static int getLength(String s) {
@@ -380,7 +380,7 @@ public final class StringTools {
     /**
      * escapeQuotes.
      *
-     * @param s a {@link java.lang.String} object.
+     * @param s string whose single and double quotes should be escaped
      * @return a {@link java.lang.String} object.
      */
     public static String escapeQuotes(final String s) {
@@ -394,7 +394,7 @@ public final class StringTools {
 
     /**
      *
-     * @param input
+     * @param input String whose charset should be detected
      * @return Charset of the given input
      */
     public static String getCharset(String input) {
@@ -463,8 +463,8 @@ public final class StringTools {
     /**
      * escapeCriticalUrlChracters.
      *
-     * @param value a {@link java.lang.String} object.
-     * @param escapePercentCharacters a boolean.
+     * @param value URL string to escape
+     * @param escapePercentCharacters true to also replace percent characters
      * @return a {@link java.lang.String} object.
      * @should replace characters correctly
      */
@@ -488,7 +488,7 @@ public final class StringTools {
     /**
      * unescapeCriticalUrlChracters.
      *
-     * @param value a {@link java.lang.String} object.
+     * @param value escaped URL string to unescape
      * @should replace characters correctly
      * @return a {@link java.lang.String} object.
      */
@@ -508,7 +508,7 @@ public final class StringTools {
     /**
      * isImageUrl.
      *
-     * @param url a {@link java.lang.String} object.
+     * @param url URL or file name to check for image extension
      * @return true if this is an image URL; false otherwise
      * @should return true for image urls
      */
@@ -581,8 +581,8 @@ public final class StringTools {
     /**
      * getHierarchyForCollection.
      *
-     * @param collection a {@link java.lang.String} object.
-     * @param split a {@link java.lang.String} object.
+     * @param collection hierarchical collection name string
+     * @param split delimiter character used to separate hierarchy levels
      * @return List of string containing every (sub-)collection name
      * @should create list correctly
      * @should return single value correctly
@@ -610,7 +610,7 @@ public final class StringTools {
     /**
      * Normalizes WebAnnotation coordinates for rectangle rendering (x,y,w,h -&gt; minX,minY,maxX,maxY).
      *
-     * @param coords a {@link java.lang.String} object.
+     * @param coords WebAnnotation coordinate string, e.g. "xywh=x,y,w,h"
      * @return Legacy format coordinates
      * @should normalize coordinates correctly
      * @should preserve legacy coordinates
@@ -637,8 +637,8 @@ public final class StringTools {
     /**
      * getMatch.
      *
-     * @param s a {@link java.lang.String} object.
-     * @param pattern a {@link java.lang.String} object.
+     * @param s input string to search within
+     * @param pattern regex pattern with one capture group
      * @return a {@link java.lang.String} object.
      */
     public static String getMatch(String s, String pattern) {
@@ -656,7 +656,7 @@ public final class StringTools {
     /**
      * intern.
      *
-     * @param string a {@link java.lang.String} object.
+     * @param string string to intern into the JVM string pool
      * @return a {@link java.lang.String} object.
      */
     public static String intern(String string) {
@@ -669,7 +669,7 @@ public final class StringTools {
     /**
      * Creates an hash of the given String using SHA-256.
      *
-     * @param myString a {@link java.lang.String} object.
+     * @param myString input string to hash
      * @return generated hash
      * @should hash string correctly
      */
@@ -699,7 +699,7 @@ public final class StringTools {
     }
 
     /**
-     * @param path
+     * @param path Path string to append a trailing slash to
      * @return Given path with a trailing slash, if not yet present
      */
     public static String appendTrailingSlash(String path) {
@@ -720,8 +720,8 @@ public final class StringTools {
     }
 
     /**
-     * 
-     * @param s
+     *
+     * @param s String to strip surrounding quotation marks from
      * @return Given string without quotation marks, or same string if not in quotation marks
      */
     public static String removeQuotations(String s) {
@@ -737,7 +737,7 @@ public final class StringTools {
 
     /**
      *
-     * @param value
+     * @param value String to check for emptiness or inverted marker
      * @return true if value null, empty or starts with 0x1; false otherwise
      * @should return true if value null or empty
      * @should return true if value starts with 0x1
@@ -755,7 +755,7 @@ public final class StringTools {
     /**
      *
      * @param values All values to check
-     * @param regex
+     * @param regex Regular expression pattern to filter by
      * @return List of values that match <code>regex</code>
      * @should return all matching values
      */
@@ -835,7 +835,7 @@ public final class StringTools {
     /**
      * Clean a String from any malicious content like script tags, line breaks and backtracking filepaths. TODO InvalidPathException in Windows
      *
-     * @param data
+     * @param data Raw user-generated string to sanitize
      * @return a cleaned up string which can be savely used
      */
     public static String cleanUserGeneratedData(String data) {
@@ -887,10 +887,10 @@ public final class StringTools {
     }
 
     /**
-     * 
-     * @param text
-     * @param target
-     * @param replacement
+     *
+     * @param text Input string in which to replace the last occurrence
+     * @param target Substring to find and replace
+     * @param replacement String to substitute for the last occurrence of target
      * @return ALtered text
      * @should return original text if target not found
      * @should replace target with replacement correctly

@@ -68,7 +68,7 @@ import io.goobi.viewer.solr.SolrTools;
 public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
 
     /**
-     * @param apiUrlManager
+     * @param apiUrlManager API URL manager for building IIIF resource URIs
      */
     public WebAnnotationBuilder(AbstractApiUrlManager apiUrlManager) {
         super(apiUrlManager);
@@ -79,8 +79,8 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
      * converted to WebAnnotations here
      *
      * @param pi The persistent identifier of the work to query
-     * @param urlOnlyTarget a boolean.
-     * @param request
+     * @param urlOnlyTarget if true, use URI-only annotation targets
+     * @param request current HTTP servlet request
      * @return A map of page numbers (1-based) mapped to a list of associated annotations
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -105,7 +105,7 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
      * converted to WebAnnotations here
      *
      * @param pi The persistent identifier of the work to query
-     * @param urlOnlyTarget a boolean.
+     * @param urlOnlyTarget if true, use URI-only annotation targets
      * @return A map of page numbers (1-based) mapped to a list of associated annotations
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -128,8 +128,8 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
     }
 
     /**
-     * 
-     * @param id
+     *
+     * @param id the IDDOC of the UGC Solr document to retrieve
      * @return {@link IAnnotation}
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -151,8 +151,8 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
     /**
      * createWebAnnotation.
      *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
-     * @param urlOnlyTarget a boolean.
+     * @param doc Solr document of type UGC containing the annotation data
+     * @param urlOnlyTarget if true, use URI-only annotation targets
      * @return a {@link de.intranda.api.annotation.wa.WebAnnotation} object.
      */
     public WebAnnotation createUGCWebAnnotation(SolrDocument doc, boolean urlOnlyTarget) {
@@ -163,9 +163,9 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
     /**
      * createWebAnnotation.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
-     * @param urlOnlyTarget a boolean.
+     * @param pi persistent identifier of the annotated record
+     * @param doc Solr document of type UGC containing the annotation data
+     * @param urlOnlyTarget if true, use URI-only annotation targets
      * @return a {@link de.intranda.api.annotation.wa.WebAnnotation} object.
      */
     public WebAnnotation createUGCWebAnnotation(String pi, SolrDocument doc, boolean urlOnlyTarget) {
@@ -195,10 +195,10 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
     }
 
     /**
-     * @param pi
-     * @param pageOrder
-     * @param coordString
-     * @param urlOnlyTarget
+     * @param pi persistent identifier of the record containing the page
+     * @param pageOrder 1-based physical page order of the target canvas
+     * @param coordString coordinate string describing the fragment region (IIIF xywh or legacy format)
+     * @param urlOnlyTarget if true, returns a {@link SpecificResourceURI} instead of a full {@link SpecificResource}
      * @return {@link IResource}
      */
     public IResource createFragmentTarget(String pi, int pageOrder, String coordString, boolean urlOnlyTarget) {
@@ -229,7 +229,7 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
     }
 
     /**
-     * @param doc
+     * @param doc the UGC Solr document from which to extract the annotation body
      * @return {@link IResource}
      */
     public IResource createAnnnotationBodyFromUGCDocument(SolrDocument doc) {
@@ -250,9 +250,9 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
     }
 
     /**
-     * @param uri
-     * @param pi
-     * @param urlsOnly
+     * @param uri the URI to use as the ID of the returned annotation page
+     * @param pi persistent identifier of the work to collect annotations for
+     * @param urlsOnly if true, annotation targets are represented as URL-only resources
      * @return {@link AnnotationPage}
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -268,11 +268,11 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
     }
 
     /**
-     * 
-     * @param uri
-     * @param pi
-     * @param pageNo
-     * @param urlsOnly
+     *
+     * @param uri the URI to use as the ID of the returned annotation page
+     * @param pi persistent identifier of the work to collect annotations for
+     * @param pageNo 1-based page order to filter annotations by; null returns all pages
+     * @param urlsOnly if true, annotation targets are represented as URL-only resources
      * @return {@link AnnotationPage}
      * @throws DAOException
      */

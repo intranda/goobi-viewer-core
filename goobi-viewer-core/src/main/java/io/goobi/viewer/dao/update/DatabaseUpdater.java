@@ -57,7 +57,7 @@ public class DatabaseUpdater {
      * Creates a new DatabaseUpdater instance.
      *
      * @param dao a {@link io.goobi.viewer.dao.IDAO} object.
-     * @param templateManager
+     * @param templateManager CMS template manager used during update
      */
     public DatabaseUpdater(IDAO dao, CMSTemplateManager templateManager) {
         this.dao = dao;

@@ -110,8 +110,8 @@ public class TempMediaImageResource extends ImageResource {
 
     /**
      * 
-     * @param foldername
-     * @param filename
+     * @param foldername name of the subfolder within the temp media directory
+     * @param filename name of the file within the folder
      * @return {@link URI}
      */
     private static URI getMediaFileUrl(String foldername, String filename) {
@@ -146,8 +146,8 @@ public class TempMediaImageResource extends ImageResource {
     /**
      * Deletes the file with the given filename in the temp media folder for the given uuid.
      *
-     * @param folder
-     * @param filename
+     * @param folder temp folder UUID identifying the upload session
+     * @param filename name of the file to delete
      * @return A 200 "OK" answer if deletion was successfull, 406 if the file was not found and 500 if there was an error
      */
     @Hidden

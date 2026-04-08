@@ -54,9 +54,9 @@ public class MapTranslation extends Translation implements Serializable {
     /**
      * Constructor without value.
      *
-     * @param language
-     * @param tag
-     * @param owner
+     * @param language language code for this translation
+     * @param tag translation tag identifying the text field
+     * @param owner the owning GeoMap
      */
     public MapTranslation(String language, String tag, GeoMap owner) {
         super();
@@ -66,7 +66,7 @@ public class MapTranslation extends Translation implements Serializable {
     }
 
     /**
-     * @param t
+     * @param t the MapTranslation to copy
      */
     public MapTranslation(MapTranslation t) {
         super(t);

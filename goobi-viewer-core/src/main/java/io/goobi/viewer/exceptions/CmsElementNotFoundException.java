@@ -31,8 +31,8 @@ public class CmsElementNotFoundException extends PresentationException {
     /**
      * Creates a new CmsElementNotFoundException instance.
      *
-     * @param string a {@link java.lang.String} object.
-     * @param e a {@link java.lang.Throwable} object.
+     * @param string detail message identifying the missing CMS element
+     * @param e cause of the lookup failure
      */
     public CmsElementNotFoundException(String string, Throwable e) {
         super(string, e);
@@ -41,7 +41,7 @@ public class CmsElementNotFoundException extends PresentationException {
     /**
      * Creates a new CmsElementNotFoundException instance.
      *
-     * @param string a {@link java.lang.String} object.
+     * @param string detail message identifying the missing CMS element
      */
     public CmsElementNotFoundException(String string) {
         super(string);

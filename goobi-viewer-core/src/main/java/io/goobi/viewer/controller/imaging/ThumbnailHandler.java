@@ -106,8 +106,8 @@ public class ThumbnailHandler {
     /**
      * Creates a new ThumbnailHandler instance.
      *
-     * @param iiifUrlHandler a {@link io.goobi.viewer.controller.imaging.IIIFUrlHandler} object.
-     * @param staticImagesPath a {@link java.lang.String} object.
+     * @param iiifUrlHandler handler used to build IIIF image URLs
+     * @param staticImagesPath base path to the viewer's static image resources
      */
     public ThumbnailHandler(IIIFUrlHandler iiifUrlHandler, String staticImagesPath) {
         this.iiifUrlHandler = iiifUrlHandler;
@@ -121,7 +121,7 @@ public class ThumbnailHandler {
     /**
      * getThumbnailPath.
      *
-     * @param filename a {@link java.lang.String} object.
+     * @param filename file name to resolve against the static images path
      * @return a {@link java.net.URI} object.
      */
     public URI getThumbnailPath(String filename) {
@@ -142,7 +142,7 @@ public class ThumbnailHandler {
     /**
      * Returns a link to a small image representing the given page. The size depends on viewer configuration.
      *
-     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @param page physical page element to render as thumbnail
      * @return a {@link java.lang.String} object.
      */
     public String getThumbnailUrl(PhysicalElement page) {
@@ -330,8 +330,8 @@ public class ThumbnailHandler {
     /**
      * getPage.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param order a int.
+     * @param pi persistent identifier of the parent work
+     * @param order physical page order number within the work
      * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -352,9 +352,9 @@ public class ThumbnailHandler {
      * Returns a link to an image representing the given page of the given size (to be exact: the largest image size which fits within the given
      * bounds and keeps the image proportions.
      *
-     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
-     * @param width a int.
-     * @param height a int.
+     * @param page physical page element to render as thumbnail
+     * @param width maximum thumbnail width in pixels
+     * @param height maximum thumbnail height in pixels
      * @return a {@link java.lang.String} object.
      */
     public String getThumbnailUrl(PhysicalElement page, int width, int height) {
@@ -365,9 +365,9 @@ public class ThumbnailHandler {
      * Returns a link to an image representing the given page of the given size (to be exact: the largest image size which fits within the given
      * bounds and keeps the image proportions.
      *
-     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
-     * @param width a int.
-     * @param height a int.
+     * @param page physical page element to render
+     * @param width maximum image width in pixels
+     * @param height maximum image height in pixels
      * @param format the file extension of the desiref format. Possible values are 'jpg', 'tif' and 'png'
      * @return a {@link java.lang.String} object.
      */
@@ -392,8 +392,8 @@ public class ThumbnailHandler {
     /**
      * getThumbnailUrl.
      *
-     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
-     * @param scale a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
+     * @param page physical page element to render as thumbnail
+     * @param scale scaling parameters defining the output size
      * @return a {@link java.lang.String} object.
      */
     public String getThumbnailUrl(PhysicalElement page, Scale scale) {
@@ -407,8 +407,8 @@ public class ThumbnailHandler {
     /**
      * getThumbnailUrl.
      *
-     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
-     * @param scale a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
+     * @param page physical page element to render
+     * @param scale scaling parameters defining the output size
      * @param format the file extension of the desired format. Possible values are 'jpg', 'tif' and 'png'
      * @return a {@link java.lang.String} object.
      */
@@ -434,7 +434,7 @@ public class ThumbnailHandler {
      * Returns a link the an image representing the given page. Its size depends on configuration. The image is always square and contains as much of
      * the actual image as is possible to fit into a square - the delivered square is always centered within the full image.
      *
-     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @param page physical page element to render as square thumbnail
      * @return a {@link java.lang.String} object.
      */
     public String getSquareThumbnailUrl(PhysicalElement page) {
@@ -445,8 +445,8 @@ public class ThumbnailHandler {
      * Returns a link the an image representing the given page of the given size. The image is always square and contains as much of the actual image
      * as is possible to fit into a square - the delivered square is always centered within the full image.
      *
-     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
-     * @param size a int.
+     * @param page physical page element to render as square thumbnail
+     * @param size width and height of the square image in pixels
      * @return a {@link java.lang.String} object.
      */
     public String getSquareThumbnailUrl(PhysicalElement page, int size) {
@@ -468,7 +468,7 @@ public class ThumbnailHandler {
     /**
      * Returns a link to a small image representing the given document. The size depends on viewer configuration.
      *
-     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param doc struct element representing the document to thumbnail
      * @return a {@link java.lang.String} object.
      */
     public String getThumbnailUrl(StructElement doc) {
@@ -480,8 +480,8 @@ public class ThumbnailHandler {
     /**
      * Returns a link to a small image representing the given document with the given pi. The size depends on viewer configuration.
      *
-     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @param pi a {@link java.lang.String} object.
+     * @param doc struct element representing the document to thumbnail
+     * @param pi persistent identifier used in the generated URL
      * @return a {@link java.lang.String} object.
      */
     public String getThumbnailUrl(StructElement doc, String pi) {
@@ -493,7 +493,7 @@ public class ThumbnailHandler {
     /**
      * Returns a link to a small image representing the given document. The size depends on viewer configuration.
      *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param doc Solr document representing the record to thumbnail
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -506,7 +506,7 @@ public class ThumbnailHandler {
      * Returns a link to a small image representing the given document. The size depends on viewer configuration. The image may be cut at the longer
      * side to provide a square image.
      *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param doc Solr document representing the record to thumbnail
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -515,7 +515,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * @param doc
+     * @param doc Solr document from which to construct a StructElement
      * @return {@link StructElement} constructed out of given doc
      */
     private static StructElement getStructElement(SolrDocument doc) {
@@ -533,9 +533,9 @@ public class ThumbnailHandler {
      * Returns a link to an image representing the given page of the given size (to be exact: the largest image size which fits within the given
      * bounds and keeps the image proportions.
      *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
-     * @param width a int.
-     * @param height a int.
+     * @param doc Solr document representing the record to thumbnail
+     * @param width maximum thumbnail width in pixels
+     * @param height maximum thumbnail height in pixels
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -547,8 +547,8 @@ public class ThumbnailHandler {
     /**
      * Returns a link to an image representing the given page of the given size. The image will be cut at the longer side to create a square image.
      *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
-     * @param size a int.
+     * @param doc Solr document representing the record to thumbnail
+     * @param size width and height of the square image in pixels
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -562,8 +562,8 @@ public class ThumbnailHandler {
      * bounds and keeps the image proportions.
      *
      * @param se Needs to have the fields {@link io.goobi.viewer.solr.SolrConstants#MIMETYPE} and {@link io.goobi.viewer.solr.SolrConstants#THUMBNAIL}
-     * @param width a int.
-     * @param height a int.
+     * @param width maximum thumbnail width in pixels
+     * @param height maximum thumbnail height in pixels
      * @return a {@link java.lang.String} object.
      */
     public String getThumbnailUrl(StructElement se, int width, int height) {
@@ -573,10 +573,10 @@ public class ThumbnailHandler {
     /**
      * getThumbnailUrl.
      *
-     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @param pi a {@link java.lang.String} object.
-     * @param width a int.
-     * @param height a int.
+     * @param doc struct element representing the document to thumbnail
+     * @param pi persistent identifier used in the generated URL
+     * @param width maximum thumbnail width in pixels
+     * @param height maximum thumbnail height in pixels
      * @return a {@link java.lang.String} object.
      */
     public String getThumbnailUrl(StructElement doc, String pi, int width, int height) {
@@ -632,8 +632,8 @@ public class ThumbnailHandler {
     /**
      * getFullImageUrl.
      *
-     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
-     * @param scale a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
+     * @param page physical page element to render at full size
+     * @param scale scaling parameters applied to the full image
      * @param formatString file extension for the desired format. May also be 'master' to indicate that the format of the original file should be used
      * @return a {@link java.lang.String} object.
      */
@@ -665,7 +665,7 @@ public class ThumbnailHandler {
      * Returns a link the an image representing the given document. Its size depends on configuration. The image is always square and contains as much
      * of the actual image as is possible to fit into a square - the delivered square is always centered within the full image.
      *
-     * @param se a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param se struct element representing the document to thumbnail
      * @return a {@link java.lang.String} object.
      */
     public String getSquareThumbnailUrl(StructElement se) {
@@ -677,7 +677,7 @@ public class ThumbnailHandler {
      * image as is possible to fit into a square - the delivered square is always centered within the full image.
      *
      * @param se Needs to have the fields {@link io.goobi.viewer.solr.SolrConstants#MIMETYPE} and {@link io.goobi.viewer.solr.SolrConstants#THUMBNAIL}
-     * @param size a int.
+     * @param size width and height of the square image in pixels
      * @return a {@link java.lang.String} object.
      */
     public String getSquareThumbnailUrl(StructElement se, int size) {
@@ -697,8 +697,8 @@ public class ThumbnailHandler {
     }
 
     /**
-     * @param se
-     * @param field
+     * @param se struct element to read the field value from
+     * @param field Solr field name whose value to retrieve
      * @return {@link StringIndexOutOfBoundsException} value of field in se, if fond
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -720,7 +720,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * @param page
+     * @param page physical page element whose image path to resolve
      * @return Constructed path
      * @should return image thumbnail path correctly
      * @should return audio thumbnail path correctly
@@ -783,8 +783,8 @@ public class ThumbnailHandler {
 
     /**
      *
-     * @param doc
-     * @param thumbnailUrl
+     * @param doc struct element whose image path to resolve
+     * @param thumbnailUrl fallback thumbnail URL if no specific path is determined
      * @return String
      */
     public String getDocumentImagePath(StructElement doc, final String thumbnailUrl) {
@@ -814,8 +814,8 @@ public class ThumbnailHandler {
 
     /**
      *
-     * @param doc
-     * @param thumbnailUrl
+     * @param doc struct element whose docstrct image path to resolve
+     * @param thumbnailUrl fallback thumbnail URL if no specific path is determined
      * @return {@link String}
      */
     public String getDocStructImagePath(StructElement doc, final String thumbnailUrl) {
@@ -856,9 +856,9 @@ public class ThumbnailHandler {
 
     /**
      *
-     * @param doc
-     * @param thumbnailUrl
-     * @param anchorThumbnailMode
+     * @param doc anchor or group struct element whose image path to resolve
+     * @param thumbnailUrl fallback thumbnail URL if no specific path is determined
+     * @param anchorThumbnailMode configured mode for selecting the anchor thumbnail
      * @return {@link String}
      */
     public String getAnchorImagePath(StructElement doc, final String thumbnailUrl, String anchorThumbnailMode) {
@@ -896,8 +896,8 @@ public class ThumbnailHandler {
 
     /**
      *
-     * @param doc
-     * @param thumbnailUrl
+     * @param doc CMS page struct element whose representative image path to resolve
+     * @param thumbnailUrl fallback thumbnail URL if no CMS media item is found
      * @return String
      */
     public String getCMSPageImagePath(StructElement doc, final String thumbnailUrl) {
@@ -928,7 +928,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * @param thumbnailUrl
+     * @param thumbnailUrl URL or file path to check for an image extension
      * @return true if thumbnailUrl points to an image resource; false otherwise
      */
     private static boolean isImageMimeType(String thumbnailUrl) {
@@ -938,7 +938,7 @@ public class ThumbnailHandler {
 
     /**
      *
-     * @param structElement
+     * @param structElement struct element whose document type to retrieve
      * @return Optional&lt;DocType&gt;
      */
     private static Optional<DocType> getDocType(StructElement structElement) {
@@ -948,7 +948,7 @@ public class ThumbnailHandler {
 
     /**
      *
-     * @param structElement
+     * @param structElement struct element whose metadata group type to retrieve
      * @return Optional&lt;MetadataGroupType&gt;
      */
     private static Optional<MetadataGroupType> getMetadataGroupType(StructElement structElement) {
@@ -958,7 +958,7 @@ public class ThumbnailHandler {
 
     /**
      *
-     * @param structElement
+     * @param structElement struct element whose filename to retrieve
      * @return Optional&lt;String&gt;
      */
     private static Optional<String> getFilename(StructElement structElement) {
@@ -979,7 +979,7 @@ public class ThumbnailHandler {
 
     /**
      *
-     * @param structElement
+     * @param structElement struct element whose MIME type to determine
      * @return Optional<String>
      * @should return mime type correctly
      */
@@ -1006,7 +1006,7 @@ public class ThumbnailHandler {
     /**
      * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem}, fit into a box of the default width and height.
      *
-     * @param item a {@link java.util.Optional} object.
+     * @param item optional CMS media item to render as thumbnail
      * @return a {@link java.lang.String} object.
      */
     public String getThumbnailUrl(Optional<CMSMediaItem> item) {
@@ -1017,7 +1017,7 @@ public class ThumbnailHandler {
     /**
      * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem}, fit into a box of the default width and height.
      *
-     * @param item a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
+     * @param item CMS media item to render as thumbnail
      * @return a {@link java.lang.String} object.
      */
     public String getThumbnailUrl(CMSMediaItem item) {
@@ -1028,9 +1028,9 @@ public class ThumbnailHandler {
     /**
      * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem}, fit into a box of the given width and height.
      *
-     * @param width a int.
-     * @param height a int.
-     * @param optional a {@link java.util.Optional} object.
+     * @param optional optional CMS media item to render as thumbnail
+     * @param width maximum thumbnail width in pixels
+     * @param height maximum thumbnail height in pixels
      * @return a {@link java.lang.String} object.
      */
     public String getThumbnailUrl(Optional<CMSMediaItem> optional, int width, int height) {
@@ -1137,7 +1137,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * @param filename
+     * @param filename CMS media file name for which to build the API URL
      * @return Generated URL
      */
     public static String getCMSMediaImageApiUrl(String filename) {
@@ -1156,8 +1156,8 @@ public class ThumbnailHandler {
     }
 
     /**
-     * @param contentApiUrl
-     * @param filename
+     * @param contentApiUrl base URL of the legacy content API
+     * @param filename CMS media file name to append to the URL
      * @return Generated URL
      */
     private static String buildLegacyCMSMediaUrl(String contentApiUrl, String filename) {
@@ -1178,9 +1178,9 @@ public class ThumbnailHandler {
     /**
      * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem}, fit into a box of the given width and height.
      *
-     * @param width a int.
-     * @param height a int.
-     * @param media a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
+     * @param media CMS media item to render as thumbnail
+     * @param width maximum thumbnail width in pixels
+     * @param height maximum thumbnail height in pixels
      * @return a {@link java.lang.String} object.
      */
     public String getThumbnailUrl(CMSMediaItem media, int width, int height) {
@@ -1191,8 +1191,8 @@ public class ThumbnailHandler {
      * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem} of the given size. The image is always square and
      * contains as much of the actual image as is possible to fit into a square - the delivered square is always centered within the full image.
      *
-     * @param size a int.
-     * @param optional a {@link java.util.Optional} object.
+     * @param optional optional CMS media item to render as square thumbnail
+     * @param size width and height of the square image in pixels
      * @return a {@link java.lang.String} object.
      */
     public String getSquareThumbnailUrl(Optional<CMSMediaItem> optional, int size) {
@@ -1212,8 +1212,8 @@ public class ThumbnailHandler {
      * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem} of the given size. The image is always square and
      * contains as much of the actual image as is possible to fit into a square - the delivered square is always centered within the full image.
      *
-     * @param size a int.
-     * @param media a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
+     * @param media CMS media item to render as square thumbnail
+     * @param size width and height of the square image in pixels
      * @return a {@link java.lang.String} object.
      */
     public String getSquareThumbnailUrl(CMSMediaItem media, int size) {
@@ -1224,7 +1224,7 @@ public class ThumbnailHandler {
      * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem} of the default size. The image is always square
      * and contains as much of the actual image as is possible to fit into a square - the delivered square is always centered within the full image.n
      *
-     * @param item a {@link java.util.Optional} object.
+     * @param item optional CMS media item to render as square thumbnail
      * @return a {@link java.lang.String} object.
      */
     public String getSquareThumbnailUrl(Optional<CMSMediaItem> item) {
@@ -1235,7 +1235,7 @@ public class ThumbnailHandler {
      * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem} of the default size. The image is always square
      * and contains as much of the actual image as is possible to fit into a square - the delivered square is always centered within the full image.
      *
-     * @param item a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
+     * @param item CMS media item to render as square thumbnail
      * @return a {@link java.lang.String} object.
      */
     public String getSquareThumbnailUrl(CMSMediaItem item) {
@@ -1243,8 +1243,8 @@ public class ThumbnailHandler {
     }
 
     /**
-     * @param width
-     * @param height
+     * @param width desired image width in pixels
+     * @param height desired image height in pixels
      * @return Given width and height in a {@link String} format
      * @should use width only if height null or zero
      * @should use height only if width null or zero
@@ -1268,7 +1268,7 @@ public class ThumbnailHandler {
     /**
      * Tests whether the given url refers to an image within the viewer image resource folder.
      *
-     * @param thumbnailUrl a {@link java.lang.String} object.
+     * @param thumbnailUrl URL to test against the static images path
      * @return true if the url starts with the viewer url path to image resources
      */
     public boolean isStaticImageResource(String thumbnailUrl) {
@@ -1283,8 +1283,8 @@ public class ThumbnailHandler {
      * to fit a box of the given size. If just of width and height is greater than 0, a scale is returned to that value; if both values are 0 or less,
      * the full (max) image scale is returned.
      *
-     * @param width
-     * @param height
+     * @param width desired bounding box width in pixels
+     * @param height desired bounding box height in pixels
      * @return An instance of {@link Scale} which represents the given values for width and height
      */
     private static Scale getScale(int width, int height) {

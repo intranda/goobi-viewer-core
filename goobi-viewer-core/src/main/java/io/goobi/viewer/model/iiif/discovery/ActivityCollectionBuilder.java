@@ -177,7 +177,7 @@ public class ActivityCollectionBuilder {
 
     /**
      * Get the number of activities per page as defined by {@link io.goobi.viewer.controller.Configuration#getIIIFDiscoveryAvtivitiesPerPage()
-     * Configuration#getIIIFDiscoveryAvtivitiesPerPage()}
+     * Configuration#getIIIFDiscoveryAvtivitiesPerPage()}.
      *
      * @return the number of activities per page as defined by {@link io.goobi.viewer.controller.Configuration#getIIIFDiscoveryAvtivitiesPerPage()
      *         Configuration#getIIIFDiscoveryAvtivitiesPerPage()}
@@ -233,10 +233,10 @@ public class ActivityCollectionBuilder {
     }
 
     /**
-     * 
-     * @param docs
-     * @param startDate
-     * @param endDate
+     *
+     * @param docs Solr documents to convert into activities
+     * @param startDate lower bound timestamp in milliseconds (inclusive)
+     * @param endDate upper bound timestamp in milliseconds (inclusive)
      * @return List<Activity>
      */
     private List<Activity> buildItems(SolrDocumentList docs, Long startDate, Long endDate) {
@@ -305,11 +305,11 @@ public class ActivityCollectionBuilder {
 
     /**
      * Get all activity dates after startDate limited to the results between first and last; sorted chronologically ascending (earliest dates come
-     * first)
+     * first).
      *
-     * @param startDate
-     * @param first
-     * @param last
+     * @param startDate earliest allowed activity date; null means no lower bound
+     * @param first zero-based index of the first activity to return
+     * @param last zero-based index of the last activity to return (inclusive)
      * @return List<Long>
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -350,9 +350,9 @@ public class ActivityCollectionBuilder {
     }
 
     /**
-     * 
-     * @param startDate
-     * @param endDate
+     *
+     * @param startDate lower bound timestamp in milliseconds (inclusive); null means no lower bound
+     * @param endDate upper bound timestamp in milliseconds (inclusive); null means no upper bound
      * @return {@link SolrDocumentList}
      * @throws PresentationException
      * @throws IndexUnreachableException

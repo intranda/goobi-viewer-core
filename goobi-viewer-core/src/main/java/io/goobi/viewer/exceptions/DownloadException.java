@@ -31,8 +31,8 @@ public class DownloadException extends PresentationException {
     /**
      * Creates a new DownloadException instance.
      *
-     * @param string a {@link java.lang.String} object.
-     * @param e a {@link java.lang.Throwable} object.
+     * @param string detail message describing the download failure
+     * @param e cause of the download failure
      */
     public DownloadException(String string, Throwable e) {
         super(string, e);
@@ -41,7 +41,7 @@ public class DownloadException extends PresentationException {
     /**
      * Creates a new DownloadException instance.
      *
-     * @param string a {@link java.lang.String} object.
+     * @param string detail message describing the download failure
      */
     public DownloadException(String string) {
         super(string);

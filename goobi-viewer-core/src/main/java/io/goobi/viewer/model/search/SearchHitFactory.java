@@ -85,12 +85,12 @@ public class SearchHitFactory {
 
     /**
      * 
-     * @param searchTerms
-     * @param sortFields
-     * @param exportFields
-     * @param proximitySearchDistance
-     * @param thumbnailHandler
-     * @param locale
+     * @param searchTerms map of Solr field names to sets of search terms for highlighting
+     * @param sortFields list of sort fields to append as metadata
+     * @param exportFields list of Solr field names to include in export metadata
+     * @param proximitySearchDistance word distance for proximity/fuzzy search
+     * @param thumbnailHandler handler used to build thumbnail URLs
+     * @param locale locale for label translation and message resolution
      */
     public SearchHitFactory(Map<String, Set<String>> searchTerms, List<StringPair> sortFields, List<String> exportFields, int proximitySearchDistance,
             ThumbnailHandler thumbnailHandler, Locale locale) {
@@ -274,10 +274,10 @@ public class SearchHitFactory {
     }
 
     /**
-     * Replaces any terms with a fuzzy search token with the matching strings found in the values of fields
+     * Replaces any terms with a fuzzy search token with the matching strings found in the values of fields.
      *
-     * @param origTerms
-     * @param resultFields
+     * @param origTerms original search terms map, may contain fuzzy tokens
+     * @param resultFields field values from the matched Solr document
      * @return Map<String, Set<String>>
      */
     private static Map<String, Set<String>> getActualSearchTerms(Map<String, Set<String>> origTerms, Map<String, List<String>> resultFields) {
@@ -316,8 +316,8 @@ public class SearchHitFactory {
      * @param availableMetadata Additional available metadata to check for matches
      * @param searchTerms Search terms
      * @param existingMetadataFields Metadata field names that are already added to the search hit and should be skipped
-     * @param iddoc
-     * @param searchHitLabel
+     * @param iddoc internal document identifier used when building Metadata objects
+     * @param searchHitLabel label value of the hit, used to skip duplicate values
      * @return List<MetadataWrapper>
      * @should add metadata fields that match search terms
      * @should not add duplicates from default terms

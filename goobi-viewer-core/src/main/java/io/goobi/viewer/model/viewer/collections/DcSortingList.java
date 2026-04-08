@@ -99,7 +99,7 @@ public class DcSortingList {
     /**
      * addCollection.
      *
-     * @param collection a {@link java.lang.String} object.
+     * @param collection collection name to append
      */
     public void addCollection(String collection) {
         collections.add(collection);

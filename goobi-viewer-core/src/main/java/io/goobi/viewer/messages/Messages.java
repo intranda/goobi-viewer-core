@@ -42,9 +42,9 @@ public final class Messages {
     /**
      * error.
      *
-     * @param targetId a {@link java.lang.String} object.
-     * @param message a {@link java.lang.String} object.
-     * @param messageParams a {@link java.lang.String} object.
+     * @param targetId JSF component ID to attach the message to
+     * @param message message key or text to display
+     * @param messageParams placeholder values substituted into the message
      */
     public static void error(String targetId, String message, String... messageParams) {
         showMessage(targetId, message, FacesMessage.SEVERITY_ERROR, messageParams);
@@ -53,7 +53,7 @@ public final class Messages {
     /**
      * error.
      *
-     * @param message a {@link java.lang.String} object.
+     * @param message message key or text to display
      */
     public static void error(String message) {
         showMessage(null, message, FacesMessage.SEVERITY_ERROR);
@@ -62,9 +62,9 @@ public final class Messages {
     /**
      * info.
      *
-     * @param targetId a {@link java.lang.String} object.
-     * @param message a {@link java.lang.String} object.
-     * @param messageParams a {@link java.lang.String} object.
+     * @param targetId JSF component ID to attach the message to
+     * @param message message key or text to display
+     * @param messageParams placeholder values substituted into the message
      */
     public static void info(String targetId, String message, String... messageParams) {
         showMessage(targetId, message, FacesMessage.SEVERITY_INFO, messageParams);
@@ -73,7 +73,7 @@ public final class Messages {
     /**
      * info.
      *
-     * @param message a {@link java.lang.String} object.
+     * @param message message key or text to display
      */
     public static void info(String message) {
         showMessage(null, message, FacesMessage.SEVERITY_INFO);
@@ -82,7 +82,7 @@ public final class Messages {
     /**
      * warn.
      *
-     * @param message a {@link java.lang.String} object.
+     * @param message message key or text to display
      */
     public static void warn(String message) {
         showMessage(null, message, FacesMessage.SEVERITY_WARN);
@@ -91,9 +91,9 @@ public final class Messages {
     /**
      * warn.
      *
-     * @param targetId a {@link java.lang.String} object.
-     * @param message a {@link java.lang.String} object.
-     * @param messageParams a {@link java.lang.String} object.
+     * @param targetId JSF component ID to attach the message to
+     * @param message message key or text to display
+     * @param messageParams placeholder values substituted into the message
      */
     public static void warn(String targetId, String message, String... messageParams) {
         showMessage(targetId, message, FacesMessage.SEVERITY_WARN, messageParams);
@@ -123,10 +123,10 @@ public final class Messages {
     /**
      * translate.
      *
-     * @param inMessage a {@link java.lang.String} object.
-     * @param messageParams a {@link java.lang.String} object.
-     * @param locale a {@link java.util.Locale} object.
-     * @return a {@link java.lang.String} object.
+     * @param inMessage message key to look up in the resource bundle
+     * @param locale locale used for translation lookup
+     * @param messageParams placeholder values substituted into the translated message
+     * @return translated and interpolated message string
      */
     public static String translate(String inMessage, Locale locale, String... messageParams) {
         String translatedMessage = ViewerResourceBundle.getTranslation(inMessage, locale);

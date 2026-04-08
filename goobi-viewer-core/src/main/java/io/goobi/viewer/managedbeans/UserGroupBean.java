@@ -83,7 +83,7 @@ public class UserGroupBean implements Serializable {
     /**
      * Creates or updates (if already exists) currentOwnUserGroup.
      *
-     * @param actionEvent a {@link jakarta.faces.event.ActionEvent} object.
+     * @param actionEvent JSF action event triggering the save
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void saveCurrentOwnUserGroupAction(ActionEvent actionEvent) throws DAOException {
@@ -233,7 +233,7 @@ public class UserGroupBean implements Serializable {
     /**
      * Setter for the field <code>currentOtherUserGroup</code>.
      *
-     * @param currentOtherUserGroup the currentOtherUserGroup to set
+     * @param currentOtherUserGroup user group the current user may join or leave
      */
     public void setCurrentOtherUserGroup(UserGroup currentOtherUserGroup) {
         this.currentOtherUserGroup = currentOtherUserGroup;
@@ -251,7 +251,7 @@ public class UserGroupBean implements Serializable {
     /**
      * Setter for the field <code>currentOwnUserGroupId</code>.
      *
-     * @param currentOwnUserGroupId the currentOwnUserGroupId to set
+     * @param currentOwnUserGroupId database ID of the group to select
      */
     public void setCurrentOwnUserGroupId(int currentOwnUserGroupId) {
         this.currentOwnUserGroupId = currentOwnUserGroupId;
@@ -269,7 +269,7 @@ public class UserGroupBean implements Serializable {
     /**
      * Setter for the field <code>currentOwnUserGroup</code>.
      *
-     * @param currentOwnUserGroup the currentOwnUserGroup to set
+     * @param currentOwnUserGroup user group owned by the current user to edit
      */
     public void setCurrentOwnUserGroup(UserGroup currentOwnUserGroup) {
         UserBean ub = BeanUtils.getUserBean();
@@ -301,7 +301,7 @@ public class UserGroupBean implements Serializable {
     /**
      * Setter for the field <code>currentMember</code>.
      *
-     * @param currentMember the currentMember to set
+     * @param currentMember group member selected for removal
      */
     public void setCurrentMember(User currentMember) {
         this.currentMember = currentMember;
@@ -319,7 +319,7 @@ public class UserGroupBean implements Serializable {
     /**
      * Setter for the field <code>currentRole</code>.
      *
-     * @param currentRole the currentRole to set
+     * @param currentRole role to assign to the selected member
      */
     public void setCurrentRole(Role currentRole) {
         this.currentRole = currentRole;
@@ -337,7 +337,7 @@ public class UserGroupBean implements Serializable {
     /**
      * Used for the 'add member' selectbox.
      *
-     * @param id a {@link java.lang.Long} object.
+     * @param id database ID of the user to add as member
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void setCurrentId(Long id) throws DAOException {

@@ -83,7 +83,7 @@ public class CreateRecordBean implements Serializable {
     }
 
     /**
-     * Get the path to a folder named <uuid>_tif within the temp_media directory
+     * Get the path to a folder named <uuid>_tif within the temp_media directory.
      *
      * @return a folder within the viewer temp_media directory
      */
@@ -248,10 +248,10 @@ public class CreateRecordBean implements Serializable {
     }
 
     /**
-     * Write filenames of files within mediaFolder as "dc:relation" metadata to writer
+     * Write filenames of files within mediaFolder as "dc:relation" metadata to writer.
      *
-     * @param writer
-     * @param mediaFolder
+     * @param writer DC record writer to receive file relation metadata
+     * @param mediaFolder folder whose files are added as dc:relation entries
      * @throws IOException
      */
     private static void addFiles(DCRecordWriter writer, Path mediaFolder) throws IOException {
@@ -283,7 +283,7 @@ public class CreateRecordBean implements Serializable {
     }
 
     /**
-     * Create a {@link DCRecordWriter} instance containing all metadata of the bean as dc metadata
+     * Create a {@link DCRecordWriter} instance containing all metadata of the bean as dc metadata.
      *
      * @return the{@link DCRecordWriter}
      */

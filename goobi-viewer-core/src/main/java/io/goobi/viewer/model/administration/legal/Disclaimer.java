@@ -60,7 +60,7 @@ public class Disclaimer {
     private TranslatedText text = new TranslatedText();
 
     /**
-     * set if the disclaimer should be shown at all
+     * set if the disclaimer should be shown at all.
      */
     @Column(name = "active")
     private boolean active = false;
@@ -73,14 +73,14 @@ public class Disclaimer {
     private LocalDateTime requiresConsentAfter = LocalDateTime.now();
 
     /**
-     * The scope within which accepting the disclaimer modal is valid for any user
+     * The scope within which accepting the disclaimer modal is valid for any user.
      */
     @Column(name = "acceptance_scope", nullable = false)
     @Convert(converter = ConsentScopeConverter.class)
     private ConsentScope acceptanceScope = new ConsentScope();
 
     /**
-     * The scope within which accepting the disclaimer modal is valid for any user
+     * The scope within which accepting the disclaimer modal is valid for any user.
      */
     @Column(name = "display_scope", nullable = true)
     @Convert(converter = DisplayScopeConverter.class)
@@ -96,7 +96,7 @@ public class Disclaimer {
     /**
      * Cloning constructor.
      * 
-     * @param orig
+     * @param orig disclaimer instance to clone
      */
     public Disclaimer(Disclaimer orig) {
         this.active = orig.active;

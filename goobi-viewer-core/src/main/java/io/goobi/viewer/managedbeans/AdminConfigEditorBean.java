@@ -224,7 +224,7 @@ public class AdminConfigEditorBean implements Serializable {
     /**
      * Setter for the field <code>fileInEditionNumber</code>.
      *
-     * @param fileInEditionNumber a int
+     * @param fileInEditionNumber zero-based index of the file in the file list
      */
     public void setFileInEditionNumber(int fileInEditionNumber) {
         this.fileInEditionNumber = fileInEditionNumber;
@@ -251,7 +251,7 @@ public class AdminConfigEditorBean implements Serializable {
     /**
      * Setter for the field <code>fileContent</code>.
      *
-     * @param fileContent a {@link java.lang.String} object
+     * @param fileContent text content of the currently open config file
      */
     public void setFileContent(String fileContent) {
         this.fileContent = fileContent;
@@ -287,7 +287,7 @@ public class AdminConfigEditorBean implements Serializable {
     /**
      * Setter for the field <code>editable</code>.
      *
-     * @param editable a boolean
+     * @param editable true to open the file in write mode; false for read-only
      */
     public void setEditable(boolean editable) {
         this.editable = editable;
@@ -318,7 +318,7 @@ public class AdminConfigEditorBean implements Serializable {
     /**
      * Determines whether the given fileRecord is locked by a different user session.
      *
-     * @param fileRecord a {@link io.goobi.viewer.model.administration.configeditor.FileRecord} object
+     * @param fileRecord file record whose lock status is to be checked
      * @return true if file path locked by other session id; false otherwise
      */
     public boolean isFileLocked(FileRecord fileRecord) {
@@ -415,8 +415,8 @@ public class AdminConfigEditorBean implements Serializable {
     /**
      * Unlocks the given file for the given session id in the static (global) fileLocks object.
      *
-     * @param file a {@link java.nio.file.Path} object
-     * @param sessionId a {@link java.lang.String} object
+     * @param file path of the config file to unlock
+     * @param sessionId HTTP session ID that holds the lock to release
      */
     public static void unlockFile(Path file, String sessionId) {
         logger.trace("Unlocking file {} for session {}", file, sessionId);
@@ -428,7 +428,7 @@ public class AdminConfigEditorBean implements Serializable {
     /**
      * editFile.
      *
-     * @param writable a boolean
+     * @param writable true to open the file for editing; false for read-only view
      * @return a {@link java.lang.String} object
      */
     public String editFile(boolean writable) {
@@ -591,7 +591,7 @@ public class AdminConfigEditorBean implements Serializable {
     /**
      * refreshBackups.
      *
-     * @param backupFolder a {@link java.io.File} object
+     * @param backupFolder directory containing timestamped backup files to list
      */
     public void refreshBackups(File backupFolder) {
         backupRecords.clear();
@@ -642,7 +642,7 @@ public class AdminConfigEditorBean implements Serializable {
 
     /**
      * 
-     * @param backupFiles
+     * @param backupFiles array of backup files to sort by last modification date
      */
     static void sortFilesByDateModified(File[] backupFiles) {
         if (backupFiles == null || backupFiles.length == 0) {
@@ -671,7 +671,7 @@ public class AdminConfigEditorBean implements Serializable {
     /**
      * selectFileAndShowBackups.
      *
-     * @param writable a boolean
+     * @param writable true to open the file for editing; false for read-only view
      */
     public void selectFileAndShowBackups(boolean writable) {
 
@@ -743,7 +743,7 @@ public class AdminConfigEditorBean implements Serializable {
     /**
      * Removes file locks for the given session id.
      *
-     * @param sessionId a {@link java.lang.String} object
+     * @param sessionId HTTP session ID whose locks are to be released
      */
     public static void clearLocksForSessionId(String sessionId) {
         fileLocks.clearLocksForSessionId(sessionId);
@@ -765,7 +765,7 @@ public class AdminConfigEditorBean implements Serializable {
     /**
      * Getter for the URL pattern.
      *
-     * @param fileName a {@link java.lang.String} object
+     * @param fileName decoded URL-encoded filename to select from the file list
      * @throws java.io.FileNotFoundException
      */
     public void setCurrentFileName(String fileName) throws FileNotFoundException {

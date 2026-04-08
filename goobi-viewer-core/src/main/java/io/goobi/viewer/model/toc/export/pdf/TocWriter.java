@@ -67,8 +67,8 @@ public class TocWriter {
     /**
      * Creates a new TocWriter instance.
      *
-     * @param author a {@link java.lang.String} object.
-     * @param title a {@link java.lang.String} object.
+     * @param author author name added to the PDF document metadata
+     * @param title title displayed as heading and added to PDF metadata
      */
     public TocWriter(String author, String title) {
         this.author = author;
@@ -105,7 +105,7 @@ public class TocWriter {
     /**
      * Setter for the field <code>levelIndent</code>.
      *
-     * @param levelIndent a int.
+     * @param levelIndent pixel indentation applied per hierarchy level
      */
     public void setLevelIndent(int levelIndent) {
         this.levelIndent = levelIndent;
@@ -114,8 +114,8 @@ public class TocWriter {
     /**
      * createDocument.
      *
-     * @param output a {@link java.io.OutputStream} object.
-     * @param elements a {@link java.util.List} object.
+     * @param output stream to write the generated PDF document to
+     * @param elements TOC elements to render as PDF table rows
      * @throws io.goobi.viewer.model.toc.export.pdf.WriteTocException if any.
      */
     public void createPdfDocument(OutputStream output, List<TOCElement> elements) throws WriteTocException {
@@ -196,7 +196,7 @@ public class TocWriter {
     /**
      * main.
      *
-     * @param args an array of {@link java.lang.String} objects.
+     * @param args command-line arguments (unused)
      * @throws java.io.FileNotFoundException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.model.toc.export.pdf.WriteTocException if any.

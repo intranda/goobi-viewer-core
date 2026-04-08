@@ -119,7 +119,7 @@ public abstract class DownloadJob {
     /**
      * notifyObservers.
      *
-     * @param email
+     * @param email recipient email address to notify
      * @param status a {@link io.goobi.viewer.model.job.JobStatus} object.
      * @param downloadUri the URI under which the download is made available
      * @return a boolean.

@@ -62,9 +62,9 @@ public class LinkingProperty {
     private final IMetadataValue label;
 
     /**
-     * @param type
-     * @param target
-     * @param label
+     * @param type IIIF linking property type (e.g. related, rendering)
+     * @param target linking target specifying MIME type and resource type
+     * @param label human-readable label for this link
      */
     public LinkingProperty(LinkingType type, LinkingTarget target, IMetadataValue label) {
         super();

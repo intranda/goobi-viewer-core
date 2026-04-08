@@ -41,14 +41,14 @@ import io.goobi.viewer.exceptions.PresentationException;
 
 public class SolrFieldValueTranslationGroupItem extends TranslationGroupItem {
 
-    /** Logger for this class */
+    /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(SolrFieldValueTranslationGroupItem.class);
 
     /**
      * Protected constructor.
      *
-     * @param key
-     * @param regex
+     * @param key the Solr field value or pattern
+     * @param regex whether the key is a regular expression
      */
     protected SolrFieldValueTranslationGroupItem(String key, boolean regex) {
         super(key, regex);

@@ -108,7 +108,7 @@ public class BrowseBean implements Serializable {
     private Map<String, List<String>> availableStringFilters = new HashMap<>();
     /** This is used for filtering term browsing by the starting letter. */
     private String currentStringFilter = "";
-    /** Optional filter query */
+    /** Optional filter query. */
     private String filterQuery;
     private int hitsCount = 0;
     private int currentPage = -1;
@@ -170,7 +170,7 @@ public class BrowseBean implements Serializable {
     /**
      * resetList.
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field Solr field name identifying the collection to reset
      */
     public void resetList(String field) {
         if (field == null) {
@@ -194,7 +194,7 @@ public class BrowseBean implements Serializable {
     /**
      * getList.
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field Solr field name identifying the collection
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -205,8 +205,8 @@ public class BrowseBean implements Serializable {
     /**
      * getList.
      *
-     * @param field a {@link java.lang.String} object.
-     * @param depth a int.
+     * @param field Solr field name identifying the collection
+     * @param depth maximum hierarchy depth to expand; -1 for unlimited
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws IllegalRequestException
@@ -235,7 +235,7 @@ public class BrowseBean implements Serializable {
     /**
      * populateCollection.
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field Solr field name identifying the collection to populate
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws IllegalRequestException
      */
@@ -259,7 +259,7 @@ public class BrowseBean implements Serializable {
     /**
      * Setter for the field <code>collectionToExpand</code>.
      *
-     * @param collectionToExpand a {@link java.lang.String} object.
+     * @param collectionToExpand name of the collection to expand in the view
      */
     public void setCollectionToExpand(String collectionToExpand) {
         synchronized (this) {
@@ -302,8 +302,8 @@ public class BrowseBean implements Serializable {
     /**
      * expandCollection.
      *
-     * @param collectionField a {@link java.lang.String} object.
-     * @param facetField a {@link java.lang.String} object.
+     * @param collectionField Solr field name identifying the collection to expand
+     * @param facetField Solr field used for grouping or faceting within the collection
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws IllegalRequestException
      */
@@ -458,7 +458,7 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * @param resultGroups
+     * @param resultGroups Search result groups used to build group sub-queries
      * @return Generated filter query or empty string
      * @should return empty string if no filterQuery or result groups available
      * @should generate filter query correctly
@@ -793,7 +793,7 @@ public class BrowseBean implements Serializable {
     /**
      * Returns the list of fields configured for term browsing to be listed in term browsing widgets.
      *
-     * @param language a {@link java.lang.String} object.
+     * @param language BCP-47 language code to filter language-specific fields
      * @return List of browsing menu items
      * @should skip items that have skipInWidget true
      * @should skip items for language-specific fields if no language was given
@@ -848,7 +848,7 @@ public class BrowseBean implements Serializable {
     /**
      * Setter for the field <code>targetCollection</code>.
      *
-     * @param targetCollection a {@link java.lang.String} object.
+     * @param targetCollection collection name whose first record should be opened
      */
     public void setTargetCollection(String targetCollection) {
         this.targetCollection = targetCollection;
@@ -914,7 +914,7 @@ public class BrowseBean implements Serializable {
     /**
      * getCollection.
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field Solr field name identifying the collection
      * @return a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object.
      */
     public CollectionView getCollection(String field) {
@@ -922,8 +922,8 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * 
-     * @param field
+     *
+     * @param field Solr field name identifying the collection
      * @return {@link CollectionView}
      */
     public CollectionView getOrCreateCollection(String field) {
@@ -949,8 +949,8 @@ public class BrowseBean implements Serializable {
     /**
      * Adds a CollectionView object for the given field to the map and populates its values.
      *
-     * @param collectionField a {@link java.lang.String} object.
-     * @param groupingField a {@link java.lang.String} object. Used for grouping results
+     * @param collectionField Solr field name identifying the collection
+     * @param groupingField Solr field used to group collection results; may be null
      */
     public void initializeCollection(final String collectionField, final String groupingField) {
         logger.trace("initializeCollection: {}", collectionField);
@@ -985,8 +985,8 @@ public class BrowseBean implements Serializable {
     /**
      * TODO translation from DB.
      *
-     * @param collectionField
-     * @param collectionValue
+     * @param collectionField Solr field name of the collection
+     * @param collectionValue Raw collection value (may be hierarchical)
      * @return {@link String}
      * @should return hierarchy correctly
      */

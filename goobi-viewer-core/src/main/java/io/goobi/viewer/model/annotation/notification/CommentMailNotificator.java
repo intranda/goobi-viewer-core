@@ -48,7 +48,7 @@ public class CommentMailNotificator implements ChangeNotificator {
 
     /**
      *
-     * @param recipients
+     * @param recipients list of email addresses to receive notifications
      */
     public void setRecipients(List<String> recipients) {
         this.recipients = recipients;
@@ -70,8 +70,8 @@ public class CommentMailNotificator implements ChangeNotificator {
 
     /**
      * 
-     * @param viewerRootUrl
-     * @param annotation
+     * @param viewerRootUrl base URL of the Goobi viewer application
+     * @param annotation annotation whose target record and page provide the URL
      * @return Hyperlink element containing the record and page URL
      * @should build element correctly
      */
@@ -156,7 +156,7 @@ public class CommentMailNotificator implements ChangeNotificator {
 
     /**
      * 
-     * @param annotation
+     * @param annotation annotation whose creator is to be looked up
      * @return Creator display name; 'unknown' if none foudn
      */
     private static String getCreator(PersistentAnnotation annotation) {

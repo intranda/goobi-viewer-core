@@ -65,7 +65,7 @@ public class CMSCategory implements Comparable<CMSCategory>, Serializable {
     /**
      * Creates a new CMSCategory instance.
      *
-     * @param name a {@link java.lang.String} object.
+     * @param name display name for this category
      */
     public CMSCategory(String name) {
         this.name = name;
@@ -76,8 +76,8 @@ public class CMSCategory implements Comparable<CMSCategory>, Serializable {
     /**
      * Creates a new CMSCategory instance.
      *
-     * @param blueprint a {@link io.goobi.viewer.model.cms.CMSCategory} object.
-     * @param keepId a boolean.
+     * @param blueprint category to copy fields from
+     * @param keepId true to retain the original database ID; false to clear it
      */
     public CMSCategory(CMSCategory blueprint, boolean keepId) {
         this.id = keepId ? blueprint.id : null;

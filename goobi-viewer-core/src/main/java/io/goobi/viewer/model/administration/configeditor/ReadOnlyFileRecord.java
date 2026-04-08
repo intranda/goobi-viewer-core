@@ -31,8 +31,8 @@ public class ReadOnlyFileRecord extends FileRecord {
 
     /**
      * 
-     * @param file
-     * @param number
+     * @param file path to the configuration file
+     * @param number index of this record in the file list
      * @param fileName Optional custom file name
      */
     public ReadOnlyFileRecord(Path file, int number, String fileName) {

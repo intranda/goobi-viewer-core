@@ -151,8 +151,8 @@ public class MonitoringResource {
 
     /**
      * 
-     * @param versionMap
-     * @param versionJson
+     * @param versionMap map to populate with version and hash values
+     * @param versionJson JSON string containing version information
      */
     private static void setVersionValues(Map<String, String> versionMap, String versionJson) {
         versionMap.put("version", JsonTools.getVersion(versionJson));

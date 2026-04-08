@@ -100,7 +100,7 @@ public class GeoFacetItem implements IFacetItem {
     /**
      * Sets {@link io.goobi.viewer.model.search.GeoCoordinateFeature} and sets the matching search string to the WKT_COORDS facet if available.
      *
-     * @param feature
+     * @param feature the GeoJSON feature string to parse
      */
     public void setFeature(String feature) {
         try {
@@ -153,7 +153,7 @@ public class GeoFacetItem implements IFacetItem {
     /**
      * Creates a polygon feature from the given vertices.
      *
-     * @param vertices
+     * @param vertices the polygon vertices as coordinate pairs
      */
     public void setVertices(double[][] vertices) {
         if (vertices == null || vertices.length == 0) {

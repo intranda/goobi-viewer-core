@@ -48,13 +48,13 @@ public class SessionStoreBookmarkManager {
 
     private static final Logger logger = LogManager.getLogger(SessionStoreBookmarkManager.class);
 
-    /** Constant <code>BOOKMARK_LIST_ATTRIBUTE_NAME="bookmarkList"</code> */
+    /** Constant <code>BOOKMARK_LIST_ATTRIBUTE_NAME="bookmarkList"</code>. */
     public static final String BOOKMARK_LIST_ATTRIBUTE_NAME = "bookmarkList";
 
     /**
      * getBookmarkList.
      *
-     * @param session a {@link jakarta.servlet.http.HttpSession} object.
+     * @param session HTTP session to look up the bookmark list in
      * @return An optional containing the stored bookmark list if one exists
      * @throws java.lang.NullPointerException if the session is NULL
      */
@@ -77,7 +77,7 @@ public class SessionStoreBookmarkManager {
     /**
      * Creates a new BookmarkList and store it in the session store in the attribute "bookmarkList".
      *
-     * @param session a {@link jakarta.servlet.http.HttpSession} object.
+     * @param session HTTP session to store the new bookmark list in
      * @return a {@link io.goobi.viewer.model.bookmark.BookmarkList} object.
      * @throws java.lang.IllegalArgumentException if a bookmark list already exists
      * @throws java.lang.IllegalStateException if the bookmark list could not be stored in the session
@@ -97,7 +97,7 @@ public class SessionStoreBookmarkManager {
     /**
      * Gets the bookmark list stored in the session. If no bookmark list exists, a new one is created, stored and returned
      *
-     * @param session a {@link jakarta.servlet.http.HttpSession} object.
+     * @param session HTTP session to retrieve or create the bookmark list in
      * @return a {@link io.goobi.viewer.model.bookmark.BookmarkList} object.
      * @throws java.lang.NullPointerException if the session is NULL
      */
@@ -108,8 +108,8 @@ public class SessionStoreBookmarkManager {
     /**
      * Adds the given item to the session bookmark list, creating a new bookmark list if required.
      *
-     * @param item a {@link io.goobi.viewer.model.bookmark.Bookmark} object.
-     * @param session a {@link jakarta.servlet.http.HttpSession} object.
+     * @param item bookmark to add to the session list
+     * @param session HTTP session holding the bookmark list
      * @return false if the item could not be added (usually because it already exists), true otherwise
      * @throws java.lang.NullPointerException if the session is NULL
      */
@@ -121,8 +121,8 @@ public class SessionStoreBookmarkManager {
      * Remove the given item (or one with identical pi, logId and order) from the session bookmark list if it exists If no session bookmark list
      * exists, it doesn't contain the item or the item could not be removed for some other reason, false is returned.
      *
-     * @param item a {@link io.goobi.viewer.model.bookmark.Bookmark} object.
-     * @param session a {@link jakarta.servlet.http.HttpSession} object.
+     * @param item bookmark to remove from the session list
+     * @param session HTTP session holding the bookmark list
      * @return a boolean.
      * @throws java.lang.NullPointerException if the session is NULL
      */
@@ -137,7 +137,7 @@ public class SessionStoreBookmarkManager {
     /**
      * deleteBookmarkList.
      *
-     * @param session a {@link jakarta.servlet.http.HttpSession} object.
+     * @param session HTTP session whose bookmark list is removed
      * @throws java.lang.NullPointerException if the session is NULL
      */
     public void deleteBookmarkList(HttpSession session) {
@@ -147,8 +147,8 @@ public class SessionStoreBookmarkManager {
     /**
      * isInBookmarkList.
      *
-     * @param item a {@link io.goobi.viewer.model.bookmark.Bookmark} object.
-     * @param session a {@link jakarta.servlet.http.HttpSession} object.
+     * @param item bookmark to look up in the session list
+     * @param session HTTP session holding the bookmark list
      * @return a boolean.
      */
     public boolean isInBookmarkList(Bookmark item, HttpSession session) {
@@ -161,10 +161,10 @@ public class SessionStoreBookmarkManager {
 
     /**
      * Assigns the current session bookmark list (if any) to the given user and saves the bookmark list to the database The bookmark list gets a newly
-     * generated name provided by {@link #generateNewBookmarkListName(List)}
+     * generated name provided by {@link #generateNewBookmarkListName(List)}.
      *
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param user user to assign the session bookmark list to
+     * @param request HTTP request providing the current session
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void addSessionBookmarkListToUser(User user, HttpServletRequest request) throws DAOException {
@@ -190,7 +190,7 @@ public class SessionStoreBookmarkManager {
      * Returns a String of the pattern "List {n}" where {n} is the lowest positive integer such that no bookmark list named "List {n}" exists in the
      * given list.
      *
-     * @param bookmarkLists a {@link java.util.List} object.
+     * @param bookmarkLists existing bookmark lists used to determine the next available number
      * @return a {@link java.lang.String} object.
      */
     public static String generateNewBookmarkListName(List<BookmarkList> bookmarkLists) {
@@ -224,10 +224,10 @@ public class SessionStoreBookmarkManager {
      *
      * <p>The parameter {@code bookmarkList} is the bookmark list containing the items to be inserted
      *
-     * @param text a {@link java.lang.String} object.
-     * @param itemText a {@link java.lang.String} object.
-     * @param emptyListText a {@link java.lang.String} object.
-     * @param bookmarkList a {@link io.goobi.viewer.model.bookmark.BookmarkList} object.
+     * @param text email body template containing placeholder {0} for the item list
+     * @param itemText per-bookmark text template with placeholders {0} (URL) and {1} (title)
+     * @param emptyListText text inserted when the bookmark list is empty
+     * @param bookmarkList bookmark list whose items are rendered into the text
      * @return a {@link java.lang.String} object.
      */
     public static String generateBookmarkListInfo(String text, String itemText, String emptyListText, BookmarkList bookmarkList) {

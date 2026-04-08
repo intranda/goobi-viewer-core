@@ -48,7 +48,7 @@ public class CalendarRow implements Serializable {
     /**
      * Setter for the field <code>itemList</code>.
      *
-     * @param itemList a {@link java.util.List} object.
+     * @param itemList calendar items to set for this row
      */
     public void setItemList(List<ICalendarItem> itemList) {
         this.itemList = itemList;
@@ -57,7 +57,7 @@ public class CalendarRow implements Serializable {
     /**
      * addItem.
      *
-     * @param item a {@link io.goobi.viewer.model.calendar.ICalendarItem} object.
+     * @param item calendar item to append to this row
      */
     public void addItem(ICalendarItem item) {
         itemList.add(item);
@@ -75,7 +75,7 @@ public class CalendarRow implements Serializable {
     /**
      * Setter for the field <code>selected</code>.
      *
-     * @param selected a boolean.
+     * @param selected true to mark this row as selected
      */
     public void setSelected(boolean selected) {
         this.selected = selected;

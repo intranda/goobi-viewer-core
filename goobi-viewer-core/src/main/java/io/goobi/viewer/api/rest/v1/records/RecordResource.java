@@ -591,12 +591,12 @@ public class RecordResource {
     /**
      * autoCompleteInManifest.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param query a {@link java.lang.String} object.
-     * @param motivation a {@link java.lang.String} object.
-     * @param date a {@link java.lang.String} object.
-     * @param user a {@link java.lang.String} object.
-     * @param page a {@link java.lang.Integer} object.
+     * @param pi persistent identifier of the record to search
+     * @param query partial query string for auto-completion
+     * @param motivation space-separated list of annotation motivations to filter
+     * @param date date filter (not supported; passed to 'ignored' property)
+     * @param user user filter (not supported; passed to 'ignored' property)
+     * @param page result page number; defaults to 1 if absent
      * @return a {@link de.intranda.api.iiif.search.AutoSuggestResult} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -624,7 +624,7 @@ public class RecordResource {
     }
 
     /**
-     * @param mode
+     * @param mode build mode string (e.g. "simple", "thumbs", "iiif")
      * @return {@link BuildMode}
      */
     public static BuildMode getBuildeMode(String mode) {
@@ -649,7 +649,7 @@ public class RecordResource {
     /**
      * deleteRecord.
      *
-     * @param createTraceDocument
+     * @param createTraceDocument if true, a trace document is written after deletion
      * @return Short summary of files deleted
      */
     @DELETE
@@ -765,7 +765,7 @@ public class RecordResource {
     }
 
     /**
-     * @param pi
+     * @param pi persistent identifier of the record
      * @return {@link StructElement} constructed out of given pi
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -784,9 +784,9 @@ public class RecordResource {
     }
 
     /**
-     * Throw an AccessDenied error if the request doesn't satisfy the access conditions
+     * Throw an AccessDenied error if the request doesn't satisfy the access conditions.
      *
-     * @param pi
+     * @param pi persistent identifier of the record to check access for
      * @throws ServiceNotAllowedException
      */
     private void checkFulltextAccessConditions(String pi) throws ServiceNotAllowedException {

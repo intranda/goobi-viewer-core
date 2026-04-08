@@ -78,13 +78,13 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     private static final Logger logger = LogManager.getLogger(LicenseType.class);
 
     // When adding a new static license type name, update isStaticLicenseType()!
-    /** Constant <code>LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE="licenseType_setRepresentativeImage"</code> */
+    /** Constant <code>LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE="licenseType_setRepresentativeImage"</code>. */
     public static final String LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE = "licenseType_setRepresentativeImage";
-    /** Constant <code>LICENSE_TYPE_DELETE_OCR_PAGE="licenseType_deleteOcrPage"</code> */
+    /** Constant <code>LICENSE_TYPE_DELETE_OCR_PAGE="licenseType_deleteOcrPage"</code>. */
     public static final String LICENSE_TYPE_DELETE_OCR_PAGE = "licenseType_deleteOcrPage";
     private static final String LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE_DESCRIPTION = "licenseType_setRepresentativeImage_desc";
     private static final String LICENSE_TYPE_DELETE_OCR_PAGE_DESCRIPTION = "licenseType_deleteOcrPage_desc";
-    /** Constant <code>LICENSE_TYPE_CMS="licenseType_cms"</code> */
+    /** Constant <code>LICENSE_TYPE_CMS="licenseType_cms"</code>. */
     public static final String LICENSE_TYPE_CMS = "licenseType_cms";
     private static final String LICENSE_TYPE_DESC_CMS = "licenseType_cms_desc";
     public static final String LICENSE_TYPE_LEGAL_DISCLAIMER = "licenseType_disclaimer";
@@ -265,8 +265,8 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * getMatch.
      *
-     * @param conditions a {@link java.lang.String} object.
-     * @param pattern a {@link java.lang.String} object.
+     * @param conditions condition string to search in
+     * @param pattern regex pattern with a capture group to apply
      * @return a {@link java.lang.String} object.
      */
     public String getMatch(String conditions, String pattern) {
@@ -551,7 +551,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Adds the given privilege to the working set.
      *
-     * @param privilege
+     * @param privilege Privilege name to add to working set
      * @return true if successful; false otherwise
      */
     @Override
@@ -563,7 +563,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Removes the given privilege from the working set.
      *
-     * @param privilege
+     * @param privilege Privilege name to remove from working set
      * @return true if successful; false otherwise
      */
     @Override
@@ -815,8 +815,8 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
 
     /**
      * Used to access individual language info when editing this LicenseType.
-     * 
-     * @param language
+     *
+     * @param language Language code for the placeholder info
      * @return {@link LicenseTypePlaceholderInfo}
      */
     public LicenseTypePlaceholderInfo getPlaceholderInfo(String language) {
@@ -848,9 +848,9 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * 
-     * @param tag
-     * @param language
+     *
+     * @param tag Translation tag identifier
+     * @param language Language code for the translation
      * @return {@link LicenseTypeTranslation}
      */
     private LicenseTypePlaceholderInfo getTranslation(String tag, String language) {
@@ -907,7 +907,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
 
     /**
      *
-     * @param query
+     * @param query Solr restriction query to check
      * @return true if the configured restriction query is expired; false otherwise
      */
     public boolean isRestrictionsExpired(String query) {
@@ -987,9 +987,9 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
 
     /**
      *
-     * @param licenseTypeName
-     * @param licenseTypeDesc
-     * @param privNames
+     * @param licenseTypeName Name of the core license type to add
+     * @param licenseTypeDesc Description key of the core license type
+     * @param privNames Privilege names to assign to the license type
      * @throws DAOException
      */
     private static void addCoreLicenseType(String licenseTypeName, String licenseTypeDesc, String... privNames) throws DAOException {

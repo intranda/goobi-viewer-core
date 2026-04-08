@@ -118,7 +118,7 @@ public class CMSComponentAttribute implements Serializable {
 
     /**
      * 
-     * @param element
+     * @param element the XML element to parse
      * @return {@link CMSComponentAttribute}
      */
     public static CMSComponentAttribute loadFromXML(Element element) {
@@ -138,7 +138,7 @@ public class CMSComponentAttribute implements Serializable {
 
     /**
      * 
-     * @param element
+     * @param element the XML element to parse
      * @return {@link Option}
      */
     private static Option createOption(Element element) {

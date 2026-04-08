@@ -40,7 +40,7 @@ public class ConsentScope implements Serializable {
     private StorageMode storageMode = StorageMode.LOCAL;
 
     /**
-     * The number of days after which the consent must be renewed at the latest
+     * The number of days after which the consent must be renewed at the latest.
      */
     private int daysToLive = 14;
 

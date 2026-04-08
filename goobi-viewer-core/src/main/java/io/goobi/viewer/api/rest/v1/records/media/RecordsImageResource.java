@@ -79,7 +79,7 @@ public class RecordsImageResource {
     private final String pi;
 
     /**
-     * @param pi
+     * @param pi persistent identifier of the record
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -151,7 +151,7 @@ public class RecordsImageResource {
     }
 
     /**
-     * @param pi
+     * @param pi persistent identifier of the record
      * @return Representative image file name for the given record pi
      * @throws PresentationException
      * @throws IndexUnreachableException

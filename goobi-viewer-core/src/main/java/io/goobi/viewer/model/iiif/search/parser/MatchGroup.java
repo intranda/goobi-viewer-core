@@ -29,9 +29,9 @@ public class MatchGroup {
 
     /**
      * 
-     * @param start
-     * @param end
-     * @param text
+     * @param start start character offset of the match
+     * @param end end character offset of the match
+     * @param text matched text content
      */
     public MatchGroup(int start, int end, String text) {
         this.start = start;

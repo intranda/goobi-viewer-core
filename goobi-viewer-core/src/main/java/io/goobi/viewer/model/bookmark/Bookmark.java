@@ -132,9 +132,9 @@ public class Bookmark implements Serializable {
     /**
      * Creates a new Bookmark instance.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param mainTitle a {@link java.lang.String} object.
-     * @param name a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record
+     * @param mainTitle main title of the bookmarked record
+     * @param name display name for this bookmark
      */
     public Bookmark(String pi, String mainTitle, String name) {
         this.pi = pi;
@@ -147,9 +147,9 @@ public class Bookmark implements Serializable {
      * references. PI must be non-empty, otherwise a NullPointerException is thrown The item name will be inferred from the book/section title from
      * Solr. If that fails, an IndexUnreachableException or PresentationException is thrown
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param logId a {@link java.lang.String} object.
-     * @param order a {@link java.lang.Integer} object.
+     * @param pi persistent identifier of the record
+     * @param logId structural element log ID, may be null or empty
+     * @param order page order number, may be null
      * @throws java.lang.NullPointerException if pi is null or blank
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -167,9 +167,9 @@ public class Bookmark implements Serializable {
      * references. PI must be non-empty, otherwise a NullPointerException is thrown The item name will be inferred from the book/section title from
      * Solr. If that fails, an IndexUnreachableException or PresentationException is thrown
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param logId a {@link java.lang.String} object.
-     * @param order a {@link java.lang.Integer} object.
+     * @param pi persistent identifier of the record
+     * @param logId structural element log ID, may be null or empty
+     * @param order page order number, may be null
      * @param ignoreMissingSolrDoc should be false, unless arbitrary pi/logid values should be allowed (e.g. for testing)
      * @throws java.lang.NullPointerException if pi is null or blank
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -225,8 +225,8 @@ public class Bookmark implements Serializable {
     /**
      * bothEqualOrNull.
      *
-     * @param o1 a {@link java.lang.Object} object.
-     * @param o2 a {@link java.lang.Object} object.
+     * @param o1 first object to compare
+     * @param o2 second object to compare
      * @return a boolean.
      */
     public boolean bothEqualOrNull(Object o1, Object o2) {
@@ -239,8 +239,8 @@ public class Bookmark implements Serializable {
     /**
      * bothEqualOrBlank.
      *
-     * @param o1 a {@link java.lang.String} object.
-     * @param o2 a {@link java.lang.String} object.
+     * @param o1 first string to compare
+     * @param o2 second string to compare
      * @return a boolean.
      */
     public boolean bothEqualOrBlank(String o1, String o2) {
@@ -298,8 +298,8 @@ public class Bookmark implements Serializable {
     /**
      * Returns the URL to the representative image thumbnail for the record represented by this item.
      *
-     * @param width a int.
-     * @param height a int.
+     * @param width desired thumbnail width in pixels
+     * @param height desired thumbnail height in pixels
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.

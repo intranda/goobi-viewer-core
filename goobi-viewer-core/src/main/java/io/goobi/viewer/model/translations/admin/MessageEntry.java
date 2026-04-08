@@ -80,8 +80,8 @@ public class MessageEntry implements Comparable<MessageEntry> {
 
     /**
      *
-     * @param key
-     * @param values
+     * @param key the full message key
+     * @param values list of translated values for this entry
      */
     public MessageEntry(String key, List<MessageValue> values) {
         this.keyPrefix = "";
@@ -92,9 +92,9 @@ public class MessageEntry implements Comparable<MessageEntry> {
     /**
      * Constructor with a composite key.
      *
-     * @param keyPrefix
-     * @param keySuffix
-     * @param values
+     * @param keyPrefix prefix part of the composite message key
+     * @param keySuffix suffix part of the composite message key
+     * @param values list of translated values for this entry
      */
     public MessageEntry(String keyPrefix, String keySuffix, List<MessageValue> values) {
         this.keyPrefix = keyPrefix != null ? keyPrefix : "";

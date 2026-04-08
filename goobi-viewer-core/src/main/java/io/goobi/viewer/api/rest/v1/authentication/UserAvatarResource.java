@@ -132,7 +132,7 @@ public class UserAvatarResource extends ImageResource {
     }
 
     /**
-     * @param userId
+     * @param userId database ID of the user
      * @return {@link URI}
      * @throws WebApplicationException
      */
@@ -154,7 +154,7 @@ public class UserAvatarResource extends ImageResource {
     }
 
     /**
-     * @param userId
+     * @param userId database ID of the user
      * @return Optional<Path>
      * @throws IOException
      */

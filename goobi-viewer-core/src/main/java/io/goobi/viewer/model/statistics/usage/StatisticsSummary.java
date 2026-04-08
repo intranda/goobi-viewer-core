@@ -54,7 +54,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 public class StatisticsSummary {
 
     /**
-     * Request counts sorted by {@link RequestType}
+     * Request counts sorted by {@link RequestType}.
      */
     private final Map<RequestType, RequestTypeSummary> types;
     private final LocalDateTime creationTime = LocalDateTime.now();
@@ -112,7 +112,7 @@ public class StatisticsSummary {
     }
 
     /**
-     * Get the request counts sorted by {@link RequestType}
+     * Get the request counts sorted by {@link RequestType}.
      * 
      * @return a {@link Map}
      */
@@ -144,7 +144,7 @@ public class StatisticsSummary {
     }
 
     /**
-     * Get the total amount for requests for a given {@link RequestType}
+     * Get the total amount for requests for a given {@link RequestType}.
      * 
      * @param types the {@link RequestType}s to count
      * @return number of requests
@@ -158,7 +158,7 @@ public class StatisticsSummary {
     }
 
     /**
-     * Get the number of unique request for a given {@link RequestType}
+     * Get the number of unique request for a given {@link RequestType}.
      * 
      * @param types the {@link RequestType}s to count
      * @return number of unique requests
@@ -218,9 +218,9 @@ public class StatisticsSummary {
 
     /**
      * 
-     * @param start
-     * @param end
-     * @param format
+     * @param start start date of the range
+     * @param end end date of the range
+     * @param format date formatter to apply
      * @return Formatted date range
      */
     private static String getAsString(LocalDate start, LocalDate end, DateTimeFormatter format) {

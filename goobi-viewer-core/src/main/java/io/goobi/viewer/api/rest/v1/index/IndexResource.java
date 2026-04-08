@@ -131,7 +131,7 @@ public class IndexResource {
 
     /**
      *
-     * @param query
+     * @param query optional Solr query to filter counted records
      * @return Indexed records statistics as JSON
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -182,7 +182,7 @@ public class IndexResource {
 
     /**
      *
-     * @param params
+     * @param params query parameters including query, sort, facet, and result field configuration
      * @return Records as JSON
      * @throws IndexUnreachableException
      * @throws ViewerConfigurationException
@@ -291,7 +291,7 @@ public class IndexResource {
 
     /**
      *
-     * @param expression
+     * @param expression raw Solr streaming expression to execute
      * @return {@link StreamingOutput}
      */
     @POST
@@ -340,11 +340,11 @@ public class IndexResource {
     }
 
     /**
-     * @param solrField
-     * @param wktRegion
-     * @param filterQuery
-     * @param facetQuery
-     * @param gridLevel
+     * @param solrField Solr field containing spatial coordinate data
+     * @param wktRegion WKT coordinate string restricting the search area
+     * @param filterQuery additional Solr query to filter results
+     * @param facetQuery facetting expression applied to heatmap results
+     * @param gridLevel heatmap grid resolution level
      * @return Heatmap as {@link String}
      * @throws IOException
      * @throws IndexUnreachableException
@@ -603,9 +603,9 @@ public class IndexResource {
     }
 
     /**
-     * 
-     * @param params
-     * @param response
+     *
+     * @param params original request parameters controlling output format and language
+     * @param response Solr query response containing matched documents
      * @return {@link JSONArray} with query results
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -684,8 +684,8 @@ public class IndexResource {
 
     /**
      *
-     * @param expr
-     * @param solrUrl
+     * @param expr raw Solr streaming expression to execute
+     * @param solrUrl base URL of the Solr server
      * @return {@link StreamingOutput}
      */
     private static StreamingOutput executeStreamingExpression(String expr, String solrUrl) {

@@ -47,7 +47,7 @@ public class Role implements Serializable {
 
     private static final long serialVersionUID = -264290351046020590L;
 
-    /** Constant <code>SUPERUSER_ROLE="admin"</code> */
+    /** Constant <code>SUPERUSER_ROLE="admin"</code>. */
     public static final String SUPERUSER_ROLE = "admin";
 
     @Id
@@ -82,7 +82,7 @@ public class Role implements Serializable {
     /**
      * Creates a new Role instance.
      *
-     * @param name a {@link java.lang.String} object.
+     * @param name unique name identifying this role
      */
     public Role(String name) {
         this.name = name;
@@ -173,7 +173,7 @@ public class Role implements Serializable {
     /**
      * setPrivDeleteOcrPage.
      *
-     * @param priv a boolean.
+     * @param priv true to grant, false to revoke the privilege
      */
     public void setPrivDeleteOcrPage(boolean priv) {
         if (priv) {
@@ -195,7 +195,7 @@ public class Role implements Serializable {
     /**
      * setPrivSetRepresentativeImage.
      *
-     * @param priv a boolean.
+     * @param priv true to grant, false to revoke the privilege
      */
     public void setPrivSetRepresentativeImage(boolean priv) {
         if (priv) {
@@ -217,7 +217,7 @@ public class Role implements Serializable {
     /**
      * setPrivCmsPages.
      *
-     * @param priv a boolean.
+     * @param priv true to grant, false to revoke the privilege
      */
     public void setPrivCmsPages(boolean priv) {
         if (priv) {
@@ -239,7 +239,7 @@ public class Role implements Serializable {
     /**
      * setPrivCmsMenu.
      *
-     * @param priv a boolean.
+     * @param priv true to grant, false to revoke the privilege
      */
     public void setPrivCmsMenu(boolean priv) {
         if (priv) {
@@ -261,7 +261,7 @@ public class Role implements Serializable {
     /**
      * setPrivCmsStaticPages.
      *
-     * @param priv a boolean.
+     * @param priv true to grant, false to revoke the privilege
      */
     public void setPrivCmsStaticPages(boolean priv) {
         if (priv) {
@@ -283,7 +283,7 @@ public class Role implements Serializable {
     /**
      * setPrivCmsCollections.
      *
-     * @param priv a boolean.
+     * @param priv true to grant, false to revoke the privilege
      */
     public void setPrivCmsCollections(boolean priv) {
         if (priv) {
@@ -305,7 +305,7 @@ public class Role implements Serializable {
     /**
      * setPrivCmsCategories.
      *
-     * @param priv a boolean.
+     * @param priv true to grant, false to revoke the privilege
      */
     public void setPrivCmsCategories(boolean priv) {
         if (priv) {

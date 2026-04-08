@@ -68,7 +68,7 @@ public class MetadataView {
     /**
      * Checks link visibility conditions.
      *
-     * @param se
+     * @param se structure element to check the visibility condition against
      * @return true if conditions empty or satisfied; false otherwise
      * @should return true if condition null or empty
      * @should return false if struct element null

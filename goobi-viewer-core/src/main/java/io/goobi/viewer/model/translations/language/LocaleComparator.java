@@ -35,7 +35,7 @@ public class LocaleComparator implements Comparator<Locale> {
     /**
      * Creates a new LocaleComparator instance.
      *
-     * @param locale a {@link java.util.Locale} object.
+     * @param locale preferred primary locale for ordering
      */
     public LocaleComparator(Locale locale) {
         this.primaryLocale = locale;

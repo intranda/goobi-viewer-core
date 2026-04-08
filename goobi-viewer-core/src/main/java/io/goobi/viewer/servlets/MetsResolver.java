@@ -241,7 +241,7 @@ public class MetsResolver extends HttpServlet {
 
     /**
      * 
-     * @param metsDoc
+     * @param metsDoc METS XML document to filter
      * @return {@link Document} without restricted metadata elements
      */
     static Document filterRestrictedMetadata(Document metsDoc) {

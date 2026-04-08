@@ -223,7 +223,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     }
 
     /**
-     * @param recordPi
+     * @param recordPi Persistent identifier of the record to load
      * @param index Metadata view index
      * @return Loaded {@link MetadataElement}
      * @throws DAOException
@@ -248,7 +248,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     }
 
     /**
-     * @param solrDoc
+     * @param solrDoc Solr document from which to extract the record title
      * @return {@link TranslatedText}
      */
     private TranslatedText createRecordTitle(SolrDocument solrDoc) {
@@ -257,7 +257,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     }
 
     /**
-     * @param label
+     * @param label Metadata value containing the record title
      * @return {@link TranslatedText}
      */
     public TranslatedText createRecordTitle(IMetadataValue label) {
@@ -325,9 +325,9 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
      * Set all note texts to the given locale unless the note texts are not filled ("valid") for the defaultLocale. In this case set them to the
      * defaultLocale.
      *
-     * @param note
-     * @param locale
-     * @param defaultLocale
+     * @param note Note whose text locales are to be set
+     * @param locale Desired locale to select
+     * @param defaultLocale Fallback locale used if texts are not valid for the desired locale
      * @return the given locale if texts are valid for the default locale, otherwise the default locale
      */
     private static Locale setSelectedLocale(CMSRecordNote note, Locale locale, Locale defaultLocale) {

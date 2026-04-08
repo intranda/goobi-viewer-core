@@ -34,7 +34,7 @@ public class RichOEmbedResponse extends OEmbedResponse {
     /**
      * Constructor.
      *
-     * @param rec a {@link io.goobi.viewer.servlets.oembed.OEmbedRecord} object.
+     * @param rec oEmbed record to embed
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public RichOEmbedResponse(OEmbedRecord rec) throws ViewerConfigurationException {
@@ -47,9 +47,9 @@ public class RichOEmbedResponse extends OEmbedResponse {
     /**
      * Constructor.
      *
-     * @param rec a {@link io.goobi.viewer.servlets.oembed.OEmbedRecord} object.
-     * @param maxWidth a {@link java.lang.Integer} object
-     * @param maxHeight a {@link java.lang.Integer} object
+     * @param rec oEmbed record to embed
+     * @param maxWidth maximum allowed embed width in pixels
+     * @param maxHeight maximum allowed embed height in pixels
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public RichOEmbedResponse(OEmbedRecord rec, Integer maxWidth, Integer maxHeight) throws ViewerConfigurationException {
@@ -67,9 +67,9 @@ public class RichOEmbedResponse extends OEmbedResponse {
 
     /**
      *
-     * @param rec
-     * @param width
-     * @param height
+     * @param rec oEmbed record providing the embed URI and type
+     * @param width desired embed width in pixels
+     * @param height desired embed height in pixels
      */
     private void generateHtml(OEmbedRecord rec, int width, int height) {
         if (rec == null) {

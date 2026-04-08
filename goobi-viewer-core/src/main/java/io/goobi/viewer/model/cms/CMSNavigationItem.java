@@ -76,13 +76,15 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     private Long id;
 
     /**
-     * Relative url in the viewer
+     * Relative url in the viewer.
      */
     @Column(name = "page_url", nullable = false)
     private String pageUrl;
 
     /**
-     * Display name and identifier for NavigationHelper.currentPage Handed to messages for normal items, and called from currentLanguage for CMS-pages
+     * Display name and identifier for NavigationHelper.currentPage.
+     *
+     * <p>Handed to messages for normal items, and called from currentLanguage for CMS pages.
      */
     @Column(name = "item_label", nullable = false)
     private String itemLabel;
@@ -94,7 +96,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     @Column(name = "item_order", nullable = false)
     private Integer order;
 
-    /** CMS-generated page this link may refer to */
+    /** CMS-generated page this link may refer to. */
     @JoinColumn(name = "cms_page_id")
     private CMSPage cmsPage;
 
@@ -140,7 +142,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * Created a copy of the passed item ignoring all data concerning the item hierarchy (order, child and parent items).
      *
-     * @param original a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
+     * @param original navigation item to copy fields from
      */
     public CMSNavigationItem(CMSNavigationItem original) {
         setItemLabel(original.getItemLabel());
@@ -156,8 +158,8 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * Creates a new CMSNavigationItem instance.
      *
-     * @param targetUrl a {@link java.lang.String} object.
-     * @param label a {@link java.lang.String} object.
+     * @param targetUrl relative or absolute URL this item points to
+     * @param label display label for this navigation item
      */
     public CMSNavigationItem(String targetUrl, String label) {
         setPageUrl(targetUrl);
@@ -167,7 +169,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * Creates a new CMSNavigationItem instance.
      *
-     * @param cmsPage a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
+     * @param cmsPage CMS page this navigation item links to
      */
     public CMSNavigationItem(CMSPage cmsPage) {
         setCmsPage(cmsPage);
@@ -226,7 +228,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * Setter for the field <code>id</code>.
      *
-     * @param id a {@link java.lang.Long} object.
+     * @param id database primary key for this navigation item
      */
     public void setId(Long id) {
         this.id = id;
@@ -247,7 +249,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * Setter for the field <code>itemLabel</code>.
      *
-     * @param itemLabel a {@link java.lang.String} object.
+     * @param itemLabel display label for this navigation item
      */
     public void setItemLabel(String itemLabel) {
         this.itemLabel = itemLabel;
@@ -304,7 +306,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * Setter for the field <code>childItems</code>.
      *
-     * @param childItems a {@link java.util.List} object.
+     * @param childItems list of child navigation items to set
      */
     public synchronized void setChildItems(List<CMSNavigationItem> childItems) {
         this.childItems = childItems;
@@ -320,7 +322,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
 
     /**
      * 
-     * @param request
+     * @param request HTTP servlet request used for access checks
      * @return Visible child items
      */
     public List<CMSNavigationItem> getActiveChildItems(HttpServletRequest request) {
@@ -332,7 +334,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * addChildItem.
      *
-     * @param child a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
+     * @param child navigation item to add as a child
      */
     public void addChildItem(CMSNavigationItem child) {
         if (!childItems.contains(child)) {
@@ -343,7 +345,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * removeChildItem.
      *
-     * @param child a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
+     * @param child navigation item to remove from children
      */
     public void removeChildItem(CMSNavigationItem child) {
         if (childItems.contains(child)) {
@@ -363,7 +365,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * Setter for the field <code>cmsPage</code>.
      *
-     * @param cmsPage a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
+     * @param cmsPage CMS page this navigation item links to
      */
     public void setCmsPage(CMSPage cmsPage) {
         this.cmsPage = cmsPage;
@@ -385,7 +387,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * @param url
+     * @param url URL to check
      * @return a boolean
      */
     private static boolean isOnSameRessource(String url) {
@@ -393,7 +395,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * @param url
+     * @param url URL to check
      * @return true if url absolute; false otherwise
      */
     private boolean isAbsolute(String url) {
@@ -421,7 +423,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * Setter for the field <code>pageUrl</code>.
      *
-     * @param pageUrl a {@link java.lang.String} object.
+     * @param pageUrl relative or absolute URL for this navigation item
      */
     public void setPageUrl(final String pageUrl) {
         String usePageUrl = pageUrl;
@@ -497,7 +499,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * Check to highlight this item as 'currentPage'. Checks both the items label and all child labels whether they equal currentPage
      *
-     * @param currentPage a {@link java.lang.String} object.
+     * @param currentPage navigation page identifier to match against this item and its children
      * @return a boolean.
      */
     public boolean matchesLabel(String currentPage) {
@@ -591,7 +593,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * Setter for the field <code>displayRule</code>.
      *
-     * @param rule a {@link io.goobi.viewer.model.cms.CMSNavigationItem.DisplayRule} object.
+     * @param rule visibility rule controlling when this item is shown
      */
     public void setDisplayRule(DisplayRule rule) {
         this.displayRule = rule;
@@ -612,7 +614,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * setDisplayForUsersOnly.
      *
-     * @param display a boolean.
+     * @param display true to restrict visibility to logged-in users
      */
     public void setDisplayForUsersOnly(boolean display) {
         this.displayRule = display ? DisplayRule.LOGGED_IN : DisplayRule.ALWAYS;
@@ -630,7 +632,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * setDisplayForAdminsOnly.
      *
-     * @param display a boolean.
+     * @param display true to restrict visibility to administrators only
      */
     public void setDisplayForAdminsOnly(boolean display) {
         this.displayRule = display ? DisplayRule.ADMIN : DisplayRule.ALWAYS;
@@ -740,7 +742,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
 
     /**
      * 
-     * @param request
+     * @param request HTTP servlet request used for access checks
      * @return true if access granted; false otherwise
      */
     public boolean checkAccess(HttpServletRequest request) {

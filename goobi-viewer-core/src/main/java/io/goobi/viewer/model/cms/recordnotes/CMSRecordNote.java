@@ -59,7 +59,7 @@ public abstract class CMSRecordNote implements Serializable {
     private static final Logger logger = LogManager.getLogger(CMSRecordNote.class);
 
     /**
-     * Auto-generated database id
+     * Auto-generated database id.
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -67,7 +67,7 @@ public abstract class CMSRecordNote implements Serializable {
     private Long id;
 
     /**
-     * Title of the note, plaintext
+     * Title of the note, plaintext.
      */
     @Column(name = "note_title", nullable = true, columnDefinition = "TINYTEXT")
     @Convert(converter = TranslatedTextConverter.class)
@@ -93,14 +93,14 @@ public abstract class CMSRecordNote implements Serializable {
     }
 
     /**
-     * @param pi
+     * @param pi persistent identifier of the record
      */
     protected CMSRecordNote(String pi) {
         this();
     }
 
     /**
-     * @param source
+     * @param source the note to copy from
      */
     protected CMSRecordNote(CMSRecordNote source) {
         this.id = source.id;

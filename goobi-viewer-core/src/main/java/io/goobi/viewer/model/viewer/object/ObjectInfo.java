@@ -44,7 +44,7 @@ public class ObjectInfo {
     /**
      * Creates a new ObjectInfo instance.
      *
-     * @param uri a {@link java.net.URI} object.
+     * @param uri URI pointing to the 3D object file.
      */
     public ObjectInfo(URI uri) {
         this.uri = uri;
@@ -55,7 +55,7 @@ public class ObjectInfo {
     /**
      * Creates a new ObjectInfo instance.
      *
-     * @param uri a {@link java.lang.String} object.
+     * @param uri URI string pointing to the 3D object file.
      * @throws java.net.URISyntaxException if any.
      */
     public ObjectInfo(String uri) throws URISyntaxException {
@@ -76,7 +76,7 @@ public class ObjectInfo {
     /**
      * Setter for the field <code>format</code>.
      *
-     * @param format a {@link io.goobi.viewer.model.viewer.object.ObjectFormat} object.
+     * @param format object format to assign to this resource.
      */
     public void setFormat(ObjectFormat format) {
         this.format = format;
@@ -139,7 +139,7 @@ public class ObjectInfo {
     /**
      * Getter for the field <code>resources</code>.
      *
-     * @return a {@link java.util.List} object.
+     * @return list of additional resource URIs.
      */
     public List<URI> getResources() {
         return resources;
@@ -148,7 +148,7 @@ public class ObjectInfo {
     /**
      * Setter for the field <code>resources</code>.
      *
-     * @param resources a {@link java.util.List} object.
+     * @param resources list of additional resource URIs to set.
      */
     public void setResources(List<URI> resources) {
         this.resources = resources;

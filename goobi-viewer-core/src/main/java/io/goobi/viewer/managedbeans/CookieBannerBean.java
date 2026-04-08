@@ -189,7 +189,7 @@ public class CookieBannerBean implements Serializable {
     /**
      * Activate/deactivate the cookie banner. Applies directly to the persisted object
      * 
-     * @param active
+     * @param active true to activate the banner; false to deactivate it
      * @throws DAOException
      */
     public void setBannerActive(boolean active) throws DAOException {

@@ -49,7 +49,7 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(LocalAuthenticationProvider.class);
 
-    /** Constant <code>TYPE_LOCAL="local"</code> */
+    /** Constant <code>TYPE_LOCAL="local"</code>. */
     public static final String TYPE_LOCAL = "local";
     private final String name;
     protected List<String> addUserToGroups;
@@ -59,7 +59,7 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
     /**
      * Creates a new LocalAuthenticationProvider instance.
      *
-     * @param name a {@link java.lang.String} object.
+     * @param name display name of this provider instance
      */
     public LocalAuthenticationProvider(String name) {
         this.name = name;
@@ -146,7 +146,7 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
     }
 
     /**
-     * Set custom bcrypt for testing
+     * Set custom bcrypt for testing.
      *
      * @param bcrypt the bcrypt to set
      */

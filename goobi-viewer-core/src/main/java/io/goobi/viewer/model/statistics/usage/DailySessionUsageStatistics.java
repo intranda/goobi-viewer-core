@@ -44,7 +44,7 @@ import org.apache.commons.lang3.StringUtils;
 import io.goobi.viewer.controller.DataManager;
 
 /**
- * Persistence class holding the usage statistics for a single day in the form of a list of {@link SessionUsageStatistics}
+ * Persistence class holding the usage statistics for a single day in the form of a list of {@link SessionUsageStatistics}.
  * 
  * @author florian
  */
@@ -58,13 +58,13 @@ public class DailySessionUsageStatistics {
     private Long id;
 
     /**
-     * The date the statistics were recorded
+     * The date the statistics were recorded.
      */
     @Column(name = "date")
     private LocalDate date;
 
     /**
-     * A name for the viewer instance the statistics were recorded for
+     * A name for the viewer instance the statistics were recorded for.
      */
     @Column(name = "viewer_instance")
     private String viewerInstance;
@@ -75,9 +75,9 @@ public class DailySessionUsageStatistics {
     private List<SessionUsageStatistics> sessions = new ArrayList<>();
 
     /**
-     * 
-     * @param date
-     * @param viewer
+     *
+     * @param date the date these statistics were recorded
+     * @param viewer the name of the viewer instance
      */
     public DailySessionUsageStatistics(LocalDate date, String viewer) {
         this.date = date;
@@ -89,8 +89,8 @@ public class DailySessionUsageStatistics {
     }
 
     /**
-     * 
-     * @param orig
+     *
+     * @param orig the instance to copy
      */
     public DailySessionUsageStatistics(DailySessionUsageStatistics orig) {
         this(orig.date, orig.viewerInstance);
@@ -98,8 +98,8 @@ public class DailySessionUsageStatistics {
     }
 
     /**
-     * 
-     * @param sessionId
+     *
+     * @param sessionId the HTTP session ID to look up
      * @return {@link SessionUsageStatistics}
      */
     public SessionUsageStatistics getSession(String sessionId) {
@@ -110,8 +110,8 @@ public class DailySessionUsageStatistics {
     }
 
     /**
-     * 
-     * @param session
+     *
+     * @param session the session statistics to add
      */
     public void addSession(SessionUsageStatistics session) {
         this.sessions.add(session);
@@ -139,8 +139,8 @@ public class DailySessionUsageStatistics {
     }
 
     /**
-     * @param type
-     * @param pi
+     * @param type request type to count
+     * @param pi persistent identifier of the record to filter by
      * @return a long
      */
     public long getTotalRequestCount(RequestType type, String pi) {
@@ -148,8 +148,8 @@ public class DailySessionUsageStatistics {
     }
 
     /**
-     * 
-     * @param type
+     *
+     * @param type request type to count
      * @return a long
      */
     public long getTotalRequestCount(RequestType type) {
@@ -157,9 +157,9 @@ public class DailySessionUsageStatistics {
     }
 
     /**
-     * 
-     * @param type
-     * @param identifiersToInclude
+     *
+     * @param type request type to count
+     * @param identifiersToInclude only count requests for these record identifiers
      * @return a long
      */
     public long getTotalRequestCount(RequestType type, List<String> identifiersToInclude) {
@@ -167,8 +167,8 @@ public class DailySessionUsageStatistics {
     }
 
     /**
-     * 
-     * @param type
+     *
+     * @param type request type to count
      * @return a long
      */
     public long getUniqueRequestCount(RequestType type) {
@@ -176,9 +176,9 @@ public class DailySessionUsageStatistics {
     }
 
     /**
-     * 
-     * @param type
-     * @param pi
+     *
+     * @param type request type to count
+     * @param pi persistent identifier of the record to filter by
      * @return a long
      */
     public long getUniqueRequestCount(RequestType type, String pi) {
@@ -186,8 +186,8 @@ public class DailySessionUsageStatistics {
     }
 
     /**
-     * @param type
-     * @param includedIdentifiers
+     * @param type request type to count
+     * @param includedIdentifiers only count sessions that requested any of these identifiers
      * @return a long
      */
     public long getUniqueRequestCount(RequestType type, List<String> includedIdentifiers) {

@@ -64,8 +64,8 @@ public class MessagesBean {
 
     /**
      * 
-     * @param msg
-     * @param params
+     * @param msg message template containing {0}, {1}, ... placeholders
+     * @param params values to substitute into the template
      * @return msg with params
      */
     public String addMessageParams(final String msg, String... params) {

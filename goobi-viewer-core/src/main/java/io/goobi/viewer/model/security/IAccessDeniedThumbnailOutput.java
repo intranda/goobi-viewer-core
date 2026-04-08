@@ -33,7 +33,7 @@ public interface IAccessDeniedThumbnailOutput {
 
     /**
      * 
-     * @param locale
+     * @param locale locale for selecting the appropriate image
      * @return Configured image URI for the given language; null if none found
      * @throws IndexUnreachableException
      * @throws DAOException

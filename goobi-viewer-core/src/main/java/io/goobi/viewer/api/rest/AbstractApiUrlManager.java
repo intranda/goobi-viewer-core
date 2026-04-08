@@ -110,7 +110,7 @@ public abstract class AbstractApiUrlManager {
     }
 
     /**
-     * @param paths
+     * @param paths additional path segments appended to the API base URL
      * @return {@link ApiPath}
      */
     public ApiPath path(String... paths) {
@@ -169,8 +169,8 @@ public abstract class AbstractApiUrlManager {
 
         /**
          *
-         * @param url
-         * @param pathParams
+         * @param url URL template containing `{placeholder}` path parameters
+         * @param pathParams values to substitute for the placeholders in order
          * @return urlSting with replacements
          */
         static String replacePathParams(final String url, Object[] pathParams) {
@@ -204,8 +204,8 @@ public abstract class AbstractApiUrlManager {
     /**
      * Calls the identical method inside the inline class ApiPathParams. For testing purposes.
      *
-     * @param urlString
-     * @param pathParams
+     * @param urlString URL template containing placeholders
+     * @param pathParams values to substitute for placeholders
      * @return urlString with replacements
      * @should remove trailing slash if file name contains period
      */
@@ -273,10 +273,10 @@ public abstract class AbstractApiUrlManager {
         }
 
         /**
-         * 
-         * @param name
-         * @param version
-         * @param specification
+         *
+         * @param name API name
+         * @param version API version string
+         * @param specification URL or identifier of the API specification
          */
         public ApiInfo(String name, String version, String specification) {
             this.name = name;

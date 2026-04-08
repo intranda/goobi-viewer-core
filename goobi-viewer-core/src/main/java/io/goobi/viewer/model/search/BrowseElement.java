@@ -97,7 +97,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     private IMetadataValue labelShort = new SimpleMetadataValue();
     /** Type of the index document. */
     private DocType docType;
-    /** Type of grouped metadata document (person, etc.) */
+    /** Type of grouped metadata document (person, etc.). */
     @JsonIgnore
     private MetadataGroupType metadataGroupType = null;
     /** Name of the grouped metadata field. */
@@ -166,12 +166,12 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Creates a new unit tests and special instances instance.
      *
-     * @param pi
-     * @param imageNo
-     * @param label
-     * @param fulltext
-     * @param locale
-     * @param dataRepository
+     * @param pi persistent identifier of the record
+     * @param imageNo representative image page number
+     * @param label display label for the element
+     * @param fulltext full-text content for the element
+     * @param locale locale for translations
+     * @param dataRepository data repository name for the record
      * @param url Injected URL, overrides URL generation
      *
      * @should build overview page url correctly
@@ -195,11 +195,11 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
      * Constructor.
      *
      * @param structElement {@link StructElement}
-     * @param metadataListMap
-     * @param locale
-     * @param fulltext
-     * @param searchTerms
-     * @param thumbs
+     * @param metadataListMap map of metadata list type names to metadata lists
+     * @param locale locale for translations
+     * @param fulltext full-text content for the element
+     * @param searchTerms map of field names to sets of search terms for highlighting
+     * @param thumbs thumbnail handler for generating thumbnail URLs
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -214,11 +214,11 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
      * Constructor.
      *
      * @param structElement {@link StructElement}
-     * @param metadataListMap
-     * @param locale
-     * @param fulltext
-     * @param searchTerms
-     * @param thumbs
+     * @param metadataListMap map of metadata list type names to metadata lists
+     * @param locale locale for translations
+     * @param fulltext full-text content for the element
+     * @param searchTerms map of field names to sets of search terms for highlighting
+     * @param thumbs thumbnail handler for generating thumbnail URLs
      * @param user The user for whom the thumbnail accessCondition is calculated. If null, it is fetched from the jsfContext if one exists
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -418,13 +418,13 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     }
 
     /**
-     * 
-     * @param metadataList
-     * @param structElement
-     * @param anchorStructElement
-     * @param searchTerms
-     * @param length
-     * @param locale
+     *
+     * @param metadataList list of metadata objects to populate
+     * @param structElement structure element to read metadata values from
+     * @param anchorStructElement parent anchor structure element, or null
+     * @param searchTerms map of field names to sets of search terms for highlighting
+     * @param length maximum length of individual metadata values
+     * @param locale locale for translations
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -483,7 +483,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * createMultiLanguageLabel.
      *
-     * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param structElement structure element to generate the label from
      * @return a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
      */
     public IMetadataValue createMultiLanguageLabel(StructElement structElement) {
@@ -506,7 +506,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
 
     /**
      *
-     * @param structElement
+     * @param structElement structure element to read sort field values from
      * @param sortFields If manual sorting was used, display the sorting fields
      * @param ignoreFields Fields to be skipped
      * @should add sort fields correctly
@@ -568,7 +568,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     }
 
     /**
-     * @param filename
+     * @param filename file name whose extension is used to determine the MIME type
      * @return Mime type for the given filename
      * @should return empty string for unknown file extensions
      */
@@ -583,8 +583,8 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
 
     /**
      *
-     * @param se
-     * @param locale
+     * @param se structure element to generate the label for
+     * @param locale locale for translations
      * @return Generated label
      */
     private String generateLabel(StructElement se, Locale locale) {
@@ -665,8 +665,8 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
 
     /**
      *
-     * @param se
-     * @param locale
+     * @param se structure element to generate the label for
+     * @param locale locale for translations
      * @return Generated label
      * @should translate docstruct label
      */
@@ -731,7 +731,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>label</code>.
      *
-     * @param locale a {@link java.util.Locale} object.
+     * @param locale locale used to select the translated label
      * @return a {@link java.lang.String} object.
      */
     public String getLabel(Locale locale) {
@@ -796,8 +796,8 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Called from HTML.
      *
-     * @param width a {@link java.lang.String} object.
-     * @param height a {@link java.lang.String} object.
+     * @param width desired thumbnail width in pixels
+     * @param height desired thumbnail height in pixels
      * @return a {@link java.lang.String} object.
      */
     public String getThumbnailUrl(String width, String height) {
@@ -1098,7 +1098,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Important: hits have to have 4 Pretty parameters (e.g. /image/nextHit/PPN123/1/LOG_0001/)
      *
-     * @param type
+     * @param type navigation type token used in the URL (e.g. "prevHit", "nextHit")
      * @return Generated URL
      */
     private String generateSidebarUrl(String type) {
@@ -1245,9 +1245,9 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     }
 
     /**
-     * 
-     * @param field
-     * @param locale
+     *
+     * @param field metadata field name to filter by
+     * @param locale locale for language-specific filtering
      * @return List<Metadata>
      */
     public List<Metadata> getMetadataListForLocale(String field, Locale locale) {
@@ -1259,7 +1259,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
      *
      * @param field Requested field name
      * @param locale Requested locale
-     * @param metadataListType
+     * @param metadataListType key of the metadata list to query (e.g. search hit or secondary)
      * @return List<Metadata>
      */
     public List<Metadata> getMetadataListForLocale(String field, Locale locale, String metadataListType) {
@@ -1269,7 +1269,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * getMetadataListForLocale.
      *
-     * @param locale a {@link java.util.Locale} object.
+     * @param locale locale used to filter language-specific metadata
      * @return a {@link java.util.List} object.
      */
     public List<Metadata> getMetadataListForLocale(Locale locale) {
@@ -1277,9 +1277,9 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     }
 
     /**
-     * 
-     * @param locale
-     * @param metadataListType
+     *
+     * @param locale locale for language-specific filtering
+     * @param metadataListType key of the metadata list to query (e.g. search hit or secondary)
      * @return List<Metadata>
      */
     public List<Metadata> getMetadataListForLocale(Locale locale, String metadataListType) {
@@ -1330,7 +1330,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>metadataList</code>.
      *
-     * @param metadataLabel a {@link java.lang.String} object.
+     * @param metadataLabel label key to filter metadata entries by
      * @return a {@link java.util.List} object.
      */
     public List<Metadata> getMetadataList(String metadataLabel) {

@@ -46,7 +46,7 @@ public final class ConfiguredValueFilter extends AbstractFilterConfiguration {
     private final String matchRegex;
 
     /**
-     * internal constructor
+     * internal constructor.
      * 
      * @param action whether to pass or block matching entities
      * @param value the value to test
@@ -127,7 +127,7 @@ public final class ConfiguredValueFilter extends AbstractFilterConfiguration {
     }
 
     /**
-     * Similar to {@link #matches(VariableReplacer)}, but if {@link #action} is {@link FilterAction#HIDE} the return value is negated
+     * Similar to {@link #matches(VariableReplacer)}, but if {@link #action} is {@link FilterAction#HIDE} the return value is negated.
      * 
      * @param vr a variable replacer containing values to test
      * @return whether the object represented by the variable replacer passes the filter, ignoring conditions
@@ -138,7 +138,7 @@ public final class ConfiguredValueFilter extends AbstractFilterConfiguration {
     }
 
     /**
-     * Test the match condition on a variable replacer
+     * Test the match condition on a variable replacer.
      * 
      * @param vr a variable replacer containing values to test
      * @return whether the {@link ConfiguredValueFilter#value} matches the {@link #matchRegex} if both are filled with values from the variable

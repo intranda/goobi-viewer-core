@@ -43,7 +43,7 @@ public class SearchSortingOption implements Serializable {
     private final String field;
     private final boolean ascending;
     /**
-     * true if this option is the default from the configuration and not set from the url path or a cms page
+     * true if this option is the default from the configuration and not set from the url path or a cms page.
      */
     private boolean defaultOption = false;
 
@@ -57,7 +57,7 @@ public class SearchSortingOption implements Serializable {
 
     /**
      *
-     * @param field
+     * @param field Solr field name; prefix "!" indicates descending sort
      * @should set ascending field correctly
      * @should set descending field correctly
      */
@@ -74,8 +74,8 @@ public class SearchSortingOption implements Serializable {
     /**
      * Creates a new sort field instance.
      *
-     * @param field
-     * @param ascending
+     * @param field Solr field name to sort by
+     * @param ascending true for ascending order, false for descending
      */
     public SearchSortingOption(String field, boolean ascending) {
         this.field = field;

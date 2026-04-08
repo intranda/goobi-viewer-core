@@ -146,7 +146,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     private boolean legacyTemplate = false;
 
     /**
-     * A html class name to be applied to the DOM element containing the page html
+     * A html class name to be applied to the DOM element containing the page html.
      */
     @Column(name = "wrapper_element_class")
     private String wrapperElementClass = "";
@@ -176,7 +176,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * Creates a deep copy of the original CMSPage. Only copies persisted properties and performs initialization for them
      *
-     * @param original a {@link io.goobi.viewer.model.cms.pages.CMSPageTemplate} object.
+     * @param original template to copy all persistent properties from.
      */
     public CMSPageTemplate(CMSPageTemplate original) {
         if (original.id != null) {
@@ -311,7 +311,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * addSidebarElement.
      *
-     * @param element a {@link io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement} object.
+     * @param element sidebar widget element to append to the list.
      */
     public void addSidebarElement(CMSSidebarElement element) {
         if (element != null) {
@@ -507,7 +507,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * Setter for the field <code>categories</code>.
      *
-     * @param categories a {@link java.util.List} object.
+     * @param categories list of categories to assign to this template.
      */
     public void setCategories(List<CMSCategory> categories) {
         this.categories = categories;
@@ -516,7 +516,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * addCategory.
      *
-     * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
+     * @param category category to add if not already present.
      */
     public void addCategory(CMSCategory category) {
         if (category != null && !categories.contains(category)) {
@@ -527,7 +527,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * removeCategory.
      *
-     * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
+     * @param category category to remove from this template.
      */
     public void removeCategory(CMSCategory category) {
         categories.remove(category);
@@ -555,7 +555,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * isLanguageComplete.
      *
-     * @param locale a {@link java.util.Locale} object.
+     * @param locale locale to check translation completeness for.
      * @return a boolean.
      */
     public boolean isLanguageComplete(Locale locale) {
@@ -584,7 +584,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * getTitle.
      *
-     * @param locale a {@link java.util.Locale} object.
+     * @param locale locale to retrieve the title translation for.
      * @return a {@link java.lang.String} object.
      */
     public String getTitle(Locale locale) {
@@ -803,8 +803,8 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
      * Sets the order attribute of the {@link PersistentCMSComponent} belonging to the given {@link CMSComponent} to the given order value. Also, sets
      * the order value of all Components which previously had the given order to the order value of the given component
      * 
-     * @param component
-     * @param order
+     * @param component the CMS component whose order to set
+     * @param order the new order value to assign
      */
     public void setComponentOrder(CMSComponent component, int order) {
         PersistentCMSComponent persistentComponent = component.getPersistentComponent();

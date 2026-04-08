@@ -35,9 +35,9 @@ public class UsageStatisticsInformation {
     private final String query;
 
     /**
-     * @param startDate
-     * @param endDate
-     * @param query
+     * @param startDate the start date of the statistics period
+     * @param endDate the end date of the statistics period
+     * @param query optional filter query string
      */
     public UsageStatisticsInformation(String startDate, String endDate, String query) {
         super();

@@ -38,7 +38,7 @@ public enum ObjectFormat {
     /**
      * getByFileExtension.
      *
-     * @param filename a {@link java.lang.String} object.
+     * @param filename file name whose extension is examined
      * @return a {@link io.goobi.viewer.model.viewer.object.ObjectFormat} object.
      */
     public static ObjectFormat getByFileExtension(String filename) {

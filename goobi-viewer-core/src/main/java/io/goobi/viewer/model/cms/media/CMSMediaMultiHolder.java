@@ -42,7 +42,7 @@ public interface CMSMediaMultiHolder extends CMSMediaHolder {
     public CMSMediaItem getMediaItem(int index);
 
     /**
-     * A regular expression determining which filenames are shown in the media list and may be uploaded
+     * A regular expression determining which filenames are shown in the media list and may be uploaded.
      *
      * @param index Index of the media item
      * @return a {@link java.lang.String} object.

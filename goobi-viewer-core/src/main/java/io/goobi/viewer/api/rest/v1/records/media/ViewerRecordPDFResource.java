@@ -144,6 +144,9 @@ public class ViewerRecordPDFResource extends MetsPdfResource {
      * if the PI contains characters that are illegal in java.net.URI paths or Solr queries.
      *
      * <p>Declared static so it can be invoked inside the super() constructor call.
+     *
+     * @param pi persistent identifier to validate
+     * @return the unchanged pi if valid
      */
     static String requireValidPi(String pi) {
         if (!PIValidator.validatePi(pi)) {

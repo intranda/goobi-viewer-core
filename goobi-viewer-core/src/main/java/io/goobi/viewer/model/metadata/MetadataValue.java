@@ -75,7 +75,7 @@ public class MetadataValue implements Serializable {
     /** Local copies of child metadata configurations containing only values for this particular instance. */
     private final List<Metadata> childMetadata = new ArrayList<>();
     private final Set<String> accessConditions = new HashSet<>();
-    /** Unique ID for citation item generation */
+    /** Unique ID for citation item generation. */
     private String id;
     /** IDDOC of the grouped metadata Solr doc. */
     private String iddoc;
@@ -93,9 +93,9 @@ public class MetadataValue implements Serializable {
     /**
      * Package-private constructor.
      *
-     * @param id
-     * @param masterValue
-     * @param label
+     * @param id unique identifier for citation item generation
+     * @param masterValue master value template string for display formatting
+     * @param label metadata field label key
      */
     MetadataValue(String id, String masterValue, String label) {
         this.id = id;
@@ -105,7 +105,7 @@ public class MetadataValue implements Serializable {
 
     /**
      *
-     * @param index
+     * @param index zero-based parameter index to check
      * @return true if value at index blank; false otherwise
      */
     public boolean isParamValueBlank(int index) {
@@ -135,7 +135,7 @@ public class MetadataValue implements Serializable {
     /**
      * getComboValueShort.
      *
-     * @param index a int.
+     * @param index zero-based parameter index to retrieve
      * @should construct param correctly
      * @should construct multivalued param correctly
      * @should not add prefix if first param
@@ -213,7 +213,7 @@ public class MetadataValue implements Serializable {
     /**
      * getParamLabelWithColon.
      *
-     * @param index a int.
+     * @param index zero-based parameter index to look up
      * @return the paramLabels
      */
     public String getParamLabelWithColon(int index) {
@@ -304,7 +304,7 @@ public class MetadataValue implements Serializable {
     /**
      * getNormDataUrl.
      *
-     * @param key a {@link java.lang.String} object.
+     * @param key norm data type identifier key
      * @return Not URL-encoded norm data URL
      */
     public String getNormDataUrl(String key) {
@@ -314,8 +314,8 @@ public class MetadataValue implements Serializable {
     /**
      * getNormDataUrl.
      *
-     * @param key a {@link java.lang.String} object.
-     * @param urlEncode a boolean.
+     * @param key norm data type identifier key
+     * @param urlEncode true to return a URL-encoded value
      * @return if urlEncode=true, then URL-encoded norm data URL; otherwise not encoded norm data URL
      */
     public String getNormDataUrl(String key, boolean urlEncode) {
@@ -363,7 +363,7 @@ public class MetadataValue implements Serializable {
     /**
      * hasParamValue.
      *
-     * @param paramLabel a {@link java.lang.String} object.
+     * @param paramLabel label key identifying the parameter
      * @return a boolean.
      */
     public boolean hasParamValue(String paramLabel) {
@@ -374,7 +374,7 @@ public class MetadataValue implements Serializable {
     /**
      * getParamValue.
      *
-     * @param paramLabel a {@link java.lang.String} object.
+     * @param paramLabel label key identifying the parameter
      * @return a {@link java.lang.String} object.
      */
     public String getParamValue(String paramLabel) {
@@ -388,7 +388,7 @@ public class MetadataValue implements Serializable {
 
     /**
      * 
-     * @param paramLabel
+     * @param paramLabel label key identifying the parameter
      * @return List of parameter values for the given paramLabel
      */
     public List<String> getParamValues(String paramLabel) {
@@ -463,8 +463,8 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * 
-     * @param includeLabels
+     *
+     * @param includeLabels if true, prepend parameter labels to each value
      * @return Display value for the current locale
      */
     public String getDisplayValue(boolean includeLabels) {
@@ -472,8 +472,8 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * 
-     * @param locale
+     *
+     * @param locale locale for translation lookup
      * @return Display value for the given locale
      */
     public String getDisplayValue(Locale locale) {
@@ -481,9 +481,9 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * 
-     * @param locale
-     * @param includeLabels
+     *
+     * @param locale locale for translation lookup
+     * @param includeLabels if true, prepend parameter labels to each value
      * @return Display value for the given locale
      */
     public String getDisplayValue(Locale locale, boolean includeLabels) {

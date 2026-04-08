@@ -127,7 +127,7 @@ public class GeoCoordinateConverter {
      * @param filterQueries filter for solr query
      * @param coordinateFields fields containing the coordinate points to collect
      * @param markerTitleField solr field containing a title for the coordinates
-     * @param aggregateResults
+     * @param aggregateResults if true, group coordinates from child documents under their parent
      * @return a list of {@link GeoMapFeature}
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -280,7 +280,7 @@ public class GeoCoordinateConverter {
      * Collects all point coordinates in the given metadata field within the given solr document.
      * 
      * @param doc the document containing the coordinates
-     * @param children
+     * @param children child Solr documents associated with the parent doc
      * @param metadataField The name of the solr field to search in
      * @param titleField solr field containing a title for the coordinates
      * @return Collection<GeoMapFeature>
@@ -527,8 +527,8 @@ public class GeoCoordinateConverter {
 
     /**
      * 
-     * @param x
-     * @param y
+     * @param x longitude or x-coordinate value (String or Number)
+     * @param y latitude or y-coordinate value (String or Number)
      * @return Parsed point as a double[]
      */
     private static double[] parsePoint(Object x, Object y) {

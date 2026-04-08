@@ -71,9 +71,9 @@ public final class TranskribusUtils {
     /**
      * ingestRecord.
      *
-     * @param restApiUrl a {@link java.lang.String} object.
-     * @param userSession a {@link io.goobi.viewer.model.transkribus.TranskribusSession} object.
-     * @param pi a {@link java.lang.String} object.
+     * @param restApiUrl base URL of the Transkribus REST API
+     * @param userSession authenticated session of the requesting user
+     * @param pi persistent identifier of the record to ingest
      * @param metsResolverUrlRoot Root of the METS resolver URL (without the identifier).
      * @return a {@link io.goobi.viewer.model.transkribus.TranskribusJob} object.
      * @throws java.io.IOException if any.
@@ -151,9 +151,9 @@ public final class TranskribusUtils {
     /**
      * login.
      *
-     * @param baseUrl a {@link java.lang.String} object.
-     * @param userName a {@link java.lang.String} object.
-     * @param password a {@link java.lang.String} object.
+     * @param baseUrl base URL of the Transkribus REST API
+     * @param userName Transkribus account user name
+     * @param password Transkribus account password
      * @return a {@link io.goobi.viewer.model.transkribus.TranskribusSession} object.
      * @throws java.io.IOException if any.
      * @throws org.jdom2.JDOMException if any.
@@ -179,9 +179,9 @@ public final class TranskribusUtils {
     /**
      * auth.
      *
-     * @param baseUrl a {@link java.lang.String} object.
-     * @param userName a {@link java.lang.String} object.
-     * @param password a {@link java.lang.String} object.
+     * @param baseUrl base URL of the Transkribus REST API
+     * @param userName Transkribus account user name
+     * @param password Transkribus account password
      * @return JDOM object containing the API response
      * @should auth correctly
      * @throws java.io.IOException if any.
@@ -219,9 +219,9 @@ public final class TranskribusUtils {
     /**
      * Returns the ID of the first collection that has the given collection name.
      *
-     * @param baseUrl a {@link java.lang.String} object.
-     * @param sessionId a {@link java.lang.String} object.
-     * @param collectionName a {@link java.lang.String} object.
+     * @param baseUrl base URL of the Transkribus REST API
+     * @param sessionId active session ID for authentication
+     * @param collectionName name of the collection to look up
      * @should retrieve correct id
      * @return a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
@@ -262,10 +262,10 @@ public final class TranskribusUtils {
     /**
      * createCollection.
      *
-     * @param baseUrl a {@link java.lang.String} object.
-     * @param sessionId a {@link java.lang.String} object.
+     * @param baseUrl base URL of the Transkribus REST API
+     * @param sessionId active session ID for authentication
      * @should create collection and return numeric id
-     * @param collectionName a {@link java.lang.String} object.
+     * @param collectionName name to assign to the new collection
      * @return a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
      */
@@ -291,11 +291,11 @@ public final class TranskribusUtils {
     /**
      * grantCollectionPrivsToViewer.
      *
-     * @param baseUrl a {@link java.lang.String} object.
-     * @param sessionId a {@link java.lang.String} object.
-     * @param collectionId a {@link java.lang.String} object.
-     * @param recipientUserId a {@link java.lang.String} object.
-     * @param sendMail a boolean.
+     * @param baseUrl base URL of the Transkribus REST API
+     * @param sessionId active session ID for authentication
+     * @param collectionId numeric ID of the collection to grant access to
+     * @param recipientUserId Transkribus user ID receiving editor privileges
+     * @param sendMail whether to send a notification email to the recipient
      * @should grant privs correctly
      * @return a boolean.
      * @throws java.io.IOException if any.
@@ -330,12 +330,12 @@ public final class TranskribusUtils {
     /**
      * ingestRecordToCollections.
      *
-     * @param baseUrl a {@link java.lang.String} object.
-     * @param session a {@link io.goobi.viewer.model.transkribus.TranskribusSession} object.
-     * @param pi a {@link java.lang.String} object.
-     * @param metsUrl a {@link java.lang.String} object.
-     * @param userCollectionId a {@link java.lang.String} object.
-     * @param viewerCollectionId a {@link java.lang.String} object.
+     * @param baseUrl base URL of the Transkribus REST API
+     * @param session authenticated session of the requesting user
+     * @param pi persistent identifier of the record being ingested
+     * @param metsUrl fully resolved METS URL for the record
+     * @param userCollectionId ID of the user's personal Transkribus collection
+     * @param viewerCollectionId ID of the viewer instance's Transkribus collection
      * @should ingest record correctly
      * @return a {@link io.goobi.viewer.model.transkribus.TranskribusJob} object.
      * @throws java.io.IOException if any. o
@@ -381,9 +381,9 @@ public final class TranskribusUtils {
     /**
      * checkJobStatus.
      *
-     * @param baseUrl a {@link java.lang.String} object.
-     * @param sessionId a {@link java.lang.String} object.
-     * @param jobId a {@link java.lang.String} object.
+     * @param baseUrl base URL of the Transkribus REST API
+     * @param sessionId active session ID for authentication
+     * @param jobId Transkribus job ID whose status is queried
      * @should return correct status
      * @return a {@link io.goobi.viewer.model.job.JobStatus} object.
      * @throws java.io.IOException if any.

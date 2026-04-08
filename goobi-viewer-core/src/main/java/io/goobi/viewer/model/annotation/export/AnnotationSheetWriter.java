@@ -49,8 +49,8 @@ public class AnnotationSheetWriter {
     }
 
     /**
-     * @param os
-     * @param annotations
+     * @param os output stream to write the Excel workbook to
+     * @param annotations list of crowdsourcing annotations to export
      * @throws IOException
      */
     public void createExcelSheet(OutputStream os, List<CrowdsourcingAnnotation> annotations) throws IOException {

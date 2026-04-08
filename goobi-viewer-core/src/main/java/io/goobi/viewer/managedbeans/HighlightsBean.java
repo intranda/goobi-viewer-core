@@ -153,7 +153,7 @@ public class HighlightsBean implements Serializable {
     }
 
     /**
-     * Get a {@link TableDataProvider} to all saved {@link Highlight highlights}
+     * Get a {@link TableDataProvider} to all saved {@link Highlight highlights}.
      * 
      * @return a {@link TableDataProvider}
      */
@@ -201,9 +201,9 @@ public class HighlightsBean implements Serializable {
     }
 
     /**
-     * Delete a {@link Highlight}
+     * Delete a {@link Highlight}.
      * 
-     * @param object
+     * @param object the highlight to delete
      */
     public void deleteObject(Highlight object) {
         try {
@@ -216,7 +216,7 @@ public class HighlightsBean implements Serializable {
     }
 
     /**
-     * Get the currently selected {@link Highlight}
+     * Get the currently selected {@link Highlight}.
      * 
      * @return a {@link Highlight}
      */
@@ -227,7 +227,7 @@ public class HighlightsBean implements Serializable {
     /**
      * Sets the {@link Highlight} selected for editing.
      * 
-     * @param selectedObject
+     * @param selectedObject the highlight to set as selected for editing
      */
     public void setSelectedObject(Highlight selectedObject) {
         this.selectedObject = selectedObject;
@@ -244,7 +244,7 @@ public class HighlightsBean implements Serializable {
     /**
      * Sets the {@link Highlight} selected for editing via its database id.
      * 
-     * @param id
+     * @param id database id of the highlight to select
      */
     public void setSelectedObjectId(long id) {
 
@@ -281,7 +281,7 @@ public class HighlightsBean implements Serializable {
     /**
      * Persist the given {@link Highlight} to the database.
      * 
-     * @param object
+     * @param object the highlight to persist to the database
      * @throws DAOException
      */
     public void saveObject(Highlight object) throws DAOException {
@@ -381,7 +381,7 @@ public class HighlightsBean implements Serializable {
     }
 
     /**
-     * Get all objected contained in {@link #getCurrentObjectsProvider()}
+     * Get all objected contained in {@link #getCurrentObjectsProvider()}.
      * 
      * @return A list of all currently active {@link Highlight}s
      */
@@ -390,7 +390,7 @@ public class HighlightsBean implements Serializable {
     }
 
     /**
-     * Get the current {@link EditStatus}
+     * Get the current {@link EditStatus}.
      * 
      * @return a {@link EditStatus}
      */
@@ -399,9 +399,9 @@ public class HighlightsBean implements Serializable {
     }
 
     /**
-     * Set the {@link #getEditStatus()}
+     * Set the {@link #getEditStatus()}.
      * 
-     * @param editStatus
+     * @param editStatus the edit status to set
      */
     public void setEditStatus(EditStatus editStatus) {
         this.editStatus = editStatus;

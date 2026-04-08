@@ -76,13 +76,13 @@ public class SolrFeatureSet extends FeatureSet {
     private SolrSearchScope searchScope = SolrSearchScope.ALL;
 
     /**
-     * SOLR-Field to create the marker title from if the features are generated from a SOLR query
+     * SOLR-Field to create the marker title from if the features are generated from a SOLR query.
      */
     @Column(name = "marker_title_field")
     private String markerTitleField = "MD_VALUE";
 
     /**
-     * Type of a metadata list configuration to use to construct the marker labels
+     * Type of a metadata list configuration to use to construct the marker labels.
      */
     @Column(name = "metadata_list_marker")
     private String markerMetadataList = "";
@@ -90,7 +90,7 @@ public class SolrFeatureSet extends FeatureSet {
     @Column(name = "item_filter_field")
     private String itemFilterName = "";
     /**
-     * Type of a metadata list configuration to use to construct labels for items for a marker displayed as a list next to the map
+     * Type of a metadata list configuration to use to construct labels for items for a marker displayed as a list next to the map.
      */
     @Column(name = "metadata_list_item")
     private String itemMetadataList = "";

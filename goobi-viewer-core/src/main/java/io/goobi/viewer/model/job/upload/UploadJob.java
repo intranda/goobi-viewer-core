@@ -265,7 +265,7 @@ public class UploadJob implements Serializable {
 
     /**
      * 
-     * @param file
+     * @param file file to upload to the Goobi workflow process
      * @throws IOException
      */
     public void uploadFile(File file) throws IOException {

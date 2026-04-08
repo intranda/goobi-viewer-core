@@ -61,7 +61,7 @@ public class PasswordValidator implements Validator<String> {
     /**
      * validatePassword.
      *
-     * @param password a {@link java.lang.String} object.
+     * @param password plain-text password to validate for length constraints
      * @should return true if password good
      * @should return false if password empty
      * @should return false if password blank

@@ -43,7 +43,7 @@ public class LabeledLink implements Serializable {
     protected int weight;
 
     /**
-     * Internal constructor for empty value
+     * Internal constructor for empty value.
      */
     private LabeledLink() {
 
@@ -52,9 +52,9 @@ public class LabeledLink implements Serializable {
     /**
      * Creates a new LabeledLink instance.
      *
-     * @param name a {@link java.lang.String} object.
-     * @param url a {@link java.lang.String} object.
-     * @param weight a int.
+     * @param name display label for the link.
+     * @param url target URL of the link.
+     * @param weight sort weight for ordering.
      */
     public LabeledLink(String name, String url, int weight) {
         this.name = new SimpleMetadataValue(name);
@@ -65,9 +65,9 @@ public class LabeledLink implements Serializable {
     /**
      * Creates a new LabeledLink instance.
      *
-     * @param name a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
-     * @param url a {@link java.lang.String} object.
-     * @param weight a int.
+     * @param name multilingual display label for the link.
+     * @param url target URL of the link.
+     * @param weight sort weight for ordering.
      */
     public LabeledLink(IMetadataValue name, String url, int weight) {
         this.name = name;
@@ -139,7 +139,7 @@ public class LabeledLink implements Serializable {
     /**
      * Setter for the field <code>name</code>.
      *
-     * @param name a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
+     * @param name multilingual display label to assign.
      */
     public void setName(IMetadataValue name) {
         this.name = name;

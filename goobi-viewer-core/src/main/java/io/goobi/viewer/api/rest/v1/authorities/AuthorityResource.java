@@ -203,8 +203,8 @@ public class AuthorityResource {
 
     /**
      * 
-     * @param normData
-     * @param locale
+     * @param normData normdata entry containing key and values
+     * @param locale locale for translating field keys
      * @return {@link JSONObject}
      */
     static JSONObject addNormDataValuesToJSON(NormData normData, Locale locale) {

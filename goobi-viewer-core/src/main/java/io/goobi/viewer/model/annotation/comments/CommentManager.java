@@ -55,7 +55,7 @@ import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
- * Class to create comments from a text input for a given PI and page order and to save them using a given {@link AnnotationSaver}
+ * Class to create comments from a text input for a given PI and page order and to save them using a given {@link AnnotationSaver}.
  *
  * @author florian
  */
@@ -71,10 +71,10 @@ public class CommentManager implements AnnotationLister<Comment> {
 
     /**
      *
-     * @param saver
-     * @param deleter
-     * @param lister
-     * @param notificators
+     * @param saver strategy used to persist new or edited comments
+     * @param deleter strategy used to remove comments
+     * @param lister strategy used to retrieve comments
+     * @param notificators zero or more notificators for comment change events
      */
     public CommentManager(AnnotationSaver saver, AnnotationDeleter deleter, AnnotationLister<Comment> lister, ChangeNotificator... notificators) {
         this.saver = saver;
@@ -85,12 +85,12 @@ public class CommentManager implements AnnotationLister<Comment> {
 
     /**
      *
-     * @param text
-     * @param creator
-     * @param pi
-     * @param pageOrder
-     * @param license
-     * @param publicationStatus
+     * @param text raw comment text entered by the user
+     * @param creator user creating the comment
+     * @param pi persistent identifier of the target record
+     * @param pageOrder page number the comment is attached to
+     * @param license license string to apply to the comment
+     * @param publicationStatus initial publication status of the comment
      */
     public void createComment(String text, User creator, String pi, Integer pageOrder, String license, PublicationStatus publicationStatus) {
         String textCleaned = checkAndCleanScripts(text, creator, pi, pageOrder);
@@ -130,10 +130,10 @@ public class CommentManager implements AnnotationLister<Comment> {
 
     /**
      *
-     * @param comment
-     * @param text
-     * @param editor
-     * @param publicationStatus
+     * @param comment the original comment being edited
+     * @param text new comment text provided by the editor
+     * @param editor user performing the edit
+     * @param publicationStatus updated publication status for the comment
      */
     public void editComment(Comment comment, String text, User editor, PublicationStatus publicationStatus) {
         String textCleaned = checkAndCleanScripts(text, editor, comment.getTargetPI(), comment.getTargetPageOrder());
@@ -176,9 +176,9 @@ public class CommentManager implements AnnotationLister<Comment> {
     /**
      * Populates recipient and BCC lists for given from given user group owner and members.
      *
-     * @param group
-     * @param notificator
-     * @param usedAddresses
+     * @param group user group whose owner and members should receive notifications
+     * @param notificator mail notificator to populate with recipient addresses
+     * @param usedAddresses set of addresses already assigned to prevent duplicates
      * @throws DAOException
      * @should not add addresses included in usedAddresses
      */
@@ -210,7 +210,7 @@ public class CommentManager implements AnnotationLister<Comment> {
 
     /**
      *
-     * @param comment
+     * @param comment the comment to delete
      */
     public void deleteComment(Comment comment) {
         try {
@@ -270,10 +270,10 @@ public class CommentManager implements AnnotationLister<Comment> {
 
     /**
      *
-     * @param text
-     * @param editor
-     * @param pi
-     * @param page
+     * @param text raw comment text to sanitize
+     * @param editor user who submitted the text
+     * @param pi persistent identifier of the target record
+     * @param page page number the comment is attached to
      * @return text stripped of any JS
      */
     public static String checkAndCleanScripts(final String text, User editor, String pi, Integer page) {
@@ -301,7 +301,7 @@ public class CommentManager implements AnnotationLister<Comment> {
      * Returns a list of email addresses that are configured (via comment views) to receive notifications for comments for the given record
      * identifier.
      *
-     * @param pi
+     * @param pi persistent identifier of the record to look up notification groups for
      * @return List of email addresses
      * @throws DAOException
      * @throws IndexUnreachableException
@@ -339,7 +339,7 @@ public class CommentManager implements AnnotationLister<Comment> {
     /**
      * Returns {@link UserGroup}s linked to {@link CommentGroup}s (non-core only) whose Solr query matches the given <code>pi</code>.
      *
-     * @param pi
+     * @param pi persistent identifier of the record to match against comment group queries
      * @return Set<CommentGroup>
      * @throws DAOException
      * @throws PresentationException
@@ -367,7 +367,7 @@ public class CommentManager implements AnnotationLister<Comment> {
 
     /**
      *
-     * @param commentGroup
+     * @param commentGroup comment group whose Solr query should be executed
      * @return true if commentGroup query has matching identifiers in the index; false otherwise
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -391,7 +391,7 @@ public class CommentManager implements AnnotationLister<Comment> {
     /**
      * Checks whether the given user has access to any comment groups, whether via being admin or owner or member of any linked user group.
      *
-     * @param user
+     * @param user user to check access for
      * @return true if user has access; false otherwise
      * @throws DAOException
      * @should return false if user null

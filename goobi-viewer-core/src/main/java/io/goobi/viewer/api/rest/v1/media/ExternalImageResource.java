@@ -91,6 +91,9 @@ public class ExternalImageResource extends ImageResource {
      *
      * <p>Must be static so it can be called within the super() argument expression.
      * Throws BadRequestException (HTTP 400) for non-ASCII or bare-percent filenames.
+     *
+     * @param imageUrl the decoded image URL to validate
+     * @return the unchanged imageUrl if valid
      */
     // Package-private for testing
     static String validateImageUrl(String imageUrl) {
@@ -108,12 +111,12 @@ public class ExternalImageResource extends ImageResource {
     }
 
     /**
-     * @param context
-     * @param request
-     * @param response
-     * @param urls
-     * @param imageUrl
-     * @param cacheManager
+     * @param context JAX-RS container request context
+     * @param request current HTTP servlet request
+     * @param response current HTTP servlet response
+     * @param urls configured API URL manager
+     * @param imageUrl URL-encoded filename/URL of the external image
+     * @param cacheManager content server cache manager
      */
     public ExternalImageResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,

@@ -62,7 +62,7 @@ public class CMSCategoryUpdate implements IModelUpdate {
     private static final String MAP_KEY_MEDIA_ITEMS = "media";
 
     /**
-     * Separates the individual classifications in the classification string
+     * Separates the individual classifications in the classification string.
      */
     private static final String CLASSIFICATION_SEPARATOR_REGEX = "::|\\$";
 
@@ -89,7 +89,7 @@ public class CMSCategoryUpdate implements IModelUpdate {
     /**
      * persistData.
      *
-     * @param dao a {@link io.goobi.viewer.dao.IDAO} object.
+     * @param dao DAO used to persist categories, pages, and media items
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void persistData(IDAO dao) throws DAOException {
@@ -131,7 +131,7 @@ public class CMSCategoryUpdate implements IModelUpdate {
     /**
      * loadData.
      *
-     * @param dao a {@link io.goobi.viewer.dao.IDAO} object.
+     * @param dao DAO used to query all CMS entities for conversion
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.sql.SQLException if any.
      */
@@ -176,7 +176,7 @@ public class CMSCategoryUpdate implements IModelUpdate {
     }
 
     /**
-     * @param dao
+     * @param dao DAO instance used to query legacy table data
      * @return Map<String, Map<String, List<Long>>>
      * @throws SQLException
      * @throws DAOException
@@ -228,9 +228,9 @@ public class CMSCategoryUpdate implements IModelUpdate {
     }
 
     /**
-     * @param categories
-     * @param map
-     * @param pages
+     * @param categories list of categories to link
+     * @param map map of category names to page IDs
+     * @param pages list of all CMS pages
      */
     private static void linkToPages(List<CMSCategory> categories, Map<String, List<Long>> map, List<CMSPage> pages) {
         if (map == null) {
@@ -259,10 +259,10 @@ public class CMSCategoryUpdate implements IModelUpdate {
     }
 
     /**
-     * 
-     * @param categories
-     * @param map
-     * @param mediaItems
+     *
+     * @param categories list of categories to link
+     * @param map map of category names to media item IDs
+     * @param mediaItems list of all CMS media items
      */
     private static void linkToMedia(List<CMSCategory> categories, Map<String, List<Long>> map, List<CMSMediaItem> mediaItems) {
         if (map != null) {
@@ -284,10 +284,10 @@ public class CMSCategoryUpdate implements IModelUpdate {
     }
 
     /**
-     * 
-     * @param categories
-     * @param map
-     * @param items
+     *
+     * @param categories list of categories to link
+     * @param map map of category names to content item IDs
+     * @param items list of all CMS content items
      */
     private static void linkToContentItems(List<CMSCategory> categories, Map<String, List<Long>> map, List<CMSContent> items) {
         if (map == null) {
@@ -318,8 +318,8 @@ public class CMSCategoryUpdate implements IModelUpdate {
     }
 
     /**
-     * @param categories
-     * @param existingCategories
+     * @param categories list of newly created categories to synchronize
+     * @param existingCategories list of already persisted categories from the DAO
      * @return List<CMSCategory>
      * @throws DAOException
      */
@@ -341,7 +341,7 @@ public class CMSCategoryUpdate implements IModelUpdate {
     /**
      * createCategories.
      *
-     * @param entityMap a {@link java.util.Map} object.
+     * @param entityMap map of entity types to their category-name-to-ID mappings
      * @return a {@link java.util.List} object.
      */
     protected List<CMSCategory> createCategories(Map<String, Map<String, List<Long>>> entityMap) {

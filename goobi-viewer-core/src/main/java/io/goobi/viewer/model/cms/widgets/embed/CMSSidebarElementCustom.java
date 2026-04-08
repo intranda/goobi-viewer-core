@@ -52,10 +52,10 @@ public class CMSSidebarElementCustom extends CMSSidebarElement {
     }
 
     /**
-     * Default constructor for a {@link CustomSidebarWidget} providing the data and an owning {@link CMSPage}
+     * Default constructor for a {@link CustomSidebarWidget} providing the data and an owning {@link CMSPage}.
      * 
-     * @param widget
-     * @param owner
+     * @param widget the custom sidebar widget providing the data
+     * @param owner the owning CMS page
      */
     public CMSSidebarElementCustom(CustomSidebarWidget widget, CMSPage owner) {
         super(widget.getType(), owner);
@@ -70,8 +70,8 @@ public class CMSSidebarElementCustom extends CMSSidebarElement {
     /**
      * Cloning constructor with a CMSPage to set as owner.
      * 
-     * @param orig
-     * @param owner
+     * @param orig original sidebar element to clone
+     * @param owner the owning CMS page
      */
     public CMSSidebarElementCustom(CMSSidebarElementCustom orig, CMSPage owner) {
         super(orig, owner);
@@ -94,7 +94,7 @@ public class CMSSidebarElementCustom extends CMSSidebarElement {
 
     /**
      *
-     * @param widget
+     * @param widget the custom sidebar widget to set
      */
     public void setWidget(CustomSidebarWidget widget) {
         this.widget = widget;

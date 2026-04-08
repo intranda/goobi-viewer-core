@@ -45,8 +45,8 @@ public class ContentAssistResourceBuilder {
     /**
      * getCollections.
      *
-     * @param solrField a {@link java.lang.String} object.
-     * @param inputString a {@link java.lang.String} object.
+     * @param solrField Solr facet field to query for collection values
+     * @param inputString partial input to filter suggestions, or "-" for all
      * @return a {@link java.util.List} object.
      * @throws IllegalRequestException if the solrField doesn't exist in the index
      * @throws IndexUnreachableException If an error occurred communicating with the SOLR index
@@ -82,9 +82,9 @@ public class ContentAssistResourceBuilder {
 
     /**
      *
-     * @param prefix
-     * @param facet
-     * @param splittingChar
+     * @param prefix the prefix accumulated from parent hierarchy levels
+     * @param facet the facet value to split into hierarchy parts
+     * @param splittingChar the character separating hierarchy levels
      * @return List<String>
      */
     private List<String> getHierarchy(String prefix, String facet, String splittingChar) {

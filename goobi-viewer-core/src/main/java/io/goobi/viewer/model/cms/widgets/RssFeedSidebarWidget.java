@@ -56,8 +56,8 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
 
     /**
      * Cloning constructor.
-     * 
-     * @param o
+     *
+     * @param o widget instance to clone
      */
     public RssFeedSidebarWidget(RssFeedSidebarWidget o) {
         super(o);
@@ -77,7 +77,7 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
     }
 
     /**
-     * Set the {@link #getFilterQuery() filter query}
+     * Set the {@link #getFilterQuery() filter query}.
      * 
      * @param filterQuery the filterQuery to set
      */
@@ -95,7 +95,7 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
     }
 
     /**
-     * Set the {@link #getSortField() sort field}
+     * Set the {@link #getSortField() sort field}.
      * 
      * @param sortField the sortField to set
      */
@@ -113,7 +113,7 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
     }
 
     /**
-     * Set the {@link #isDescendingSorting() descending sorting}
+     * Set the {@link #isDescendingSorting() descending sorting}.
      * 
      * @param descendingSorting the descendingSorting to set
      */

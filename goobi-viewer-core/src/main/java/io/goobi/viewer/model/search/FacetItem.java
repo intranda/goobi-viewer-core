@@ -69,7 +69,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Constructor that doesn't parse the link; for testing purposes.
      *
-     * @param hierarchical
+     * @param hierarchical true if this is a hierarchical facet
      */
     FacetItem(boolean hierarchical) {
         this.hierarchial = hierarchical;
@@ -78,8 +78,8 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Creates a new FacetItem for active facets received via the URL. The Solr query is split into individual field/value.
      *
-     * @param link a {@link java.lang.String} object.
-     * @param hierarchical a boolean.
+     * @param link Solr field:value query string to parse
+     * @param hierarchical true if this is a hierarchical facet
      * @should split field and value correctly
      * @should split field and value range correctly
      */
@@ -90,9 +90,9 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Creates a new FacetItem for active facets received via the URL. The Solr query is split into individual field/value.
      *
-     * @param link a {@link java.lang.String} object.
-     * @param label
-     * @param hierarchical a boolean.
+     * @param link Solr field:value query string to parse
+     * @param label display label; null to use the value as label
+     * @param hierarchical true if this is a hierarchical facet
      * @should split field and value correctly
      * @should split field and value range correctly
      * @should set label to value if no label value given
@@ -105,7 +105,7 @@ public class FacetItem implements Serializable, IFacetItem {
 
     /**
      * 
-     * @param count
+     * @param count Solr facet count object to build the item from
      */
     public FacetItem(Count count) {
         this(count.getFacetField().getName(), count.getFacetField().getName() + ":" + count.getName(), count.getName(), count.getCount(), false);
@@ -114,11 +114,11 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Internal constructor.
      * 
-     * @param field
+     * @param field Solr field name for this facet
      * @param link {@link String}
      * @param label {@link String}
      * @param count {@link Integer}
-     * @param hierarchical
+     * @param hierarchical true if this is a hierarchical facet
      */
     private FacetItem(String field, String link, String label, long count, boolean hierarchical) {
         this.field = field;
@@ -319,11 +319,11 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Constructs a list of FilterLink objects for faceting. Optionally sorted by the raw values.
      *
-     * @param field a {@link java.lang.String} object.
-     * @param values a {@link java.util.Map} object.
-     * @param sort a boolean.
-     * @param reverseOrder a boolean.
-     * @param hierarchical a boolean.
+     * @param field Solr facet field name
+     * @param values map of facet values to their document counts
+     * @param sort if true, sort items by value before returning
+     * @param reverseOrder if true, reverse the sort order
+     * @param hierarchical true if facet field is hierarchical
      * @return a {@link java.util.List} object.
      * @should sort items correctly
      */

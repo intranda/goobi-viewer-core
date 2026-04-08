@@ -70,7 +70,7 @@ public class CMSSidebarElement implements Serializable {
     public static final String WIDGET_TYPE_AUTOMATIC = "AUTOMATIC";
     public static final String WIDGET_TYPE_CUSTOM = "CUSTOM";
 
-    /** Constant <code>HASH_MULTIPLIER=11</code> */
+    /** Constant <code>HASH_MULTIPLIER=11</code>. */
     protected static final int HASH_MULTIPLIER = 11;
     // private static final NumberIterator ID_COUNTER = new NumberIterator();
     @Id
@@ -108,8 +108,8 @@ public class CMSSidebarElement implements Serializable {
 
     /**
      * Default constructor for a certain type of widget.
-     * 
-     * @param type
+     *
+     * @param type the content type determining the widget's behaviour and rendering
      */
     public CMSSidebarElement(WidgetContentType type) {
         this.generationType = WidgetContentType.getGenerationType(type);
@@ -118,9 +118,9 @@ public class CMSSidebarElement implements Serializable {
 
     /**
      * Default constructor for a certain type of widget.
-     * 
-     * @param type
-     * @param owner
+     *
+     * @param type the content type determining the widget's behaviour and rendering
+     * @param owner the CMS page that owns this sidebar element
      */
     public CMSSidebarElement(WidgetContentType type, CMSPage owner) {
         this(type);
@@ -129,9 +129,9 @@ public class CMSSidebarElement implements Serializable {
 
     /**
      * Default constructor for a certain type of widget.
-     * 
-     * @param type
-     * @param owner
+     *
+     * @param type the content type determining the widget's behaviour and rendering
+     * @param owner the CMS page template that owns this sidebar element
      */
     public CMSSidebarElement(WidgetContentType type, CMSPageTemplate owner) {
         this(type);
@@ -140,9 +140,9 @@ public class CMSSidebarElement implements Serializable {
 
     /**
      * Default constructor for a certain type of widget and owning CMSPage.
-     * 
-     * @param orig
-     * @param owner
+     *
+     * @param orig the sidebar element to copy
+     * @param owner the CMS page that will own the copied element
      */
     public CMSSidebarElement(CMSSidebarElement orig, CMSPage owner) {
         this(orig.contentType);
@@ -153,9 +153,9 @@ public class CMSSidebarElement implements Serializable {
 
     /**
      * Default constructor for a certain type of widget and owning CMSPageTemplate.
-     * 
-     * @param orig
-     * @param owner
+     *
+     * @param orig the sidebar element to copy
+     * @param owner the CMS page template that will own the copied element
      */
     public CMSSidebarElement(CMSSidebarElement orig, CMSPageTemplate owner) {
         this(orig.contentType);
@@ -166,9 +166,9 @@ public class CMSSidebarElement implements Serializable {
 
     /**
      * Clones the given sidebar element and assigns the given CMSPage as owner. Depends on cloning constructors of subclasses
-     * 
-     * @param orig
-     * @param owner
+     *
+     * @param orig the sidebar element to copy
+     * @param owner the CMS page that will own the copied element
      * @return {@link CMSSidebarElement}
      */
     public static CMSSidebarElement copy(CMSSidebarElement orig, CMSPage owner) {
@@ -186,9 +186,9 @@ public class CMSSidebarElement implements Serializable {
 
     /**
      * Clones the given sidebar element and assigns the given CMSPage as owner. Depends on cloning constructors of subclasses
-     * 
-     * @param orig
-     * @param owner
+     *
+     * @param orig the sidebar element to copy
+     * @param owner the CMS page template that will own the copied element
      * @return {@link CMSSidebarElement}
      */
     public static CMSSidebarElement copy(CMSSidebarElement orig, CMSPageTemplate owner) {

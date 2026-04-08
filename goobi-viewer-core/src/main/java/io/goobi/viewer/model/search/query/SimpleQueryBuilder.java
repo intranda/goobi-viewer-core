@@ -41,7 +41,7 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
- * Builds a simple search String for a {@link SearchBean}
+ * Builds a simple search String for a {@link SearchBean}.
  */
 public final class SimpleQueryBuilder {
 

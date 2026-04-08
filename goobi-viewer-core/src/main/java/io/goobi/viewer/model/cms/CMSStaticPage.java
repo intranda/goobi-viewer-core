@@ -71,7 +71,7 @@ public class CMSStaticPage implements Serializable {
     /**
      * Creates a new CMSStaticPage instance.
      *
-     * @param name a {@link java.lang.String} object.
+     * @param name internal page name identifying this static page
      * @throws java.lang.NullPointerException if the given name is null
      */
     public CMSStaticPage(String name) {
@@ -134,7 +134,7 @@ public class CMSStaticPage implements Serializable {
     /**
      * isLanguageComplete.
      *
-     * @param locale a {@link java.util.Locale} object.
+     * @param locale locale to check for completeness
      * @return a boolean.
      */
     public boolean isLanguageComplete(Locale locale) {

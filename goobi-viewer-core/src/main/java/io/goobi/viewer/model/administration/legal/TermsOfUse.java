@@ -59,7 +59,7 @@ public class TermsOfUse {
     protected Long id;
 
     /**
-     * Contains texts and titles
+     * Contains texts and titles.
      */
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @PrivateOwned
@@ -74,7 +74,7 @@ public class TermsOfUse {
 
     /**
      * 
-     * @param orig
+     * @param orig the instance to copy
      * @should clone original correctly
      */
     public TermsOfUse(TermsOfUse orig) {
@@ -150,8 +150,8 @@ public class TermsOfUse {
 
     /**
      * 
-     * @param translations
-     * @param language
+     * @param translations stream of translations to filter
+     * @param language language code to filter by
      * @return Stream<TermsOfUseTranslation>
      * @should throw IllegalArgumentException if language blank
      */

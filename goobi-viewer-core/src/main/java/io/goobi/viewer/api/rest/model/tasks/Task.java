@@ -48,8 +48,8 @@ import jakarta.servlet.http.HttpServletRequest;
  * at task creation. Also each task has a status property signaling he current state of the task. A task starts out as {@link TaskStatus#CREATED}.
  *
  * <p>Once processing starts (which may be delayed by the limited thread pool if other tasks are running) the status changes to
- * {@link TaskStatus#STARTED}. After processing ends the task is set to either {@link TaskStatus#COMPLETE} or {@link TaskStatus#ERROR} depedning on
- * whether an error occured which may be recorded in the {@link #exception} property.
+ * {@link TaskStatus#STARTED}. After processing ends the task is set to either {@link TaskStatus#COMPLETE} or {@link TaskStatus#ERROR} depending on
+ * whether an error occurred which may be recorded in the {@link #exception} property.
  *
  * @author florian
  */
@@ -103,8 +103,8 @@ public class Task {
 
     /**
      * 
-     * @param params
-     * @param work
+     * @param params task parameters including the task type
+     * @param work the actual work to execute when task is run
      */
     public Task(TaskParameter params, BiConsumer<HttpServletRequest, Task> work) {
         this.type = params.getType();
@@ -117,7 +117,7 @@ public class Task {
 
     /**
      * 
-     * @param request
+     * @param request HTTP servlet request used to execute the task
      */
     public void doTask(HttpServletRequest request) {
         logger.debug("Started Task '{}'", this);
@@ -132,7 +132,7 @@ public class Task {
 
     /**
      * 
-     * @param error
+     * @param error error message describing the task failure
      */
     public void setError(String error) {
         this.status = TaskStatus.ERROR;
@@ -141,7 +141,7 @@ public class Task {
 
     /**
      * 
-     * @param type
+     * @param type the task type to determine accessibility for
      * @return {@link Accessibility}
      */
     public static Accessibility getAccessibility(ITaskType type) {

@@ -49,11 +49,11 @@ public class XServiceProvider extends VuFindProvider {
     /**
      * Creates a new XServiceProvider instance.
      *
-     * @param name a {@link java.lang.String} object.
-     * @param label a {@link java.lang.String} object.
-     * @param url a {@link java.lang.String} object.
-     * @param image a {@link java.lang.String} object.
-     * @param timeoutMillis a long.
+     * @param name internal provider identifier
+     * @param label human-readable provider name shown in the UI
+     * @param url base URL of the XService authentication endpoint
+     * @param image path to the provider logo image
+     * @param timeoutMillis HTTP request timeout in milliseconds
      */
     public XServiceProvider(String name, String label, String url, String image, long timeoutMillis) {
         super(name, label, url, image, timeoutMillis);
@@ -106,8 +106,8 @@ public class XServiceProvider extends VuFindProvider {
     /**
      * Retrieves or creates User object for the given credentials.
      *
-     * @param request
-     * @param response
+     * @param request the authentication request containing credentials
+     * @param response the authentication response from the XService
      * @return User object
      * @throws AuthenticationProviderException
      */

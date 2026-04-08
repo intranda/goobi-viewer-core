@@ -80,8 +80,8 @@ public final class ALTOTools {
     /**
      * Reads the plain full-text from an alto file. Don't merge line breaks.
      *
-     * @param path
-     * @param encoding
+     * @param path path to the ALTO file
+     * @param encoding character encoding to use when reading the file
      * @return {@link String} containing plain text from ALTO at the given path
      * @throws IOException
      */
@@ -93,9 +93,9 @@ public final class ALTOTools {
     /**
      * getFullText.
      *
-     * @param alto a {@link java.lang.String} object.
-     * @param charset
-     * @param mergeLineBreakWords a boolean.
+     * @param alto ALTO XML document as a string
+     * @param charset character encoding of the ALTO document
+     * @param mergeLineBreakWords merge words split across line breaks into one
      * @return a {@link java.lang.String} object.
      * @should extract fulltext correctly
      */
@@ -112,9 +112,9 @@ public final class ALTOTools {
     /**
      * getNERTags.
      *
-     * @param alto a {@link java.lang.String} object.
-     * @param inCharset
-     * @param type a {@link io.goobi.viewer.api.rest.model.ner.NERTag.Type} object.
+     * @param alto ALTO XML document as a string
+     * @param inCharset character encoding of the ALTO document
+     * @param type NER tag type to filter by; null returns all types
      * @return a {@link java.util.List} object.
      */
     public static List<TagCount> getNERTags(String alto, final String inCharset, NERTag.Type type) {
@@ -141,8 +141,8 @@ public final class ALTOTools {
     }
 
     /**
-     * @param tags
-     * @param list
+     * @param tags tags to add or merge into the list
+     * @param list target list to add tags to
      */
     private static void addTags(List<TagCount> tags, List<TagCount> list) {
         for (TagCount tag : tags) {
@@ -156,7 +156,7 @@ public final class ALTOTools {
     }
 
     /**
-     * @param tag
+     * @param tag ALTO named-entity tag to convert into TagCount entries
      * @return List<TagCount>
      * @should add identifier to TagCount
      */
@@ -195,9 +195,9 @@ public final class ALTOTools {
     /**
      * alto2Txt.
      *
-     * @param alto a {@link java.lang.String} object.
-     * @param charset ALTO charset
-     * @param mergeLineBreakWords a boolean.
+     * @param alto ALTO XML document as a string
+     * @param charset character encoding of the ALTO document
+     * @param mergeLineBreakWords merge words split across line breaks into one
      * @return a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
      * @throws javax.xml.stream.XMLStreamException if any.
@@ -233,9 +233,9 @@ public final class ALTOTools {
     /**
      * getWordCoords.
      *
-     * @param altoString a {@link java.lang.String} object.
-     * @param charset
-     * @param searchTerms a {@link java.util.Set} object.
+     * @param altoString ALTO XML document as a string
+     * @param charset character encoding of the ALTO document
+     * @param searchTerms set of terms whose coordinates to locate
      * @return a {@link java.util.List} object.
      */
     public static List<String> getWordCoords(String altoString, String charset, Set<String> searchTerms) {
@@ -245,9 +245,9 @@ public final class ALTOTools {
     /**
      * getRotatedCoordinates.
      *
-     * @param inCoords a {@link java.lang.String} object.
-     * @param rotation a int.
-     * @param pageSize a {@link java.awt.Dimension} object.
+     * @param inCoords comma-separated coordinate string to rotate
+     * @param rotation rotation angle in degrees (0, 90, 180, 270)
+     * @param pageSize dimensions of the page image
      * @return a {@link java.lang.String} object.
      */
     public static String getRotatedCoordinates(final String inCoords, int rotation, Dimension pageSize) {
@@ -267,7 +267,7 @@ public final class ALTOTools {
     /**
      *
      * @param altoString String containing the ALTO XML document
-     * @param charset
+     * @param charset character encoding of the ALTO document
      * @param searchTerms Set of search terms
      * @param rotation Image rotation in degrees
      * @return a {@link java.util.List} object.
@@ -290,7 +290,7 @@ public final class ALTOTools {
     }
 
     /**
-     * @param rect
+     * @param rect rectangle whose coordinates to format
      * @return ALTO word coordinates as a {@link String}
      */
     private static String getString(Rectangle rect) {
@@ -302,9 +302,9 @@ public final class ALTOTools {
     /**
      * rotate.
      *
-     * @param rect a {@link java.awt.Rectangle} object.
-     * @param rotation a int.
-     * @param imageSize a {@link java.awt.Dimension} object.
+     * @param rect rectangle to rotate around the image center
+     * @param rotation rotation angle in degrees (90, 180, 270)
+     * @param imageSize dimensions of the image for computing the rotation
      * @return a {@link java.awt.Rectangle} object.
      */
     protected static Rectangle rotate(Rectangle rect, int rotation, Dimension imageSize) {
@@ -354,7 +354,7 @@ public final class ALTOTools {
      * Reads rectangle coordinates from the given String. The String-coordinates are assumed to be int coordinates for left, top, right, bottom in
      * that order
      *
-     * @param string
+     * @param string comma-separated left, top, right, bottom coordinate string
      * @return {@link Rectangle} from the given coordinates string
      */
     private static Rectangle getRectangle(String string) throws NumberFormatException {
@@ -373,8 +373,8 @@ public final class ALTOTools {
     /**
      * getMatchALTOWord.
      *
-     * @param eleWord a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word} object.
-     * @param words an array of {@link java.lang.String} objects.
+     * @param eleWord ALTO word element whose content to match against
+     * @param words array of search words to match against the element
      * @return 1 if there is a match; 0 otherwise
      */
     public static int getMatchALTOWord(Word eleWord, String[] words) {
@@ -418,7 +418,7 @@ public final class ALTOTools {
     /**
      * getALTOCoords.
      *
-     * @param element a {@link de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData} object.
+     * @param element ALTO geometric element whose bounding box to extract
      * @return a {@link java.lang.String} object.
      */
     public static String getALTOCoords(GeometricData element) {

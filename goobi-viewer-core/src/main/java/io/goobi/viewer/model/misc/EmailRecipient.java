@@ -30,10 +30,10 @@ public class EmailRecipient {
 
     /**
      *
-     * @param id
-     * @param label
-     * @param emailAddress
-     * @param defaultRecipient
+     * @param id unique identifier for this recipient
+     * @param label display name of the recipient
+     * @param emailAddress email address of the recipient
+     * @param defaultRecipient true if this is the default recipient
      */
     public EmailRecipient(String id, String label, String emailAddress, boolean defaultRecipient) {
         this.id = id;

@@ -76,7 +76,7 @@ public class AnnotationUpdate implements IModelUpdate {
     }
 
     /**
-     * @param dao
+     * @param dao DAO instance used to read and persist annotation data
      * @throws DAOException
      */
     @SuppressWarnings("unchecked")
@@ -152,7 +152,7 @@ public class AnnotationUpdate implements IModelUpdate {
     }
 
     /**
-     * @param dao
+     * @param dao DAO instance used to read and persist comment data
      * @throws DAOException
      */
     @SuppressWarnings("unchecked")
@@ -198,8 +198,8 @@ public class AnnotationUpdate implements IModelUpdate {
     }
 
     /**
-     * @param id
-     * @param dao
+     * @param id database ID of the question to load
+     * @param dao DAO instance used to load the question
      * @return Optional<Question>
      */
     private static Optional<Question> getCampaignQuestion(Long id, IDAO dao) {
@@ -211,7 +211,7 @@ public class AnnotationUpdate implements IModelUpdate {
     }
 
     /**
-     * @param text
+     * @param text annotation body text to serialize
      * @return JSON representation of the given text
      * @throws JsonProcessingException
      */
@@ -221,9 +221,9 @@ public class AnnotationUpdate implements IModelUpdate {
     }
 
     /**
-     * 
-     * @param id
-     * @param dao
+     *
+     * @param id database ID of the user to load
+     * @param dao DAO instance used to load the user
      * @return Optional<User>
      */
     private static Optional<User> getUser(Long id, IDAO dao) {
@@ -235,8 +235,8 @@ public class AnnotationUpdate implements IModelUpdate {
     }
 
     /**
-     * 
-     * @param generator
+     *
+     * @param generator crowdsourcing question whose campaign access condition is queried
      * @return Access condition for campaign; OPENACCESS if none set
      */
     private static String getAccessConditionForAnnotation(Question generator) {

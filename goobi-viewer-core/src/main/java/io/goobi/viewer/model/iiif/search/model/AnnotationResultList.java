@@ -47,7 +47,7 @@ public class AnnotationResultList {
     /**
      * add.
      *
-     * @param hit a {@link de.intranda.api.iiif.search.SearchHit} object.
+     * @param hit search hit with associated annotations to add
      */
     public void add(SearchHit hit) {
         numHits++;
@@ -62,7 +62,7 @@ public class AnnotationResultList {
     /**
      * add.
      *
-     * @param partialResults a {@link io.goobi.viewer.model.iiif.search.model.AnnotationResultList} object.
+     * @param partialResults result list to merge into this one
      */
     public void add(AnnotationResultList partialResults) {
         numHits += partialResults.numHits;
@@ -73,8 +73,8 @@ public class AnnotationResultList {
     /**
      * Creates a new AnnotationResultList instance.
      *
-     * @param numHits a long.
-     * @param hits a {@link java.util.List} object.
+     * @param numHits total number of hits
+     * @param hits search hits to populate the list with
      */
     public AnnotationResultList(long numHits, List<SearchHit> hits) {
         this.annotations = new ArrayList<>();

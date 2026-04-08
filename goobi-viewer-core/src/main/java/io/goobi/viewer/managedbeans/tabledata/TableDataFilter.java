@@ -42,8 +42,8 @@ public class TableDataFilter implements Serializable {
     /**
      * Creates a new TableDataFilter instance.
      *
-     * @param owner a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider} object.
-     * @param columns a {@link java.lang.String} object.
+     * @param owner data provider notified when the filter value changes
+     * @param columns database column names this filter applies to
      */
     public TableDataFilter(TableDataProvider<?> owner, String... columns) {
         this.columns = Arrays.asList(columns);
@@ -55,7 +55,7 @@ public class TableDataFilter implements Serializable {
     /**
      * <p>Constructor for TableDataFilter.
      *
-     * @param columns a {@link java.lang.String} object
+     * @param columns database column names this filter applies to
      */
     public TableDataFilter(String... columns) {
         this(null, columns);
@@ -91,7 +91,7 @@ public class TableDataFilter implements Serializable {
     /**
      * Setter for the field <code>value</code>.
      *
-     * @param value a {@link java.lang.String} object.
+     * @param value filter string to match against the configured columns
      */
     public void setValue(String value) {
         this.value = value;
@@ -113,7 +113,7 @@ public class TableDataFilter implements Serializable {
     /**
      * <p>Setter for the field <code>joinTable</code>.
      *
-     * @param joinTable a {@link java.lang.String} object
+     * @param joinTable name of the table to join when filtering
      */
     public void setJoinTable(String joinTable) {
         this.joinTable = joinTable;

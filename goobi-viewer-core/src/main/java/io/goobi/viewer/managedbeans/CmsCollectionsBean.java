@@ -89,7 +89,7 @@ public class CmsCollectionsBean implements Serializable {
     private List<CMSCollection> collections;
     private boolean piValid = true;
     private CMSCollectionImageMode imageMode = CMSCollectionImageMode.NONE;
-    /** Current tab language */
+    /** Current tab language. */
     private CMSCollectionTreeTab currentTab = new CMSCollectionTreeTab(solrField);
 
     /**
@@ -234,8 +234,8 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * 
-     * @param solrField
+     *
+     * @param solrField Solr field whose collection descriptions to import
      * @return empty string
      * @throws DAOException
      */
@@ -430,7 +430,7 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * @param collection
+     * @param collection Collection whose info is added to all matching collection views
      */
     private static void addToCollectionViews(CMSCollection collection) {
         CollectionView collectionView = BeanUtils.getBrowseBean().getCollection(collection.getSolrField());
@@ -442,7 +442,7 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * @param collection
+     * @param collection Collection whose info is removed from all matching collection views
      */
     private static void removeFromCollectionViews(CMSCollection collection) {
         CollectionView collectionView = BeanUtils.getBrowseBean().getCollection(collection.getSolrField());
@@ -457,7 +457,7 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * deleteCollection.
      *
-     * @param collection a {@link io.goobi.viewer.model.cms.collections.CMSCollection} object.
+     * @param collection collection to delete from the database
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void deleteCollection(CMSCollection collection) throws DAOException {
@@ -469,7 +469,7 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * editCollection.
      *
-     * @param collection a {@link io.goobi.viewer.model.cms.collections.CMSCollection} object.
+     * @param collection collection to set as current and prepare for editing
      * @return a {@link java.lang.String} object.
      */
     public String editCollection(CMSCollection collection) {
@@ -482,7 +482,7 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * getCurrentLabel.
      *
-     * @param language a {@link java.lang.String} object.
+     * @param language ISO language code to retrieve the label for
      * @return a {@link io.goobi.viewer.model.cms.collections.CMSCollectionTranslation} object.
      */
     public CMSCollectionTranslation getCurrentLabel(String language) {
@@ -492,7 +492,7 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * getCurrentDescription.
      *
-     * @param language a {@link java.lang.String} object.
+     * @param language ISO language code to retrieve the description for
      * @return a {@link io.goobi.viewer.model.cms.collections.CMSCollectionTranslation} object.
      */
     public CMSCollectionTranslation getCurrentDescription(String language) {
@@ -565,9 +565,9 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * validatePI.
      *
-     * @param context a {@link jakarta.faces.context.FacesContext} object.
-     * @param comp a {@link jakarta.faces.component.UIComponent} object.
-     * @param value a {@link java.lang.Object} object.
+     * @param context current JSF faces context
+     * @param comp UI component that triggered the validation
+     * @param value PI value submitted by the user
      * @throws jakarta.faces.validator.ValidatorException if any.
      */
     public void validatePI(FacesContext context, UIComponent comp, Object value) throws ValidatorException {
@@ -592,7 +592,7 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * Checks if the given pi matches a known PI in the solr index. If the pi is empty, true is returned to allow not setting any pi
      *
-     * @param pi a {@link java.lang.String} object.
+     * @param pi persistent identifier to look up in the Solr index
      * @return false if no current collection is set, the pi does not match any known work
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -657,7 +657,7 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * Initializes the collection tree for the given index field name.
      *
-     * @param field
+     * @param field Solr field name to load the collection for
      * @throws IllegalRequestException
      * @throws IndexUnreachableException
      */

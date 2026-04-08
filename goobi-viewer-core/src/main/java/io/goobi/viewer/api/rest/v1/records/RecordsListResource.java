@@ -186,10 +186,10 @@ public class RecordsListResource {
     }
 
     /**
-     * @param query
-     * @param start
-     * @param end
-     * @param subtheme
+     * @param query base Solr query string to filter records
+     * @param start start year for date range filter (inclusive)
+     * @param end end year for date range filter (inclusive)
+     * @param subtheme subtheme discriminator value for filtering
      * @return Generated query
      */
     private String createQuery(String query, final String start, final String end, String subtheme) {

@@ -43,8 +43,8 @@ public class ErrorMessage implements IResponseMessage {
     /**
      * Creates a new ErrorMessage instance.
      *
-     * @param status a int.
-     * @param message a {@link java.lang.String} object.
+     * @param status HTTP status code of the error response
+     * @param message human-readable error description
      */
     public ErrorMessage(int status, String message) {
         super();
@@ -56,9 +56,9 @@ public class ErrorMessage implements IResponseMessage {
     /**
      * Creates a new ErrorMessage instance.
      *
-     * @param status a int.
-     * @param message a {@link java.lang.String} object.
-     * @param stackTrace a {@link java.lang.String} object.
+     * @param status HTTP status code of the error response
+     * @param message human-readable error description
+     * @param stackTrace stack trace string for diagnostic purposes
      */
     public ErrorMessage(int status, String message, String stackTrace) {
         super();
@@ -70,7 +70,7 @@ public class ErrorMessage implements IResponseMessage {
     /**
      * Creates a new ErrorMessage instance.
      *
-     * @param exception a {@link io.goobi.viewer.exceptions.RestApiException} object.
+     * @param exception REST API exception carrying status code and message
      */
     public ErrorMessage(RestApiException exception) {
         this.status = exception.getStatusCode();

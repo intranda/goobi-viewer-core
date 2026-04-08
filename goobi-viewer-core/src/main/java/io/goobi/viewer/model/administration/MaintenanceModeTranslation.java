@@ -48,10 +48,10 @@ public class MaintenanceModeTranslation extends Translation {
     /**
      * Creates a new MaintenanceModeTranslation instance.
      *
-     * @param language a {@link java.lang.String} object.
-     * @param tag a {@link java.lang.String} object.
-     * @param value a {@link java.lang.String} object.
-     * @param owner
+     * @param language BCP 47 language code for this translation
+     * @param tag key identifying the translated field
+     * @param value translated text value
+     * @param owner owning MaintenanceMode entity
      */
     public MaintenanceModeTranslation(String language, String tag, String value, MaintenanceMode owner) {
         super(language, tag, value);
@@ -61,11 +61,11 @@ public class MaintenanceModeTranslation extends Translation {
     /**
      * setTranslation.
      *
-     * @param translations a {@link java.util.List} object.
-     * @param lang a {@link java.lang.String} object.
-     * @param value a {@link java.lang.String} object.
-     * @param tag a {@link java.lang.String} object.
-     * @param owner a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
+     * @param translations mutable list of existing translations to update
+     * @param lang BCP 47 language code to set or add
+     * @param value translated text to assign
+     * @param tag key identifying the translated field
+     * @param owner maintenance mode entity to assign when creating a new translation
      */
     public static void setTranslation(List<MaintenanceModeTranslation> translations, String lang, String value, String tag, MaintenanceMode owner) {
         if (lang == null) {

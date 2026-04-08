@@ -41,7 +41,7 @@ public final class BookmarkTools {
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(BookmarkTools.class);
 
-    /** Private constructor */
+    /** Private constructor. */
     private BookmarkTools() {
         //
     }

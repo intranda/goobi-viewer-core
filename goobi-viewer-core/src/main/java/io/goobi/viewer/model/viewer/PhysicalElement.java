@@ -190,7 +190,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      * @param order Page number (numerical)
      * @param orderLabel Page number (label)
      * @param urn Page URN
-     * @param purlPart a {@link java.lang.String} object.
+     * @param purlPart persistent URL path segment for this page
      * @param pi Record identifier
      * @param mimeType Page mime type
      * @param dataRepository Record date repository
@@ -221,7 +221,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * determineFileName.
      *
-     * @param filePath a {@link java.lang.String} object.
+     * @param filePath full path or URL to extract the filename from
      * @should cut off everything but the file name for normal file paths
      * @should leave external urls intact
      * @return a {@link java.lang.String} object.
@@ -407,8 +407,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * getThumbnailUrl.
      *
-     * @param width a int.
-     * @param height a int.
+     * @param width desired thumbnail width in pixels
+     * @param height desired thumbnail height in pixels
      * @return a {@link java.lang.String} object.
      */
     public String getThumbnailUrl(int width, int height) {
@@ -437,9 +437,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * 
-     * @param accessPermission
-     * @param locale
+     *
+     * @param privilegeName access privilege name to look up
+     * @param locale locale for the description text
      * @return Description text if found; otherwise null
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -469,9 +469,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * 
-     * @param accessPermission
-     * @param locale
+     *
+     * @param accessPermission Access permission holding placeholder info
+     * @param locale Locale for selecting the image URL
      * @return Access denied image url; null if none found
      */
     static String getAccessDeniedUrl(AccessPermission accessPermission, Locale locale) {
@@ -487,7 +487,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * @param privilegeName
+     * @param privilegeName Access privilege name to check
      * @return the accessPermissionAudio
      * @throws DAOException
      * @throws IndexUnreachableException
@@ -497,7 +497,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * @param privilegeName
+     * @param privilegeName Access privilege name to check
      * @param user The User requesting access. If null, it is fetched from the jsfContext if one exists
      * @return the accessPermissionAudio
      * @throws DAOException
@@ -652,8 +652,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * getFullMimeType.
      *
-     * @param mimeType a {@link java.lang.String} object.
-     * @param fileName a {@link java.lang.String} object.
+     * @param mimeType partial or full MIME type string
+     * @param fileName file name used to determine image format
      * @return a {@link java.lang.String} object.
      * @should return mimeType if already full mime type
      * @should return mimeType if not image
@@ -1060,7 +1060,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * getWordCoords.
      *
-     * @param searchTerms a {@link java.util.Set} object.
+     * @param searchTerms terms whose word coordinates to retrieve
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -1071,9 +1071,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Returns word coordinates for words that start with any of the given search terms.
      *
-     * @param searchTerms a {@link java.util.Set} object.
-     * @param proximitySearchDistance
-     * @param rotation a int.
+     * @param searchTerms terms whose word coordinates to retrieve
+     * @param proximitySearchDistance Maximum word distance for proximity search
+     * @param rotation image rotation in degrees
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @should load XML document if none yet set
@@ -1208,7 +1208,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * getFileNameForFormat.
      *
-     * @param format a {@link java.lang.String} object.
+     * @param format media format key to look up (e.g. "ogg", "mp4")
      * @return a {@link java.lang.String} object.
      */
     public String getFileNameForFormat(String format) {
@@ -1232,7 +1232,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Returns a "RESTful" URL for a media (audio or video) file in the given format.
      *
-     * @param format a {@link java.lang.String} object.
+     * @param format media format key (e.g. "ogg", "mp4", "mp3")
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -1364,7 +1364,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * getImageUrl.
      *
-     * @param size a int.
+     * @param size desired image width in pixels
      * @return a {@link java.lang.String} object.
      */
     public String getImageUrl(int size) {
@@ -1690,7 +1690,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * getFooterHeight.
      *
-     * @param pageType a {@link java.lang.String} object.
+     * @param pageType name of the page type for footer configuration lookup
      * @return a int.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -1714,7 +1714,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * deleteCommentAction.
      *
-     * @param comment a {@link io.goobi.viewer.model.annotation.comments.Comment} object.
+     * @param comment the comment to delete
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void deleteCommentAction(Comment comment) throws DAOException {
@@ -1831,7 +1831,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      * Gets the filename but with its extension replaced by the given extension. If the extension is an empty String, the filename without any
      * extension is returned If the extension is null, {@link io.goobi.viewer.model.viewer.PhysicalElement#getFileName()} is returned.
      *
-     * @param extension a {@link java.lang.String} object.
+     * @param extension replacement extension, without leading dot; null returns original filename
      * @return a {@link java.lang.String} object.
      */
     public String getFileName(String extension) {
@@ -1863,7 +1863,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      * Lists of struct elements that start on this page. For example, if a page contains multiple elements that only cover a certain area of the page
      * (using coordinates), this method can be used to get all shape coordinates for these elemets for visualization.
      *
-     * @return List of <code>/StructElement<code>s
+     * @return List of <code>StructElement</code>s
      * @throws IndexUnreachableException
      * @throws PresentationException
      */

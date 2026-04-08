@@ -27,15 +27,15 @@ package io.goobi.viewer.exceptions;
 public class AjaxResponseException extends PresentationException {
 
     /**
-     * @param string
+     * @param string the exception message
      */
     public AjaxResponseException(String string) {
         super(string);
     }
 
     /**
-     * @param string
-     * @param e
+     * @param string the exception message
+     * @param e the cause
      */
     public AjaxResponseException(String string, Throwable e) {
         super(string, e);

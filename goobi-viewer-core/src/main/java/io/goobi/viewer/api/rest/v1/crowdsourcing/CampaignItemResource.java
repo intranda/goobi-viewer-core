@@ -92,6 +92,7 @@ import jakarta.ws.rs.core.MediaType;
  * combination</li>
  * <li>/crowdsourcing/campaigns/{campaignId}/{pi}/annotations/ <br/>
  * GET a list of annotations for the given campaignId and pi, sorted by target, or PUT the annotations for this combination</li>
+ * </ul>
  *
  * @author florian
  */
@@ -113,8 +114,8 @@ public class CampaignItemResource {
     /**
      * Creates a new CampaignItemResource instance.
      *
-     * @param servletRequest
-     * @param campaignId
+     * @param servletRequest incoming HTTP servlet request
+     * @param campaignId campaign database ID used to look up the campaign
      */
     public CampaignItemResource(@Context HttpServletRequest servletRequest, @PathParam("campaignId") Long campaignId) {
         this.campaignId = campaignId;
@@ -122,10 +123,10 @@ public class CampaignItemResource {
     }
 
     /**
-     * 
-     * @param servletRequest
-     * @param urls
-     * @param campaignId
+     *
+     * @param servletRequest incoming HTTP servlet request
+     * @param urls API URL manager for building and parsing resource URLs
+     * @param campaignId campaign database ID used to look up the campaign
      */
     public CampaignItemResource(@Context HttpServletRequest servletRequest, AbstractApiUrlManager urls, @PathParam("campaignId") Long campaignId) {
         this.urls = urls;
@@ -137,8 +138,8 @@ public class CampaignItemResource {
      * Gets the {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem} for a campaign and work, containing the URL of the targeted
      * resource (IIIF manifest) and all information to create a GUI for the campaign's questions.
      *
-     * @param persistentIdentifier a {@link java.lang.String} object.
-     * @param servletRequest
+     * @param persistentIdentifier persistent identifier of the target record
+     * @param servletRequest incoming HTTP servlet request
      * @return a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem}
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -214,9 +215,9 @@ public class CampaignItemResource {
      * Sets the {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus} for the given campaign and work and records the
      * {@link io.goobi.viewer.model.security.user.User} who made the change.
      *
-     * @param item a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem} object.
-     * @param persistentIdentifier a {@link java.lang.String} object.
-     * @param page
+     * @param item campaign item containing the new crowdsourcing status
+     * @param persistentIdentifier persistent identifier of the target record
+     * @param page page order number within the record
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @PUT
@@ -274,12 +275,12 @@ public class CampaignItemResource {
     }
 
     /**
-     * 
-     * @param campaign
-     * @param pi
-     * @param page
-     * @param crowdsourcingStatus
-     * @param user
+     *
+     * @param campaign campaign whose annotations should be updated
+     * @param pi persistent identifier of the record
+     * @param page page order number within the record
+     * @param crowdsourcingStatus new crowdsourcing status to apply to annotations
+     * @param user optional user who triggered the status change
      * @throws DAOException
      */
     private static void updateAnnotationStatusForPage(Campaign campaign, String pi, int page, CrowdsourcingStatus crowdsourcingStatus,
@@ -302,11 +303,11 @@ public class CampaignItemResource {
     }
 
     /**
-     * 
-     * @param campaign
-     * @param pi
-     * @param crowdsourcingStatus
-     * @param user
+     *
+     * @param campaign campaign whose annotations should be updated
+     * @param pi persistent identifier of the record
+     * @param crowdsourcingStatus new crowdsourcing status to apply to annotations
+     * @param user optional user who triggered the status change
      * @throws DAOException
      */
     private static void updateAnnotationStatusForRecord(Campaign campaign, String pi, CrowdsourcingStatus crowdsourcingStatus,
@@ -325,8 +326,8 @@ public class CampaignItemResource {
     }
 
     /**
-     * 
-     * @param crowdsourcingStatus
+     *
+     * @param crowdsourcingStatus crowdsourcing workflow status to convert
      * @return {@link PublicationStatus}
      */
     private static PublicationStatus getPublicationStatus(CrowdsourcingStatus crowdsourcingStatus) {
@@ -346,8 +347,8 @@ public class CampaignItemResource {
     /**
      * Gets all annotations for the given campaign and work, sorted by target.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param request
+     * @param pi persistent identifier of the record to query annotations for
+     * @param request incoming HTTP servlet request
      * @return A map of target URIs (manifest or canvas) mapped to a submap of question URIs mapped to questions
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -381,8 +382,8 @@ public class CampaignItemResource {
      * Takes a map of annotation target (canvas/manifest) ids and replaces all annotations for the given campaign, pi and targeted pages if target is
      * canvas) with the ones contained in the map.
      *
-     * @param pages a {@link java.util.List} object.
-     * @param pi a {@link java.lang.String} object.
+     * @param pages list of annotation pages containing the new or updated annotations
+     * @param pi persistent identifier of the annotated record
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -445,9 +446,9 @@ public class CampaignItemResource {
     }
 
     /**
-     * @param pi
-     * @param pageOrder
-     * @param anno
+     * @param pi persistent identifier of the annotated record
+     * @param pageOrder page order number within the record, or null for record-level annotations
+     * @param anno web annotation to convert to a persistent crowdsourcing annotation
      * @return a {@link CrowdsourcingAnnotation}. Either with an existing database id, or without id if ann doesn't has an empty id property
      */
     public CrowdsourcingAnnotation createPersistentAnnotation(String pi, Integer pageOrder, WebAnnotation anno) {

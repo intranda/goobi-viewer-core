@@ -75,8 +75,8 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
     /**
      * Returns the session stored bookmark list, creating a new empty one if needed.
      *
-     * @param id
-     * @param urls
+     * @param id ignored; session has only one bookmark list
+     * @param urls URL manager used to build application and API URLs
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
@@ -97,8 +97,8 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
     /**
      * Adds an item with the given pi to the session stored bookmark list, creating a new bookmark list if needed.
      *
-     * @param id
-     * @param pi a {@link java.lang.String} object.
+     * @param id ignored; session has only one bookmark list
+     * @param pi persistent identifier of the record to bookmark
      * @return a {@link io.goobi.viewer.api.rest.model.SuccessMessage} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
@@ -111,10 +111,10 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
     /**
      * Adds an item with the given pi, logid and page number to the session stored bookmark list, creating a new bookmark list if needed.
      *
-     * @param id
-     * @param pi a {@link java.lang.String} object.
-     * @param logId a {@link java.lang.String} object.
-     * @param pageString a {@link java.lang.String} object.
+     * @param id ignored; session has only one bookmark list
+     * @param pi persistent identifier of the record to bookmark
+     * @param logId structural element log ID, or "-" to indicate none
+     * @param pageString page order number as string, may be null
      * @return a {@link io.goobi.viewer.api.rest.model.SuccessMessage} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
@@ -139,9 +139,9 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
      * "success: false" if the operation failed (usually because the object wasn't in the bookmark list to begin with). Otherwise the
      * return object contains "success: true"
      *
-     * @param id
-     * @param pi a {@link java.lang.String} object.
-     * @return an object containing the boolean property 'success', detailing wether the operation was successfull
+     * @param id ignored; session has only one bookmark list
+     * @param pi persistent identifier of the record to remove
+     * @return an object containing the boolean property 'success', detailing whether the operation was successful
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -155,11 +155,11 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
      * property "success: false" if the operation failed (usually because the object wasn't in the bookmark list to begin with). Otherwise the return
      * object contains "success: true"
      *
-     * @param id
-     * @param pi a {@link java.lang.String} object.
-     * @param logId a {@link java.lang.String} object.
-     * @param pageString a {@link java.lang.String} object.
-     * @return an object containing the boolean property 'success', detailing wether the operation was successfull
+     * @param id ignored; session has only one bookmark list
+     * @param pi persistent identifier of the record to remove
+     * @param logId structural element log ID, or "-" to indicate none
+     * @param pageString page order number as string, may be null
+     * @return an object containing the boolean property 'success', detailing whether the operation was successful
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -193,7 +193,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
     /**
      * Returns "true" if the object with the given IP is in the session store bookmark list, "false" otherwise.
      *
-     * @param pi a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record to look up
      * @return a {@link java.lang.Boolean} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
@@ -206,9 +206,9 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
     /**
      * Returns "true" if the object with the given IP, logid and page number is in the session store bookmark list, "false" otherwise.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param logId a {@link java.lang.String} object.
-     * @param pageString a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record to look up
+     * @param logId structural element log ID, or "-" to indicate none
+     * @param pageString page order number as string, may be null
      * @return a {@link java.lang.Boolean} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
@@ -243,7 +243,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
     /**
      * Returns the bookmark list with the given id, provided it is owned by the user or it is public or shared to him.
      *
-     * @param id a {@link java.lang.Long} object.
+     * @param id database ID of the requested bookmark list
      * @return a {@link io.goobi.viewer.model.bookmark.BookmarkList} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
@@ -261,9 +261,9 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
     }
 
     /**
-     * @param shareKey
+     * @param shareKey the share key identifying the bookmark list
      * @return {@link BookmarkList} that match shareKey
-     * @throws DAOException If an error occured talking to the database
+     * @throws DAOException If an error occurred talking to the database
      * @throws RestApiException If no user session exists or if the user has no access to the requested list
      * @throws ContentNotFoundException If no list with the given key was found
      */

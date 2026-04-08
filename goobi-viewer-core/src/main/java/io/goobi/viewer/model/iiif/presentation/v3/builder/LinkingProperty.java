@@ -56,8 +56,8 @@ public class LinkingProperty {
     private final IMetadataValue label;
 
     /**
-     * @param target
-     * @param label
+     * @param target linking target specifying MIME type and resource type
+     * @param label human-readable label for this link
      */
     public LinkingProperty(LinkingTarget target, IMetadataValue label) {
         super();
@@ -67,7 +67,7 @@ public class LinkingProperty {
 
     /**
      * 
-     * @param id
+     * @param id URI of the linked resource
      * @return {@link LabeledResource}
      */
     public LabeledResource getResource(URI id) {

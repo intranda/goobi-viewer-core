@@ -46,10 +46,10 @@ public class CMSSidebarElementDefault extends CMSSidebarElement {
     }
 
     /**
-     * Default constructor for a {@link WidgetContentType} determining the xhtml component to use and an owning {@link CMSPage}
+     * Default constructor for a {@link WidgetContentType} determining the xhtml component to use and an owning {@link CMSPage}.
      * 
-     * @param type
-     * @param owner
+     * @param type widget content type determining the xhtml component
+     * @param owner the owning CMS page
      */
     public CMSSidebarElementDefault(WidgetContentType type, CMSPage owner) {
         super(type, owner);
@@ -62,8 +62,8 @@ public class CMSSidebarElementDefault extends CMSSidebarElement {
     /**
      * Cloning constructor with a CMSPage to set as owner.
      * 
-     * @param orig
-     * @param owner
+     * @param orig original sidebar element to clone
+     * @param owner the owning CMS page
      */
     public CMSSidebarElementDefault(CMSSidebarElementDefault orig, CMSPage owner) {
         super(orig, owner);

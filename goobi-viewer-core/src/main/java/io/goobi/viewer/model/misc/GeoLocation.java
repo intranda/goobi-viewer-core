@@ -57,8 +57,8 @@ public class GeoLocation {
     /**
      * Creates a new GeoLocation instance.
      *
-     * @param latitude a {@link java.lang.Double} object.
-     * @param longitude a {@link java.lang.Double} object.
+     * @param latitude geographic latitude in decimal degrees.
+     * @param longitude geographic longitude in decimal degrees.
      */
     public GeoLocation(Double latitude, Double longitude) {
         super();
@@ -69,7 +69,7 @@ public class GeoLocation {
     /**
      * Creates a new GeoLocation instance.
      *
-     * @param json a {@link org.json.JSONObject} object.
+     * @param json JSON object containing latitude, longitude, info and link fields.
      * @throws org.json.JSONException if any.
      */
     public GeoLocation(JSONObject json) throws JSONException {
@@ -96,7 +96,7 @@ public class GeoLocation {
     }
 
     /**
-     * @param string
+     * @param string raw JSON string to format for display
      * @return Formatted string
      */
     private static String formatJson(final String string) {
@@ -117,7 +117,7 @@ public class GeoLocation {
     /**
      * Setter for the field <code>latitude</code>.
      *
-     * @param latitude a {@link java.lang.Double} object.
+     * @param latitude geographic latitude in decimal degrees.
      */
     public void setLatitude(Double latitude) {
         this.latitude = latitude;

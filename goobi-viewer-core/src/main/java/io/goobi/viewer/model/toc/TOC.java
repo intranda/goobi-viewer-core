@@ -76,10 +76,10 @@ public class TOC implements Serializable {
     /**
      * generate.
      *
-     * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @param addAllSiblings a boolean.
-     * @param mimeType a {@link java.lang.String} object.
-     * @param tocCurrentPage a int.
+     * @param structElement root struct element for TOC generation
+     * @param addAllSiblings if true, sibling elements are included in the TOC
+     * @param mimeType MIME type of the record
+     * @param tocCurrentPage current paginator page of anchor group elements
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -109,7 +109,7 @@ public class TOC implements Serializable {
     /**
      * getViewForGroup.
      *
-     * @param group a {@link java.lang.String} object.
+     * @param group TOC group name to retrieve elements for
      * @return a {@link java.util.List} object.
      */
     public List<TOCElement> getViewForGroup(String group) {
@@ -123,7 +123,7 @@ public class TOC implements Serializable {
     /**
      * getTreeViewForGroup.
      *
-     * @param group a {@link java.lang.String} object.
+     * @param group TOC group name to build the tree for
      * @should call buildTree and set maxTocDepth correctly
      * @return a {@link java.util.List} object.
      */
@@ -163,11 +163,11 @@ public class TOC implements Serializable {
 
     /**
      *
-     * @param group
-     * @param visibleLevel
-     * @param collapseThreshold
-     * @param lowestLevelToCollapse
-     * @param currentElementIdDoc
+     * @param group TOC group name to build the tree for
+     * @param visibleLevel maximum hierarchy level shown expanded initially
+     * @param collapseThreshold sibling count above which a level is auto-collapsed
+     * @param lowestLevelToCollapse minimum hierarchy level eligible for length-based collapse
+     * @param currentElementIdDoc IDDOC of the currently displayed struct element
      */
     protected void buildTree(String group, int visibleLevel, int collapseThreshold, int lowestLevelToCollapse, String currentElementIdDoc) {
         logger.trace("buildTree");
@@ -225,8 +225,8 @@ public class TOC implements Serializable {
 
     /**
      *
-     * @param list
-     * @param currentElementIdDoc
+     * @param list flat list of all TOC elements
+     * @param currentElementIdDoc IDDOC of the currently displayed struct element
      */
     private void uncollapseCurrentElementAncestors(List<TOCElement> list, String currentElementIdDoc) {
         if (currentElementIdDoc != null) {
@@ -247,9 +247,9 @@ public class TOC implements Serializable {
     }
 
     /**
-     * 
-     * @param list
-     * @param iddoc
+     *
+     * @param list flat list of all TOC elements
+     * @param iddoc IDDOC value to search for
      * @return {@link TOCElement}
      */
     private static TOCElement getElement(List<TOCElement> list, String iddoc) {
@@ -257,9 +257,9 @@ public class TOC implements Serializable {
     }
 
     /**
-     * 
-     * @param list
-     * @param id
+     *
+     * @param list flat list of all TOC elements
+     * @param id numeric element ID to search for
      * @return {@link TOCElement}
      */
     private static TOCElement getElement(List<TOCElement> list, int id) {
@@ -267,9 +267,9 @@ public class TOC implements Serializable {
     }
 
     /**
-     * 
-     * @param collapseThreshold
-     * @param lowestLevelToCollapse
+     *
+     * @param collapseThreshold sibling count above which a level is auto-collapsed
+     * @param lowestLevelToCollapse minimum hierarchy level eligible for length-based collapse
      */
     private void collapseTocForLength(int collapseThreshold, int lowestLevelToCollapse) {
         if (collapseThreshold <= 0 || tocElementMap == null) {
@@ -351,7 +351,7 @@ public class TOC implements Serializable {
     /**
      * Collapses all elements below the element with the given ID.
      *
-     * @param parentId
+     * @param parentId index of the parent element in the flat TOC list
      */
     private void collapseTree(int parentId) {
         logger.trace("collapseTree: {}", parentId);
@@ -373,7 +373,7 @@ public class TOC implements Serializable {
     /**
      * Recursively expands the child elements of the element with the given ID.
      *
-     * @param parentId
+     * @param parentId index of the parent element in the flat TOC list
      */
     private void expandTree(int parentId) {
         // logger.trace("expandTree: {}", parentId); //NOSONAR Debug
@@ -431,7 +431,7 @@ public class TOC implements Serializable {
     /**
      * setChildVisible.
      *
-     * @param id a int.
+     * @param id index of the TOC element to expand
      */
     public void setChildVisible(int id) {
         this.tocVisible = id;
@@ -440,7 +440,7 @@ public class TOC implements Serializable {
     /**
      * setChildInvisible.
      *
-     * @param id a int.
+     * @param id index of the TOC element to collapse
      */
     public void setChildInvisible(int id) {
         this.tocInvisible = id;
@@ -640,7 +640,7 @@ public class TOC implements Serializable {
     /**
      * Returns the label of the first found TOCElement that has the given PI as its topStructPi.
      *
-     * @param pi a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record
      * @should return correct label
      * @return a {@link java.lang.String} object.
      */
@@ -651,9 +651,9 @@ public class TOC implements Serializable {
     /**
      * Returns the label in the given language of the first found TOCElement that has the given PI as its topStructPi.
      *
-     * @param pi a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record
      * @should return correct label
-     * @param language a {@link java.lang.String} object.
+     * @param language ISO 639-1 language code for the desired label
      * @return a {@link java.lang.String} object.
      */
     public String getLabel(String pi, String language) {
@@ -676,9 +676,9 @@ public class TOC implements Serializable {
     /**
      * Returns the label in the given locale of the first found TOCElement that has the given PI as its topStructPi.
      *
-     * @param pi a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record
      * @should return correct label
-     * @param locale a {@link java.util.Locale} object.
+     * @param locale locale for the desired label language
      * @return a {@link java.lang.String} object.
      */
     public String getLabel(String pi, Locale locale) {

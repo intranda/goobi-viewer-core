@@ -63,7 +63,7 @@ public class EmailValidator implements Validator<String> {
     /**
      * validateEmailAddress.
      *
-     * @param email a {@link java.lang.String} object.
+     * @param email e-mail address string to validate against the RFC pattern
      * @param allowEmptyString use `true` if an empty email address is allowed
      * @should match correct email addresses
      * @should match entire email address only

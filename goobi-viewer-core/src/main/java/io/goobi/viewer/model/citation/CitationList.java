@@ -40,7 +40,7 @@ public class CitationList {
     private final int page;
 
     /**
-     * Constructor creating state from a {@link ViewManager}
+     * Constructor creating state from a {@link ViewManager}.
      * 
      * @param list the list of citation links
      * @param level the level this list pertains to
@@ -77,7 +77,7 @@ public class CitationList {
     /**
      * Checks whether the state of this list reflects the same state as the given ViewManager regarding the level for which the list was created.
      * 
-     * @param viewManager
+     * @param viewManager ViewManager for the current record
      * @return true if the state of this list reflects the same state as the given ViewManager regarding the level for which the list was created;
      *         false otherwise
      */

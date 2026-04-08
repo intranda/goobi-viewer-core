@@ -43,7 +43,7 @@ public interface BrowseElementInfo {
 
     /**
      *
-     * @param language
+     * @param language language code for the requested description
      * @return a {@link java.lang.String} object.
      */
     public String getDescription(String language);

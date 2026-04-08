@@ -65,7 +65,7 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
     /**
      * Cloning constructor.
      *
-     * @param o
+     * @param o the widget to copy from
      */
     public FacetFieldSidebarWidget(FacetFieldSidebarWidget o) {
         super(o);
@@ -131,7 +131,7 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
     }
 
     /**
-     * Set the value of {@link #getFilterQuery()}
+     * Set the value of {@link #getFilterQuery()}.
      * 
      * @param filterQuery the filterQuery to set
      */
@@ -155,7 +155,7 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
     /**
      * Sets the number of field values displayed in the widget.
      * 
-     * @param numEntries
+     * @param numEntries the number of field values to display
      */
     public void setNumEntries(int numEntries) {
         this.numEntries = numEntries;

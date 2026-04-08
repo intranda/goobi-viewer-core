@@ -194,7 +194,7 @@ public class MetadataElement implements Serializable {
      *
      * @param se StructElement
      * @param metadataViewIndex Metadata view index
-     * @param sessionLocale
+     * @param sessionLocale locale for translations/formatting
      * @return Constructed {@link MetadataElement}
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -284,7 +284,7 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * Determines the mimetype from the structElement's metadata, or its first child if the structElement is an anchor
+     * Determines the mimetype from the structElement's metadata, or its first child if the structElement is an anchor.
      *
      * @param se {@link StructElement}
      * @return Mime type form metadata field
@@ -356,7 +356,7 @@ public class MetadataElement implements Serializable {
     /**
      * Returns the first instance of a Metadata object whose label matches the given field name.
      *
-     * @param name a {@link java.lang.String} object.
+     * @param name Solr field name to look up
      * @return a {@link io.goobi.viewer.model.metadata.Metadata} object.
      */
     public Metadata getMetadata(String name) {
@@ -367,7 +367,7 @@ public class MetadataElement implements Serializable {
      * Returns the first instance of a Metadata object whose label matches the given field name. If a language is given, a localized field name will
      * be used.
      *
-     * @param name a {@link java.lang.String} object.
+     * @param name Solr field name to look up
      * @param language Optional language
      * @should return correct language metadata field
      * @should fall back to non language field if language field not found
@@ -412,7 +412,7 @@ public class MetadataElement implements Serializable {
     /**
      * getMetadata.
      *
-     * @param fields a {@link java.util.List} object.
+     * @param fields Solr field names to retrieve metadata for
      * @return List of Metadata objects that match the given field names
      */
     public List<Metadata> getMetadata(List<String> fields) {
@@ -461,7 +461,7 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * Alias for {@link #getMetadataList(boolean) getMetadataList(true)}
+     * Alias for {@link #getMetadataList(boolean) getMetadataList(true)}.
      * 
      * @return the MetadataList
      */
@@ -489,7 +489,7 @@ public class MetadataElement implements Serializable {
     /**
      * Checks whether all metadata fields for this element can be displayed in a single box (i.e. no table type grouped metadata are configured).
      *
-     * @param type
+     * @param type the metadata type to check
      * @return true if all metadata are not configured as single string; false otherwise
      * @should return false if at least one metadata with same type not single string
      * @should return true if all metadata of same type single string
@@ -576,7 +576,7 @@ public class MetadataElement implements Serializable {
     /**
      * Setter for the field <code>label</code>.
      *
-     * @param label a {@link java.lang.String} object.
+     * @param label display label for this metadata element
      */
     public void setLabel(String label) {
         this.label = label;
@@ -603,7 +603,7 @@ public class MetadataElement implements Serializable {
     /**
      * Setter for the field <code>url</code>.
      *
-     * @param url a {@link java.lang.String} object.
+     * @param url viewer URL for this element's record page
      */
     public void setUrl(String url) {
         this.url = url;
@@ -713,7 +713,7 @@ public class MetadataElement implements Serializable {
     /**
      * getFirstMetadataValueIfExists.
      *
-     * @param name a {@link java.lang.String} object.
+     * @param name Solr field name to look up
      * @return a {@link java.util.Optional} object.
      */
     public Optional<String> getFirstMetadataValueIfExists(String name) {
@@ -727,9 +727,9 @@ public class MetadataElement implements Serializable {
     /**
      * getFirstMetadataValue.
      *
-     * @param prefix a {@link java.lang.String} object.
-     * @param name a {@link java.lang.String} object.
-     * @param suffix a {@link java.lang.String} object.
+     * @param prefix string prepended to the metadata value
+     * @param name Solr field name to look up
+     * @param suffix string appended to the metadata value
      * @return a {@link java.lang.String} object.
      */
     public String getFirstMetadataValue(String prefix, String name, String suffix) {
@@ -743,7 +743,7 @@ public class MetadataElement implements Serializable {
     /**
      * Setter for the field <code>selectedRecordLanguage</code>.
      *
-     * @param language a {@link java.lang.String} object.
+     * @param language ISO language code for the selected record language
      * @return this
      */
     public MetadataElement setSelectedRecordLanguage(String language) {

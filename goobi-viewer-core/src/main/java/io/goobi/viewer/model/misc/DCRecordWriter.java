@@ -64,8 +64,8 @@ public class DCRecordWriter {
     /**
      * Adds a metadata element with namespace "dc" to the record element.
      *
-     * @param name
-     * @param value
+     * @param name local name of the Dublin Core element (e.g. "title", "creator")
+     * @param value text content to set for the element
      */
     public void addDCMetadata(String name, String value) {
         if (StringUtils.isNotBlank(value)) {
@@ -78,7 +78,7 @@ public class DCRecordWriter {
     /**
      * Reads the value of the given metadata from the jdom document.
      *
-     * @param name
+     * @param name local name of the Dublin Core element to read
      * @return Metadata value from the XML tree; null if none found
      */
     public String getMetadataValue(String name) {

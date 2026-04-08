@@ -32,15 +32,15 @@ public class Language implements Comparable<Language>, Serializable {
     private static final long serialVersionUID = 688690972248321229L;
 
     /**
-     * Language code according to iso 639-2/B (based on English names)
+     * Language code according to iso 639-2/B (based on English names).
      */
     private String isoCode6392B;
     /**
-     * Language code according to iso 639-2/T (based on native names)
+     * Language code according to iso 639-2/T (based on native names).
      */
     private String isoCode6392T;
     /**
-     * Language code according to iso 639_1
+     * Language code according to iso 639_1.
      */
     private String isoCode6391;
     private String englishName;
@@ -113,7 +113,7 @@ public class Language implements Comparable<Language>, Serializable {
     /**
      * setIsoCode.
      *
-     * @param isoCode a {@link java.lang.String} object.
+     * @param isoCode ISO 639-2/B language code to set
      */
     public void setIsoCode(String isoCode) {
         this.isoCode6392B = isoCode;
@@ -131,7 +131,7 @@ public class Language implements Comparable<Language>, Serializable {
     /**
      * setIsoCodeOld.
      *
-     * @param isoCodeOld a {@link java.lang.String} object.
+     * @param isoCodeOld ISO 639-1 language code to set
      */
     public void setIsoCodeOld(String isoCodeOld) {
         this.isoCode6391 = isoCodeOld;

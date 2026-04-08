@@ -39,8 +39,8 @@ public class DynamicContent implements Serializable {
 
     /**
      * 
-     * @param type
-     * @param componentFilename
+     * @param type the type of dynamic content
+     * @param componentFilename the filename of the JSF component
      */
     public DynamicContent(DynamicContentType type, String componentFilename) {
         this.type = type;

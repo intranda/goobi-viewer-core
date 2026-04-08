@@ -172,7 +172,7 @@ public class DefaultURLBuilder implements IURLBuilder {
     /**
      * getPageType.
      *
-     * @param ele a {@link io.goobi.viewer.model.search.BrowseElement} object.
+     * @param ele browse element whose page type to determine
      * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
      */
     protected PageType getPageType(BrowseElement ele) {
@@ -189,8 +189,8 @@ public class DefaultURLBuilder implements IURLBuilder {
     /**
      * buildSearchUrl.
      *
-     * @param fieldName a {@link java.lang.String} object.
-     * @param fieldValue a {@link java.lang.String} object.
+     * @param fieldName Solr field name to search in
+     * @param fieldValue field value to search for
      * @return a {@link java.lang.String} object.
      */
     protected String buildSearchUrl(String fieldName, String fieldValue) {

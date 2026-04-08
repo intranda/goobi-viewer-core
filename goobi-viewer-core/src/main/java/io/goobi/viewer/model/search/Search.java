@@ -164,13 +164,13 @@ public class Search implements Serializable {
     private final List<String> facetFields;
 
     /**
-     * Lists of geo-locations found by the last search
+     * Lists of geo-locations found by the last search.
      */
     @Transient
     private List<Location> hitLocationList = new ArrayList<>();
     @Transient
     private boolean hasGeoLocationHits = false;
-    /** Metadata configuration list type (default is "searchHit") */
+    /** Metadata configuration list type (default is "searchHit"). */
     @Transient
     private String metadataListType = Configuration.METADATA_LIST_TYPE_SEARCH_HIT;
 
@@ -185,7 +185,7 @@ public class Search implements Serializable {
      * Cloning constructor. Creates a new search in a state as it might be loaded from database, i.e. without any transient fields set. In particular
      * with empty {@link #getHits()}
      *
-     * @param blueprint
+     * @param blueprint search instance to copy state from
      */
     public Search(Search blueprint) {
         this.id = blueprint.id;
@@ -214,9 +214,9 @@ public class Search implements Serializable {
     /**
      * Creates a new Search instance.
      *
-     * @param searchType a int.
-     * @param searchFilter a {@link io.goobi.viewer.model.search.SearchFilter} object.
-     * @param resultGroups
+     * @param searchType numeric search type constant
+     * @param searchFilter filter restricting the search scope
+     * @param resultGroups result groups to search within
      */
     public Search(int searchType, SearchFilter searchFilter, List<SearchResultGroup> resultGroups) {
         this(searchType, searchFilter, resultGroups, DataManager.getInstance().getConfiguration().getAllFacetFields());
@@ -225,8 +225,8 @@ public class Search implements Serializable {
     /**
      * Creates a new Search instance.
      *
-     * @param searchType a int.
-     * @param searchFilter a {@link io.goobi.viewer.model.search.SearchFilter} object.
+     * @param searchType numeric search type constant
+     * @param searchFilter filter restricting the search scope
      * @param resultGroups the {@link SearchResultGroup}s to search
      * @param facetFields the facet fields to use
      */
@@ -289,7 +289,7 @@ public class Search implements Serializable {
 
     /**
      * 
-     * @param facets
+     * @param facets active search facets
      * @return Generated Solr query
      * @throws IndexUnreachableException
      */
@@ -299,8 +299,8 @@ public class Search implements Serializable {
 
     /**
      * 
-     * @param facets
-     * @param aggregationType
+     * @param facets active search facets
+     * @param aggregationType controls how results are aggregated
      * @return Generated Solr query
      * @throws IndexUnreachableException
      */
@@ -323,9 +323,9 @@ public class Search implements Serializable {
     /**
      * execute.
      *
-     * @param facets a {@link io.goobi.viewer.model.search.SearchFacets} object.
-     * @param searchTerms a {@link java.util.Map} object.
-     * @param hitsPerPage a int.
+     * @param facets active search facets to apply during execution
+     * @param searchTerms map of search terms per field for highlighting
+     * @param hitsPerPage number of hits to return per page
      * @param locale Selected locale
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -340,12 +340,12 @@ public class Search implements Serializable {
     /**
      * execute.
      *
-     * @param facets a {@link io.goobi.viewer.model.search.SearchFacets} object.
-     * @param searchTerms a {@link java.util.Map} object.
-     * @param hitsPerPage a int.
+     * @param facets active search facets to apply during execution
+     * @param searchTerms map of search terms per field for highlighting
+     * @param hitsPerPage number of hits to return per page
      * @param locale Selected locale
-     * @param keepSolrDoc
-     * @param aggregationType
+     * @param keepSolrDoc if true, retains the raw Solr document in each hit
+     * @param aggregationType controls how results are aggregated
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -400,19 +400,19 @@ public class Search implements Serializable {
 
     /**
      * 
-     * @param resultGroup
-     * @param currentQuery
-     * @param finalQuery
-     * @param subElementQueryFilterSuffix
-     * @param activeFacetFilterQueries
-     * @param params
-     * @param searchTerms
+     * @param resultGroup result group to search
+     * @param currentQuery prepared user query string
+     * @param finalQuery fully assembled Solr query with aggregation suffix
+     * @param subElementQueryFilterSuffix additional filter for sub-element facets
+     * @param activeFacetFilterQueries list of active Solr facet filter queries
+     * @param params additional Solr query parameters
+     * @param searchTerms map of search terms per field for highlighting
      * @param facets {@link SearchFacets} object
      * @param generateAvailableFacets If true, facet links will be generated from the search result
-     * @param hitsPerPage
-     * @param locale
-     * @param keepSolrDoc
-     * @param aggregationType
+     * @param hitsPerPage number of hits to return per page
+     * @param locale locale used for facet label translation
+     * @param keepSolrDoc if true, retains the raw Solr document in each hit
+     * @param aggregationType controls how results are aggregated
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -631,10 +631,10 @@ public class Search implements Serializable {
     /**
      * Populates slider ranges for ranged facets.
      * 
-     * @param finalQuery
-     * @param facets
+     * @param finalQuery fully assembled Solr query
+     * @param facets active search facets to populate range values into
      * @param resultGroup Active result group for optional filtering
-     * @param params
+     * @param params additional Solr query parameters
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
@@ -685,11 +685,11 @@ public class Search implements Serializable {
     /**
      * Populates facets that are applied to a raw, unfiltered search, such as total slider range and permanently displayed facets.
      * 
-     * @param finalQuery
-     * @param facets
-     * @param resultGroup
-     * @param params
-     * @param locale
+     * @param finalQuery fully assembled Solr query
+     * @param facets active search facets to populate unfiltered values into
+     * @param resultGroup optional result group for additional filtering
+     * @param params additional Solr query parameters
+     * @param locale locale used for facet label translation
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
@@ -750,8 +750,8 @@ public class Search implements Serializable {
 
     /**
      * 
-     * @param solrField
-     * @param results
+     * @param solrField Solr field name containing WKT coordinate values
+     * @param results list of Solr documents to extract locations from
      * @return List<Location>
      */
     private static List<Location> getLocations(String solrField, SolrDocumentList results) {
@@ -781,7 +781,7 @@ public class Search implements Serializable {
 
     /**
      * 
-     * @param o
+     * @param o WKT string or list of WKT strings to parse
      * @return List<IArea>
      */
     protected static List<IArea> getLocations(Object o) {
@@ -813,7 +813,7 @@ public class Search implements Serializable {
 
     /**
      * 
-     * @param value
+     * @param value WKT string containing coordinate pairs to parse
      * @return double[][]
      */
     protected static double[][] getPoints(String value) {
@@ -827,8 +827,8 @@ public class Search implements Serializable {
 
     /**
      * 
-     * @param x
-     * @param y
+     * @param x longitude coordinate as Number or String
+     * @param y latitude coordinate as Number or String
      * @return double[][]
      */
     protected static double[] parsePoint(Object x, Object y) {
@@ -1100,7 +1100,7 @@ public class Search implements Serializable {
 
     /**
      * 
-     * @param option
+     * @param option sorting option containing field and direction
      */
     public void setSearchSortingOption(SearchSortingOption option) {
         logger.trace("setSearchSortingOption: {}", option);
@@ -1285,7 +1285,7 @@ public class Search implements Serializable {
     /**
      * getLastPage.
      *
-     * @param hitsPerPage a int.
+     * @param hitsPerPage number of hits displayed per page
      * @return a int.
      */
     public int getLastPage(int hitsPerPage) {

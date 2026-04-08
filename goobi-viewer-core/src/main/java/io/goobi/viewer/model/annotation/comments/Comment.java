@@ -55,19 +55,19 @@ public class Comment extends PersistentAnnotation implements Comparable<Comment>
     }
 
     /**
-     * @param source
+     * @param source the annotation to copy fields from
      */
     public Comment(PersistentAnnotation source) {
         super(source);
     }
 
     /**
-     * @param pi
-     * @param page
-     * @param owner
-     * @param text
-     * @param accessCondition
-     * @param publicationStatus
+     * @param pi persistent identifier of the target record
+     * @param page physical page order of the annotated page
+     * @param owner the user creating this comment
+     * @param text the comment text body
+     * @param accessCondition access condition controlling visibility
+     * @param publicationStatus the publication/review status of this comment
      */
     public Comment(String pi, int page, User owner, String text, String accessCondition, PublicationStatus publicationStatus) {
         super();
@@ -118,8 +118,10 @@ public class Comment extends PersistentAnnotation implements Comparable<Comment>
     }
 
     /**
-     * @param o
-     * @return
+     * Compares this comment to another based on their modification and creation dates.
+     *
+     * @param o the comment to compare to
+     * @return a negative integer, zero, or positive integer if this comment is earlier than, equal to, or later than the given comment
      */
     @Override
     public int compareTo(Comment o) {

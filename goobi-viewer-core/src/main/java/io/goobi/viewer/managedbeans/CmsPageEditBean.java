@@ -342,8 +342,8 @@ public class CmsPageEditBean implements Serializable {
 
     /**
      * 
-     * @param page
-     * @param pageId
+     * @param page CMS page whose index entry is to be deleted
+     * @param pageId Numeric ID of the CMS page
      */
     static void deletePageMetadataFromIndex(CMSPage page, Long pageId) {
         if (page == null) {
@@ -370,7 +370,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Setter for the field <code>selectedPage</code>.
      *
-     * @param currentPage a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
+     * @param currentPage CMS page to select; null clears the selection
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void setSelectedPage(CMSPage currentPage) throws DAOException {
@@ -405,7 +405,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * setSelectedPageId.
      *
-     * @param id a {@link java.lang.String} object
+     * @param id string representation of the CMS page database ID
      * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void setSelectedPageId(String id) throws DAOException {
@@ -462,7 +462,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Setter for the field <code>sidebarWidgets</code>.
      *
-     * @param sidebarWidgets a {@link java.util.Map} object
+     * @param sidebarWidgets map of widgets to their selection state
      */
     public void setSidebarWidgets(Map<WidgetDisplayElement, Boolean> sidebarWidgets) {
         this.sidebarWidgets = sidebarWidgets;
@@ -507,7 +507,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Setter for the field <code>selectedComponent</code>.
      *
-     * @param selectedComponent a {@link java.lang.String} object
+     * @param selectedComponent template filename of the component to add
      */
     public void setSelectedComponent(String selectedComponent) {
         this.selectedComponent = selectedComponent;
@@ -516,7 +516,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * getAvailableComponents.
      *
-     * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object
+     * @param page CMS page used to filter out incompatible paged components
      * @return a {@link java.util.List} object
      */
     public List<SelectItem> getAvailableComponents(CMSPage page) {
@@ -554,7 +554,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * mayRemoveCategoryFromPage.
      *
-     * @param cat a {@link io.goobi.viewer.model.cms.CMSCategory} object.
+     * @param cat category whose removal eligibility is being checked
      * @return false only if the user has limited privileges for categories and only one category is set for the selected page
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -579,7 +579,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Setter for the field <code>editMode</code>.
      *
-     * @param editMode a boolean.
+     * @param editMode true when editing an existing page; false for new pages
      */
     public void setEditMode(boolean editMode) {
         this.editMode = editMode;
@@ -595,7 +595,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * setNewSelectedPage.
      *
-     * @param templateId a {@link java.lang.Long} object
+     * @param templateId database ID of the page template to base the new page on
      */
     public void setNewSelectedPage(Long templateId) {
         CMSPageTemplate template = loadTemplate(templateId);
@@ -634,7 +634,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Setter for the field <code>pageEditState</code>.
      *
-     * @param pageEditState a {@link io.goobi.viewer.model.cms.pages.CMSPageEditState} object
+     * @param pageEditState active section of the page edit UI
      */
     public void setPageEditState(CMSPageEditState pageEditState) {
         this.pageEditState = pageEditState;
@@ -643,7 +643,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * deleteComponent.
      *
-     * @param component a {@link io.goobi.viewer.model.cms.pages.content.CMSComponent} object
+     * @param component CMS component to remove from the selected page
      * @return a boolean
      */
     public boolean deleteComponent(CMSComponent component) {
@@ -681,10 +681,10 @@ public class CmsPageEditBean implements Serializable {
 
     /**
      * Fills all properties of the page with values for which the user has privileges - but only if the user has restricted privileges for that
-     * property
+     * property.
      *
-     * @param page
-     * @param user
+     * @param page CMS page whose restricted fields are to be set
+     * @param user User whose privilege constraints are applied
      * @throws PresentationException
      * @throws DAOException
      */
@@ -710,7 +710,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Setter for the field <code>saveAsTemplate</code>.
      *
-     * @param saveAsTemplate a boolean
+     * @param saveAsTemplate true to save the current page as a template after saving
      */
     public void setSaveAsTemplate(boolean saveAsTemplate) {
         this.saveAsTemplate = saveAsTemplate;
@@ -728,7 +728,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Setter for the field <code>templateName</code>.
      *
-     * @param templateName a {@link java.lang.String} object
+     * @param templateName display name for the template to be created
      */
     public void setTemplateName(String templateName) {
         this.templateName = templateName;
@@ -758,7 +758,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Setter for the field <code>templateLockComponents</code>.
      *
-     * @param templateLockComponents a boolean
+     * @param templateLockComponents true to prevent component editing in pages based on this template
      */
     public void setTemplateLockComponents(boolean templateLockComponents) {
         this.templateLockComponents = templateLockComponents;

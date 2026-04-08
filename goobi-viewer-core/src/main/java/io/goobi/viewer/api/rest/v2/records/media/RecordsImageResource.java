@@ -74,7 +74,7 @@ public class RecordsImageResource {
     private final String pi;
 
     /**
-     * @param pi
+     * @param pi persistent identifier of the record
      */
     public RecordsImageResource(
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) {
@@ -135,7 +135,7 @@ public class RecordsImageResource {
     }
 
     /**
-     * @param pi
+     * @param pi persistent identifier of the record
      * @return File name of the representative image for the record with the given pi
      * @throws PresentationException
      * @throws IndexUnreachableException

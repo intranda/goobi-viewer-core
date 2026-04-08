@@ -35,7 +35,7 @@ public class RestApiException extends Exception {
     /**
      * Creates a new RestApiException instance.
      *
-     * @param statusCode a int.
+     * @param statusCode HTTP status code of the failed API response
      */
     public RestApiException(int statusCode) {
         super();
@@ -45,9 +45,9 @@ public class RestApiException extends Exception {
     /**
      * Creates a new RestApiException instance.
      *
-     * @param message a {@link java.lang.String} object.
-     * @param cause a {@link java.lang.Throwable} object.
-     * @param statusCode a int.
+     * @param message human-readable error description
+     * @param cause underlying exception that triggered this error
+     * @param statusCode HTTP status code of the failed API response
      */
     public RestApiException(String message, Throwable cause, int statusCode) {
         super(message, cause);
@@ -61,8 +61,8 @@ public class RestApiException extends Exception {
     /**
      * Creates a new RestApiException instance.
      *
-     * @param message a {@link java.lang.String} object.
-     * @param statusCode a int.
+     * @param message human-readable error description
+     * @param statusCode HTTP status code of the failed API response
      */
     public RestApiException(String message, int statusCode) {
         super(message);
@@ -76,8 +76,8 @@ public class RestApiException extends Exception {
     /**
      * Creates a new RestApiException instance.
      *
-     * @param cause a {@link java.lang.Throwable} object.
-     * @param statusCode a int.
+     * @param cause underlying exception that triggered this error
+     * @param statusCode HTTP status code of the failed API response
      */
     public RestApiException(Throwable cause, int statusCode) {
         super(cause);

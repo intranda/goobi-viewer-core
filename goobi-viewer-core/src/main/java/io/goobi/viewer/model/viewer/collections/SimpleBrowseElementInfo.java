@@ -48,7 +48,7 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo, Serializable 
     /**
      * Creates a new SimpleBrowseElementInfo instance.
      *
-     * @param collectionName a {@link java.lang.String} object.
+     * @param collectionName identifier of the collection to represent
      */
     public SimpleBrowseElementInfo(String collectionName) {
         this.collectionName = collectionName;
@@ -57,9 +57,9 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo, Serializable 
     /**
      * Creates a new SimpleBrowseElementInfo instance.
      *
-     * @param collectionName a {@link java.lang.String} object.
-     * @param linkURI a {@link java.net.URI} object.
-     * @param iconURI a {@link java.net.URI} object.
+     * @param collectionName identifier of the collection to represent
+     * @param linkURI optional URI the element links to, may be null
+     * @param iconURI optional URI of the element's icon, may be null
      */
     public SimpleBrowseElementInfo(String collectionName, URI linkURI, URI iconURI) {
         this.collectionName = collectionName;
@@ -84,7 +84,7 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo, Serializable 
     /**
      * Setter for the field <code>description</code>.
      *
-     * @param description a {@link java.lang.String} object.
+     * @param description plain text description to assign
      */
     public void setDescription(String description) {
         this.description = description;
@@ -105,7 +105,7 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo, Serializable 
     /**
      * Setter for the field <code>linkURI</code>.
      *
-     * @param linkURI a {@link java.net.URI} object.
+     * @param linkURI URI the element should link to
      */
     public void setLinkURI(URI linkURI) {
         this.linkURI = linkURI;
@@ -120,7 +120,7 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo, Serializable 
     /**
      * Setter for the field <code>iconURI</code>.
      *
-     * @param iconURI a {@link java.net.URI} object.
+     * @param iconURI URI of the icon to display for this element
      */
     public void setIconURI(URI iconURI) {
         this.iconURI = iconURI;

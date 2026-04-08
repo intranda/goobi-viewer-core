@@ -95,7 +95,7 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * @param template
+     * @param template advanced search template name for field configuration lookup
      */
     public SearchQueryItem(String template) {
         this.template = template;
@@ -141,7 +141,7 @@ public class SearchQueryItem implements Serializable {
     /**
      * getSelectItems.
      *
-     * @param language a {@link java.lang.String} object.
+     * @param language locale language code for label translation.
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -181,7 +181,7 @@ public class SearchQueryItem implements Serializable {
 
     /**
      * 
-     * @param language
+     * @param language locale language code for label translation
      * @param additionalValues 0-n additional, manually added values
      * @return List&lt;CheckboxSelectable&lt;String&gt;&gt;
      * @throws DAOException
@@ -218,7 +218,7 @@ public class SearchQueryItem implements Serializable {
 
     /**
      * 
-     * @param lineIndex
+     * @param lineIndex zero-based index of the line to check
      * @return a boolean
      */
     public boolean isDisplayAddNewItemButton(int lineIndex) {
@@ -226,8 +226,8 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * 
-     * @param lineIndex
+     *
+     * @param lineIndex zero-based index of the line to check
      * @return true if given line is first in list; false otherwise
      */
     public boolean isFirstLine(int lineIndex) {
@@ -235,8 +235,8 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * 
-     * @param lineIndex
+     *
+     * @param lineIndex zero-based index of the line to check
      * @return true if given line is last in list; false otherwise
      */
     public boolean isLastLine(int lineIndex) {
@@ -244,8 +244,8 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * 
-     * @param afterIndex
+     *
+     * @param afterIndex index after which to insert the new line; -1 to append
      * @return true if new line successfully added; false otherwise
      */
     public boolean addNewLine(int afterIndex) {
@@ -267,7 +267,7 @@ public class SearchQueryItem implements Serializable {
     /**
      * removeLine.
      *
-     * @param line a {@link io.goobi.viewer.model.search.SearchQueryItemLine} object.
+     * @param line query item line to remove from this item.
      * @should remove line correctly
      * @should not remove last remaining line
      * @return a boolean.
@@ -416,8 +416,8 @@ public class SearchQueryItem implements Serializable {
 
     /**
      * Convenience setter.
-     * 
-     * @param operator
+     *
+     * @param operator operator to set on the first line
      */
     public void setOperator(SearchItemOperator operator) {
         lines.get(0).setOperator(operator);
@@ -450,8 +450,8 @@ public class SearchQueryItem implements Serializable {
 
     /**
      * Backwards compatibility method.
-     * 
-     * @param value
+     *
+     * @param value value to look up in the first line's values list
      * @return true if values contains given value; false otherwise
      */
     public boolean isValueSet(String value) {
@@ -512,7 +512,7 @@ public class SearchQueryItem implements Serializable {
     /**
      * This is called after <code>setField</code>, so no point in calling <code>toggleDisplaySelectItems</code> here.
      *
-     * @param ev a {@link jakarta.faces.event.ValueChangeEvent} object.
+     * @param ev JSF value change event from the field selector.
      */
     public void selectOneMenuListener(ValueChangeEvent ev) {
         //
@@ -574,8 +574,8 @@ public class SearchQueryItem implements Serializable {
     /**
      * Generates the advanced query part for this item.
      *
-     * @param searchTerms a {@link java.util.Set} object.
-     * @param aggregateHits a boolean.
+     * @param searchTerms set collecting all search terms encountered during query building.
+     * @param aggregateHits if true, SUPER fields are included for aggregated hit results.
      * @param allowFuzzySearch If true, search terms will be augmented by fuzzy search tokens
      * @return a {@link java.lang.String} object.
      * @should generate query correctly

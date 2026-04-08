@@ -45,7 +45,7 @@ public interface TagGroup extends Comparable<TagGroup> {
     /**
      * addTags.
      *
-     * @param tags a {@link java.util.List} object.
+     * @param tags list of tag counts to add to this group
      */
     public void addTags(List<TagCount> tags);
 

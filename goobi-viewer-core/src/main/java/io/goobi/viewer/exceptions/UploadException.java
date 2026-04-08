@@ -25,8 +25,8 @@ public class UploadException extends PresentationException {
     /**
      * Creates a new UploadException instance.
      *
-     * @param string a {@link java.lang.String} object.
-     * @param e a {@link java.lang.Throwable} object.
+     * @param string detail message describing the upload failure
+     * @param e cause of the upload failure
      */
     public UploadException(String string, Throwable e) {
         super(string, e);
@@ -35,7 +35,7 @@ public class UploadException extends PresentationException {
     /**
      * Creates a new UploadException instance.
      *
-     * @param string a {@link java.lang.String} object.
+     * @param string detail message describing the upload failure
      */
     public UploadException(String string) {
         super(string);

@@ -44,7 +44,7 @@ public class MediaHandler {
     /**
      * Creates a new MediaHandler instance.
      *
-     * @param urls
+     * @param urls API URL manager for building media resource URLs
      */
     public MediaHandler(AbstractApiUrlManager urls) {
         this.urls = urls;
@@ -54,7 +54,7 @@ public class MediaHandler {
      * Returns the url to the media object for the given pi and filename.
      *
      * @param type The mime type to use
-     * @param format
+     * @param format media sub-format (e.g. audio or video format extension)
      * @param pi The pi of the requested work
      * @param filename The media filename
      * @return the url to the media file of the given pi and filename

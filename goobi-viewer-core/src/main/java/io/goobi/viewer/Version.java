@@ -41,13 +41,13 @@ import io.goobi.viewer.controller.DateTools;
  * Version class.
  */
 public final class Version {
-    /** Constant <code>APPLICATION_NAME</code> */
+    /** Constant <code>APPLICATION_NAME</code>. */
     public static final String APPLICATION_NAME;
-    /** Constant <code>VERSION</code> */
+    /** Constant <code>VERSION</code>. */
     public static final String VERSION;
-    /** Constant <code>BUILDVERSION</code> */
+    /** Constant <code>BUILDVERSION</code>. */
     public static final String BUILDVERSION;
-    /** Constant <code>BUILDDATE</code> */
+    /** Constant <code>BUILDDATE</code>. */
     public static final String BUILDDATE;
 
     static {
@@ -92,10 +92,11 @@ public final class Version {
     }
 
     /**
+     * Extracts the value associated with the given label from an info text string.
      *
-     * @param label
-     * @param infoText
-     * @return
+     * @param label the label whose value to extract; used as regex prefix in the pattern {@code label: *(.*)}
+     * @param infoText the info text string to search in
+     * @return the value following the label, or {@code "?"} if the label is not found
      * @should extract fields correctly
      */
     static String getInfo(String label, String infoText) {

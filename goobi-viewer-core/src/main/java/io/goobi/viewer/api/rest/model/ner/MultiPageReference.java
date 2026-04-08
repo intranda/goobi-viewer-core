@@ -51,7 +51,7 @@ public class MultiPageReference implements TagGroup {
     /**
      * Creates a new MultiPageReference instance.
      *
-     * @param order a int.
+     * @param order page order number used for both first and last page
      */
     public MultiPageReference(int order) {
         super();
@@ -63,8 +63,8 @@ public class MultiPageReference implements TagGroup {
     /**
      * Creates a new MultiPageReference instance.
      *
-     * @param first a {@link java.lang.Integer} object.
-     * @param last a {@link java.lang.Integer} object.
+     * @param first order number of the first page in the range
+     * @param last order number of the last page in the range
      */
     public MultiPageReference(Integer first, Integer last) {
         super();

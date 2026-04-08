@@ -47,7 +47,7 @@ public class Feedback implements Serializable {
     /**
      * getEmailSubject.
      *
-     * @param key a {@link java.lang.String} object.
+     * @param key message key to resolve as email subject
      * @return a {@link java.lang.String} object.
      */
     public String getEmailSubject(String key) {
@@ -57,7 +57,7 @@ public class Feedback implements Serializable {
     /**
      * getEmailBody.
      *
-     * @param key a {@link java.lang.String} object.
+     * @param key message key to resolve as email body template
      * @return a {@link java.lang.String} object.
      */
     public String getEmailBody(String key) {

@@ -58,21 +58,21 @@ public final class ComplexMetadata {
      */
     private final String field;
     /**
-     * Taken from 'METADATATYPE'
+     * Taken from 'METADATATYPE'.
      */
     private final String type;
     /**
-     * IDDOC_OWNER
+     * IDDOC_OWNER.
      */
     private final String ownerId;
 
     /**
-     * IDDOC
+     * IDDOC.
      */
     private final String id;
 
     /**
-     * PI_TOPSTRUCT
+     * PI_TOPSTRUCT.
      */
     private final String topStructIdentifier;
 

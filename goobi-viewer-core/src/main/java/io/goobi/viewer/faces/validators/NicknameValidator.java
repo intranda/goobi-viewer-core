@@ -75,7 +75,7 @@ public class NicknameValidator implements Validator<String> {
     /**
      * validateEmailAddress.
      *
-     * @param name a {@link java.lang.String} object.
+     * @param name nickname string to check against the allowed character pattern
      * @should match correct name
      * @should not match invalid name
      * @return a boolean.
@@ -92,7 +92,7 @@ public class NicknameValidator implements Validator<String> {
     }
 
     /**
-     * @param nick
+     * @param nick nickname to check for uniqueness
      * @return true if the given email is not already used by a different user; false otherwise
      * @throws DAOException
      */

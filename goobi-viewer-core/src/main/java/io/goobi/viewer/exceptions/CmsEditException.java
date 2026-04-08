@@ -33,8 +33,8 @@ public class CmsEditException extends PresentationException {
     /**
      * Creates a new CmsEditException instance.
      *
-     * @param string a {@link java.lang.String} object.
-     * @param e a {@link java.lang.Throwable} object.
+     * @param string detail message describing the invalid edit state
+     * @param e cause of the edit failure
      */
     public CmsEditException(String string, Throwable e) {
         super(string, e);
@@ -43,7 +43,7 @@ public class CmsEditException extends PresentationException {
     /**
      * Creates a new CmsEditException instance.
      *
-     * @param string a {@link java.lang.String} object.
+     * @param string detail message describing the invalid edit state
      */
     public CmsEditException(String string) {
         super(string);

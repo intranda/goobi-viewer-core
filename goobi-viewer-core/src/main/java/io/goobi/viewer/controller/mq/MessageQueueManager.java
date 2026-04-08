@@ -173,7 +173,7 @@ public class MessageQueueManager {
     /**
      * Adds the message to the internal message queue to be handled later.
      * 
-     * @param message
+     * @param message message to add to the queue
      * @return Message ID
      * @throws MessageQueueException
      */
@@ -221,7 +221,7 @@ public class MessageQueueManager {
     /**
      * Finds the appropriate MessageHandler for a message, lets the handler handle the message and update the message in the database.
      * 
-     * @param message
+     * @param message message to dispatch to its handler
      * @return the result of the handler calling the message
      */
     public MessageStatus handle(ViewerMessage message) {

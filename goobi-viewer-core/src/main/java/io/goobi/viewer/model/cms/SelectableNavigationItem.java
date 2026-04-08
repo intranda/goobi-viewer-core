@@ -46,7 +46,7 @@ public class SelectableNavigationItem extends CMSNavigationItem {
     /**
      * Creates a new SelectableNavigationItem instance.
      *
-     * @param original a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
+     * @param original navigation item to copy state from
      */
     public SelectableNavigationItem(CMSNavigationItem original) {
         super(original);
@@ -55,7 +55,7 @@ public class SelectableNavigationItem extends CMSNavigationItem {
     /**
      * Creates a new SelectableNavigationItem instance.
      *
-     * @param cmsPage a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
+     * @param cmsPage CMS page to wrap as a navigation item
      */
     public SelectableNavigationItem(CMSPage cmsPage) {
         super(cmsPage);
@@ -64,8 +64,8 @@ public class SelectableNavigationItem extends CMSNavigationItem {
     /**
      * Creates a new SelectableNavigationItem instance.
      *
-     * @param targetUrl a {@link java.lang.String} object.
-     * @param label a {@link java.lang.String} object.
+     * @param targetUrl navigation target URL
+     * @param label display label for the menu item
      */
     public SelectableNavigationItem(String targetUrl, String label) {
         super(targetUrl, label);

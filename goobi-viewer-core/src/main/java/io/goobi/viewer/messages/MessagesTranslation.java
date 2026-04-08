@@ -39,9 +39,9 @@ public class MessagesTranslation extends Translation {
     /**
      * Creates a new MessagesTranslation instance.
      *
-     * @param key a {@link java.lang.String} object.
-     * @param value a {@link java.lang.String} object.
-     * @param language a {@link java.lang.String} object.
+     * @param key message key identifying the translation entry
+     * @param value translated text for the given language
+     * @param language ISO language code for this translation
      */
     public MessagesTranslation(String key, String value, String language) {
         super(language, key, value);
@@ -51,7 +51,7 @@ public class MessagesTranslation extends Translation {
     /**
      * getTranslations.
      *
-     * @param key a {@link java.lang.String} object.
+     * @param key message key to look up across all configured locales
      * @return a {@link java.util.Collection} object.
      */
     public static Collection<Translation> getTranslations(String key) {

@@ -85,10 +85,10 @@ public class NERTag {
     /**
      * Creates a new NERTag instance.
      *
-     * @param id a {@link java.lang.String} object.
-     * @param value a {@link java.lang.String} object.
-     * @param type a {@link io.goobi.viewer.api.rest.model.ner.NERTag.Type} object.
-     * @param element a {@link io.goobi.viewer.api.rest.model.ner.ElementReference} object.
+     * @param id unique identifier of the named entity tag
+     * @param value text value of the named entity tag
+     * @param type NER category of the tag (person, location, etc.)
+     * @param element element reference where the tag appears
      */
     public NERTag(String id, String value, Type type, ElementReference element) {
         this.id = id;
@@ -136,7 +136,7 @@ public class NERTag {
     /**
      * Setter for the field <code>element</code>.
      *
-     * @param element a {@link io.goobi.viewer.api.rest.model.ner.ElementReference} object.
+     * @param element element reference where the tag appears
      */
     public void setElement(ElementReference element) {
         this.element = element;

@@ -36,15 +36,15 @@ public class MetadataDocument {
     private final String pi;
     private final String iddoc;
     /**
-     * Metadata directly in SOLR document
+     * Metadata directly in SOLR document.
      */
     private final MetadataContainer metadata;
     /**
-     * Metadata in METADATA documents
+     * Metadata in METADATA documents.
      */
     private final ComplexMetadataContainer metadataGroups;
     /**
-     * Child docstructs
+     * Child docstructs.
      */
     private final Collection<MetadataDocument> children;
 

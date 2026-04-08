@@ -47,7 +47,7 @@ public interface CMSMediaHolder {
     public CMSMediaItem getMediaItem();
 
     /**
-     * A regular expression determining which filenames are shown in the media list and may be uploaded
+     * A regular expression determining which filenames are shown in the media list and may be uploaded.
      *
      * @return a {@link java.lang.String} object.
      */

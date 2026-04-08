@@ -85,8 +85,8 @@ public class IIIFPresentationResponseFilter implements ContainerResponseFilter {
     /**
      * setResponseCharset.
      *
-     * @param response a {@link jakarta.ws.rs.container.ContainerResponseContext} object.
-     * @param charset a {@link java.lang.String} object.
+     * @param response JAX-RS response context whose Content-Type header is updated
+     * @param charset charset name to append to the Content-Type header
      */
     public void setResponseCharset(ContainerResponseContext response, String charset) {
         String contentType = response.getHeaderString(NetTools.HTTP_HEADER_CONTENT_TYPE) + ";charset=" + charset;

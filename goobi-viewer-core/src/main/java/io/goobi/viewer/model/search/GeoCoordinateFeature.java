@@ -72,9 +72,9 @@ public class GeoCoordinateFeature {
     /**
      * Initializes as a polygon feature with the given points as vertices.
      * 
-     * @param points
-     * @param predicate
-     * @param shape
+     * @param points array of coordinate pairs [lon, lat] forming the polygon vertices
+     * @param predicate Solr field or predicate identifying the coordinate source
+     * @param shape GeoJSON geometry type (e.g. "Polygon")
      * @param distError maximal distance between points for them to be considered overlapping
      */
     public GeoCoordinateFeature(double[][] points, String predicate, String shape, double distError) {

@@ -46,8 +46,8 @@ public class PhotoOEmbedResponse extends OEmbedResponse {
 
     /**
      *
-     * @param rec
-     * @param size
+     * @param rec the OEmbed record containing the image source
+     * @param size the desired image size in pixels
      * @throws ViewerConfigurationException
      */
     private void generateUrl(OEmbedRecord rec, int size) {

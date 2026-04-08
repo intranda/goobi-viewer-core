@@ -345,7 +345,7 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Checks both record status and all page status to check if any matches the given status.
      *
-     * @param status
+     * @param status crowdsourcing status to check for
      * @return false if status is null, otherwise true exactly if {@link #getStatus()} equals status or if any
      *         {@link CampaignRecordPageStatistic#getStatus()} of {@link #pageStatistics} returns true
      */
@@ -378,7 +378,9 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
-     * @return
+     * Retrieves the total number of pages for this record from the Solr index.
+     *
+     * @return the number of pages, 0 if no document was found, or null if an index error occurred
      */
     private Integer calculateTotalPages() {
         String query = String.format("PI:\"%s\"", pi);

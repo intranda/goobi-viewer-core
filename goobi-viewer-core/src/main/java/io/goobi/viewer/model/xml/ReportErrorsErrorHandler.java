@@ -38,8 +38,8 @@ public class ReportErrorsErrorHandler implements ErrorHandler {
 
     /**
      * 
-     * @param e
-     * @param severity
+     * @param e the SAX parse exception to record
+     * @param severity the severity level string (e.g. "ERROR", "FATAL", "WARNING")
      */
     private void addError(SAXParseException e, String severity) {
         errors.add(new XMLError(e.getLineNumber(), e.getColumnNumber(), severity, e.getMessage()));

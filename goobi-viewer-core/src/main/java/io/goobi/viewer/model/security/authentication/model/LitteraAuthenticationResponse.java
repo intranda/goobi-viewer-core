@@ -40,7 +40,7 @@ public class LitteraAuthenticationResponse {
     /**
      * Creates a new LitteraAuthenticationResponse instance.
      *
-     * @param success a boolean.
+     * @param success true if authentication succeeded
      */
     public LitteraAuthenticationResponse(boolean success) {
         this.authenticationSuccessful = success;

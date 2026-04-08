@@ -83,7 +83,7 @@ public class StatisticsBean implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(StatisticsBean.class);
 
-    /** Constant <code>SEPARATOR="::"</code> */
+    /** Constant <code>SEPARATOR="::"</code>. */
     public static final String SEPARATOR = "::";
     private static final int DAY_MS = 86400000;
 
@@ -94,8 +94,8 @@ public class StatisticsBean implements Serializable {
     /**
      * getImportedRecordsTrend.
      *
-     * @param days a int.
-     * @param dataPoints a int.
+     * @param days total number of days covered by the trend
+     * @param dataPoints number of data points to plot
      * @return a {@link java.util.List} object.
      */
     public List<String> getImportedRecordsTrend(final int days, final int dataPoints) {
@@ -336,7 +336,7 @@ public class StatisticsBean implements Serializable {
     /**
      * getUsageStatisticsForRecord.
      *
-     * @param pi a {@link java.lang.String} object
+     * @param pi persistent identifier of the record
      * @return {@link io.goobi.viewer.model.statistics.usage.StatisticsSummary}
      * @throws io.goobi.viewer.exceptions.PresentationException
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException

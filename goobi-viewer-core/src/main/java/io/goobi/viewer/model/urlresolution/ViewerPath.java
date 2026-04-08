@@ -101,10 +101,10 @@ public class ViewerPath implements Serializable {
      * Creates a {@link ViewerPath} based on the given request properties. This should not be called directly. Instead a ViewerPath should be created
      * by calling {@link ViewerPathBuilder#createPath(HttpServletRequest)} or {@link ViewerPathBuilder#createPath(String, String, String)}
      *
-     * @param applicationUrl
-     * @param applicationName
-     * @param pagePath
-     * @param parameterPath
+     * @param applicationUrl base URL of the viewer application
+     * @param applicationName context name of the web application
+     * @param pagePath URI path to the viewer page
+     * @param parameterPath URI path containing additional parameters
      */
     ViewerPath(String applicationUrl, String applicationName, URI pagePath, URI parameterPath) {
         super();

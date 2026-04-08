@@ -36,7 +36,7 @@ public class RecordLockManager {
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(RecordLockManager.class);
 
-    /** Currently viewed records */
+    /** Currently viewed records. */
     private final Map<String, Set<RecordLock>> loadedRecordMap = new ConcurrentHashMap<>();
     /**
      * Cache for record access conditions. Null value means the record is not yet cached, while empty list means the record has no access conditions.
@@ -115,8 +115,8 @@ public class RecordLockManager {
 
     /**
      *
-     * @param pi
-     * @param sessionId
+     * @param pi persistent identifier of the locked record
+     * @param sessionId HTTP session ID holding the lock
      * @return true if lock removed successfully; false otherwise
      */
     public synchronized boolean removeLockForPiAndSessionId(String pi, String sessionId) {
@@ -143,7 +143,7 @@ public class RecordLockManager {
      * Removes all record locks that are older that <code>maxAge</code> milliseconds. Can be used to periodically clean up locks that might have been
      * missed by the web socket mechanism.
      *
-     * @param maxAge
+     * @param maxAge maximum age of locks in milliseconds before removal
      * @return Number of removed locks
      * @should remove locks older than maxAge
      */
@@ -192,7 +192,7 @@ public class RecordLockManager {
 
     /**
      *
-     * @param pi
+     * @param pi persistent identifier of the record to clear from cache
      */
     public void emptyCacheForRecord(String pi) {
         if (pi == null) {

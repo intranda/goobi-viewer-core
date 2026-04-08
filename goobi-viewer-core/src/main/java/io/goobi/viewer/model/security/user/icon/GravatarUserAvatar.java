@@ -54,7 +54,7 @@ public class GravatarUserAvatar implements UserAvatar {
 
     /**
      *
-     * @param email
+     * @param email user email address used to generate the Gravatar hash
      */
     public GravatarUserAvatar(String email) {
         this.email = email;
@@ -69,7 +69,7 @@ public class GravatarUserAvatar implements UserAvatar {
 
     /**
      *
-     * @param size
+     * @param size desired image size in pixels
      * @return Gravatar URL
      */
     private String getGravatarUrl(int size) {
@@ -81,9 +81,10 @@ public class GravatarUserAvatar implements UserAvatar {
     }
 
     /**
+     * Converts a byte array to its lowercase hexadecimal string representation.
      *
-     * @param array
-     * @return
+     * @param array the byte array to convert
+     * @return the hexadecimal string representation of the given byte array
      */
     static String hex(byte[] array) {
         StringBuilder sb = new StringBuilder();
@@ -97,7 +98,7 @@ public class GravatarUserAvatar implements UserAvatar {
     /**
      * Gravatar requires MD5.
      * 
-     * @param message
+     * @param message string to hash with MD5
      * @return MD5 hash of message
      */
     static String md5Hex(String message) {

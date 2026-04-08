@@ -111,7 +111,7 @@ public final class BeanUtils {
     /**
      * getRequest.
      *
-     * @param context a {@link jakarta.faces.context.FacesContext} object.
+     * @param context faces context to extract the request from
      * @return a {@link jakarta.servlet.http.HttpServletRequest} object.
      */
     public static HttpServletRequest getRequest(FacesContext context) {
@@ -168,8 +168,8 @@ public final class BeanUtils {
     /**
      * getServletImagesPathFromRequest.
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @param theme a {@link java.lang.String} object.
+     * @param request incoming HTTP request for base URL resolution
+     * @param theme theme folder name appended to the path
      * @return a {@link java.lang.String} object.
      */
     public static String getServletImagesPathFromRequest(HttpServletRequest request, String theme) {
@@ -299,8 +299,8 @@ public final class BeanUtils {
     /**
      * getBeanByName.
      *
-     * @param name a {@link java.lang.String} object.
-     * @param clazz a {@link java.lang.Class} object.
+     * @param name CDI bean name to look up
+     * @param clazz expected type used to create the CDI reference
      * @return a {@link java.lang.Object} object.
      * @should throw IllegalArgumentException if named bean of different class
      * @should throw IllegalStateException if named bean of different class
@@ -524,7 +524,7 @@ public final class BeanUtils {
     /**
      * getUserBeanFromSession.
      *
-     * @param session a {@link jakarta.servlet.http.HttpSession} object.
+     * @param session HTTP session to retrieve the UserBean from
      * @return a {@link io.goobi.viewer.managedbeans.UserBean} object.
      */
     public static UserBean getUserBeanFromSession(HttpSession session) {
@@ -548,9 +548,9 @@ public final class BeanUtils {
     /**
      * getBeanFromSession.
      *
-     * @param session a {@link jakarta.servlet.http.HttpSession} object
-     * @param beanName a {@link java.lang.String} object
-     * @param clazz a {@link java.lang.Class} object
+     * @param session HTTP session to retrieve the bean from
+     * @param beanName session attribute name of the bean
+     * @param clazz expected type of the bean
      * @param <T> a T class
      * @return a {@link java.util.Optional} object
      */
@@ -571,7 +571,7 @@ public final class BeanUtils {
      * getUserFromSession. This performs a scan of the whole session and may be expensive. Prefer using {@link #getUserBean()} and
      * #{@link UserBean#getUser()}
      *
-     * @param session a {@link jakarta.servlet.http.HttpSession} object.
+     * @param session HTTP session containing the UserBean
      * @return a {@link io.goobi.viewer.model.security.user.User} object.
      */
     public static User getUserFromSession(HttpSession session) {
@@ -586,7 +586,7 @@ public final class BeanUtils {
     /**
      * escapeCriticalUrlChracters.
      *
-     * @param value a {@link java.lang.String} object.
+     * @param value URL string to escape
      * @return a {@link java.lang.String} object.
      */
     public static String escapeCriticalUrlChracters(String value) {
@@ -596,8 +596,8 @@ public final class BeanUtils {
     /**
      * findInstanceInSessionAttributes.
      *
-     * @param session a {@link jakarta.servlet.http.HttpSession} object
-     * @param clazz a {@link java.lang.Class} object
+     * @param session HTTP session whose attributes are scanned
+     * @param clazz type to search for among session attributes
      * @param <T> a T class
      * @return a {@link java.util.Optional} object
      */
@@ -636,7 +636,7 @@ public final class BeanUtils {
     /**
      * getManagedBeanValue.
      *
-     * @param expr a {@link java.lang.String} object
+     * @param expr EL expression string to evaluate
      * @return a {@link java.lang.Object} object
      */
     public static Object getManagedBeanValue(String expr) {

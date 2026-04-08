@@ -45,15 +45,15 @@ public class ArchiveResource implements Serializable {
     private final String resourceId;
     private final LocalDateTime modifiedDate;
     private final Long size;
-    /** Access conditions of the root element (excluding OPENACCESS) */
+    /** Access conditions of the root element (excluding OPENACCESS). */
     private final List<String> accessConditions = new ArrayList<>();
 
     /**
      * 
-     * @param resourceName
-     * @param resourceId
-     * @param modifiedDate
-     * @param size
+     * @param resourceName human-readable name of the archive resource
+     * @param resourceId unique identifier of the archive resource
+     * @param modifiedDate last modification date as string
+     * @param size file size as string
      */
     public ArchiveResource(String resourceName, String resourceId, String modifiedDate, String size) {
         this.resourceName = resourceName;

@@ -45,10 +45,10 @@ public class Citation {
     /**
      * Constructor.
      *
-     * @param id
-     * @param processor
-     * @param itemDataProvider
-     * @param type
+     * @param id unique citation identifier
+     * @param processor the CSL citation processor
+     * @param itemDataProvider provider used to register item data
+     * @param type the CSL document type
      * @param fields Map containing metadata fields
      */
     public Citation(String id, CSL processor, CitationDataProvider itemDataProvider, CSLType type, Map<String, List<String>> fields) {
@@ -77,8 +77,8 @@ public class Citation {
 
     /**
      *
-     * @param outputFormat
-     * @param items
+     * @param outputFormat the CSL output format (e.g. "html" or "text")
+     * @param items citation item data to render
      * @return {@link Bibliography}
      */
     Bibliography makeAdhocBibliography(String outputFormat, CSLItemData... items) {
@@ -102,7 +102,7 @@ public class Citation {
     }
 
     /**
-     * @param outputFormat
+     * @param outputFormat the CSL output format (e.g. "html" or "text")
      * @return Citation string
      * @should return apa html citation correctly
      * @should return apa html plaintext correctly

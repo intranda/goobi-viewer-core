@@ -121,9 +121,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(CMSPage.class);
 
-    /** Constant <code>GLOBAL_LANGUAGE="global"</code> */
+    /** Constant <code>GLOBAL_LANGUAGE="global"</code>. */
     public static final String GLOBAL_LANGUAGE = "global";
-    /** Constant <code>CLASSIFICATION_OVERVIEWPAGE="overviewpage"</code> */
+    /** Constant <code>CLASSIFICATION_OVERVIEWPAGE="overviewpage"</code>. */
     public static final String CLASSIFICATION_OVERVIEWPAGE = "overviewpage";
     public static final String TOPBAR_SLIDER_ID = "topbar_slider";
 
@@ -204,7 +204,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     private String parentPageId = null;
 
     /**
-     * A html class name to be applied to the DOM element containing the page html
+     * A html class name to be applied to the DOM element containing the page html.
      */
     @Column(name = "wrapper_element_class")
     private String wrapperElementClass = "";
@@ -244,7 +244,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * creates a deep copy of the original CMSPage. Only copies persisted properties and performs initialization for them
      *
-     * @param original a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
+     * @param original source page to copy from
      */
     public CMSPage(CMSPage original) {
         if (original.id != null) {
@@ -299,7 +299,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * creates a CMSPage from a {@link CMSPageTemplate}. Only copies persisted properties and performs initialization for them
      *
-     * @param original a {@link io.goobi.viewer.model.cms.pages.CMSPageTemplate} object.
+     * @param original template to derive the new page from
      */
     public CMSPage(CMSPageTemplate original) {
 
@@ -405,7 +405,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * addSidebarElement.
      *
-     * @param element a {@link io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement} object.
+     * @param element sidebar element to append to the list
      */
     public void addSidebarElement(CMSSidebarElement element) {
         if (element != null) {
@@ -603,7 +603,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Setter for the field <code>categories</code>.
      *
-     * @param categories a {@link java.util.List} object.
+     * @param categories list of categories to assign to this page
      */
     public void setCategories(List<CMSCategory> categories) {
         this.categories = categories;
@@ -612,7 +612,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * addCategory.
      *
-     * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
+     * @param category category to add if not already present
      */
     public void addCategory(CMSCategory category) {
         if (category != null && !categories.contains(category)) {
@@ -623,7 +623,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * removeCategory.
      *
-     * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
+     * @param category category to remove from this page
      */
     public void removeCategory(CMSCategory category) {
         categories.remove(category);
@@ -641,7 +641,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Setter for the field <code>sidebarElementString</code>.
      *
-     * @param sidebarElementString the sidebarElementString to set
+     * @param sidebarElementString serialized sidebar element configuration string
      */
     public void setSidebarElementString(String sidebarElementString) {
         logger.trace("setSidebarElementString: {}", sidebarElementString);
@@ -660,7 +660,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * getTitle.
      *
-     * @param locale a {@link java.util.Locale} object.
+     * @param locale locale of the desired title translation
      * @return a {@link java.lang.String} object.
      */
     public String getTitle(Locale locale) {
@@ -683,7 +683,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * getMenuTitle.
      *
-     * @param locale a {@link java.util.Locale} object.
+     * @param locale locale of the desired menu title translation
      * @return a {@link java.lang.String} object.
      */
     public String getMenuTitle(Locale locale) {
@@ -705,7 +705,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * getMenuTitleOrTitle.
      *
-     * @param locale a {@link java.util.Locale} object.
+     * @param locale locale of the desired translation
      * @return a {@link java.lang.String} object.
      */
     public String getMenuTitleOrTitle(Locale locale) {
@@ -732,7 +732,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Setter for the field <code>pageSorting</code>.
      *
-     * @param pageSorting a {@link java.lang.Long} object.
+     * @param pageSorting numeric sort position for page ordering
      */
     public void setPageSorting(Long pageSorting) {
         this.pageSorting = pageSorting;
@@ -750,7 +750,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Setter for the field <code>subTheme</code>.
      *
-     * @param subTheme the subTheme to set
+     * @param subTheme sub-theme discriminator value for this page
      */
     public void setSubTheme(String subTheme) {
         this.subTheme = subTheme == null ? "" : subTheme;
@@ -786,7 +786,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Sets the pagination number for this page's main list if it contains one.
      *
-     * @param listPage a int.
+     * @param listPage current pagination page number of the main list
      */
     public void setListPage(int listPage) {
         this.listPage = listPage;
@@ -840,7 +840,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * getRelativeUrlPath.
      *
-     * @param pretty a boolean.
+     * @param pretty if true, use static or persistent URL when available
      * @return a {@link java.lang.String} object.
      */
     public String getRelativeUrlPath(boolean pretty) {
@@ -943,7 +943,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Returns the property with the given key or else creates a new one with that key and returns it.
      *
-     * @param key a {@link java.lang.String} object.
+     * @param key property key to look up or create
      * @return the property with the given key or else creates a new one with that key and returns it
      * @throws java.lang.ClassCastException if the returned property has the wrong generic type.
      */
@@ -1109,8 +1109,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Exports text/html fragments from this page's content items for indexing.
      *
-     * @param outputFolderPath a {@link java.lang.String} object.
-     * @param namingScheme a {@link java.lang.String} object.
+     * @param outputFolderPath destination directory for exported text fragments
+     * @param namingScheme filename pattern used when writing exported files
      * @return a {@link java.util.List} object.
      * @throws java.io.IOException if any.
      */
@@ -1373,8 +1373,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      * Set the order attribute of the {@link PersistentCMSComponent} belonging to the given {@link CMSComponent} to the given order value. Also, sets
      * the order value of all Components which previously had the given order to the order value of the given component
      * 
-     * @param component
-     * @param order
+     * @param component the CMS component whose order to set
+     * @param order the new order value to assign
      */
     public void setComponentOrder(CMSComponent component, int order) {
         PersistentCMSComponent persistentComponent = component.getPersistentComponent();

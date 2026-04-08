@@ -116,7 +116,7 @@ public class IpRange extends AbstractLicensee implements Serializable {
     /**
      * matchIp.
      *
-     * @param inIp a {@link java.lang.String} object.
+     * @param inIp client IP address to test against this range
      * @return a boolean.
      * @should match IPv6 localhost to IPv4 mask
      * @should match edge addresses
@@ -152,9 +152,9 @@ public class IpRange extends AbstractLicensee implements Serializable {
     /**
      * canSatisfyAllAccessConditions.
      *
-     * @param requiredAccessConditions a {@link java.util.Set} object.
-     * @param privilegeName a {@link java.lang.String} object.
-     * @param pi a {@link java.lang.String} object.
+     * @param requiredAccessConditions set of access condition values that must all be satisfied
+     * @param privilegeName privilege name to check against each access condition
+     * @param pi persistent identifier of the record being accessed
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -258,7 +258,7 @@ public class IpRange extends AbstractLicensee implements Serializable {
     /**
      * main.
      *
-     * @param args an array of {@link java.lang.String} objects.
+     * @param args command-line arguments (unused)
      */
     public static void main(String[] args) {
         try {

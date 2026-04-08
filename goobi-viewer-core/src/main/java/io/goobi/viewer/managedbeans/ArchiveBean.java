@@ -237,7 +237,7 @@ public class ArchiveBean implements Serializable {
 
     /**
      *
-     * @param entry
+     * @param entry archive entry to select
      * @return empty string
      */
     public String selectEntryAction(ArchiveEntry entry) {

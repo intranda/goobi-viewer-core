@@ -96,9 +96,9 @@ public class MetadataBean {
     /**
      * loadMetadata.
      *
-     * @param index
-     * @param locale
-     * @return a {@link java.lang.String} object.
+     * @param index Metadata view index to load
+     * @param locale Locale used for translating metadata values
+     * @return navigation outcome string for the metadata view
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -155,7 +155,7 @@ public class MetadataBean {
     /**
      * Getter for the field <code>metadataElementList</code>.
      *
-     * @param index
+     * @param index Metadata view index to retrieve
      * @return the metadataElementList
      */
     public List<MetadataElement> getMetadataElementList(int index) {
@@ -193,7 +193,7 @@ public class MetadataBean {
     /**
      * Returns given {@link MetadataElement}s as an {@link ArrayList}. Used for supplying a custom list of elements for the metadata sidebar widget.
      * 
-     * @param elements
+     * @param elements Vararg metadata elements to wrap in a list
      * @return List<MetadataElement>
      * @should return empty list given null
      * @should return given elements as list
@@ -225,7 +225,7 @@ public class MetadataBean {
      * The main metadata element is the first element which isn't an anchor if any such elements are in the metadata element list. Otherwise it is
      * just the first (anchor) metadata element
      * 
-     * @param index
+     * @param index Metadata view index to retrieve
      * @return a {@link MetadataElement} object
      */
     public MetadataElement getMainMetadataElement(int index) {
@@ -262,7 +262,7 @@ public class MetadataBean {
 
     /**
      * 
-     * @param metadataViewIndex
+     * @param metadataViewIndex Metadata view index to retrieve
      * @return List<MetadataElement>
      * @should return empty list if bottom element missing
      * @should return empty list if bottom element contains no sidebar metadata
@@ -317,7 +317,7 @@ public class MetadataBean {
     /**
      * Setter for the field <code>events</code>.
      *
-     * @param events the events to set
+     * @param events LIDO event elements to display
      */
     public void setEvents(List<EventElement> events) {
         this.events = events;
@@ -335,7 +335,7 @@ public class MetadataBean {
     /**
      * setSelectedRecordLanguage.
      *
-     * @param selectedRecordLanguage a {@link java.lang.String} object.
+     * @param selectedRecordLanguage ISO language code to use for multi-language fields
      */
     public void setSelectedRecordLanguage(String selectedRecordLanguage) {
         for (Entry<Integer, List<MetadataElement>> entry : metadataElementMap.entrySet()) {
@@ -362,7 +362,7 @@ public class MetadataBean {
     }
 
     /**
-     * @param metadataViewUrl the metadataViewUrl to set
+     * @param metadataViewUrl URL segment identifying the metadata view to activate
      */
     public void setMetadataViewUrl(String metadataViewUrl) {
         logger.debug("setMetadataViewUrl({})", metadataViewUrl);
@@ -418,7 +418,7 @@ public class MetadataBean {
     }
 
     /**
-     * @param activeMetadataView the activeMetadataView to set
+     * @param activeMetadataView metadata view configuration to make active
      */
     public void setActiveMetadataView(MetadataView activeMetadataView) {
         this.activeMetadataView = activeMetadataView;
@@ -426,7 +426,7 @@ public class MetadataBean {
 
     /**
      * 
-     * @param fields
+     * @param fields Vararg Solr field names to convert to a list
      * @return Given strings as List<String>
      */
     public List<String> getComplexMetadataFieldsToList(String... fields) {
@@ -487,7 +487,7 @@ public class MetadataBean {
     }
 
     /**
-     * Returns the first {@link String} values for <code>subFieldName</code> of a grouped metadata field <code>mainFieldName</code>
+     * Returns the first {@link String} values for <code>subFieldName</code> of a grouped metadata field <code>mainFieldName</code>.
      * 
      * @param metadataViewIndex Index of the requested metadataView where the requested metadata is configured
      * @param mainFieldName Main metadata field
@@ -505,7 +505,7 @@ public class MetadataBean {
     }
 
     /**
-     * Returns a list of {@link String} values for <code>subFieldName</code> of a grouped metadata field <code>mainFieldName</code>
+     * Returns a list of {@link String} values for <code>subFieldName</code> of a grouped metadata field <code>mainFieldName</code>.
      * 
      * @param metadataViewIndex Index of the requested metadataView where the requested metadata is configured
      * @param mainFieldName Main metadata field

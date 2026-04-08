@@ -52,7 +52,7 @@ public class LicenseTypePlaceholderInfo extends Translation implements CMSMediaH
 
         /**
          * 
-         * @param name
+         * @param name name to look up
          * @return {@link LicenseTypeImageMode} matchin name; otherwise null
          */
         public static LicenseTypeImageMode getByName(String name) {
@@ -86,9 +86,9 @@ public class LicenseTypePlaceholderInfo extends Translation implements CMSMediaH
 
     /**
      * 
-     * @param language
-     * @param tag
-     * @param owner
+     * @param language language code for this translation entry
+     * @param tag translation tag identifying the text field
+     * @param owner the owning LicenseType
      */
     public LicenseTypePlaceholderInfo(String language, String tag, LicenseType owner) {
         super();

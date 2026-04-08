@@ -147,7 +147,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(SearchBean.class);
 
-    /** Constant <code>URL_ENCODING="UTF8"</code> */
+    /** Constant <code>URL_ENCODING="UTF8"</code>. */
     public static final String URL_ENCODING = "UTF8";
 
     private static final String PREFIX_KEY = "KEY::";
@@ -297,7 +297,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Executes the search using already set parameters. Usually called from Pretty URLs.
      *
-     * @param filterQuery a {@link java.lang.String} object
+     * @param filterQuery additional Solr filter query to restrict results
      * @return Navigation outcome
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -330,7 +330,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Action method for search buttons (simple search) with an option to reset search parameters.
      *
-     * @param resetParameters a boolean.
+     * @param resetParameters true to reset sort, filter and page before searching
      * @return Navigation outcome
      */
     public String searchSimple(boolean resetParameters) {
@@ -340,8 +340,8 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Action method for search buttons (simple search) with an option to reset search parameters and active facets.
      *
-     * @param resetParameters a boolean.
-     * @param resetFacets a boolean.
+     * @param resetParameters true to reset sort, filter and page before searching
+     * @param resetFacets true to clear all active facet selections
      * @return Navigation outcome
      * @should not reset facets if resetFacets false
      * @should not produce results if search terms not in index
@@ -364,7 +364,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * simpleSearch.
      *
-     * @param search a {@link io.goobi.viewer.model.search.SearchInterface} object
+     * @param search search interface to trigger simple search on
      * @return Navigation outcome
      */
     public String simpleSearch(SearchInterface search) {
@@ -384,7 +384,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Same as <code>{@link #searchSimple()}</code> but sets the current facets to the given string.
      *
-     * @param facetString a {@link java.lang.String} object.
+     * @param facetString encoded facet selection string to apply before searching
      * @return Navigation outcome
      */
     public String searchSimpleSetFacets(String facetString) {
@@ -403,7 +403,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * searchAdvanced.
      *
-     * @param resetParameters a boolean.
+     * @param resetParameters true to reset sort, filter and page before searching
      * @return Navigation outcome
      * @should generate search string correctly
      * @should reset search parameters
@@ -528,7 +528,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * resetSearchParameters.
      *
-     * @param resetAllSearchTypes a boolean
+     * @param resetAllSearchTypes true to also reset parameters for the currently active search type
      */
     public void resetSearchParameters(boolean resetAllSearchTypes) {
         resetSearchParameters(resetAllSearchTypes, true);
@@ -614,7 +614,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * "Setter" for resetting the query item list via a f:setPropertyActionListener.
      *
-     * @param reset a boolean.
+     * @param reset true to reset advanced search query items to defaults
      */
     public void setAdvancedQueryItemsReset(boolean reset) {
         logger.trace("setAdvancedQueryItemsReset");
@@ -881,7 +881,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * executeSearch.
      *
-     * @param filterQuery a {@link java.lang.String} object
+     * @param filterQuery additional Solr filter query to restrict results
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1116,7 +1116,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * For unit tests, only sets the value.
      * 
-     * @param activeSearchType
+     * @param activeSearchType Active search type value to set
      */
     void setActiveSearchTypeTest(int activeSearchType) {
         this.activeSearchType = activeSearchType;
@@ -1172,7 +1172,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * The setter for the invisible search string. Performs all regular settings.
      *
-     * @param invisibleSearchString a {@link java.lang.String} object.
+     * @param invisibleSearchString search string value to apply silently
      */
     public void setInvisibleSearchString(String invisibleSearchString) {
         setSearchString(invisibleSearchString);
@@ -1199,7 +1199,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Wrapper method for Pretty URL mappings.
      *
-     * @param searchString a {@link java.lang.String} object.
+     * @param searchString URL-decoded search string from the Pretty URL
      */
     public void setSearchStringForUrl(String searchString) {
         logger.trace("setSearchStringForUrl: {}", searchString);
@@ -1275,7 +1275,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * Sets the current <code>searchStringInternal</code> to the given query, without parsing it like the regular setSearchString() method. This
      * method performs URL-unescaping, so using it directly with unescaped queries containing '+' etc. will change the logic.
      *
-     * @param inSearchString a {@link java.lang.String} object.
+     * @param inSearchString URL-encoded Solr query string from the Pretty URL
      * @should perform double unescaping if necessary
      */
     public void setExactSearchString(final String inSearchString) {
@@ -1441,7 +1441,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Setter for the field <code>activeResultGroup</code>.
      *
-     * @param activeResultGroup a {@link io.goobi.viewer.model.search.SearchResultGroup} object
+     * @param activeResultGroup search result group to activate, or null to deactivate
      */
     public void setActiveResultGroup(SearchResultGroup activeResultGroup) {
         this.activeResultGroup = activeResultGroup;
@@ -1511,7 +1511,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     /**
      * 
-     * @param advancedSearchFieldTemplate
+     * @param advancedSearchFieldTemplate Template name for advanced search fields
      */
     public void setAdvancedSearchFieldTemplate(String advancedSearchFieldTemplate) {
         logger.trace("setAdvancedSearchFieldTemplate: {}", advancedSearchFieldTemplate);
@@ -1623,7 +1623,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * removeRangeFacetAction.
      *
-     * @param field a {@link java.lang.String} object
+     * @param field Solr field name of the range facet to remove
      * @return Navigation outcome
      */
     public String removeRangeFacetAction(String field) {
@@ -1637,7 +1637,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * removeFacetAction.
      *
-     * @param facetQuery a {@link java.lang.String} object.
+     * @param facetQuery encoded facet query string identifying the facet to remove
      * @return Navigation outcome
      * @should remove facet correctly
      */
@@ -2120,7 +2120,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Returns drop-down items for all collection names. The displayed values are translated into the given language.
      *
-     * @param language a {@link java.lang.String} object.
+     * @param language BCP 47 language tag for translating collection labels
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -2149,8 +2149,8 @@ public class SearchBean implements SearchInterface, Serializable {
      * locale are omitted.
      *
      * @param language Optional language code for filtering language-specific fields
-     * @param template a {@link java.lang.String} object
-     * @param addSearchFilters
+     * @param template advanced search field configuration template name
+     * @param addSearchFilters If true, prepend configured search filters as fields
      * @return List of allowed advanced search fields
      * @should omit languaged fields for other languages
      * @should add search filters
@@ -2296,7 +2296,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * executeSavedSearchAction.
      *
-     * @param search a {@link io.goobi.viewer.model.search.Search} object.
+     * @param search previously saved search object to re-execute
      * @return a {@link java.lang.String} object.
      */
     public String executeSavedSearchAction(Search search) {
@@ -2507,11 +2507,11 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * @param facesContext
+     * @param facesContext Current JSF FacesContext for writing the response
      * @param finalQuery Complete query with suffixes.
      * @param exportQuery Query constructed from the user's input, without any secret suffixes.
-     * @param proximitySearchDistance
-     * @param locale
+     * @param proximitySearchDistance Maximum word distance for proximity searches
+     * @param locale Locale used for formatting exported cell values
      * @return {@link SXSSFWorkbook}
      * @throws InterruptedException
      * @throws ViewerConfigurationException
@@ -2676,7 +2676,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * getStructElement.
      *
-     * @param pi a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record
      * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -2720,8 +2720,8 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * updateFacetItem.
      *
-     * @param field a {@link java.lang.String} object.
-     * @param hierarchical a boolean.
+     * @param field Solr field name of the facet to update
+     * @param hierarchical true if the field uses hierarchical faceting
      */
     public void updateFacetItem(String field, boolean hierarchical) {
         getFacets().updateFacetItem(field, hierarchical);
@@ -2749,7 +2749,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     /**
      * 
-     * @param basePath
+     * @param basePath Base URI to append search parameters to
      * @return {@link URI}
      */
     private URI getParameterPath(final URI basePath) {
@@ -2766,7 +2766,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     /**
      * 
-     * @param url
+     * @param url Target URL to redirect to
      */
     private static void redirectToURL(String url) {
         final FacesContext context = FacesContext.getCurrentInstance();
@@ -2781,10 +2781,10 @@ public class SearchBean implements SearchInterface, Serializable {
      * Returns a list of FilterLink elements for the given field over all documents in the index (optionally filtered by a subquery). Replaces the
      * method in the old TagLib class.
      *
-     * @param field a {@link java.lang.String} object.
-     * @param subQuery a {@link java.lang.String} object.
-     * @param resultLimit a {@link java.lang.Integer} object.
-     * @param reverseOrder a {@link java.lang.Boolean} object.
+     * @param field Solr field name to retrieve facet values for
+     * @param subQuery optional Solr sub-query to filter the facet base set
+     * @param resultLimit maximum number of facet values to return
+     * @param reverseOrder true to sort facet values in reverse order
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -2847,7 +2847,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * setFirstQueryItemValue.
      *
-     * @param value a {@link java.lang.String} object.
+     * @param value search term to set on the first advanced query item
      */
     public void setFirstQueryItemValue(String value) {
         this.advancedSearchQueryGroup.getQueryItems().get(0).setValue(value);
@@ -2863,7 +2863,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * setBookmarkListName.
      *
-     * @param name a {@link java.lang.String} object.
+     * @param name bookmark list name to set as advanced search query value
      */
     public void setBookmarkListName(String name) {
         SearchQueryItem item = this.advancedSearchQueryGroup.getQueryItems().get(0);
@@ -2875,7 +2875,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * getBookmarkListName.
      *
-     * @return a {@link java.lang.String} object.
+     * @return name of the bookmark list set in the advanced search query
      */
     public String getBookmarkListName() {
         return this.advancedSearchQueryGroup.getQueryItems()
@@ -2902,7 +2902,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * getBookmarkListName.
      *
-     * @return a {@link java.lang.String} object.
+     * @return sharing key of the bookmark list set in the advanced search query
      */
     public String getBookmarkListSharedKey() {
         String value = this.advancedSearchQueryGroup.getQueryItems()
@@ -2927,8 +2927,8 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * searchInRecord.
      *
-     * @param piField a {@link java.lang.String} object
-     * @param piValue a {@link java.lang.String} object
+     * @param piField Solr field name holding the record identifier
+     * @param piValue persistent identifier value to restrict the search to
      * @return Navigation outcome
      */
     public String searchInRecord(String piField, String piValue) {
@@ -2938,10 +2938,10 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * searchInRecord.
      *
-     * @param piField a {@link java.lang.String} object
-     * @param piValue a {@link java.lang.String} object
-     * @param date1
-     * @param date2
+     * @param piField Solr field name holding the record identifier
+     * @param piValue persistent identifier value to restrict the search to
+     * @param date1 Start date for the calendar day range filter
+     * @param date2 End date for the calendar day range filter
      * @return Navigation outcome
      */
     public String searchInRecord(String piField, String piValue, String date1, String date2) {
@@ -3076,7 +3076,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * facetifyField.
      *
-     * @param fieldName a {@link java.lang.String} object
+     * @param fieldName Solr field name to convert to its facet variant
      * @return Facet variant of the given fieldName
      */
     public String facetifyField(String fieldName) {
@@ -3086,8 +3086,8 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * getFieldFacetValues.
      *
-     * @param field a {@link java.lang.String} object
-     * @param num a int
+     * @param field Solr field name to retrieve facet values for
+     * @param num maximum number of facet values to return; 0 for unlimited
      * @return List of facet values for the given field
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
@@ -3098,9 +3098,9 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * getFieldFacetValues.
      *
-     * @param field a {@link java.lang.String} object
-     * @param num a int
-     * @param filterQuery a {@link java.lang.String} object
+     * @param field Solr field name to retrieve facet values for
+     * @param num maximum number of facet values to return; 0 for unlimited
+     * @param filterQuery additional Solr filter query to restrict the facet base set
      * @return List of facet values for the given field
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
@@ -3133,7 +3133,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * getSearchSortingOptions.
      *
-     * @param language a {@link java.lang.String} object
+     * @param language BCP 47 language tag for translating sort option labels
      * @return List of sorting options for the given language
      * @should return options correctly
      * @should use current random seed option instead of default
@@ -3157,7 +3157,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * getQueryResultCount.
      *
-     * @param query a {@link java.lang.String} object
+     * @param query Solr query to count results for
      * @return Number of hits for the given query
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @throws io.goobi.viewer.exceptions.PresentationException

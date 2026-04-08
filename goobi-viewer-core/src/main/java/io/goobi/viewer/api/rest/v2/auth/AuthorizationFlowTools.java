@@ -50,8 +50,8 @@ public final class AuthorizationFlowTools {
     /**
      * Wrapper method.
      * 
-     * @param pi
-     * @param fileName
+     * @param pi persistent identifier of the record
+     * @param fileName file name of the resource to protect
      * @return List<Service>
      */
     public static List<Service> getAuthServices(String pi, String fileName) {

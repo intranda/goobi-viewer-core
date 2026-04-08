@@ -67,9 +67,9 @@ public class CitationDataProvider implements ItemDataProvider {
 
     /**
      *
-     * @param id
-     * @param fields
-     * @param type
+     * @param id citation item identifier
+     * @param fields map of metadata field names to their values
+     * @param type CSL document type for this citation
      * @return Created CSLItemData
      * @should add item data correctly
      * @should parse years correctly

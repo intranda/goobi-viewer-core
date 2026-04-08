@@ -74,37 +74,37 @@ public class BreadcrumbBean implements Serializable {
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(BreadcrumbBean.class);
 
-    /** Constant <code>WEIGHT_TAG_MAIN_MENU=1</code> */
+    /** Constant <code>WEIGHT_TAG_MAIN_MENU=1</code>. */
     public static final int WEIGHT_TAG_MAIN_MENU = 1;
-    /** Constant <code>WEIGHT_ACTIVE_COLLECTION=2</code> */
+    /** Constant <code>WEIGHT_ACTIVE_COLLECTION=2</code>. */
     public static final int WEIGHT_ACTIVE_COLLECTION = 2;
-    /** Constant <code>WEIGHT_OPEN_DOCUMENT=3</code> */
+    /** Constant <code>WEIGHT_OPEN_DOCUMENT=3</code>. */
     public static final int WEIGHT_OPEN_DOCUMENT = 3;
-    /** Constant <code>WEIGHT_BROWSE=1</code> */
+    /** Constant <code>WEIGHT_BROWSE=1</code>. */
     public static final int WEIGHT_BROWSE = 1;
-    /** Constant <code>WEIGHT_SEARCH=1</code> */
+    /** Constant <code>WEIGHT_SEARCH=1</code>. */
     public static final int WEIGHT_SEARCH = 1;
-    /** Constant <code>WEIGHT_SEARCH_RESULTS=2</code> */
+    /** Constant <code>WEIGHT_SEARCH_RESULTS=2</code>. */
     public static final int WEIGHT_SEARCH_RESULTS = 2;
-    /** Constant <code>WEIGHT_SEARCH_TERMS=1</code> */
+    /** Constant <code>WEIGHT_SEARCH_TERMS=1</code>. */
     public static final int WEIGHT_SEARCH_TERMS = 1;
-    /** Constant <code>WEIGHT_TAG_CLOUD=1</code> */
+    /** Constant <code>WEIGHT_TAG_CLOUD=1</code>. */
     public static final int WEIGHT_TAG_CLOUD = 1;
-    /** Constant <code>WEIGHT_SITELINKS=1</code> */
+    /** Constant <code>WEIGHT_SITELINKS=1</code>. */
     public static final int WEIGHT_SITELINKS = 1;
-    /** Constant <code>WEIGHT_USER_ACCOUNT=1</code> */
+    /** Constant <code>WEIGHT_USER_ACCOUNT=1</code>. */
     public static final int WEIGHT_USER_ACCOUNT = 1;
-    /** Constant <code>WEIGHT_CROWDSOURCING_OVERVIEW=3</code> */
+    /** Constant <code>WEIGHT_CROWDSOURCING_OVERVIEW=3</code>. */
     public static final int WEIGHT_CROWDSOURCING_OVERVIEW = 3;
-    /** Constant <code>WEIGHT_CROWDSOURCING_EDIT_OVERVIEW=4</code> */
+    /** Constant <code>WEIGHT_CROWDSOURCING_EDIT_OVERVIEW=4</code>. */
     public static final int WEIGHT_CROWDSOURCING_EDIT_OVERVIEW = 4;
-    /** Constant <code>WEIGHT_CROWDSOURCING_EDIT_OCR_CONTENTS=5</code> */
+    /** Constant <code>WEIGHT_CROWDSOURCING_EDIT_OCR_CONTENTS=5</code>. */
     public static final int WEIGHT_CROWDSOURCING_EDIT_OCR_CONTENTS = 5;
-    /** Constant <code>WEIGHT_CROWDSOURCING_CAMPAIGN=2</code> */
+    /** Constant <code>WEIGHT_CROWDSOURCING_CAMPAIGN=2</code>. */
     public static final int WEIGHT_CROWDSOURCING_CAMPAIGN = 2;
-    /** Constant <code>WEIGHT_CROWDSOURCING_CAMPAIGN_ITEM=3</code> */
+    /** Constant <code>WEIGHT_CROWDSOURCING_CAMPAIGN_ITEM=3</code>. */
     public static final int WEIGHT_CROWDSOURCING_CAMPAIGN_ITEM = 3;
-    /** Constant <code>WEIGHT_CROWDSOURCING_CAMPAIGN_PARENT=1</code> */
+    /** Constant <code>WEIGHT_CROWDSOURCING_CAMPAIGN_PARENT=1</code>. */
     public static final int WEIGHT_CROWDSOURCING_CAMPAIGN_PARENT = 1;
 
     private List<LabeledLink> breadcrumbs = new LinkedList<>();
@@ -272,7 +272,7 @@ public class BreadcrumbBean implements Serializable {
     /**
      * This is used for flipping search result pages (so that the breadcrumb always has the last visited result page as its URL).
      *
-     * @param facetString a {@link java.lang.String} object.
+     * @param facetString URL-encoded active facet filter string
      */
     public void updateBreadcrumbsForSearchHits(final String facetString) {
         logger.trace("updateBreadcrumbsForSearchHits: {}", facetString);
@@ -337,8 +337,8 @@ public class BreadcrumbBean implements Serializable {
     /**
      * Adds a link to the breadcrumbs using the current PrettyURL. Can be called from XHTML.
      *
-     * @param linkName a {@link java.lang.String} object.
-     * @param linkWeight a int.
+     * @param linkName display label for the breadcrumb entry
+     * @param linkWeight position weight determining order in the breadcrumb trail
      */
     public void addStaticLinkToBreadcrumb(String linkName, int linkWeight) {
         addStaticLinkToBreadcrumb(linkName, navigationHelper.getCurrentPrettyUrl(), linkWeight);
@@ -347,9 +347,9 @@ public class BreadcrumbBean implements Serializable {
     /**
      * Adds a link to the breadcrumbs using the given URL. Can be called from XHTML.
      *
-     * @param linkName a {@link java.lang.String} object.
-     * @param linkWeight a int.
-     * @param url a {@link java.lang.String} object.
+     * @param linkName display label for the breadcrumb entry
+     * @param linkWeight position weight determining order in the breadcrumb trail
+     * @param url target URL for the breadcrumb link
      */
     public void addStaticLinkToBreadcrumb(String linkName, final String url, int linkWeight) {
         // logger.trace("addStaticLinkToBreadcrumb: {} - {} ({})", linkName, url, linkWeight); //NOSONAR Debug
@@ -370,7 +370,7 @@ public class BreadcrumbBean implements Serializable {
      *
      * @param collection Full collection string containing all levels
      * @param field Solr field
-     * @param splittingChar a {@link java.lang.String} object.
+     * @param splittingChar character used to split collection hierarchy levels
      * @should create breadcrumbs correctly
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -397,9 +397,9 @@ public class BreadcrumbBean implements Serializable {
 
     /**
      *
-     * @param viewManager
-     * @param name
-     * @param url
+     * @param viewManager ViewManager for the current record
+     * @param name display name for the breadcrumb entry
+     * @param url URL to associate with the breadcrumb entry
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws PresentationException
@@ -503,7 +503,7 @@ public class BreadcrumbBean implements Serializable {
     }
 
     /**
-     * @param page
+     * @param page viewer page type for which to build the URL
      * @return Absolute URL to the given page type
      */
     private static String getUrl(PageType page) {

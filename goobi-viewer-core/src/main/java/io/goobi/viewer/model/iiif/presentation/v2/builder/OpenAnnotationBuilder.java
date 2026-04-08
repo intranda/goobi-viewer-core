@@ -70,7 +70,7 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
     private static final String OA_MOTAVATION_REGEX = "(sc|oa):\\w+";
 
     /**
-     * @param apiUrlManager
+     * @param apiUrlManager the URL manager for building API paths
      */
     public OpenAnnotationBuilder(AbstractApiUrlManager apiUrlManager) {
         super(apiUrlManager);
@@ -81,8 +81,8 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
      * converted to OpenAnnotations here
      *
      * @param pi The persistent identifier of the work to query
-     * @param urlOnlyTarget a boolean.
-     * @param request
+     * @param urlOnlyTarget if true, use URI-only annotation targets
+     * @param request the current HTTP servlet request
      * @return A map of page numbers (1-based) mapped to a list of associated annotations
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -107,8 +107,8 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
      * converted to OpenAnnotations here
      *
      * @param pi The persistent identifier of the work to query
-     * @param urlOnlyTarget a boolean.
-     * @param request
+     * @param urlOnlyTarget if true, use URI-only annotation targets
+     * @param request the current HTTP servlet request
      * @return A map of page numbers (1-based) mapped to a list of associated annotations
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -150,8 +150,8 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
     /**
      * createOpenAnnotation.
      *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
-     * @param urlOnlyTarget a boolean.
+     * @param doc Solr document of type UGC containing the annotation data
+     * @param urlOnlyTarget if true, use URI-only annotation targets
      * @return a {@link de.intranda.api.annotation.oa.OpenAnnotation} object.
      */
     public OpenAnnotation createUGCOpenAnnotation(SolrDocument doc, boolean urlOnlyTarget) {
@@ -163,9 +163,9 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
     /**
      * createOpenAnnotation.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
-     * @param urlOnlyTarget a boolean.
+     * @param pi persistent identifier of the annotated record
+     * @param doc Solr document of type UGC containing the annotation data
+     * @param urlOnlyTarget if true, use URI-only annotation targets
      * @return a {@link de.intranda.api.annotation.oa.OpenAnnotation} object.
      */
     public OpenAnnotation createUGCOpenAnnotation(String pi, SolrDocument doc, boolean urlOnlyTarget) {
@@ -195,10 +195,10 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
     }
 
     /**
-     * @param pi
-     * @param pageOrder
-     * @param coordString
-     * @param urlOnlyTarget
+     * @param pi persistent identifier of the work
+     * @param pageOrder physical page number (1-based)
+     * @param coordString coordinate string encoding the fragment region
+     * @param urlOnlyTarget if true, return a URI-only specific resource
      * @return {@link IResource}
      */
     public IResource createFragmentTarget(String pi, int pageOrder, String coordString, boolean urlOnlyTarget) {
@@ -229,7 +229,7 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
     }
 
     /**
-     * @param doc
+     * @param doc the Solr document containing the UGC annotation body fields
      * @return {@link IResource}
      */
     public IResource createAnnnotationBodyFromUGCDocument(SolrDocument doc) {
@@ -250,10 +250,10 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
     }
 
     /**
-     * @param uri
-     * @param pi
-     * @param urlsOnly
-     * @param request
+     * @param uri the URI to assign to the annotation collection
+     * @param pi persistent identifier of the work
+     * @param urlsOnly if true, annotation targets are URL-only resources
+     * @param request the current HTTP servlet request
      * @return {@link IAnnotationCollection}
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -266,12 +266,12 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
     }
 
     /**
-     * 
-     * @param uri
-     * @param pi
-     * @param page
-     * @param urlsOnly
-     * @param request
+     *
+     * @param uri the URI to assign to the annotation collection
+     * @param pi persistent identifier of the work
+     * @param page physical page number to filter annotations by
+     * @param urlsOnly if true, annotation targets are URL-only resources
+     * @param request the current HTTP servlet request
      * @return {@link IAnnotationCollection}
      * @throws DAOException
      */

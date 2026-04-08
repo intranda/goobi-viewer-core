@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * Contains a list of {@link MediaItem MediaItems} built from {@link CMSMediaItem CMSMediaItems}
+ * Contains a list of {@link MediaItem MediaItems} built from {@link CMSMediaItem CMSMediaItems}.
  */
 public class MediaList {
 

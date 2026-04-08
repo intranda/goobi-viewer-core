@@ -129,7 +129,7 @@ public class MaintenanceMode implements IPolyglott {
     }
 
     /**
-     * @param language
+     * @param language locale for the text translation to retrieve
      * @return Text value in the given language
      */
     public String getText(String language) {
@@ -137,7 +137,7 @@ public class MaintenanceMode implements IPolyglott {
     }
 
     /**
-     * @param language
+     * @param language locale for the text translation to retrieve, with fallback to default
      * @return Text value in the given language
      * @should return translation correctly
      */
@@ -148,7 +148,7 @@ public class MaintenanceMode implements IPolyglott {
     /**
      * setText.
      *
-     * @param text a {@link java.lang.String} object.
+     * @param text maintenance message text for the current locale
      */
     public void setText(String text) {
         setText(text, selectedLocale.getLanguage());
@@ -156,8 +156,8 @@ public class MaintenanceMode implements IPolyglott {
 
     /**
      * 
-     * @param text
-     * @param language
+     * @param text maintenance message text to store
+     * @param language locale for which to set the text
      */
     public void setText(String text, String language) {
         MaintenanceModeTranslation.setTranslation(translations, language, text, "text", this);

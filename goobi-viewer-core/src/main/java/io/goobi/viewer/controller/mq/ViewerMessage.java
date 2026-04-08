@@ -233,7 +233,7 @@ public class ViewerMessage {
     /**
      * Returns the latest VieweMessage of the given type that finished successfully.
      * 
-     * @param type
+     * @param type task type name to filter by
      * @return Optional<ViewerMessage>
      * @throws DAOException
      */

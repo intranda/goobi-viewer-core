@@ -100,7 +100,7 @@ public final class TocMaker {
      * any additional fields configured for the TOC label.
      *
      * @should return both static and configured fields
-     * @param template a {@link java.lang.String} object.
+     * @param template docstruct type name used to look up the label configuration
      * @return a {@link java.util.List} object.
      */
     protected static List<String> getSolrFieldsToFetch(String template) {
@@ -136,7 +136,7 @@ public final class TocMaker {
      * Generates the TOC.
      *
      * @param toc The TOC object (only required to set the number of volumes for anchor TOCs.
-     * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param structElement struct element representing the record to generate the TOC for
      * @param addAllSiblings If true and <code>structElement</code> has a parent, other siblings will be listed as well and can be navigated.
      * @param mimeType Mime type determines the target URL of the TOC element.
      * @param tocCurrentPage Current page of a paginated TOC.
@@ -214,11 +214,11 @@ public final class TocMaker {
     /**
      * Builds a TOC tree for non-anchor and non-group documents. Adds clickable sibling elements, if so requested.
      *
-     * @param doc
-     * @param structElement
-     * @param addAllSiblings
-     * @param mimeType
-     * @param sourceFormatPdfAllowed
+     * @param doc Solr document for the top-level record
+     * @param structElement struct element representing the loaded record
+     * @param addAllSiblings whether to include sibling elements in the TOC
+     * @param mimeType mime type of the record, determines target URL
+     * @param sourceFormatPdfAllowed whether the source format allows PDF download
      * @return List<TOCElement>
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -294,11 +294,11 @@ public final class TocMaker {
     /**
      * A group is a series, etc.
      *
-     * @param ret
-     * @param groupIdFields
-     * @param groupIdValue
-     * @param sourceFormatPdfAllowed
-     * @param mimeType
+     * @param ret list to which TOC elements are added
+     * @param groupIdFields list of Solr fields holding group identifier values
+     * @param groupIdValue identifier value of the group to build the TOC for
+     * @param sourceFormatPdfAllowed whether the source format allows PDF download
+     * @param mimeType mime type of the record, determines target URL
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws ViewerConfigurationException
@@ -394,9 +394,9 @@ public final class TocMaker {
     /**
      * Creates a manually sorted map of docs, since the order can be contained in different GROUPORDER_* fields.
      *
-     * @param groupMemberDocs
-     * @param groupIdFields
-     * @param groupIdValue
+     * @param groupMemberDocs list of Solr documents that are members of the group
+     * @param groupIdFields list of Solr fields holding group identifier values
+     * @param groupIdValue identifier value used to match the group
      * @return Map<Integer, SolrDocument>
      * @should create correctly sorted map
      */
@@ -450,12 +450,12 @@ public final class TocMaker {
     /**
      * Adds TOC elements for volumes that belong to the anchor document with the given IDDOC.
      *
-     * @param ret
-     * @param anchorDoc
-     * @param sourceFormatPdfAllowed
-     * @param mimeType
-     * @param tocCurrentPage
-     * @param hitsPerPage
+     * @param ret map to which TOC element lists are added per group
+     * @param anchorDoc Solr document of the anchor record
+     * @param sourceFormatPdfAllowed whether the source format allows PDF download
+     * @param mimeType mime type of the record, determines target URL
+     * @param tocCurrentPage current page number of the paginated volume TOC
+     * @param hitsPerPage number of volumes per page; 0 or negative means unlimited
      * @return Number of hits
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -616,16 +616,16 @@ public final class TocMaker {
 
     /**
      *
-     * @param ret mainDocumentChain Solr documents that comprise the path from the top ancestor to the loaded record.
-     * @param mainDocumentChain
-     * @param doc
-     * @param level
-     * @param addChildren
-     * @param sourceFormatPdfAllowed
-     * @param mimeType
-     * @param ancestorField
-     * @param addAllSiblings
-     * @param footerId
+     * @param ret list to which TOC elements are added
+     * @param mainDocumentChain IDDOC path from the top ancestor to the loaded record
+     * @param doc Solr document of the current node to process
+     * @param level current depth level in the TOC tree
+     * @param addChildren whether to recurse into child struct elements
+     * @param sourceFormatPdfAllowed whether the source format allows PDF download
+     * @param mimeType mime type of the record, determines target URL
+     * @param ancestorField Solr field used to resolve ancestor/parent relationships
+     * @param addAllSiblings whether to include sibling elements in the TOC
+     * @param footerId watermark footer identifier for access conditions
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -739,14 +739,15 @@ public final class TocMaker {
 
     /**
      *
-     * @param ret
-     * @param childrenMap
-     * @param doc
-     * @param level
-     * @param addChildren
-     * @param pdfPermissionMap
-     * @param mimeType
-     * @param footerId
+     * @param ret list to which TOC elements are added
+     * @param childrenMap map of IDDOC_PARENT to list of child Solr documents
+     * @param doc Solr document of the current node to process
+     * @param level current depth level in the TOC tree
+     * @param addChildren whether to recurse into child struct elements
+     * @param thumbnailPermissionMap map of logId to thumbnail view access permissions
+     * @param pdfPermissionMap map of logId to PDF download access permissions
+     * @param mimeType mime type of the record, determines target URL
+     * @param footerId watermark footer identifier for access conditions
      * @throws PresentationException
      */
     private static void addTocElementsRecusively(List<TOCElement> ret, Map<String, List<SolrDocument>> childrenMap, SolrDocument doc, int level,
@@ -800,8 +801,8 @@ public final class TocMaker {
     /**
      * getFirstFieldValue.
      *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
-     * @param footerIdField a {@link java.lang.String} object.
+     * @param doc Solr document to read the field value from
+     * @param footerIdField name of the Solr field to read
      * @return a {@link java.lang.String} object.
      */
     @SuppressWarnings("rawtypes")
@@ -832,8 +833,8 @@ public final class TocMaker {
     /**
      * Generates the label for this TOC element either from a configured layout or hardcoded old style.
      *
-     * @param doc
-     * @param template
+     * @param doc Solr document from which label field values are read
+     * @param template docstruct type name used to look up the label configuration
      * @return {@link IMetadataValue} containing constructed label
      * @should build configured label correctly
      * @should fill remaining parameters correctly if docstruct fallback used
@@ -929,7 +930,7 @@ public final class TocMaker {
     /**
      * createMultiLanguageValue.
      *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param doc Solr document to read language-specific values from
      * @param field Index field
      * @param altField Fallback index field
      * @return a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
@@ -951,9 +952,9 @@ public final class TocMaker {
     }
 
     /**
-     * TODO Unused
+     * TODO Unused.
      * 
-     * @param labelConfig
+     * @param labelConfig label configuration string containing placeholder field names in braces
      * @return List<String>
      * @should parse all field names correctly
      */
@@ -974,8 +975,8 @@ public final class TocMaker {
     /**
      * Returns the first value of the given field in the given doc.
      *
-     * @param doc
-     * @param fields
+     * @param doc Solr document to look up footer field values in
+     * @param fields list of Solr field names to check in order
      * @return Footer id
      */
     static String getFooterId(SolrDocument doc, List<String> fields) {
@@ -992,11 +993,10 @@ public final class TocMaker {
     }
 
     /**
+     * Returns the first value of the given field in the given struct element.
      *
-     * Returns the first value of the given field in the given struct element
-     *
-     * @param doc
-     * @param fields
+     * @param doc struct element to look up footer field values in
+     * @param fields list of Solr field names to check in order
      * @return Footer id
      */
     static String getFooterId(StructElement doc, List<String> fields) {

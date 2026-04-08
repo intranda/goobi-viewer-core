@@ -68,7 +68,7 @@ public final class StatisticsLuceneFields {
     /**
      * Gets the record identifier from the given SOLR field name.
      * 
-     * @param fieldname
+     * @param fieldname full Solr field name containing the record identifier
      * @return the record identifier
      */
     public static String getPi(String fieldname) {

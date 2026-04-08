@@ -79,8 +79,8 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /**
      * Creates a new SearchFunctionality instance.
      *
-     * @param pageFacetString a {@link java.lang.String} object.
-     * @param baseUrl a {@link java.lang.String} object.
+     * @param pageFacetString Solr filter query fixed for this CMS page
+     * @param baseUrl base URL of the CMS page hosting this search
      */
     public SearchFunctionality(String pageFacetString, String baseUrl) {
         this.pageFacetString = pageFacetString;
@@ -98,7 +98,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /**
      * redirectToSearchUrl.
      *
-     * @param keepUrlParameter a boolean.
+     * @param keepUrlParameter if true, append current search parameters to the redirect URL
      */
     public void redirectToSearchUrl(boolean keepUrlParameter) {
         logger.trace("redirectToSearchUrl({})", keepUrlParameter);
@@ -167,7 +167,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /**
      * search.
      *
-     * @param subtheme
+     * @param subtheme subtheme discriminator value to filter search
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -184,7 +184,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
 
     /**
      * 
-     * @param subtheme
+     * @param subtheme subtheme discriminator value to filter search
      * @return {@link String}
      */
     private String getCompleteFilterString(String subtheme) {
@@ -211,7 +211,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     }
 
     /**
-     * @param subtheme
+     * @param subtheme subtheme discriminator value to build filter for
      * @return Solr query part for subtheme
      */
     private static String getSubthemeFilter(String subtheme) {
@@ -249,7 +249,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /**
      * The part of the search url after the page number.
      *
-     * @param solrSortFields a {@link java.lang.String} object.
+     * @param solrSortFields Solr sort field string to embed in the URL
      * @return a {@link java.lang.String} object.
      */
     public String getUrlSuffix(String solrSortFields) {
@@ -290,7 +290,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /**
      * SearchBean injection for tests.
      * 
-     * @param searchBean
+     * @param searchBean the search bean to inject
      */
     void setSearchBean(SearchBean searchBean) {
         this.searchBean = searchBean;
@@ -341,7 +341,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /**
      * setFacetString.
      *
-     * @param facetString the facetString to set
+     * @param facetString active facet filter string to apply
      */
     public void setFacetString(String facetString) {
         getSearchBean().getFacets().setActiveFacetString(facetString);
@@ -365,7 +365,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /**
      * setQueryString.
      *
-     * @param s a {@link java.lang.String} object.
+     * @param s exact search query string to set
      */
     public void setQueryString(String s) {
         getSearchBean().setExactSearchString(s);
@@ -427,8 +427,8 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /**
      * getSortUrl.
      *
-     * @param sortString a {@link java.lang.String} object.
-     * @param descending a boolean.
+     * @param sortString Solr sort field name to include in the URL
+     * @param descending if true, prefix the sort field with '!' for descending order
      * @return a {@link java.lang.String} object.
      */
     public String getSortUrl(final String sortString, final boolean descending) {
@@ -438,7 +438,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /**
      * getFacettedUrl.
      *
-     * @param facetString a {@link java.lang.String} object.
+     * @param facetString active facet filter string to embed in the URL
      * @return a {@link java.lang.String} object.
      */
     public String getFacettedUrl(String facetString) {
@@ -454,7 +454,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /**
      * removeFacet.
      *
-     * @param facet a {@link java.lang.String} object.
+     * @param facet facet value string to remove from the active facet string
      * @return a {@link java.lang.String} object.
      */
     public String removeFacet(String facet) {

@@ -62,8 +62,8 @@ public class IIIFUrlHandler {
     private final AbstractApiUrlManager urls;
 
     /**
-     * 
-     * @param urls
+     *
+     * @param urls API URL manager used to build image resource URLs
      */
     public IIIFUrlHandler(AbstractApiUrlManager urls) {
         this.urls = urls;
@@ -78,14 +78,14 @@ public class IIIFUrlHandler {
     }
 
     /**
-     * 
-     * @param fileUrl
-     * @param docStructIdentifier
-     * @param region
-     * @param size
-     * @param rotation
-     * @param quality
-     * @param format
+     *
+     * @param fileUrl file path or URL of the image resource
+     * @param docStructIdentifier record identifier (PI) of the parent document
+     * @param region IIIF region parameter
+     * @param size IIIF size parameter
+     * @param rotation IIIF rotation parameter
+     * @param quality IIIF quality parameter
+     * @param format IIIF format parameter
      * @return Generated URL
      */
     public String getIIIFImageUrl(String fileUrl, String docStructIdentifier, String region, String size, String rotation, String quality,
@@ -98,14 +98,14 @@ public class IIIFUrlHandler {
     /**
      * Returns a link to the actual image of the given page, delivered via IIIF api using the given parameters.
      *
-     * @param apiUrl
-     * @param inFileUrl a {@link java.lang.String} object.
-     * @param docStructIdentifier
-     * @param region a {@link java.lang.String} object.
-     * @param size a {@link java.lang.String} object.
-     * @param rotation a {@link java.lang.String} object.
-     * @param quality a {@link java.lang.String} object.
-     * @param format a {@link java.lang.String} object.
+     * @param apiUrl base URL of the IIIF image API
+     * @param inFileUrl file path or URL of the image resource
+     * @param docStructIdentifier record identifier (PI) of the parent document
+     * @param region IIIF region parameter
+     * @param size IIIF size parameter
+     * @param rotation IIIF rotation parameter
+     * @param quality IIIF quality parameter
+     * @param format IIIF format parameter
      * @return Generated URL
      */
     public String getIIIFImageUrl(String apiUrl, final String inFileUrl, final String docStructIdentifier, String region, String size,
@@ -210,12 +210,12 @@ public class IIIFUrlHandler {
     /**
      * Appends image request parameter paths to the given baseUrl.
      *
-     * @param baseUrl a {@link java.lang.String} object.
-     * @param region a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest} object.
-     * @param size a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
-     * @param rotation a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation} object.
-     * @param quality a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype} object.
-     * @param format a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat} object.
+     * @param baseUrl base IIIF image identifier URL
+     * @param region image region to extract
+     * @param size scaling specification for the image
+     * @param rotation rotation angle for the image
+     * @param quality color type/quality for the image
+     * @param format output image file format
      * @return a {@link java.lang.String} object.
      */
     public String getIIIFImageUrl(final String baseUrl, RegionRequest region, Scale size, Rotation rotation, Colortype quality,
@@ -233,14 +233,14 @@ public class IIIFUrlHandler {
     /**
      * Replaces the image request parameters in an IIIF URL with the given ones.
      *
-     * @param url a {@link java.lang.String} object.
+     * @param url existing IIIF image URL to modify
      * @should replace dimensions correctly
      * @should do nothing if not iiif url
-     * @param region a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest} object.
-     * @param size a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
-     * @param rotation a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation} object.
-     * @param quality a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype} object.
-     * @param format a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat} object.
+     * @param region replacement image region parameter
+     * @param size replacement scaling parameter
+     * @param rotation replacement rotation parameter
+     * @param quality replacement color type/quality parameter
+     * @param format replacement output image file format
      * @return a {@link java.lang.String} object.
      */
     public String getModifiedIIIFFUrl(String url, RegionRequest region, Scale size, Rotation rotation, Colortype quality, ImageFileFormat format) {

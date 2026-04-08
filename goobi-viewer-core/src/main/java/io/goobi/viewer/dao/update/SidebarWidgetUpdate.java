@@ -155,16 +155,16 @@ public class SidebarWidgetUpdate implements IModelUpdate {
     }
 
     /**
-     * 
-     * @param innerHtml
-     * @param linkedPages
-     * @param widgetTitle
-     * @param additionalQuery
-     * @param resultDisplayLimit
-     * @param searchField
-     * @param contentType
-     * @param widgetMode
-     * @param cssClass
+     *
+     * @param innerHtml raw HTML content for HTML-type widgets
+     * @param linkedPages semicolon-separated page IDs for page list widgets
+     * @param widgetTitle display title of the widget
+     * @param additionalQuery Solr filter query for RSS/facet widgets
+     * @param resultDisplayLimit maximum number of entries to display
+     * @param searchField Solr field name used for facet widgets
+     * @param contentType determines which widget subtype to create
+     * @param widgetMode display mode; "FOLDOUT" collapses the widget
+     * @param cssClass additional CSS class applied to the widget
      * @return Created {@link CustomSidebarWidget}
      */
     private static CustomSidebarWidget createCustomWidget(String innerHtml, String linkedPages, String widgetTitle, String additionalQuery,
@@ -217,9 +217,9 @@ public class SidebarWidgetUpdate implements IModelUpdate {
     }
 
     /**
-     * 
-     * @param widgetTitle
-     * @param htmlWidget
+     *
+     * @param widgetTitle title string to resolve and set; may be a message key or literal text
+     * @param htmlWidget widget on which the resolved title is set
      */
     private static void setTitle(String widgetTitle, CustomSidebarWidget htmlWidget) {
         TranslatedText translatedTitle = new TranslatedText(ViewerResourceBundle.getTranslations(widgetTitle, false));
@@ -231,8 +231,8 @@ public class SidebarWidgetUpdate implements IModelUpdate {
     }
 
     /**
-     * 
-     * @param type
+     *
+     * @param type legacy widget type string from the database
      * @return {@link WidgetContentType}
      */
     private static WidgetContentType parseContentType(String type) {
@@ -272,8 +272,8 @@ public class SidebarWidgetUpdate implements IModelUpdate {
 
     /**
      * 
-     * @param string
-     * @param separatorPattern
+     * @param string string containing separated long ID values
+     * @param separatorPattern regex pattern used to split the string
      * @return IDs parsed from given string
      */
     private static List<Long> parseIds(String string, String separatorPattern) {

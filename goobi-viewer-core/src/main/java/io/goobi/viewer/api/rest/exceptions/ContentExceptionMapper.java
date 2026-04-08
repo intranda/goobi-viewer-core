@@ -124,10 +124,10 @@ public class ContentExceptionMapper implements ExceptionMapper<ContentLibExcepti
         }
 
         /**
-         * 
-         * @param status
-         * @param e
-         * @param printStackTrace
+         *
+         * @param status HTTP status for the error response
+         * @param e the exception that caused the error
+         * @param printStackTrace whether to include the stack trace in the response
          */
         public ErrorMessage(Status status, Throwable e, boolean printStackTrace) {
             this.status = status.getStatusCode();
@@ -142,11 +142,11 @@ public class ContentExceptionMapper implements ExceptionMapper<ContentLibExcepti
         }
 
         /**
-         * 
-         * @param status
-         * @param e
-         * @param errorImage
-         * @param printStackTrace
+         *
+         * @param status HTTP status for the error response
+         * @param e the exception that caused the error
+         * @param errorImage URL or path of an error image to include
+         * @param printStackTrace whether to include the stack trace in the response
          */
         public ErrorMessage(Status status, Throwable e, String errorImage, boolean printStackTrace) {
             this.status = status.getStatusCode();

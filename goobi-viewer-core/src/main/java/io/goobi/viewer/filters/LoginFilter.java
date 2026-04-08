@@ -113,7 +113,7 @@ public class LoginFilter implements Filter {
     /**
      * Checks whether the given URI requires a logged in user.
      *
-     * @param uri a {@link java.lang.String} object.
+     * @param uri request URI to check against restricted path patterns
      * @return true if restricted; false otherwise.
      * @should return true for certain pretty uris
      * @should return true for crowdsourcing uris

@@ -77,9 +77,9 @@ public class DynamicContentBuilder {
     }
 
     /**
-     * 
-     * @param content
-     * @param parent
+     *
+     * @param content dynamic content descriptor specifying type and attributes
+     * @param parent parent UI component to attach the built component to
      * @return {@link UIComponent}
      */
     public UIComponent build(DynamicContent content, UIComponent parent) {
@@ -159,9 +159,10 @@ public class DynamicContentBuilder {
     }
 
     /**
-     * @param parent
-     * @param name
-     * @param library
+     * @param parent parent UI component to attach the composite to
+     * @param name resource file name of the composite component
+     * @param library JSF resource library containing the component
+     * @param attributes map of component attribute names to their values
      * @return {@link UIComponent}
      */
     private UIComponent loadCompositeComponent(UIComponent parent, String name, String library, Map<String, Object> attributes)
@@ -242,9 +243,9 @@ public class DynamicContentBuilder {
     }
 
     /**
-     * 
-     * @param name
-     * @param attributes
+     *
+     * @param name HTML element tag name to render
+     * @param attributes map of HTML attributes to write on the element
      * @return {@link UIComponent}
      */
     public UIComponent createTag(String name, Map<String, String> attributes) {
@@ -274,8 +275,8 @@ public class DynamicContentBuilder {
     }
 
     /**
-     * @param content
-     * @param parent
+     * @param content dynamic content descriptor specifying type and attributes
+     * @param parent parent panel group to attach head elements to
      * @return Optional<UIComponent>
      */
     public Optional<UIComponent> buildHead(DynamicContent content, HtmlPanelGroup parent) {
@@ -314,10 +315,10 @@ public class DynamicContentBuilder {
     }
 
     /**
-     * 
-     * @param id
-     * @param type
-     * @param attributes
+     *
+     * @param id unique component ID to assign to the content
+     * @param type content type determining the component template
+     * @param attributes map of content-specific configuration attributes
      * @return {@link DynamicContent}
      */
     public DynamicContent createContent(String id, DynamicContentType type, Map<String, Object> attributes) {
@@ -328,8 +329,8 @@ public class DynamicContentBuilder {
     }
 
     /**
-     * 
-     * @param type
+     *
+     * @param type content type to resolve a filename for
      * @return File name
      */
     public static String getFilenameForType(DynamicContentType type) {

@@ -78,7 +78,7 @@ public final class MetadataTools {
     /**
      * generateDublinCoreMetaTags.
      *
-     * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param structElement structural element whose metadata is rendered.
      * @return String containing meta tags
      */
     public static String generateDublinCoreMetaTags(StructElement structElement) {
@@ -216,8 +216,8 @@ public final class MetadataTools {
     /**
      * generateHighwirePressMetaTags.
      *
-     * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @param resources a {@link java.util.List} object.
+     * @param structElement structural element whose metadata is rendered.
+     * @param resources list of physical resources for citation_pdf_url tags.
      * @return String containing meta tags
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -318,7 +318,7 @@ public final class MetadataTools {
     /**
      * generateRIS.
      *
-     * @param se a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param se structural element to generate RIS output for.
      * @return a {@link java.lang.String} object.
      */
     public static String generateRIS(StructElement se) {
@@ -331,8 +331,8 @@ public final class MetadataTools {
 
     /**
      * 
-     * @param docstructType
-     * @param metadataFields
+     * @param docstructType logical document structure type (e.g. "monograph", "article")
+     * @param metadataFields map of metadata field names to their values
      * @return Generated RIS string; null of no docstructType given
      */
     public static String generateRIS(String docstructType, Map<String, List<String>> metadataFields) {
@@ -434,7 +434,7 @@ public final class MetadataTools {
 
     /**
      *
-     * @param docstructType
+     * @param docstructType logical document structure type to map to a RIS type
      * @return Mapped RIS type or default value "GEN"
      */
     static String getRISTypeMapping(String docstructType) {
@@ -480,7 +480,7 @@ public final class MetadataTools {
     /**
      * Converts given language name or ISO-3 code to ISO-2, if possible.
      *
-     * @param language a {@link java.lang.String} object.
+     * @param language language name or ISO-3 code to convert.
      * @return ISO-2 representation; original string if none found
      * @should return original value if language not found
      */
@@ -578,7 +578,7 @@ public final class MetadataTools {
     /**
      * findMetadataGroupType.
      *
-     * @param type a {@link java.lang.String} object.
+     * @param type gndspec type code to look up.
      * @return MetadataGroupType value corresponding to the given gndspec type
      * @should map values correctly
      */

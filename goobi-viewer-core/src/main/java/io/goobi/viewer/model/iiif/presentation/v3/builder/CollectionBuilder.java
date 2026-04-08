@@ -80,8 +80,8 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * 
-     * @param collectionField
+     *
+     * @param collectionField Solr field containing the collection hierarchy
      * @return {@link Collection3}
      * @throws IndexUnreachableException
      */
@@ -103,9 +103,9 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * 
-     * @param collectionField
-     * @param collectionName
+     *
+     * @param collectionField Solr field containing the collection hierarchy
+     * @param collectionName name of the collection to build
      * @return {@link Collection3}
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -147,9 +147,9 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * 
-     * @param collectionField
-     * @param collectionName
+     *
+     * @param collectionField Solr field containing the collection hierarchy
+     * @param collectionName name of the collection to create
      * @return {@link Collection3}
      */
     private Collection3 createCollection(String collectionField, String collectionName) {
@@ -179,9 +179,9 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * 
-     * @param collectionName
-     * @param cmsCollection
+     *
+     * @param collectionName name of the collection, used for error logging
+     * @param cmsCollection CMS collection providing media item and representative work data
      * @return {@link ImageResource}
      */
     private ImageResource createThumbnail(String collectionName, CMSCollection cmsCollection) {

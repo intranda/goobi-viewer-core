@@ -75,11 +75,11 @@ public class TranskribusJob implements Serializable {
     @Column(name = "owner_id", nullable = false)
     private String ownerId;
 
-    /** Transkribus collection (user) */
+    /** Transkribus collection (user). */
     @Column(name = "user_collection_id", nullable = false)
     private String userCollectionId;
 
-    /** Transkribus collection (viewer) */
+    /** Transkribus collection (viewer). */
     @Column(name = "viewer_collection_id", nullable = false)
     private String viewerCollectionId;
 

@@ -40,7 +40,7 @@ public class CitationProcessorWrapper implements Serializable {
 
     /**
      * 
-     * @param style
+     * @param style CSL citation style name (e.g. "apa", "chicago-notes")
      * @return the citationProcessor
      * @throws IOException
      * @should create citation processor correctly

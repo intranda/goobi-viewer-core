@@ -61,8 +61,8 @@ public class EMailSender {
     }
 
     /**
-     * 
-     * @param config
+     *
+     * @param config configuration object providing SMTP settings
      */
     public EMailSender(Configuration config) {
         this(config.getSmtpServer(), config.getSmtpUser(), config.getSmtpPassword(), config.getSmtpSenderAddress(), config.getSmtpSenderName(),
@@ -70,13 +70,13 @@ public class EMailSender {
     }
 
     /**
-     * @param smtpServer
-     * @param smtpUser
-     * @param smtpPassword
-     * @param smtpSenderAddress
-     * @param smtpSenderName
-     * @param smtpSecurity
-     * @param smtpPort
+     * @param smtpServer hostname or IP address of the SMTP server
+     * @param smtpUser username for SMTP authentication
+     * @param smtpPassword password for SMTP authentication
+     * @param smtpSenderAddress email address used as the sender
+     * @param smtpSenderName display name shown as the sender
+     * @param smtpSecurity security protocol to use (NONE, SSL, STARTTLS)
+     * @param smtpPort SMTP server port number
      */
     public EMailSender(String smtpServer, String smtpUser, String smtpPassword, String smtpSenderAddress, String smtpSenderName, String smtpSecurity,
             Integer smtpPort) {
@@ -104,12 +104,12 @@ public class EMailSender {
     /**
      * Sends an email to with the given subject and body to the given recipient list using the given SMTP parameters.
      *
-     * @param recipients
-     * @param cc
-     * @param bcc
-     * @param replyTo
-     * @param subject
-     * @param body
+     * @param recipients list of primary recipient email addresses
+     * @param cc list of carbon-copy recipient email addresses
+     * @param bcc list of blind carbon-copy recipient email addresses
+     * @param replyTo list of reply-to email addresses
+     * @param subject email subject line
+     * @param body email body content
      * @return true if mail sent successfully; false otherwise
      * @throws MessagingException
      * @throws UnsupportedEncodingException
@@ -143,14 +143,14 @@ public class EMailSender {
     }
 
     /**
-     * 
-     * @param recipients
-     * @param cc
-     * @param bcc
-     * @param replyTo
-     * @param subject
-     * @param body
-     * @param session
+     *
+     * @param recipients list of primary recipient email addresses
+     * @param cc list of carbon-copy recipient email addresses
+     * @param bcc list of blind carbon-copy recipient email addresses
+     * @param replyTo list of reply-to email addresses
+     * @param subject email subject line
+     * @param body email body content
+     * @param session active mail session to use for message creation
      * @return Created {@link Message}
      * @throws UnsupportedEncodingException
      * @throws MessagingException
@@ -216,8 +216,8 @@ public class EMailSender {
     }
 
     /**
-     * 
-     * @param auth
+     *
+     * @param auth true if SMTP authentication should be enabled
      * @return {@link Properties}
      */
     private Properties createProperties(boolean auth) {
@@ -255,7 +255,7 @@ public class EMailSender {
 
     /**
      *
-     * @param recipients
+     * @param recipients list of email address strings to convert
      * @return {@link InternetAddress}[]
      * @throws AddressException
      * @should parse addresses correctly

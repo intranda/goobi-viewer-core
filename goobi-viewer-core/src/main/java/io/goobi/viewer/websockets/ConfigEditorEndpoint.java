@@ -55,8 +55,8 @@ public class ConfigEditorEndpoint {
     /**
      * Store id of http session.
      * 
-     * @param session
-     * @param config
+     * @param session WebSocket session being opened
+     * @param config endpoint configuration providing HTTP session properties
      */
     @OnOpen
     public void onOpen(Session session, EndpointConfig config) {
@@ -85,7 +85,7 @@ public class ConfigEditorEndpoint {
      * Called when leaving a adminConfigEditor page. Unlocks the file set by {@link #onMessage(String)} for the session set by
      * {@link #onOpen(Session, EndpointConfig)} using {@link AdminConfigEditorBean#unlockFile(Path, String)}
      * 
-     * @param session
+     * @param session WebSocket session being closed
      */
     @OnClose
     public void onClose(Session session) {

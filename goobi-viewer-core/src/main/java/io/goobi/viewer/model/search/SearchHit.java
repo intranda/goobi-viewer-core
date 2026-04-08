@@ -110,7 +110,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /** Metadata for Excel export. */
     private final Map<String, String> exportMetadata = new HashMap<>();
     private String url;
-    /** Secondary URL */
+    /** Secondary URL. */
     private String altUrl;
     /** Secondary label. */
     private String altLabel;
@@ -119,13 +119,13 @@ public class SearchHit implements Comparable<SearchHit> {
     private final List<SearchHit> children = new ArrayList<>();
     private final Map<HitType, Integer> hitTypeCounts = new EnumMap<>(HitType.class);
     /**
-     * Hits generated from {@link #childDocs} in {@link #populateChildren(int, int, Locale, HttpServletRequest)}
+     * Hits generated from {@link #childDocs} in {@link #populateChildren(int, int, Locale, HttpServletRequest)}.
      */
     private int hitsPopulated = 0;
     /**
      * Hits generated when hit is created in
      * {@link SearchHelper#searchWithAggregation(String, int, int, List, List, List, Map, Map, List, String, Locale, boolean, int)} This hits are part
-     * of the total hit count returned by {@link #getHitCount()} but don't count towards {@link #hitsPopulated}
+     * of the total hit count returned by {@link #getHitCount()} but don't count towards {@link #hitsPopulated}.
      */
     private int hitsPreloaded = 0;
     private SolrDocument solrDoc = null;
@@ -138,12 +138,12 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Package-private constructor. Clients should use SearchHitFactory to create SearchHit instances.
      *
-     * @param type
-     * @param browseElement
-     * @param doc
-     * @param searchTerms
-     * @param locale
-     * @param factory
+     * @param type the hit type (page, metadata, UGC, etc.)
+     * @param browseElement the browse element representing this hit
+     * @param doc the Solr document backing this hit
+     * @param searchTerms map of Solr field names to matched search term sets
+     * @param locale locale used for label translations
+     * @param factory factory used to create child search hits
      * @should set authorityDataIdentifier correctly
      */
     SearchHit(HitType type, BrowseElement browseElement, SolrDocument doc, Map<String, Set<String>> searchTerms, Locale locale,
@@ -325,7 +325,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * Creates a child hit element for TEI full-texts, with child hits of its own for each truncated fragment containing search terms.
      *
      * @param doc Solr page doc
-     * @param language a {@link java.lang.String} object.
+     * @param language BCP 47 language code for TEI file lookup
      * @return the number of child hits added
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -406,10 +406,10 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * populateChildren.
      *
-     * @param number a int.
-     * @param skip a int.
-     * @param locale a {@link java.util.Locale} object.
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param number maximum number of child hits to populate
+     * @param skip number of child hits to skip before populating
+     * @param locale locale used for label translations
+     * @param request current HTTP request used for access checks
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -518,11 +518,11 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * 
-     * @param childDoc
-     * @param fulltext
-     * @param docType
-     * @param acccessDeniedType
+     *
+     * @param childDoc the child Solr document to process
+     * @param fulltext full-text content for page hits, may be null
+     * @param docType document type of the child document
+     * @param acccessDeniedType true if access to this document was denied
      * @throws DAOException
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -576,11 +576,11 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * 
-     * @param request
-     * @param pi
-     * @param authorityIdentifier
-     * @param childDoc
+     *
+     * @param request the current HTTP request, used for access checks
+     * @param pi persistent identifier of the record
+     * @param authorityIdentifier authority data identifier used to highlight named entity tags; may be null
+     * @param childDoc Solr page document providing fulltext filename fields
      * @return Full-text for this search hit
      * @throws FileNotFoundException If the fulltext resource is not found or not accessible
      * @throws AccessDeniedException If the request is missing access rights to the fulltext resource
@@ -978,7 +978,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Generates HTML fragment for this search hit for notification mails.
      *
-     * @param count a int.
+     * @param count sequential position of this hit in the notification list
      * @return a {@link java.lang.String} object.
      * @should generate fragment correctly
      */
@@ -989,7 +989,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * @param doc
+     * @param doc the Solr document to set
      */
     public void setSolrDoc(SolrDocument doc) {
         this.solrDoc = doc;

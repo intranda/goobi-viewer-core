@@ -63,7 +63,7 @@ public class CookieBanner implements Serializable {
     private TranslatedText text = new TranslatedText();
 
     /**
-     * set if the banner should be shown at all
+     * set if the banner should be shown at all.
      */
     @Column(name = "active")
     private boolean active = false;
@@ -76,7 +76,7 @@ public class CookieBanner implements Serializable {
     private LocalDateTime requiresConsentAfter = LocalDateTime.now();
 
     /**
-     * IDs of CMS Pages on which the cookie banner should not be displayed
+     * IDs of CMS Pages on which the cookie banner should not be displayed.
      */
     @Column(name = "ignore_on")
     @Convert(converter = NumberListConverter.class)
@@ -92,7 +92,7 @@ public class CookieBanner implements Serializable {
     /**
      * Cloning constructor.
      * 
-     * @param orig
+     * @param orig the instance to copy
      */
     public CookieBanner(CookieBanner orig) {
         this.id = orig.id;
@@ -133,7 +133,7 @@ public class CookieBanner implements Serializable {
     /**
      * Set the database id.
      * 
-     * @param id
+     * @param id database ID to set
      */
     public void setId(Long id) {
         this.id = id;
@@ -148,9 +148,9 @@ public class CookieBanner implements Serializable {
     }
 
     /**
-     * set the {@link CookieBanner#ignoreList}
+     * set the {@link CookieBanner#ignoreList}.
      * 
-     * @param ignoreList
+     * @param ignoreList list of user IDs that have dismissed the cookie banner
      */
     public void setIgnoreList(List<Long> ignoreList) {
         this.ignoreList = ignoreList;
@@ -165,9 +165,9 @@ public class CookieBanner implements Serializable {
     }
 
     /**
-     * set the {@link #requiresConsentAfter}
+     * set the {@link #requiresConsentAfter}.
      * 
-     * @param requiresConsentAfter
+     * @param requiresConsentAfter date/time after which re-consent is required
      */
     public void setRequiresConsentAfter(LocalDateTime requiresConsentAfter) {
         this.requiresConsentAfter = requiresConsentAfter;

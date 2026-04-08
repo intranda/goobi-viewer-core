@@ -81,19 +81,19 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(CMSMediaItem.class);
 
-    /** Constant <code>CONTENT_TYPE_XML="text/xml"</code> */
+    /** Constant <code>CONTENT_TYPE_XML="text/xml"</code>. */
     public static final String CONTENT_TYPE_XML = "text/xml";
-    /** Constant <code>CONTENT_TYPE_SVG="image/svg+xml"</code> */
+    /** Constant <code>CONTENT_TYPE_SVG="image/svg+xml"</code>. */
     public static final String CONTENT_TYPE_SVG = "image/svg+xml";
-    /** Constant <code>CONTENT_TYPE_SVG="image/svg+xml"</code> */
+    /** Constant <code>CONTENT_TYPE_SVG="image/svg+xml"</code>. */
     public static final String CONTENT_TYPE_ICO = "image/x-icon";
-    /** Constant <code>CONTENT_TYPE_PDF="application/pdf"</code> */
+    /** Constant <code>CONTENT_TYPE_PDF="application/pdf"</code>. */
     public static final String CONTENT_TYPE_PDF = "application/pdf";
-    /** Constant <code>CONTENT_TYPE_GIF="application/gif"</code> */
+    /** Constant <code>CONTENT_TYPE_GIF="application/gif"</code>. */
     public static final String CONTENT_TYPE_GIF = "image/gif";
-    /** Constant <code>CONTENT_TYPE_VIDEO="video"</code> */
+    /** Constant <code>CONTENT_TYPE_VIDEO="video"</code>. */
     public static final String CONTENT_TYPE_VIDEO = "video";
-    /** Constant <code>CONTENT_TYPE_AUDIO="audio"</code> */
+    /** Constant <code>CONTENT_TYPE_AUDIO="audio"</code>. */
     public static final String CONTENT_TYPE_AUDIO = "audio";
 
     @Id
@@ -139,7 +139,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /**
      * Copy constructor.
      *
-     * @param orig a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
+     * @param orig source media item to copy from
      */
     public CMSMediaItem(CMSMediaItem orig) {
         if (orig.id != null) {
@@ -295,7 +295,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /**
      * getMetadataForLocale.
      *
-     * @param locale a {@link java.util.Locale} object.
+     * @param locale locale used to look up the language tag
      * @return media item metadata for the given locale; null if no locale given
      */
     public CMSMediaItemMetadata getMetadataForLocale(Locale locale) {
@@ -309,7 +309,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /**
      * getMetadataForLanguage.
      *
-     * @param language a {@link java.lang.String} object.
+     * @param language BCP 47 language code to look up
      * @return media item metadata for the given locale
      */
     public CMSMediaItemMetadata getMetadataForLanguage(String language) {
@@ -346,7 +346,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /**
      * Adds a metadata item to the list of image metadata. If a metadata item with the same language string exists, it is replaced
      *
-     * @param metadata a {@link io.goobi.viewer.model.cms.media.CMSMediaItemMetadata} object.
+     * @param metadata metadata entry to add or replace for its language
      */
     public void addMetadata(CMSMediaItemMetadata metadata) {
         String language = metadata.getLanguage();
@@ -392,7 +392,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /**
      * Setter for the field <code>categories</code>.
      *
-     * @param categories a {@link java.util.List} object.
+     * @param categories replacement list of categories to assign
      */
     public void setCategories(List<CMSCategory> categories) {
         this.categories = categories;
@@ -401,7 +401,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /**
      * removeCategory.
      *
-     * @param cat a {@link io.goobi.viewer.model.cms.CMSCategory} object.
+     * @param cat category to remove from this item
      * @return a boolean.
      */
     public boolean removeCategory(CMSCategory cat) {
@@ -411,7 +411,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /**
      * addCategory.
      *
-     * @param cat a {@link io.goobi.viewer.model.cms.CMSCategory} object.
+     * @param cat category to add if not already present
      * @return a boolean.
      */
     public boolean addCategory(CMSCategory cat) {
@@ -428,7 +428,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /**
      * setImportant.
      *
-     * @param important a boolean.
+     * @param important true sets priority to IMPORTANT, false to DEFAULT
      */
     public void setImportant(boolean important) {
         this.priority = important ? Priority.IMPORTANT : Priority.DEFAULT;
@@ -498,7 +498,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /**
      * Set the link for this media item.
      *
-     * @param linkUrl a {@link java.lang.String} object.
+     * @param linkUrl URL string to associate with this media item
      * @throws java.net.URISyntaxException if any.
      */
     public void setLink(String linkUrl) {
@@ -666,7 +666,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /**
      * isFinished.
      *
-     * @param locale a {@link java.util.Locale} object.
+     * @param locale locale to check for a non-blank name entry
      * @return a boolean.
      */
     public boolean isFinished(Locale locale) {
@@ -736,7 +736,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /**
      * wrapCategories.
      *
-     * @param categories a {@link java.util.List} object.
+     * @param categories all available categories to wrap with selection state
      * @return the categoryMap. Never null. If it isn't defined yet, create a map from all categories
      */
     public synchronized List<Selectable<CMSCategory>> wrapCategories(List<CMSCategory> categories) {

@@ -59,11 +59,11 @@ public class VuFindProvider extends HttpAuthenticationProvider {
     /**
      * Creates a new VuFindProvider instance.
      *
-     * @param name a {@link java.lang.String} object.
-     * @param url a {@link java.lang.String} object.
-     * @param image a {@link java.lang.String} object.
-     * @param label a {@link java.lang.String} object.
-     * @param timeoutMillis a long.
+     * @param name internal provider identifier
+     * @param url base URL of the VuFind authentication endpoint
+     * @param image path to the provider logo image
+     * @param label human-readable provider name shown in the UI
+     * @param timeoutMillis HTTP request timeout in milliseconds
      */
     public VuFindProvider(String name, String label, String url, String image, long timeoutMillis) {
         super(name, label, TYPE_USER_PASSWORD, url, image, timeoutMillis);
@@ -112,7 +112,7 @@ public class VuFindProvider extends HttpAuthenticationProvider {
     }
 
     /**
-     * @param request
+     * @param request authentication request containing username and password
      * @return Optional<User>
      * @throws AuthenticationProviderException
      */

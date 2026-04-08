@@ -82,10 +82,10 @@ public class IIIFPresentationRequestFilter implements ContainerRequestFilter {
     /**
      * forwardToCanonicalUrl.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param imageName a {@link java.lang.String} object.
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
+     * @param pi persistent identifier of the record
+     * @param imageName image filename or page order number to resolve
+     * @param request incoming HTTP request to update with resolved filename
+     * @param response HTTP response used to perform the redirect
      * @return a boolean.
      * @throws java.io.IOException if any.
      */
@@ -117,8 +117,8 @@ public class IIIFPresentationRequestFilter implements ContainerRequestFilter {
     }
 
     /**
-     * @param pi
-     * @param logId
+     * @param pi persistent identifier of the record
+     * @param logId logical structure ID to check
      * @throws ServiceNotAllowedException
      */
     private void filterForAccessConditions(String pi, String logId) throws ServiceNotAllowedException {

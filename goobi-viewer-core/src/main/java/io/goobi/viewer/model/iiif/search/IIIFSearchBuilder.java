@@ -66,7 +66,7 @@ import io.goobi.viewer.solr.SolrTools;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * Creates a IIIF Search API v1.0 response as {@link de.intranda.api.iiif.search.SearchResult}
+ * Creates a IIIF Search API v1.0 response as {@link de.intranda.api.iiif.search.SearchResult}.
  *
  * @author florian
  */
@@ -94,10 +94,10 @@ public class IIIFSearchBuilder {
     /**
      * Initializes the builder with all required parameters.
      *
-     * @param urls
+     * @param urls the API URL manager for constructing resource URIs
      * @param query the query string
      * @param pi the pi of the manifest to search
-     * @param request
+     * @param request the current HTTP servlet request
      */
     public IIIFSearchBuilder(AbstractApiUrlManager urls, final String query, String pi, HttpServletRequest request) {
         this.query = query != null ? query.replace("+", " ") : query;
@@ -257,7 +257,7 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * @return a list of all passed paramters that are ignored
+     * @return a list of all passed parameters that are ignored
      */
     private List<String> getIgnoredParameterList() {
         List<String> ignored = new ArrayList<>();
@@ -392,8 +392,8 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * 
-     * @param query
+     *
+     * @param query search query string
      * @param pi Record identifier
      * @return {@link SearchTermList}
      */
@@ -417,11 +417,11 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * 
-     * @param query
+     *
+     * @param query search query string
      * @param pi Record identifier
-     * @param firstHitIndex
-     * @param hitsPerPage
+     * @param firstHitIndex zero-based index of the first result to return
+     * @param hitsPerPage maximum number of results to return
      * @return {@link AnnotationResultList}
      */
     private AnnotationResultList searchMetadata(String query, String pi, int firstHitIndex, int hitsPerPage) {
@@ -472,8 +472,8 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * 
-     * @param query
+     *
+     * @param query search query string
      * @param pi Record identifier
      * @return SearchTermList
      */
@@ -525,8 +525,8 @@ public class IIIFSearchBuilder {
     /**
      * @param query Solr query
      * @param pi Record identifier
-     * @param firstHitIndex
-     * @param hitsPerPage
+     * @param firstHitIndex zero-based index of the first result to return
+     * @param hitsPerPage maximum number of results to return
      * @param request {@link HttpServletRequest}
      * @return {@link AnnotationResultList}
      */
@@ -628,9 +628,9 @@ public class IIIFSearchBuilder {
 
     /**
      * Test if the given fieldName is included in the configuredFields or matches any of the contained wildcard fieldNames.
-     * 
-     * @param fieldName
-     * @param configuredFields
+     *
+     * @param fieldName the Solr field name to test
+     * @param configuredFields list of configured field names, may contain wildcards
      * @return a boolean
      */
     private static boolean fieldNameMatches(String fieldName, List<String> configuredFields) {
@@ -693,7 +693,7 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * @param page
+     * @param page result page number for pagination
      * @return {@link URI}
      */
     private URI getURI(Integer page) {

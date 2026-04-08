@@ -26,7 +26,7 @@ package io.goobi.viewer.model.security.recordlock;
  */
 public class RecordLock {
 
-    /** Record PI */
+    /** Record PI. */
     private final String pi;
     /** HTTP session ID. */
     private final String sessionId;

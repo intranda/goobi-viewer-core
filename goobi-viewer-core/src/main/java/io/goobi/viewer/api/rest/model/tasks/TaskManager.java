@@ -123,7 +123,7 @@ public class TaskManager {
     }
 
     /**
-     * @param pool
+     * @param pool executor service to query
      * @return Number of active threads
      */
     private static int getActiveThreads(ExecutorService pool) {
@@ -165,7 +165,7 @@ public class TaskManager {
     }
 
     /**
-     * @param type
+     * @param type task type for which to create the handler
      * @return BiConsumer&lt;HttpServletRequest, Task&gt;
      */
     public static BiConsumer<HttpServletRequest, Task> createTask(TaskType type) {

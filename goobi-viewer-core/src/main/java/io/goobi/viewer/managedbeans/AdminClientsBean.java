@@ -54,8 +54,7 @@ import jakarta.servlet.http.HttpServletRequest;
 @SessionScoped
 public class AdminClientsBean implements Serializable {
 
-    /**
-     */
+    /** Default table filter key covering name, IP address, and client identifier columns. */
     public static final String DEFAULT_TABLE_FILTER = "name_ip_identifier";
     private static final long serialVersionUID = -614644783330750969L;
     private static final Logger logger = LogManager.getLogger(AdminClientsBean.class);
@@ -70,8 +69,8 @@ public class AdminClientsBean implements Serializable {
     /**
      * Creates a new AdminClientsBean instance for testing.
      * 
-     * @param dao
-     * @param listEntriesPerPage
+     * @param dao DAO instance used for database access
+     * @param listEntriesPerPage number of entries shown per page in the client list
      */
     AdminClientsBean(IDAO dao, int listEntriesPerPage) {
         this.dao = dao;
@@ -79,7 +78,7 @@ public class AdminClientsBean implements Serializable {
     }
 
     /**
-     * Publi no-args constructor.
+     * Creates a new AdminClientsBean instance.
      */
     public AdminClientsBean() {
         try {
@@ -145,9 +144,9 @@ public class AdminClientsBean implements Serializable {
     }
 
     /**
-     * 'Accept' a registered client by setting its {@link ClientApplication#getAccessStatus()} to {@link AccessStatus#GRANTED}
+     * 'Accept' a registered client by setting its {@link ClientApplication#getAccessStatus()} to {@link AccessStatus#GRANTED}.
      * 
-     * @param client
+     * @param client client application to grant access to
      */
     public void accept(ClientApplication client) {
         client.setAccessStatus(AccessStatus.GRANTED);
@@ -158,7 +157,7 @@ public class AdminClientsBean implements Serializable {
     /**
      * Reject a registered client by calling {@link #delete(ClientApplication)} on it.
      * 
-     * @param client
+     * @param client client application to reject and delete
      * @return pretty url of admin/clients overview page
      */
     public String reject(ClientApplication client) {
@@ -169,7 +168,7 @@ public class AdminClientsBean implements Serializable {
     /**
      * Saves the given client to database.
      * 
-     * @param client
+     * @param client client application to persist
      */
     public void save(ClientApplication client) {
         String clientId = Optional.ofNullable(client).map(ClientApplication::getClientIdentifier).orElse("-");
@@ -188,7 +187,7 @@ public class AdminClientsBean implements Serializable {
     /**
      * Deletes given client from database.
      * 
-     * @param client
+     * @param client client application to remove from the database
      * @return Navigation outcome
      */
     public String delete(ClientApplication client) {
@@ -298,7 +297,7 @@ public class AdminClientsBean implements Serializable {
     }
 
     /**
-     * Get a list of all clients with {@link AccessStatus#REQUESTED}
+     * Get a list of all clients with {@link AccessStatus#REQUESTED}.
      * 
      * @return List of clients that are not configured
      * @throws DAOException
@@ -311,7 +310,7 @@ public class AdminClientsBean implements Serializable {
     }
 
     /**
-     * Get a list of all clients with {@link AccessStatus#GRANTED}
+     * Get a list of all clients with {@link AccessStatus#GRANTED}.
      * 
      * @return List of clients that have been granted
      * @throws DAOException
@@ -324,7 +323,7 @@ public class AdminClientsBean implements Serializable {
     }
 
     /**
-     * Get a list of all clients with {@link AccessStatus#GRANTED} pr {@link AccessStatus#DENIED}
+     * Get a list of all clients with {@link AccessStatus#GRANTED} pr {@link AccessStatus#DENIED}.
      * 
      * @return List of clients that have been either granted or denied
      * @throws DAOException

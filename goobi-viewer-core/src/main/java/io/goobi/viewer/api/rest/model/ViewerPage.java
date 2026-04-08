@@ -43,10 +43,10 @@ public class ViewerPage {
     private final long order;
 
     /**
-     * @param link
-     * @param image
-     * @param label
-     * @param order
+     * @param link URI linking to the page
+     * @param image representative image content for the page
+     * @param label display label of the page
+     * @param order sort order of the page
      */
     public ViewerPage(URI link, IContent image, IMetadataValue label, long order) {
         super();
@@ -58,7 +58,7 @@ public class ViewerPage {
 
     /**
      * 
-     * @param page
+     * @param page CMS page to build the viewer page from
      */
     public ViewerPage(CMSPage page) {
         this.label = page.getTitleTranslations();

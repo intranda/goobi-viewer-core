@@ -57,7 +57,7 @@ public class CalendarView implements Serializable {
      *
      * @param pi Record identifier
      * @param anchorPi Anchor record identifier (must be same as pi if this is an anchor)
-     * @param anchorField
+     * @param anchorField Solr field name linking volumes to their anchor
      * @param year Year of a volume; null, if this is an anchor!
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.

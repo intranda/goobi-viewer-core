@@ -224,9 +224,9 @@ public class AuthorizationFlowResource {
     }
 
     /**
-     * 
-     * @param origin
-     * @param logContext
+     *
+     * @param origin value of the HTTP Origin header from the preflight request
+     * @param logContext description of the resource being probed, used for logging
      * @return {@link Response}
      */
     private static Response handleProbePreflightCommon(String origin, String logContext) {
@@ -246,10 +246,10 @@ public class AuthorizationFlowResource {
 
     /**
      * Common probe endpoint code.
-     * 
-     * @param origin
-     * @param path
-     * @param accessCheck
+     *
+     * @param origin value of the HTTP Origin header from the client request
+     * @param path resource path used to build auth service links on failure
+     * @param accessCheck predicate that evaluates the bearer token against the resource
      * @return {@link Response}
      * @throws JsonProcessingException
      */
@@ -335,10 +335,10 @@ public class AuthorizationFlowResource {
 
     /**
      * Probe service endpoint (image and text). The session will probably be different here from previous login/token queries.
-     * 
-     * @param pi
-     * @param filename
-     * @param origin
+     *
+     * @param pi record identifier
+     * @param filename name of the content file to check access for
+     * @param origin value of the HTTP Origin header from the client request
      * @return {@link Response}
      * @throws JsonProcessingException
      */
@@ -407,7 +407,7 @@ public class AuthorizationFlowResource {
      * 
      * @param pi Record identifier
      * @param order Page number
-     * @param origin
+     * @param origin HTTP Origin header value for CORS
      * @return {@link Response}
      * @throws JsonProcessingException
      */
@@ -488,9 +488,9 @@ public class AuthorizationFlowResource {
 
     /**
      * Probe pre-flight endpoint for general record related resources.
-     * 
+     *
      * @param pi Record identifier
-     * @param privilege
+     * @param privilege name of the privilege to check
      * @param origin Client origin
      * @return {@link Response}
      */

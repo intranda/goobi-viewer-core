@@ -166,8 +166,8 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     /**
      * Gets the URI to the image representing the object.
      * 
-     * @param width
-     * @param height
+     * @param width desired image width in pixels
+     * @param height desired image height in pixels
      * @return true if {@link #hasImageURI()} returns true and, if the image is taken from the record identifier, the record identifier points to a
      *         records which has a representative image
      * @throws IndexUnreachableException
@@ -208,7 +208,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     }
 
     /**
-     * alias for {@link #isCurrent()}
+     * alias for {@link #isCurrent()}.
      * 
      * @return true if startTime is before now (or null) and endTime is after now (or null)
      */
@@ -228,7 +228,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     /**
      * Checks if the object is active at the given date.
      * 
-     * @param date
+     * @param date the point in time to check activity against
      * @return true if startTime is before now (or null) and endTime is after now (or null)
      */
     public boolean isCurrent(LocalDateTime date) {
@@ -246,8 +246,8 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
 
     /**
      * Check if this object was only active before the given date.
-     * 
-     * @param date
+     *
+     * @param date the point in time to evaluate past status against
      * @return true if timeEnd is not null and before now
      */
     public boolean isPast(LocalDateTime date) {
@@ -266,8 +266,8 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
 
     /**
      * Check if this object is not currently active but will be active in the future of the given date.
-     * 
-     * @param date
+     *
+     * @param date the point in time to evaluate future status against
      * @return true if startTime is not null and after now and timeEnd is either null or after now
      */
     public boolean isFuture(LocalDateTime date) {
@@ -304,8 +304,8 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     }
 
     /**
-     * 
-     * @param locale
+     *
+     * @param locale locale for which to retrieve the metadata list
      * @return List<Metadata>
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -320,9 +320,9 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     }
 
     /**
-     * 
-     * @param field
-     * @param locale
+     *
+     * @param field Solr field name to filter metadata entries by
+     * @param locale locale used for language-specific field suffixes and metadata retrieval
      * @return List<Metadata>
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -342,8 +342,8 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     }
 
     /**
-     * 
-     * @param locale
+     *
+     * @param locale locale used to load and populate the metadata entries
      * @return List<Metadata>
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -382,7 +382,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     }
 
     /**
-     * @param solrDoc
+     * @param solrDoc Solr document from which the record title is extracted
      * @return TranslatedText
      */
     private static TranslatedText createRecordTitle(SolrDocument solrDoc) {
@@ -393,7 +393,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     }
 
     /**
-     * @param label
+     * @param label metadata value containing the record title, possibly multi-language
      * @return TranslatedText
      */
     private static TranslatedText createRecordTitle(IMetadataValue label) {
@@ -407,7 +407,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     }
 
     /**
-     * @param solrDoc
+     * @param solrDoc Solr document used to build the struct element
      * @param index Metadata view index
      * @return MetadataElement
      * @throws DAOException
@@ -422,8 +422,8 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     }
 
     /**
-     * 
-     * @param recordPi
+     *
+     * @param recordPi persistent identifier of the record to load
      * @return Loaded SolrDocument
      * @throws IndexUnreachableException
      * @throws PresentationException

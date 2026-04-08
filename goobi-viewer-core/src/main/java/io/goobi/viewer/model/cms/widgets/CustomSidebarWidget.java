@@ -80,7 +80,7 @@ public class CustomSidebarWidget implements IPolyglott, Serializable {
     private TranslatedText title = new TranslatedText(IPolyglott.getLocalesStatic(), IPolyglott.getCurrentLocale());
 
     /**
-     * Currently not in use
+     * Currently not in use.
      */
     @Column(name = "widget_description", columnDefinition = "MEDIUMTEXT")
     @Convert(converter = TranslatedTextConverter.class)
@@ -105,7 +105,7 @@ public class CustomSidebarWidget implements IPolyglott, Serializable {
     /**
      * Cloning constructor.
      * 
-     * @param source
+     * @param source widget to copy fields from
      */
     public CustomSidebarWidget(CustomSidebarWidget source) {
         this.id = source.id;
@@ -197,7 +197,7 @@ public class CustomSidebarWidget implements IPolyglott, Serializable {
     /**
      * Sets the css style class to use for this widget.
      * 
-     * @param styleClass
+     * @param styleClass CSS class name to apply to this widget
      */
     public void setStyleClass(String styleClass) {
         this.styleClass = styleClass;
@@ -222,7 +222,7 @@ public class CustomSidebarWidget implements IPolyglott, Serializable {
     /**
      * Creates a copy of the given custom widget o. Depends on cloning constructors if sublass
      *
-     * @param o
+     * @param o widget instance to clone
      * @return {@link CustomSidebarWidget}
      */
     public static CustomSidebarWidget clone(CustomSidebarWidget o) {

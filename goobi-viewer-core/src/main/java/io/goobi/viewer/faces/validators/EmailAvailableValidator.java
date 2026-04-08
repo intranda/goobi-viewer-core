@@ -60,7 +60,7 @@ public class EmailAvailableValidator implements Validator<String> {
     }
 
     /**
-     * @param email
+     * @param email email address to check for uniqueness
      * @return true if the given email is not already assigned to a user except a possibly currently logged in user in this session
      * @throws DAOException
      */

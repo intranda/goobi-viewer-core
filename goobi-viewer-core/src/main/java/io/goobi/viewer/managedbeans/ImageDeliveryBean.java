@@ -75,7 +75,7 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
  * <li>imageDelivery.images.imageUrl(pyhsicalElement[, pageType])</li>
  * <li>imageDelivery.pdf.pdfUrl(structElement[, pyhsicalElement[, more physicalElements...]])</li>
  * <li>imageDelivery.media.mediaUrl(mimeType, pi, filename)</li>
- * </ul>
+ * </ul>.
  *
  * @author Florian Alpers
  */
@@ -135,11 +135,11 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
-     * Initialize for testing
+     * Initialize for testing.
      *
-     * @param config a {@link io.goobi.viewer.controller.Configuration} object.
-     * @param dataUrlManager
-     * @param contentUrlManager
+     * @param config viewer configuration to read settings from
+     * @param dataUrlManager URL manager for data (IIIF) API endpoints
+     * @param contentUrlManager URL manager for content delivery endpoints
      */
     public void init(Configuration config, AbstractApiUrlManager dataUrlManager, AbstractApiUrlManager contentUrlManager) {
         this.servletPath = getServletPathFromContext();
@@ -193,7 +193,7 @@ public class ImageDeliveryBean implements Serializable {
 
     /**
      * Returns the default size thumbnail url of the current top level document (according to the {@link io.goobi.viewer.model.viewer.ViewManager}
-     * Returns an empty string if no current document exists
+     * Returns an empty string if no current document exists.
      *
      * @return The representative thumbnail for the current top docStruct element
      */
@@ -205,8 +205,8 @@ public class ImageDeliveryBean implements Serializable {
      * Returns a thumbnail url of the current top level document (according to the {@link io.goobi.viewer.model.viewer.ViewManager} with the given
      * width/height. Returns an empty string if no current document exists
      *
-     * @param width a int.
-     * @param height a int.
+     * @param width desired thumbnail width in pixels
+     * @param height desired thumbnail height in pixels
      * @return The representative thumbnail for the current top docStruct element
      */
     public String getRepresentativeThumbnail(int width, int height) {
@@ -227,7 +227,7 @@ public class ImageDeliveryBean implements Serializable {
      * Returns a thumbnail url of the current top level document (according to the {@link io.goobi.viewer.model.viewer.ViewManager} for a square
      * thumbnail image of the given size. Returns an empty string if no current document exists
      *
-     * @param size a int.
+     * @param size desired square thumbnail side length in pixels
      * @return The representative thumbnail for the current top docStruct element
      */
     public String getRepresentativeSquareThumbnail(int size) {
@@ -253,8 +253,8 @@ public class ImageDeliveryBean implements Serializable {
      *
      * <p>Returns an empty string if no current page exists
      *
-     * @param width a int.
-     * @param height a int.
+     * @param width desired thumbnail width in pixels
+     * @param height desired thumbnail height in pixels
      * @return The thumbnail of the current page
      */
     public String getCurrentPageThumbnail(int width, int height) {
@@ -275,7 +275,7 @@ public class ImageDeliveryBean implements Serializable {
      * Returns a thumbnail url of the current page (according to the {@link io.goobi.viewer.model.viewer.ViewManager} for a square thumbnail image of
      * the given size. Returns an empty string if no current page exists
      *
-     * @param size a int.
+     * @param size desired square thumbnail side length in pixels
      * @return The thumbnail of the current page
      */
     public String getCurrentPageSquareThumbnail(int size) {
@@ -284,7 +284,7 @@ public class ImageDeliveryBean implements Serializable {
 
     /**
      * Returns the url to the image of the current page: Either a IIIF manifest if available, or a full image url For image size and tiling
-     * ingormation {@link io.goobi.viewer.model.viewer.PageType#viewImage} is assumed
+     * ingormation {@link io.goobi.viewer.model.viewer.PageType#viewImage} is assumed.
      *
      * @return The url to the image of the current page: Either a IIIF manifest if available, or a full image url
      */
@@ -297,7 +297,7 @@ public class ImageDeliveryBean implements Serializable {
      * image size and tiling suggestions for IIIF image information. If the given pageType does not match any known pageType, an empty String is
      * returned
      *
-     * @param pageType a {@link java.lang.String} object.
+     * @param pageType name of the page type determining image size and tiling
      * @return The url to the image of the current page for the current pageType: Either a IIIF manifest if available, or a full image url
      */
     public String getCurrentImage(String pageType) {
@@ -341,7 +341,7 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
-     * Retrieves the #{@link io.goobi.viewer.controller.imaging.IIIFUrlHandler}, creates it if it doesn't exist yet
+     * Retrieves the #{@link io.goobi.viewer.controller.imaging.IIIFUrlHandler}, creates it if it doesn't exist yet.
      *
      * @return the iiif
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -354,7 +354,7 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
-     * Retrieves the #{@link io.goobi.viewer.controller.imaging.WatermarkHandler}, creates it if it doesn't exist yet
+     * Retrieves the #{@link io.goobi.viewer.controller.imaging.WatermarkHandler}, creates it if it doesn't exist yet.
      *
      * @return the footer
      */
@@ -366,7 +366,7 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
-     * Retrieves the #{@link io.goobi.viewer.controller.imaging.ImageHandler}, creates it if it doesn't exist yet
+     * Retrieves the #{@link io.goobi.viewer.controller.imaging.ImageHandler}, creates it if it doesn't exist yet.
      *
      * @return the images
      */
@@ -378,7 +378,7 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
-     * Retrieves the #{@link io.goobi.viewer.controller.imaging.PdfHandler}, creates it if it doesn't exist yet
+     * Retrieves the #{@link io.goobi.viewer.controller.imaging.PdfHandler}, creates it if it doesn't exist yet.
      *
      * @return the pdf
      */
@@ -390,7 +390,7 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
-     * Retrieves the #{@link io.goobi.viewer.controller.imaging.ThumbnailHandler}, creates it if it doesn't exist yet
+     * Retrieves the #{@link io.goobi.viewer.controller.imaging.ThumbnailHandler}, creates it if it doesn't exist yet.
      *
      * @return the thumbs
      */
@@ -402,7 +402,7 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
-     * Retrieves the #{@link io.goobi.viewer.controller.imaging.MediaHandler}, creates it if it doesn't exist yet
+     * Retrieves the #{@link io.goobi.viewer.controller.imaging.MediaHandler}, creates it if it doesn't exist yet.
      *
      * @return the media
      */
@@ -420,7 +420,7 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
-     * Retrieves the #{@link io.goobi.viewer.controller.imaging.IIIFPresentationAPIHandler}, creates it if it doesn't exist yet
+     * Retrieves the #{@link io.goobi.viewer.controller.imaging.IIIFPresentationAPIHandler}, creates it if it doesn't exist yet.
      *
      * @return the IIIF presentation handler
      */
@@ -443,7 +443,7 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
-     * Returns true if the given String denotes an absolute url that is not a file url, false otherwise
+     * Returns true if the given String denotes an absolute url that is not a file url, false otherwise.
      *
      * @param urlString the string to test
      * @return whether the given string denotes to an external url resource
@@ -464,7 +464,7 @@ public class ImageDeliveryBean implements Serializable {
     /**
      * Retrieves the url path to the viewer image resource folder. Ith the theme is given, the image resource folder within the theme is returned
      *
-     * @param servletPath a {@link java.lang.String} object.
+     * @param servletPath base servlet path including host
      * @param theme The name of the theme housing the images. If this is null or empty, the images are taken from the viewer core
      * @return The url to the images folder in resources (possibly in the given theme)
      */
@@ -528,7 +528,7 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
-     * @param url
+     * @param url URL to test
      * @return true if given url is cms or temp url; false otherwise
      * @throws ViewerConfigurationException
      */
@@ -537,7 +537,7 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
-     * Tests whether the given url points to a static image resource within the current theme
+     * Tests whether the given url points to a static image resource within the current theme.
      *
      * @param url the url to test
      * @return true if the url points to a static image resource within the current theme
@@ -548,7 +548,7 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
-     * Returns the url path to the static images folder of the viewer theme (or the viewer itself if no theme is found
+     * Returns the url path to the static images folder of the viewer theme (or the viewer itself if no theme is found.
      *
      * @return the staticImagesURI
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -582,7 +582,7 @@ public class ImageDeliveryBean implements Serializable {
     /**
      * getIfExists.
      *
-     * @param url a {@link java.lang.String} object.
+     * @param url URL string to wrap as optional
      * @return an optional containing the given String if it is non-empty, otherwise an empty optional
      */
     public Optional<String> getIfExists(String url) {

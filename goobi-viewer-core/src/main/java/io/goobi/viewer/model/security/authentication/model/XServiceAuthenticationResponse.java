@@ -51,8 +51,8 @@ public class XServiceAuthenticationResponse {
     /**
      * Parses and evaluates the given XML response from X-Service.
      *
-     * @param xml a {@link java.lang.String} object.
-     * @param encoding a {@link java.lang.String} object.
+     * @param xml XML response string from X-Service to parse
+     * @param encoding character encoding of the XML string
      * @throws org.jdom2.JDOMException if any.
      * @throws java.io.IOException if any.
      */

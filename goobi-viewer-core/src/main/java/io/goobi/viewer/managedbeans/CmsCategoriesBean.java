@@ -41,7 +41,7 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSCategory;
 
 /**
- * Managed Bean for editing, deleting and creating {@link CMSCategory categories}
+ * Managed Bean for editing, deleting and creating {@link CMSCategory categories}.
  *
  * @author florian
  */
@@ -142,7 +142,7 @@ public class CmsCategoriesBean implements Serializable {
     /**
      * Delete the given Category in DAO. Also clear categoryName and categoryDescription
      *
-     * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
+     * @param category category to delete from the database
      * @return Navigation outcome
      */
     public String deleteCategoryAction(CMSCategory category) {
@@ -218,7 +218,7 @@ public class CmsCategoriesBean implements Serializable {
     /**
      * Setter for the field <code>categoryName</code>.
      *
-     * @param categoryName the categoryName to set
+     * @param categoryName name entered for the new or edited category
      */
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
@@ -236,7 +236,7 @@ public class CmsCategoriesBean implements Serializable {
     /**
      * Setter for the field <code>categoryDescription</code>.
      *
-     * @param categoryDescription the categoryDescription to set
+     * @param categoryDescription description entered for the new or edited category
      */
     public void setCategoryDescription(String categoryDescription) {
         this.categoryDescription = categoryDescription;
@@ -267,7 +267,7 @@ public class CmsCategoriesBean implements Serializable {
     /**
      * <p>setSelectedCategoryId.
      *
-     * @param id a {@link java.lang.Long} object
+     * @param id database ID of the category to edit
      * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void setSelectedCategoryId(Long id) throws DAOException {

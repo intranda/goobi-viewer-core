@@ -140,7 +140,7 @@ public class ActiveDocumentBean implements Serializable {
     private static final Logger logger = LogManager.getLogger(ActiveDocumentBean.class);
 
     /**
-     * Regex pattern 'imageToShow' matches if doublePageMode should be active
+     * Regex pattern 'imageToShow' matches if doublePageMode should be active.
      */
     private static final String DOUBLE_PAGE_PATTERN = "\\d+-\\d+";
 
@@ -331,7 +331,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * reload.
      *
-     * @param pi a {@link java.lang.String} object
+     * @param pi persistent identifier of the record to reload
      * @return output of open()
      * @throws io.goobi.viewer.exceptions.PresentationException
      * @throws io.goobi.viewer.exceptions.RecordNotFoundException
@@ -991,8 +991,8 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * getPIFromFieldValue.
      *
-     * @param value a {@link java.lang.String} object
-     * @param field a {@link java.lang.String} object
+     * @param value field value to search for
+     * @param field Solr field name to query
      * @return a {@link java.lang.String} object
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -1006,7 +1006,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * setPersistentIdentifier.
      *
-     * @param persistentIdentifier a {@link java.lang.String} object.
+     * @param persistentIdentifier persistent identifier of the record to load
      * @should determine currentElementIddoc correctly
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.RecordNotFoundException if any.
@@ -1060,7 +1060,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Returns the navigation URL for the given page type and number.
      *
-     * @param pageType a {@link java.lang.String} object.
+     * @param pageType view page type name, e.g. "viewObject"
      * @param pageOrderRange Single page number or range
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -1138,7 +1138,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * getPageUrl.
      *
-     * @param pageType a {@link java.lang.String} object.
+     * @param pageType view page type name, e.g. "viewObject"
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -1195,7 +1195,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * getNextPageUrl.
      *
-     * @param step a int.
+     * @param step number of pages to advance (positive or negative)
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @should return correct page in single page mode
@@ -1267,7 +1267,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * getPageUrl.
      *
-     * @param order a int
+     * @param order physical page order number
      * @return Page URL for the given page number
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
@@ -1278,7 +1278,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * getPreviousPageUrl.
      *
-     * @param step a int
+     * @param step number of pages to go back
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -1289,7 +1289,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * getNextPageUrl.
      *
-     * @param step a int
+     * @param step number of pages to advance forward
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -1493,7 +1493,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * setChildrenVisible.
      *
-     * @param element a {@link io.goobi.viewer.model.toc.TOCElement} object.
+     * @param element TOC element whose children to make visible
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1512,7 +1512,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * setChildrenInvisible.
      *
-     * @param element a {@link io.goobi.viewer.model.toc.TOCElement} object.
+     * @param element TOC element whose children to hide
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1588,7 +1588,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Setter for the field <code>tocCurrentPage</code>.
      *
-     * @param tocCurrentPage a int.
+     * @param tocCurrentPage desired TOC pagination page number
      * @should set toc page to last page if value too high
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -1626,7 +1626,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * getTitleBarLabel.
      *
-     * @param locale a {@link java.util.Locale} object.
+     * @param locale locale used to select the label language
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -1659,7 +1659,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * getTitleBarLabel.
      *
-     * @param language a {@link java.lang.String} object.
+     * @param language ISO 639 language code for label selection
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -1912,7 +1912,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * setCurrentThumbnailPage.
      *
-     * @param currentThumbnailPage a int.
+     * @param currentThumbnailPage thumbnail grid page number to set
      */
     public void setCurrentThumbnailPage(int currentThumbnailPage) {
         synchronized (this) {
@@ -2012,7 +2012,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Setter to match getSelectedRecordLanguage3() for URL patterns.
      *
-     * @param selectedRecordLanguageCode a {@link java.lang.String} object
+     * @param selectedRecordLanguageCode ISO 639-2/B language code to set
      */
     public void setSelectedRecordLanguage3(String selectedRecordLanguageCode) {
         setSelectedRecordLanguage(selectedRecordLanguageCode);
@@ -2066,8 +2066,8 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * @param downloadType
-     * @param pageTypeName
+     * @param downloadType download job type identifier (e.g. PDF or EPUB)
+     * @param pageTypeName name of the current page type
      * @return true if download of the given type is enabled for the given page type; false otherwise
      */
     private static boolean isEnabled(String downloadType, String pageTypeName) {
@@ -2410,7 +2410,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * generateGeoMap.
      *
-     * @param pi a {@link java.lang.String} object
+     * @param pi persistent identifier of the record to map
      * @return {@link io.goobi.viewer.model.maps.GeoMap}
      * @throws io.goobi.viewer.exceptions.PresentationException
      * @throws io.goobi.viewer.exceptions.DAOException

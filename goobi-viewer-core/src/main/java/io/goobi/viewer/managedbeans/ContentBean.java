@@ -69,7 +69,7 @@ public class ContentBean implements Serializable {
     private static final Logger logger = LogManager.getLogger(ContentBean.class);
 
     /**
-     * PI for which {@link #userGeneratedContentsForDisplay} is loaded
+     * PI for which {@link #userGeneratedContentsForDisplay} is loaded.
      */
     private volatile String pi;
     /**
@@ -127,7 +127,7 @@ public class ContentBean implements Serializable {
     }
 
     /**
-     * @param page
+     * @param page physical page element to retrieve contents for
      * @return User-generated contents for the given page element
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -146,7 +146,7 @@ public class ContentBean implements Serializable {
      * loadUserGeneratedContentsForDisplay.
      *
      * @param pi Record identifier
-     * @param request
+     * @param request HTTP servlet request for access condition checks
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws DAOException
@@ -193,8 +193,8 @@ public class ContentBean implements Serializable {
 
     /**
      * 
-     * @param content
-     * @param request
+     * @param content the user-generated content item to check access for
+     * @param request HTTP servlet request for access condition checks
      * @return true if request has access rights to content; false otherwise
      */
     public static boolean isAccessible(DisplayUserGeneratedContent content, HttpServletRequest request) {
@@ -218,7 +218,7 @@ public class ContentBean implements Serializable {
     /**
      * getCurrentUGCCoords.
      *
-     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @param page physical page whose UGC coordinates are retrieved
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -250,7 +250,7 @@ public class ContentBean implements Serializable {
     /**
      * Removes script tags from the given string.
      *
-     * @param value a {@link java.lang.String} object.
+     * @param value raw string to strip JavaScript from
      * @return value sans any script tags
      */
     public String cleanUpValue(String value) {
@@ -267,7 +267,7 @@ public class ContentBean implements Serializable {
     }
 
     /**
-     * @param persistentIdentifier
+     * @param persistentIdentifier persistent identifier of the record to check
      * @return true if record with given identifier has any geo-location type annotations; false otherwise
      * @throws IndexUnreachableException
      * @throws PresentationException

@@ -81,8 +81,8 @@ public class CampaignItemLogResource {
     /**
      * Creates a new CampaignItemResource instance.
      *
-     * @param servletRequest
-     * @param campaignId
+     * @param servletRequest HTTP servlet request
+     * @param campaignId identifier of the crowdsourcing campaign
      */
     public CampaignItemLogResource(@Context HttpServletRequest servletRequest,
             @Parameter(description = "Crowdsourcing campaign identifier") @PathParam("campaignId") Long campaignId) {
@@ -92,9 +92,9 @@ public class CampaignItemLogResource {
 
     /**
      * 
-     * @param servletRequest
-     * @param urls
-     * @param campaignId
+     * @param servletRequest HTTP servlet request
+     * @param urls API URL manager for path construction
+     * @param campaignId identifier of the crowdsourcing campaign
      */
     public CampaignItemLogResource(HttpServletRequest servletRequest, AbstractApiUrlManager urls, @PathParam("campaignId") Long campaignId) {
         this.urls = urls;

@@ -48,7 +48,7 @@ public class ArchiveEntryMetadataList {
     private static final Logger logger = LogManager.getLogger(ArchiveEntryMetadataList.class);
 
     /**
-     * Id referencing an archiveEntry
+     * Id referencing an archiveEntry.
      */
     private final String id;
 
@@ -102,7 +102,7 @@ public class ArchiveEntryMetadataList {
 
     /**
      * 
-     * @param id
+     * @param id identifier for this archive entry metadata list
      * @param doc Archive node Solr doc
      * @param metadataList Metadata configuration list
      * @should populate metadata correctly
@@ -120,8 +120,8 @@ public class ArchiveEntryMetadataList {
 
     /**
      * 
-     * @param doc
-     * @param metadataList
+     * @param doc Solr document for the archive node
+     * @param metadataList metadata configuration list to populate from
      * @should populate metadata correctly
      */
     void populateMetadata(SolrDocument doc, List<Metadata> metadataList) {
@@ -253,8 +253,7 @@ public class ArchiveEntryMetadataList {
     /**
      * Adds the metadata to the configured level.
      *
-     * @param entry
-     * @param metadata
+     * @param metadata metadata item to add to the appropriate area list
      */
     void addMetadataField(Metadata metadata) {
         if (metadata == null) {

@@ -67,8 +67,8 @@ public class EventElement implements Comparable<EventElement>, Serializable {
      * Creates a new EventElement instance.
      *
      * @param doc Event Solr document
-     * @param locale a {@link java.util.Locale} object.
-     * @param forSearchHit
+     * @param locale locale for metadata translations
+     * @param forSearchHit true to populate search hit metadata; false for full metadata
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @should fill in missing dateStart from displayDate
@@ -159,9 +159,9 @@ public class EventElement implements Comparable<EventElement>, Serializable {
 
     /**
      *
-     * @param metadata
-     * @param doc
-     * @param locale
+     * @param metadata list of metadata fields to populate
+     * @param doc Solr document containing the event data
+     * @param locale locale for translations/formatting
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -351,7 +351,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
 
     /**
      * 
-     * @param locale
+     * @param locale locale to filter metadata fields by
      * @return searchHitMetadata minus any fields that don't match the given locale
      */
     public List<Metadata> getSearchHitListForLocale(Locale locale) {

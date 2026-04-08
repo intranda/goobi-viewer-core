@@ -65,7 +65,7 @@ public class LayerBuilder extends AbstractBuilder {
     /**
      * Creates a new LayerBuilder instance.
      *
-     * @param apiUrlManager
+     * @param apiUrlManager API URL manager for building IIIF resource URLs
      */
     public LayerBuilder(AbstractApiUrlManager apiUrlManager) {
         super(apiUrlManager);
@@ -74,11 +74,11 @@ public class LayerBuilder extends AbstractBuilder {
     /**
      * createAnnotationLayer.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param type a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
-     * @param motivation a {@link java.lang.String} object.
-     * @param fileGetter a {@link java.util.function.BiFunction} object.
-     * @param linkGetter a {@link java.util.function.BiFunction} object.
+     * @param pi persistent identifier of the record
+     * @param type annotation type determining format and label
+     * @param motivation OA motivation string for each annotation
+     * @param fileGetter function resolving PI and repository to file paths
+     * @param linkGetter function resolving PI and language to resource URI
      * @return a {@link de.intranda.api.iiif.presentation.v2.Layer} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -107,12 +107,12 @@ public class LayerBuilder extends AbstractBuilder {
     /**
      * createAnnotation.
      *
-     * @param annotationId a {@link java.net.URI} object.
-     * @param linkURI a {@link java.net.URI} object.
-     * @param format a {@link de.intranda.api.iiif.presentation.enums.Format} object.
-     * @param dcType a {@link de.intranda.api.iiif.presentation.enums.DcType} object.
-     * @param annoType a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
-     * @param motivation a {@link java.lang.String} object.
+     * @param annotationId URI identifying the annotation
+     * @param linkURI URI of the linked content resource
+     * @param format MIME format of the linked content
+     * @param dcType Dublin Core type label for the content
+     * @param annoType annotation type used to set the label
+     * @param motivation OA motivation string; defaults to painting if null
      * @return a {@link de.intranda.api.annotation.oa.OpenAnnotation} object.
      */
     public OpenAnnotation createAnnotation(URI annotationId, URI linkURI, Format format, DcType dcType, AnnotationType annoType, String motivation) {
@@ -139,9 +139,9 @@ public class LayerBuilder extends AbstractBuilder {
     /**
      * createAnnotationList.
      *
-     * @param annotations a {@link java.util.List} object.
-     * @param id a {@link java.net.URI} object.
-     * @param type a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
+     * @param annotations annotations to add as resources
+     * @param id URI identifying the annotation list
+     * @param type annotation type used to set the list label
      * @return a {@link de.intranda.api.iiif.presentation.v2.AnnotationList} object.
      */
     public AnnotationList createAnnotationList(List<IAnnotation> annotations, URI id, AnnotationType type) {
@@ -156,9 +156,9 @@ public class LayerBuilder extends AbstractBuilder {
     /**
      * generateLayer.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param annoLists a {@link java.util.Map} object.
-     * @param annoType a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
+     * @param pi persistent identifier of the record
+     * @param annoLists map of annotation lists grouped by type
+     * @param annoType annotation type selecting which list to include
      * @return a {@link de.intranda.api.iiif.presentation.v2.Layer} object.
      * @throws java.net.URISyntaxException if any.
      */
@@ -173,8 +173,8 @@ public class LayerBuilder extends AbstractBuilder {
     /**
      * mergeAnnotationLists.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param annoLists a {@link java.util.Map} object.
+     * @param pi persistent identifier used to build annotation list URIs
+     * @param annoLists per-type lists of annotation lists to merge
      * @return a {@link java.util.Map} object.
      * @throws java.net.URISyntaxException if any.
      */
@@ -197,7 +197,7 @@ public class LayerBuilder extends AbstractBuilder {
     /**
      * getLanguage.
      *
-     * @param filename a {@link java.lang.String} object.
+     * @param filename filename containing a language code before the extension
      * @return a {@link java.util.Optional} object.
      */
     private static Optional<String> getLanguage(String filename) {

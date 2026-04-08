@@ -99,8 +99,8 @@ public class CollectionViewBean implements Serializable {
     /**
      * getCollection.
      *
-     * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} object
-     * @param topVisibleElement a {@link java.lang.String} object
+     * @param content collection content item providing base configuration
+     * @param topVisibleElement collection name to use as the top visible element
      * @return a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -135,7 +135,7 @@ public class CollectionViewBean implements Serializable {
     /**
      * getCollectionId.
      *
-     * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} object
+     * @param content collection content item to derive the ID from
      * @return a {@link java.lang.String} object
      */
     public static String getCollectionId(CMSCollectionContent content) {
@@ -152,7 +152,7 @@ public class CollectionViewBean implements Serializable {
     /**
      * getCollectionIfStored.
      *
-     * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} object
+     * @param content collection content item identifying the desired collection
      * @return a {@link java.util.Optional} object
      */
     public Optional<CollectionView> getCollectionIfStored(CMSCollectionContent content) {
@@ -164,7 +164,7 @@ public class CollectionViewBean implements Serializable {
     /**
      * removeCollection.
      *
-     * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} object
+     * @param content collection content item identifying the collection to remove
      * @return a boolean
      */
     public boolean removeCollection(CMSCollectionContent content) {
@@ -180,8 +180,8 @@ public class CollectionViewBean implements Serializable {
     /**
      * Creates a collection view object from the item's collection related properties.
      *
-     * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} object
-     * @param topVisibleElement a {@link java.lang.String} object
+     * @param content collection content item providing Solr field and filter configuration
+     * @param topVisibleElement collection name to display at the root level
      * @return a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -204,7 +204,7 @@ public class CollectionViewBean implements Serializable {
     /**
      * Adds a CollecitonView object for the given field to the map and populates its values.
      *
-     * @param content
+     * @param content collection content item providing Solr field and filter configuration
      * @return {@link CollectionView}
      */
     private static CollectionView initializeCollection(final CMSCollectionContent content) {
@@ -242,8 +242,8 @@ public class CollectionViewBean implements Serializable {
     /**
      * Queries Solr for a list of all values of the set collectionField which my serve as a collection.
      *
-     * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} object
-     * @param includeSubcollections
+     * @param content collection content item providing Solr field and filter configuration
+     * @param includeSubcollections if true, nested subcollections are included in the list
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -279,7 +279,7 @@ public class CollectionViewBean implements Serializable {
     /**
      * Queries Solr for a list of all values of the set collectionField which my serve as a collection.
      *
-     * @param content
+     * @param content collection content item providing Solr field and filter configuration
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -303,9 +303,9 @@ public class CollectionViewBean implements Serializable {
      *
      * <p>Does not consider whether one collection is a child of the other
      * 
-     * @param collection1
-     * @param collection2
-     * @param splittingChar
+     * @param collection1 first collection name as the reference level
+     * @param collection2 second collection name whose level is compared against collection1
+     * @param splittingChar character used to separate hierarchy levels in collection names
      * @return an int < 1 if collection2 has a lower hierarchy level than collection1, 0 if both have the same hierarchy level, and an int > 1 if
      *         collection1 has a lower hierarchy level than collection 2.
      */
@@ -318,7 +318,7 @@ public class CollectionViewBean implements Serializable {
     /**
      * getColletionMap.
      *
-     * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} object
+     * @param content collection content item providing Solr field and filter configuration
      * @return Map&lt;String, CollectionResult&gt;
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
@@ -337,7 +337,7 @@ public class CollectionViewBean implements Serializable {
     /**
      * removeCollectionsForPage.
      *
-     * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object
+     * @param page CMS page whose associated collections should be removed
      */
     public void removeCollectionsForPage(CMSPage page) {
         String idRegex = page.getId() + "_" + "\\w";
@@ -352,7 +352,7 @@ public class CollectionViewBean implements Serializable {
     /**
      * getLoadedCollectionsForPage.
      *
-     * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object
+     * @param page CMS page whose loaded collections to retrieve
      * @return a {@link java.util.List} object
      */
     public List<CollectionView> getLoadedCollectionsForPage(CMSPage page) {

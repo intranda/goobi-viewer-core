@@ -46,7 +46,7 @@ public class CmsSliderBean implements Serializable {
     private static final long serialVersionUID = -2204866565916114208L;
 
     /**
-     * We actually only need a filter String, but we use a complete {@link TableDataFilter} so we can utilize the dataTableColumnFilter component
+     * We actually only need a filter String, but we use a complete {@link TableDataFilter} so we can utilize the dataTableColumnFilter component.
      */
     private TableDataFilter filter = new TableDataFilter("name_description");
 

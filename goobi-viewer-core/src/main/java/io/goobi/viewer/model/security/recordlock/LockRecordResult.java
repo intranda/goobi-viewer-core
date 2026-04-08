@@ -22,7 +22,7 @@
 package io.goobi.viewer.model.security.recordlock;
 
 /**
- * Possible result for a record lock action, specifically {@link RecordLockManager#lockRecord(String, String, Integer)}
+ * Possible result for a record lock action, specifically {@link RecordLockManager#lockRecord(String, String, Integer)}.
  */
 public enum LockRecordResult {
 

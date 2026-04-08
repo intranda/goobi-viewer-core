@@ -72,8 +72,8 @@ public class DisplayScope implements Serializable {
     /**
      * Creates a scope from a given PageScope and filterQuery. The filterQuery is only meaningful if the scope is PageScope.RECORD
      *
-     * @param scope
-     * @param filter
+     * @param scope page scope defining where the display applies
+     * @param filter Solr filter query restricting the scope to specific records
      */
     public DisplayScope(PageScope scope, String filter) {
         this.pageScope = scope;
@@ -131,9 +131,9 @@ public class DisplayScope implements Serializable {
 
     /**
      *
-     * @param query
-     * @param pi
-     * @param searchIndex
+     * @param query Solr query to match the record against
+     * @param pi persistent identifier of the record to check
+     * @param searchIndex Solr search index to query
      * @return true if given pi is found using query; false otherwise
      * @throws PresentationException
      * @throws IndexUnreachableException

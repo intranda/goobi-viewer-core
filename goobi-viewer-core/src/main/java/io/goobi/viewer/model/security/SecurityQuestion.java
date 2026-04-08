@@ -34,8 +34,8 @@ public class SecurityQuestion {
     /**
      * Constructor.
      *
-     * @param questionKey
-     * @param correctAnswers
+     * @param questionKey message key for the question text to display
+     * @param correctAnswers set of accepted answer strings (case-insensitive)
      */
     public SecurityQuestion(String questionKey, Set<String> correctAnswers) {
         this.questionKey = questionKey;
@@ -44,7 +44,7 @@ public class SecurityQuestion {
 
     /**
      *
-     * @param answer
+     * @param answer user-provided answer to validate
      * @return true if given answer is among correct answers; false otherwise
      * @should return true on correct answer
      * @should return true on correct answer and ignore case

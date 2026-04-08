@@ -56,7 +56,7 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     private final WidgetGenerationType generationType;
     private final WidgetContentType contentType;
     /**
-     * Identifier of the underlying CustomSidebarWidget or GeoMap, if any
+     * Identifier of the underlying CustomSidebarWidget or GeoMap, if any.
      */
     private final Long id;
     private final IPolyglott translations;
@@ -64,11 +64,11 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     /**
      * Default constructor for widgets without underlying data (i.e. default widgets)
      *
-     * @param title
-     * @param description
-     * @param embeddingPages
-     * @param generationType
-     * @param contentType
+     * @param title displayed title of the widget
+     * @param description short description of the widget
+     * @param embeddingPages CMS pages that embed this widget
+     * @param generationType the way the widget's data is generated and stored
+     * @param contentType the specific xhtml component used for this widget
      */
     public WidgetDisplayElement(IMetadataValue title, IMetadataValue description, List<CMSPage> embeddingPages, WidgetGenerationType generationType,
             WidgetContentType contentType) {
@@ -79,11 +79,11 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
      *
      * Default constructor for widgets with underlying data identified by the given id.
      *
-     * @param title
-     * @param description
-     * @param embeddingPages
-     * @param generationType
-     * @param contentType
+     * @param title displayed title of the widget
+     * @param description short description of the widget
+     * @param embeddingPages CMS pages that embed this widget
+     * @param generationType the way the widget's data is generated and stored
+     * @param contentType the specific xhtml component used for this widget
      * @param id the database id of the underlying content. The type of content depends on generationType and contentType
      * @param translations used to display translation status of the widget. Usually the underlying custom widget
      */

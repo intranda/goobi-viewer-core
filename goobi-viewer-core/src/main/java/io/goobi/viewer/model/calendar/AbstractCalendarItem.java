@@ -28,7 +28,7 @@ import java.text.DecimalFormat;
  */
 public abstract class AbstractCalendarItem implements ICalendarItem {
 
-    /** Constant <code>dfTwoDigitInteger</code> */
+    /** Constant <code>dfTwoDigitInteger</code>. */
     private static DecimalFormat dfTwoDigitInteger = new DecimalFormat("00");
 
     protected String name;
@@ -43,9 +43,9 @@ public abstract class AbstractCalendarItem implements ICalendarItem {
     /**
      * Creates a new AbstractCalendarItem instance.
      *
-     * @param name a {@link java.lang.String} object.
-     * @param value a int.
-     * @param hits a int.
+     * @param name display label for this item
+     * @param value numeric calendar value (e.g. day, month, year)
+     * @param hits initial number of search hits
      */
     protected AbstractCalendarItem(String name, int value, int hits) {
         this.name = name;

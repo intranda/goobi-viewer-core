@@ -103,10 +103,10 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(User.class);
 
-    /** Constant <code>ATTRIBUTE_LOGINS="logins"</code> */
+    /** Constant <code>ATTRIBUTE_LOGINS="logins"</code>. */
     public static final String ATTRIBUTE_LOGINS = "logins";
 
-    /** Constant <code>AVATAR_DEFAULT_SIZE=140</code> */
+    /** Constant <code>AVATAR_DEFAULT_SIZE=140</code>. */
     public static final int AVATAR_DEFAULT_SIZE = 140;
 
     private static final String URI_ID_TEMPLATE = DataManager.getInstance().getConfiguration().getRestApiUrl() + "users/{id}";
@@ -213,7 +213,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
 
     /**
      *
-     * @param nickname
+     * @param nickname the display nickname to assign to this user
      */
     public User(String nickname) {
         this.nickName = nickname;
@@ -365,7 +365,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * isGroupMember.
      *
-     * @param group a {@link io.goobi.viewer.model.security.user.UserGroup} object.
+     * @param group the user group to check membership in
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -400,9 +400,9 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
      * Checks whether the user can satisfy at least one of the given access conditions with a license that contains the given privilege name. If one
      * of the conditions is OPENACCESS, true is always returned. Superusers always get access.
      *
-     * @param requiredAccessConditions a {@link java.util.Set} object.
-     * @param privilegeName a {@link java.lang.String} object.
-     * @param pi a {@link java.lang.String} object.
+     * @param requiredAccessConditions set of access condition names to satisfy
+     * @param privilegeName the privilege to check against each condition
+     * @param pi persistent identifier of the record being accessed
      * @should return true if user is superuser
      * @should return true if condition is open access
      * @should return true if user has license
@@ -462,7 +462,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * isHasCmsPrivilege.
      *
-     * @param privilege a {@link java.lang.String} object.
+     * @param privilege the CMS privilege name to check
      * @return boolean
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -475,8 +475,8 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * isHasPrivilege.
      *
-     * @param licenseType a {@link java.lang.String} object.
-     * @param privilege a {@link java.lang.String} object.
+     * @param licenseType the license type name to check
+     * @param privilege the privilege name to check
      * @return boolean
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -526,9 +526,9 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
 
     /**
      *
-     * @param licenseType
-     * @param privilegeName
-     * @param alreadyCheckedPiMap
+     * @param licenseType the license type name to check
+     * @param privilegeName the access privilege name to check
+     * @param alreadyCheckedPiMap cache of previously checked PIs and their access results
      * @return boolean
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -548,10 +548,10 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
 
     /**
      *
-     * @param pi
-     * @param licenseType
-     * @param privilegeName
-     * @param alreadyCheckedPiMap
+     * @param pi the persistent identifier of the record to check
+     * @param licenseType the license type name to check
+     * @param privilegeName the access privilege name to check
+     * @param alreadyCheckedPiMap cache of previously checked PIs and their access results
      * @return {@link AccessPermission}
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -580,8 +580,8 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
      * {@link io.goobi.viewer.model.security.user.icon.GravatarUserAvatar#getGravatarUrl(int size)}. Otherwise build a resource url to
      * 'resources/images/backend/thumbnail_goobi_person.svg' from the request or the JSF-Context if no request is provided
      *
-     * @param size
-     * @param request
+     * @param size the desired avatar image size in pixels
+     * @param request the HTTP request used to build resource URLs; may be null
      * @return Avatar URL
      */
     public String getAvatarUrl(int size, HttpServletRequest request) {
@@ -599,7 +599,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
 
     /**
      *
-     * @param request
+     * @param request the HTTP request used to build resource URLs
      * @return {@link #getAvatarUrl(int size, HttpServletRequest request)} with size={@link #AVATAR_DEFAULT_SIZE}
      */
     public String getAvatarUrl(HttpServletRequest request) {
@@ -609,7 +609,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Used by the crowdsourcing module.
      *
-     * @param size a int.
+     * @param size the desired avatar image size in pixels
      * @return {@link #getAvatarUrl(int size, HttpServletRequest request)} with request=null
      */
     public String getAvatarUrl(int size) {
@@ -619,7 +619,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Generates salt and a password hash for the given password string.
      *
-     * @param password a {@link java.lang.String} object.
+     * @param password the plain-text password to hash and store
      * @return a boolean.
      */
     public boolean setNewPassword(String password) {
@@ -634,8 +634,8 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Authentication check for regular (i.e. non-OpenID) accounts.
      *
-     * @param email a {@link java.lang.String} object.
-     * @param password a {@link java.lang.String} object.
+     * @param email the email address to look up
+     * @param password the plain-text password to verify
      * @return The user, if successful.
      * @throws io.goobi.viewer.exceptions.AuthenticationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -681,7 +681,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * hasPrivilegesForTemplate.
      *
-     * @param template
+     * @param template the CMS page template to check privileges for
      * @return true exactly if the user is not restricted to certain cmsTemplates or if the given templateId is among the allowed templates for the
      *         user of a usergroup she is in
      */
@@ -730,7 +730,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * getAllowedTemplates.
      *
-     * @param allTemplates a {@link java.util.List} object.
+     * @param allTemplates full list of available CMS page templates
      * @return a {@link java.util.List} object.
      */
     public List<CMSPageTemplate> getAllowedTemplates(List<CMSPageTemplate> allTemplates) {
@@ -825,7 +825,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * getAllowedCategories.
      *
-     * @param allCategories a {@link java.util.List} object.
+     * @param allCategories full list of available CMS categories
      * @return a {@link java.util.List} object.
      */
     public List<CMSCategory> getAllowedCategories(List<CMSCategory> allCategories) {
@@ -1206,7 +1206,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * raiseScore.
      *
-     * @param amount a int.
+     * @param amount points to add to the user score
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void raiseScore(int amount) throws DAOException {
@@ -1406,7 +1406,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * setBCrypt.
      *
-     * @param bcrypt a {@link io.goobi.viewer.controller.BCrypt} object.
+     * @param bcrypt the BCrypt instance to use for password hashing
      */
     protected void setBCrypt(BCrypt bcrypt) {
         this.bcrypt = bcrypt;
@@ -1415,7 +1415,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Gets the {@link io.goobi.viewer.model.security.user.User#id} of a user from a URI.
      *
-     * @param idAsURI a {@link java.net.URI} object.
+     * @param idAsURI URI containing the user ID in its path
      * @return a {@link java.lang.Long} object.
      * @should extract id correctly
      */
@@ -1568,7 +1568,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * main.
      *
-     * @param args an array of {@link java.lang.String} objects.
+     * @param args command-line arguments (unused)
      */
     public static void main(String[] args) {
         System.out.println(BCrypt.hashpw("halbgeviertstrich", BCrypt.gensalt()));

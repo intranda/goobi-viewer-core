@@ -152,7 +152,7 @@ public class AccessTicketBean implements Serializable {
 
     /**
      * 
-     * @param type
+     * @param type access ticket type to request (e.g. DOWNLOAD)
      * @return
      * @throws DAOException
      * @throws IndexUnreachableException
@@ -218,9 +218,9 @@ public class AccessTicketBean implements Serializable {
 
     /**
      * 
-     * @param recipients
-     * @param subject
-     * @param body
+     * @param recipients list of email addresses to send the notification to
+     * @param subject email subject line
+     * @param body email body text
      */
     private static void sendEmailNotification(List<String> recipients, String subject, String body) {
         try {

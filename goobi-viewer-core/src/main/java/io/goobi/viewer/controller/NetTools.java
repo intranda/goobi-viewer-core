@@ -91,9 +91,9 @@ public final class NetTools {
     private static final Logger logger = LogManager.getLogger(NetTools.class);
 
     private static final int HTTP_TIMEOUT = 30000;
-    /** Constant <code>ADDRESS_LOCALHOST_IPV4="127.0.0.1"</code> */
+    /** Constant <code>ADDRESS_LOCALHOST_IPV4="127.0.0.1"</code>. */
     public static final String ADDRESS_LOCALHOST_IPV4 = "127.0.0.1";
-    /** Constant <code>ADDRESS_LOCALHOST_IPV6="0:0:0:0:0:0:0:1"</code> */
+    /** Constant <code>ADDRESS_LOCALHOST_IPV6="0:0:0:0:0:0:0:1"</code>. */
     public static final String ADDRESS_LOCALHOST_IPV6 = "0:0:0:0:0:0:0:1";
 
     public static final String HTTP_HEADER_CONTENT_DISPOSITION = "Content-Disposition";
@@ -155,7 +155,7 @@ public final class NetTools {
     /**
      * callUrlGET.
      *
-     * @param url a {@link java.lang.String} object.
+     * @param url URL to call via HTTP GET
      * @return A String array with two elements. The first contains the HTTP status code, the second either the requested data (if status code is 200)
      *         or the error message.
      */
@@ -235,13 +235,13 @@ public final class NetTools {
     /**
      * getWebContentPOST.
      *
-     * @param url a {@link java.lang.String} object.
-     * @param headers
-     * @param params a {@link java.util.Map} object.
-     * @param cookies a {@link java.util.Map} object.
-     * @param contentType
+     * @param url URL to call via HTTP POST
+     * @param headers HTTP request headers as name-value pairs
+     * @param params form parameters sent in the request body
+     * @param cookies cookies to include with the request
+     * @param contentType MIME type for the request body
      * @param stringBody Optional entity content.
-     * @param file
+     * @param file optional file to upload as multipart body
      * @return a {@link java.lang.String} object.
      * @throws org.apache.http.client.ClientProtocolException if any.
      * @throws java.io.IOException if any.
@@ -254,10 +254,10 @@ public final class NetTools {
     /**
      * getWebContentDELETE.
      *
-     * @param url a {@link java.lang.String} object.
-     * @param headers
-     * @param params a {@link java.util.Map} object.
-     * @param cookies a {@link java.util.Map} object.
+     * @param url URL to call via HTTP DELETE
+     * @param headers HTTP request headers as name-value pairs
+     * @param params form parameters sent in the request body
+     * @param cookies cookies to include with the request
      * @param stringBody Optional entity content.
      * @return a {@link java.lang.String} object.
      * @throws org.apache.http.client.ClientProtocolException if any.
@@ -273,10 +273,10 @@ public final class NetTools {
      * getWebContent.
      *
      * @param method POST | PUT | DELETE
-     * @param url a {@link java.lang.String} object.
-     * @param headers
-     * @param params a {@link java.util.Map} object.
-     * @param cookies a {@link java.util.Map} object.
+     * @param url URL to call
+     * @param headers HTTP request headers as name-value pairs
+     * @param params form parameters sent in the request body
+     * @param cookies cookies to include with the request
      * @param contentType Optional mime type.
      * @param stringBody Optional entity content.
      * @param file Optional file entity content.
@@ -380,11 +380,11 @@ public final class NetTools {
     /**
      * Sends an email to with the given subject and body to the given recipient list.
      *
-     * @param recipients a {@link java.util.List} object.
-     * @param cc
-     * @param bcc
-     * @param subject a {@link java.lang.String} object.
-     * @param body a {@link java.lang.String} object.
+     * @param recipients list of primary recipient email addresses
+     * @param cc list of CC recipient email addresses
+     * @param bcc list of BCC recipient email addresses
+     * @param subject email subject line
+     * @param body email body text (HTML)
      * @return true if mail sent successfully; false otherwise
      * @throws java.io.UnsupportedEncodingException if any.
      * @throws jakarta.mail.MessagingException if any.
@@ -400,18 +400,18 @@ public final class NetTools {
     /**
      * Sends an email to with the given subject and body to the given recipient list using the given SMTP parameters.
      *
-     * @param recipients
-     * @param cc
-     * @param bcc
-     * @param subject
-     * @param body
-     * @param smtpServer
-     * @param smtpUser
-     * @param smtpPassword
-     * @param smtpSenderAddress
-     * @param smtpSenderName
-     * @param smtpSecurity
-     * @param inSmtpPort
+     * @param recipients list of primary recipient email addresses
+     * @param cc list of CC recipient email addresses
+     * @param bcc list of BCC recipient email addresses
+     * @param subject email subject line
+     * @param body email body text (HTML)
+     * @param smtpServer SMTP server hostname
+     * @param smtpUser SMTP authentication username
+     * @param smtpPassword SMTP authentication password
+     * @param smtpSenderAddress sender email address
+     * @param smtpSenderName sender display name
+     * @param smtpSecurity security protocol (STARTTLS, SSL, or none)
+     * @param inSmtpPort SMTP server port number
      * @return true if mail sent successfully; false otherwise
      * @throws MessagingException
      * @throws UnsupportedEncodingException
@@ -547,7 +547,7 @@ public final class NetTools {
 
     /**
      *
-     * @param recipients
+     * @param recipients list of email address strings to convert
      * @return Given recipients as a InternetAddress[]
      * @throws AddressException
      */
@@ -570,7 +570,7 @@ public final class NetTools {
      * Returns the remote IP address of the given HttpServletRequest. If multiple addresses are found in x-forwarded-for, the first in the list is
      * returned.
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param request incoming HTTP servlet request to inspect
      * @return a {@link java.lang.String} object.
      */
     public static String getIpAddress(HttpServletRequest request) {
@@ -624,7 +624,7 @@ public final class NetTools {
     /**
      * Replaces most of the given email address with asterisks.
      *
-     * @param email
+     * @param email email address to scramble
      * @return Scrambled email address
      * @should modify string correctly
      */
@@ -683,10 +683,10 @@ public final class NetTools {
 
     /**
      *
-     * @param mode
-     * @param pi
-     * @param rootUrl
-     * @param webApiToken
+     * @param mode cache clear mode (all, content, thumbs, pdf)
+     * @param pi persistent identifier of the record
+     * @param rootUrl base URL of the viewer application
+     * @param webApiToken authentication token for the web API
      * @return Generated URL
      * @should build url correctly
      */
@@ -735,7 +735,7 @@ public final class NetTools {
 
     /**
      * 
-     * @param subnetMask
+     * @param subnetMask subnet mask in CIDR notation to validate
      * @return true if subnetMask valid; false otherwise
      */
     public static boolean isValidSubnetMask(String subnetMask) {
@@ -752,7 +752,7 @@ public final class NetTools {
      * matches, the request is assumed be be from a web-crawler bot and not from a human. Identifying a web-crawler request via the
      * CrawlerSessionManagerValve session attribute does not work for this purpose since it is only applied to the session after the first request
      * 
-     * @param request
+     * @param request incoming HTTP servlet request to inspect
      * @return true if the request is made by a web crawler
      */
     public static boolean isCrawlerBotRequest(HttpServletRequest request) {

@@ -42,9 +42,9 @@ public class Tag implements Comparable<Tag>, Serializable {
     /**
      * Konstruktor.
      *
-     * @param size {@link java.lang.Integer}
-     * @param name {@link java.lang.String}
-     * @param field a {@link java.lang.String} object.
+     * @param size relative weight of this tag in the cloud
+     * @param name display label of the tag
+     * @param field Solr field this tag is based on
      */
     public Tag(long size, String name, String field) {
         super();
@@ -76,7 +76,7 @@ public class Tag implements Comparable<Tag>, Serializable {
     /**
      * Setter for the field <code>css</code>.
      *
-     * @param css a {@link java.lang.String} object.
+     * @param css CSS class name to assign to this tag
      */
     public void setCss(String css) {
         this.css = css;

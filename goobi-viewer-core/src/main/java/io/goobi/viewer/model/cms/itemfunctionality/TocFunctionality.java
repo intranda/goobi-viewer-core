@@ -56,7 +56,7 @@ public class TocFunctionality implements Functionality {
     /**
      * Creates a new TocFunctionality instance.
      *
-     * @param pi a {@link java.lang.String} object.
+     * @param pi process identifier of the record to display
      */
     public TocFunctionality(String pi) {
         this.pi = pi;
@@ -65,7 +65,7 @@ public class TocFunctionality implements Functionality {
     /**
      * Creates a new TocFunctionality instance.
      *
-     * @param blueprint a {@link io.goobi.viewer.model.cms.itemfunctionality.TocFunctionality} object.
+     * @param blueprint existing instance to copy state from
      */
     public TocFunctionality(TocFunctionality blueprint) {
         this.toc = blueprint.toc;

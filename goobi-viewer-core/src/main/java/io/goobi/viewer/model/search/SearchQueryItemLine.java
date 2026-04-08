@@ -92,7 +92,7 @@ public class SearchQueryItemLine implements Serializable {
 
     /**
      * 
-     * @param value
+     * @param value value to check for
      * @return true if values contains given value; false otherwise
      */
     public boolean isValueSet(String value) {

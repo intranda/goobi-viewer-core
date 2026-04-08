@@ -104,7 +104,7 @@ public class CampaignItem {
     }
 
     /**
-     * The {@link CrowdsourcingStatus status} of the resource within the {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign}
+     * The {@link CrowdsourcingStatus status} of the resource within the {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign}.
      *
      * @return the recordStatus
      */

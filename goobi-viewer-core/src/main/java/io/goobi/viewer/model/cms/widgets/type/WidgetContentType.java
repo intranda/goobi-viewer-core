@@ -52,7 +52,7 @@ public interface WidgetContentType {
     /**
      * Gets the WidgetContentType for which {@link #getName()} method matches the given name.
      * 
-     * @param name
+     * @param name the name to look up
      * @return null if no matching type exists
      */
     public static WidgetContentType valueOf(String name) {
@@ -77,7 +77,7 @@ public interface WidgetContentType {
      * {@link WidgetGenerationType#AUTOMATIC} Widgets of class
      * {@link CustomWidgetType} have the generation type {@link WidgetGenerationType#CUSTOM}
      * 
-     * @param type
+     * @param type the widget content type to resolve
      * @return {@link WidgetGenerationType}
      */
     public static WidgetGenerationType getGenerationType(WidgetContentType type) {

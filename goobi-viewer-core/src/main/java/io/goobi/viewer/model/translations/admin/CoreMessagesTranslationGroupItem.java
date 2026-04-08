@@ -36,8 +36,8 @@ public class CoreMessagesTranslationGroupItem extends TranslationGroupItem {
     /**
      * Protected constructor.
      *
-     * @param key
-     * @param regex
+     * @param key the message key or pattern
+     * @param regex whether the key is a regular expression
      */
     protected CoreMessagesTranslationGroupItem(String key, boolean regex) {
         super(key, regex);

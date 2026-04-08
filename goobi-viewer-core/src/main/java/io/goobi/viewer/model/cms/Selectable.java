@@ -39,8 +39,8 @@ public class Selectable<T> implements Comparable<Selectable<T>>, Serializable {
     /**
      * Creates a new Selectable instance.
      *
-     * @param value a T object.
-     * @param selected a boolean.
+     * @param value the wrapped item
+     * @param selected initial selection state
      */
     public Selectable(T value, boolean selected) {
         this.value = value;

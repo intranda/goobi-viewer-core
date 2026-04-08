@@ -229,10 +229,10 @@ public class RecordFilesResource {
     }
 
     /**
-     * Throw an AccessDenied error if the request doesn't satisfy the access conditions
+     * Throw an AccessDenied error if the request doesn't satisfy the access conditions.
      * 
-     * @param pi
-     * @param filename
+     * @param pi persistent identifier of the record
+     * @param filename name of the fulltext file to check access for
      * @throws ServiceNotAllowedException
      */
     private void checkFulltextAccessConditions(String pi, String filename) throws ServiceNotAllowedException {
@@ -252,8 +252,8 @@ public class RecordFilesResource {
      * Returns the first file on the given folder path that contains the requested language code in its name. ISO-3 files are preferred, with a
      * fallback to ISO-2.
      *
-     * @param folder
-     * @param language
+     * @param folder directory containing the language-versioned document files
+     * @param language requested language for the document version
      * @return Path of the requested file; null if not found
      * @throws IOException
      */

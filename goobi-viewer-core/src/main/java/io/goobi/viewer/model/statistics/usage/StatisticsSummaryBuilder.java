@@ -54,12 +54,12 @@ public class StatisticsSummaryBuilder {
     private final Logger logger = LogManager.getLogger(StatisticsSummaryBuilder.class);
 
     /**
-     * The SOLR interface from which to query the usage statistics
+     * The SOLR interface from which to query the usage statistics.
      */
     private final SolrSearchIndex searchIndex;
 
     /**
-     * Constructor using instances from {@link DataManager}
+     * Constructor using instances from {@link DataManager}.
      */
     public StatisticsSummaryBuilder() {
         this(DataManager.getInstance().getSearchIndex());
@@ -75,7 +75,7 @@ public class StatisticsSummaryBuilder {
     }
 
     /**
-     * Collect usage statistics from SOLR in a {@link StatisticsSummary}
+     * Collect usage statistics from SOLR in a {@link StatisticsSummary}.
      * 
      * @param filter a {@link StatisticsSummaryFilter} to filter results
      * @return a {@link StatisticsSummary}
@@ -87,8 +87,8 @@ public class StatisticsSummaryBuilder {
     }
 
     /**
-     * 
-     * @param filter
+     *
+     * @param filter filter criteria for the Solr query
      * @return {@link StatisticsSummary}
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -109,9 +109,9 @@ public class StatisticsSummaryBuilder {
     }
 
     /**
-     * 
-     * @param s
-     * @param d
+     *
+     * @param s the accumulated summary to add to
+     * @param d the Solr document to extract statistics from
      * @return {@link StatisticsSummary}
      */
     private StatisticsSummary add(StatisticsSummary s, SolrDocument d) {
@@ -120,8 +120,8 @@ public class StatisticsSummaryBuilder {
     }
 
     /**
-     * 
-     * @param doc
+     *
+     * @param doc the Solr document containing record request count fields
      * @return {@link StatisticsSummary}
      */
     @SuppressWarnings("unchecked")
@@ -160,8 +160,8 @@ public class StatisticsSummaryBuilder {
     }
 
     /**
-     * 
-     * @param identifiersToInclude
+     *
+     * @param identifiersToInclude list of record identifiers to build field names for
      * @return List<String> (immutable!)
      */
     private static List<String> getFieldListForRecords(List<String> identifiersToInclude) {
@@ -193,8 +193,8 @@ public class StatisticsSummaryBuilder {
     }
 
     /**
-     * 
-     * @param filter
+     *
+     * @param filter filter providing the Solr query to resolve record identifiers
      * @return List<String>
      * @throws IndexUnreachableException
      * @should extract pi from filter correctly

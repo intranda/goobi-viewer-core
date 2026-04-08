@@ -166,7 +166,7 @@ public class JPADAO implements IDAO {
     /**
      * Creates a new JPADAO instance.
      *
-     * @param inPersistenceUnitName a {@link java.lang.String} object.
+     * @param inPersistenceUnitName persistence unit name; uses default when null or empty
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public JPADAO(String inPersistenceUnitName) throws DAOException {
@@ -233,7 +233,7 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * Get a new {@link EntityManager} from the {@link JPADAO#factory}
+     * Get a new {@link EntityManager} from the {@link JPADAO#factory}.
      *
      * @return {@link jakarta.persistence.EntityManager} for the current thread
      */
@@ -246,7 +246,7 @@ public class JPADAO implements IDAO {
     /**
      * Operation to call after a query or other kind of transaction is complete.
      *
-     * @param em
+     * @param em entity manager to close
      * @throws DAOException
      */
     @Override
@@ -423,7 +423,7 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * @param param
+     * @param param named query parameter placeholder for filter values
      * @return Generated query
      */
     public String getUsersFilterQuery(String param) {
@@ -4119,9 +4119,9 @@ public class JPADAO implements IDAO {
     /**
      * Universal method for returning the row count for the given class and filter string.
      *
-     * @param className
+     * @param className fully qualified entity class name
      * @param filter Filter query string
-     * @param params
+     * @param params map of named query parameters and their values
      * @return Number of rows matching given filters
      * @throws DAOException
      */
@@ -4142,9 +4142,9 @@ public class JPADAO implements IDAO {
     /**
      * Universal method for returning the row count for the given class and filters.
      *
-     * @param className
+     * @param className fully qualified entity class name
      * @param staticFilterQuery Optional filter query in case the fuzzy filters aren't sufficient
-     * @param filters
+     * @param filters filter map of field names to filter values
      * @return Number of rows matching given filters
      * @throws DAOException
      */
@@ -4180,8 +4180,6 @@ public class JPADAO implements IDAO {
 
     /**
      * {@inheritDoc}
-     *
-     * @return
      */
     @Override
     public boolean addStaticPage(CMSStaticPage page) throws DAOException {
@@ -4556,11 +4554,11 @@ public class JPADAO implements IDAO {
     /**
      * createCMSPageFilter.
      *
-     * @param params a {@link java.util.Map} object.
-     * @param pageParameter a {@link java.lang.String} object.
-     * @param allowedTemplates a {@link java.util.List} object.
-     * @param allowedSubthemes a {@link java.util.List} object.
-     * @param allowedCategoryIds a {@link java.util.List} object.
+     * @param params query parameter map to populate with named parameter values
+     * @param pageParameter JPQL alias for the CMS page entity in the query
+     * @param allowedTemplates template IDs the user may view; null means no restriction
+     * @param allowedSubthemes subtheme discriminator values the user may view; null means no restriction
+     * @param allowedCategoryIds category IDs the user may view; null means no restriction
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
      */
@@ -6224,10 +6222,10 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * 
-     * @param staticFilterQuery
-     * @param filters
-     * @param params
+     *
+     * @param staticFilterQuery optional static where clause prepended to generated query
+     * @param filters filter map of field names to filter values
+     * @param params map populated with named query parameters during query construction
      * @return Generated query
      */
     static String createFilterQuery2(String staticFilterQuery, Map<String, String> filters, Map<String, Object> params) {
@@ -6299,9 +6297,9 @@ public class JPADAO implements IDAO {
 
     /**
      *
-     * @param staticFilterQuery
-     * @param filters
-     * @param params
+     * @param staticFilterQuery optional static where clause prepended to generated query
+     * @param filters filter map of field names to filter values
+     * @param params map populated with named query parameters during query construction
      * @return Generated query
      * @should create query correctly
      */
@@ -6384,9 +6382,9 @@ public class JPADAO implements IDAO {
 
     /**
      *
-     * @param staticFilterQuery
-     * @param filters
-     * @param params
+     * @param staticFilterQuery optional static where clause prepended to generated query
+     * @param filters filter map of field names to filter values
+     * @param params map populated with named query parameters during query construction
      * @return Generated query
      * @should create query correctly
      */
@@ -6495,9 +6493,9 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * Builds a query string to filter a query across several tables
+     * Builds a query string to filter a query across several tables.
      *
-     * @param staticFilterQuery
+     * @param staticFilterQuery optional static where clause prepended to generated query
      * @param filters The filters to use
      * @param params Empty map which will be filled with the used query parameters. These to be added to the query
      * @return A string consisting of a WHERE and possibly JOIN clause of a query
@@ -7432,12 +7430,12 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * returns String in the form "a.field LIKE :field if filterValue is a string or "a.field = :field" otherwise
+     * returns String in the form "a.field LIKE :field if filterValue is a string or "a.field = :field" otherwise.
      * 
      * @param filterField A field name to search in
      * @param filterValue The value to search for
-     * @param params a parameter
-     * @param entityVariable
+     * @param params map populated with named query parameters during query construction
+     * @param entityVariable single-letter JPQL alias for the entity
      * @return Generated query
      */
     private static String getFilterQuery(String filterField, Object filterValue, Map<String, Object> params, Character entityVariable) {

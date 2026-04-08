@@ -86,7 +86,7 @@ public final class FileTools {
     /**
      * getStringFromFilePath.
      *
-     * @param filePath a {@link java.lang.String} object.
+     * @param filePath absolute or relative path to the file
      * @should read text file correctly
      * @should throw FileNotFoundException if file not found
      * @return a {@link java.lang.String} object.
@@ -99,7 +99,7 @@ public final class FileTools {
     /**
      * Reads a text file and return content as String.
      *
-     * @param file a {@link java.io.File} object.
+     * @param file text file to read
      * @param encoding The character encoding to use. If null, a standard utf-8 encoding will be used
      * @should read text file correctly
      * @should throw FileNotFoundException if file not found
@@ -113,7 +113,7 @@ public final class FileTools {
     /**
      * Reads a text file and return content as String.
      *
-     * @param file a {@link java.io.File} object.
+     * @param file text file to read
      * @param encoding The character encoding to use. If null, a standard utf-8 encoding will be used
      * @param convertToEncoding Optional target encoding for conversion
      * @return a {@link java.lang.String} object.
@@ -148,7 +148,7 @@ public final class FileTools {
     }
 
     /**
-     * @param file
+     * @param file Path to the file whose charset should be detected
      * @return Charset of the given file
      * @throws IOException
      */
@@ -162,7 +162,7 @@ public final class FileTools {
      * Uses ICU4J to determine the charset of the given InputStream. Clients are responsible for closing the input stream. Do not re-use this stream
      * for any other operations.
      *
-     * @param input a {@link java.io.InputStream} object.
+     * @param input open stream whose charset should be detected
      * @return Detected charset name; null if not detected.
      * @throws java.io.IOException if any.
      * @should detect charset correctly
@@ -184,8 +184,8 @@ public final class FileTools {
     /**
      * Reads a String from a byte array.
      *
-     * @param bytes byte[]
-     * @param encoding a {@link java.lang.String} object.
+     * @param bytes raw byte array to read as text
+     * @param encoding character encoding to apply when reading bytes
      * @return a {@link java.lang.String} object.
      */
     public static String getStringFromByteArray(byte[] bytes, final String encoding) {
@@ -235,8 +235,8 @@ public final class FileTools {
     /**
      * decompressGzipFile.
      *
-     * @param gzipFile a {@link java.io.File} object.
-     * @param newFile a {@link java.io.File} object.
+     * @param gzipFile compressed source file to decompress
+     * @param newFile destination file for the decompressed content
      * @should throw FileNotFoundException if file not found
      * @throws java.io.IOException if any.
      */
@@ -254,8 +254,8 @@ public final class FileTools {
     /**
      * compressGzipFile.
      *
-     * @param file a {@link java.io.File} object.
-     * @param gzipFile a {@link java.io.File} object.
+     * @param file source file to compress
+     * @param gzipFile target file to write the compressed output to
      * @should throw FileNotFoundException if file not found
      * @throws java.io.IOException if any.
      */
@@ -307,8 +307,8 @@ public final class FileTools {
     /**
      * compressZipFile.
      *
-     * @param contentMap a {@link java.util.Map} object.
-     * @param zipFile a {@link java.io.File} object.
+     * @param contentMap map of entry paths to their text content
+     * @param zipFile target ZIP file to write
      * @param level The compression level of the zip archive. Must be an integer in the range from 0 to 9
      * @throws java.io.IOException if any.
      * @should throw FileNotFoundException if file not found
@@ -341,8 +341,8 @@ public final class FileTools {
     /**
      * compressZipFile.
      *
-     * @param output
-     * @param contentMap a {@link java.util.Map} object.
+     * @param output OutputStream to write the ZIP data into
+     * @param contentMap map of entry paths to their text content
      * @param level The compression level of the zip archive. Must be an integer in the range from 0 to 9
      * @throws java.io.IOException if any.
      * @should throw FileNotFoundException if file not found
@@ -371,8 +371,8 @@ public final class FileTools {
     /**
      * checkPathExistance.
      *
-     * @param path a {@link java.nio.file.Path} object.
-     * @param create a boolean.
+     * @param path filesystem path to check for existence
+     * @param create true to create the directory if it does not exist
      * @return a boolean.
      * @throws java.io.IOException if any.
      */
@@ -396,8 +396,8 @@ public final class FileTools {
     /**
      * copyStream.
      *
-     * @param output a {@link java.io.OutputStream} object.
-     * @param input a {@link java.io.InputStream} object.
+     * @param output destination stream to write bytes to
+     * @param input source stream to read bytes from
      * @throws java.io.IOException if any.
      */
     public static void copyStream(OutputStream output, InputStream input) throws IOException {
@@ -411,7 +411,7 @@ public final class FileTools {
     /**
      * isFolderEmpty.
      *
-     * @param folder a {@link java.nio.file.Path} object.
+     * @param folder directory path to check for contents
      * @return true if folder empty; false otherwise
      * @throws java.io.IOException if any.
      */
@@ -592,7 +592,7 @@ public final class FileTools {
      * Guess the content type of the given text, using {@link URLConnection#guessContentTypeFromName(String)} If no content type could be determined,
      * 'text/plain' is assumed.
      *
-     * @param content
+     * @param content Text content whose MIME type should be guessed
      * @return Content mime type
      */
     public static String probeContentType(String content) {
@@ -613,7 +613,7 @@ public final class FileTools {
      * Parses the given String as {@link java.nio.file.Path Path} and returns the lowest folder name as String. Returns an empty String if the given
      * path is empty or null
      *
-     * @param pathString
+     * @param pathString Path string from which to extract the parent folder name
      * @return The folder name, or an empty String if it could not be determined
      * @should return folder name correctly
      * @should return empty string if no folder in path
@@ -632,7 +632,7 @@ public final class FileTools {
      * Parses the given String as {@link java.nio.file.Path Path} and returns the last path element (the filename) as String. Returns an empty String
      * if the given path is empty or null
      *
-     * @param pathString
+     * @param pathString Path or URL string from which to extract the file name
      * @return The filename, or an empty String if it could not be determined
      * @throws FileNotFoundException
      * @should return file name correctly
@@ -721,8 +721,8 @@ public final class FileTools {
     /**
      * Check if a path is a real descendant of the parent path.
      * 
-     * @param path
-     * @param parent
+     * @param path Path to check for containment within parent
+     * @param parent Ancestor path that should contain path
      * @return true if path is a descendant of parent, first resolving any path backtracking with '../' or similar
      */
     public static boolean isWithin(Path path, Path parent) {
@@ -755,7 +755,7 @@ public final class FileTools {
     /**
      * Removes any path elements from the given file name.
      *
-     * @param fileName
+     * @param fileName File name or path to sanitize
      * @return Lowest level file name
      * @should return unchanged string if string blank
      * @should remove everything but the file name from given path

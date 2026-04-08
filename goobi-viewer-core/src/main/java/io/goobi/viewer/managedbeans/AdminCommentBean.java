@@ -170,7 +170,7 @@ public class AdminCommentBean implements Serializable {
     /**
      * <p>Setter for the field <code>userBean</code>.
      *
-     * @param userBean a {@link io.goobi.viewer.managedbeans.UserBean} object
+     * @param userBean injected user session bean
      */
     public void setUserBean(UserBean userBean) {
         this.userBean = userBean;
@@ -188,7 +188,7 @@ public class AdminCommentBean implements Serializable {
     /**
      * <p>setUserCommentsEnabled.
      *
-     * @param userCommentsEnabled a boolean
+     * @param userCommentsEnabled true to enable comments; false to disable
      * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void setUserCommentsEnabled(boolean userCommentsEnabled) throws DAOException {
@@ -265,7 +265,7 @@ public class AdminCommentBean implements Serializable {
     /**
      * saveCommentGroupAction.
      *
-     * @param commentGroup a {@link io.goobi.viewer.model.annotation.comments.CommentGroup} object.
+     * @param commentGroup comment group to persist or update
      * @return Navigation outcome
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -292,7 +292,7 @@ public class AdminCommentBean implements Serializable {
     /**
      * deleteCommentGroupAction.
      *
-     * @param commentGroup a {@link io.goobi.viewer.model.annotation.comments.CommentGroup} object.
+     * @param commentGroup comment group to delete from the database
      * @return Navigation outcome
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -318,7 +318,7 @@ public class AdminCommentBean implements Serializable {
     /**
      * saveCommentAction.
      *
-     * @param comment a {@link io.goobi.viewer.model.annotation.comments.Comment} object.
+     * @param comment comment to persist or update
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void saveCommentAction(Comment comment) throws DAOException {
@@ -345,8 +345,8 @@ public class AdminCommentBean implements Serializable {
     /**
      * deleteCommentAction.
      *
-     * @param comment a {@link io.goobi.viewer.model.annotation.comments.Comment} object.
-     * @return a {@link java.lang.String} object.
+     * @param comment comment to delete from the database
+     * @return empty navigation outcome string
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String deleteCommentAction(Comment comment) throws DAOException {
@@ -389,7 +389,7 @@ public class AdminCommentBean implements Serializable {
     /**
      * <p>Setter for the field <code>currentCommentGroup</code>.
      *
-     * @param currentCommentGroup the currentCommentGroup to set
+     * @param currentCommentGroup comment group to set as active and reload the table for
      */
     public void setCurrentCommentGroup(CommentGroup currentCommentGroup) {
         this.currentCommentGroup = currentCommentGroup;
@@ -412,7 +412,7 @@ public class AdminCommentBean implements Serializable {
     /**
      * Sets <code>currentCommentGroup</code> by loading it from the DB via the given ID.
      *
-     * @param id a {@link java.lang.Long} object
+     * @param id database ID of the comment group to load
      * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void setCurrentCommentGroupId(Long id) throws DAOException {
@@ -443,7 +443,7 @@ public class AdminCommentBean implements Serializable {
     /**
      * Setter for the field <code>selectedComment</code>.
      *
-     * @param selectedComment the selectedComment to set
+     * @param selectedComment comment selected for editing or deletion
      */
     public void setSelectedComment(Comment selectedComment) {
         this.currentComment = selectedComment;

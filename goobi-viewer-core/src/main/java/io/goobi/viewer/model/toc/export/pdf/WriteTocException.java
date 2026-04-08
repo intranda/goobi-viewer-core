@@ -38,10 +38,10 @@ public class WriteTocException extends Exception {
     /**
      * Creates a new WriteTocException instance.
      *
-     * @param message a {@link java.lang.String} object.
-     * @param cause a {@link java.lang.Throwable} object.
-     * @param enableSuppression a boolean.
-     * @param writableStackTrace a boolean.
+     * @param message human-readable error description
+     * @param cause underlying exception that triggered this error
+     * @param enableSuppression whether suppression is enabled
+     * @param writableStackTrace whether the stack trace is writable
      */
     public WriteTocException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
@@ -50,8 +50,8 @@ public class WriteTocException extends Exception {
     /**
      * Creates a new WriteTocException instance.
      *
-     * @param message a {@link java.lang.String} object.
-     * @param cause a {@link java.lang.Throwable} object.
+     * @param message human-readable error description
+     * @param cause underlying exception that triggered this error
      */
     public WriteTocException(String message, Throwable cause) {
         super(message, cause);
@@ -60,7 +60,7 @@ public class WriteTocException extends Exception {
     /**
      * Creates a new WriteTocException instance.
      *
-     * @param message a {@link java.lang.String} object.
+     * @param message human-readable error description
      */
     public WriteTocException(String message) {
         super(message);
@@ -69,7 +69,7 @@ public class WriteTocException extends Exception {
     /**
      * Creates a new WriteTocException instance.
      *
-     * @param cause a {@link java.lang.Throwable} object.
+     * @param cause underlying exception that triggered this error
      */
     public WriteTocException(Throwable cause) {
         super(cause);

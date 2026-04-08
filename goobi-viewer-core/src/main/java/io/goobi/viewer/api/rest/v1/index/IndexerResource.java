@@ -75,7 +75,7 @@ public class IndexerResource {
     /**
      * Used by the Solr indexer to submit its current version and hotfolder file count.
      * 
-     * @param params
+     * @param params indexer data request parameters including version and file counts
      * @return {@link SuccessMessage}
      * @throws IllegalRequestException
      * @throws MessageQueueException

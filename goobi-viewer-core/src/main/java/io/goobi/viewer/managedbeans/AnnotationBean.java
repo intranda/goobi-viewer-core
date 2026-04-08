@@ -111,7 +111,7 @@ public class AnnotationBean implements Serializable {
                 }
 
                 /**
-                 * @param filters
+                 * @return map of filter field names to their values
                  */
                 public Map<String, String> getFilters() {
                     Map<String, String> filters = new HashMap<>();
@@ -236,7 +236,7 @@ public class AnnotationBean implements Serializable {
      * Setter for {@link SelectionManager#setSelectAll(boolean) exportSelection#setSelectAll(boolean)} is placed here to avoid jsf confusing it with
      * setting a value of the map.
      *
-     * @param select
+     * @param select if true, selects all annotations; if false, deselects all
      */
     public void setSelectAll(boolean select) {
         this.exportSelection.setSelectAll(select);
@@ -275,7 +275,7 @@ public class AnnotationBean implements Serializable {
 
     /**
      * 
-     * @param annotations
+     * @param annotations the list of annotations to export
      * @throws IOException
      */
     public void downloadAnnotations(List<CrowdsourcingAnnotation> annotations) throws IOException {

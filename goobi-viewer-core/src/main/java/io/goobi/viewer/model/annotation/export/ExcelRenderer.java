@@ -62,15 +62,15 @@ public class ExcelRenderer {
     private final AnnotationConverter annotationConverter;
 
     /**
-     * @param annotationConverter
+     * @param annotationConverter converter used to deserialize annotations into typed objects
      */
     public ExcelRenderer(AnnotationConverter annotationConverter) {
         this.annotationConverter = annotationConverter;
     }
 
     /**
-     * 
-     * @param annotationMap
+     *
+     * @param annotationMap map of sheet names to their annotation lists
      * @return {@link XSSFWorkbook}
      */
     public XSSFWorkbook render(Map<String, List<CrowdsourcingAnnotation>> annotationMap) {
@@ -98,8 +98,8 @@ public class ExcelRenderer {
     }
 
     /**
-     * @param sheet
-     * @param annotations
+     * @param sheet the Excel sheet to append data rows to
+     * @param annotations list of annotations to write as rows
      */
     public void createDataRows(XSSFSheet sheet, List<CrowdsourcingAnnotation> annotations) {
         int rowCounter = 1;
@@ -114,9 +114,9 @@ public class ExcelRenderer {
     }
 
     /**
-     * @param annotation
-     * @param sheet
-     * @param rowCounter
+     * @param annotation the annotation whose data is written into the row
+     * @param sheet the Excel sheet to create the row in
+     * @param rowCounter 0-based index of the row to create
      * @throws DAOException
      */
     public void createDataRow(CrowdsourcingAnnotation annotation, XSSFSheet sheet, int rowCounter) throws DAOException {
@@ -141,7 +141,7 @@ public class ExcelRenderer {
     }
 
     /**
-     * @param sheet
+     * @param sheet the Excel sheet to create the header row in
      */
     public void createHeaderRow(XSSFSheet sheet) {
         XSSFRow titleRow = sheet.createRow(0);
@@ -196,9 +196,9 @@ public class ExcelRenderer {
     }
 
     /**
-     * 
-     * @param row
-     * @param style
+     *
+     * @param row the Excel row whose cells will receive the style
+     * @param style the cell style to apply to all cells in the row
      */
     private static void setCellStyles(Row row, CellStyle style) {
         Iterator<Cell> cells = row.cellIterator();
@@ -218,7 +218,7 @@ public class ExcelRenderer {
     }
 
     /**
-     * @param wb
+     * @param wb workbook in which to create the cell style
      * @return {@link XSSFCellStyle}
      */
     private static XSSFCellStyle getDataCellStyle(XSSFWorkbook wb) {

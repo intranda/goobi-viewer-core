@@ -76,10 +76,10 @@ public class TableDataProvider<T> implements Serializable {
     /**
      * <p>initDataProvider.
      *
-     * @param itemsPerPage a int
-     * @param defaultSortField a {@link java.lang.String} object
-     * @param defaultSortOrder a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder} object
-     * @param search a {@link io.goobi.viewer.controller.DAOSearchFunction} object
+     * @param itemsPerPage number of items displayed per page
+     * @param defaultSortField field name used when no explicit sort is set
+     * @param defaultSortOrder sort direction applied with the default sort field
+     * @param search DAO function used to fetch and count records
      * @param <T> a T class
      * @return a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider} object
      */
@@ -131,7 +131,7 @@ public class TableDataProvider<T> implements Serializable {
     /**
      * Creates a new TableDataProvider instance.
      *
-     * @param source a {@link io.goobi.viewer.managedbeans.tabledata.TableDataSource} object.
+     * @param source data source that supplies and counts table entries
      */
     public TableDataProvider(TableDataSource<T> source) {
         this.source = source;
@@ -141,8 +141,8 @@ public class TableDataProvider<T> implements Serializable {
      * Creates a new TableDataProvider instance.
      *
      * @param entriesPerPage the number of entries per page
-     * @param sortOrder a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder} object
-     * @param source a {@link io.goobi.viewer.managedbeans.tabledata.TableDataSource} object.
+     * @param sortOrder initial sort direction for the table
+     * @param source data source that supplies and counts table entries
      */
     public TableDataProvider(int entriesPerPage, SortOrder sortOrder, TableDataSource<T> source) {
         this.source = source;
@@ -175,7 +175,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * @param filters
+     * @param filters list of table data filters to serialize
      * @return {@link String}
      */
     private static String getFilterString(List<TableDataFilter> filters) {
@@ -207,7 +207,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * Called ony any changes to the currently listed objects noop - may be implemented by inheriting classes
+     * Called ony any changes to the currently listed objects noop - may be implemented by inheriting classes.
      */
     protected void resetCurrentList() {
         //
@@ -216,8 +216,8 @@ public class TableDataProvider<T> implements Serializable {
     /**
      * sortBy.
      *
-     * @param sortField a {@link java.lang.String} object.
-     * @param sortOrder a {@link java.lang.String} object.
+     * @param sortField field name to sort the table by
+     * @param sortOrder sort direction name, parsed via SortOrder.valueOf
      */
     public void sortBy(String sortField, String sortOrder) {
         setSortField(sortField);
@@ -227,8 +227,8 @@ public class TableDataProvider<T> implements Serializable {
     /**
      * sortBy.
      *
-     * @param sortField a {@link java.lang.String} object.
-     * @param sortOrder a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder} object.
+     * @param sortField field name to sort the table by
+     * @param sortOrder ascending or descending sort direction to apply
      */
     public void sortBy(String sortField, SortOrder sortOrder) {
         setSortField(sortField);
@@ -298,7 +298,7 @@ public class TableDataProvider<T> implements Serializable {
     /**
      * setTxtMoveTo.
      *
-     * @param neueSeite a int.
+     * @param neueSeite 1-based target page number to navigate to
      * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
      */
     public void setTxtMoveTo(int neueSeite) throws TableDataSourceException {
@@ -410,7 +410,7 @@ public class TableDataProvider<T> implements Serializable {
     /**
      * Setter for the field <code>sortField</code>.
      *
-     * @param sortField a {@link java.lang.String} object.
+     * @param sortField field name to sort the table by
      */
     public void setSortField(String sortField) {
         if (!this.sortField.equals(sortField)) {
@@ -431,7 +431,7 @@ public class TableDataProvider<T> implements Serializable {
     /**
      * Setter for the field <code>sortOrder</code>.
      *
-     * @param sortOrder a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder} object.
+     * @param sortOrder ascending or descending sort direction to apply
      */
     public void setSortOrder(SortOrder sortOrder) {
         this.sortOrder = sortOrder;
@@ -441,7 +441,7 @@ public class TableDataProvider<T> implements Serializable {
     /**
      * Setter for the field <code>entriesPerPage</code>.
      *
-     * @param entriesPerPage a int.
+     * @param entriesPerPage number of rows to display per page
      */
     public void setEntriesPerPage(int entriesPerPage) {
         this.entriesPerPage = entriesPerPage;
@@ -469,7 +469,7 @@ public class TableDataProvider<T> implements Serializable {
     /**
      * removeFilter.
      *
-     * @param filter a {@link io.goobi.viewer.managedbeans.tabledata.TableDataFilter} object.
+     * @param filter filter instance to remove from the active filters
      */
     public void removeFilter(TableDataFilter filter) {
         this.filters.remove(filter);
@@ -515,7 +515,7 @@ public class TableDataProvider<T> implements Serializable {
     /**
      * <p>getFilter.
      *
-     * @param columns a {@link java.lang.String} object
+     * @param columns one or more column names the filter applies to
      * @return a {@link io.goobi.viewer.managedbeans.tabledata.TableDataFilter} object
      */
     public TableDataFilter getFilter(String... columns) {
@@ -531,7 +531,7 @@ public class TableDataProvider<T> implements Serializable {
     /**
      * <p>addFilter.
      *
-     * @param filter a {@link io.goobi.viewer.managedbeans.tabledata.TableDataFilter} object
+     * @param filter pre-built filter instance to append to the active filters
      */
     public void addFilter(TableDataFilter filter) {
         this.filters.add(filter);
@@ -541,7 +541,7 @@ public class TableDataProvider<T> implements Serializable {
     /**
      * <p>getFilterIfPresent.
      *
-     * @param columns a {@link java.lang.String} object
+     * @param columns one or more column names to match against existing filters
      * @return a {@link java.util.Optional} object
      */
     public Optional<TableDataFilter> getFilterIfPresent(String... columns) {

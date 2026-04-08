@@ -64,8 +64,8 @@ public class BrowseTermComparator implements Comparator<BrowseTerm>, Serializabl
     }
 
     /**
-     * @param o1
-     * @param o2
+     * @param o1 first browse term to compare
+     * @param o2 second browse term to compare
      * @should compare correctly
      * @should use sort term if provided
      * @should use translated term if provided

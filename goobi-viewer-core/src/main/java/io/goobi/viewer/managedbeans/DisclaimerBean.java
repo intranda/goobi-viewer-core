@@ -72,7 +72,7 @@ public class DisclaimerBean implements Serializable {
     private UserBean userBean;
 
     /**
-     * the {@link LicenseType#LICENSE_TYPE_LEGAL_DISCLAIMER} core license type derived from the dao
+     * the {@link LicenseType#LICENSE_TYPE_LEGAL_DISCLAIMER} core license type derived from the dao.
      */
     private final LicenseType licenseType;
 
@@ -84,7 +84,7 @@ public class DisclaimerBean implements Serializable {
      */
     private Optional<User> currentUser = Optional.empty();
     /**
-     * the consentScope to use as long as the user doesn't change
+     * the consentScope to use as long as the user doesn't change.
      */
     private Optional<ConsentScope> currentConsentScope = Optional.empty();
 
@@ -103,7 +103,7 @@ public class DisclaimerBean implements Serializable {
      * Creates a new testing purposes instance.
      *
      * @param dao the IDAO implementation to use
-     * @param searchIndex
+     * @param searchIndex Solr search index used for access condition checks
      */
     public DisclaimerBean(IDAO dao, SolrSearchIndex searchIndex) {
         this.dao = dao;

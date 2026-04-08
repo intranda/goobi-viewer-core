@@ -107,7 +107,7 @@ public class SearchResultConverter {
     /**
      * Creates a new converter; parameters are used to construct urls or result resources.
      *
-     * @param urls
+     * @param urls the API URL manager for constructing resource URIs
      * @param pi The PI of the manifest to search
      * @param pageNo The page number of generated resources
      */
@@ -124,7 +124,7 @@ public class SearchResultConverter {
     /**
      * Setter for the field <code>pi</code>.
      *
-     * @param pi a {@link java.lang.String} object.
+     * @param pi persistent identifier of the manifest being searched
      */
     public void setPi(String pi) {
         this.pi = pi;
@@ -142,7 +142,7 @@ public class SearchResultConverter {
     /**
      * Setter for the field <code>pageNo</code>.
      *
-     * @param pageNo a {@link java.lang.Integer} object.
+     * @param pageNo page order number of generated resources
      */
     public void setPageNo(Integer pageNo) {
         this.pageNo = pageNo;
@@ -167,7 +167,7 @@ public class SearchResultConverter {
     }
 
     /**
-     * Generates a search hit from a {@link io.goobi.viewer.model.annotation.comments.Comment}
+     * Generates a search hit from a {@link io.goobi.viewer.model.annotation.comments.Comment}.
      *
      * @param pi The PI of the work containing the comment
      * @param queryRegex The regex matching the search terms
@@ -208,8 +208,8 @@ public class SearchResultConverter {
     /**
      * Creates a IIIF Search hit from a UGC solr document (usually a crowdsourcing created comment/metadata).
      *
-     * @param queryRegex a {@link java.lang.String} object.
-     * @param ugc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param queryRegex regex pattern matching the search terms
+     * @param ugc Solr document of type UGC to search within
      * @return A search hit matching the queryRegex within the given UGC SolrDocument
      */
     public SearchHit convertUGCToHit(String queryRegex, SolrDocument ugc) {
@@ -252,9 +252,9 @@ public class SearchResultConverter {
     /**
      * Creates a IIIF Search hit from the field fieldName within the SolrDocumnet doc.
      *
-     * @param queryRegex a {@link java.lang.String} object.
-     * @param fieldName a {@link java.lang.String} object.
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param queryRegex regex pattern matching the search terms
+     * @param fieldName Solr field name to read metadata value from
+     * @param doc Solr document containing the field to search
      * @return A search hit for a Solr field search
      */
     public SearchHit convertMetadataToHit(String queryRegex, String fieldName, SolrDocument doc) {
@@ -289,7 +289,7 @@ public class SearchResultConverter {
     /**
      * Creates annotations for all matches of the given query within the given alto file.
      *
-     * @param path
+     * @param path path to the ALTO XML file
      * @param query a regex; each match of the query within the alto document creates a {@link de.intranda.api.iiif.search.SearchHit} with one or more
      *            annotations referencing alto word or line elements
      * @return A result list containing hits for each mach of the query and annotations containing the hits
@@ -348,7 +348,7 @@ public class SearchResultConverter {
     }
 
     /**
-     * Get all matches to the given regex in the fieldsToSearch of the given doc as {@link SearchTerm SearchTerms}
+     * Get all matches to the given regex in the fieldsToSearch of the given doc as {@link SearchTerm SearchTerms}.
      *
      * @param regex A regex matching all text wich should be returned as a searchTerm
      * @param doc The document within to search
@@ -366,7 +366,7 @@ public class SearchResultConverter {
     }
 
     /**
-     * Get all matches to the given regex in the given value as {@link SearchTerm SearchTerms}
+     * Get all matches to the given regex in the given value as {@link SearchTerm SearchTerms}.
      *
      * @param regex A regex matching all text wich should be returned as a searchTerm
      * @param value The text to be searched with the regex
@@ -491,10 +491,10 @@ public class SearchResultConverter {
     }
 
     /**
-     * Create an annotation for the given metadata field in the given doc
+     * Create an annotation for the given metadata field in the given doc.
      *
-     * @param metadataField
-     * @param doc
+     * @param metadataField Solr field name whose value is used as the annotation body
+     * @param doc Solr document containing the metadata field
      * @return {@link OpenAnnotation}
      */
     private OpenAnnotation createAnnotation(String metadataField, SolrDocument doc) {
@@ -523,7 +523,7 @@ public class SearchResultConverter {
     }
 
     /**
-     * Create an annotation from an ALTO element
+     * Create an annotation from an ALTO element.
      *
      * @param altoElement The alto xml element
      * @return An annotation representing the element
@@ -533,10 +533,10 @@ public class SearchResultConverter {
     }
 
     /**
-     * create a text annotation with the given text in the given canvas
-     * 
-     * @param text
-     * @param canvas
+     * create a text annotation with the given text in the given canvas.
+     *
+     * @param text the plain text content of the annotation body
+     * @param canvas the canvas resource this annotation targets
      * @return {@link IAnnotation}
      */
     private IAnnotation createAnnotation(String text, IResource canvas) {
@@ -549,9 +549,9 @@ public class SearchResultConverter {
     }
 
     /**
-     * 
+     *
      * @param pi Record identifier
-     * @param comment
+     * @param comment the comment to create an annotation for
      * @return {@link IAnnotation}
      */
     private IAnnotation createAnnotation(String pi, Comment comment) {
@@ -582,10 +582,10 @@ public class SearchResultConverter {
 
     /**
      * Return a URI to an annotation list for the given pi and pageNo.
-     * 
+     *
      * @param pi PI of the record containing the page
      * @param pageNo page number (ORDER) of the page
-     * @param type
+     * @param type the annotation type determining the annotation list endpoint
      * @return {@link URI}
      */
     private URI getAnnotationListURI(String pi, Integer pageNo, AnnotationType type) {

@@ -163,8 +163,8 @@ public class RecordSectionResource {
     }
 
     /**
-     * @param pi
-     * @param divId
+     * @param pi persistent identifier of the record
+     * @param divId logical div ID of the METS section
      * @return {@link StructElement}
      * @throws IndexUnreachableException
      * @throws PresentationException

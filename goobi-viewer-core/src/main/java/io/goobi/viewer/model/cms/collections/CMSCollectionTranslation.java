@@ -54,8 +54,8 @@ public class CMSCollectionTranslation extends Translation implements Serializabl
     /**
      * Creates a new CMSCollectionTranslation instance.
      *
-     * @param language a {@link java.lang.String} object.
-     * @param value a {@link java.lang.String} object.
+     * @param language BCP 47 language code for this translation
+     * @param value translated text value
      */
     public CMSCollectionTranslation(String language, String value) {
         super(language, value);
@@ -64,8 +64,8 @@ public class CMSCollectionTranslation extends Translation implements Serializabl
     /**
      * Cloning constructor.
      * 
-     * @param tr
-     * @param owner
+     * @param tr translation to copy
+     * @param owner collection that owns this translation
      */
     public CMSCollectionTranslation(CMSCollectionTranslation tr, CMSCollection owner) {
         this.id = tr.id;

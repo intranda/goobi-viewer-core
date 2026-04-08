@@ -217,8 +217,8 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
     }
 
     /**
-     * @param errorDetails
-     * @param errorType
+     * @param errorDetails human-readable error message stored in request/session
+     * @param errorType logical error category used for navigation to the error page
      */
     private void handleError(String errorDetails, String errorType) {
         FacesContext fc = FacesContext.getCurrentInstance();
@@ -246,7 +246,7 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
 
     /**
      *
-     * @param target
+     * @param target PrettyFaces navigation outcome or view ID to redirect to
      */
     private static void redirect(String target) {
         FacesContext fc = FacesContext.getCurrentInstance();
@@ -260,7 +260,7 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
     }
 
     /**
-     * @param t
+     * @param t throwable carrying the RecordLimitExceededException message
      * @return String
      */
     public String createRecodLimitExceededMessage(Throwable t) {
@@ -284,8 +284,8 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
     }
 
     /**
-     * @param requestMap
-     * @param session
+     * @param requestMap current JSF request attribute map
+     * @param session current HTTP session for storing navigation state
      */
     public void putNavigationState(Map<String, Object> requestMap, HttpSession session) {
         NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
@@ -305,7 +305,7 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
     }
 
     /**
-     * @param fc
+     * @param fc current JSF faces context for accessing the session
      * @return String
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -341,8 +341,8 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
     /**
      * Checks whether the given Throwable was at some point caused by an IndexUnreachableException.
      *
-     * @param t
-     * @param className
+     * @param t the throwable to inspect
+     * @param className fully qualified class name of the exception type to search for
      * @return true if the root cause of the exception is className
      */
     @SuppressWarnings("rawtypes")

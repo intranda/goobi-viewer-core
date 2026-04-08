@@ -84,7 +84,7 @@ public final class RSSFeed {
 
     private static final Logger logger = LogManager.getLogger(RSSFeed.class);
 
-    /** Constant <code>FIELDS</code> */
+    /** Constant <code>FIELDS</code>. */
     private static final String[] FIELDS = { SolrConstants.ACCESSCONDITION, SolrConstants.DATECREATED, SolrConstants.FILENAME, SolrConstants.FULLTEXT,
             SolrConstants.IDDOC, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE, SolrConstants.IDDOC_PARENT,
             SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LOGID, SolrConstants.MIMETYPE, SolrConstants.NUMVOLUMES,
@@ -102,9 +102,9 @@ public final class RSSFeed {
     /**
      * createRss.
      *
-     * @param rootPath a {@link java.lang.String} object.
-     * @param query a {@link java.lang.String} object.
-     * @param maxItems
+     * @param rootPath base URL of the viewer instance
+     * @param query Solr query string to select feed entries
+     * @param maxItems maximum number of feed items to return
      * @return a {@link com.rometools.rome.feed.synd.SyndFeed} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -119,8 +119,8 @@ public final class RSSFeed {
     /**
      * getFieldsWithTranslation.
      *
-     * @param locale a {@link java.util.Locale} object.
-     * @return a {@link java.util.List} object.
+     * @param locale locale whose language suffix is appended to each field name
+     * @return list of base field names and their language-specific variants
      */
     public static List<String> getFieldsWithTranslation(Locale locale) {
         List<String> allFields = new ArrayList<>();
@@ -134,13 +134,13 @@ public final class RSSFeed {
     /**
      * Creates RSS feed for the RSS REST API endpoint.
      *
-     * @param rootPath a {@link java.lang.String} object.
-     * @param query a {@link java.lang.String} object.
-     * @param filterQueries a {@link java.util.List} object.
-     * @param language a {@link java.lang.String} object.
-     * @param maxItems
-     * @param sortField
-     * @param sortDescending
+     * @param rootPath base URL of the viewer instance
+     * @param query Solr query string to select feed entries
+     * @param filterQueries additional Solr filter queries to restrict results
+     * @param language BCP-47 language tag for feed language and translations
+     * @param maxItems maximum number of feed items to return
+     * @param sortField Solr field name used for sorting
+     * @param sortDescending true to sort descending; false for ascending
      * @return a {@link com.rometools.rome.feed.synd.SyndFeed} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -423,7 +423,7 @@ public final class RSSFeed {
     }
 
     /**
-     * @param doc
+     * @param doc Solr document to extract the representative page number from
      * @return Representative page number, if found in doc; otherwise 1
      */
     private static int getRepresentativePageNumber(SolrDocument doc) {
@@ -440,9 +440,9 @@ public final class RSSFeed {
     /**
      * createRssFeed.
      *
-     * @param rootPath a {@link java.lang.String} object.
-     * @param query a {@link java.lang.String} object.
-     * @param rssFeedItems a int.
+     * @param rootPath base URL of the viewer instance
+     * @param query Solr query string to select feed entries
+     * @param rssFeedItems maximum number of feed items to return
      * @return a {@link io.goobi.viewer.model.rss.Channel} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -457,13 +457,13 @@ public final class RSSFeed {
     /**
      * createRssFeed.
      *
-     * @param rootPath a {@link java.lang.String} object.
-     * @param query a {@link java.lang.String} object.
-     * @param filterQueries a {@link java.util.List} object.
-     * @param rssFeedItems a int.
-     * @param language a {@link java.lang.String} object.
-     * @param sortField
-     * @param sortDescending
+     * @param rootPath base URL of the viewer instance
+     * @param query Solr query string to select feed entries
+     * @param filterQueries additional Solr filter queries to restrict results
+     * @param rssFeedItems maximum number of feed items to return
+     * @param language BCP-47 language tag for feed language and translations
+     * @param sortField Solr field name used for sorting
+     * @param sortDescending true to sort descending; false for ascending
      * @return a {@link io.goobi.viewer.model.rss.Channel} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -704,11 +704,11 @@ public final class RSSFeed {
     /**
      * createLink.
      *
-     * @param rootPath a {@link java.lang.String} object.
-     * @param pi a {@link java.lang.String} object.
-     * @param pageNo
-     * @param pageType a {@link io.goobi.viewer.model.viewer.PageType} object.
-     * @return a {@link java.lang.String} object.
+     * @param rootPath base URL of the viewer instance
+     * @param pi persistent identifier of the record
+     * @param pageNo representative page number for URL construction
+     * @param pageType viewer page type determining the URL pattern
+     * @return fully qualified URL to the record page
      */
     public static String createLink(String rootPath, String pi, int pageNo, PageType pageType) {
         return new StringBuilder().append(rootPath)
@@ -718,14 +718,14 @@ public final class RSSFeed {
     }
 
     /**
-     * @param language
-     * @param maxHits
-     * @param subtheme
-     * @param query
-     * @param facets
-     * @param servletRequest
-     * @param sortField
-     * @param sortDescending
+     * @param language BCP-47 language tag for feed language and translations
+     * @param maxHits maximum number of feed items to return
+     * @param subtheme subtheme/partner identifier to filter results
+     * @param query optional Solr query string to filter results
+     * @param facets active facet string to apply as filter queries
+     * @param servletRequest HTTP servlet request used to determine base URL and locale
+     * @param sortField Solr field name used for sorting
+     * @param sortDescending true to sort descending; false for ascending
      * @return {@link Channel}
      * @throws ContentLibException
      */
@@ -770,14 +770,14 @@ public final class RSSFeed {
 
     /**
      *
-     * @param language
-     * @param maxHits
-     * @param subtheme
-     * @param query
-     * @param facets
-     * @param servletRequest
-     * @param sortField
-     * @param sortDescending
+     * @param language BCP-47 language tag for feed language and translations
+     * @param maxHits maximum number of feed items to return
+     * @param subtheme subtheme/partner identifier to filter results
+     * @param query optional Solr query string to filter results
+     * @param facets active facet string to apply as filter queries
+     * @param servletRequest HTTP servlet request used to determine base URL and locale
+     * @param sortField Solr field name used for sorting
+     * @param sortDescending true to sort descending; false for ascending
      * @return RSS feed as {@link String}
      * @throws ContentLibException
      */
@@ -810,14 +810,14 @@ public final class RSSFeed {
 
     /**
      *
-     * @param language
-     * @param maxHits
-     * @param subtheme
-     * @param query
-     * @param facets
-     * @param servletRequest
-     * @param sortField
-     * @param sortDescending
+     * @param language BCP-47 language tag for feed language and translations
+     * @param maxHits maximum number of feed items to return
+     * @param subtheme subtheme/partner identifier to filter results
+     * @param query optional Solr query string to filter results
+     * @param facets active facet string to apply as filter queries
+     * @param servletRequest HTTP servlet request used to determine base URL and locale
+     * @param sortField Solr field name used for sorting
+     * @param sortDescending true to sort descending; false for ascending
      * @return {@link SyndFeed}
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -847,12 +847,12 @@ public final class RSSFeed {
     }
 
     /**
-     * 
-     * @param query
-     * @param bookshelfId
-     * @param partnerId
-     * @param servletRequest
-     * @param addSuffixes
+     *
+     * @param query optional caller-supplied Solr query; if blank a default query is built
+     * @param bookshelfId ID of the bookmark list for a bookshelf RSS feed, or null
+     * @param partnerId subtheme/partner identifier used to restrict results
+     * @param servletRequest HTTP servlet request for building access suffixes
+     * @param addSuffixes true to append access condition suffixes to the query
      * @return Generated Solr query
      * @throws PresentationException
      * @throws DAOException

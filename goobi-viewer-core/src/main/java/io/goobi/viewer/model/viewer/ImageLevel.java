@@ -35,8 +35,8 @@ public class ImageLevel implements Comparable<ImageLevel> {
     /**
      * Creates a new ImageLevel instance.
      *
-     * @param url a {@link java.lang.String} object.
-     * @param size a {@link java.awt.Dimension} object.
+     * @param url URL of the image resource
+     * @param size pixel dimensions of the image
      */
     public ImageLevel(String url, Dimension size) {
         super();
@@ -48,9 +48,9 @@ public class ImageLevel implements Comparable<ImageLevel> {
     /**
      * Creates a new ImageLevel instance.
      *
-     * @param url a {@link java.lang.String} object.
-     * @param width a int.
-     * @param height a int.
+     * @param url URL of the image resource
+     * @param width image width in pixels
+     * @param height image height in pixels
      */
     public ImageLevel(String url, int width, int height) {
         super();
@@ -62,9 +62,9 @@ public class ImageLevel implements Comparable<ImageLevel> {
     /**
      * Creates a new ImageLevel instance.
      *
-     * @param url a {@link java.lang.String} object.
-     * @param size a {@link java.awt.Dimension} object.
-     * @param currentRotate a int.
+     * @param url URL of the image resource
+     * @param size pixel dimensions of the image
+     * @param currentRotate current rotation angle in degrees
      */
     public ImageLevel(String url, Dimension size, int currentRotate) {
         super();

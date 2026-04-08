@@ -27,7 +27,7 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 /**
- * A {@link io.goobi.viewer.model.cms.TranslatedSelectable} which may also contain a list of {@link CMSCategory categories}
+ * A {@link io.goobi.viewer.model.cms.TranslatedSelectable} which may also contain a list of {@link CMSCategory categories}.
  *
  * @author florian
  * @param <T>
@@ -41,10 +41,10 @@ public class CategorizableTranslatedSelectable<T> extends TranslatedSelectable<T
     /**
      * Creates a new CategorizableTranslatedSelectable instance.
      *
-     * @param value a T object.
-     * @param selected a boolean.
-     * @param defaultLocale a {@link java.util.Locale} object.
-     * @param categories a {@link java.util.List} object.
+     * @param value wrapped item value
+     * @param selected initial selection state
+     * @param defaultLocale locale used for translation display
+     * @param categories selectable CMS categories associated with this item
      */
     public CategorizableTranslatedSelectable(T value, boolean selected, Locale defaultLocale, List<Selectable<CMSCategory>> categories) {
         super(value, selected, defaultLocale);
@@ -63,7 +63,7 @@ public class CategorizableTranslatedSelectable<T> extends TranslatedSelectable<T
     /**
      * Setter for the field <code>categories</code>.
      *
-     * @param categories a {@link java.util.List} object.
+     * @param categories selectable CMS categories to assign
      */
     public void setCategories(List<Selectable<CMSCategory>> categories) {
         this.categories = categories;

@@ -27,7 +27,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Contains additional information of collections searched by {@link SearchHelper#findAllCollectionsFromField}
+ * Contains additional information of collections searched by {@link SearchHelper#findAllCollectionsFromField}.
  *
  * @author florian
  */
@@ -38,11 +38,11 @@ public class CollectionResult implements Serializable {
     private final String name;
     private Set<String> facetValues = new HashSet<>();
     /**
-     * A counter for all records within the collections or its descendants
+     * A counter for all records within the collections or its descendants.
      */
     private Long recordCount = 0L;
     /**
-     * A counter for direct child collections
+     * A counter for direct child collections.
      */
     private Long childCount = 0L;
 
@@ -51,8 +51,8 @@ public class CollectionResult implements Serializable {
     }
 
     /**
-     * @param name
-     * @param recordCount
+     * @param name collection name (Solr field value)
+     * @param recordCount number of records in this collection
      */
     public CollectionResult(String name, long recordCount) {
         this.name = name;
@@ -111,7 +111,7 @@ public class CollectionResult implements Serializable {
     }
 
     /**
-     * @param fieldValues
+     * @param fieldValues collection of facet values to add to this result
      */
     public void addFacetValues(Collection<Object> fieldValues) {
         if (fieldValues != null) {

@@ -92,10 +92,10 @@ public class ArchiveEntry implements Serializable {
     private boolean childrenLoaded = false;
 
     /**
-     * 
-     * @param order
-     * @param hierarchy
-     * @param doc
+     *
+     * @param order position of this node within its parent's children
+     * @param hierarchy depth level of this node in the tree
+     * @param doc Solr document representing this archive entry
      */
     public ArchiveEntry(Integer order, Integer hierarchy, SolrDocument doc) {
         this.orderNumber = order;
@@ -104,9 +104,9 @@ public class ArchiveEntry implements Serializable {
     }
 
     /**
-     * 
-     * @param orig
-     * @param parent
+     *
+     * @param orig the entry to copy all fields from
+     * @param parent the parent node in the cloned tree
      * @should clone entry correctly
      */
     public ArchiveEntry(ArchiveEntry orig, ArchiveEntry parent) {
@@ -156,7 +156,7 @@ public class ArchiveEntry implements Serializable {
 
     /**
      *
-     * @param ignoreDisplayChildren
+     * @param ignoreDisplayChildren if true, recurse into children regardless of their display state
      * @return List<ArchiveEntry> LinkedList containing all nodes
      */
     public List<ArchiveEntry> getAsFlatList(boolean ignoreDisplayChildren) {
@@ -235,7 +235,7 @@ public class ArchiveEntry implements Serializable {
 
     /**
      *
-     * @param offset
+     * @param offset value added to the hierarchy level of this node and all descendants
      */
     public void shiftHierarchy(int offset) {
         this.hierarchyLevel += offset;
@@ -416,9 +416,9 @@ public class ArchiveEntry implements Serializable {
     }
 
     /**
-     * 
-     * @param displaySearch
-     * @param recursive
+     *
+     * @param displaySearch the display-in-search-results flag to set
+     * @param recursive if true, apply the flag to all descendant nodes as well
      */
     public void setDisplaySearch(boolean displaySearch, boolean recursive) {
         this.displaySearch = displaySearch;
@@ -563,7 +563,7 @@ public class ArchiveEntry implements Serializable {
      * Get the parent node hierarchy of this node, optionally including the node itself The list is sorted with hightest hierarchy level first, so the
      * node itself will always be the last element, if included.
      *
-     * @param includeSelf
+     * @param includeSelf if true, this node is appended at the end of the list
      * @return List<ArchiveEntry>
      */
     public List<ArchiveEntry> getAncestors(boolean includeSelf) {

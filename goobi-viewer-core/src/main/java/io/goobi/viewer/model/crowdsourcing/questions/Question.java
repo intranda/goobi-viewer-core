@@ -129,7 +129,7 @@ public class Question implements Serializable {
     /**
      * Constructor setting the owning campaign.
      *
-     * @param owner a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
+     * @param owner campaign that owns this question
      */
     public Question(Campaign owner) {
         this();
@@ -140,10 +140,10 @@ public class Question implements Serializable {
      *
      * Constructor setting the owning campaign as well as the type of annotation to be generated.
      *
-     * @param questionType a {@link io.goobi.viewer.model.crowdsourcing.questions.QuestionType} object.
-     * @param targetSelector a {@link io.goobi.viewer.model.crowdsourcing.questions.TargetSelector} object.
-     * @param targetFrequency a int.
-     * @param owner a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
+     * @param questionType type of annotation this question generates
+     * @param targetSelector scope selector for annotation targets
+     * @param targetFrequency how often this question may be answered per target
+     * @param owner campaign that owns this question
      */
     public Question(QuestionType questionType, TargetSelector targetSelector, int targetFrequency, Campaign owner) {
         this(owner);
@@ -154,7 +154,7 @@ public class Question implements Serializable {
 
     /**
      * 
-     * @param orig
+     * @param orig question to copy
      */
     public Question(Question orig) {
         this.id = orig.id;
@@ -169,8 +169,8 @@ public class Question implements Serializable {
     /**
      * Creates a clone of the given question with the given campaign as owner.
      *
-     * @param orig
-     * @param campaign
+     * @param orig question to copy
+     * @param campaign crowdsourcing campaign to set as owner
      */
     public Question(Question orig, Campaign campaign) {
         this(orig);
@@ -368,7 +368,7 @@ public class Question implements Serializable {
     /**
      * Get the {@link #id} of a question from an URI identifier.
      *
-     * @param idAsURI a {@link java.net.URI} object.
+     * @param idAsURI URI identifier containing the question ID
      * @return a {@link java.lang.Long} object.
      * @should extract id correctly
      */
@@ -385,7 +385,7 @@ public class Question implements Serializable {
     /**
      * Get the {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign#id} of the owning campaign from an URI identifier of a question.
      *
-     * @param idAsURI a {@link java.net.URI} object.
+     * @param idAsURI URI identifier containing the campaign ID segment
      * @return a {@link java.lang.Long} object.
      * @should extract id correctly
      */

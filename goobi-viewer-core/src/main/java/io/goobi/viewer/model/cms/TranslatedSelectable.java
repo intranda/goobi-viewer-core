@@ -38,9 +38,9 @@ public class TranslatedSelectable<T> extends Selectable<T> {
     /**
      * Creates a new TranslatedSelectable instance.
      *
-     * @param value a T object.
-     * @param selected a boolean.
-     * @param defaultLocale a {@link java.util.Locale} object.
+     * @param value wrapped value of type T.
+     * @param selected true if this item is pre-selected.
+     * @param defaultLocale initial locale for translation display.
      */
     public TranslatedSelectable(T value, boolean selected, Locale defaultLocale) {
         super(value, selected);
@@ -69,7 +69,7 @@ public class TranslatedSelectable<T> extends Selectable<T> {
     /**
      * getLanguage.
      *
-     * @return a {@link java.lang.String} object.
+     * @return BCP 47 language tag of the current locale.
      */
     public String getLanguage() {
         return locale.getLanguage();
@@ -78,7 +78,7 @@ public class TranslatedSelectable<T> extends Selectable<T> {
     /**
      * setLanguage.
      *
-     * @param language a {@link java.lang.String} object.
+     * @param language BCP 47 language tag to set as locale.
      */
     public void setLanguage(String language) {
         this.locale = Locale.forLanguageTag(language);

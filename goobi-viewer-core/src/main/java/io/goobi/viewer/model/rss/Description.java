@@ -51,7 +51,7 @@ public class Description {
     /**
      * Creates a new Description instance.
      *
-     * @param value a {@link java.lang.String} object.
+     * @param value initial text content of the description
      */
     public Description(String value) {
         text = value;
@@ -105,7 +105,7 @@ public class Description {
     /**
      * Adds rss metadata to this object.
      *
-     * @param metadata a {@link io.goobi.viewer.model.rss.RssMetadata} object.
+     * @param metadata RSS metadata entry to append
      */
     public void addMetadata(RssMetadata metadata) {
         this.metadata.add(metadata);

@@ -81,7 +81,7 @@ public class DataRetriever {
      * Queries all DocStructs which have the given PI as PI_TOPSTRUCT or anchor (or are the anchor themselves). Works are sorted by a
      * {@link io.goobi.viewer.model.iiif.presentation.v2.builder.StructElementComparator} If no hits are found, an empty list is returned
      *
-     * @param pi a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record to retrieve
      * @return A list of all docstructs with the given pi or children thereof. An empty list if no hits are found
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -132,7 +132,7 @@ public class DataRetriever {
     /**
      * Get all top level collections (i.e. those without splitting-char) along with the number of contained works and direct children
      *
-     * @param solrField
+     * @param solrField Solr field used to store the collection hierarchy
      * @return List<CollectionResult> (immutable!)
      * @throws IndexUnreachableException
      */
@@ -150,8 +150,8 @@ public class DataRetriever {
     /**
      * Gets all collections which are direct children of the given collection along with the number of contained works and direct children.
      *
-     * @param solrField
-     * @param collectionName
+     * @param solrField Solr field used to store the collection hierarchy
+     * @param collectionName name of the parent collection whose children to retrieve
      * @return List<CollectionResult> (immutable!)
      * @throws IndexUnreachableException
      */
@@ -174,8 +174,8 @@ public class DataRetriever {
     /**
      * Gets all records directly belonging to the given collection, only the fields in {@link #CONTAINED_WORKS_QUERY_FIELDS} are returned.
      *
-     * @param solrField
-     * @param collectionName
+     * @param solrField Solr field used to store the collection hierarchy
+     * @param collectionName name of the collection whose records to retrieve
      * @return List<StructElement> (immutable!)
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -199,8 +199,8 @@ public class DataRetriever {
     }
 
     /**
-     * 
-     * @param doc
+     *
+     * @param doc Solr document from which to construct the element
      * @return Constructed {@link StructElement}
      */
     private static StructElement createStructElement(SolrDocument doc) {
@@ -213,9 +213,9 @@ public class DataRetriever {
     }
 
     /**
-     * @param collection
-     * @param splittingChar
-     * @param allCollections
+     * @param collection name of the collection whose direct children to count
+     * @param splittingChar character used to separate hierarchy levels in collection names
+     * @param allCollections set of all known collection names to search within
      * @return Child count
      */
     private static long getChildCount(String collection, String splittingChar, Set<String> allCollections) {
@@ -277,7 +277,7 @@ public class DataRetriever {
     /**
      * getDocument.
      *
-     * @param pi a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record to retrieve
      * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -317,8 +317,8 @@ public class DataRetriever {
     }
 
     /**
-     * @param displayFields
-     * @param locales
+     * @param displayFields base list of Solr field names to expand with language variants
+     * @param locales locales for which to add language-specific field variants
      * @return List<String> (immutable!)
      */
     protected static List<String> addLanguageFields(List<String> displayFields, List<Locale> locales) {
@@ -326,10 +326,10 @@ public class DataRetriever {
     }
 
     /**
-     * 
-     * @param field
-     * @param locales
-     * @param includeSelf
+     *
+     * @param field base Solr field name to expand
+     * @param locales locales for which to generate language-specific variants
+     * @param includeSelf whether to include the base field name itself in the result
      * @return List<String>
      */
     private static List<String> getLanguageFields(String field, List<Locale> locales, boolean includeSelf) {

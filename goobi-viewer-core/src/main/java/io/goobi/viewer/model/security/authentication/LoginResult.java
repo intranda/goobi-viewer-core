@@ -49,9 +49,9 @@ public class LoginResult {
     /**
      * Creates a new LoginResult instance.
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
-     * @param user a {@link java.util.Optional} object.
+     * @param request HTTP request associated with the login attempt
+     * @param response HTTP response associated with the login attempt
+     * @param user optional containing the authenticated user, or empty if login failed
      * @param loginRefused true if the login has been refused even if the user may exist and be valid. Typically true for wrong password
      */
     public LoginResult(HttpServletRequest request, HttpServletResponse response, Optional<User> user, boolean loginRefused) {
@@ -61,11 +61,11 @@ public class LoginResult {
     /**
      * Creates a new LoginResult instance.
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
-     * @param user a {@link java.util.Optional} object.
+     * @param request HTTP request associated with the login attempt
+     * @param response HTTP response associated with the login attempt
+     * @param user optional containing the authenticated user, or empty if login failed
      * @param loginRefused true if the login has been refused even if the user may exist and be valid. Typically true for wrong password
-     * @param delay a configured delay time
+     * @param delay configured delay in milliseconds before completing the result
      */
     public LoginResult(HttpServletRequest request, HttpServletResponse response, Optional<User> user, boolean loginRefused, long delay) {
         super();
@@ -80,9 +80,9 @@ public class LoginResult {
     /**
      * Creates a new LoginResult instance.
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
-     * @param exception a {@link io.goobi.viewer.model.security.authentication.AuthenticationProviderException} object.
+     * @param request HTTP request associated with the login attempt
+     * @param response HTTP response associated with the login attempt
+     * @param exception exception that caused the login failure
      */
     public LoginResult(HttpServletRequest request, HttpServletResponse response, AuthenticationProviderException exception) {
         this(request, response, exception, 0);
@@ -91,10 +91,10 @@ public class LoginResult {
     /**
      * Creates a new LoginResult instance.
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
-     * @param exception a {@link io.goobi.viewer.model.security.authentication.AuthenticationProviderException} object.
-     * @param delay a configured delay time
+     * @param request HTTP request associated with the login attempt
+     * @param response HTTP response associated with the login attempt
+     * @param exception exception that caused the login failure
+     * @param delay configured delay in milliseconds before completing the result
      */
     public LoginResult(HttpServletRequest request, HttpServletResponse response, AuthenticationProviderException exception, long delay) {
         super();
@@ -140,7 +140,7 @@ public class LoginResult {
     /**
      * isRedirected.
      *
-     * @param timeout a long.
+     * @param timeout maximum wait time in milliseconds for the redirect signal
      * @return a {@link java.util.concurrent.Future} object.
      */
     public Future<Boolean> isRedirected(long timeout) {

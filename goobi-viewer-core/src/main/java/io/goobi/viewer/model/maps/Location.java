@@ -54,9 +54,9 @@ public class Location implements Serializable {
 
     /**
      *
-     * @param area
-     * @param label
-     * @param uri
+     * @param area geographic area of the location
+     * @param label display label for the location
+     * @param uri URI linking to the associated record or resource
      */
     public Location(IArea area, String label, URI uri) {
         this.area = area;
@@ -66,8 +66,8 @@ public class Location implements Serializable {
 
     /**
      *
-     * @param pi
-     * @param pageType
+     * @param pi persistent identifier of the record
+     * @param pageType viewer page type for the generated URI
      * @param urlBuilder If not null, the URL will be build using the URL builder, otherwise manually
      * @return {@link URI}
      */

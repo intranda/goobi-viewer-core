@@ -132,9 +132,9 @@ public class ClientApplicationsResource {
 
     /**
      * Change properties of an existing {@link ClientApplication}.
-     * 
-     * @param clientIdentifier
-     * @param update
+     *
+     * @param clientIdentifier unique identifier of the client to update
+     * @param update client object carrying the new property values to apply
      * @return {@link ClientApplication}
      * @throws DAOException If an error occurs accessing the database
      * @throws ContentNotFoundException If no 'id' or 'clientIdentier' values are given or if no matching client could be found
@@ -213,8 +213,8 @@ public class ClientApplicationsResource {
 
     /**
      * Lists all registered {@link ClientApplication}s.
-     * 
-     * @param clientIdentifier
+     *
+     * @param clientIdentifier unique identifier of the client to retrieve
      * @return Client with given clientIdentifier
      * @throws DAOException If an error occurs accessing the database
      * @throws ContentNotFoundException
@@ -289,8 +289,8 @@ public class ClientApplicationsResource {
     }
 
     /**
-     * @param client
-     * @param allowed
+     * @param client the client application whose status is included in the response
+     * @param allowed whether the client was granted access in this session
      * @return JSON response
      */
     private static String createRequestResponse(ClientApplication client, boolean allowed) {
@@ -301,7 +301,7 @@ public class ClientApplicationsResource {
     }
 
     /**
-     * @param client
+     * @param client the newly registered client application
      * @return JSON response
      */
     private static String createRegistrationResponse(ClientApplication client) {

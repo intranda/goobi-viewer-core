@@ -55,9 +55,9 @@ import io.goobi.viewer.model.security.user.User;
 public class LitteraProvider extends HttpAuthenticationProvider {
 
     private static final Logger logger = LogManager.getLogger(LitteraProvider.class);
-    /** Constant <code>DEFAULT_EMAIL="{username}@nomail.com"</code> */
+    /** Constant <code>DEFAULT_EMAIL="{username}@nomail.com"</code>. */
     protected static final String DEFAULT_EMAIL = "{username}@nomail.com";
-    /** Constant <code>TYPE_USER_PASSWORD="userPassword"</code> */
+    /** Constant <code>TYPE_USER_PASSWORD="userPassword"</code>. */
     protected static final String TYPE_USER_PASSWORD = "userPassword";
     private static final String QUERY_PARAMETER_ID = "id";
     private static final String QUERY_PARAMETER_PW = "pw";
@@ -65,11 +65,11 @@ public class LitteraProvider extends HttpAuthenticationProvider {
     /**
      * Creates a new LitteraProvider instance.
      *
-     * @param name a {@link java.lang.String} object.
-     * @param label a {@link java.lang.String} object.
-     * @param url a {@link java.lang.String} object.
-     * @param image a {@link java.lang.String} object.
-     * @param timeoutMillis a long.
+     * @param name unique provider name identifier
+     * @param label display label shown to users
+     * @param url base URL of the Littera authentication endpoint
+     * @param image path to the provider logo image
+     * @param timeoutMillis HTTP request timeout in milliseconds
      */
     public LitteraProvider(String name, String label, String url, String image, long timeoutMillis) {
         super(name, label, TYPE_USER_PASSWORD, url, image, timeoutMillis);
@@ -105,9 +105,9 @@ public class LitteraProvider extends HttpAuthenticationProvider {
     /**
      * get.
      *
-     * @param url a {@link java.net.URI} object.
-     * @param username a {@link java.lang.String} object.
-     * @param password a {@link java.lang.String} object.
+     * @param url base URI of the Littera authentication endpoint
+     * @param username login name submitted by the user
+     * @param password password submitted by the user
      * @return a {@link io.goobi.viewer.model.security.authentication.model.LitteraAuthenticationResponse} object.
      * @throws java.io.IOException if any.
      */
@@ -118,7 +118,7 @@ public class LitteraProvider extends HttpAuthenticationProvider {
     }
 
     /**
-     * @param xml
+     * @param xml XML response string from Littera authentication endpoint
      * @return {@link LitteraAuthenticationResponse}
      * @throws IOException
      * @throws JsonMappingException
@@ -129,8 +129,8 @@ public class LitteraProvider extends HttpAuthenticationProvider {
     }
 
     /**
-     * @param loginName
-     * @param response
+     * @param loginName username entered by the user
+     * @param response deserialized response from the Littera authentication service
      * @return Optional<User>
      * @throws AuthenticationProviderException
      */

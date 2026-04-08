@@ -47,7 +47,7 @@ public class ArchiveResourceWrapper implements Serializable {
 
     /**
      * 
-     * @param locale
+     * @param locale locale for which to retrieve the label
      * @return Configured title of the given locale; resource name if no configured title found
      */
     public String getLabel(Locale locale) {

@@ -33,8 +33,8 @@ public class FileRecord {
 
     /**
      * 
-     * @param file
-     * @param number
+     * @param file path to the configuration file
+     * @param number index of this record in the file list
      */
     public FileRecord(Path file, int number) {
         this.file = file;

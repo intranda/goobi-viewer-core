@@ -46,9 +46,9 @@ public class TagCount implements Comparable<TagCount> {
     /**
      * Creates a new TagCount instance.
      *
-     * @param element a {@link io.goobi.viewer.api.rest.model.ner.ElementReference} object.
-     * @param value a {@link java.lang.String} object.
-     * @param type a {@link io.goobi.viewer.api.rest.model.ner.NERTag.Type} object.
+     * @param element initial element reference where this tag occurs
+     * @param value text value of the named entity tag
+     * @param type NER category of the tag (person, location, etc.)
      */
     public TagCount(String value, Type type, ElementReference element) {
         this.value = value;
@@ -98,7 +98,7 @@ public class TagCount implements Comparable<TagCount> {
     /**
      * Setter for the field <code>type</code>.
      *
-     * @param type the type to set
+     * @param type NER category to assign to this tag
      */
     public void setType(NERTag.Type type) {
         this.type = type;
@@ -130,7 +130,7 @@ public class TagCount implements Comparable<TagCount> {
     /**
      * Setter for the field <code>references</code>.
      *
-     * @param references the references to set
+     * @param references list of element references to assign
      */
     public void setReferences(List<ElementReference> references) {
         this.references = references;
@@ -177,7 +177,7 @@ public class TagCount implements Comparable<TagCount> {
     /**
      * addReferences.
      *
-     * @param references a {@link java.util.List} object.
+     * @param references element references to add if not already present
      */
     public void addReferences(List<ElementReference> references) {
         for (ElementReference ref : references) {
@@ -187,7 +187,7 @@ public class TagCount implements Comparable<TagCount> {
     }
 
     /**
-     * @param ref
+     * @param ref element reference to add
      */
     private void addReference(ElementReference ref) {
         if (!references.contains(ref)) {

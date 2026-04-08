@@ -84,7 +84,7 @@ public enum RequestType {
     }
 
     /**
-     * Index of the count for this type in {@link RequestType} within {@link SessionUsageStatistics}
+     * Index of the count for this type in {@link RequestType} within {@link SessionUsageStatistics}.
      * 
      * @return the ordinal of the instance
      */
@@ -93,9 +93,9 @@ public enum RequestType {
     }
 
     /**
-     * Get the RequestType for the given index of the count array in {@link RequestType} within {@link SessionUsageStatistics}
+     * Get the RequestType for the given index of the count array in {@link RequestType} within {@link SessionUsageStatistics}.
      * 
-     * @param index
+     * @param index position in the session count array
      * @return the type
      */
     public static RequestType getTypeForSessionCountIndex(int index) {
@@ -106,7 +106,7 @@ public enum RequestType {
     /**
      * Gets the RequestType for the given index of the count array for total count in the SOLR field for the counts of a record identifier.
      * 
-     * @param index
+     * @param index position in the total count array in the Solr field
      * @return the type
      */
     public static RequestType getTypeForTotalCountIndex(int index) {
@@ -117,7 +117,7 @@ public enum RequestType {
     /**
      * Gets the RequestType for the given index of the count array for unique count in the SOLR field for the counts of a record identifier.
      * 
-     * @param index
+     * @param index position in the unique count array in the Solr field
      * @return the type
      */
     public static RequestType getTypeForUniqueCountIndex(int index) {

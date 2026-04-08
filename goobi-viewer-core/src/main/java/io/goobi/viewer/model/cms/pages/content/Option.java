@@ -31,8 +31,8 @@ public class Option implements Serializable {
     private final String label;
 
     /**
-     * @param value
-     * @param label
+     * @param value the option value
+     * @param label the display label
      */
     public Option(String value, String label) {
         super();

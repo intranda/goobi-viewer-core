@@ -34,8 +34,8 @@ public class SuccessMessage implements IResponseMessage {
     /**
      * Creates a new SuccessMessage instance.
      *
-     * @param success a boolean.
-     * @param message a {@link java.lang.String} object.
+     * @param success true if the operation succeeded
+     * @param message human-readable result description
      */
     public SuccessMessage(boolean success, String message) {
         super();
@@ -46,7 +46,7 @@ public class SuccessMessage implements IResponseMessage {
     /**
      * Creates a new SuccessMessage instance.
      *
-     * @param success a boolean.
+     * @param success true if the operation succeeded
      */
     public SuccessMessage(boolean success) {
         super();

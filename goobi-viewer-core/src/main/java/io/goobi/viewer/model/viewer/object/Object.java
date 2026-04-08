@@ -40,7 +40,7 @@ public class Object {
     /**
      * Creates a new Object instance.
      *
-     * @param uri a {@link java.net.URI} object.
+     * @param uri URI pointing to the 3D object resource
      */
     public Object(URI uri) {
         this.uri = uri;
@@ -51,7 +51,7 @@ public class Object {
     /**
      * Creates a new Object instance.
      *
-     * @param uri a {@link java.lang.String} object.
+     * @param uri URI string pointing to the 3D object resource
      * @throws java.net.URISyntaxException if any.
      */
     public Object(String uri) throws URISyntaxException {

@@ -62,8 +62,8 @@ public class SearchQueryGroup implements Serializable {
     /**
      * Creates a new SearchQueryGroup instance.
      *
-     * @param fieldConfigs
-     * @param template
+     * @param fieldConfigs list of advanced search field configurations
+     * @param template search template name to use for initialization
      */
     public SearchQueryGroup(List<AdvancedSearchFieldConfiguration> fieldConfigs, String template) {
         this.template = template;
@@ -72,8 +72,8 @@ public class SearchQueryGroup implements Serializable {
 
     /**
      * 
-     * @param fieldConfigs
-     * @param template
+     * @param fieldConfigs list of advanced search field configurations
+     * @param template search template name to determine available fields
      * @should create and preselect visible fields
      * @should only create allfields item if fieldConfigs null
      */
@@ -122,7 +122,7 @@ public class SearchQueryGroup implements Serializable {
     /**
      * Replaces query items in this group with the given list.
      * 
-     * @param items
+     * @param items list of search query items to inject
      * @should replace existing items with given
      */
     public void injectItems(List<SearchQueryItem> items) {

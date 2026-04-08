@@ -97,13 +97,13 @@ public class RecordsFilesImageResource extends ImageResource {
     private String filename;
 
     /**
-     * @param context
-     * @param request
-     * @param response
-     * @param urls
-     * @param pi
-     * @param filename
-     * @param cacheManager
+     * @param context JAX-RS container request context
+     * @param request incoming HTTP servlet request
+     * @param response outgoing HTTP servlet response
+     * @param urls API URL manager for building resource URIs
+     * @param pi persistent identifier of the record
+     * @param filename filename of the image file
+     * @param cacheManager content server cache manager
      */
     public RecordsFilesImageResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
@@ -263,6 +263,9 @@ public class RecordsFilesImageResource extends ImageResource {
      * if the PI contains characters that are illegal in java.net.URI paths or Solr queries.
      *
      * <p>Declared static so it can be invoked inside the super() constructor call.
+     *
+     * @param pi persistent identifier to validate
+     * @return the unchanged pi if valid
      */
     static String requireValidPi(String pi) {
         if (!PIValidator.validatePi(pi)) {

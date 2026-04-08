@@ -70,8 +70,9 @@ import io.goobi.viewer.solr.SolrConstants;
 /**
  * Replace variable expression denoted by <code>{variable-name}</code> in strings. Possible variables are those listed in {@link ReplacerVariables} or
  * any SOLR fields (partially listed in {@link SolrConstants}). Values may be taken from configuration and/or solr-derived documents passed in
- * construction of the VariableReplacer instance </br>
- * Variables may have more than one value, typically for multivalued metadata fields, for this reason, in general a list of replaced strings is
+ * construction of the VariableReplacer instance.
+ *
+ * <p>Variables may have more than one value, typically for multivalued metadata fields, for this reason, in general a list of replaced strings is
  * returned, with one element for each replacement value
  */
 public class VariableReplacer {
@@ -84,8 +85,8 @@ public class VariableReplacer {
 
     /**
      * Take variable values from current struct element and page of the given navigationHelper.
-     * 
-     * @param viewManager
+     *
+     * @param viewManager view manager providing the current record context
      * @throws IndexUnreachableException
      */
     public VariableReplacer(ViewManager viewManager) throws IndexUnreachableException {
@@ -97,11 +98,11 @@ public class VariableReplacer {
      * Take variable values from the given config and structure elements. Any passed objects may be null, in which case the associated values won't be
      * replaced
      * 
-     * @param config
-     * @param anchor
-     * @param topStruct
-     * @param structElement
-     * @param page
+     * @param config application configuration providing config-namespace variable values
+     * @param anchor anchor structure element providing anchor-namespace variable values
+     * @param topStruct top structure element providing record-namespace variable values
+     * @param structElement current structure element providing struct-namespace variable values
+     * @param page current physical page providing page-namespace variable values
      */
     public VariableReplacer(Configuration config, StructElementStub anchor, StructElementStub topStruct, StructElementStub structElement,
             PhysicalElement page) {
@@ -122,8 +123,8 @@ public class VariableReplacer {
 
     /**
      * Specifically replace the variables defined in the given replacement map.
-     * 
-     * @param replacementsMap
+     *
+     * @param replacementsMap namespace-keyed map of variable name to replacement value lists
      */
     public VariableReplacer(Map<String, Map<String, List<String>>> replacementsMap) {
         super();
@@ -132,8 +133,8 @@ public class VariableReplacer {
 
     /**
      * Only replace configuration variables.
-     * 
-     * @param configuration
+     *
+     * @param configuration application configuration providing config-namespace variable values
      */
     public VariableReplacer(Configuration configuration) {
         this(configuration, null, null, null, null);
@@ -141,8 +142,8 @@ public class VariableReplacer {
 
     /**
      * Take variable values from global configuration and the given struct element.
-     * 
-     * @param struct
+     *
+     * @param struct structure element providing variable values for replacement
      */
     public VariableReplacer(StructElementStub struct) {
         this(DataManager.getInstance().getConfiguration(), null, struct, null, null);
@@ -150,8 +151,8 @@ public class VariableReplacer {
 
     /**
      * Replace variables in the given template string. The first element in the returned list will use the first replacement value and so on
-     * 
-     * @param template
+     *
+     * @param template string containing variable placeholders to replace
      * @return A list of strings
      */
     public List<String> replace(String template) {
@@ -166,8 +167,8 @@ public class VariableReplacer {
 
     /**
      * Returns a single string which only uses the first replacement values for each variable if there is more than one.
-     * 
-     * @param template
+     *
+     * @param template string containing variable placeholders to replace
      * @return the string with replaced variables
      */
     public String replaceFirst(String template) {
@@ -176,9 +177,9 @@ public class VariableReplacer {
 
     /**
      * Concatenate all returned strings of {@link #replace(String)}, separated by the given separator.
-     * 
-     * @param template
-     * @param separator
+     *
+     * @param template string containing variable placeholders to replace
+     * @param separator string to place between each replaced result
      * @return The concatenated strings with replaced variables
      */
     public String replaceAll(String template, String separator) {
@@ -187,9 +188,9 @@ public class VariableReplacer {
 
     /**
      * Adds a custom replacement variable.
-     * 
-     * @param s
-     * @param value
+     *
+     * @param s variable placeholder name to register for replacement
+     * @param value replacement value to use for the given variable
      */
     public void addReplacement(String s, String value) {
         Map<String, List<String>> map = this.replacementsMap.computeIfAbsent("custom", key -> new HashMap<String, List<String>>());
@@ -198,8 +199,8 @@ public class VariableReplacer {
 
     /**
      * Return a new {@link Metadata} object with the replaced values of the given metadata object as values.
-     * 
-     * @param metadata
+     *
+     * @param metadata source metadata object whose value string is used as template
      * @return a new metadata object
      */
     public Metadata replace(Metadata metadata) {
@@ -208,8 +209,8 @@ public class VariableReplacer {
 
     /**
      * Return a new {@link IMetadataValue} object with the replaced values of the given object as values.
-     * 
-     * @param value
+     *
+     * @param value source metadata value whose content strings are used as templates
      * @return a new IMetadata value
      */
     public IMetadataValue replace(IMetadataValue value) {

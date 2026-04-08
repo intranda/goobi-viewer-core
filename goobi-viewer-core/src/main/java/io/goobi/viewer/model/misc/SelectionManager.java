@@ -42,7 +42,7 @@ public class SelectionManager<T> implements Map<T, Boolean> {
     private boolean selectAll = false;
 
     /**
-     * @param allEntries
+     * @param allEntries initial list of items to manage selection for
      */
     public SelectionManager(List<T> allEntries) {
         this.selectionMap = allEntries.stream().collect(Collectors.toMap(t -> t, t -> false));

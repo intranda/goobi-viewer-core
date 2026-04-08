@@ -36,9 +36,9 @@ public class CalendarItemWeek extends AbstractCalendarItem implements Serializab
     /**
      * Creates a new CalendarItemWeek instance.
      *
-     * @param name a {@link java.lang.String} object.
-     * @param value a int.
-     * @param hits a int.
+     * @param name display label for the week
+     * @param value numeric week-of-year value
+     * @param hits number of records found for this week
      */
     public CalendarItemWeek(String name, int value, int hits) {
         super(name, value, hits);
@@ -56,7 +56,7 @@ public class CalendarItemWeek extends AbstractCalendarItem implements Serializab
     /**
      * Setter for the field <code>daysOfWeek</code>.
      *
-     * @param daysOfWeek a {@link java.util.List} object.
+     * @param daysOfWeek list of daily calendar items for this week
      */
     public void setDaysOfWeek(List<CalendarItemDay> daysOfWeek) {
         this.daysOfWeek = daysOfWeek;
@@ -65,7 +65,7 @@ public class CalendarItemWeek extends AbstractCalendarItem implements Serializab
     /**
      * addDay.
      *
-     * @param day a {@link io.goobi.viewer.model.calendar.CalendarItemDay} object.
+     * @param day daily calendar item to append to this week
      */
     public void addDay(CalendarItemDay day) {
         daysOfWeek.add(day);

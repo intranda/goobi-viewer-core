@@ -169,10 +169,10 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
 
     /**
      * 
-     * @param urls
-     * @param tags
-     * @param imagesPerView
-     * @param priorityImagesPerView
+     * @param urls API URL manager for path construction
+     * @param tags comma-separated category tags to filter media items
+     * @param imagesPerView maximum number of images to display per view
+     * @param priorityImagesPerView number of priority/important images per view
      * @return Generated URL
      */
     private static String buildTilegridUrl(AbstractApiUrlManager urls, final String tags, int imagesPerView, int priorityImagesPerView) {

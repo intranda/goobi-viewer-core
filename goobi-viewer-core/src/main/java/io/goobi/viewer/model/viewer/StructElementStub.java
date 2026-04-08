@@ -74,7 +74,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     protected boolean volume = false;
     /** True if this element represents a CMS page. */
     protected boolean cmsPage = false;
-    /** Number of contained volumes (anchors only) */
+    /** Number of contained volumes (anchors only). */
     protected long numVolumes = 0;
     /** Volume label of this element (only for records that are part of a multi-volume record). */
     protected String volumeNo = null;
@@ -103,7 +103,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Creates a new StructElementStub instance.
      *
-     * @param luceneId a long.
+     * @param luceneId IDDOC of the Solr document for this element
      */
     public StructElementStub(String luceneId) {
         this.luceneId = luceneId;
@@ -381,7 +381,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * getUrl.
      *
-     * @param pageTypeName a {@link java.lang.String} object.
+     * @param pageTypeName name of the target page type
      * @return a {@link java.lang.String} object.
      */
     public String getUrl(String pageTypeName) {
@@ -395,7 +395,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * getUrl.
      *
-     * @param pageType a {@link io.goobi.viewer.model.viewer.PageType} object.
+     * @param pageType target viewer page type
      * @return a {@link java.lang.String} object.
      */
     public String getUrl(final PageType pageType) {
@@ -470,7 +470,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Setter for the field <code>partnerId</code>.
      *
-     * @param partnerId a {@link java.lang.String} object.
+     * @param partnerId identifier of the partner institution
      */
     public void setPartnerId(String partnerId) {
         this.partnerId = partnerId;
@@ -507,7 +507,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Returns a language specific version of MD_TITLE, if available. If not available or if locale is null, the regular label is returned.
      *
-     * @param language a {@link java.lang.String} object.
+     * @param language ISO 639-1 language code, or null for default label
      * @return Locale-specific version of MD_TITLE if requested and found; label otherwise
      * @should return locale specific title if so requested
      * @should return label if no locale specific title found
@@ -609,7 +609,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Returns all metadata values for the given field name.
      *
-     * @param fieldName Field Name of Lucene
+     * @param fieldName Solr field name to look up
      * @return a {@link java.util.List} object.
      */
     public List<String> getMetadataValues(String fieldName) {
@@ -624,9 +624,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * Generates a ContextObject (for a COinS <span> element) containing metadata from this <code>StructElement</code>.
+     * Generates a ContextObject (for a COinS &lt;span&gt; element) containing metadata from this <code>StructElement</code>.
      *
-     * @param currentUrl a {@link java.lang.String} object.
+     * @param currentUrl URL of the current page, appended as rft.id
      * @param topStruct StructElementStub representing the top structure element.
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -702,7 +702,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * getMultiLanguageMetadataValue.
      *
-     * @param fieldName a {@link java.lang.String} object.
+     * @param fieldName Solr field name to retrieve values for
      * @return a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
      */
     public IMetadataValue getMultiLanguageMetadataValue(String fieldName) {
@@ -732,10 +732,10 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * getKEVForField.
      *
-     * @param se a {@link io.goobi.viewer.model.viewer.StructElementStub} object.
-     * @param solrField a {@link java.lang.String} object.
-     * @param targetField a {@link java.lang.String} object.
-     * @param prefix a {@link java.lang.String} object.
+     * @param se struct element to read the field value from
+     * @param solrField Solr source field name to read
+     * @param targetField KEV key name in the output string
+     * @param prefix string to prepend before the key-value pair
      * @return a {@link java.lang.String} object.
      */
     public static String getKEVForField(StructElementStub se, String solrField, String targetField, String prefix) {

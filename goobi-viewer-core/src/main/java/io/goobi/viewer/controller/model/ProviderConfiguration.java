@@ -47,8 +47,8 @@ public class ProviderConfiguration {
 
     /**
      * 
-     * @param uri
-     * @param label
+     * @param uri URI of the provider
+     * @param label display label of the provider
      * @throws PresentationException
      */
     public ProviderConfiguration(String uri, String label) throws PresentationException {
@@ -64,7 +64,7 @@ public class ProviderConfiguration {
 
     /**
      * 
-     * @param config
+     * @param config XML configuration node for the provider
      * @throws PresentationException
      */
     public ProviderConfiguration(HierarchicalConfiguration<ImmutableNode> config) throws PresentationException {
@@ -73,8 +73,8 @@ public class ProviderConfiguration {
 
     /**
      * 
-     * @param config
-     * @param vr
+     * @param config XML configuration node for the provider
+     * @param vr variable replacer for resolving placeholders in config values
      * @throws PresentationException
      */
     public ProviderConfiguration(HierarchicalConfiguration<ImmutableNode> config, VariableReplacer vr) throws PresentationException {

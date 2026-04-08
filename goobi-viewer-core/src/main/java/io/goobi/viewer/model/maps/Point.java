@@ -34,8 +34,8 @@ public class Point implements IArea {
     /**
      * First longitide in eastern direction, then latitude in northern direction.
      * 
-     * @param lng
-     * @param lat
+     * @param lng longitude in eastern direction
+     * @param lat latitude in northern direction
      */
     public Point(double lng, double lat) {
         this.lng = lng;

@@ -37,8 +37,8 @@ public class StringPair implements Comparable<StringPair>, Serializable {
     /**
      * Creates a new StringPair instance.
      *
-     * @param one a {@link java.lang.String} object.
-     * @param two a {@link java.lang.String} object.
+     * @param one first element of the pair
+     * @param two second element of the pair (used for sorting)
      */
     public StringPair(String one, String two) {
         //        if (one == null || two == null) {

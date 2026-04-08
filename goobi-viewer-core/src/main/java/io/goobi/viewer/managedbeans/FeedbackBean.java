@@ -111,7 +111,7 @@ public class FeedbackBean implements Serializable {
     /**
      * submitFeedbackAction.
      *
-     * @param setCurrentUrl
+     * @param setCurrentUrl if true, uses the current URL as feedback URL; otherwise uses the referrer
      * @return a {@link java.lang.String} object.
      */
     public String submitFeedbackAction(boolean setCurrentUrl) {

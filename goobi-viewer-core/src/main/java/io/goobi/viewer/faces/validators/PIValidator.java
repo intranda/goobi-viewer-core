@@ -38,7 +38,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 @FacesValidator("piValidator")
 public class PIValidator implements Validator<String> {
 
-    /** Constant <code>ILLEGAL_CHARS</code> */
+    /** Constant <code>ILLEGAL_CHARS</code>. */
     // Blocklist of characters not permitted in persistent identifiers.
     // Colons are excluded because they are structurally significant in Solr query syntax
     // (FIELD:value) and must not appear unescaped in PI values used in queries.
@@ -68,7 +68,7 @@ public class PIValidator implements Validator<String> {
     /**
      * validatePi.
      *
-     * @param pi a {@link java.lang.String} object.
+     * @param pi persistent identifier string to validate for syntax
      * @should return true if pi good
      * @should return false if pi empty, blank or null
      * @should return false if pi contains illegal characters

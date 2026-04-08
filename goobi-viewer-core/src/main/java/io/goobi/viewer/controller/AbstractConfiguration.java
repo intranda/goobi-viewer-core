@@ -92,8 +92,8 @@ public abstract class AbstractConfiguration {
     /**
      * getLocalInt.
      *
-     * @param inPath a {@link java.lang.String} object.
-     * @param inDefault a int.
+     * @param inPath XML configuration path to look up
+     * @param inDefault fallback value if path is not configured
      * @return a int.
      */
     protected int getLocalInt(String inPath, int inDefault) {
@@ -111,7 +111,7 @@ public abstract class AbstractConfiguration {
     /**
      * getLocalFloat.
      *
-     * @param inPath a {@link java.lang.String} object.
+     * @param inPath XML configuration path to look up
      * @return a float.
      */
     protected float getLocalFloat(String inPath) {
@@ -121,8 +121,8 @@ public abstract class AbstractConfiguration {
     /**
      * getLocalFloat.
      *
-     * @param inPath a {@link java.lang.String} object.
-     * @param inDefault a float.
+     * @param inPath XML configuration path to look up
+     * @param inDefault fallback value if path is not configured
      * @return a float.
      */
     protected float getLocalFloat(String inPath, float inDefault) {
@@ -140,8 +140,8 @@ public abstract class AbstractConfiguration {
     /**
      * getLocalString.
      *
-     * @param inPath a {@link java.lang.String} object.
-     * @param inDefault a {@link java.lang.String} object.
+     * @param inPath XML configuration path to look up
+     * @param inDefault fallback value if path is not configured
      * @return a {@link java.lang.String} object.
      */
     protected String getLocalString(String inPath, String inDefault) {
@@ -156,7 +156,7 @@ public abstract class AbstractConfiguration {
     /**
      * getLocalString.
      *
-     * @param inPath a {@link java.lang.String} object.
+     * @param inPath XML configuration path to look up
      * @return a {@link java.lang.String} object.
      */
     protected String getLocalString(String inPath) {
@@ -166,7 +166,7 @@ public abstract class AbstractConfiguration {
     /**
      * getLocalNodeList.
      *
-     * @param inPath a {@link java.lang.String} object.
+     * @param inPath XML configuration path to look up
      * @return a {@link java.util.List} object.
      */
     protected List<Object> getLocalNodeList(String inPath) {
@@ -211,8 +211,8 @@ public abstract class AbstractConfiguration {
     /**
      * getLocalList.
      *
-     * @param inPath a {@link java.lang.String} object.
-     * @param defaultList a {@link java.util.List} object.
+     * @param inPath XML configuration path to look up
+     * @param defaultList fallback list if path is not configured
      * @return configured list; defaultList if none found
      */
     protected List<String> getLocalList(String inPath, List<String> defaultList) {
@@ -222,7 +222,7 @@ public abstract class AbstractConfiguration {
     /**
      * getLocalList.
      *
-     * @param inPath a {@link java.lang.String} object.
+     * @param inPath XML configuration path to look up
      * @return configured list; empty list if none found
      */
     protected List<String> getLocalList(String inPath) {
@@ -232,8 +232,8 @@ public abstract class AbstractConfiguration {
     /**
      * getLocalBoolean.
      *
-     * @param inPath a {@link java.lang.String} object.
-     * @param inDefault a boolean.
+     * @param inPath XML configuration path to look up
+     * @param inDefault fallback value if path is not configured
      * @return a boolean.
      */
     protected boolean getLocalBoolean(String inPath, boolean inDefault) {
@@ -247,9 +247,9 @@ public abstract class AbstractConfiguration {
 
     /**
      *
-     * @param config
-     * @param altConfig
-     * @param inPath
+     * @param config the primary configuration to query
+     * @param altConfig the fallback configuration used when config yields no results
+     * @param inPath the XPath path to look up in the configuration
      * @return List&lt;HierarchicalConfiguration&lt;ImmutableNode&gt;&gt;
      */
     protected static List<HierarchicalConfiguration<ImmutableNode>> getLocalConfigurationsAt(HierarchicalConfiguration<ImmutableNode> config,
@@ -269,7 +269,7 @@ public abstract class AbstractConfiguration {
     /**
      * getLocalConfigurationsAt.
      *
-     * @param inPath a {@link java.lang.String} object.
+     * @param inPath XML configuration path to look up
      * @return a {@link java.util.List} object.
      */
     protected List<HierarchicalConfiguration<ImmutableNode>> getLocalConfigurationsAt(String inPath) {
@@ -277,7 +277,7 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * Gathers all configuration nodes from both the local and global config, local first
+     * Gathers all configuration nodes from both the local and global config, local first.
      * 
      * @param inPath the configuration path
      * @return A list of all found configurations ath 'inPath'
@@ -295,7 +295,7 @@ public abstract class AbstractConfiguration {
     /**
      * getLocalConfigurationAt.
      *
-     * @param inPath a {@link java.lang.String} object.
+     * @param inPath XML configuration path to look up
      * @return a {@link org.apache.commons.configuration2.HierarchicalConfiguration} object.
      */
     protected HierarchicalConfiguration<ImmutableNode> getLocalConfigurationAt(String inPath) {

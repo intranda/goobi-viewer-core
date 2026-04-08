@@ -468,12 +468,12 @@ public class IdentifierResolver extends HttpServlet {
     }
 
     /**
-     * 
-     * @param fieldName
-     * @param fieldValue
-     * @param moreFields
-     * @param moreValues
-     * @param request
+     *
+     * @param fieldName Solr field name to search in
+     * @param fieldValue value to match in the given field
+     * @param moreFields additional field names indexed by position number
+     * @param moreValues additional field values indexed by position number
+     * @param request current HTTP request used to append access suffixes
      * @return {@link SolrDocumentList}
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -511,10 +511,10 @@ public class IdentifierResolver extends HttpServlet {
 
     /**
      *
-     * @param code
-     * @param identifier
-     * @param request
-     * @param response
+     * @param code HTTP status code to set on the response
+     * @param identifier the resolved identifier used in the error message
+     * @param request current HTTP request
+     * @param response current HTTP response
      * @throws IOException
      * @throws ServletException
      */
@@ -574,9 +574,9 @@ public class IdentifierResolver extends HttpServlet {
 
     /**
      *
-     * @param targetDoc
-     * @param pageResolverUrl
-     * @param order
+     * @param targetDoc Solr document of the resolved record
+     * @param pageResolverUrl if true, build a page-level URL; otherwise a work-level URL
+     * @param order page order number to include in the URL
      * @return Generated URL
      * @should construct url correctly
      * @should construct anchor url correctly

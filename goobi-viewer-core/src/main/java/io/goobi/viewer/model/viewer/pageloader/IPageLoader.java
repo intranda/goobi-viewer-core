@@ -59,7 +59,7 @@ public interface IPageLoader extends Serializable {
     /**
      * getPage.
      *
-     * @param pageOrder a int.
+     * @param pageOrder physical page order number (1-based)
      * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -69,7 +69,7 @@ public interface IPageLoader extends Serializable {
     /**
      * getPageForFileName.
      *
-     * @param fileName a {@link java.lang.String} object.
+     * @param fileName base file name of the page to look up
      * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -80,7 +80,7 @@ public interface IPageLoader extends Serializable {
     /**
      * getOwnerIddocForPage.
      *
-     * @param pageOrder a int.
+     * @param pageOrder physical page order number to look up
      * @return a {@link java.lang.Long} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -92,9 +92,9 @@ public interface IPageLoader extends Serializable {
      *
      * @param dropdownPages Image view drop-down item
      * @param dropdownFulltext Full-text view drop-down item list
-     * @param urlRoot a {@link java.lang.String} object.
-     * @param locale a {@link java.util.Locale} object.
-     * @param recordBelowFulltextThreshold a boolean.
+     * @param urlRoot base URL prepended to page navigation links
+     * @param locale locale used for page label translations
+     * @param recordBelowFulltextThreshold true if fulltext availability is below the configured threshold
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public void generateSelectItems(List<SelectPageItem> dropdownPages, List<SelectPageItem> dropdownFulltext, String urlRoot,

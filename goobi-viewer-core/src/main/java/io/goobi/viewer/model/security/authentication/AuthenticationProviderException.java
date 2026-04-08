@@ -22,7 +22,7 @@
 package io.goobi.viewer.model.security.authentication;
 
 /**
- * An exception indicating that an error occured when trying to authenticate a user. This should only be used if an internal error occured or the
+ * An exception indicating that an error occurred when trying to authenticate a user. This should only be used if an internal error occurred or the
  * request could not be processed. Ordinary login refusal should not be handled with exceptions
  *
  * @author Florian Alpers
@@ -44,10 +44,10 @@ public class AuthenticationProviderException extends Exception {
     /**
      * Creates a new AuthenticationProviderException instance.
      *
-     * @param arg0 a {@link java.lang.String} object.
-     * @param arg1 a {@link java.lang.Throwable} object.
-     * @param arg2 a boolean.
-     * @param arg3 a boolean.
+     * @param arg0 human-readable error description
+     * @param arg1 underlying exception that triggered this error
+     * @param arg2 whether suppression is enabled
+     * @param arg3 whether the stack trace is writable
      */
     public AuthenticationProviderException(String arg0, Throwable arg1, boolean arg2, boolean arg3) {
         super(arg0, arg1, arg2, arg3);
@@ -57,8 +57,8 @@ public class AuthenticationProviderException extends Exception {
     /**
      * Creates a new AuthenticationProviderException instance.
      *
-     * @param arg0 a {@link java.lang.String} object.
-     * @param arg1 a {@link java.lang.Throwable} object.
+     * @param arg0 human-readable error description
+     * @param arg1 underlying exception that triggered this error
      */
     public AuthenticationProviderException(String arg0, Throwable arg1) {
         super(arg0, arg1);
@@ -68,7 +68,7 @@ public class AuthenticationProviderException extends Exception {
     /**
      * Creates a new AuthenticationProviderException instance.
      *
-     * @param arg0 a {@link java.lang.String} object.
+     * @param arg0 human-readable error description
      */
     public AuthenticationProviderException(String arg0) {
         super(arg0);
@@ -78,7 +78,7 @@ public class AuthenticationProviderException extends Exception {
     /**
      * Creates a new AuthenticationProviderException instance.
      *
-     * @param arg0 a {@link java.lang.Throwable} object.
+     * @param arg0 underlying exception that triggered this error
      */
     public AuthenticationProviderException(Throwable arg0) {
         super(arg0);

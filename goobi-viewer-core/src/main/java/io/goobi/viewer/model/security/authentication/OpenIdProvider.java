@@ -67,7 +67,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
 
     private static final Logger logger = LogManager.getLogger(OpenIdProvider.class);
 
-    /** Constant <code>TYPE_OPENID="openId"</code> */
+    /** Constant <code>TYPE_OPENID="openId"</code>. */
     public static final String TYPE_OPENID = "openId";
 
     /** Reusable Random object. */
@@ -114,13 +114,13 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     /**
      * Creates a new OpenIdProvider instance.
      *
-     * @param name a {@link java.lang.String} object.
-     * @param label a {@link java.lang.String} object.
-     * @param url a {@link java.lang.String} object.
-     * @param image a {@link java.lang.String} object.
-     * @param timeoutMillis a long.
-     * @param clientId a {@link java.lang.String} object.
-     * @param clientSecret a {@link java.lang.String} object.
+     * @param name unique internal name identifying this provider
+     * @param label display label shown in the UI
+     * @param url authorization endpoint URL of the provider
+     * @param image URL or path to the provider's logo image
+     * @param timeoutMillis login response wait timeout in milliseconds
+     * @param clientId OAuth client ID registered with the provider
+     * @param clientSecret OAuth client secret for token exchange
      */
     public OpenIdProvider(String name, String label, String url, String image, long timeoutMillis, String clientId, String clientSecret) {
         super(name, label, TYPE_OPENID, url, image, timeoutMillis);
@@ -194,13 +194,13 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
      * Tries to find or create a valid {@link io.goobi.viewer.model.security.user.User} based on the given json object. Generates a
      * {@link io.goobi.viewer.model.security.authentication.LoginResult} containing the given request and response and either an optional containing
      * the user or nothing if no user was found, or a {@link io.goobi.viewer.model.security.authentication.AuthenticationProviderException} if an
-     * internal error occured during login If this method is not called within {@link #getTimeoutMillis()} ms after calling
+     * internal error occurred during login If this method is not called within {@link #getTimeoutMillis()} ms after calling
      * {@link #login(String, String)}, a loginResponse is created containing an appropriate exception. In any case, the future returned by
      * {@link #login(String, String)} is resolved.
      *
-     * @param jwt {@link DecodedJWT}
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
+     * @param jwt decoded JWT token received from the OAuth callback
+     * @param request incoming HTTP request from the OAuth redirect
+     * @param response HTTP response for the OAuth callback
      * @return a {@link java.util.concurrent.Future} object.
      */
     public Future<Boolean> completeLogin(DecodedJWT jwt, HttpServletRequest request, HttpServletResponse response) {

@@ -48,9 +48,9 @@ public class BrowsingMenuFieldConfig implements Serializable {
     /**
      * Constructor.
      *
-     * @param field a {@link java.lang.String} object.
-     * @param sortField a {@link java.lang.String} object.
-     * @param filterQuery a {@link java.lang.String} object.
+     * @param field Solr field name to browse.
+     * @param sortField Solr field used for sorting the terms.
+     * @param filterQuery optional Solr filter query to restrict results.
      * @should add doctype filter if field MD or MD2
      */
     public BrowsingMenuFieldConfig(String field, String sortField, String filterQuery) {
@@ -100,7 +100,7 @@ public class BrowsingMenuFieldConfig implements Serializable {
 
     /**
      * 
-     * @param language
+     * @param language the language code to substitute into the field name
      * @return Language specific variant of field if it contains a placeholder; otherwise unaltered field
      */
     public String getFieldForLanguage(String language) {
@@ -186,7 +186,7 @@ public class BrowsingMenuFieldConfig implements Serializable {
 
     /**
      *
-     * @param recordsAndAnchorsOnly
+     * @param recordsAndAnchorsOnly if true, adds a filter query restricting results to records and anchors only
      * @return this
      * @should create filter query correctly
      */

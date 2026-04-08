@@ -48,7 +48,7 @@ public interface IAuthenticationProvider {
      *
      * @param password A string to be used as a password or similar for login. If the provider does not require such a string, this can be left empty
      *            or null
-     * @param loginName a {@link java.lang.String} object.
+     * @param loginName login name or identifier supplied by the user
      * @return A {@link java.util.concurrent.CompletableFuture} which is resolved once login is completed and contains a
      *         {@link io.goobi.viewer.model.security.authentication.LoginResult}
      * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException if any.
@@ -95,14 +95,14 @@ public interface IAuthenticationProvider {
     /**
      * getAddUserToGroups.
      *
-     * @return a {@link java.util.List} object.
+     * @return list of group names to add the user to on login
      */
     public List<String> getAddUserToGroups();
 
     /**
      * setAddUserToGroups.
      *
-     * @param addUserToGroups a {@link java.util.List} object.
+     * @param addUserToGroups group names to assign new or returning users to
      */
     public void setAddUserToGroups(List<String> addUserToGroups);
 

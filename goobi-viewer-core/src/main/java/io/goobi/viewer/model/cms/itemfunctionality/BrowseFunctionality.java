@@ -39,7 +39,7 @@ public class BrowseFunctionality implements Functionality {
     private String browseField = "";
 
     /**
-     * @param field
+     * @param field Solr field to browse
      */
     public BrowseFunctionality(String field) {
         setBrowseField(field);
@@ -64,7 +64,7 @@ public class BrowseFunctionality implements Functionality {
     /**
      * Sets the SOLR field which to browse to create the list.
      *
-     * @param field
+     * @param field Solr field to browse for list creation
      */
     public void setBrowseField(String field) {
         this.browseField = field;
@@ -82,8 +82,8 @@ public class BrowseFunctionality implements Functionality {
     /**
      * Sets an additional filter to restrict the list to a subset of all records.
      *
-     * @param field
-     * @param value
+     * @param field Solr field name to filter by
+     * @param value field value to restrict results to
      */
     public void setFilter(String field, String value) {
         if (StringUtils.isNoneBlank(field, value)) {
@@ -96,7 +96,7 @@ public class BrowseFunctionality implements Functionality {
     /**
      * Sets the start character for which results should be displayed.
      *
-     * @param start
+     * @param start starting character to filter browse results by
      */
     public void setStartingCharacter(String start) {
         bean.setCurrentStringFilter(start);

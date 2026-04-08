@@ -114,7 +114,7 @@ public interface IModule extends IndexAugmenter {
     /**
      * Generic widget URLs than can be used from virtually anywhere. The URLs are configured in the config file.
      *
-     * @param type a {@link java.lang.String} object.
+     * @param type widget type identifier from configuration
      * @return a {@link java.util.List} object.
      */
     public List<String> getWidgets(String type);

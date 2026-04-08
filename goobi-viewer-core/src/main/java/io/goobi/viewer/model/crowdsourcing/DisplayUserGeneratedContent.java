@@ -93,7 +93,7 @@ public class DisplayUserGeneratedContent {
     }
 
     private static final Logger logger = LogManager.getLogger(DisplayUserGeneratedContent.class);
-    /** Constant <code>format</code> */
+    /** Constant <code>format</code>. */
     public static final NumberFormat FORMAT = new DecimalFormat("00000000");
 
     private Long id;
@@ -178,7 +178,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Setter for the field <code>id</code>.
      *
-     * @param id a {@link java.lang.Long} object.
+     * @param id database primary key to set
      */
     public void setId(Long id) {
         this.id = id;
@@ -434,7 +434,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Setter for the field <code>displayCoordinates</code>.
      *
-     * @param displayCoordinates a {@link java.lang.String} object.
+     * @param displayCoordinates coordinate string for UI rendering
      */
     public void setDisplayCoordinates(String displayCoordinates) {
         this.displayCoordinates = displayCoordinates;
@@ -444,7 +444,7 @@ public class DisplayUserGeneratedContent {
      * @see io.goobi.viewer.model.crowdsourcing.AbstractCrowdsourcingUpdate#getDisplayPage()
      */
     /**
-     * Alias for {@link #getPage()}
+     * Alias for {@link #getPage()}.
      *
      * @return a {@link java.lang.Integer} object.
      */
@@ -544,7 +544,7 @@ public class DisplayUserGeneratedContent {
     /**
      * buildFromSolrDoc.
      *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param doc Solr document containing UGC field values
      * @return UserGeneratedContent generated from the given Solr document
      * @should construct content correctly
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -597,8 +597,8 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * @param type
-     * @param body
+     * @param type content type of the annotation
+     * @param body annotation body resource to extract text from
      * @return the text if the body is a TextualResource. Otherwise return null
      */
     private static String createExtendedLabelFromBody(ContentType type, ITypedResource body) {
@@ -610,8 +610,8 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * @param type
-     * @param body
+     * @param type content type of the annotation
+     * @param body annotation body resource to extract the label from
      * @return {@link String}
      */
     private static String createLabelFromBody(ContentType type, ITypedResource body) {
@@ -635,7 +635,7 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * @param body
+     * @param body annotation body resource containing the dataset JSON
      * @return {@link String}
      */
     private static String getDataSetForDisplay(ITypedResource body) {
@@ -654,8 +654,8 @@ public class DisplayUserGeneratedContent {
 
     /**
      * If the annotation body has a type property of one of "Feature", "AuthorityResource" or "TextualBody" then the {@link #type} is set accordingly.
-     * 
-     * @param body
+     *
+     * @param body annotation body resource whose type property is inspected
      * @return {@link ContentType}
      */
     private static ContentType getTypeFromBody(ITypedResource body) {
@@ -679,7 +679,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Builds label out of user-generated content metadata.
      *
-     * @param se a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param se struct element containing UGC type and metadata fields
      * @return the generated label
      * @should generate person label correctly
      * @should generate corporation label correctly
@@ -713,9 +713,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * 
-     * @param se
-     * @param text
+     *
+     * @param se struct element containing address metadata fields
+     * @param text fallback text used when no address fields are present
      * @return {@link String}
      */
     public static String generateAddressLabel(StructElement se, String text) {
@@ -738,9 +738,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * 
-     * @param sb
-     * @param value
+     *
+     * @param sb the string builder to append to
+     * @param value the value to append if non-empty, preceded by a comma separator
      */
     private static void appendIfNotEmpty(StringBuilder sb, String value) {
         if (StringUtils.isNotEmpty(value)) {
@@ -752,8 +752,8 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * 
-     * @param se
+     *
+     * @param se struct element containing corporation metadata fields
      * @return {@link String}
      */
     public static String generateCorporationLabel(StructElement se) {
@@ -827,8 +827,8 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * 
-     * @param pageType
+     *
+     * @param pageType the viewer page type used to build the URL prefix
      * @return Generated URL
      */
     public String getPageUrl(PageType pageType) {

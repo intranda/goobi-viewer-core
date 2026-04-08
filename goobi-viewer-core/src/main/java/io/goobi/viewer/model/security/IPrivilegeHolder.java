@@ -30,85 +30,85 @@ import java.util.Set;
 public interface IPrivilegeHolder {
 
     // Data access privileges
-    /** Constant <code>PREFIX_TICKET="TICKET_"</code> */
+    /** Constant <code>PREFIX_TICKET="TICKET_"</code>. */
     public static final String PREFIX_TICKET = "TICKET_";
-    /** Constant <code>PREFIX_PRIV="PRIV_"</code> */
+    /** Constant <code>PREFIX_PRIV="PRIV_"</code>. */
     public static final String PREFIX_PRIV = "PRIV_";
 
-    /** Constant <code>PRIV_ARCHIVE_DISPLAY_NODE="PRIV_ARCHIVE_DISPLAY_NODE"</code> */
+    /** Constant <code>PRIV_ARCHIVE_DISPLAY_NODE="PRIV_ARCHIVE_DISPLAY_NODE"</code>. */
     public static final String PRIV_ARCHIVE_DISPLAY_NODE = "ARCHIVE_DISPLAY_NODE";
-    /** Constant <code>PRIV_LIST="LIST"</code> */
+    /** Constant <code>PRIV_LIST="LIST"</code>. */
     public static final String PRIV_LIST = "LIST";
-    /** Constant <code>PRIV_VIEW_IMAGES="VIEW_IMAGES"</code> */
+    /** Constant <code>PRIV_VIEW_IMAGES="VIEW_IMAGES"</code>. */
     public static final String PRIV_VIEW_IMAGES = "VIEW_IMAGES";
-    /** Constant <code>PRIV_VIEW_THUMBNAILS="VIEW_THUMBNAILS"</code> */
+    /** Constant <code>PRIV_VIEW_THUMBNAILS="VIEW_THUMBNAILS"</code>. */
     public static final String PRIV_VIEW_THUMBNAILS = "VIEW_THUMBNAILS";
-    /** Constant <code>PRIV_VIEW_FULLTEXT="VIEW_FULLTEXT"</code> */
+    /** Constant <code>PRIV_VIEW_FULLTEXT="VIEW_FULLTEXT"</code>. */
     public static final String PRIV_VIEW_FULLTEXT = "VIEW_FULLTEXT";
-    /** Constant <code>PRIV_VIEW_VIDEO="VIEW_VIDEO"</code> */
+    /** Constant <code>PRIV_VIEW_VIDEO="VIEW_VIDEO"</code>. */
     public static final String PRIV_VIEW_VIDEO = "VIEW_VIDEO";
-    /** Constant <code>PRIV_VIEW_AUDIO="VIEW_AUDIO"</code> */
+    /** Constant <code>PRIV_VIEW_AUDIO="VIEW_AUDIO"</code>. */
     public static final String PRIV_VIEW_AUDIO = "VIEW_AUDIO";
-    /** Constant <code>PRIV_VIEW_UGC="PRIV_VIEW_UGC"</code> */
+    /** Constant <code>PRIV_VIEW_UGC="PRIV_VIEW_UGC"</code>. */
     public static final String PRIV_VIEW_UGC = "VIEW_UGC";
-    /** Constant <code>PRIV_VIEW_CMS="PRIV_VIEW_CMS"</code> */
+    /** Constant <code>PRIV_VIEW_CMS="PRIV_VIEW_CMS"</code>. */
     public static final String PRIV_VIEW_CMS = "VIEW_CMS";
-    /** Constant <code>PRIV_VIEW_UGC="PRIV_VIEW_METADATA"</code> */
+    /** Constant <code>PRIV_VIEW_UGC="PRIV_VIEW_METADATA"</code>. */
     public static final String PRIV_VIEW_METADATA = "VIEW_METADATA";
-    /** Constant <code>PRIV_DOWNLOAD_PDF="DOWNLOAD_PDF"</code> */
+    /** Constant <code>PRIV_DOWNLOAD_PDF="DOWNLOAD_PDF"</code>. */
     public static final String PRIV_DOWNLOAD_PDF = "DOWNLOAD_PDF";
-    /** Constant <code>PRIV_DOWNLOAD_PAGE_PDF="DOWNLOAD_PAGE_PDF"</code> */
+    /** Constant <code>PRIV_DOWNLOAD_PAGE_PDF="DOWNLOAD_PAGE_PDF"</code>. */
     public static final String PRIV_DOWNLOAD_PAGE_PDF = "DOWNLOAD_PAGE_PDF";
-    /** Constant <code>PRIV_DOWNLOAD_ORIGINAL_CONTENT="DOWNLOAD_ORIGINAL_CONTENT"</code> */
+    /** Constant <code>PRIV_DOWNLOAD_ORIGINAL_CONTENT="DOWNLOAD_ORIGINAL_CONTENT"</code>. */
     public static final String PRIV_DOWNLOAD_ORIGINAL_CONTENT = "DOWNLOAD_ORIGINAL_CONTENT";
-    /** Constant <code>PRIV_DOWNLOAD_METADATA="DOWNLOAD_METADATA"</code> */
+    /** Constant <code>PRIV_DOWNLOAD_METADATA="DOWNLOAD_METADATA"</code>. */
     public static final String PRIV_DOWNLOAD_METADATA = "DOWNLOAD_METADATA";
-    /** Constant <code>PRIV_DOWNLOAD_IMAGES="DOWNLOAD_IMAGES"</code> */
+    /** Constant <code>PRIV_DOWNLOAD_IMAGES="DOWNLOAD_IMAGES"</code>. */
     public static final String PRIV_DOWNLOAD_IMAGES = "DOWNLOAD_IMAGES";
     /**
-     * Constant <code>PRIV_GENERATE_IIIF_MANIFEST="GENERATE_IIIF_MANIFEST"</code>
+     * Constant <code>PRIV_GENERATE_IIIF_MANIFEST="GENERATE_IIIF_MANIFEST"</code>.
      * 
      * @deprecated iiif manifests are now always allowed, but individual resources therein may not be, depending on specific privileges
      */
     @Deprecated(since = "25.11")
     public static final String PRIV_GENERATE_IIIF_MANIFEST = "GENERATE_IIIF_MANIFEST";
-    /** Constant <code>PRIV_ZOOM_IMAGES="ZOOM_IMAGES"</code> */
+    /** Constant <code>PRIV_ZOOM_IMAGES="ZOOM_IMAGES"</code>. */
     public static final String PRIV_ZOOM_IMAGES = "ZOOM_IMAGES";
-    /** Constant <code>PRIV_DOWNLOAD_BORN_DIGITAL_FILES="DOWNLOAD_BORN_DIGITAL_FILES"</code> */
+    /** Constant <code>PRIV_DOWNLOAD_BORN_DIGITAL_FILES="DOWNLOAD_BORN_DIGITAL_FILES"</code>. */
     public static final String PRIV_DOWNLOAD_BORN_DIGITAL_FILES = "DOWNLOAD_BORN_DIGITAL_FILES";
 
     // Role privileges
-    /** Constant <code>PRIV_DELETE_OCR_PAGE="DELETE_OCR_PAGE"</code> */
+    /** Constant <code>PRIV_DELETE_OCR_PAGE="DELETE_OCR_PAGE"</code>. */
     public static final String PRIV_DELETE_OCR_PAGE = "DELETE_OCR_PAGE";
-    /** Constant <code>PRIV_SET_REPRESENTATIVE_IMAGE="SET_REPRESENTATIVE_IMAGE"</code> */
+    /** Constant <code>PRIV_SET_REPRESENTATIVE_IMAGE="SET_REPRESENTATIVE_IMAGE"</code>. */
     public static final String PRIV_SET_REPRESENTATIVE_IMAGE = "SET_REPRESENTATIVE_IMAGE";
 
     // CMS privileges
-    /** Constant <code>PRIV_CMS_PAGES="CMS_PAGES"</code> */
+    /** Constant <code>PRIV_CMS_PAGES="CMS_PAGES"</code>. */
     public static final String PRIV_CMS_PAGES = "CMS_PAGES";
-    /** Constant <code>PRIV_CMS_PAGES="PRIV_LEGAL_DISCLAIMER"</code> */
+    /** Constant <code>PRIV_CMS_PAGES="PRIV_LEGAL_DISCLAIMER"</code>. */
     public static final String PRIV_LEGAL_DISCLAIMER = "PRIV_LEGAL_DISCLAIMER";
-    /** Constant <code>PRIV_CMS_ALL_SUBTHEMES="CMS_ALL_SUBTHEMES"</code> */
+    /** Constant <code>PRIV_CMS_ALL_SUBTHEMES="CMS_ALL_SUBTHEMES"</code>. */
     public static final String PRIV_CMS_ALL_SUBTHEMES = "CMS_ALL_SUBTHEMES";
-    /** Constant <code>PRIV_CMS_ALL_CATEGORIES="CMS_ALL_CATEGORIES"</code> */
+    /** Constant <code>PRIV_CMS_ALL_CATEGORIES="CMS_ALL_CATEGORIES"</code>. */
     public static final String PRIV_CMS_ALL_CATEGORIES = "CMS_ALL_CATEGORIES";
-    /** Constant <code>PRIV_CMS_ALL_TEMPLATES="CMS_ALL_TEMPLATES"</code> */
+    /** Constant <code>PRIV_CMS_ALL_TEMPLATES="CMS_ALL_TEMPLATES"</code>. */
     public static final String PRIV_CMS_ALL_TEMPLATES = "CMS_ALL_TEMPLATES";
-    /** Constant <code>PRIV_CMS_MENU="CMS_MENU"</code> */
+    /** Constant <code>PRIV_CMS_MENU="CMS_MENU"</code>. */
     public static final String PRIV_CMS_MENU = "CMS_MENU";
-    /** Constant <code>PRIV_CMS_STATIC_PAGES="CMS_STATIC_PAGES"</code> */
+    /** Constant <code>PRIV_CMS_STATIC_PAGES="CMS_STATIC_PAGES"</code>. */
     public static final String PRIV_CMS_STATIC_PAGES = "CMS_STATIC_PAGES";
-    /** Constant <code>PRIV_CMS_COLLECTIONS="CMS_COLLECTIONS"</code> */
+    /** Constant <code>PRIV_CMS_COLLECTIONS="CMS_COLLECTIONS"</code>. */
     public static final String PRIV_CMS_COLLECTIONS = "CMS_COLLECTIONS";
-    /** Constant <code>PRIV_CMS_CATEGORIES="CMS_CATEGORIES"</code> */
+    /** Constant <code>PRIV_CMS_CATEGORIES="CMS_CATEGORIES"</code>. */
     public static final String PRIV_CMS_CATEGORIES = "CMS_CATEGORIES";
 
     // Crowdsourcing privileges
-    /** Constant <code>PRIV_CROWDSOURCING_ALL_CAMPAIGNS="CROWDSOURCING_ALL_CAMPAIGNS"</code> */
+    /** Constant <code>PRIV_CROWDSOURCING_ALL_CAMPAIGNS="CROWDSOURCING_ALL_CAMPAIGNS"</code>. */
     public static final String PRIV_CROWDSOURCING_ALL_CAMPAIGNS = "CROWDSOURCING_ALL_CAMPAIGNS";
-    /** Constant <code>PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN="CROWDSOURCING_ANNOTATE_CAMPAIGN"</code> */
+    /** Constant <code>PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN="CROWDSOURCING_ANNOTATE_CAMPAIGN"</code>. */
     public static final String PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN = "CROWDSOURCING_ANNOTATE_CAMPAIGN";
-    /** Constant <code>PRIV_CROWDSOURCING_REVIEW_CAMPAIGN="CROWDSOURCING_REVIEW_CAMPAIGN"</code> */
+    /** Constant <code>PRIV_CROWDSOURCING_REVIEW_CAMPAIGN="CROWDSOURCING_REVIEW_CAMPAIGN"</code>. */
     public static final String PRIV_CROWDSOURCING_REVIEW_CAMPAIGN = "CROWDSOURCING_REVIEW_CAMPAIGN";
 
     public List<String> getSortedPrivileges(Set<String> privileges);
@@ -120,7 +120,7 @@ public interface IPrivilegeHolder {
     /**
      * hasPrivilege.
      *
-     * @param privilege a {@link java.lang.String} object.
+     * @param privilege privilege name constant to check
      * @return a boolean.
      */
     public boolean hasPrivilege(String privilege);
@@ -135,7 +135,7 @@ public interface IPrivilegeHolder {
     /**
      * setPrivCmsPages.
      *
-     * @param priv a boolean.
+     * @param priv true to grant CMS pages privilege
      */
     public void setPrivCmsPages(boolean priv);
 
@@ -149,7 +149,7 @@ public interface IPrivilegeHolder {
     /**
      * setPrivCmsMenu.
      *
-     * @param priv a boolean.
+     * @param priv true to grant CMS menu privilege
      */
     public void setPrivCmsMenu(boolean priv);
 
@@ -163,7 +163,7 @@ public interface IPrivilegeHolder {
     /**
      * setPrivCmsAllSubthemes.
      *
-     * @param priv a boolean.
+     * @param priv true to grant all CMS subthemes privilege
      */
     public void setPrivCmsAllSubthemes(boolean priv);
 
@@ -177,7 +177,7 @@ public interface IPrivilegeHolder {
     /**
      * setPrivCmsAllCategories.
      *
-     * @param priv a boolean.
+     * @param priv true to grant all CMS categories privilege
      */
     public void setPrivCmsAllCategories(boolean priv);
 
@@ -191,7 +191,7 @@ public interface IPrivilegeHolder {
     /**
      * setPrivCmsAllTemplates.
      *
-     * @param priv a boolean.
+     * @param priv true to grant all CMS templates privilege
      */
     public void setPrivCmsAllTemplates(boolean priv);
 
@@ -205,7 +205,7 @@ public interface IPrivilegeHolder {
     /**
      * setPrivCmsStaticPages.
      *
-     * @param priv a boolean.
+     * @param priv true to grant CMS static pages privilege
      */
     public void setPrivCmsStaticPages(boolean priv);
 
@@ -219,7 +219,7 @@ public interface IPrivilegeHolder {
     /**
      * setPrivCmsCollections.
      *
-     * @param priv a boolean.
+     * @param priv true to grant CMS collections privilege
      */
     public void setPrivCmsCollections(boolean priv);
 
@@ -233,7 +233,7 @@ public interface IPrivilegeHolder {
     /**
      * setPrivCmsCategories.
      *
-     * @param priv a boolean.
+     * @param priv true to grant CMS categories privilege
      */
     public void setPrivCmsCategories(boolean priv);
 
@@ -247,7 +247,7 @@ public interface IPrivilegeHolder {
     /**
      * setPrivCrowdsourcingAllCampaigns.
      *
-     * @param priv a boolean.
+     * @param priv true to grant all crowdsourcing campaigns privilege
      */
     public void setPrivCrowdsourcingAllCampaigns(boolean priv);
 
@@ -261,7 +261,7 @@ public interface IPrivilegeHolder {
     /**
      * setPrivCrowdsourcingAnnotateCampaign.
      *
-     * @param priv a boolean.
+     * @param priv true to grant crowdsourcing annotate campaign privilege
      */
     public void setPrivCrowdsourcingAnnotateCampaign(boolean priv);
 
@@ -275,7 +275,7 @@ public interface IPrivilegeHolder {
     /**
      * setPrivCrowdsourcingReviewCampaign.
      *
-     * @param priv a boolean.
+     * @param priv true to grant crowdsourcing review campaign privilege
      */
     public void setPrivCrowdsourcingReviewCampaign(boolean priv);
 
@@ -289,7 +289,7 @@ public interface IPrivilegeHolder {
     /**
      * setPrivViewUgc.
      *
-     * @param priv a boolean.
+     * @param priv true to grant view UGC privilege
      */
     public void setPrivViewUgc(boolean priv);
 }

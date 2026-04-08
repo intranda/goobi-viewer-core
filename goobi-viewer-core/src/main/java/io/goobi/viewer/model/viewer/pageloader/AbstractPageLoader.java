@@ -139,7 +139,7 @@ public abstract class AbstractPageLoader implements IPageLoader {
 
     /**
      * 
-     * @param topStructElement
+     * @param topStructElement top-level structure element of the record
      * @param pageNosToLoad List of page numbers to load; empty list means all pages
      * @param forceEagerLoading set to true to ensure an {@link EagerPageLoader} is used
      * @return Appropriate page loader implementation for the given record topStructElement
@@ -161,8 +161,8 @@ public abstract class AbstractPageLoader implements IPageLoader {
     /**
      * Replaces the static variable placeholders (the ones that don't change depending on the page) of the given label format with values.
      *
-     * @param format a {@link java.lang.String} object.
-     * @param locale a {@link java.util.Locale} object.
+     * @param format label format string with placeholders such as {numpages}
+     * @param locale locale used to resolve message key placeholders
      * @should replace numpages correctly
      * @should replace message keys correctly
      * @return a {@link java.lang.String} object.
@@ -185,8 +185,8 @@ public abstract class AbstractPageLoader implements IPageLoader {
     /**
      * loadPage.
      *
-     * @param topElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @param page a int.
+     * @param topElement top-level struct element of the record
+     * @param page page order number to load
      * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.

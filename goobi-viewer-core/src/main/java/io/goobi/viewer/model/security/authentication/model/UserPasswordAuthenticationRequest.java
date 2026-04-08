@@ -40,8 +40,8 @@ public class UserPasswordAuthenticationRequest {
     /**
      * Creates a new XServiceAuthenticationRequest instance.
      *
-     * @param username a {@link java.lang.String} object.
-     * @param password a {@link java.lang.String} object.
+     * @param username login name of the user
+     * @param password plaintext password for authentication
      */
     public UserPasswordAuthenticationRequest(String username, String password) {
         super();

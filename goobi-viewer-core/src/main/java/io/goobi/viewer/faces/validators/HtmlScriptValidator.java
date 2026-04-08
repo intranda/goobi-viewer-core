@@ -56,9 +56,9 @@ public class HtmlScriptValidator implements Validator<String> {
     }
 
     /**
-     * Returns false if the input string is not blank and does not contain the string {@code <script} (disregarding case).
+     * Returns false if the input string is not blank and contains a script opening tag (disregarding case).
      *
-     * @param input a {@link java.lang.String} object.
+     * @param input HTML string to check for script opening tags
      * @return a boolean.
      */
     public boolean validate(String input) {

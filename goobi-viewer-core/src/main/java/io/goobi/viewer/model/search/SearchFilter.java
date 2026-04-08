@@ -83,9 +83,9 @@ public class SearchFilter implements Serializable {
     /**
      * Creates a new SearchFilter instance.
      *
-     * @param label a {@link java.lang.String} object.
-     * @param field a {@link java.lang.String} object.
-     * @param defaultFilter
+     * @param label display label shown in the UI
+     * @param field Solr field name this filter applies to
+     * @param defaultFilter whether this filter is the default selection
      * @should set attributes correctly
      */
     public SearchFilter(String label, String field, boolean defaultFilter) {

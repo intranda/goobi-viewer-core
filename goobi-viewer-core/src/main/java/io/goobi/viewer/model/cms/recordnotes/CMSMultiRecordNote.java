@@ -74,7 +74,7 @@ public class CMSMultiRecordNote extends CMSRecordNote {
     }
 
     /**
-     * @param query
+     * @param query Solr query used to match records for this note
      */
     public CMSMultiRecordNote(String query) {
         super();
@@ -82,7 +82,7 @@ public class CMSMultiRecordNote extends CMSRecordNote {
     }
 
     /**
-     * @param source
+     * @param source the record note to copy
      */
     public CMSMultiRecordNote(CMSRecordNote source) {
         super(source);
@@ -182,7 +182,7 @@ public class CMSMultiRecordNote extends CMSRecordNote {
      * Check if the given pi is a match for the query of the record note The pi is a match if the record note query combined with a query for the
      * given pi returns at least one result.
      *
-     * @param pi
+     * @param pi persistent identifier of the record to check
      * @return true if pi matches query; false otherwise
      */
     public boolean matchesRecord(String pi) {

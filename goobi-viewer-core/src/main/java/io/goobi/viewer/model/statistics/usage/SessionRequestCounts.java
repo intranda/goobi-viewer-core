@@ -50,8 +50,8 @@ public class SessionRequestCounts {
 
     /**
      * Constructor to deserialize data from a string.
-     * 
-     * @param data
+     *
+     * @param data JSON array string with serialized request counts
      */
     public SessionRequestCounts(String data) {
         if (StringUtils.isNotBlank(data)) {
@@ -67,10 +67,10 @@ public class SessionRequestCounts {
     }
 
     /**
-     * Set the total count of requests for a given {@link RequestType}
-     * 
-     * @param type
-     * @param count
+     * Set the total count of requests for a given {@link RequestType}.
+     *
+     * @param type the request type to set the count for
+     * @param count the number of requests to set
      */
     public void setCount(RequestType type, long count) {
         this.counts.put(type, count);
@@ -78,8 +78,8 @@ public class SessionRequestCounts {
 
     /**
      * Increment the total count of requests for a given {@link RequestType} by one.
-     * 
-     * @param type
+     *
+     * @param type the request type whose count to increment
      */
     public void incrementCount(RequestType type) {
         Long current = getCount(type);
@@ -87,9 +87,9 @@ public class SessionRequestCounts {
     }
 
     /**
-     * Get the total count of requests for a given {@link RequestType}
-     * 
-     * @param type
+     * Get the total count of requests for a given {@link RequestType}.
+     *
+     * @param type the request type to retrieve the count for
      * @return {@link Long}
      */
     public Long getCount(RequestType type) {
@@ -120,7 +120,7 @@ public class SessionRequestCounts {
     /**
      * Two SessionRequestCounts are equal if the have the same request counts for all {@link RequestType}s.
      *
-     * @param o
+     * @param o the object to compare with
      * @return true if objects equal; false otherwise
      */
     @Override

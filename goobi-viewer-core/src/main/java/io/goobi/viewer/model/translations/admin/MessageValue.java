@@ -43,8 +43,8 @@ public class MessageValue {
     /**
      *
      * @param language Language code
-     * @param value
-     * @param globalValue
+     * @param value the translation value for this language
+     * @param globalValue the global/fallback translation value
      */
     public MessageValue(String language, String value, String globalValue) {
         this.language = language;

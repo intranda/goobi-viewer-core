@@ -45,12 +45,12 @@ public class ArchiveTree implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(ArchiveTree.class);
 
-    /** Constant <code>DEFAULT_GROUP="_DEFAULT"</code> */
+    /** Constant <code>DEFAULT_GROUP="_DEFAULT"</code>. */
     public static final String DEFAULT_GROUP = "_DEFAULT";
 
     public static final int DEFAULT_COLLAPSE_LEVEL = 1;
 
-    /** Actual root of the document (even if it's not part of the displayed tree) */
+    /** Actual root of the document (even if it's not part of the displayed tree). */
     private ArchiveEntry trueRootElement = null;
 
     /** Currently displayed tree. Can be partial after a search, etc. */
@@ -62,7 +62,7 @@ public class ArchiveTree implements Serializable {
     private Map<String, Boolean> entryExpansionMap = new HashMap<>();
     private Map<String, Boolean> entryVisiblilityMap = new HashMap<>();
 
-    /** Actively selected entry */
+    /** Actively selected entry. */
     private ArchiveEntry selectedEntry;
 
     private boolean treeBuilt = false;
@@ -85,7 +85,7 @@ public class ArchiveTree implements Serializable {
 
     /**
      * 
-     * @param rootElement
+     * @param rootElement root archive entry to update the tree from
      */
     public void update(ArchiveEntry rootElement) {
         logger.trace("update: {}", rootElement);
@@ -124,7 +124,7 @@ public class ArchiveTree implements Serializable {
     /**
      * Checks whether any nodes in given tree have children that are not yet loaded.
      * 
-     * @param tree
+     * @param tree flat list of archive entries to check
      * @should set treeFullyLoaded false if tree incomplete
      */
     void checkTreeFullyLoaded(List<ArchiveEntry> tree) {
@@ -140,7 +140,7 @@ public class ArchiveTree implements Serializable {
     /**
      * getViewForGroup.
      *
-     * @param group a {@link java.lang.String} object.
+     * @param group entry map group key to retrieve the flat view for
      * @return a {@link java.util.List} object.
      */
     public List<ArchiveEntry> getViewForGroup(String group) {
@@ -155,7 +155,7 @@ public class ArchiveTree implements Serializable {
     /**
      * getTreeViewForGroup.
      *
-     * @param group a {@link java.lang.String} object.
+     * @param group entry map group key to build the tree view for
      * @should call buildTree and set maxTocDepth correctly
      * @return a {@link java.util.List} object.
      */
@@ -189,7 +189,7 @@ public class ArchiveTree implements Serializable {
 
     /**
      * 
-     * @param searchActive
+     * @param searchActive true if a search filter is currently active
      * @return List<ArchiveEntry>
      */
     public List<ArchiveEntry> getVisibleTree(boolean searchActive) {
@@ -201,8 +201,8 @@ public class ArchiveTree implements Serializable {
 
     /**
      *
-     * @param group
-     * @param collapseLevel
+     * @param group entry map group key to build the tree for
+     * @param collapseLevel hierarchy depth at which entries are collapsed
      */
     private void buildTree(String group, int collapseLevel) {
         logger.trace("buildTree: {} - {}", group, collapseLevel);
@@ -242,8 +242,8 @@ public class ArchiveTree implements Serializable {
     /**
      * Recursively expands and sets visible entries at or below maxDepth; hides and collapses any below.
      * 
-     * @param entry
-     * @param maxDepth
+     * @param entry archive entry to start recursion from
+     * @param maxDepth maximum hierarchy level to keep expanded and visible
      */
     public void resetCollapseLevel(ArchiveEntry entry, int maxDepth) {
         if (entry == null) {
@@ -296,7 +296,7 @@ public class ArchiveTree implements Serializable {
 
     /**
      * 
-     * @param selectedEntry
+     * @param selectedEntry archive entry to toggle selection for
      */
     public void toggleSelectedEntry(ArchiveEntry selectedEntry) {
         if (selectedEntry != null && selectedEntry.equals(this.selectedEntry)) {
@@ -330,7 +330,7 @@ public class ArchiveTree implements Serializable {
 
     /**
      *
-     * @param group
+     * @param group entry map group key to retrieve the root entry for
      * @return Root element for the given group
      */
     public ArchiveEntry getRootElement(String group) {
@@ -429,7 +429,7 @@ public class ArchiveTree implements Serializable {
 
     /**
      *
-     * @param identifier
+     * @param identifier node identifier to search for in the tree
      * @return the {@link ArchiveEntry} with the given identifier if it exists in the tree; null otherwise
      */
     public ArchiveEntry getEntryById(String identifier) {
@@ -438,7 +438,7 @@ public class ArchiveTree implements Serializable {
 
     /**
      *
-     * @param searchValue
+     * @param searchValue search string to match against node labels and IDs
      */
     public void search(String searchValue) {
         if (getRootElement() == null) {
@@ -463,10 +463,10 @@ public class ArchiveTree implements Serializable {
 
     /**
      * Recursively searches for searchValue in the given node and its descendants.
-     * 
-     * @param node
+     *
+     * @param node archive tree node to search within
      * @param searchValue Search terms
-     * @param searchInNotLoadedNodes
+     * @param searchInNotLoadedNodes if true, triggers a Solr search to load not yet parsed child nodes
      */
     void searchInNode(ArchiveEntry node, String searchValue, boolean searchInNotLoadedNodes) {
         if (searchInNotLoadedNodes) {
@@ -491,10 +491,10 @@ public class ArchiveTree implements Serializable {
     }
 
     /**
-     * Return this node if it has the given identifier or the first of its descendants with the identifier
+     * Return this node if it has the given identifier or the first of its descendants with the identifier.
      *
-     * @param identifier
-     * @param node
+     * @param identifier node identifier to find
+     * @param node archive tree node to start searching from
      * @return Optional<ArchiveEntry>
      */
     private Optional<ArchiveEntry> findEntry(String identifier, ArchiveEntry node) {
@@ -526,7 +526,7 @@ public class ArchiveTree implements Serializable {
 
     /**
      * 
-     * @param entry
+     * @param entry archive entry to check visibility for
      * @return true if given entry is currently visible; false otherwise
      */
     public boolean isEntryVisible(ArchiveEntry entry) {
@@ -539,7 +539,7 @@ public class ArchiveTree implements Serializable {
 
     /**
      * 
-     * @param entry
+     * @param entry archive entry to check expansion state for
      * @return true if given entry is currently expanded; false otherwise
      */
     public boolean isEntryExpanded(ArchiveEntry entry) {
@@ -553,7 +553,7 @@ public class ArchiveTree implements Serializable {
     /**
      * Expands this entry and sets all sub-entries visible if their immediate parent is expanded.
      * 
-     * @param entry
+     * @param entry archive entry to expand
      */
     public void expandEntry(ArchiveEntry entry) {
         // logger.trace("expand: {}", label); //NOSONAR Debug
@@ -577,7 +577,7 @@ public class ArchiveTree implements Serializable {
     /**
      * Collapses this entry and hides all sub-entries.
      * 
-     * @param entry
+     * @param entry archive entry to collapse
      */
     public void collapseEntry(ArchiveEntry entry) {
         // logger.trace("collapse: {}", id); //NOSONAR Debug
@@ -590,8 +590,8 @@ public class ArchiveTree implements Serializable {
     }
 
     /**
-     * @param entry
-     * @param visible
+     * @param entry archive entry whose children visibility is to be set
+     * @param visible true to make children visible; false to hide them
      */
     void setEntryChildrenVisibility(ArchiveEntry entry, boolean visible) {
         if (!entry.isHasChildren()) {
@@ -609,7 +609,7 @@ public class ArchiveTree implements Serializable {
     /**
      * Expands and sets visible all ancestors of this node and expands siblings of this node.
      * 
-     * @param entry
+     * @param entry archive entry whose ancestors are to be expanded
      */
     public void expandUpEntry(ArchiveEntry entry) {
         if (entry.getParentNode() == null) {

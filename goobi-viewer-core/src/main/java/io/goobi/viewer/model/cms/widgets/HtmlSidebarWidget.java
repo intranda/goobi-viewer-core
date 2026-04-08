@@ -60,8 +60,8 @@ public class HtmlSidebarWidget extends CustomSidebarWidget {
 
     /**
      * Cloning constructor.
-     * 
-     * @param o
+     *
+     * @param o widget instance to clone
      */
     public HtmlSidebarWidget(HtmlSidebarWidget o) {
         super(o);

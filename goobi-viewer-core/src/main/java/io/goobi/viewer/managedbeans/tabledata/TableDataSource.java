@@ -36,11 +36,11 @@ public interface TableDataSource<T> {
     /**
      * getEntries.
      *
-     * @param first a int.
-     * @param pageSize a int.
-     * @param sortField a {@link java.lang.String} object.
-     * @param sortOrder a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder} object.
-     * @param filters a {@link java.util.Map} object.
+     * @param first zero-based index of the first result to return.
+     * @param pageSize maximum number of results to return.
+     * @param sortField field name to sort by; null for default order.
+     * @param sortOrder ascending or descending sort direction.
+     * @param filters map of field names to filter values.
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
      */
@@ -50,7 +50,7 @@ public interface TableDataSource<T> {
     /**
      * getTotalNumberOfRecords.
      *
-     * @param filters a {@link java.util.Map} object.
+     * @param filters map of field names to filter values applied to the count.
      * @return a long.
      */
     long getTotalNumberOfRecords(Map<String, String> filters);

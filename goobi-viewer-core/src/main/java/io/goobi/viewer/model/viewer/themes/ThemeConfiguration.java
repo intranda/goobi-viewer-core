@@ -89,7 +89,7 @@ public class ThemeConfiguration {
     /**
      * Sets the name and calls default constructor.
      * 
-     * @param themeName
+     * @param themeName the name of the theme
      */
     public ThemeConfiguration(String themeName) {
         this();
@@ -98,7 +98,7 @@ public class ThemeConfiguration {
 
     /**
      * 
-     * @param orig
+     * @param orig the theme configuration to copy from
      */
     public ThemeConfiguration(ThemeConfiguration orig) {
         this.id = orig.id;

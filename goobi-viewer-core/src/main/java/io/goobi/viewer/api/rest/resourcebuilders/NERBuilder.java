@@ -80,10 +80,10 @@ public class NERBuilder {
 
     /**
      *
-     * @param request
+     * @param request HTTP servlet request for context information
      * @param query must return a set of PAGE documents within a single topStruct
-     * @param typeString
-     * @param rangeSize
+     * @param typeString NER tag type label to filter (e.g. "PERSON", "LOCATION")
+     * @param rangeSize number of pages to include in each NER result group
      * @return {@link DocumentReference}
      * @throws PresentationException if there is an error parsing the alto documents or if the search doesn't result in PAGE documents from a single
      *             topStruct
@@ -181,7 +181,7 @@ public class NERBuilder {
     }
 
     /**
-     * @param solrDoc
+     * @param solrDoc Solr document representing a PAGE from which to extract the order
      * @return Page order from given solrDoc
      */
     private static Integer getPageOrderFromSolrDoc(SolrDocument solrDoc) {

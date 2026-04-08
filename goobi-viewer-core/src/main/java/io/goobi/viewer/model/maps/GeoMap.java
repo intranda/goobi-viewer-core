@@ -74,7 +74,7 @@ public class GeoMap implements Serializable {
     private static final Logger logger = LogManager.getLogger(GeoMap.class);
 
     /**
-     * Placeholder User if the actual creator could not be determined
+     * Placeholder User if the actual creator could not be determined.
      */
     private static final User CREATOR_UNKNOWN = new User("Unknown");
 
@@ -135,7 +135,7 @@ public class GeoMap implements Serializable {
     /**
      * Clones constructor.
      *
-     * @param blueprint
+     * @param blueprint the GeoMap to copy from
      */
     public GeoMap(GeoMap blueprint) {
         this.creatorId = blueprint.creatorId;
@@ -309,7 +309,7 @@ public class GeoMap implements Serializable {
 
     /**
      * 
-     * @param linkTarget
+     * @param linkTarget optional link target parameter appended to the URL
      * @return {@link URI}
      */
     public URI getOEmbedURI(String linkTarget) {

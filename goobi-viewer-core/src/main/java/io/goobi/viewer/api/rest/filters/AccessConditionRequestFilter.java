@@ -106,10 +106,10 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
     }
 
     /**
-     * @param request
-     * @param pi
-     * @param logid
-     * @param inContentFileName
+     * @param request HTTP servlet request
+     * @param pi persistent identifier of the record
+     * @param logid logical structure ID of the element
+     * @param inContentFileName content file name to check access for
      * @throws ServiceNotAllowedException
      * @throws IndexUnreachableException
      */
@@ -158,7 +158,7 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
     /**
      * Reads attribute {@link #REQUIRED_PRIVILEGE} from request and return it as String array. If the attribute doesn't exist, return an empty array
      *
-     * @param request
+     * @param request HTTP servlet request carrying the privilege attribute
      * @return Required privileges as {@link String}[]
      */
     public static String[] getRequiredPrivileges(HttpServletRequest request) {

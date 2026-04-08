@@ -50,7 +50,7 @@ public class SqlAnnotationLister implements AnnotationLister<CrowdsourcingAnnota
     }
 
     /**
-     * @param dao
+     * @param dao data access object for annotation queries
      */
     public SqlAnnotationLister(IDAO dao) {
         this.dao = dao;

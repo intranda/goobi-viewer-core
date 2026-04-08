@@ -92,7 +92,7 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
 
     /**
      * 
-     * @param message
+     * @param message the error message to send
      */
     private void sendProgressError(String message) {
         developerBean = (AdminDeveloperBean) BeanUtils.getBeanByName("adminDeveloperBean", AdminDeveloperBean.class);
@@ -110,7 +110,7 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
 
     /**
      * 
-     * @param f
+     * @param f progress value between 0.0 and 1.0
      */
     private void updateProgress(float f) {
         developerBean = (AdminDeveloperBean) BeanUtils.getBeanByName("adminDeveloperBean", AdminDeveloperBean.class);

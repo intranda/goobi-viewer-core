@@ -67,7 +67,7 @@ public class PageList implements Iterable<String> {
     /**
      * Creates a new PageList instance.
      *
-     * @param stringRep a {@link java.lang.String} object.
+     * @param stringRep semicolon-separated string of CMS page IDs or page type names.
      */
     public PageList(String stringRep) {
         super();
@@ -148,7 +148,7 @@ public class PageList implements Iterable<String> {
     /**
      * getPage.
      *
-     * @param index a int.
+     * @param index zero-based position in the page list.
      * @return a {@link java.lang.String} object.
      */
     public String getPage(int index) {
@@ -174,7 +174,7 @@ public class PageList implements Iterable<String> {
     /**
      * getSearch.
      *
-     * @param pageIndex a int.
+     * @param pageIndex zero-based position of the desired page in the list.
      * @return a {@link io.goobi.viewer.model.search.SearchInterface} object.
      * @throws java.lang.NumberFormatException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -217,7 +217,7 @@ public class PageList implements Iterable<String> {
     }
 
     /**
-     * @param page
+     * @param page string to test
      * @return true if the given string is a number, i.e. it is the identifier of a cms page
      */
     private static boolean isCMSPage(String page) {
@@ -227,7 +227,7 @@ public class PageList implements Iterable<String> {
     /**
      * Sets the pages list to a list containing only the given string.
      *
-     * @param page a {@link java.lang.String} object.
+     * @param page CMS page ID or page type name to set as sole entry.
      */
     public void setPage(String page) {
         this.pages = Collections.singletonList(page);
@@ -247,7 +247,7 @@ public class PageList implements Iterable<String> {
     /**
      * getPage.
      *
-     * @param idString a {@link java.lang.String} object.
+     * @param idString numeric CMS page ID as string.
      * @return a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */

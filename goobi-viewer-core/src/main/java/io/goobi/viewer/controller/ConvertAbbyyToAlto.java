@@ -73,7 +73,7 @@ public class ConvertAbbyyToAlto {
     /**
      * convert.
      *
-     * @param input a {@link java.io.File} object.
+     * @param input ABBYY XML file to convert
      * @return a {@link org.jdom2.Element} object.
      * @throws org.jdom2.JDOMException if any.
      * @throws java.io.IOException if any.
@@ -96,7 +96,7 @@ public class ConvertAbbyyToAlto {
     /**
      * convert.
      *
-     * @param abbyyDoc a {@link org.jdom2.Document} object.
+     * @param abbyyDoc parsed ABBYY XML document to convert
      * @return a {@link org.jdom2.Element} object.
      */
     public Element convert(Document abbyyDoc) {
@@ -107,9 +107,9 @@ public class ConvertAbbyyToAlto {
     }
 
     /**
-     * Adds ALTO Layout Element
-     * 
-     * @param alto
+     * Adds ALTO Layout Element.
+     *
+     * @param alto the ALTO root element to add the Layout to
      * @return {@link Element}
      */
     private Element addLayout(Element alto) {
@@ -132,9 +132,9 @@ public class ConvertAbbyyToAlto {
     }
 
     /**
-     * 
-     * @param abbyypage
-     * @param altopage
+     *
+     * @param abbyypage ABBYY page element to extract blocks from
+     * @param altopage ALTO page element to add the PrintSpace to
      */
     private void addPrintSpace(Element abbyypage, Element altopage) {
         List<Element> abbyyPageBlocks = abbyypage.getChildren("block", abbyyNamespace);
@@ -203,9 +203,9 @@ public class ConvertAbbyyToAlto {
     }
 
     /**
-     * 
-     * @param altoTextBlock
-     * @param abbyyPageBlock
+     *
+     * @param altoTextBlock ALTO TextBlock element to add text lines to
+     * @param abbyyPageBlock ABBYY block element containing text paragraphs
      */
     private void addTextBlocks(Element altoTextBlock, Element abbyyPageBlock) {
         List<Element> abbyyPars = new ArrayList<>();
@@ -249,9 +249,9 @@ public class ConvertAbbyyToAlto {
     }
 
     /**
-     * 
-     * @param altoTextBlock
-     * @param abbyyPageBlock
+     *
+     * @param altoTextBlock ALTO TextBlock element to add table content to
+     * @param abbyyPageBlock ABBYY block element containing table rows and cells
      */
     private void addTableBlocks(Element altoTextBlock, Element abbyyPageBlock) {
 
@@ -367,9 +367,9 @@ public class ConvertAbbyyToAlto {
     }
 
     /**
-     * 
-     * @param altoTextLine
-     * @param abbyyLine
+     *
+     * @param altoTextLine ALTO TextLine element to add String elements to
+     * @param abbyyLine ABBYY line element containing character parameters
      */
     private void addStrings(Element altoTextLine, Element abbyyLine) {
         List<Element> abbyyCharParams = getLineChildren(abbyyLine);
@@ -563,7 +563,7 @@ public class ConvertAbbyyToAlto {
     /**
      * main.
      *
-     * @param args an array of {@link java.lang.String} objects.
+     * @param args command-line arguments: input path, output path
      * @throws java.io.IOException if any.
      * @throws org.jdom2.JDOMException if any.
      */
@@ -620,7 +620,7 @@ public class ConvertAbbyyToAlto {
     /**
      * Setter for the field <code>inputfilename</code>.
      *
-     * @param inputfilename a {@link java.lang.String} object.
+     * @param inputfilename name of the ABBYY input file
      */
     public void setInputfilename(String inputfilename) {
         this.inputfilename = inputfilename;
@@ -638,7 +638,7 @@ public class ConvertAbbyyToAlto {
     /**
      * Setter for the field <code>creationtime</code>.
      *
-     * @param creationtime a {@link java.time.LocalDateTime} object.
+     * @param creationtime document creation timestamp to embed in ALTO header
      */
     public void setCreationtime(LocalDateTime creationtime) {
         this.creationtime = creationtime;

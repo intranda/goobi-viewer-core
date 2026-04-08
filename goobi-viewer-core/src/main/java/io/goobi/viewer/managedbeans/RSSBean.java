@@ -49,10 +49,10 @@ public class RSSBean {
 
     /**
      * 
-     * @param maxHits
-     * @param query
-     * @param sortField
-     * @param sortDescending
+     * @param maxHits maximum number of feed entries to return
+     * @param query Solr query to filter feed entries
+     * @param sortField Solr field used for sorting results
+     * @param sortDescending if true, results are sorted in descending order
      * @return List<SyndEntry>
      */
     public List<SyndEntry> getRssFeed(Integer maxHits, String query, String sortField, Boolean sortDescending) {
@@ -73,10 +73,10 @@ public class RSSBean {
 
     /**
      * 
-     * @param maxHits
-     * @param query
-     * @param sortField
-     * @param sortDescending
+     * @param maxHits maximum number of feed entries to return
+     * @param query Solr query to filter feed entries
+     * @param sortField Solr field used for sorting results
+     * @param sortDescending if true, results are sorted in descending order
      * @return {@link Channel}
      */
     public Channel getRssFeedChannel(Integer maxHits, String query, String sortField, Boolean sortDescending) {

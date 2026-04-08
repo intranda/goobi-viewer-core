@@ -54,10 +54,10 @@ public class CMSSidebarElementAutomatic extends CMSSidebarElement {
     }
 
     /**
-     * Default constructor for a {@link GeoMap} to display and an owning {@link CMSPage}
+     * Default constructor for a {@link GeoMap} to display and an owning {@link CMSPage}.
      * 
-     * @param map
-     * @param owner
+     * @param map the GeoMap to display in the sidebar widget
+     * @param owner the owning CMS page
      */
     public CMSSidebarElementAutomatic(GeoMap map, CMSPage owner) {
         super(AutomaticWidgetType.WIDGET_CMSGEOMAP, owner);
@@ -72,8 +72,8 @@ public class CMSSidebarElementAutomatic extends CMSSidebarElement {
     /**
      * Cloning constructor assigning the given CMSPage as owner.
      * 
-     * @param orig
-     * @param owner
+     * @param orig original sidebar element to clone
+     * @param owner the owning CMS page
      */
     public CMSSidebarElementAutomatic(CMSSidebarElementAutomatic orig, CMSPage owner) {
         super(orig, owner);
@@ -86,7 +86,7 @@ public class CMSSidebarElementAutomatic extends CMSSidebarElement {
     }
 
     /**
-     * The underlying {@link GeoMap}
+     * The underlying {@link GeoMap}.
      * 
      * @return the map
      */

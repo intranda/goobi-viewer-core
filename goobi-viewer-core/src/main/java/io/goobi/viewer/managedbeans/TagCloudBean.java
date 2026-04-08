@@ -157,10 +157,10 @@ public class TagCloudBean implements Serializable {
     /**
      * getTags.
      *
-     * @param luceneField a {@link java.lang.String} object.
-     * @param shuffle a boolean.
-     * @param topCount a int.
-     * @param query a {@link java.lang.String} object.
+     * @param luceneField Solr field to collect tag values from.
+     * @param shuffle if true, randomizes the returned tag list order.
+     * @param topCount maximum number of tags to return; 0 means unlimited.
+     * @param query optional Solr filter query; null or empty for all records.
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */

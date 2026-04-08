@@ -53,7 +53,7 @@ public final class TranslationGroup {
 
         /**
          *
-         * @param name
+         * @param name name of the enum constant to look up
          * @return {@link TranslationGroupType} matching given name; null if none foudn
          */
         public static TranslationGroupType getByName(String name) {
@@ -93,10 +93,10 @@ public final class TranslationGroup {
      * Factory method.
      *
      * @param id unique ID number
-     * @param type
-     * @param name
-     * @param description
-     * @param numItems
+     * @param type the type of this translation group
+     * @param name display name of this group
+     * @param description human-readable description of this group
+     * @param numItems initial capacity for the items list
      * @return Created {@link TranslationGroup}
      */
     public static TranslationGroup create(int id, TranslationGroupType type, String name, String description, int numItems) {
@@ -106,11 +106,11 @@ public final class TranslationGroup {
     /**
      * Private constructor.
      *
-     * @param id
-     * @param type
-     * @param name
-     * @param description
-     * @param numItems
+     * @param id unique ID number
+     * @param type the type of this translation group
+     * @param name display name of this group
+     * @param description human-readable description of this group
+     * @param numItems initial capacity for the items list
      */
     private TranslationGroup(int id, TranslationGroupType type, String name, String description, int numItems) {
         if (numItems < 0) {
@@ -276,7 +276,7 @@ public final class TranslationGroup {
 
     /**
      *
-     * @param status
+     * @param status the translation status to count
      * @return Count of entries with the given <code>status</code>
      */
     int getEntryStatusCount(TranslationStatus status) {

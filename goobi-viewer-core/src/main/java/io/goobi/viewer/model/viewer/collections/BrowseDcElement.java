@@ -58,7 +58,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
 
     private static final Logger logger = LogManager.getLogger(BrowseDcElement.class);
 
-    /** Collection name */
+    /** Collection name. */
     private final String name;
     private final String field;
     private final String splittingChar;
@@ -80,12 +80,12 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     /**
      * Creates a new BrowseDcElement instance.
      *
-     * @param name a {@link java.lang.String} object.
-     * @param number a long.
-     * @param field a {@link java.lang.String} object.
-     * @param sortField a {@link java.lang.String} object.
-     * @param splittingChar
-     * @param displayNumberOfVolumesLevel
+     * @param name collection name (Solr field value)
+     * @param number total number of records in this collection
+     * @param field Solr field used to identify the collection
+     * @param sortField Solr field used to sort collection contents
+     * @param splittingChar character used to split hierarchical collection names
+     * @param displayNumberOfVolumesLevel level at which to display the number of volumes
      */
     public BrowseDcElement(String name, long number, String field, String sortField, String splittingChar, int displayNumberOfVolumesLevel) {
         this.name = name != null ? name.intern() : name;
@@ -111,7 +111,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     /**
      * Creates a new BrowseDcElement instance.
      *
-     * @param blueprint a {@link io.goobi.viewer.model.viewer.collections.BrowseDcElement} object.
+     * @param blueprint existing element to copy fields from
      */
     public BrowseDcElement(BrowseDcElement blueprint) {
         this.name = blueprint.name;
@@ -239,7 +239,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     /**
      * addToNumber.
      *
-     * @param inNumber a long.
+     * @param inNumber value to add to the record count
      */
     public void addToNumber(long inNumber) {
         number += inNumber;
@@ -248,7 +248,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     /**
      * Setter for the field <code>hasSubelements</code>.
      *
-     * @param hasSubelements a boolean.
+     * @param hasSubelements true if this collection has sub-collections
      */
     public void setHasSubelements(boolean hasSubelements) {
         this.hasSubelements = hasSubelements;
@@ -329,7 +329,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     /**
      * Setter for the field <code>sortField</code>.
      *
-     * @param sortField the sortField to set
+     * @param sortField Solr field name used for sorting
      */
     public void setSortField(String sortField) {
         this.sortField = sortField;
@@ -347,7 +347,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     /**
      * Setter for the field <code>showSubElements</code>.
      *
-     * @param showSubElements a boolean.
+     * @param showSubElements true to expand sub-collections in the view
      */
     public void setShowSubElements(boolean showSubElements) {
         this.showSubElements = showSubElements;
@@ -365,7 +365,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     /**
      * Setter for the field <code>showDescription</code>.
      *
-     * @param showDescription the showDescription to set
+     * @param showDescription true to show the collection description
      */
     public void setShowDescription(boolean showDescription) {
         this.showDescription = showDescription;

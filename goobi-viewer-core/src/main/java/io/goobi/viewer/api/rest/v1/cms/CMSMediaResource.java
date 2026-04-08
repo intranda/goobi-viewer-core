@@ -143,10 +143,10 @@ public class CMSMediaResource {
     /**
      * getMediaByTag.
      *
-     * @param tags a {@link java.lang.String} object.
-     * @param maxItems
-     * @param prioritySlots
-     * @param random
+     * @param tags category name(s) separated by '...'
+     * @param maxItems maximum number of items to return
+     * @param prioritySlots number of high-priority items guaranteed in result
+     * @param random if true, return items in random order
      * @return a {@link io.goobi.viewer.model.cms.media.MediaList} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -192,10 +192,10 @@ public class CMSMediaResource {
     /**
      * getMediaByTag.
      *
-     * @param tags a {@link java.lang.String} object.
-     * @param maxItems
-     * @param prioritySlots
-     * @param random
+     * @param tags comma-separated list of category tag names
+     * @param maxItems maximum number of items to return
+     * @param prioritySlots number of high-priority items guaranteed in result
+     * @param random if true, return items in random order
      * @return a {@link io.goobi.viewer.model.cms.media.MediaList} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -245,8 +245,8 @@ public class CMSMediaResource {
     /**
      * getPDFMediaItemContent.
      *
-     * @param filename
-     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
+     * @param filename name of the PDF file to serve
+     * @param response HTTP response used to set headers
      * @return File contents as HTML
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -374,7 +374,7 @@ public class CMSMediaResource {
     /**
      * getMediaItemContent.
      *
-     * @param filename
+     * @param filename name of the HTML file to serve
      * @return File contents as HTML
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -414,7 +414,7 @@ public class CMSMediaResource {
     /**
      * Return the media item for the given filename. If no matching media item exists, return a not-found status code
      *
-     * @param filename a {@link java.lang.String} object.
+     * @param filename name of the CMS media file to look up
      * @return a {@link jakarta.ws.rs.core.Response} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -509,10 +509,10 @@ public class CMSMediaResource {
     /**
      * May receive a file from a multipart form and saves the file in the cms media folder.
      *
-     * @param enabled a boolean.
-     * @param filename a {@link java.lang.String} object.
-     * @param uploadedInputStream a {@link java.io.InputStream} object.
-     * @param fileDetail a {@link org.glassfish.jersey.media.multipart.FormDataContentDisposition} object.
+     * @param enabled whether the uploaded media item should be enabled
+     * @param filename target filename for the uploaded file
+     * @param uploadedInputStream input stream carrying the file content
+     * @param fileDetail multipart form metadata for the uploaded file
      * @return an ACCEPTED response if the upload was successful, a FORBIDDEN response if no user is registered in the html session or the user does
      *         not have rights to upload media, or a CONFLICT response if a file of the same name already exists in the cms media foler
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -600,8 +600,8 @@ public class CMSMediaResource {
     }
 
     /**
-     * @param item
-     * @param cacheManager
+     * @param item the CMS media item to evict from cache
+     * @param cacheManager the content server cache manager to use
      */
     public static void removeFromImageCache(CMSMediaItem item, ContentServerCacheManager cacheManager) {
         String identifier =
@@ -611,9 +611,9 @@ public class CMSMediaResource {
 
     /**
      * Return an Optional containing a {@link CMSCategory} for which the user has access rights if the user in a CmsAdmin but has limited category
-     * rights If the user has unlimited category rights, return an empty optional
+     * rights If the user has unlimited category rights, return an empty optional.
      *
-     * @param user
+     * @param user the logged-in user to check category rights for
      * @return Optional<CMSCategory>
      * @throws DAOException
      * @throws AccessDeniedException if the user is not allowed to use any categories whatsoever
@@ -633,7 +633,7 @@ public class CMSMediaResource {
     /**
      * createMediaItem.
      *
-     * @param filePath a {@link java.nio.file.Path} object.
+     * @param filePath path to the uploaded media file
      * @return a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      */
     public CMSMediaItem createMediaItem(Path filePath) {

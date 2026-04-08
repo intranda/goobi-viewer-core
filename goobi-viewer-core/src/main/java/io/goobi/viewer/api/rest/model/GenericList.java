@@ -45,7 +45,7 @@ public class GenericList<T> {
     /**
      * Creates a new GenericList instance.
      *
-     * @param theList a {@link java.util.List} object.
+     * @param theList list of elements to wrap as an unmodifiable list
      */
     public GenericList(List<T> theList) {
         this.list = Collections.unmodifiableList(theList);

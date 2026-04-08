@@ -176,7 +176,7 @@ public class CampaignEndpoint {
     }
 
     /**
-     * Send a message about all locked pages to all sessions which have the same campaignId and recordIdentifier
+     * Send a message about all locked pages to all sessions which have the same campaignId and recordIdentifier.
      *
      * @param sessionLock The lock of the broadcasting session
      * @throws IOException
@@ -205,11 +205,11 @@ public class CampaignEndpoint {
     }
 
     /**
-     * Get all locked pages with the given campaignId and recordIdentifier which are not(!) locked by the given httpSessionId
+     * Get all locked pages with the given campaignId and recordIdentifier which are not(!) locked by the given httpSessionId.
      *
-     * @param httpSessionId
-     * @param campaignId
-     * @param recordIdentifier
+     * @param httpSessionId HTTP session ID of the requesting session (excluded from locked results)
+     * @param campaignId ID of the campaign to query locks for
+     * @param recordIdentifier persistent identifier of the record to query locks for
      * @return JSON containing pages locked by other sessions
      * @throws DAOException
      */
@@ -230,8 +230,8 @@ public class CampaignEndpoint {
     }
 
     /**
-     * @param campaignId
-     * @param recordIdentifier
+     * @param campaignId ID of the campaign to look up
+     * @param recordIdentifier persistent identifier of the record
      * @return Map<Integer, String>
      * @throws DAOException
      */
@@ -263,7 +263,7 @@ public class CampaignEndpoint {
     /**
      * Removes a registered crowdsourcing page lock after session end and notify the assiciated websocket session that the session has ended.
      *
-     * @param sessionId
+     * @param sessionId HTTP session ID whose lock should be removed
      * @throws DAOException
      * @throws IOException
      */
@@ -275,7 +275,7 @@ public class CampaignEndpoint {
     /**
      * Checks if the given http session id has a registered lock.
      *
-     * @param sessionId
+     * @param sessionId HTTP session ID to check
      * @return true if given sesisonId has a registered lock; false otherwise
      */
     public static boolean hasLock(String sessionId) {

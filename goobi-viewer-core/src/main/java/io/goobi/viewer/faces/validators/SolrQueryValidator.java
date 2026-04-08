@@ -89,7 +89,7 @@ public class SolrQueryValidator implements Validator<String> {
 
     /**
      *
-     * @param query
+     * @param query Solr query string to execute
      * @return Hit count
      * @throws SolrServerException
      * @throws IOException

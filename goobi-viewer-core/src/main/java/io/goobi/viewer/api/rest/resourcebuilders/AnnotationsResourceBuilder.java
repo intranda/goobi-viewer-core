@@ -101,7 +101,7 @@ public class AnnotationsResourceBuilder {
 
     /**
      *
-     * @param page
+     * @param page 1-based page number within the annotation collection
      * @return {@link AnnotationPage}
      * @throws IllegalRequestException
      * @throws DAOException
@@ -131,8 +131,8 @@ public class AnnotationsResourceBuilder {
     }
 
     /**
-     * @param anno
-     * @param request
+     * @param anno the annotation to check access for
+     * @param request the current HTTP request carrying session/user context
      * @return true if session has access permission to given annotation; false otherwise
      */
     private boolean isAccessible(CrowdsourcingAnnotation anno, HttpServletRequest request) {
@@ -150,8 +150,8 @@ public class AnnotationsResourceBuilder {
     }
 
     /**
-     * @param pi
-     * @param uri
+     * @param pi persistent identifier of the record
+     * @param uri base URI for the annotation collection
      * @return {@link AnnotationCollection}
      * @throws DAOException
      */
@@ -175,9 +175,9 @@ public class AnnotationsResourceBuilder {
 
     /**
      *
-     * @param pi
-     * @param pageNo
-     * @param uri
+     * @param pi persistent identifier of the record
+     * @param pageNo physical page number within the record
+     * @param uri base URI for the annotation collection
      * @return {@link AnnotationCollection}
      * @throws DAOException
      */
@@ -200,8 +200,8 @@ public class AnnotationsResourceBuilder {
     }
 
     /**
-     * @param pi
-     * @param uri
+     * @param pi persistent identifier of the record
+     * @param uri base URI for the annotation list
      * @return {@link AnnotationList}
      * @throws DAOException
      */
@@ -213,9 +213,9 @@ public class AnnotationsResourceBuilder {
     }
 
     /**
-     * @param pi
-     * @param pageNo
-     * @param uri
+     * @param pi persistent identifier of the record
+     * @param pageNo physical page number within the record
+     * @param uri base URI for the annotation list
      * @return {@link IAnnotationCollection}
      * @throws DAOException
      */
@@ -227,9 +227,9 @@ public class AnnotationsResourceBuilder {
     }
 
     /**
-     * @param pi
-     * @param uri
-     * @param page
+     * @param pi persistent identifier of the record
+     * @param uri base URI for the annotation collection
+     * @param page 1-based page number within the annotation collection
      * @return {@link AnnotationPage}
      * @throws DAOException
      * @throws IllegalRequestException
@@ -249,10 +249,10 @@ public class AnnotationsResourceBuilder {
 
     /**
      *
-     * @param pi
-     * @param pageNo
-     * @param uri
-     * @param page
+     * @param pi persistent identifier of the record
+     * @param pageNo physical page number within the record
+     * @param uri base URI for the annotation collection
+     * @param page 1-based page number within the annotation collection
      * @return {@link AnnotationPage}
      * @throws DAOException
      * @throws IllegalRequestException
@@ -271,8 +271,8 @@ public class AnnotationsResourceBuilder {
     }
 
     /**
-     * @param pi
-     * @param uri
+     * @param pi persistent identifier of the record
+     * @param uri base URI for the annotation collection
      * @return {@link AnnotationCollection}
      * @throws DAOException
      */
@@ -296,9 +296,9 @@ public class AnnotationsResourceBuilder {
     }
 
     /**
-     * @param pi
-     * @param pageNo
-     * @param uri
+     * @param pi persistent identifier of the record
+     * @param pageNo physical page number within the record
+     * @param uri base URI for the annotation collection
      * @return {@link AnnotationCollection}
      * @throws DAOException
      */
@@ -319,9 +319,9 @@ public class AnnotationsResourceBuilder {
 
     /**
      *
-     * @param pi
-     * @param uri
-     * @param page
+     * @param pi persistent identifier of the record
+     * @param uri base URI for the annotation collection
+     * @param page 1-based page number within the annotation collection
      * @return {@link AnnotationPage}
      * @throws DAOException
      * @throws IllegalRequestException
@@ -366,8 +366,8 @@ public class AnnotationsResourceBuilder {
 
     /**
      *
-     * @param pi
-     * @param uri
+     * @param pi persistent identifier of the record
+     * @param uri base URI for the annotation list
      * @return {@link AnnotationList}
      * @throws DAOException
      */
@@ -381,9 +381,9 @@ public class AnnotationsResourceBuilder {
 
     /**
      *
-     * @param pi
-     * @param pageNo
-     * @param uri
+     * @param pi persistent identifier of the record
+     * @param pageNo physical page number within the record
+     * @param uri base URI for the annotation list
      * @return {@link AnnotationList}
      * @throws DAOException
      */
@@ -397,9 +397,9 @@ public class AnnotationsResourceBuilder {
 
     /**
      *
-     * @param pi
-     * @param pageNo
-     * @param uri
+     * @param pi persistent identifier of the record
+     * @param pageNo physical page number within the record
+     * @param uri base URI for the annotation page
      * @return {@link AnnotationPage}
      * @throws DAOException
      */
@@ -415,7 +415,7 @@ public class AnnotationsResourceBuilder {
     }
 
     /**
-     * @param id
+     * @param id database ID of the annotation
      * @return Optional<WebAnnotation>
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -427,7 +427,7 @@ public class AnnotationsResourceBuilder {
 
     /**
      *
-     * @param id
+     * @param id database ID of the comment
      * @return Optional<WebAnnotation>
      * @throws DAOException
      */
@@ -437,7 +437,7 @@ public class AnnotationsResourceBuilder {
     }
 
     /**
-     * @param id
+     * @param id database ID of the annotation
      * @return Optional<OpenAnnotation>
      * @throws IndexUnreachableException
      * @throws PresentationException

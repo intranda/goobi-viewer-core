@@ -88,7 +88,7 @@ public final class XmlTools {
     /**
      * readXmlFile.
      *
-     * @param filePath a {@link java.lang.String} object.
+     * @param filePath absolute path to the XML file to read
      * @should build document from string correctly
      * @should throw FileNotFoundException if file not found
      * @return a {@link org.jdom2.Document} object.
@@ -105,7 +105,7 @@ public final class XmlTools {
     /**
      * Reads an XML document from the given URL and returns a JDOM2 document. Works with XML files within JARs.
      *
-     * @param url a {@link java.net.URL} object.
+     * @param url URL pointing to the XML resource to read
      * @should build document from url correctly
      * @return a {@link org.jdom2.Document} object.
      * @throws java.io.FileNotFoundException if any.
@@ -121,7 +121,7 @@ public final class XmlTools {
     /**
      * readXmlFile.
      *
-     * @param path a {@link java.nio.file.Path} object.
+     * @param path path to the XML file to read
      * @should build document from path correctly
      * @return a {@link org.jdom2.Document} object.
      * @throws java.io.FileNotFoundException if any.
@@ -137,8 +137,8 @@ public final class XmlTools {
     /**
      * writeXmlFile.
      *
-     * @param doc a {@link org.jdom2.Document} object.
-     * @param filePath a {@link java.lang.String} object.
+     * @param doc the JDOM2 document to serialize
+     * @param filePath absolute path of the output file to write
      * @return a {@link java.io.File} object.
      * @throws java.io.FileNotFoundException if any.
      * @throws java.io.IOException if any.
@@ -152,9 +152,9 @@ public final class XmlTools {
     /**
      * Create a JDOM document from an XML string.
      *
-     * @param string a {@link java.lang.String} object.
+     * @param string the XML content as a string
      * @should build document correctly
-     * @param encoding a {@link java.lang.String} object.
+     * @param encoding character encoding to use when converting the string to bytes
      * @return a {@link org.jdom2.Document} object.
      * @throws org.jdom2.JDOMException if any.
      * @throws java.io.IOException if any.
@@ -174,8 +174,8 @@ public final class XmlTools {
     /**
      * getStringFromElement.
      *
-     * @param element a {@link java.lang.Object} object.
-     * @param encoding a {@link java.lang.String} object.
+     * @param element the Document or Element to serialize to a string
+     * @param encoding character encoding to apply to the XML output
      * @should return XML string correctly for documents
      * @should return XML string correctly for elements
      * @return a {@link java.lang.String} object.
@@ -209,8 +209,8 @@ public final class XmlTools {
      * Evaluates the given XPath expression to a list of elements.
      *
      * @param expr XPath expression to evaluate.
-     * @param element a {@link org.jdom2.Element} object.
-     * @param namespaces a {@link java.util.List} object.
+     * @param element the root element to evaluate the expression against
+     * @param namespaces namespace bindings required by the XPath expression
      * @return {@link java.util.ArrayList} or null
      * @should return all values
      */
@@ -240,7 +240,7 @@ public final class XmlTools {
      * @param expr XPath expression to evaluate.
      * @param parent If not null, the expression is evaluated relative to this element.
      * @param filter Return type filter.
-     * @param namespaces a {@link java.util.List} object.
+     * @param namespaces namespace bindings required by the XPath expression
      * @return a {@link java.util.List} object.
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -297,8 +297,8 @@ public final class XmlTools {
     /**
      * determineFileFormat.
      *
-     * @param xml a {@link java.lang.String} object.
-     * @param encoding a {@link java.lang.String} object.
+     * @param xml the XML content as a string to inspect
+     * @param encoding character encoding used to parse the XML string
      * @return a {@link java.lang.String} object.
      * @throws org.jdom2.JDOMException if any.
      * @throws java.io.IOException if any.
@@ -318,7 +318,7 @@ public final class XmlTools {
      * @should detect lido files correctly
      * @should detect abbyy files correctly
      * @should detect tei files correctly
-     * @param doc a {@link org.jdom2.Document} object.
+     * @param doc the parsed JDOM2 document to inspect
      * @return a {@link java.lang.String} object.
      */
     public static String determineFileFormat(Document doc) {
@@ -344,7 +344,7 @@ public final class XmlTools {
 
     /**
      * 
-     * @param xml
+     * @param xml XML string to validate
      * @return List<XMLError>
      * @throws ParserConfigurationException
      * @throws SAXException

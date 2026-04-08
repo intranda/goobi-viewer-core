@@ -112,7 +112,7 @@ public class SearchFacets implements Serializable {
     /**
      * Generates a list containing filter queries for the selected regular and hierarchical facets.
      *
-     * @param includeRangeFacets a boolean.
+     * @param includeRangeFacets if true, range facet fields are included in the output
      * @return a {@link java.util.List} object.
      */
     public List<String> generateFacetFilterQueries(boolean includeRangeFacets) {
@@ -171,7 +171,7 @@ public class SearchFacets implements Serializable {
     /**
      * Generates a filter query for the selected non-hierarchical facets.
      *
-     * @param includeRangeFacets
+     * @param includeRangeFacets if true, range facet fields are included in the query
      * @return List of generated Solr queries
      * @should generate queries correctly
      * @should return empty list if facet list empty
@@ -239,7 +239,7 @@ public class SearchFacets implements Serializable {
     /**
      * Returns a list of FacetItem objects in <code>activeFacets</code> where the field name matches the given field name.
      *
-     * @param field The field name to match.
+     * @param field Solr facet field name to match against active facets
      * @return a {@link java.util.List} object.
      * @should return correct items
      */
@@ -255,8 +255,8 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * 
-     * @param link
+     *
+     * @param link facet query link string to look up in the active facets
      * @return true if given link is part of the active facet string; false otherwise
      */
     public boolean isFacetStringCurrentlyUsed(String link) {
@@ -271,7 +271,7 @@ public class SearchFacets implements Serializable {
     /**
      * Checks whether the given facet is currently in use.
      *
-     * @param facet The facet to check.
+     * @param facet facet item to check for active use
      * @return a boolean.
      * @should return correct value
      */
@@ -288,7 +288,7 @@ public class SearchFacets implements Serializable {
     /**
      * isFacetListSizeSufficient.
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field Solr facet field name to check
      * @return a boolean.
      */
     public boolean isFacetListSizeSufficient(String field) {
@@ -306,7 +306,7 @@ public class SearchFacets implements Serializable {
     /**
      * Returns the size of the full element list of the facet for the given field.
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field Solr facet field name to look up
      * @return a int.
      */
     public int getAvailableFacetsListSizeForField(String field) {
@@ -320,7 +320,7 @@ public class SearchFacets implements Serializable {
     /**
      * getActiveFacetsSizeForField.
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field Solr facet field name to count active facets for
      * @return Size of <code>activeFacets</code>.
      */
     public int getActiveFacetsSizeForField(String field) {
@@ -330,7 +330,7 @@ public class SearchFacets implements Serializable {
     /**
      * Returns a collapsed sublist of the available facet elements for the given field.
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field Solr facet field name whose items to retrieve
      * @return a {@link java.util.List} object.
      * @should return full DC facet list if expanded
      * @should return full DC facet list if list size less than default
@@ -345,8 +345,8 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * 
-     * @param field
+     *
+     * @param field Solr facet field name to look up in the available facets map
      * @param excludeSelected If true, selected facets will be removed from the list
      * @return List<IFacetItem>
      */
@@ -372,9 +372,9 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * 
-     * @param field
-     * @param value
+     *
+     * @param field Solr facet field name to search for
+     * @param value facet value to match within the given field
      * @return Specific facet item for the given field and value; null if none found
      * @should return null if field or value null
      * @should return correct facet item
@@ -439,7 +439,7 @@ public class SearchFacets implements Serializable {
     /**
      * Sets the expanded flag to <code>true</code> for the given facet field.
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field Solr facet field name to expand
      */
     public void expandFacet(String field) {
         logger.trace("expandFacet: {}", field);
@@ -449,7 +449,7 @@ public class SearchFacets implements Serializable {
     /**
      * Sets the expanded flag to <code>false</code> for the given facet field.
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field Solr facet field name to collapse
      */
     public void collapseFacet(String field) {
         logger.trace("collapseFacet: {}", field);
@@ -460,7 +460,7 @@ public class SearchFacets implements Serializable {
      * Returns true if the "(more)" link is to be displayed for a facet box. This is the case if the facet has more elements than the initial number
      * of displayed elements and the facet hasn't been manually expanded yet.
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field Solr facet field name to check expansion state for
      * @should return true if DC facet collapsed and has more elements than default
      * @should return true if facet collapsed and has more elements than default
      * @should return false if DC facet expanded
@@ -479,7 +479,7 @@ public class SearchFacets implements Serializable {
     /**
      * isDisplayFacetCollapseLink.
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field Solr facet field name to check expansion state for
      * @return a boolean.
      */
     public boolean isDisplayFacetCollapseLink(String field) {
@@ -508,7 +508,7 @@ public class SearchFacets implements Serializable {
     /**
      * Receives an SSV string of facet fields and values (FIELD1:value1;FIELD2:value2;FIELD3:value3) and generates new Elements for currentFacets.
      *
-     * @param activeFacetString a {@link java.lang.String} object.
+     * @param activeFacetString SSV-encoded string of active facet field:value pairs
      * @should create FacetItems from all links
      * @should decode slashes and backslashes
      * @should reset slider range if no slider field among current facets
@@ -587,7 +587,7 @@ public class SearchFacets implements Serializable {
 
     /**
      *
-     * @param field
+     * @param field Solr facet field name to test for hierarchical configuration
      * @return true if field is hierarchical; false otherwise
      */
     static boolean isFieldHierarchical(String field) {
@@ -598,8 +598,8 @@ public class SearchFacets implements Serializable {
     /**
      * Updates existing facet item for the given field with a new value. If no item for that field yet exist, a new one is added.
      *
-     * @param field a {@link java.lang.String} object.
-     * @param hierarchical a boolean.
+     * @param field Solr facet field name whose item to update
+     * @param hierarchical if true, the facet item is marked as hierarchical
      * @return a {@link java.lang.String} object.
      */
     public String updateFacetItem(String field, boolean hierarchical) {
@@ -611,10 +611,10 @@ public class SearchFacets implements Serializable {
     /**
      * Updates existing facet item for the given field with a new value. If no item for that field yet exist, a new one is added.
      *
-     * @param field
-     * @param updateValue
-     * @param facetItems
-     * @param hierarchical
+     * @param field Solr facet field name whose item is to be updated
+     * @param updateValue new facet value to set for the given field
+     * @param facetItems list of active facet items to update in place
+     * @param hierarchical if true, the new facet item is marked as hierarchical
      * @should update facet item correctly
      * @should add new item correctly
      */
@@ -658,8 +658,8 @@ public class SearchFacets implements Serializable {
     /**
      * getHierarchicalFacets.
      *
-     * @param facetString a {@link java.lang.String} object.
-     * @param facetFields a {@link java.util.List} object.
+     * @param facetString SSV-encoded string of active facet field:value pairs
+     * @param facetFields list of hierarchical facet field names to extract values for
      * @return a {@link java.util.List} object.
      */
     public static List<String> getHierarchicalFacets(String facetString, List<String> facetFields) {
@@ -685,7 +685,7 @@ public class SearchFacets implements Serializable {
     /**
      * splitHierarchicalFacet.
      *
-     * @param facet a {@link java.lang.String} object.
+     * @param facet hierarchical facet value string to split into path segments
      * @return a {@link java.util.List} object.
      */
     public static List<String> splitHierarchicalFacet(final String facet) {
@@ -705,7 +705,7 @@ public class SearchFacets implements Serializable {
     /**
      * getCurrentMinRangeValue.
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field Solr range facet field name to look up
      * @return Current min value, if facet in use; otherwise absolute min value for that field
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -726,7 +726,7 @@ public class SearchFacets implements Serializable {
     /**
      * getCurrentMaxRangeValue.
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field Solr range facet field name to look up
      * @return Current max value, if facet in use; otherwise absolute max value for that field
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -747,7 +747,7 @@ public class SearchFacets implements Serializable {
     /**
      * Returns the minimum value for the given field available in the search index.
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field Solr range facet field name to look up
      * @return Smallest available value
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -762,7 +762,7 @@ public class SearchFacets implements Serializable {
     /**
      * Returns the maximum value for the given field available in the search index.
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field Solr range facet field name to look up
      * @return Largest available value
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -777,7 +777,7 @@ public class SearchFacets implements Serializable {
     /**
      * Returns a sorted list of all available values for the given field among available facet values.
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field Solr range facet field name to look up
      * @return sorted list of all values for the given field among available facet values
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -790,8 +790,8 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * 
-     * @param field
+     *
+     * @param field Solr range facet field name whose value range to serialize
      * @return {@link String}
      */
     public String getValueRangeAsJsonMap(String field) {
@@ -802,8 +802,8 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * 
-     * @param field
+     *
+     * @param field Solr range facet field name to check for an active range constraint
      * @return true if active range for field is currently smaller than the absolute range; false otherwise
      */
     public boolean isRangeFacetActive(String field) {
@@ -823,8 +823,8 @@ public class SearchFacets implements Serializable {
      * Adds the min and max values from the search index for the given field to the bottomValues map. Min and max values are determined via an
      * alphanumeric comparator.
      *
-     * @param field
-     * @param counts
+     * @param field Solr range facet field name for which to compute min and max values
+     * @param counts sorted map of facet values and their document counts from the index
      * @should populate values correctly
      * @should add all values to list
      * @should use configured min max values correctly
@@ -892,7 +892,7 @@ public class SearchFacets implements Serializable {
      * Returns the value returned by generateFacetPrefix() for regular facets. Returns an empty string instead a hyphen if empty.
      *
      * @param omitFields Field names to omit from the facet string
-     * @param urlEncode
+     * @param urlEncode if true, the resulting string is URL-encoded
      * @return URL part for currently selected facets; empty string if empty
      */
     public String getActiveFacetStringPrefix(List<String> omitFields, boolean urlEncode) {
@@ -911,7 +911,7 @@ public class SearchFacets implements Serializable {
     /**
      * Generates an SSV string of facet fields and values from the elements in the given List<FacetString> (empty string if empty).
      *
-     * @param facetItems
+     * @param facetItems list of active facet items to serialize into the prefix string
      * @param omitFields Field names to omit from the facet string
      * @param escapeSlashes If true, slashes and backslashes are replaced with URL-compatible replacement strings
      * @return Generated prefix
@@ -940,11 +940,11 @@ public class SearchFacets implements Serializable {
     /**
      * removeFacetAction.
      *
-     * @param facetQuery a {@link java.lang.String} object.
+     * @param facetQuery facet query string to remove from active facets
      * @should remove facet correctly
      * @should remove facet containing reserved chars
      * @should sanitize triple semicolons to double after removal
-     * @param ret a {@link java.lang.String} object.
+     * @param ret navigation outcome string to return after removal
      * @return a {@link java.lang.String} object.
      */
     public String removeFacetAction(final String facetQuery, final String ret) {
@@ -966,7 +966,7 @@ public class SearchFacets implements Serializable {
     /**
      * Returns true if the value for the given field type in <code>facetsExpanded</code> has been previously set to true.
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field Solr facet field name to check
      * @should return false if value null
      * @should return true if value true
      * @return a boolean.
@@ -996,7 +996,7 @@ public class SearchFacets implements Serializable {
     /**
      * isFacetCollapsed.
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field Solr facet field name to check
      * @return a boolean.
      */
     public boolean isFacetCollapsed(String field) {
@@ -1012,8 +1012,8 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * 
-     * @param field
+     *
+     * @param field Solr range facet field name whose visualization style to retrieve
      * @return Visualization style for the given range field
      */
     public String getRangeFacetStyle(String field) {
@@ -1021,8 +1021,8 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * 
-     * @param field
+     *
+     * @param field Solr range facet field name whose configured minimum to retrieve
      * @return Configured min value for the given field
      */
     public int getRangeFacetMinValue(String field) {
@@ -1030,8 +1030,8 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * 
-     * @param field
+     *
+     * @param field Solr range facet field name whose configured maximum to retrieve
      * @return Configured max value for the given field
      */
     public int getRangeFacetMaxValue(String field) {
@@ -1054,8 +1054,8 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * 
-     * @param types
+     *
+     * @param types list of facet field type strings to include; null means all types
      * @return Map<String, List<IFacetItem>>
      */
     Map<String, List<IFacetItem>> getAvailableFacets(List<String> types) {
@@ -1158,8 +1158,8 @@ public class SearchFacets implements Serializable {
     /**
      * Returns true if the given <code>field</code> is language-specific to a different language than the given <code>language</code>.
      *
-     * @param field a {@link java.lang.String} object.
-     * @param language a {@link java.lang.String} object.
+     * @param field Solr field name to test for a language code suffix
+     * @param language BCP 47 language code to compare against the field suffix
      * @should return true if language code different
      * @should return false if language code same
      * @should return false if no language code
@@ -1172,7 +1172,7 @@ public class SearchFacets implements Serializable {
     /**
      * getFacetValue.
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field Solr facet field name whose active value to retrieve
      * @return a {@link java.lang.String} object.
      */
     public String getFacetValue(String field) {
@@ -1182,7 +1182,7 @@ public class SearchFacets implements Serializable {
     /**
      * getFacetDescription.
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field Solr facet field name whose active description to retrieve
      * @return a {@link java.lang.String} object.
      */
     public String getFacetDescription(String field) {
@@ -1205,7 +1205,7 @@ public class SearchFacets implements Serializable {
     /**
      * getFirstHierarchicalFacetDescription.
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field Solr facet field name (unused; description taken from first hierarchical active facet)
      * @return a {@link java.lang.String} object.
      */
     public String getFirstHierarchicalFacetDescription(String field) {
@@ -1213,7 +1213,7 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * @param facet
+     * @param facet active facet item whose CMS collection description to retrieve
      * @return {@link String}
      */
     private static String getFacetDescription(IFacetItem facet) {
@@ -1230,7 +1230,7 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * @param facet
+     * @param facet active facet item whose value to return
      * @return Value of the given facet
      */
     private static String getFacetName(IFacetItem facet) {
@@ -1266,7 +1266,7 @@ public class SearchFacets implements Serializable {
     /**
      * Sets the feature of the geoFacettingfield to to given feature. A new GeoFacetItem is added to currentFacets if none exists yet
      *
-     * @param feature
+     * @param feature GeoJSON feature string defining the geographic filter area
      */
     public void setGeoFacetFeature(String feature) {
         GeoFacetItem item = getGeoFacetting();

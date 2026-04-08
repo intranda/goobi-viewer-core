@@ -88,8 +88,8 @@ public final class ViewerPathBuilder {
     /**
      * createPath.
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @param baseUrl a {@link java.lang.String} object.
+     * @param request incoming HTTP request providing server URL and context
+     * @param baseUrl absolute URL to resolve into a ViewerPath
      * @return a {@link java.util.Optional} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @should remove server url or name correctly
@@ -117,7 +117,7 @@ public final class ViewerPathBuilder {
      * @param applicationUrl The absolute url of the web-application including the application name ('viewer')
      * @param applicationName The name of the web-application. This is always the last part of the {@code hostUrl}. May be empty
      * @param serviceUrl The complete requested url, optionally including the hostUrl
-     * @param queryString
+     * @param queryString the raw HTTP query string, may be null
      * @return A {@link io.goobi.viewer.model.urlresolution.ViewerPath} containing the complete path information
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -192,7 +192,7 @@ public final class ViewerPathBuilder {
     /**
      * Gets the best matching CMSPage which alternative url ('persistent url') matches the beginning of the given path.
      *
-     * @param servicePath a {@link java.net.URI} object.
+     * @param servicePath requested service path to match against CMS page URLs
      * @return a {@link java.util.Optional} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -218,7 +218,7 @@ public final class ViewerPathBuilder {
     /**
      * getCampaign.
      *
-     * @param servicePath a {@link java.net.URI} object.
+     * @param servicePath requested service path to match against campaign permalinks
      * @return a {@link java.util.Optional} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -241,7 +241,7 @@ public final class ViewerPathBuilder {
     /**
      * Gets the {@link io.goobi.viewer.model.viewer.PageType} that the given path refers to, if any.
      *
-     * @param servicePath a {@link java.net.URI} object.
+     * @param servicePath requested service path to match against known page types
      * @return a {@link java.util.Optional} object.
      */
     public static Optional<PageType> getPageType(final URI servicePath) {
@@ -273,8 +273,8 @@ public final class ViewerPathBuilder {
      * Returns true if the first parts of the uri (separated by '/') are equal to all parts of the given string (separated by '/'). If the string has
      * more parts than the uri, false is returned
      *
-     * @param uri a {@link java.net.URI} object.
-     * @param string a {@link java.lang.String} object.
+     * @param uri URI whose leading path segments are compared
+     * @param string path string to match against the URI prefix
      * @return a boolean.
      */
     public static boolean startsWith(URI uri, final String string) {
@@ -303,7 +303,7 @@ public final class ViewerPathBuilder {
     }
 
     /**
-     * @param uriPart
+     * @param uriPart a single path segment to clean
      * @return {@link String}
      */
     private static String cleanPathPart(final String uriPart) {
@@ -318,8 +318,8 @@ public final class ViewerPathBuilder {
     }
 
     /**
-     * 
-     * @param uri
+     *
+     * @param uri the URI whose leading special characters should be cleaned
      * @return {@link URI}
      */
     private static URI cleanPath(URI uri) {
@@ -331,10 +331,10 @@ public final class ViewerPathBuilder {
     /**
      * resolve.
      *
-     * @param master a {@link java.net.URI} object.
-     * @param slave a {@link java.net.URI} object.
-     * @param fragment
-     * @param query
+     * @param master base URI to resolve against
+     * @param slave URI whose string form is appended to the base URI
+     * @param fragment optional URL fragment to append (without '#')
+     * @param query optional query string to append (without '?')
      * @return a {@link java.net.URI} object.
      */
     public static URI resolve(URI master, URI slave, String fragment, String query) {
@@ -342,9 +342,9 @@ public final class ViewerPathBuilder {
     }
 
     /**
-     * 
-     * @param master
-     * @param slave
+     *
+     * @param master the base URI
+     * @param slave the path segment to append to the base URI
      * @return a {@link java.net.URI} object
      */
     public static URI resolve(URI master, String slave) {
@@ -354,10 +354,10 @@ public final class ViewerPathBuilder {
     /**
      * resolve.
      *
-     * @param master a {@link java.net.URI} object.
-     * @param slave a {@link java.lang.String} object.
-     * @param fragment
-     * @param query
+     * @param master base URI to resolve against
+     * @param slave path string to append to the base URI
+     * @param fragment optional URL fragment to append (without '#')
+     * @param query optional query string to append (without '?')
      * @return a {@link java.net.URI} object.
      */
     public static URI resolve(URI master, final String slave, String fragment, String query) {
@@ -372,7 +372,7 @@ public final class ViewerPathBuilder {
     }
 
     /**
-     * @param query
+     * @param query URL query string without the leading '?' character
      * @return query with a '?' prefix; empty string if query blank
      */
     private static String getQueryString(String query) {
@@ -383,7 +383,7 @@ public final class ViewerPathBuilder {
     }
 
     /**
-     * @param fragment
+     * @param fragment URL fragment identifier without the leading '#' character
      * @return fragment with a '#' prefix; empty string if fragment blank
      */
     private static String getFragmentString(String fragment) {

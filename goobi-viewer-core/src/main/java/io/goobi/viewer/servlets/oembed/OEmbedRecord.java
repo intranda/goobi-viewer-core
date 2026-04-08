@@ -40,7 +40,7 @@ public class OEmbedRecord {
     /**
      * <p>Constructor for OEmbedRecord.
      *
-     * @param uri a {@link java.lang.String} object
+     * @param uri URL string to parse into a URI
      * @throws java.net.URISyntaxException
      */
     public OEmbedRecord(String uri) throws URISyntaxException {

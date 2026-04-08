@@ -31,6 +31,10 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.viewer.ViewManager;
 
 /**
+ * Represents a configurable citation link for a digitized record.
+ *
+ * <p>Each link has a {@link CitationLinkType} (internal viewer URL or external URL), a {@link CitationLinkLevel} (record, docstruct, or image page),
+ * and a {@link CitationLinkAction} (copy to clipboard, open, or download) that determines how the link is presented to the user.
  */
 public class CitationLink {
 
@@ -40,7 +44,7 @@ public class CitationLink {
 
         /**
          *
-         * @param name
+         * @param name case-insensitive enum constant name
          * @return {@link CitationLinkType}; null if no matching type found
          */
         protected static CitationLinkType getByName(String name) {
@@ -66,7 +70,7 @@ public class CitationLink {
 
         /**
          *
-         * @param name
+         * @param name case-insensitive enum constant name
          * @return {@link CitationLinkLevel}; null if no matching level found
          */
         public static CitationLinkLevel getByName(String name) {
@@ -91,7 +95,7 @@ public class CitationLink {
 
         /**
          *
-         * @param name
+         * @param name case-insensitive enum constant name
          * @return {@link CitationLinkLevel}; null if no matching level found
          */
         public static CitationLinkAction getByName(String name) {
@@ -122,10 +126,10 @@ public class CitationLink {
 
     /**
      *
-     * @param type
-     * @param level
-     * @param action
-     * @param label
+     * @param type link type name (URL or INTERNAL)
+     * @param level link level name (RECORD, DOCSTRUCT, or IMAGE)
+     * @param action link action name (CLIPBOARD, OPEN, or DOWNLOAD)
+     * @param label display label shown to the user
      */
     public CitationLink(String type, String level, String action, String label) {
         this.type = CitationLinkType.getByName(type);
@@ -149,7 +153,7 @@ public class CitationLink {
 
     /**
      * 
-     * @param viewManager
+     * @param viewManager the ViewManager providing the current record context
      * @return Appropriate URL
      * @throws IndexUnreachableException
      * @throws PresentationException

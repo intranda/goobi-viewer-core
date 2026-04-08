@@ -149,8 +149,8 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     /**
      * changeMemberRole.
      *
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
-     * @param role a {@link io.goobi.viewer.model.security.Role} object.
+     * @param user user whose role to update in this group
+     * @param role new role to assign to the user
      * @return a boolean.
      */
     public boolean changeMemberRole(User user, Role role) {
@@ -166,7 +166,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     /**
      * Remove User from Group.
      *
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     * @param user user to remove from this group
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -183,7 +183,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     /**
      * hasUserPrivilege.
      *
-     * @param privilegeName a {@link java.lang.String} object.
+     * @param privilegeName name of the privilege to check
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */

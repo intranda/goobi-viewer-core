@@ -48,12 +48,12 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     /**
      * Creates a new HierarchicalBrowseDcElement instance.
      *
-     * @param name a {@link java.lang.String} object.
-     * @param number a long.
-     * @param field a {@link java.lang.String} object.
-     * @param sortField a {@link java.lang.String} object.
-     * @param splittingChar
-     * @param displayNumberOfVolumesLevel
+     * @param name full hierarchical collection name
+     * @param number initial volume count for this element
+     * @param field Solr field name for the collection
+     * @param sortField Solr field used for sorting results
+     * @param splittingChar character used to split hierarchical collection names
+     * @param displayNumberOfVolumesLevel level at which to display the number of volumes
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public HierarchicalBrowseDcElement(String name, long number, String field, String sortField, String splittingChar,
@@ -64,7 +64,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     /**
      * Creates a new HierarchicalBrowseDcElement instance.
      *
-     * @param blueprint a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
+     * @param blueprint element to copy, including its children recursively
      */
     public HierarchicalBrowseDcElement(HierarchicalBrowseDcElement blueprint) {
         super(blueprint);
@@ -74,7 +74,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     /**
      * Getter for the field <code>children</code>.
      *
-     * @return a {@link java.util.List} object.
+     * @return direct child elements of this collection node
      */
     public List<HierarchicalBrowseDcElement> getChildren() {
         return children;
@@ -93,7 +93,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     /**
      * Setter for the field <code>children</code>.
      *
-     * @param children a {@link java.util.List} object.
+     * @param children list of direct child elements to assign
      */
     public void setChildren(List<HierarchicalBrowseDcElement> children) {
         this.children = children;
@@ -102,7 +102,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     /**
      * Getter for the field <code>parent</code>.
      *
-     * @return a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
+     * @return parent element in the collection hierarchy, or null if root
      */
     public HierarchicalBrowseDcElement getParent() {
         return parent;
@@ -111,7 +111,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     /**
      * Setter for the field <code>parent</code>.
      *
-     * @param parent a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
+     * @param parent parent element in the collection hierarchy
      */
     public void setParent(HierarchicalBrowseDcElement parent) {
         this.parent = parent;
@@ -120,7 +120,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     /**
      * addChild.
      *
-     * @param dc a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
+     * @param dc child element to add and link to this parent
      */
     public void addChild(HierarchicalBrowseDcElement dc) {
         this.children.add(dc);
@@ -149,7 +149,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     /**
      * Setter for the field <code>opensInNewWindow</code>.
      *
-     * @param opensInNewWindow a boolean.
+     * @param opensInNewWindow true to open sub-collection in a new window
      */
     public void setOpensInNewWindow(boolean opensInNewWindow) {
         this.opensInNewWindow = opensInNewWindow;
@@ -176,8 +176,8 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     /**
      * getAllVisibleDescendents.
      *
-     * @param checkAllDescendents a boolean.
-     * @return a {@link java.util.Collection} object.
+     * @param checkAllDescendents true to recurse regardless of visibility flags
+     * @return all visible descendant elements of this node
      */
     public Collection<HierarchicalBrowseDcElement> getAllVisibleDescendents(boolean checkAllDescendents) {
         List<HierarchicalBrowseDcElement> list = new ArrayList<>();
@@ -249,8 +249,8 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     /**
      * getAllDescendents.
      *
-     * @param includeMyself a boolean.
-     * @return a {@link java.util.List} object.
+     * @param includeMyself true to prepend this element to the result list
+     * @return all descendant elements, optionally including this element
      */
     public List<HierarchicalBrowseDcElement> getAllDescendents(final boolean includeMyself) {
         List<HierarchicalBrowseDcElement> list =

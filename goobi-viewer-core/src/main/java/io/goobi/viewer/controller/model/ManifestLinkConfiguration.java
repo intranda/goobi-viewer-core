@@ -30,9 +30,9 @@ public class ManifestLinkConfiguration {
     private final Metadata metadata;
 
     /**
-     * @param label
-     * @param format
-     * @param metadata
+     * @param label the display label for the manifest link
+     * @param format the format identifier for the manifest
+     * @param metadata the metadata object providing the link URL
      */
     public ManifestLinkConfiguration(String label, String format, Metadata metadata) {
         super();

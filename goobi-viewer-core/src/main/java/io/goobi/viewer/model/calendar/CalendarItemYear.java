@@ -36,9 +36,9 @@ public class CalendarItemYear extends AbstractCalendarItem implements Serializab
     /**
      * Creates a new CalendarItemYear instance.
      *
-     * @param name a {@link java.lang.String} object.
-     * @param value a int.
-     * @param hits a int.
+     * @param name display label for the year
+     * @param value numeric year value
+     * @param hits number of records found for this year
      */
     public CalendarItemYear(String name, int value, int hits) {
         super(name, value, hits);
@@ -56,7 +56,7 @@ public class CalendarItemYear extends AbstractCalendarItem implements Serializab
     /**
      * Setter for the field <code>monthsOfYear</code>.
      *
-     * @param monthsOfYear a {@link java.util.List} object.
+     * @param monthsOfYear list of monthly calendar items for this year
      */
     public void setMonthsOfYear(List<CalendarItemMonth> monthsOfYear) {
         this.monthsOfYear = monthsOfYear;

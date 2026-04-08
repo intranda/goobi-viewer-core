@@ -108,9 +108,9 @@ public class CacheResource {
 
     /**
      *
-     * @param content
-     * @param thumbs
-     * @param pdf
+     * @param content if true, clears the main image content cache
+     * @param thumbs if true, clears the thumbnail cache
+     * @param pdf if true, clears the PDF cache
      * @return {@link IResponseMessage}
      */
     @DELETE
@@ -134,10 +134,10 @@ public class CacheResource {
 
     /**
      *
-     * @param pi
-     * @param content
-     * @param thumbs
-     * @param pdf
+     * @param pi persistent identifier of the record whose cache entries are deleted
+     * @param content if true, clears the main image content cache for the record
+     * @param thumbs if true, clears the thumbnail cache for the record
+     * @param pdf if true, clears the PDF cache and download jobs for the record
      * @return {@link IResponseMessage}
      * @throws IOException
      */

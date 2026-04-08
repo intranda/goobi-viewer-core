@@ -45,7 +45,7 @@ public enum HitType {
 
     /**
      * 
-     * @param name
+     * @param name hit type name to look up
      * @return {@link HitType} matching given name; null if none found
      * @should return all known types correctly
      * @should return null if name unknown

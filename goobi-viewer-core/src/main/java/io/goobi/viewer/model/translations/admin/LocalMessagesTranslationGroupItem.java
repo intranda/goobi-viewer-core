@@ -36,8 +36,8 @@ public class LocalMessagesTranslationGroupItem extends TranslationGroupItem {
     /**
      * Protected constructor.
      *
-     * @param key
-     * @param regex
+     * @param key the message key or pattern
+     * @param regex whether the key is a regular expression
      */
     protected LocalMessagesTranslationGroupItem(String key, boolean regex) {
         super(key, regex);

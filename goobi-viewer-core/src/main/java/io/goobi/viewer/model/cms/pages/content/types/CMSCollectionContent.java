@@ -166,7 +166,7 @@ public class CMSCollectionContent extends CMSContent {
     }
 
     /**
-     * Get {@link #openExpanded}
+     * Get {@link #openExpanded}.
      * 
      * @return {@link #openExpanded}
      */
@@ -175,16 +175,16 @@ public class CMSCollectionContent extends CMSContent {
     }
 
     /**
-     * Sets {@link #openExpanded}
+     * Sets {@link #openExpanded}.
      * 
-     * @param openExpanded
+     * @param openExpanded true to expand collection on initial load
      */
     public void setOpenExpanded(boolean openExpanded) {
         this.openExpanded = openExpanded;
     }
 
     /**
-     * Getter for {@link #ignoreHierarchy}
+     * Getter for {@link #ignoreHierarchy}.
      * 
      * @return {@link #ignoreHierarchy}
      */
@@ -193,9 +193,9 @@ public class CMSCollectionContent extends CMSContent {
     }
 
     /**
-     * Setter for {@link #ignoreHierarchy}
+     * Setter for {@link #ignoreHierarchy}.
      * 
-     * @param ignoreHierarchy
+     * @param ignoreHierarchy true to flatten collection hierarchy
      */
     public void setIgnoreHierarchy(boolean ignoreHierarchy) {
         this.ignoreHierarchy = ignoreHierarchy;
@@ -228,7 +228,7 @@ public class CMSCollectionContent extends CMSContent {
     /**
      * setIgnoreCollectionsAsList.
      *
-     * @param toIgnore a {@link java.util.List} object.
+     * @param toIgnore collection names to exclude from display
      */
     public void setIgnoreCollectionsAsList(List<String> toIgnore) {
         if (toIgnore == null || toIgnore.isEmpty()) {
@@ -240,7 +240,7 @@ public class CMSCollectionContent extends CMSContent {
     }
 
     /**
-     * Remove cached CollectionView for this content from {@link CollectionViewBean}
+     * Remove cached CollectionView for this content from {@link CollectionViewBean}.
      */
     private void resetCollection() {
         BeanUtils.getCollectionViewBean().removeCollection(this);
@@ -262,8 +262,8 @@ public class CMSCollectionContent extends CMSContent {
     }
 
     /**
-     * @param resetResults
-     * @param component
+     * @param resetResults true to reset cached collection results
+     * @param component the owning CMS component
      * @return {@link String}
      */
     @Override

@@ -47,17 +47,17 @@ public class CrowdsourcingAnnotation extends PersistentAnnotation {
     }
 
     /**
-     * @param source
+     * @param source persistent annotation to copy from
      */
     public CrowdsourcingAnnotation(PersistentAnnotation source) {
         super(source);
     }
 
     /**
-     * @param source
-     * @param id
-     * @param targetPI
-     * @param targetPage
+     * @param source abstract annotation to copy from
+     * @param id database id for the new annotation
+     * @param targetPI persistent identifier of the target record
+     * @param targetPage target page number within the record
      */
     public CrowdsourcingAnnotation(AbstractAnnotation source, Long id, String targetPI, Integer targetPage) {
         super(source, id, targetPI, targetPage);

@@ -84,8 +84,8 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
         private final String labelKey;
 
         /**
-         * 
-         * @param labelKey
+         *
+         * @param labelKey Message key for the access type label
          */
         private AccessType(String labelKey) {
             this.labelKey = labelKey;
@@ -254,7 +254,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Adds the given privilege to the working set.
      *
-     * @param privilege
+     * @param privilege Privilege name to add to working set
      * @return true if successful; false otherwise
      */
     @Override
@@ -266,7 +266,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Removes the given privilege from the working set.
      *
-     * @param privilege
+     * @param privilege Privilege name to remove from working set
      * @return true if successful; false otherwise
      */
     @Override
@@ -493,8 +493,8 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
 
     /**
      * Returns the list of available record privileges for adding to this license (using the given privileges list).
-     * 
-     * @param privileges
+     *
+     * @param privileges Currently assigned privileges to exclude from result
      * @return Values in IPrivilegeHolder.PRIVS_RECORD minus the privileges already added
      * @should return cms privileges if licenseType cms type
      * @should only return priv view ugc if licenseType ugc type
@@ -514,8 +514,8 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
 
     /**
      *
-     * @param excludePrivileges
-     * @param sourcePrivileges
+     * @param excludePrivileges Privileges to exclude from the result
+     * @param sourcePrivileges Full list of privileges to select from
      * @return List<String>
      */
     List<String> getAvailablePrivileges(Set<String> excludePrivileges, List<String> sourcePrivileges) {

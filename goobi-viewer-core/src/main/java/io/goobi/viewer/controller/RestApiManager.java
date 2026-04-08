@@ -59,7 +59,7 @@ public class RestApiManager {
     /**
      * Creates an instance based on configuration. Final urls may change from configured ones
      *
-     * @param config
+     * @param config the viewer configuration to read API URLs from
      */
     public RestApiManager(Configuration config) {
         this.config = config;
@@ -132,7 +132,7 @@ public class RestApiManager {
     }
 
     /**
-     * @param restApiUrl
+     * @param restApiUrl the REST API URL to check
      * @return true if restApiUrl is legacy URL; false otherwise
      */
     public static boolean isLegacyUrl(String restApiUrl) {
@@ -156,7 +156,7 @@ public class RestApiManager {
     }
 
     /**
-     * @param version
+     * @param version the API version to use
      * @return the url to the content api to use for IIIF resources
      */
     public String getIIIFContentApiUrl(Version version) {

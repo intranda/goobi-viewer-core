@@ -42,7 +42,7 @@ public class CMSProperty implements Serializable {
     private static final long serialVersionUID = -2227539151219620322L;
 
     public static final String KEY_ACCESS_CONDITION = "ACCESSCONDITION";
-    /** Constant <code>KEY_EMPTY="EMPTY"</code> */
+    /** Constant <code>KEY_EMPTY="EMPTY"</code>. */
     public static final String KEY_EMPTY = "EMPTY";
     /**
      * Boolean specifying that a page list should separate child pages by tag and prepend each group with a header.
@@ -74,7 +74,7 @@ public class CMSProperty implements Serializable {
     /**
      * Creates a new CMSProperty instance.
      *
-     * @param key a {@link java.lang.String} object.
+     * @param key property key name
      */
     public CMSProperty(String key) {
         this.key = key;
@@ -83,8 +83,8 @@ public class CMSProperty implements Serializable {
     /**
      * Key+value constructor.
      * 
-     * @param key
-     * @param value
+     * @param key property key name
+     * @param value property value
      */
     public CMSProperty(String key, String value) {
         this.key = key;
@@ -94,7 +94,7 @@ public class CMSProperty implements Serializable {
     /**
      * Creates a clone of the given property.
      *
-     * @param original a {@link io.goobi.viewer.model.cms.CMSProperty} object.
+     * @param original property to copy key and value from
      */
     public CMSProperty(CMSProperty original) {
         if (original.id != null) {

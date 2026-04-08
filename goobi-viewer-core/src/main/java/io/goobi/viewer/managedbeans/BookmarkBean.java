@@ -91,7 +91,7 @@ public class BookmarkBean implements Serializable {
     private String newBookmarkListName = "";
 
     /**
-     * An email-address which a user may enter to receive the session store bookmark list as mail
+     * An email-address which a user may enter to receive the session store bookmark list as mail.
      */
     private String sessionBookmarkListEmail = "";
     private static final String KEY_BOOKMARK_LIST_EMAIL_SUBJECT = "bookmarkList_session_mail_header";
@@ -145,7 +145,7 @@ public class BookmarkBean implements Serializable {
      * Updates the given BookmarkList if it already in the user's list of bookmark lists, adds it to the list otherwise. Saves DataManager in both
      * cases.
      *
-     * @param bookmarkList
+     * @param bookmarkList bookmark list to save or update
      * @return true if bookmarkList saved successfully; false otherwise
      */
     static boolean saveBookmarkListAction(BookmarkList bookmarkList) {
@@ -304,7 +304,7 @@ public class BookmarkBean implements Serializable {
     /**
      * Removes the currently selected Bookmark from the currently selected BookmarkList.
      *
-     * @param bookmark a {@link io.goobi.viewer.model.bookmark.Bookmark} object.
+     * @param bookmark bookmark to remove from the current list
      */
     public void deleteCurrentItemAction(Bookmark bookmark) {
         if (bookmark != null && userBean != null && userBean.getUser() != null && currentBookmarkList != null) {
@@ -361,7 +361,7 @@ public class BookmarkBean implements Serializable {
     /**
      * getBookmarkListsSharedWithUser.
      *
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     * @param user user whose shared bookmark lists to retrieve
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -385,7 +385,7 @@ public class BookmarkBean implements Serializable {
     /**
      * getBookmarkListsForUser.
      *
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     * @param user user whose owned bookmark lists to load
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -396,7 +396,7 @@ public class BookmarkBean implements Serializable {
     /**
      * selectBookmarkListAction.
      *
-     * @param event a {@link jakarta.faces.event.ValueChangeEvent} object.
+     * @param event value change event carrying the selected bookmark list name
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void selectBookmarkListAction(ValueChangeEvent event) throws DAOException {
@@ -429,7 +429,7 @@ public class BookmarkBean implements Serializable {
     /**
      * userGroupSelectedAction.
      *
-     * @param event {@link jakarta.faces.event.ValueChangeEvent}
+     * @param event value change event carrying the selected user group name
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void userGroupSelectedAction(ValueChangeEvent event) throws DAOException {
@@ -439,9 +439,9 @@ public class BookmarkBean implements Serializable {
     /**
      * validateName.
      *
-     * @param context a {@link jakarta.faces.context.FacesContext} object.
-     * @param toValidate a {@link jakarta.faces.component.UIComponent} object.
-     * @param value a {@link java.lang.Object} object.
+     * @param context current JSF faces context
+     * @param toValidate UI component being validated
+     * @param value submitted bookmark list name value
      * @throws jakarta.faces.validator.ValidatorException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -524,7 +524,7 @@ public class BookmarkBean implements Serializable {
     /**
      * Setter for the field <code>currentBookmarkList</code>.
      *
-     * @param currentBookmarkList the currentBookmarkList to set
+     * @param currentBookmarkList bookmark list to set as currently selected
      */
     public void setCurrentBookmarkList(BookmarkList currentBookmarkList) {
         this.currentBookmarkList = currentBookmarkList;
@@ -545,7 +545,7 @@ public class BookmarkBean implements Serializable {
     /**
      * setCurrentBookmarkListId.
      *
-     * @param bookmarkListId a {@link java.lang.String} object.
+     * @param bookmarkListId numeric ID string of the bookmark list to load
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -574,7 +574,7 @@ public class BookmarkBean implements Serializable {
     /**
      * viewBookmarkListAction.
      *
-     * @param bookmarkList a {@link io.goobi.viewer.model.bookmark.BookmarkList} object.
+     * @param bookmarkList bookmark list to open in view mode
      * @return a {@link java.lang.String} object.
      */
     public String viewBookmarkListAction(BookmarkList bookmarkList) {
@@ -589,7 +589,7 @@ public class BookmarkBean implements Serializable {
     /**
      * editBookmarkListAction.
      *
-     * @param bookmarkList a {@link io.goobi.viewer.model.bookmark.BookmarkList} object.
+     * @param bookmarkList bookmark list to open in edit mode
      * @return a {@link java.lang.String} object.
      */
     public String editBookmarkListAction(BookmarkList bookmarkList) {
@@ -613,7 +613,7 @@ public class BookmarkBean implements Serializable {
     /**
      * Setter for the field <code>currentBookmark</code>.
      *
-     * @param currentBookmark the currentBookmark to set
+     * @param currentBookmark bookmark to set as currently active
      */
     public void setCurrentBookmark(Bookmark currentBookmark) {
         this.currentBookmark = currentBookmark;
@@ -631,7 +631,7 @@ public class BookmarkBean implements Serializable {
     /**
      * Setter for the field <code>currentUserGroup</code>.
      *
-     * @param currentUserGroup the currentUserGroup to set
+     * @param currentUserGroup user group to set as currently selected
      */
     public void setCurrentUserGroup(UserGroup currentUserGroup) {
         this.currentUserGroup = currentUserGroup;
@@ -640,7 +640,7 @@ public class BookmarkBean implements Serializable {
     /**
      * Setter for the field <code>sessionBookmarkListEmail</code>.
      *
-     * @param sessionBookmarkListEmail the sessionBookmarkListEmail to set
+     * @param sessionBookmarkListEmail email address for sending the session bookmark list
      */
     public void setSessionBookmarkListEmail(String sessionBookmarkListEmail) {
         this.sessionBookmarkListEmail = sessionBookmarkListEmail;
@@ -678,7 +678,7 @@ public class BookmarkBean implements Serializable {
     /**
      * getShareLink.
      *
-     * @param bookmarkList a {@link io.goobi.viewer.model.bookmark.BookmarkList} object.
+     * @param bookmarkList bookmark list to generate or retrieve share link for
      * @return Absolute share URLto the given bookmark list
      */
     public String getShareLink(BookmarkList bookmarkList) {
@@ -727,7 +727,7 @@ public class BookmarkBean implements Serializable {
     /**
      * setShareKey.
      *
-     * @param key a {@link java.lang.String} object.
+     * @param key share key identifying the bookmark list to load
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void setShareKey(String key) throws DAOException, IllegalUrlParameterException {

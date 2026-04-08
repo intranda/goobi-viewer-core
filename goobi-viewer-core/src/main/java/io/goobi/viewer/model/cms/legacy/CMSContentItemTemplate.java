@@ -62,7 +62,7 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     private String itemId;
 
     /**
-     * For SOLRQUERY items: If true, show number of hits and sort order options on page and hide them in cms backend
+     * For SOLRQUERY items: If true, show number of hits and sort order options on page and hide them in cms backend.
      */
     private boolean hitListOptions = false;
     private boolean randomizeItems = false;
@@ -256,8 +256,8 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
 
     /**
      * 
-     * @param type
-     * @param mediaFilter
+     * @param type content item type to create
+     * @param mediaFilter media filter string for media content types
      * @return {@link CMSContent}
      */
     private static CMSContent createCMSContent(CMSContentItemType type, String mediaFilter) {

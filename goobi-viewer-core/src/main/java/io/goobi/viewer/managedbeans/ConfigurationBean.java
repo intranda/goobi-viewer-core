@@ -112,8 +112,8 @@ public class ConfigurationBean implements Serializable {
     /**
      * useTiles.
      *
-     * @param pageType a {@link java.lang.String} object.
-     * @param mimeType a {@link java.lang.String} object.
+     * @param pageType name of the page type to look up settings for
+     * @param mimeType MIME type of the image being displayed
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -140,8 +140,8 @@ public class ConfigurationBean implements Serializable {
     /**
      * getFooterHeight.
      *
-     * @param pageType a {@link java.lang.String} object.
-     * @param mimeType a {@link java.lang.String} object.
+     * @param pageType name of the page type to look up settings for
+     * @param mimeType MIME type of the image being displayed
      * @return a int.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -154,8 +154,8 @@ public class ConfigurationBean implements Serializable {
     /**
      * getImageSizes.
      *
-     * @param pageType a {@link java.lang.String} object.
-     * @param mimeType a {@link java.lang.String} object.
+     * @param pageType name of the page type to look up settings for
+     * @param mimeType MIME type of the image being displayed
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -168,8 +168,8 @@ public class ConfigurationBean implements Serializable {
     /**
      * getTileSizes.
      *
-     * @param pageType a {@link java.lang.String} object.
-     * @param mimeType a {@link java.lang.String} object.
+     * @param pageType name of the page type to look up settings for
+     * @param mimeType MIME type of the image being displayed
      * @return a {@link java.util.Map} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -487,7 +487,7 @@ public class ConfigurationBean implements Serializable {
     /**
      * isTocTreeView.
      *
-     * @param docStructType a {@link java.lang.String} object.
+     * @param docStructType document structure type name to check
      * @return a boolean.
      */
     public boolean isTocTreeView(String docStructType) {
@@ -560,7 +560,7 @@ public class ConfigurationBean implements Serializable {
     /**
      * getTimeMatrixStartYear.
      *
-     * @param subTheme
+     * @param subTheme sub-theme discriminator value used to restrict the Solr query
      * @return a int.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -585,7 +585,7 @@ public class ConfigurationBean implements Serializable {
     /**
      * getTimeMatrixEndYear.
      *
-     * @param subTheme
+     * @param subTheme sub-theme discriminator value used to restrict the Solr query
      * @return a int.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -911,8 +911,8 @@ public class ConfigurationBean implements Serializable {
     /**
      * getTranslation.
      *
-     * @param language a {@link java.lang.String} object.
-     * @param locale a {@link java.lang.String} object.
+     * @param language ISO 639 language code to translate
+     * @param locale target locale code for the output language name
      * @return a {@link java.lang.String} object.
      */
     public String getTranslation(String language, String locale) {
@@ -1140,8 +1140,8 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * @param template
-     * @param fallbackToDefaultTemplate
+     * @param template metadata template name to look up navigation types for
+     * @param fallbackToDefaultTemplate if true, falls back to the default template when the given template has no configuration
      * @return true if docstruct navigation is enabled and properly configured; false otherwise
      */
     public boolean isDisplayDocstructNavigation(String template, boolean fallbackToDefaultTemplate) {
@@ -1166,7 +1166,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * @param field
+     * @param field Solr sort field name
      * @return Configured value
      */
     public String getSearchSortingAscendingKey(String field) {
@@ -1174,7 +1174,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * @param field
+     * @param field Solr sort field name
      * @return Configured value
      */
     public String getSearchSortingDescendingKey(String field) {
@@ -1222,7 +1222,7 @@ public class ConfigurationBean implements Serializable {
 
     /**
      *
-     * @param facetField
+     * @param facetField Solr facet field name
      * @return Configured value
      */
     public boolean isTranslateFacetFieldLabels(String facetField) {
@@ -1360,7 +1360,7 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * 
-     * @param name
+     * @param name PageType name string to look up
      * @return Configured value
      */
     public String getPageType(String name) {
@@ -1369,7 +1369,7 @@ public class ConfigurationBean implements Serializable {
 
     /**
      *
-     * @param facetField
+     * @param facetField Solr facet field name
      * @return Configured value
      */
     public boolean isFacetFieldDisplayValueFilter(String facetField) {
@@ -1378,7 +1378,7 @@ public class ConfigurationBean implements Serializable {
 
     /**
      *
-     * @param facetField
+     * @param facetField Solr facet field name
      * @return Configured value
      * @should return correct value
      */
@@ -1388,7 +1388,7 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * 
-     * @param facetField
+     * @param facetField Solr facet field name
      * @return Configured value; null if none found
      */
     public String getFacetFieldDescriptionKey(String facetField) {

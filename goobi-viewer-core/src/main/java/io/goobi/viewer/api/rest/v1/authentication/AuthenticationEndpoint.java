@@ -110,8 +110,8 @@ public class AuthenticationEndpoint {
     /**
      * authenticateUser.
      *
-     * @param email a {@link java.lang.String} object.
-     * @param password a {@link java.lang.String} object.
+     * @param email user email address for authentication
+     * @param password user password for authentication
      * @return a {@link jakarta.ws.rs.core.Response} object.
      */
     @POST
@@ -144,8 +144,8 @@ public class AuthenticationEndpoint {
 
     /**
      *
-     * @param email
-     * @param password
+     * @param email user email address
+     * @param password user password
      * @throws AuthenticationException
      * @throws DAOException
      */
@@ -158,7 +158,7 @@ public class AuthenticationEndpoint {
 
     /**
      *
-     * @param email
+     * @param email user email address
      * @return email
      */
     private static String issueToken(String email) {
@@ -170,8 +170,8 @@ public class AuthenticationEndpoint {
     }
 
     /**
-     * 
-     * @param redirectUrl
+     *
+     * @param redirectUrl optional URL to redirect to after login
      * @return {@link Response}
      * @should return status 403 if redirectUrl external
      * @should return status 403 if no httpHeader type provider configured
@@ -265,11 +265,11 @@ public class AuthenticationEndpoint {
     }
 
     /**
-     * 
-     * @param error
-     * @param authCode
-     * @param accessToken
-     * @param state
+     *
+     * @param error error code returned by the OpenID provider on failure
+     * @param authCode authorization code from the OpenID provider
+     * @param accessToken ID token passed directly by the provider
+     * @param state state value to match against the registered provider
      * @return {@link Response}
      * @throws IOException
      */
@@ -323,11 +323,11 @@ public class AuthenticationEndpoint {
     }
 
     /**
-     * 
-     * @param state
-     * @param error
-     * @param authCode
-     * @param accessToken
+     *
+     * @param state state value to match against the registered OpenID provider
+     * @param error error code returned by the OpenID provider on failure
+     * @param authCode authorization code from the OpenID provider
+     * @param accessToken ID token passed directly by the provider, or null
      * @return {@link Response}
      * @throws IOException
      */
@@ -434,10 +434,10 @@ public class AuthenticationEndpoint {
     }
 
     /**
-     * 
-     * @param token
-     * @param jwksUri
-     * @param issuer
+     *
+     * @param token encoded JWT ID token to verify
+     * @param jwksUri URL of the JWKS endpoint for public key retrieval
+     * @param issuer expected issuer claim value
      * @return {@link DecodedJWT}
      */
     static DecodedJWT verifyOpenIdToken(String token, String jwksUri, String issuer) {

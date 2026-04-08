@@ -104,7 +104,7 @@ public abstract class AbstractBuilder {
 
     private static final Logger logger = LogManager.getLogger(AbstractBuilder.class);
 
-    /** Constant <code>REQUIRED_SOLR_FIELDS</code> */
+    /** Constant <code>REQUIRED_SOLR_FIELDS</code>. */
     protected static final String[] REQUIRED_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.TITLE, SolrConstants.PI_TOPSTRUCT,
             SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE, SolrConstants.METADATATYPE,
             SolrConstants.FILENAME_TEI, SolrConstants.FILENAME_WEBM, SolrConstants.PI_PARENT, SolrConstants.PI_ANCHOR, SolrConstants.LOGID,
@@ -112,7 +112,7 @@ public abstract class AbstractBuilder {
             SolrConstants.LOGID, SolrConstants.THUMBPAGENO, SolrConstants.IDDOC_PARENT, SolrConstants.IDDOC_TOPSTRUCT, SolrConstants.NUMPAGES,
             SolrConstants.DATAREPOSITORY, SolrConstants.SOURCEDOCFORMAT, SolrConstants.BOOL_IMAGEAVAILABLE };
 
-    /** Constant <code>UGC_SOLR_FIELDS</code> */
+    /** Constant <code>UGC_SOLR_FIELDS</code>. */
 
     protected final AbstractApiUrlManager urls;
 
@@ -125,7 +125,7 @@ public abstract class AbstractBuilder {
     /**
      * Creates a new AbstractBuilder instance.
      *
-     * @param apiUrlManager
+     * @param apiUrlManager API URL manager for building IIIF resource URIs
      */
     protected AbstractBuilder(final AbstractApiUrlManager apiUrlManager) {
         this(apiUrlManager, DataManager.getInstance().getConfiguration());
@@ -134,8 +134,8 @@ public abstract class AbstractBuilder {
     /**
      * Creates a new AbstractBuilder instance.
      *
-     * @param apiUrlManager
-     * @param config
+     * @param apiUrlManager API URL manager for building IIIF resource URIs
+     * @param config viewer configuration instance
      */
     protected AbstractBuilder(final AbstractApiUrlManager apiUrlManager, Configuration config) {
         AbstractApiUrlManager useApiUrlManager = apiUrlManager;
@@ -151,7 +151,7 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * Read config for rendering linking properties and add configured properties to linkingProperties map
+     * Read config for rendering linking properties and add configured properties to linkingProperties map.
      */
     private void initLinkingProperties() {
         if (this.config.isVisibleIIIFRenderingPDF()) {
@@ -173,7 +173,7 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * @param value
+     * @param value message key or literal string to translate
      * @return {@link IMetadataValue}
      */
     protected IMetadataValue getLabel(String value) {
@@ -181,7 +181,7 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * @param uri
+     * @param uri the URI to make absolute; returned unchanged if already absolute
      * @return {@link URI}
      */
     public URI absolutize(URI uri) {
@@ -206,7 +206,7 @@ public abstract class AbstractBuilder {
     /**
      * getLocale.
      *
-     * @param language a {@link java.lang.String} object.
+     * @param language BCP 47 language tag string
      * @return a {@link java.util.Locale} object.
      */
     protected Locale getLocale(String language) {
@@ -220,7 +220,7 @@ public abstract class AbstractBuilder {
     /**
      * getMetsResolverUrl.
      *
-     * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param ele structure element whose PI is used to build the URL
      * @return METS resolver link for the DFG Viewer
      */
     public String getMetsResolverUrl(StructElement ele) {
@@ -236,7 +236,7 @@ public abstract class AbstractBuilder {
     /**
      * getLidoResolverUrl.
      *
-     * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param ele structure element whose PI is used to build the URL
      * @return LIDO resolver link for the DFG Viewer
      */
     public String getLidoResolverUrl(StructElement ele) {
@@ -252,8 +252,8 @@ public abstract class AbstractBuilder {
     /**
      * getViewUrl.
      *
-     * @param ele a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
-     * @param pageType a {@link io.goobi.viewer.model.viewer.PageType} object.
+     * @param ele physical page element whose PURL part is appended to the URL
+     * @param pageType page type determining the viewer URL prefix
      * @return viewer url for the given page in the given {@link io.goobi.viewer.model.viewer.PageType}
      */
     public String getViewUrl(PhysicalElement ele, PageType pageType) {
@@ -268,9 +268,9 @@ public abstract class AbstractBuilder {
 
     /**
      * Simple method to create a label for a {@link org.apache.solr.common.SolrDocument} from {@link io.goobi.viewer.solr.SolrConstants#LABEL},
-     * {@link io.goobi.viewer.solr.SolrConstants#TITLE} or {@link io.goobi.viewer.solr.SolrConstants#DOCSTRCT}
+     * {@link io.goobi.viewer.solr.SolrConstants#TITLE} or {@link io.goobi.viewer.solr.SolrConstants#DOCSTRCT}.
      *
-     * @param solrDocument a {@link org.apache.solr.common.SolrDocument} object.
+     * @param solrDocument Solr document to extract label information from
      * @return a {@link java.util.Optional} object.
      */
     public Optional<IMetadataValue> getLabelIfExists(SolrDocument solrDocument) {
@@ -293,8 +293,8 @@ public abstract class AbstractBuilder {
     /**
      * addMetadata.
      *
-     * @param manifest a {@link de.intranda.api.iiif.presentation.v2.AbstractPresentationModelElement2} object.
-     * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param manifest IIIF presentation element to attach metadata to
+     * @param ele structure element providing the metadata values
      */
     public void addMetadata(AbstractPresentationModelElement2 manifest, StructElement ele) {
         List<String> displayFields = this.config.getIIIFMetadataFields();
@@ -351,10 +351,10 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * Return true if the field is contained in displayFields, accounting for wildcard characters
+     * Return true if the field is contained in displayFields, accounting for wildcard characters.
      *
-     * @param field
-     * @param displayFields
+     * @param field Solr field name to look up
+     * @param displayFields list of configured display field names (may contain wildcards)
      * @return true if displayFields contains field; false otherwise
      */
     protected boolean contained(String field, List<String> displayFields) {
@@ -377,8 +377,8 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * @param displayFields
-     * @param locales
+     * @param displayFields list of base Solr field names to expand
+     * @param locales locales for which language-specific field variants should be added
      * @return List<String> (immutable!)
      */
     protected static List<String> addLanguageFields(List<String> displayFields, List<Locale> locales) {
@@ -387,9 +387,9 @@ public abstract class AbstractBuilder {
 
     /**
      * 
-     * @param field
-     * @param locales
-     * @param includeSelf
+     * @param field base Solr field name to expand with language variants
+     * @param locales locales for which language-specific field names are generated
+     * @param includeSelf if true, includes the base field name itself in the result
      * @return List<String>
      */
     private static List<String> getLanguageFields(String field, List<Locale> locales, boolean includeSelf) {
@@ -406,7 +406,7 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * @param ele
+     * @param ele structure element whose metadata field names are retrieved
      * @return List<String> (immutable!)
      */
     private static List<String> getMetadataFields(StructElement ele) {
@@ -418,7 +418,7 @@ public abstract class AbstractBuilder {
      * Queries all DocStructs which have the given PI as PI_TOPSTRUCT or anchor (or are the anchor themselves). Works are sorted by a
      * {@link io.goobi.viewer.model.iiif.presentation.v2.builder.StructElementComparator} If no hits are found, an empty list is returned.
      *
-     * @param pi a {@link java.lang.String} object.
+     * @param pi persistent identifier of the top-level record
      * @return A list of all docstructs with the given pi or children thereof. An empty list if no hits are found
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -518,7 +518,7 @@ public abstract class AbstractBuilder {
     /**
      * getDocument.
      *
-     * @param pi a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record to load
      * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -556,7 +556,7 @@ public abstract class AbstractBuilder {
 
     /**
      * Gets the attribution text configured in webapi.iiif.attribution and returns all translations if any are found, or the configured string itself
-     * otherwise
+     * otherwise.
      *
      * @return the configured attribution
      */
@@ -576,7 +576,7 @@ public abstract class AbstractBuilder {
     /**
      * getDescription.
      *
-     * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param ele structure element to extract description fields from
      * @return a {@link java.util.Optional} object.
      */
     protected Optional<IMetadataValue> getDescription(StructElement ele) {
@@ -596,7 +596,7 @@ public abstract class AbstractBuilder {
     /**
      * getDescription.
      *
-     * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param ele structure element to extract label fields from
      * @return a {@link java.util.Optional} object.
      */
     protected Optional<IMetadataValue> getLabel(StructElement ele) {
@@ -616,8 +616,8 @@ public abstract class AbstractBuilder {
     /**
      * getCollectionURI.
      *
-     * @param collectionField a {@link java.lang.String} object.
-     * @param baseCollectionName a {@link java.lang.String} object.
+     * @param collectionField Solr field used to group the collection
+     * @param baseCollectionName top-level collection name, or blank for root collection
      * @return a {@link java.net.URI} object.
      */
     public URI getCollectionURI(String collectionField, final String baseCollectionName) {
@@ -635,7 +635,7 @@ public abstract class AbstractBuilder {
     /**
      * getManifestURI.
      *
-     * @param pi a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record
      * @return a {@link java.net.URI} object.
      */
     public URI getManifestURI(String pi) {
@@ -679,7 +679,7 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * getManifestURI for page
+     * getManifestURI for page.
      *
      * @param pi Persistent identifier of a record
      * @param pageNo 1-based page order within the record
@@ -693,8 +693,8 @@ public abstract class AbstractBuilder {
     /**
      * getManifestURI.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param mode a {@link io.goobi.viewer.model.iiif.presentation.v2.builder.BuildMode} object.
+     * @param pi persistent identifier of the record
+     * @param mode build mode appended as a query parameter
      * @return a {@link java.net.URI} object.
      */
     public URI getManifestURI(String pi, BuildMode mode) {
@@ -705,8 +705,8 @@ public abstract class AbstractBuilder {
     /**
      * getRangeURI.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param logId a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record
+     * @param logId logical structure element ID for the range
      * @return a {@link java.net.URI} object.
      */
     public URI getRangeURI(String pi, String logId) {
@@ -717,8 +717,8 @@ public abstract class AbstractBuilder {
     /**
      * getSequenceURI.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param label a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record
+     * @param label sequence label; defaults to "basic" if blank
      * @return a {@link java.net.URI} object.
      */
     public URI getSequenceURI(String pi, final String label) {
@@ -729,8 +729,8 @@ public abstract class AbstractBuilder {
     /**
      * getCanvasURI.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param pageNo a int.
+     * @param pi persistent identifier of the record
+     * @param pageNo 1-based physical page order number
      * @return a {@link java.net.URI} object.
      */
     public URI getCanvasURI(String pi, int pageNo) {
@@ -739,10 +739,10 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * Get the page order (1-based) from a canavs URI. That is the number in the last path paramter after '/canvas/' If the URI doesn't match a canvas
-     * URI, null is returned
+     * Get the page order (1-based) from a canvas URI. That is the number in the last path parameter after '/canvas/'
+     * If the URI doesn't match a canvas URI, null is returned
      *
-     * @param uri a {@link java.net.URI} object.
+     * @param uri canvas URI to extract the page order from
      * @return a {@link java.lang.Integer} object.
      */
     public Integer getPageOrderFromCanvasURI(URI uri) {
@@ -758,7 +758,7 @@ public abstract class AbstractBuilder {
     /**
      * Get the persistent identifier from a canvas URI. This is the URI path param between '/iiif/manifests/' and '/canvas/'
      *
-     * @param uri a {@link java.net.URI} object.
+     * @param uri canvas URI to extract the persistent identifier from
      * @return The pi, or null if the URI doesn't match a iiif canvas URI
      */
     public String getPIFromCanvasURI(URI uri) {
@@ -774,10 +774,10 @@ public abstract class AbstractBuilder {
     /**
      * getAnnotationListURI.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param pageNo a int.
-     * @param type a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
-     * @param openAnnotation
+     * @param pi persistent identifier of the record
+     * @param pageNo 1-based physical page order number
+     * @param type annotation type determining the URL path
+     * @param openAnnotation if true, appends a format=oa query parameter for Open Annotation format
      * @return a {@link java.net.URI} object.
      */
     public URI getAnnotationListURI(String pi, int pageNo, AnnotationType type, boolean openAnnotation) {
@@ -806,8 +806,8 @@ public abstract class AbstractBuilder {
     /**
      * getAnnotationListURI.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param type a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
+     * @param pi persistent identifier of the record
+     * @param type annotation type appended as a query parameter
      * @return a {@link java.net.URI} object.
      */
     public URI getAnnotationListURI(String pi, AnnotationType type) {
@@ -819,7 +819,7 @@ public abstract class AbstractBuilder {
     /**
      * getCommentAnnotationURI.
      *
-     * @param id a long.
+     * @param id database ID of the comment annotation
      * @return a {@link java.net.URI} object.
      */
     public URI getCommentAnnotationURI(long id) {
@@ -831,8 +831,8 @@ public abstract class AbstractBuilder {
     /**
      * getLayerURI.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param type a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
+     * @param pi persistent identifier of the record
+     * @param type annotation type identifying the layer
      * @return a {@link java.net.URI} object.
      */
     public URI getLayerURI(String pi, AnnotationType type) {
@@ -843,8 +843,8 @@ public abstract class AbstractBuilder {
     /**
      * getImageAnnotationURI.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param order a int.
+     * @param pi persistent identifier of the record
+     * @param order 1-based physical page order number
      * @return a {@link java.net.URI} object.
      */
     public URI getImageAnnotationURI(String pi, int order) {
@@ -855,10 +855,10 @@ public abstract class AbstractBuilder {
     /**
      * getAnnotationURI.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param order a int.
-     * @param type a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
-     * @param annoNum a int.
+     * @param pi persistent identifier of the record
+     * @param order 1-based physical page order number
+     * @param type annotation type used as a path segment
+     * @param annoNum 1-based annotation index within the page
      * @return a {@link java.net.URI} object.
      * @throws java.net.URISyntaxException if any.
      */
@@ -870,7 +870,7 @@ public abstract class AbstractBuilder {
     /**
      * getAnnotationURI.
      *
-     * @param id a {@link java.lang.String} object.
+     * @param id annotation ID used as a path parameter
      * @return a {@link java.net.URI} object.
      */
     public URI getAnnotationURI(String id) {
@@ -879,7 +879,7 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * Get URL to search service from {@link ApiUrls}
+     * Get URL to search service from {@link ApiUrls}.
      *
      * @param pi The persistent identifier of the work to search
      * @return the service URI
@@ -889,7 +889,7 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * Get URL to auto complete service from {@link ApiUrls}
+     * Get URL to auto complete service from {@link ApiUrls}.
      *
      * @param pi The persistent identifier of the work to search for autocomplete
      * @return the service URI
@@ -901,9 +901,9 @@ public abstract class AbstractBuilder {
     /**
      * getSearchURI.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param query a {@link java.lang.String} object.
-     * @param motivation a {@link java.util.List} object.
+     * @param pi persistent identifier of the record to search within
+     * @param query search term appended as the q parameter
+     * @param motivation list of motivation strings to filter results
      * @return a {@link java.net.URI} object.
      */
     public URI getSearchURI(String pi, String query, List<String> motivation) {
@@ -918,9 +918,9 @@ public abstract class AbstractBuilder {
     /**
      * getAutoSuggestURI.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param query a {@link java.lang.String} object.
-     * @param motivation a {@link java.util.List} object.
+     * @param pi persistent identifier of the record to autocomplete within
+     * @param query partial search term for autocomplete suggestions
+     * @param motivation list of motivation strings to filter suggestions
      * @return a {@link java.net.URI} object.
      */
     public URI getAutoSuggestURI(String pi, String query, List<String> motivation) {

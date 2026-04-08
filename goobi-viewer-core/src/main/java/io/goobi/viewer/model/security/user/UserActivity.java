@@ -71,10 +71,10 @@ public class UserActivity {
 
     /**
      * 
-     * @param type
-     * @param label
-     * @param date
-     * @param update
+     * @param type type of user activity
+     * @param label display label describing the activity
+     * @param date date and time of the activity
+     * @param update true if this represents an update to an existing item
      */
     public UserActivity(ActivityType type, String label, LocalDateTime date, boolean update) {
         this.type = type;
@@ -139,7 +139,7 @@ public class UserActivity {
     }
 
     /**
-     * @param text
+     * @param text the text to truncate
      * @return text truncated to MAX_LABEL_LENGTH
      */
     private static String truncate(String text) {

@@ -47,9 +47,9 @@ public class RssMetadata {
     /**
      * Creates a new RssMetadata instance.
      *
-     * @param label a {@link java.lang.String} object.
-     * @param value a {@link java.lang.String} object.
-     * @param link a {@link java.lang.String} object.
+     * @param label display label for this metadata field
+     * @param value metadata field value
+     * @param link optional URL associated with this metadata
      */
     public RssMetadata(String label, String value, String link) {
         super();
@@ -61,8 +61,8 @@ public class RssMetadata {
     /**
      * Creates a new RssMetadata instance.
      *
-     * @param label a {@link java.lang.String} object.
-     * @param value a {@link java.lang.String} object.
+     * @param label display label for this metadata field
+     * @param value metadata field value
      */
     public RssMetadata(String label, String value) {
         super();

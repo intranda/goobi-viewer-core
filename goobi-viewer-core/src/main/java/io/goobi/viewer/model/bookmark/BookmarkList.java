@@ -205,7 +205,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Add bookshelf to list and save.
      *
-     * @param item a {@link io.goobi.viewer.model.bookmark.Bookmark} object.
+     * @param item bookmark to add to this list
      * @return boolean if list changed
      */
     public boolean addItem(Bookmark item) {
@@ -223,7 +223,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Remove bookshelf from list and save.
      *
-     * @param item a {@link io.goobi.viewer.model.bookmark.Bookmark} object.
+     * @param item bookmark to remove from this list
      * @return boolean if list changed
      */
     public boolean removeItem(Bookmark item) {
@@ -236,7 +236,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Add user group to list and save.
      *
-     * @param group a {@link io.goobi.viewer.model.security.user.UserGroup} object.
+     * @param group user group to grant shared access
      * @return boolean if list changed
      */
     public boolean addGroupShare(UserGroup group) {
@@ -246,7 +246,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Remove user group from list and save.
      *
-     * @param group a {@link io.goobi.viewer.model.security.user.UserGroup} object.
+     * @param group user group to revoke shared access from
      * @return boolean if list changed
      */
     public boolean removeGroupShare(UserGroup group) {
@@ -308,7 +308,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * isMayView.
      *
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     * @param user user requesting view access; may be null for anonymous
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -338,7 +338,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * isMayEdit.
      *
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     * @param user user requesting edit access; may be null
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -599,7 +599,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
      * getMiradorJsonObject.
      *
      * @param applicationRoot a {@link java.lang.String} object.
-     * @param restApiUrl
+     * @param restApiUrl base URL of the REST API for manifest links
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -662,7 +662,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * @param pi
+     * @param pi persistent identifier of the record
      * @return Generated URL
      */
     public String getLegacyManifestUrl(String pi) {
@@ -737,7 +737,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
 
     /**
      *
-     * @param bookmarkLists
+     * @param bookmarkLists list of bookmark lists to sort in place
      * @should sort lists correctly
      */
     public static void sortBookmarkLists(List<BookmarkList> bookmarkLists) {

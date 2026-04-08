@@ -24,6 +24,7 @@ package io.goobi.viewer.model.security;
 import java.io.Serializable;
 
 /**
+ * Represents the aggregated copyright indicator status for a digitized record, pairing a {@link Status} value with a human-readable description.
  */
 public class CopyrightIndicatorStatus implements Serializable {
 

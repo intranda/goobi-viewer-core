@@ -97,7 +97,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
     /**
      * getAllWidgets.
      *
-     * @param queryAdditionalInformation a boolean
+     * @param queryAdditionalInformation if true, queries embedding pages for each widget
      * @return a {@link java.util.List} object
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -169,7 +169,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
     /**
      * deleteWidget.
      *
-     * @param id a {@link java.lang.Long} object
+     * @param id database ID of the custom widget to delete
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void deleteWidget(Long id) throws DAOException {
@@ -179,8 +179,8 @@ public class CMSSidebarWidgetsBean implements Serializable {
     /**
      * Getter for the field <code>sidebarGroup</code>.
      *
-     * @param elements a {@link java.util.List} object
-     * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object
+     * @param elements ordered list of sidebar elements to render
+     * @param page CMS page owning the sidebar elements
      * @return a {@link jakarta.faces.component.html.HtmlPanelGroup} object
      */
     public HtmlPanelGroup getSidebarGroup(List<CMSSidebarElement> elements, CMSPage page) {
@@ -209,7 +209,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
     /**
      * Setter for the field <code>sidebarGroup</code>.
      *
-     * @param sidebarGroup a {@link jakarta.faces.component.html.HtmlPanelGroup} object
+     * @param sidebarGroup panel group to set as the sidebar container
      */
     public void setSidebarGroup(HtmlPanelGroup sidebarGroup) {
         this.sidebarGroup = sidebarGroup;

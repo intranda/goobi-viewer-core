@@ -41,15 +41,15 @@ import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleTyp
 public class MetadataParameter implements Serializable {
 
     /**
-     * Needed for reading xml config
+     * Needed for reading xml config.
      */
     private static final String XML_PATH_ATTRIBUTE_CONDITION = "[@condition]";
     /**
-     * Needed for reading xml config
+     * Needed for reading xml config.
      */
     private static final String XML_PATH_ATTRIBUTE_TYPE = "[@type]";
     /**
-     * Needed for reading xml config
+     * Needed for reading xml config.
      */
     private static final String XML_PATH_ATTRIBUTE_URL = "[@url]";
 
@@ -129,7 +129,7 @@ public class MetadataParameter implements Serializable {
     private List<MetadataReplaceRule> replaceRules = Collections.emptyList();
     /**
      * Optional parameter which signals that the values should come from some other document, either "parent" (data comes from direct parent document)
-     * or "topStruct" (data comes from the main record document)
+     * or "topStruct" (data comes from the main record document).
      */
     private String scope = "";
 
@@ -503,8 +503,8 @@ public class MetadataParameter implements Serializable {
 
     /**
      * 
-     * @param config
-     * @param topstructValueFallbackDefaultValue
+     * @param config the hierarchical configuration node to read from
+     * @param topstructValueFallbackDefaultValue whether to fall back to topstruct value as default
      * @return {@link MetadataParameter}
      */
     public static MetadataParameter createFromConfig(HierarchicalConfiguration<ImmutableNode> config, boolean topstructValueFallbackDefaultValue) {

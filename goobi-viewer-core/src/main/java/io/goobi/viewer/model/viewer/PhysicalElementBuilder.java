@@ -22,6 +22,9 @@
 package io.goobi.viewer.model.viewer;
 
 /**
+ * Builder for {@link PhysicalElement} instances.
+ *
+ * <p>Use the fluent setter methods to configure all physical page properties, then call {@link #build()} to create the element.
  */
 public class PhysicalElementBuilder {
 

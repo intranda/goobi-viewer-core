@@ -54,7 +54,7 @@ public class CMSTitleValidator implements Validator<String> {
     /**
      * validate.
      *
-     * @param s a {@link java.lang.String} object.
+     * @param s CMS page title string to check for non-blank content
      * @return a boolean.
      */
     protected static boolean validate(String s) {

@@ -63,13 +63,13 @@ public class ViewerSectionPDFResource extends MetsPdfResource {
     private String filename;
 
     /**
-     * @param context
-     * @param request
-     * @param response
-     * @param urls
-     * @param pi
-     * @param divId
-     * @param cacheManager
+     * @param context JAX-RS container request context
+     * @param request incoming HTTP servlet request
+     * @param response outgoing HTTP servlet response
+     * @param urls API URL manager for building resource URIs
+     * @param pi persistent identifier of the record
+     * @param divId logical div ID of the METS section
+     * @param cacheManager content server cache manager
      * @throws ContentLibException
      */
     public ViewerSectionPDFResource(
@@ -132,6 +132,9 @@ public class ViewerSectionPDFResource extends MetsPdfResource {
      * if the PI contains characters that are illegal in java.net.URI paths or Solr queries.
      *
      * <p>Declared static so it can be invoked inside the super() constructor call.
+     *
+     * @param pi persistent identifier to validate
+     * @return the unchanged pi if valid
      */
     static String requireValidPi(String pi) {
         if (!PIValidator.validatePi(pi)) {

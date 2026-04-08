@@ -43,9 +43,9 @@ public class MetadataReplaceRule implements Serializable {
 
     /**
      *
-     * @param key
-     * @param replacement
-     * @param type
+     * @param key the string, char, or regex pattern to match
+     * @param replacement the replacement string
+     * @param type the type of matching rule (CHAR, STRING, or REGEX)
      */
     public MetadataReplaceRule(Object key, String replacement, MetadataReplaceRuleType type) {
         this(key, replacement, null, type);
@@ -53,10 +53,10 @@ public class MetadataReplaceRule implements Serializable {
 
     /**
      *
-     * @param key
-     * @param replacement
+     * @param key the string, char, or regex pattern to match
+     * @param replacement the replacement string
      * @param conditions Optional condition Solr query
-     * @param type
+     * @param type the type of matching rule (CHAR, STRING, or REGEX)
      */
     public MetadataReplaceRule(Object key, String replacement, String conditions, MetadataReplaceRuleType type) {
         this.key = key;

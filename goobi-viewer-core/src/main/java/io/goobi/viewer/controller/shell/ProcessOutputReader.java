@@ -50,7 +50,7 @@ public class ProcessOutputReader implements Runnable {
 
     /**
      * 
-     * @param inputStream
+     * @param inputStream input stream to read process output from
      */
     public ProcessOutputReader(InputStream inputStream) {
         this.inputStream = inputStream;

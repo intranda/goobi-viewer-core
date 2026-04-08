@@ -43,11 +43,11 @@ public final class StatisticsSummaryFilter {
     public static final LocalDate LOCAL_DATE_MAX = LocalDate.of(3000, Month.DECEMBER, 31);
 
     /**
-     * Earliest date from which to collect data
+     * Earliest date from which to collect data.
      */
     private final LocalDate startDate;
     /**
-     * Latest date from which to collect data
+     * Latest date from which to collect data.
      */
     private final LocalDate endDate;
     /**
@@ -56,9 +56,9 @@ public final class StatisticsSummaryFilter {
     private final String filterQuery;
 
     /**
-     * @param startDate
-     * @param endDate
-     * @param filterQuery
+     * @param startDate earliest date from which to collect data
+     * @param endDate latest date from which to collect data
+     * @param filterQuery Solr query to filter results by record identifier
      */
     private StatisticsSummaryFilter(LocalDate startDate, LocalDate endDate, String filterQuery) {
         super();
@@ -90,8 +90,8 @@ public final class StatisticsSummaryFilter {
 
     /**
      * Creates an instance filtering by a single date.
-     * 
-     * @param date
+     *
+     * @param date the single date to filter by
      * @return {@link StatisticsSummaryFilter}
      */
     public static StatisticsSummaryFilter ofDate(LocalDate date) {
@@ -111,8 +111,8 @@ public final class StatisticsSummaryFilter {
 
     /**
      * Creates an instance for a single record identifier.
-     * 
-     * @param pi
+     *
+     * @param pi the record identifier (PI) to filter by
      * @return {@link StatisticsSummaryFilter}
      */
     public static StatisticsSummaryFilter forRecord(String pi) {
@@ -121,8 +121,8 @@ public final class StatisticsSummaryFilter {
 
     /**
      * Creates an instance for all records within a single digital collection.
-     * 
-     * @param collectionName
+     *
+     * @param collectionName name of the digital collection (DC field value)
      * @return {@link StatisticsSummaryFilter}
      */
     public static StatisticsSummaryFilter ofDigitalCollection(String collectionName) {

@@ -131,10 +131,11 @@ public class AccessRightsRequestFilter implements ContainerRequestFilter {
     }
 
     /**
-     * @param request
-     * @param pi
-     * @param logid
-     * @param inContentFileName
+     * @param request HTTP servlet request
+     * @param pi persistent identifier of the record
+     * @param logid logical structure ID of the element
+     * @param inContentFileName content file name to check access for
+     * @param pageNo 1-based physical page order, or null if not page-specific
      * @throws ServiceNotAllowedException
      * @throws IndexUnreachableException
      */
@@ -187,7 +188,7 @@ public class AccessRightsRequestFilter implements ContainerRequestFilter {
     /**
      * Reads required privilege from request and return it as String array. If the attribute doesn't exist, return an empty array
      *
-     * @param request
+     * @param request HTTP servlet request to read required privilege from
      * @return Required privileges as {@link String}[]
      */
     public String[] getRequiredPrivileges(HttpServletRequest request) {

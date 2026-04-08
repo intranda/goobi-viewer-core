@@ -165,7 +165,7 @@ public final class DataManager {
     /**
      * getModule.
      *
-     * @param id a {@link java.lang.String} object.
+     * @param id unique identifier of the module to look up
      * @return a {@link io.goobi.viewer.modules.IModule} object.
      * @throws io.goobi.viewer.exceptions.ModuleMissingException if any.
      */
@@ -186,7 +186,7 @@ public final class DataManager {
     /**
      * isModuleLoaded.
      *
-     * @param id a {@link java.lang.String} object.
+     * @param id unique identifier of the module to check
      * @return a boolean.
      */
     public boolean isModuleLoaded(String id) {
@@ -206,7 +206,7 @@ public final class DataManager {
     /**
      * registerModule.
      *
-     * @param module a {@link io.goobi.viewer.modules.IModule} object.
+     * @param module module instance to register
      * @should not add module if it's already registered
      * @return a boolean.
      */
@@ -327,7 +327,7 @@ public final class DataManager {
     /**
      * Sets custom Configuration object (used for unit testing).
      *
-     * @param configuration a {@link io.goobi.viewer.controller.Configuration} object.
+     * @param configuration configuration instance to inject
      */
     public void injectConfiguration(Configuration configuration) {
         if (configuration != null) {
@@ -338,7 +338,7 @@ public final class DataManager {
     /**
      * Sets custom SolrSearchIndex object (used for unit testing).
      *
-     * @param searchIndex a {@link io.goobi.viewer.solr.SolrSearchIndex} object.
+     * @param searchIndex Solr search index instance to inject
      */
     public void injectSearchIndex(SolrSearchIndex searchIndex) {
         if (searchIndex != null) {
@@ -349,7 +349,7 @@ public final class DataManager {
     /**
      * Sets custom IDAO object (used for unit testing).
      *
-     * @param dao a {@link io.goobi.viewer.dao.IDAO} object.
+     * @param dao DAO instance to inject
      */
     public void injectDao(IDAO dao) {
         this.dao = dao;
@@ -372,7 +372,7 @@ public final class DataManager {
     /**
      * injectBookmarkManager.
      *
-     * @param bookmarkManager a {@link io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager} object.
+     * @param bookmarkManager bookmark manager instance to inject
      */
     public void injectBookmarkManager(SessionStoreBookmarkManager bookmarkManager) {
         this.bookmarkManager = bookmarkManager;
@@ -381,7 +381,7 @@ public final class DataManager {
     /**
      * injectAuthResponseListener.
      *
-     * @param listener a {@link io.goobi.viewer.model.security.authentication.AuthResponseListener} object.
+     * @param listener authentication response listener to inject
      */
     public void injectAuthResponseListener(AuthResponseListener<HttpAuthenticationProvider> listener) {
         if (listener != null) {
@@ -416,7 +416,7 @@ public final class DataManager {
     /**
      * Setter for the field <code>recordCampaignMap</code>.
      *
-     * @param recordCampaignMap the recordCampaignMap to set
+     * @param recordCampaignMap map of PI to associated crowdsourcing campaigns
      */
     public void setRecordCampaignMap(Map<String, List<Campaign>> recordCampaignMap) {
         this.recordCampaignMap = recordCampaignMap;
@@ -430,7 +430,7 @@ public final class DataManager {
     }
 
     /**
-     * @param indexerVersion the indexerVersion to set
+     * @param indexerVersion version string of the Goobi viewer indexer
      */
     public void setIndexerVersion(String indexerVersion) {
         this.indexerVersion = indexerVersion;
@@ -444,7 +444,7 @@ public final class DataManager {
     }
 
     /**
-     * @param connectorVersion the connectorVersion to set
+     * @param connectorVersion version string of the Goobi viewer connector
      */
     public void setConnectorVersion(String connectorVersion) {
         this.connectorVersion = connectorVersion;
@@ -458,7 +458,7 @@ public final class DataManager {
     }
 
     /**
-     * @param hotfolderFileCount the hotfolderFileCount to set
+     * @param hotfolderFileCount number of files currently in the hotfolder
      */
     public void setHotfolderFileCount(int hotfolderFileCount) {
         this.hotfolderFileCount = hotfolderFileCount;
@@ -475,7 +475,7 @@ public final class DataManager {
     }
 
     /**
-     * @param restApiManager the restApiManager to set
+     * @param restApiManager REST API manager instance to set
      */
     public void setRestApiManager(RestApiManager restApiManager) {
         this.restApiManager = restApiManager;

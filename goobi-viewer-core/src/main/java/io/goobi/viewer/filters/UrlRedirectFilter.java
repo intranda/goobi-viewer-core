@@ -116,7 +116,7 @@ public class UrlRedirectFilter implements Filter {
      * Fortunately Firefox marks all precaching-request with a X-Moz : prefetch header
      * (https://developer.mozilla.org/en-US/docs/Web/HTTP/Link_prefetching_FAQ) However this header is not standardized and may change in the future
      *
-     * @param httpRequest
+     * @param httpRequest HTTP servlet request to check for prefetch headers
      * @return true if X-Moz:prefetch or sec-purpose:prefetch; false otherwise
      */
     private static boolean isPrefetchingRequest(HttpServletRequest httpRequest) {

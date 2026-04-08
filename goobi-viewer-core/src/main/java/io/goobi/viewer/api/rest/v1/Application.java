@@ -54,7 +54,7 @@ public class Application extends ResourceConfig {
     /**
      * Creates a new ViewerApplication instance.
      *
-     * @param servletConfig
+     * @param servletConfig servlet configuration for dependency injection setup
      */
     public Application(@Context ServletConfig servletConfig) {
         super();
@@ -85,7 +85,7 @@ public class Application extends ResourceConfig {
     /**
      * Constructor with custom injection binder for tests.
      *
-     * @param binder
+     * @param binder custom injection binder used in tests
      */
     public Application(AbstractBinder binder) {
         super();

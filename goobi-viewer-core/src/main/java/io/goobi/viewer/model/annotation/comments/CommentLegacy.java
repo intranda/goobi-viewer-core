@@ -103,11 +103,11 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Creates a new Comment instance.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param page a int.
-     * @param owner a {@link io.goobi.viewer.model.security.user.User} object.
-     * @param text a {@link java.lang.String} object.
-     * @param parent a {@link io.goobi.viewer.model.annotation.comments.Comment} object.
+     * @param pi persistent identifier of the commented record
+     * @param page page number the comment is attached to
+     * @param owner user who created this comment
+     * @param text comment body text
+     * @param parent unused parent comment (legacy field)
      * @should construct object correctly
      */
     public CommentLegacy(String pi, int page, User owner, String text, CommentLegacy parent) {
@@ -140,8 +140,8 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Sends an email notification about a new or altered comment to the configured recipient addresses.
      *
-     * @param comment a {@link io.goobi.viewer.model.annotation.comments.Comment} object.
-     * @param oldText a {@link java.lang.String} object.
+     * @param comment comment that was created or modified
+     * @param oldText previous comment text, or empty/null if this is a new comment
      * @param locale Language locale for the email text.
      * @return a boolean.
      */
@@ -178,7 +178,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Checks whether the user with the given ID is allowed to edit this comment (i.e. the annotation belongs to this (proper) user.
      *
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     * @param user user requesting edit access
      * @return true if allowed; false otherwise
      * @should return true if use id equals owner id
      * @should return false if owner id is null
@@ -191,7 +191,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * getDisplayDate.
      *
-     * @param date a {@link java.time.LocalDateTime} object.
+     * @param date date and time to format for display
      * @return a {@link java.lang.String} object.
      */
     public String getDisplayDate(LocalDateTime date) {

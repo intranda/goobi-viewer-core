@@ -33,14 +33,14 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 
 public class SolrFieldNameTranslationGroupItem extends TranslationGroupItem {
 
-    /** Logger for this class */
+    /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(SolrFieldNameTranslationGroupItem.class);
 
     /**
      * Protected constructor.
      *
-     * @param key
-     * @param regex
+     * @param key the Solr field name or pattern
+     * @param regex whether the key is a regular expression
      */
     protected SolrFieldNameTranslationGroupItem(String key, boolean regex) {
         super(key, regex);

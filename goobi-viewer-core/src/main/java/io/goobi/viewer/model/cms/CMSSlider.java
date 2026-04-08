@@ -81,7 +81,7 @@ public class CMSSlider implements Serializable {
     /**
      * Copies constructor.
      *
-     * @param o
+     * @param o slider to copy
      */
     public CMSSlider(CMSSlider o) {
         this.id = o.id;
@@ -106,7 +106,7 @@ public class CMSSlider implements Serializable {
     /**
      * Default constructor. Provides the source type which should be treated as final
      *
-     * @param type
+     * @param type source type determining how slider entries are loaded
      */
     public CMSSlider(SourceType type) {
         this.sourceType = type;

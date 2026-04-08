@@ -76,9 +76,9 @@ public class AuthorizationFilter implements ContainerRequestFilter {
 
     /**
      *
-     * @param ip
-     * @param token
-     * @param pathInfo
+     * @param ip the client IP address
+     * @param token the bearer token from the request
+     * @param pathInfo the request path info
      * @return Whether or not access is granted
      */
     private static boolean checkPermissions(String ip, String token, String pathInfo) {

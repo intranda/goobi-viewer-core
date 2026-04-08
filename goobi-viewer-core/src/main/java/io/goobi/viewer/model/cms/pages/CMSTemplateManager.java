@@ -210,7 +210,7 @@ public class CMSTemplateManager implements Serializable {
     /**
      * toURI.
      *
-     * @param url a {@link java.net.URL} object.
+     * @param url URL to convert to a filesystem path
      * @return a {@link java.nio.file.Path} object.
      */
     public static Path toURI(URL url) {
@@ -224,9 +224,9 @@ public class CMSTemplateManager implements Serializable {
     /**
      * Getter for the field <code>coreTemplateFolderUrl</code>.
      *
-     * @param filesystemPath a {@link java.lang.String} object.
-     * @param servletContext a {@link jakarta.servlet.ServletContext} object.
-     * @param templateFolderUrl a {@link java.lang.String} object.
+     * @param filesystemPath base filesystem path used when servlet context is absent
+     * @param servletContext servlet context for resolving web resource paths
+     * @param templateFolderUrl relative URL path of the template folder
      * @return a {@link java.util.Optional} object.
      * @throws java.net.MalformedURLException if any.
      * @throws java.io.UnsupportedEncodingException if any.
@@ -263,10 +263,10 @@ public class CMSTemplateManager implements Serializable {
     /**
      * Returns an url pointing to the cms template folder of the viewer theme.
      *
-     * @param filesystemPath
-     * @param servletContext
-     * @param templateFolderUrl
-     * @param absolutetemplateFolderUrl
+     * @param filesystemPath base filesystem path for template lookup
+     * @param servletContext servlet context for resource lookup; may be null
+     * @param templateFolderUrl relative or absolute URL of the template folder
+     * @param absolutetemplateFolderUrl true if templateFolderUrl is an absolute path
      * @return Optional<URL>
      * @throws URISyntaxException
      * @throws IOException
@@ -331,8 +331,8 @@ public class CMSTemplateManager implements Serializable {
     /**
      * updateTemplates.
      *
-     * @param corePath a {@link java.util.Optional} object.
-     * @param themePath a {@link java.util.Optional} object.
+     * @param corePath optional path to the core legacy template folder
+     * @param themePath optional path to the theme legacy template folder
      */
     public synchronized void updateTemplates(Optional<Path> corePath, Optional<Path> themePath) {
         legacyTemplateComponents = new HashMap<>();
@@ -379,7 +379,7 @@ public class CMSTemplateManager implements Serializable {
     /**
      * getTemplate.
      *
-     * @param templateId a {@link java.lang.String} object.
+     * @param templateId unique identifier of the legacy template
      * @return a {@link io.goobi.viewer.model.cms.pages.CMSPageTemplate} object.
      */
     public CMSComponent getLegacyComponent(String templateId) {

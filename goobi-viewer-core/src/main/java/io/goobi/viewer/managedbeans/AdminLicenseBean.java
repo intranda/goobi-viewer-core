@@ -208,7 +208,7 @@ public class AdminLicenseBean implements Serializable {
 
     /**
      *
-     * @param core
+     * @param core true to return core license types; false for regular ones
      * @return all license types in the database where this.core=core
      * @throws DAOException
      */
@@ -346,7 +346,7 @@ public class AdminLicenseBean implements Serializable {
     /**
      * newCurrentLicenseTypeAction.
      *
-     * @param name
+     * @param name name to assign to the new license type
      */
     public void newCurrentLicenseTypeAction(String name) {
         logger.trace("newCurrentLicenseTypeAction({})", name);
@@ -369,7 +369,7 @@ public class AdminLicenseBean implements Serializable {
 
     /**
      *
-     * @param licenseType
+     * @param licenseType the license type to check for usage
      * @return true if at least one license uses the given license type; false otherwise
      * @throws DAOException
      */
@@ -383,7 +383,7 @@ public class AdminLicenseBean implements Serializable {
 
     /**
      *
-     * @param licenseTypeName
+     * @param licenseTypeName name of the license type to query records for
      * @return Number of records with the given licenseTypeName that have the ACCESSCONDITION_CONCURRENTUSE field
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -397,7 +397,7 @@ public class AdminLicenseBean implements Serializable {
 
     /**
      *
-     * @param licenseTypeName
+     * @param licenseTypeName name of the license type to query records for
      * @return Number of records with the given licenseTypeName that have the ACCESSCONDITION_PDF_PERCENTAGE_QUOTA field
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -411,7 +411,7 @@ public class AdminLicenseBean implements Serializable {
 
     /**
      *
-     * @param licenseType
+     * @param licenseType the license type to retrieve licenses for
      * @return Number of licenses with of given {@link LicenseType}
      * @throws DAOException
      */
@@ -554,8 +554,8 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * 
-     * @param ticket
+     *
+     * @param ticket the access ticket to persist
      * @throws DAOException
      */
     private static void saveTicket(AccessTicket ticket) throws DAOException {
@@ -573,11 +573,11 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * 
-     * @param ticket
-     * @param emailSubjectKey
-     * @param emailBodyKey
-     * @param emailBodyParams
+     *
+     * @param ticket the access ticket whose owner should be notified
+     * @param emailSubjectKey message key for the email subject line
+     * @param emailBodyKey message key for the email body text
+     * @param emailBodyParams parameter values substituted into the email body
      * @return Navigation outcome
      */
     private static String notifyOwner(AccessTicket ticket, String emailSubjectKey, String emailBodyKey, List<String> emailBodyParams) {
@@ -614,8 +614,8 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * 
-     * @param ticket
+     *
+     * @param ticket the access ticket to activate
      * @return Navigation outcome
      * @throws DAOException
      */
@@ -636,8 +636,8 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * 
-     * @param ticket
+     *
+     * @param ticket the access ticket to extend
      * @return Navigation outcome
      * @throws DAOException
      */
@@ -657,8 +657,8 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * 
-     * @param ticket
+     *
+     * @param ticket the access ticket to renew with a new password
      * @return Navigation outcome
      * @throws DAOException
      */
@@ -679,8 +679,8 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * 
-     * @param ticket
+     *
+     * @param ticket the access ticket request to reject and delete
      * @return Navigation outcome
      * @throws DAOException
      */
@@ -702,8 +702,8 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * 
-     * @param ticket
+     *
+     * @param ticket the access ticket to delete
      * @return Navigation outcome
      * @throws DAOException
      */
@@ -783,7 +783,7 @@ public class AdminLicenseBean implements Serializable {
     /**
      * Sets <code>currentUserGroup</code> by loading it from the DB via the given ID.
      *
-     * @param id
+     * @param id database ID of the license type to load
      * @throws DAOException
      */
     public void setCurrentLicenseTypeId(Long id) throws DAOException {
@@ -832,7 +832,7 @@ public class AdminLicenseBean implements Serializable {
     /**
      * Sets <code>currentLicense</code> by loading it from the DB via the given ID.
      *
-     * @param id
+     * @param id database ID of the license to load
      * @throws DAOException
      */
     public void setCurrentLicenseId(Long id) throws DAOException {
@@ -927,8 +927,8 @@ public class AdminLicenseBean implements Serializable {
 
     /**
      * Record count for non-configured access conditions.
-     * 
-     * @param accessCondition
+     *
+     * @param accessCondition access condition value to count records for
      * @return Number of records containing the given access condition value
      * @throws DAOException
      * @throws PresentationException
@@ -955,8 +955,8 @@ public class AdminLicenseBean implements Serializable {
 
     /**
      * Record count for configured access conditions.
-     * 
-     * @param licenseType
+     *
+     * @param licenseType the license type whose record count to retrieve
      * @return Number of records containing the given access condition value
      * @throws DAOException
      * @throws IndexUnreachableException
@@ -990,7 +990,7 @@ public class AdminLicenseBean implements Serializable {
 
     /**
      *
-     * @param accessCondition
+     * @param accessCondition access condition value to generate a query for
      * @return Generated query for given accessCondition
      */
     public String getUrlQueryForAccessCondition(String accessCondition) {
@@ -1007,8 +1007,8 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * 
-     * @param licenseType
+     *
+     * @param licenseType the license type whose access condition to search for in CMS pages
      * @return List of CMSPages that have the access condition of the given LicenseType assigned
      * @throws DAOException
      */
@@ -1022,7 +1022,7 @@ public class AdminLicenseBean implements Serializable {
 
     /**
      *
-     * @param privilege
+     * @param privilege privilege name to build a message key for
      * @return Composite message key for the given privilege name
      */
     public String getMessageKeyForPrivilege(String privilege) {

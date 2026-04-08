@@ -208,7 +208,7 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
 
     /**
      * 
-     * @param origUrl
+     * @param origUrl original URL string to parse
      * @return {@link OEmbedRecord}
      * @throws URISyntaxException
      * @throws PresentationException

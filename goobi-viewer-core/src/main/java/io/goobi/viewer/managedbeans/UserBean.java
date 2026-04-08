@@ -103,7 +103,7 @@ public class UserBean implements Serializable {
     private PushContext sessionTimeoutCounter;
 
     /**
-     * The logged in user
+     * The logged in user.
      */
     private User user;
     private String nickName;
@@ -303,7 +303,7 @@ public class UserBean implements Serializable {
     /**
      * login.
      *
-     * @param provider a {@link io.goobi.viewer.model.security.authentication.IAuthenticationProvider} object.
+     * @param provider authentication provider to use for the login attempt
      * @return a {@link java.lang.String} object.
      * @throws java.lang.IllegalStateException if any.
      * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException if any.
@@ -347,8 +347,8 @@ public class UserBean implements Serializable {
 
     /**
      *
-     * @param provider
-     * @param result
+     * @param provider Authentication provider that performed the login
+     * @param result Result object containing user and request/response data
      * @throws IllegalStateException
      */
     private void completeLogin(IAuthenticationProvider provider, LoginResult result) {
@@ -528,7 +528,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * @param request
+     * @param request Current HTTP servlet request
      * @return Redirect outcome
      */
     private String getRedirectUrl(HttpServletRequest request) {
@@ -586,7 +586,7 @@ public class UserBean implements Serializable {
 
     /**
      *
-     * @param user
+     * @param user User for whom to send the activation email
      * @return true if activation email sent successfully; false otherwise
      */
     private boolean sendActivationEmail(User user) {
@@ -902,7 +902,7 @@ public class UserBean implements Serializable {
     /**
      * Setter for the field <code>authenticationProvider</code>.
      *
-     * @param provider a {@link io.goobi.viewer.model.security.authentication.IAuthenticationProvider} object.
+     * @param provider authentication provider to set as the active one
      */
     public void setAuthenticationProvider(IAuthenticationProvider provider) {
         logger.trace("setAuthenticationProvider: {}", provider.getName());
@@ -921,7 +921,7 @@ public class UserBean implements Serializable {
     /**
      * setAuthenticationProviderName.
      *
-     * @param name a {@link java.lang.String} object.
+     * @param name name used to look up the matching authentication provider
      */
     public void setAuthenticationProviderName(String name) {
         this.authenticationProvider = getAuthenticationProviders().stream()
@@ -955,7 +955,7 @@ public class UserBean implements Serializable {
     /**
      * Setter for the field <code>passwordOne</code>.
      *
-     * @param passwordOne a {@link java.lang.String} object.
+     * @param passwordOne first password entry for new account creation
      */
     public void setPasswordOne(String passwordOne) {
         this.passwordOne = passwordOne;
@@ -973,7 +973,7 @@ public class UserBean implements Serializable {
     /**
      * Setter for the field <code>passwordTwo</code>.
      *
-     * @param passwordTwo a {@link java.lang.String} object.
+     * @param passwordTwo confirmation password entry for new account creation
      */
     public void setPasswordTwo(String passwordTwo) {
         this.passwordTwo = passwordTwo;
@@ -1134,7 +1134,7 @@ public class UserBean implements Serializable {
     /**
      * userEquals.
      *
-     * @param id a long.
+     * @param id database ID to compare against the current user
      * @return a boolean.
      */
     public boolean userEquals(long id) {
@@ -1144,7 +1144,7 @@ public class UserBean implements Serializable {
     /**
      * hasProvidersOfType.
      *
-     * @param type a {@link java.lang.String} object.
+     * @param type provider type string to match (e.g. "local", "openId")
      * @return a boolean.
      */
     public boolean hasProvidersOfType(String type) {
@@ -1157,7 +1157,7 @@ public class UserBean implements Serializable {
     /**
      * getProvidersOfType.
      *
-     * @param type a {@link java.lang.String} object.
+     * @param type provider type string to filter by (e.g. "local", "openId")
      * @return a {@link java.util.List} object.
      */
     public List<IAuthenticationProvider> getProvidersOfType(String type) {
@@ -1251,7 +1251,7 @@ public class UserBean implements Serializable {
     /**
      * logoutWithMessage.
      *
-     * @param messageKey a {@link java.lang.String} object
+     * @param messageKey i18n key for the info message shown after logout
      * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException if any.
      * @throws IOException
      */

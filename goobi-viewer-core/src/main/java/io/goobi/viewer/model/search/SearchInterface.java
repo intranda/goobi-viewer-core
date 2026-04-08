@@ -76,7 +76,7 @@ public interface SearchInterface {
     public String getActiveContext();
 
     /**
-     * @param activeContext a {@link java.lang.String} object.
+     * @param activeContext result group name or advanced search template to activate
      */
     public void setActiveContext(String activeContext);
 
@@ -90,7 +90,7 @@ public interface SearchInterface {
     /**
      * Sets the sorting search string.
      *
-     * @param sortString a {@link java.lang.String} object.
+     * @param sortString sort field and direction encoded as search string
      */
     public void setSortString(String sortString);
 
@@ -104,13 +104,13 @@ public interface SearchInterface {
     /**
      * Returns if search is performed only within a certain facet field.
      *
-     * @param fieldName
+     * @param fieldName Solr facet field name to check
      * @return a boolean.
      */
     public boolean isSearchInFacetFieldFlag(String fieldName);
 
     /**
-     * List all current {@link io.goobi.viewer.model.search.SearchFacets}
+     * List all current {@link io.goobi.viewer.model.search.SearchFacets}.
      *
      * @return all current {@link io.goobi.viewer.model.search.SearchFacets}
      */
@@ -119,7 +119,7 @@ public interface SearchInterface {
     /**
      * Returns suggestions for autocomplete.
      *
-     * @param suggestion a {@link java.lang.String} object.
+     * @param suggestion partial input string to complete
      * @return suggestions for autocomplete
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -142,7 +142,7 @@ public interface SearchInterface {
     /**
      * Sets the actual search string.
      *
-     * @param searchString a {@link java.lang.String} object.
+     * @param searchString raw search query to set
      */
     public void setSearchString(String searchString);
 
@@ -163,7 +163,7 @@ public interface SearchInterface {
     /**
      * Sets the current search filter as string.
      *
-     * @param filter a {@link java.lang.String} object.
+     * @param filter search filter identifier string to activate
      */
     public void setCurrentSearchFilterString(String filter);
 
@@ -177,7 +177,7 @@ public interface SearchInterface {
     /**
      * Set the search type to use. The possible types are defined in {@link io.goobi.viewer.model.search.SearchHelper}
      *
-     * @param type a int.
+     * @param type search type constant as defined in SearchHelper
      */
     public void setActiveSearchType(int type);
 

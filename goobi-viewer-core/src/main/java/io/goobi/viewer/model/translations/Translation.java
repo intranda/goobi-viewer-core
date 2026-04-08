@@ -69,8 +69,8 @@ public class Translation {
     /**
      * Creates a new Translation instance.
      *
-     * @param language a {@link java.lang.String} object.
-     * @param translationValue a {@link java.lang.String} object.
+     * @param language ISO language code for this translation
+     * @param translationValue translated text value
      */
     public Translation(String language, String translationValue) {
         this.language = language;
@@ -80,9 +80,9 @@ public class Translation {
     /**
      * Creates a new Translation instance.
      *
-     * @param language a {@link java.lang.String} object.
-     * @param tag a {@link java.lang.String} object.
-     * @param translationValue a {@link java.lang.String} object.
+     * @param language ISO language code for this translation
+     * @param tag category or purpose label for this translation
+     * @param translationValue translated text value
      */
     public Translation(String language, String tag, String translationValue) {
         this.language = language;
@@ -93,7 +93,7 @@ public class Translation {
     /**
      * Clones constructor.
      * 
-     * @param t
+     * @param t translation to copy
      */
     public Translation(Translation t) {
         this.id = t.id;
@@ -105,9 +105,9 @@ public class Translation {
     /**
      * getTranslation.
      *
-     * @param tag a {@link java.lang.String} object.
-     * @param lang a {@link java.lang.String} object.
-     * @param translations a {@link java.util.List} object.
+     * @param tag category label to match against translation entries
+     * @param lang ISO language code of the desired translation
+     * @param translations list of translations to search in
      * @return a {@link java.lang.String} object.
      */
     public static String getTranslation(List<? extends Translation> translations, String lang, String tag) {
@@ -117,10 +117,10 @@ public class Translation {
     /**
      * getTranslation.
      *
-     * @param tag a {@link java.lang.String} object.
-     * @param lang a {@link java.lang.String} object.
+     * @param tag category label to match against translation entries
+     * @param lang ISO language code of the desired translation
      * @param useFallback if no translation for lang exists, use the application default language
-     * @param translations a {@link java.util.List} object.
+     * @param translations list of translations to search in
      * @return a {@link java.lang.String} object.
      */
     public static String getTranslation(List<? extends Translation> translations, String lang, String tag, boolean useFallback) {

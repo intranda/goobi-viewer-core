@@ -84,7 +84,7 @@ public class CmsRecordNotesBean implements Serializable {
     }
 
     /**
-     * @param images
+     * @param images Bean used for image delivery
      */
     public CmsRecordNotesBean(ImageDeliveryBean images) {
         this.images = images;
@@ -107,7 +107,7 @@ public class CmsRecordNotesBean implements Serializable {
     /**
      * Get the thumbnail url for the record related to the note.
      *
-     * @param note
+     * @param note Note whose related record's thumbnail is requested
      * @return Thumbnail URL
      * @throws ViewerConfigurationException
      * @throws PresentationException
@@ -123,9 +123,9 @@ public class CmsRecordNotesBean implements Serializable {
     /**
      * Get the thumbnail url for the record related to the note for given width and height.
      *
-     * @param note
-     * @param width
-     * @param height
+     * @param note Note whose related record's thumbnail is requested
+     * @param width Desired thumbnail width in pixels
+     * @param height Desired thumbnail height in pixels
      * @return Thumbnail URL
      * @throws ViewerConfigurationException
      * @throws PresentationException
@@ -155,8 +155,8 @@ public class CmsRecordNotesBean implements Serializable {
     }
 
     /**
-     * 
-     * @param note
+     *
+     * @param note Note whose related record URL is requested
      * @return Record URL
      * @throws IndexUnreachableException
      * @throws PresentationException

@@ -88,7 +88,7 @@ public class CMSArchiveConfig implements CMSMediaMultiHolder, Serializable {
 
     /**
      * 
-     * @param pi
+     * @param pi persistent identifier of the archive resource
      */
     public CMSArchiveConfig(String pi) {
         this.pi = pi;

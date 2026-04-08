@@ -54,9 +54,9 @@ public class DefaultQueueListener {
     private ActiveMQConnection conn = null;
 
     /**
-     * 
-     * @param messageBroker
-     * @param queueType
+     *
+     * @param messageBroker message queue manager used to obtain connections and handle messages
+     * @param queueType name of the ActiveMQ queue to listen on
      */
     public DefaultQueueListener(MessageQueueManager messageBroker, String queueType) {
         this.messageBroker = messageBroker;
@@ -79,9 +79,9 @@ public class DefaultQueueListener {
     }
 
     /**
-     * 
-     * @param queueType
-     * @param conn
+     *
+     * @param queueType name of the ActiveMQ queue to listen on
+     * @param conn active ActiveMQ connection used to start the listener
      */
     void startMessageLoop(String queueType, ActiveMQConnection conn) {
         try {
@@ -96,9 +96,9 @@ public class DefaultQueueListener {
     }
 
     /**
-     * 
-     * @param queueType
-     * @param conn
+     *
+     * @param queueType name of the ActiveMQ queue to consume messages from
+     * @param conn active ActiveMQ connection from which to create a session
      * @throws JMSException
      */
     void startListener(String queueType, ActiveMQConnection conn) throws JMSException {
@@ -118,9 +118,9 @@ public class DefaultQueueListener {
     }
 
     /**
-     * 
-     * @param sess
-     * @param consumer
+     *
+     * @param sess JMS session used to recover on error or wait
+     * @param consumer message consumer to poll for the next message
      */
     void waitForMessage(Session sess, MessageConsumer consumer) {
         try {
@@ -177,10 +177,10 @@ public class DefaultQueueListener {
     }
 
     /**
-     * 
-     * @param sess
-     * @param message
-     * @param inTicket
+     *
+     * @param sess JMS session used to acknowledge or recover the message
+     * @param message raw JMS message to acknowledge or recover after processing
+     * @param inTicket parsed viewer message containing the task to handle
      * @throws JMSException
      */
     void handleTicket(final Session sess, Message message, final ViewerMessage inTicket) throws JMSException {

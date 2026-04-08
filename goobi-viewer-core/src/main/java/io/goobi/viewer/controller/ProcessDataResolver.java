@@ -127,7 +127,7 @@ public class ProcessDataResolver {
      * Returns a map of Paths for each data folder name passed as an argument.
      *
      * @param pi The record identifier. This is both the actual name of the folder and the identifier used to look up data repository in Solr
-     * @param dataFolderNames a {@link java.lang.String} object.
+     * @param dataFolderNames names of the data folders to resolve
      * @return HashMap&lt;dataFolderName,Path&gt;
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -172,8 +172,8 @@ public class ProcessDataResolver {
     /**
      * Returns the data folder path for the given record identifier. To be used in clients that already possess the data repository name.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param dataFolderName a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record
+     * @param dataFolderName name of the data subfolder (e.g. 'alto', 'media')
      * @param dataRepositoryFolder Absolute path to the data repository folder or just the folder name
      * @return a {@link java.nio.file.Path} object.
      * @should return correct folder if no data repository used
@@ -225,7 +225,7 @@ public class ProcessDataResolver {
     /**
      * Removes any path elements from the given file name.
      *
-     * @param fileName
+     * @param fileName file name or path to sanitize
      * @return Lowest level file name
      * @should remove everything but the file name from given path
      */
@@ -260,8 +260,8 @@ public class ProcessDataResolver {
     /**
      * Returns the absolute path to the source (METS/LIDO) file with the given file name.
      *
-     * @param fileName a {@link java.lang.String} object.
-     * @param format a {@link java.lang.String} object.
+     * @param fileName source file name (basename is used as record identifier)
+     * @param format source document format (e.g. METS, LIDO)
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -275,9 +275,9 @@ public class ProcessDataResolver {
     /**
      * Returns the absolute path to the source (METS/LIDO/DENKXWEB/DUBLINCORE) file with the given file name.
      *
-     * @param fileName a {@link java.lang.String} object.
-     * @param dataRepository a {@link java.lang.String} object.
-     * @param format a {@link java.lang.String} object.
+     * @param fileName source file name including extension
+     * @param dataRepository path or name of the data repository folder
+     * @param format source document format (e.g. METS, LIDO)
      * @return a {@link java.lang.String} object.
      * @should construct METS file path correctly
      * @should construct LIDO file path correctly
@@ -333,9 +333,9 @@ public class ProcessDataResolver {
     /**
      * getTextFilePath.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param fileName a {@link java.lang.String} object.
-     * @param format a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record
+     * @param fileName name of the text file
+     * @param format text format constant (e.g. FILENAME_ALTO, FILENAME_FULLTEXT)
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -370,7 +370,7 @@ public class ProcessDataResolver {
     /**
      * getTextFilePath.
      *
-     * @param pi a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record
      * @param relativeFilePath ALTO/text file path relative to the data folder
      * @return a {@link java.nio.file.Path} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -390,8 +390,8 @@ public class ProcessDataResolver {
      *
      * @param altoFilePath ALTO file path relative to the repository root (e.g. "alto/PPN123/00000001.xml")
      * @param fulltextFilePath plain full-text file path relative to the repository root (e.g. "fulltext/PPN123/00000001.xml")
-     * @param mergeLineBreakWords a boolean.
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param mergeLineBreakWords true to merge words split across line breaks
+     * @param request HTTP request used for access permission checks
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
      * @throws java.io.IOException if any.
@@ -440,7 +440,7 @@ public class ProcessDataResolver {
 
     /**
      *
-     * @param altoFilePath
+     * @param altoFilePath path to the ALTO XML file
      * @return StringPair(ALTO,charset)
      * @throws ContentNotFoundException
      * @throws IndexUnreachableException
@@ -469,8 +469,8 @@ public class ProcessDataResolver {
     /**
      * loadTei.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param language a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record
+     * @param language ISO language code for the requested TEI document
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
      * @throws java.io.IOException if any.
@@ -493,7 +493,7 @@ public class ProcessDataResolver {
     /**
      * Creates a Dataset object, containing all relevant file paths.
      * 
-     * @param pi a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record to build the dataset for
      * @return a {@link io.goobi.viewer.model.viewer.Dataset} object.
      * @throws PresentationException
      * @throws IndexUnreachableException

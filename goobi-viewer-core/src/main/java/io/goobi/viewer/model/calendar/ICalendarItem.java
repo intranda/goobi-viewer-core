@@ -50,7 +50,7 @@ public interface ICalendarItem extends Comparable<ICalendarItem> {
     /**
      * setHits.
      *
-     * @param hits a int.
+     * @param hits number of search hits for this item
      */
     public void setHits(int hits);
 
@@ -64,7 +64,7 @@ public interface ICalendarItem extends Comparable<ICalendarItem> {
     /**
      * setSelected.
      *
-     * @param selected a boolean.
+     * @param selected true to mark this item as selected
      */
     public void setSelected(boolean selected);
 

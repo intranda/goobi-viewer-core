@@ -40,8 +40,8 @@ public class BearerTokenManager {
 
     /**
      * 
-     * @param token
-     * @param session
+     * @param token the bearer access token to register
+     * @param session the HTTP session associated with the token
      * @should add token correctly
      */
     public void addToken(AuthAccessToken2 token, HttpSession session) {

@@ -93,7 +93,7 @@ public class CmsNavigationBean implements Serializable {
     /**
      * Setter for the field <code>menuItemList</code>.
      *
-     * @param menuItemList a {@link java.lang.String} object.
+     * @param menuItemList serialized menu item order string from the UI
      */
     public void setMenuItemList(String menuItemList) {
         this.menuItemList = menuItemList;
@@ -102,7 +102,7 @@ public class CmsNavigationBean implements Serializable {
     /**
      * Creates the visible items hiearchy from the string argument.
      *
-     * @param itemString a {@link java.lang.String} object.
+     * @param itemString serialized item hierarchy string from the drag-and-drop UI
      * @return true if the items could be serialized. False if the item ids don't match any items
      */
     public boolean deserializeMenuItems(String itemString) {
@@ -233,7 +233,7 @@ public class CmsNavigationBean implements Serializable {
     /**
      * Setter for the field <code>itemManager</code>.
      *
-     * @param itemManager a {@link io.goobi.viewer.model.cms.CMSNavigationManager} object.
+     * @param itemManager navigation manager to replace the current one
      */
     public void setItemManager(CMSNavigationManager itemManager) {
         this.itemManager = itemManager;
@@ -251,7 +251,7 @@ public class CmsNavigationBean implements Serializable {
     /**
      * Setter for the field <code>editMode</code>.
      *
-     * @param editMode the editMode to set
+     * @param editMode true to enable item editing mode
      */
     public void setEditMode(boolean editMode) {
         this.editMode = editMode;
@@ -288,7 +288,7 @@ public class CmsNavigationBean implements Serializable {
     /**
      * setSelectedTheme.
      *
-     * @param selectedTheme the selectedTheme to set
+     * @param selectedTheme theme name to select for the navigation menu
      */
     public void setSelectedTheme(String selectedTheme) {
         if (!selectedTheme.equals(getItemManager().getAssociatedTheme())) {

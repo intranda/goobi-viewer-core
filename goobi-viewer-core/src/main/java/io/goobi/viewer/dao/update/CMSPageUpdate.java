@@ -223,11 +223,11 @@ public class CMSPageUpdate implements IModelUpdate {
     }
 
     /**
-     * 
-     * @param contentItemMap
-     * @param pageLanguageVersions
-     * @param title
-     * @param dao
+     *
+     * @param contentItemMap map of language version IDs to their content item rows
+     * @param pageLanguageVersions language versions of the page mapped by language string
+     * @param title translated title text of the page
+     * @param dao DAO instance used to load referenced media items
      * @return An optional containing a {@link PersistentCMSComponent}. Empty if no preview items were found
      * @throws DAOException
      */
@@ -259,11 +259,11 @@ public class CMSPageUpdate implements IModelUpdate {
     }
 
     /**
-     * 
-     * @param contentItemMap
-     * @param pageLanguageVersions
-     * @param title
-     * @param previewImage
+     *
+     * @param contentItemMap map of language version IDs to their content item rows
+     * @param pageLanguageVersions language versions of the page mapped by language string
+     * @param title translated title used as fallback preview text
+     * @param previewImage preview image; if set and preview text is empty, title is used
      * @return A {@link TranslatedText} object containing all prreview text. Is empty if not preview text was found
      */
     private static TranslatedText getPreviewText(Map<Long, List<Map<String, Object>>> contentItemMap,
@@ -277,11 +277,11 @@ public class CMSPageUpdate implements IModelUpdate {
     }
 
     /**
-     * 
-     * @param contentItemMap
-     * @param pageLanguageVersions
-     * @param itemId
-     * @param dao
+     *
+     * @param contentItemMap map of language version IDs to their content item rows
+     * @param pageLanguageVersions language versions of the page mapped by language string
+     * @param itemId legacy item ID identifying the image content item
+     * @param dao DAO instance used to load the media item by ID
      * @return The {@link CMSMediaItem} for the given itemId. May be null
      * @throws DAOException
      */
@@ -299,10 +299,10 @@ public class CMSPageUpdate implements IModelUpdate {
     }
 
     /**
-     * 
-     * @param contentItemMap
-     * @param pageLanguageVersions
-     * @param itemId
+     *
+     * @param contentItemMap map of language version IDs to their content item rows
+     * @param pageLanguageVersions language versions of the page mapped by language string
+     * @param itemId legacy item ID identifying the text content item
      * @return A {@link TranslatedText} for the given itemId. May be empty, but not null
      */
     private static TranslatedText getText(Map<Long, List<Map<String, Object>>> contentItemMap,

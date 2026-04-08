@@ -52,7 +52,7 @@ public class DocumentReference {
     /**
      * Creates a new DocumentReference instance.
      *
-     * @param piTopStruct a {@link java.lang.String} object.
+     * @param piTopStruct persistent identifier of the top-level structure
      */
     public DocumentReference(String piTopStruct) {
         super();
@@ -72,7 +72,7 @@ public class DocumentReference {
     /**
      * Setter for the field <code>pageRanges</code>.
      *
-     * @param ranges a {@link java.util.List} object.
+     * @param ranges sorted list of tag groups to set
      */
     public void setPageRanges(List<TagGroup> ranges) {
         this.pageRanges = ranges;
@@ -82,7 +82,7 @@ public class DocumentReference {
     /**
      * addPageRange.
      *
-     * @param range a {@link io.goobi.viewer.api.rest.model.ner.TagGroup} object.
+     * @param range tag group representing a page range to add
      */
     public void addPageRange(TagGroup range) {
         this.pageRanges.add(range);
@@ -92,7 +92,7 @@ public class DocumentReference {
     /**
      * addPageRanges.
      *
-     * @param ranges a {@link java.util.Collection} object.
+     * @param ranges collection of tag groups to add
      */
     public void addPageRanges(Collection<TagGroup> ranges) {
         this.pageRanges.addAll(ranges);
@@ -112,7 +112,7 @@ public class DocumentReference {
     /**
      * getPageRange.
      *
-     * @param startPage a int.
+     * @param startPage page order number to look up in ranges
      * @return a {@link io.goobi.viewer.api.rest.model.ner.TagGroup} object.
      */
     public TagGroup getPageRange(int startPage) {

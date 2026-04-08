@@ -54,7 +54,7 @@ public class LanguageHelper {
     /**
      * Creates a new LanguageHelper instance.
      *
-     * @param configFilePath a {@link java.lang.String} object.
+     * @param configFilePath path to the languages XML configuration file
      */
     public LanguageHelper(String configFilePath) {
         try {
@@ -134,7 +134,7 @@ public class LanguageHelper {
     /**
      * Gets the language data for the given iso-code 639-1 or 639-2B.
      *
-     * @param inIsoCode a {@link java.lang.String} object.
+     * @param inIsoCode ISO 639-1 or 639-2/B language code to look up
      * @return a {@link io.goobi.viewer.model.translations.language.Language} object.
      */
     public Language getLanguage(final String inIsoCode) {
@@ -170,7 +170,7 @@ public class LanguageHelper {
     }
 
     /**
-     * @param languageConfig
+     * @param languageConfig XML configuration node for a single language entry
      * @return Created {@link Language}
      */
     public Language createLanguage(HierarchicalConfiguration<ImmutableNode> languageConfig) {

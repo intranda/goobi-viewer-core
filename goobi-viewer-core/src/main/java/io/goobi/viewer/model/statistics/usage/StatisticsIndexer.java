@@ -47,7 +47,7 @@ import io.goobi.viewer.exceptions.DAOException;
 public class StatisticsIndexer {
 
     /**
-     * Absolute path to write index files to
+     * Absolute path to write index files to.
      */
     private final Path hotfolder;
 
@@ -61,7 +61,7 @@ public class StatisticsIndexer {
     }
 
     /**
-     * constructor using the {@link #hotfolder} given by {@link Configuration#getHotfolder()}
+     * constructor using the {@link #hotfolder} given by {@link Configuration#getHotfolder()}.
      * 
      * @throws DAOException
      */
@@ -70,7 +70,7 @@ public class StatisticsIndexer {
     }
 
     /**
-     * Write index file to {@link #hotfolder} path for the given {@link DailySessionUsageStatistics}
+     * Write index file to {@link #hotfolder} path for the given {@link DailySessionUsageStatistics}.
      * 
      * @param stats the statistics to index
      * @return The filepath to the index files

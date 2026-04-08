@@ -88,20 +88,20 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * Creates a new TOCElement instance.
      *
-     * @param label a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
-     * @param pageNo a {@link java.lang.String} object.
-     * @param pageNoLabel a {@link java.lang.String} object.
-     * @param iddoc a {@link java.lang.String} object.
-     * @param logId a {@link java.lang.String} object.
-     * @param level a int.
-     * @param topStructPi a {@link java.lang.String} object.
-     * @param thumbnailUrl a {@link java.lang.String} object.
-     * @param accessPermissionPdf a boolean.
-     * @param anchorOrGroup a boolean.
-     * @param hasImages a boolean.
-     * @param recordMimeType a {@link java.lang.String} object.
-     * @param docStructType a {@link java.lang.String} object.
-     * @param footerId a {@link java.lang.String} object.
+     * @param label multilingual display label for this element
+     * @param pageNo physical page number as string
+     * @param pageNoLabel human-readable page label
+     * @param iddoc Solr IDDOC identifier of this element
+     * @param logId logical structure ID from METS
+     * @param level nesting depth in the TOC hierarchy
+     * @param topStructPi persistent identifier of the top-level record
+     * @param thumbnailUrl URL of the representative thumbnail image
+     * @param accessPermissionPdf true if PDF download is permitted
+     * @param anchorOrGroup true if this element is an anchor or group record
+     * @param hasImages true if the structure element has image pages
+     * @param recordMimeType MIME type of the associated record
+     * @param docStructType document structure type string from METS
+     * @param footerId identifier for the associated footer configuration
      * @should add logId to url
      * @should set correct view url for given docStructType
      */
@@ -225,8 +225,8 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * Getter for the field <code>thumbnailUrl</code>.
      *
-     * @param width a int.
-     * @param height a int.
+     * @param width desired thumbnail width in pixels
+     * @param height desired thumbnail height in pixels
      * @return a {@link java.lang.String} object.
      */
     public String getThumbnailUrl(int width, int height) {
@@ -278,7 +278,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * Getter for the field <code>label</code>.
      *
-     * @param locale a {@link java.util.Locale} object.
+     * @param locale locale used to select the label value
      * @return the label
      */
     public String getLabel(Locale locale) {
@@ -288,7 +288,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * Getter for the field <code>label</code>.
      *
-     * @param locale a {@link java.lang.String} object.
+     * @param locale BCP 47 language tag for label selection
      * @return the label
      */
     public String getLabel(String locale) {
@@ -307,7 +307,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * getMetadataValue.
      *
-     * @param key a {@link java.lang.String} object.
+     * @param key metadata field name to look up
      * @return a {@link java.lang.String} object.
      */
     public String getMetadataValue(String key) {
@@ -380,7 +380,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * Returns the URL for this element that links to the requested view type.
      *
-     * @param viewType a {@link java.lang.String} object.
+     * @param viewType name of the requested page view type
      * @should construct full screen url correctly
      * @should construct reading mode url correctly
      * @return a {@link java.lang.String} object.
@@ -434,7 +434,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * Setter for the field <code>visible</code>.
      *
-     * @param visible a boolean.
+     * @param visible true to show this element, false to hide it
      */
     public void setVisible(boolean visible) {
         this.visible = visible;
@@ -452,7 +452,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * Setter for the field <code>parentId</code>.
      *
-     * @param parentId a int.
+     * @param parentId ID of the parent TOC element
      */
     public void setParentId(int parentId) {
         this.parentId = parentId;
@@ -470,7 +470,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * setID.
      *
-     * @param iD a int.
+     * @param iD numeric ID to assign to this element
      */
     public void setID(int iD) {
         id = iD;
@@ -488,7 +488,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * Setter for the field <code>expanded</code>.
      *
-     * @param expanded a boolean.
+     * @param expanded true if this element should be shown expanded
      */
     public void setExpanded(boolean expanded) {
         this.expanded = expanded;
@@ -506,7 +506,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * Setter for the field <code>hasChild</code>.
      *
-     * @param hasChild a boolean.
+     * @param hasChild true if this element has child elements
      */
     public void setHasChild(boolean hasChild) {
         this.hasChild = hasChild;
@@ -524,7 +524,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * Setter for the field <code>groupIds</code>.
      *
-     * @param groupIds the groupIds to set
+     * @param groupIds list of group identifier strings to assign
      */
     public void setGroupIds(List<String> groupIds) {
         this.groupIds = groupIds;

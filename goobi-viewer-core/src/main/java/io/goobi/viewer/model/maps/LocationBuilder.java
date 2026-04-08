@@ -75,7 +75,7 @@ public class LocationBuilder {
 
     /**
      * 
-     * @param value
+     * @param value string containing coordinate pairs to parse
      * @return double[][]
      */
     private double[][] getPoints(String value) {
@@ -89,8 +89,8 @@ public class LocationBuilder {
 
     /**
      * 
-     * @param x
-     * @param y
+     * @param x longitude or x-coordinate value (String or Number)
+     * @param y latitude or y-coordinate value (String or Number)
      * @return double[][]
      */
     private double[] parsePoint(Object x, Object y) {

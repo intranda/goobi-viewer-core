@@ -50,7 +50,7 @@ public class SqlCommentLister implements AnnotationLister<Comment> {
     }
 
     /**
-     * @param dao
+     * @param dao data access object for comment queries
      */
     public SqlCommentLister(IDAO dao) {
         this.dao = dao;

@@ -39,10 +39,10 @@ public class TableDataSourceException extends RuntimeException {
     /**
      * Creates a new TableDataSourceException instance.
      *
-     * @param arg0 a {@link java.lang.String} object.
-     * @param arg1 a {@link java.lang.Throwable} object.
-     * @param arg2 a boolean.
-     * @param arg3 a boolean.
+     * @param arg0 human-readable error message
+     * @param arg1 underlying cause of this exception
+     * @param arg2 whether suppression is enabled
+     * @param arg3 whether the stack trace is writable
      */
     public TableDataSourceException(String arg0, Throwable arg1, boolean arg2, boolean arg3) {
         super(arg0, arg1, arg2, arg3);
@@ -52,8 +52,8 @@ public class TableDataSourceException extends RuntimeException {
     /**
      * Creates a new TableDataSourceException instance.
      *
-     * @param arg0 a {@link java.lang.String} object.
-     * @param arg1 a {@link java.lang.Throwable} object.
+     * @param arg0 human-readable error message
+     * @param arg1 underlying cause of this exception
      */
     public TableDataSourceException(String arg0, Throwable arg1) {
         super(arg0, arg1);
@@ -63,7 +63,7 @@ public class TableDataSourceException extends RuntimeException {
     /**
      * Creates a new TableDataSourceException instance.
      *
-     * @param arg0 a {@link java.lang.String} object.
+     * @param arg0 human-readable error message
      */
     public TableDataSourceException(String arg0) {
         super(arg0);
@@ -73,7 +73,7 @@ public class TableDataSourceException extends RuntimeException {
     /**
      * Creates a new TableDataSourceException instance.
      *
-     * @param arg0 a {@link java.lang.Throwable} object.
+     * @param arg0 underlying cause of this exception
      */
     public TableDataSourceException(Throwable arg0) {
         super(arg0);

@@ -63,7 +63,7 @@ public class CMSSingleRecordNote extends CMSRecordNote {
     }
 
     /**
-     * @param pi
+     * @param pi persistent identifier of the record
      */
     public CMSSingleRecordNote(String pi) {
         super();
@@ -71,7 +71,7 @@ public class CMSSingleRecordNote extends CMSRecordNote {
     }
 
     /**
-     * @param source
+     * @param source the note to copy from
      */
     public CMSSingleRecordNote(CMSRecordNote source) {
         super(source);

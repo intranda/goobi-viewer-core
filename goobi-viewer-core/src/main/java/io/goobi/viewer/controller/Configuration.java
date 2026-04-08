@@ -155,7 +155,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Creates a new Configuration instance.
      *
-     * @param configFilePath a {@link java.lang.String} object.
+     * @param configFilePath path to the default configuration XML file
      */
     public Configuration(String configFilePath) {
         // Load default config file
@@ -224,7 +224,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * loadStopwords.
      *
-     * @param stopwordsFilePath a {@link java.lang.String} object.
+     * @param stopwordsFilePath path to the stopwords file to read
      * @return a {@link java.util.Set} object.
      * @throws java.io.IOException if any.
      * @should load all stopwords
@@ -406,10 +406,10 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @param type
-     * @param template
-     * @param fallbackToDefaultTemplate
-     * @param topstructValueFallbackDefaultValue
+     * @param type metadata list type attribute value
+     * @param template template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
+     * @param topstructValueFallbackDefaultValue default value for topstructValueFallback attribute
      * @return List of metadata configurations
      * @should throw IllegalArgumentException if type null
      * @should return empty list if no metadata lists configured
@@ -426,10 +426,10 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @param type
-     * @param template
-     * @param fallbackToDefaultTemplate
-     * @param topstructValueFallbackDefaultValue
+     * @param type metadata list type attribute value
+     * @param template template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
+     * @param topstructValueFallbackDefaultValue default value for topstructValueFallback attribute
      * @return List of metadata configurations
      * @should throw IllegalArgumentException if type null
      * @should return empty list if no metadata lists configured
@@ -478,7 +478,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @param type
+     * @param type metadata list type attribute value
      * @return Map&lt;String, List&lt;Metadata&gt;&gt;
      * @should return empty map if type null
      * @should return correct config
@@ -493,9 +493,9 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @param type
-     * @param fallbackToDefaultTemplate
-     * @param topstructValueFallbackDefaultValue
+     * @param type metadata list type attribute value
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
+     * @param topstructValueFallbackDefaultValue default value for topstructValueFallback attribute
      * @return Map&lt;String, List&lt;Metadata&gt;&gt;
      */
     public Map<String, List<Metadata>> getMetadataTemplates(String type, boolean fallbackToDefaultTemplate,
@@ -539,7 +539,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Returns the list of configured metadata for search hit elements.
      *
-     * @param template a {@link java.lang.String} object.
+     * @param template template name to look up
      * @should return correct template configuration
      * @should return default template configuration if requested not found
      * @should return default template if template is null
@@ -558,7 +558,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Returns the list of configured metadata for pages.
      *
-     * @param template a {@link java.lang.String} object.
+     * @param template template name to look up
      * @should return correct template configuration
      * @should return default template configuration if requested not found
      * @should return default template if template is null
@@ -571,7 +571,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Returns the list of configured metadata for {@link Highlight}s which reference a record.
      *
-     * @param template a {@link java.lang.String} object.
+     * @param template template name to look up
      * @should return default template configuration if requested not found
      * @return a {@link java.util.List} object.
      */
@@ -617,8 +617,8 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @param index
-     * @param template
+     * @param index zero-based index of the metadataView element to use
+     * @param template template name to look up
      * @return List of configured <code>Metadata</code> fields for the given template
      * @should return correct template configuration
      * @should return default template configuration if template not found
@@ -633,8 +633,8 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @param index
-     * @param template
+     * @param index zero-based index of the metadataView element to use
+     * @param template template name to look up
      * @return List of configured <code>Metadata</code> fields for the given template
      * @should return correct template configuration
      * @should return default template configuration if template not found
@@ -734,7 +734,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Reads metadata configuration for the given template configuration item. Returns empty list if template is null.
      *
-     * @param usingTemplate
+     * @param usingTemplate the template configuration node to read metadata from
      * @param topstructValueFallbackDefaultValue Default value for topstructValueFallback, if not explicitly configured
      * @return Configured values
      */
@@ -767,9 +767,9 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Selects template from given list and optionally returns default template configuration.
      * 
-     * @param templateList
-     * @param template
-     * @param fallbackToDefaultTemplate
+     * @param templateList list of template configuration nodes to search
+     * @param template template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
      * @return Configured values
      */
     static HierarchicalConfiguration<ImmutableNode> selectTemplate(List<HierarchicalConfiguration<ImmutableNode>> templateList, String template,
@@ -798,11 +798,11 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Creates a {@link Metadata} instance from the given subnode configuration
+     * Creates a {@link Metadata} instance from the given subnode configuration.
      *
      * @param sub The subnode configuration
-     * @param topstructValueFallbackDefaultValue
-     * @param indentation
+     * @param topstructValueFallbackDefaultValue default value for topstructValueFallback attribute
+     * @param indentation indentation level for nested metadata
      * @return the resulting {@link Metadata} instance
      * @should load metadata config attributes correctly
      * @should load parameters correctly
@@ -897,7 +897,7 @@ public class Configuration extends AbstractConfiguration {
      *
      * @should return correct template configuration
      * @should return default template configuration if template not found
-     * @param template a {@link java.lang.String} object.
+     * @param template template name to look up
      * @return a {@link java.util.List} object.
      */
     public List<Metadata> getTocLabelConfiguration(String template) {
@@ -1444,7 +1444,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getCollectionSplittingChar.
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field collection Solr field name to look up
      * @should return correct value
      * @return a {@link java.lang.String} object.
      */
@@ -1460,7 +1460,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Returns the config block for the given field.
      *
-     * @param field
+     * @param field collection Solr field name
      * @return Configured values
      */
     private HierarchicalConfiguration<ImmutableNode> getCollectionConfiguration(String field) {
@@ -1514,7 +1514,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getCollectionSorting.
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field collection Solr field name to look up
      * @return a {@link java.util.List} object.
      * @should return all configured elements
      */
@@ -1539,7 +1539,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Returns collection names to be omitted from search results, listings etc.
      *
-     * @param field a {@link java.lang.String} object
+     * @param field collection Solr field name to look up
      * @return a {@link java.util.List} object.
      * @should return all configured elements
      */
@@ -1554,7 +1554,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Returns the index field by which records in the collection with the given name are to be sorted in a listing.
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field collection Solr field name to look up
      * @return a {@link java.lang.String} object.
      * @should return correct field for collection
      * @should give priority to exact matches
@@ -1583,7 +1583,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getCollectionDisplayNumberOfVolumesLevel.
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field collection Solr field name to look up
      * @should return correct value
      * @return a int.
      */
@@ -1598,7 +1598,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getCollectionDisplayDepthForSearch.
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field collection Solr field name to look up
      * @should return correct value
      * @should return -1 if no collection config was found
      * @return a int.
@@ -1632,7 +1632,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * isAddCollectionHierarchyToBreadcrumbs.
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field collection Solr field name to look up
      * @should return correct value
      * @should return false if no collection config was found
      * @return a boolean.
@@ -1892,7 +1892,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @param template
+     * @param template advanced search template name to look up
      * @return Value of the query attribute; empty string if none found
      * @should return correct value
      */
@@ -1912,9 +1912,9 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getAdvancedSearchFields.
      *
-     * @param template
-     * @param fallbackToDefaultTemplate
-     * @param language
+     * @param template advanced search template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
+     * @param language language code used to filter language-specific fields
      * @return a {@link java.util.List} object.
      * @should return all values
      * @should return skip fields that don't match given language
@@ -2073,9 +2073,9 @@ public class Configuration extends AbstractConfiguration {
     /**
      * isAdvancedSearchFieldHierarchical.
      *
-     * @param field a {@link java.lang.String} object.
-     * @param template
-     * @param fallbackToDefaultTemplate
+     * @param field advanced search field name to check
+     * @param template advanced search template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
      * @return a boolean.
      * @should return correct value
      */
@@ -2086,9 +2086,9 @@ public class Configuration extends AbstractConfiguration {
     /**
      * isAdvancedSearchFieldRange.
      *
-     * @param field a {@link java.lang.String} object.
-     * @param template
-     * @param fallbackToDefaultTemplate
+     * @param field advanced search field name to check
+     * @param template advanced search template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
      * @return a boolean.
      * @should return correct value
      */
@@ -2097,9 +2097,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @param field a {@link java.lang.String} object.
-     * @param template
-     * @param fallbackToDefaultTemplate
+     * @param field advanced search field name to check
+     * @param template advanced search template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
      * @return a boolean.
      */
     public boolean isAdvancedSearchFieldDatepicker(String field, String template, boolean fallbackToDefaultTemplate) {
@@ -2109,9 +2109,9 @@ public class Configuration extends AbstractConfiguration {
     /**
      * isAdvancedSearchFieldAllowMultipleItems.
      *
-     * @param field a {@link java.lang.String} object.
-     * @param template
-     * @param fallbackToDefaultTemplate
+     * @param field advanced search field name to check
+     * @param template advanced search template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
      * @return a boolean.
      * @should return correct value
      */
@@ -2123,9 +2123,9 @@ public class Configuration extends AbstractConfiguration {
     /**
      * isAdvancedSearchFieldUntokenizeForPhraseSearch.
      *
-     * @param field a {@link java.lang.String} object.
-     * @param template
-     * @param fallbackToDefaultTemplate
+     * @param field advanced search field name to check
+     * @param template advanced search template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
      * @return a boolean.
      * @should return correct value
      */
@@ -2135,9 +2135,9 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @param field
-     * @param template
-     * @param fallbackToDefaultTemplate
+     * @param field advanced search field name
+     * @param template advanced search template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
      * @return Configured value
      * @should return correct value
      */
@@ -2166,9 +2166,9 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @param field
-     * @param template
-     * @param fallbackToDefaultTemplate
+     * @param field advanced search field name
+     * @param template advanced search template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
      * @return Configured value
      * @should return correct value
      */
@@ -2184,9 +2184,9 @@ public class Configuration extends AbstractConfiguration {
     /**
      * isAdvancedSearchFieldHierarchical.
      *
-     * @param field a {@link java.lang.String} object.
-     * @param template
-     * @param fallbackToDefaultTemplate
+     * @param field advanced search field name to check
+     * @param template advanced search template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
      * @return Label attribute value for the given field name
      * @should return correct value
      */
@@ -2195,10 +2195,10 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param field
-     * @param template
-     * @param fallbackToDefaultTemplate
+     *
+     * @param field advanced search field name
+     * @param template advanced search template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
      * @return Configured value; null if none found
      * @should return correct value
      */
@@ -2207,10 +2207,10 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param field
-     * @param template
-     * @param fallbackToDefaultTemplate
+     *
+     * @param field advanced search field name
+     * @param template advanced search template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
      * @return Configured value; null if none found
      * @should return correct value
      */
@@ -2219,10 +2219,10 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param field
-     * @param template
-     * @param fallbackToDefaultTemplate
+     *
+     * @param field advanced search field name
+     * @param template advanced search template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
      * @return Configured value; null if none found
      * @should return correct value
      */
@@ -2231,8 +2231,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param template
+     *
+     * @param template advanced search template name to look up
      * @return Configured value; null if none found
      * @should return correct value
      */
@@ -2250,11 +2250,11 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param field
-     * @param attribute
-     * @param template
-     * @param fallbackToDefaultTemplate
+     *
+     * @param field advanced search field name
+     * @param attribute XML attribute name to read
+     * @param template advanced search template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
      * @return Configured value; null if none found
      */
     String getAdvancedSearchFieldGetAttributeValue(String field, String attribute, String template, boolean fallbackToDefaultTemplate) {
@@ -2284,8 +2284,8 @@ public class Configuration extends AbstractConfiguration {
      *
      * @param field Advanced search field name
      * @param attribute Attribute name
-     * @param template
-     * @param fallbackToDefaultTemplate
+     * @param template advanced search template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
      * @return Configured value; false if none found
      */
     boolean isAdvancedSearchFieldHasAttribute(String field, String attribute, String template, boolean fallbackToDefaultTemplate) {
@@ -2955,9 +2955,9 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * Returns the config block for the given path and name attribute value.
-     * 
-     * @param path
-     * @param name
+     *
+     * @param path XPath expression for the config elements
+     * @param name value of the name attribute to match
      * @param globalFallback If true, search in global config if desired name not found in local
      * @return HierarchicalConfiguration<ImmutableNode>; null if none found
      */
@@ -2989,7 +2989,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @param field
+     * @param field sidebar view field name
      * @return Configured values
      */
     /**
@@ -3017,7 +3017,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @param field
+     * @param name sidebar widget field name
      * @return Configured values
      */
     private HierarchicalConfiguration<ImmutableNode> getSidebarWidgetConfiguration(String name) {
@@ -3028,7 +3028,7 @@ public class Configuration extends AbstractConfiguration {
      * 
      * @param widgetName Widget name
      * @param valuePath Path to the wanted value
-     * @param defaultValue
+     * @param defaultValue value to return if none configured
      * @return a boolean
      */
     private boolean getSidebarWidgetBooleanValue(String widgetName, String valuePath, boolean defaultValue) {
@@ -3044,7 +3044,7 @@ public class Configuration extends AbstractConfiguration {
      * 
      * @param widgetName Widget name
      * @param valuePath Path to the wanted value
-     * @param defaultValue
+     * @param defaultValue value to return if none configured
      * @return an int
      */
     private int getSidebarWidgetIntValue(String widgetName, String valuePath, int defaultValue) {
@@ -3060,7 +3060,7 @@ public class Configuration extends AbstractConfiguration {
      * 
      * @param widgetName Widget name
      * @param valuePath Path to the wanted value
-     * @param defaultValue
+     * @param defaultValue value to return if none configured
      * @return a {@link String}
      */
     private String getSidebarWidgetStringValue(String widgetName, String valuePath, String defaultValue) {
@@ -3075,7 +3075,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * isFoldout.
      *
-     * @param sidebarElement a {@link java.lang.String} object.
+     * @param sidebarElement sidebar widget name to check
      * @return a boolean.
      */
     public boolean isFoldout(String sidebarElement) {
@@ -3230,7 +3230,7 @@ public class Configuration extends AbstractConfiguration {
      *
      * @should return true for allowed docstructs
      * @should return false for other docstructs
-     * @param docStructType a {@link java.lang.String} object.
+     * @param docStructType document structure type to check against configured allowlist
      * @return a boolean.
      */
     public boolean isTocTreeView(String docStructType) {
@@ -3363,8 +3363,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param facetField
+     *
+     * @param facetField facet field name
      * @return Configured value
      * @should return correct value
      * @should return INT_MIN if no value configured
@@ -3379,8 +3379,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param facetField
+     *
+     * @param facetField facet field name
      * @return Configured value
      * @should return correct value
      * @should return INT_MAX if no value configured
@@ -3395,8 +3395,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param facetField
+     *
+     * @param facetField facet field name
      * @return Configured value
      * @should return correct value
      */
@@ -3423,7 +3423,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @param facetField
+     * @param facetField facet field name
      * @return Configured value
      * @should return correct value
      */
@@ -3433,7 +3433,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @param facetField
+     * @param facetField facet field name
      * @return Configured value
      * @should return correct value
      */
@@ -3445,7 +3445,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getInitialFacetElementNumber.
      *
-     * @param facetField a {@link java.lang.String} object.
+     * @param facetField facet field name to look up
      * @return Number of initial facet values
      * @should return correct value
      * @should return default value if field not found
@@ -3462,7 +3462,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getFacetFieldDescriptionKey.
      *
-     * @param facetField a {@link java.lang.String} object.
+     * @param facetField facet field name to look up
      * @return Optional description message key
      * @should return correct value
      */
@@ -3473,7 +3473,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getSortOrder.
      *
-     * @param facetField a {@link java.lang.String} object.
+     * @param facetField facet field name to look up
      * @return a {@link java.lang.String} object.
      */
     public String getSortOrder(String facetField) {
@@ -3483,7 +3483,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Returns a list of values to prioritize for the given facet field.
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field facet field name to look up
      * @return List of priority values; empty list if none found for the given field
      * @should return return all configured elements for regular fields
      * @should return return all configured elements for hierarchical fields
@@ -3504,7 +3504,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @param facetField
+     * @param facetField facet field name
      * @return Configured value
      * @should return correct value
      * @should return null if no value found
@@ -3515,7 +3515,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @param facetField
+     * @param facetField facet field name
      * @return Configured value
      * @should return correct value
      */
@@ -3525,8 +3525,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param facetField
+     *
+     * @param facetField facet field name
      * @return Configured value
      * @should return correct value
      */
@@ -3537,7 +3537,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @param facetField
+     * @param facetField facet field name
      * @return Configured value
      * @should return correct value
      */
@@ -3548,7 +3548,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @param facetField
+     * @param facetField facet field name
      * @return Configured value
      * @should return correct value
      */
@@ -3558,8 +3558,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param facetField
+     *
+     * @param facetField facet field name
      * @return Configured value
      * @should return correct value
      */
@@ -3569,8 +3569,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param facetField
+     *
+     * @param facetField facet field name
      * @return Configured value
      */
     public String getFacetFieldType(String facetField) {
@@ -3578,7 +3578,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @param facetField
+     * @param facetField facet field name
      * @return Configured value
      * @should return correct value
      */
@@ -3647,7 +3647,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getDefaultSortField.
      *
-     * @param language
+     * @param language language code for selecting language-specific sort fields
      * @return a {@link java.lang.String} object.
      * @should return correct value
      * @should return correct language value
@@ -3682,8 +3682,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param language
+     *
+     * @param language language code for filtering language-specific sort fields
      * @return List of {@link SearchSortingOption}s from configured sorting fields
      * @should place default sorting field on top
      * @should handle descending configurations correctly
@@ -3737,7 +3737,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @param field
+     * @param field sort field name
      * @return Configured value
      */
     public Optional<String> getSearchSortingKeyAscending(String field) {
@@ -3752,8 +3752,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param field
+     *
+     * @param field sort field name
      * @return Configured value
      */
     public Optional<String> getSearchSortingKeyDescending(String field) {
@@ -3914,7 +3914,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value for pdf
      * @should return correct value for epub
      * @should return empty string if type unknown
-     * @param type a {@link java.lang.String} object.
+     * @param type download type (pdf, epub, or resource)
      * @return a {@link java.lang.String} object.
      */
     public String getDownloadFolder(String type) {
@@ -4102,7 +4102,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * useTiles.
      *
-     * @param viewAttributes a {@link ViewAttributes} object
+     * @param viewAttributes view context attributes selecting the zoom config
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -4112,8 +4112,8 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * Returns whether a navigator element should be shown in the OpenSeadragon viewer.
-     * 
-     * @param viewAttributes a {@link ViewAttributes} object
+     *
+     * @param viewAttributes view context attributes selecting the zoom config
      * @return true if navigator should be shown
      * @throws ViewerConfigurationException
      */
@@ -4123,8 +4123,8 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * Returns whether the thumbnail gallery should be shown in image view.
-     * 
-     * @param viewAttributes a {@link ViewAttributes} object
+     *
+     * @param viewAttributes view context attributes selecting the zoom config
      * @return true if thumbnail gallery should be visible
      * @throws ViewerConfigurationException
      */
@@ -4155,7 +4155,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getFooterHeight.
      *
-     * @param viewAttributes a {@link ViewAttributes} object
+     * @param viewAttributes view context attributes selecting the zoom config
      * @return a int.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -4176,7 +4176,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getImageViewZoomScales.
      *
-     * @param view a {@link java.lang.String} object.
+     * @param view page type name used to construct the ViewAttributes
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -4187,7 +4187,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getImageViewZoomScales.
      *
-     * @param viewAttributes a {@link ViewAttributes} object
+     * @param viewAttributes view context attributes selecting the zoom config
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -4216,7 +4216,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getTileSizes.
      *
-     * @param viewAttributes a {@link ViewAttributes} object
+     * @param viewAttributes view context attributes selecting the zoom config
      * @return a {@link java.util.Map} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -4248,7 +4248,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getZoomImageViewConfig.
      *
-     * @param viewAttributes a {@link ViewAttributes} object
+     * @param viewAttributes view context attributes selecting the matching zoom config block
      * @return a {@link org.apache.commons.configuration2.SubnodeConfiguration} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -4359,7 +4359,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Returns the locally configured page type name for URLs (e.g. "bild" instead of default "image").
      *
-     * @param type a {@link io.goobi.viewer.model.viewer.PageType} object.
+     * @param type page type whose configured URL name is returned
      * @should return the correct value for the given type
      * @should return null for non configured type
      * @return a {@link java.lang.String} object.
@@ -4371,7 +4371,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getRecordTargetPageType.
      *
-     * @param publicationType a {@link java.lang.String} object.
+     * @param publicationType publication type name to look up
      * @should return correct value
      * @should return null if docstruct not found
      * @return a {@link java.lang.String} object.
@@ -4528,8 +4528,8 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @param template
-     * @param fallbackToDefaultTemplate
+     * @param template template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
      * @return Configured value
      * @should return all configured values
      */
@@ -4581,7 +4581,7 @@ public class Configuration extends AbstractConfiguration {
      *
      * @should return correct value for existing fields
      * @should return INT_MAX for other fields
-     * @param fieldName a {@link java.lang.String} object.
+     * @param fieldName Solr field name to look up the sample size for
      * @return a int.
      */
     public int getTagCloudSampleSize(String fieldName) {
@@ -4591,7 +4591,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getTocVolumeSortFieldsForTemplate.
      *
-     * @param template a {@link java.lang.String} object.
+     * @param template template name to look up
      * @return a {@link java.util.List} object.
      * @should return correct template configuration
      * @should return default template configuration if template not found
@@ -4643,7 +4643,7 @@ public class Configuration extends AbstractConfiguration {
      * Returns the grouping Solr field for the given anchor TOC sort configuration.
      *
      * @should return correct value
-     * @param template a {@link java.lang.String} object.
+     * @param template template name to look up
      * @return a {@link java.lang.String} object.
      */
     public String getTocVolumeGroupFieldForTemplate(String template) {
@@ -4833,7 +4833,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getAncestorIdentifierFieldFilterQuery(String).
      *
-     * @param field
+     * @param field ancestor identifier field name
      * @return Configured filter query for the given field; empty string is none found
      * @should return empty string if field config not found
      * @should return correctValue
@@ -4895,7 +4895,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getWebApiFields.
      *
-     * @param template
+     * @param template template name to look up
      * @return {@link JsonMetadataConfiguration}
      * @should return all configured elements
      */
@@ -5141,7 +5141,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @param path
+     * @param path XPath expression for the config elements
      * @return Configured values
      */
     List<ExportFieldConfiguration> getExportConfigurations(String path) {
@@ -5175,7 +5175,7 @@ public class Configuration extends AbstractConfiguration {
      * Return true if double page navigation is enabled for the given {@link PageType} and {@link ImageType}. Default is false
      *
      * @should return correct value
-     * @param viewAttributes a {@link ViewAttributes} object
+     * @param viewAttributes view context attributes selecting the zoom config
      * @return a boolean.
      * @throws ViewerConfigurationException
      */
@@ -5188,7 +5188,7 @@ public class Configuration extends AbstractConfiguration {
      * Return true if double page navigation should be used per default for the given {@link PageType} and {@link ImageType}. Default is false
      *
      * @should return correct value
-     * @param viewAttributes a {@link ViewAttributes} object
+     * @param viewAttributes view context attributes selecting the zoom config
      * @return a boolean.
      * @throws ViewerConfigurationException
      */
@@ -5201,7 +5201,7 @@ public class Configuration extends AbstractConfiguration {
      * Return true if sequence page navigation is enabled for the given {@link PageType} and {@link ImageType}. Default is false
      *
      * @should return correct value
-     * @param viewAttributes a {@link ViewAttributes} object
+     * @param viewAttributes view context attributes selecting the zoom config
      * @return a boolean.
      * @throws ViewerConfigurationException
      */
@@ -5619,8 +5619,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param value
+     *
+     * @param value field value to match against configured entries
      * @return Configured value
      * @should return correct value
      */
@@ -5651,8 +5651,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param value
+     *
+     * @param value field value to match against configured entries
      * @return Configured value
      * @should return correct value
      */
@@ -5741,7 +5741,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @param name
+     * @param name geo map marker name to look up
      * @return Configured value
      */
     public GeoMapMarker getGeoMapMarker(String name) {
@@ -5814,7 +5814,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @param config
+     * @param config configuration node for the marker element
      * @return Configured value
      */
     public static GeoMapMarker readGeoMapMarker(HierarchicalConfiguration<ImmutableNode> config) {
@@ -5847,8 +5847,8 @@ public class Configuration extends AbstractConfiguration {
      * Find the template with the given name in the templateList. If no such template exists, find the template with name _DEFAULT. Failing that,
      * return null;
      *
-     * @param templateList
-     * @param name
+     * @param templateList list of template configuration nodes to search
+     * @param name template name to match
      * @return Configured value
      */
     private static HierarchicalConfiguration<ImmutableNode> getMatchingConfig(List<HierarchicalConfiguration<ImmutableNode>> templateList,
@@ -5932,7 +5932,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * config: <code>&#60;iiif use-version="3.0"&#62;&#60;/iiif&#62;</code>
+     * config: <code>&#60;iiif use-version="3.0"&#62;&#60;/iiif&#62;</code>.
      *
      * @return Configured value
      */
@@ -6185,8 +6185,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param url
+     *
+     * @param url URL whose host is checked against the proxy whitelist
      * @return Configured value
      * @throws MalformedURLException
      * @throws URISyntaxException
@@ -6255,8 +6255,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @param field
-     * @param language
+     * @param field Solr field name to check for language suffix
+     * @param language language code to compare against the field suffix
      * @return Configured value
      */
     public static boolean isLanguageVersionOtherThan(String field, String language) {

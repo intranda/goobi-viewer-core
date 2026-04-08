@@ -69,7 +69,7 @@ public class StructureBuilder extends AbstractBuilder {
     /**
      * Creates a new StructureBuilder instance.
      *
-     * @param apiUrlManager
+     * @param apiUrlManager API URL manager for building IIIF resource URIs
      */
     public StructureBuilder(AbstractApiUrlManager apiUrlManager) {
         super(apiUrlManager);
@@ -80,8 +80,8 @@ public class StructureBuilder extends AbstractBuilder {
      * the given baseElement otherwise.
      *
      * @param elements All elements to include in the list
-     * @param useMembers a boolean.
-     * @param pi a {@link java.lang.String} object.
+     * @param useMembers if true, child canvases are listed as members instead of sub-ranges
+     * @param pi persistent identifier of the record
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -127,10 +127,10 @@ public class StructureBuilder extends AbstractBuilder {
     /**
      * Generates the list of child ranges of the given range from the given elements which have the given parent iddoc.
      *
-     * @param elements
-     * @param parentIddoc
-     * @param pi
-     * @param range
+     * @param elements all struct elements in scope to search for children
+     * @param parentIddoc the Lucene IDDOC of the parent element
+     * @param pi persistent identifier of the record
+     * @param range the range to add child ranges to
      */
     private void populateChildren(List<StructElement> elements, String parentIddoc, String pi, Range2 range) {
         elements.stream()
@@ -143,9 +143,9 @@ public class StructureBuilder extends AbstractBuilder {
     /**
      * Adds Metadata and links to external services to a range.
      *
-     * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @param pi a {@link java.lang.String} object.
-     * @param range a {@link de.intranda.api.iiif.presentation.v2.Range2} object.
+     * @param ele structure element whose metadata and thumbnails are added to the range
+     * @param pi persistent identifier of the record
+     * @param range IIIF Range2 to populate with metadata and links
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -175,8 +175,8 @@ public class StructureBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param range
-     * @param ele
+     * @param range the presentation element to add rendering links to
+     * @param ele the structure element used to resolve rendering URIs
      */
     public void addRenderings(AbstractPresentationModelElement2 range, StructElement ele) {
 
@@ -218,9 +218,9 @@ public class StructureBuilder extends AbstractBuilder {
     /**
      * populatePages.
      *
-     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @param pi a {@link java.lang.String} object.
-     * @param range a {@link de.intranda.api.iiif.presentation.v2.Range2} object.
+     * @param doc structure element whose page range is added to the IIIF range
+     * @param pi persistent identifier of the record
+     * @param range IIIF Range2 to add canvas references to
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -244,7 +244,7 @@ public class StructureBuilder extends AbstractBuilder {
     /**
      * getDescendents.
      *
-     * @param range a {@link de.intranda.api.iiif.presentation.v2.Range2} object.
+     * @param range parent range whose entire sub-tree is collected
      * @return a {@link java.util.List} object.
      */
     public List<Range2> getDescendents(Range2 range) {

@@ -59,8 +59,8 @@ public class AltoAnnotationBuilder {
 
     /**
      *
-     * @param urls
-     * @param format
+     * @param urls the URL manager for building annotation API paths
+     * @param format the annotation format, e.g. "oa" for OpenAnnotation or "wa" for WebAnnotation
      */
     public AltoAnnotationBuilder(AbstractApiUrlManager urls, String format) {
         this.urls = urls;
@@ -70,12 +70,12 @@ public class AltoAnnotationBuilder {
     /**
      * createAnnotations.
      *
-     * @param alto a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.Page} object.
-     * @param pi
-     * @param pageNo
-     * @param target
-     * @param granularity a {@link io.goobi.viewer.model.annotation.AltoAnnotationBuilder.Granularity} object.
-     * @param urlOnlyTarget a boolean.
+     * @param alto parsed ALTO page from which annotations are extracted
+     * @param pi persistent identifier of the digitized work
+     * @param pageNo physical page number within the work
+     * @param target the IIIF canvas resource used as annotation target
+     * @param granularity level of text elements to generate annotations for
+     * @param urlOnlyTarget if true, use URI-only specific resources as annotation targets
      * @return a {@link java.util.List} object.
      */
     public List<AbstractAnnotation> createAnnotations(Page alto, String pi, Integer pageNo, IResource target, Granularity granularity,
@@ -107,11 +107,11 @@ public class AltoAnnotationBuilder {
     /**
      * createAnnotations.
      *
-     * @param elements a {@link java.util.List} object.
-     * @param pi
-     * @param pageNo
-     * @param target
-     * @param urlOnlyTarget a boolean.
+     * @param elements list of ALTO geometric elements to convert to annotations
+     * @param pi persistent identifier of the digitized work
+     * @param pageNo physical page number within the work
+     * @param target the IIIF canvas resource used as annotation target
+     * @param urlOnlyTarget if true, use URI-only specific resources as annotation targets
      * @return a {@link java.util.List} object.
      */
     public List<AbstractAnnotation> createAnnotations(List<GeometricData> elements, String pi, Integer pageNo, IResource target,
@@ -122,11 +122,11 @@ public class AltoAnnotationBuilder {
     /**
      * createAnnotation.
      *
-     * @param element a {@link de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData} object.
-     * @param pi
-     * @param pageNo
-     * @param canvas a {@link de.intranda.api.annotation.IResource} object.
-     * @param urlOnlyTarget a boolean.
+     * @param element ALTO geometric element providing bounds and text content
+     * @param pi persistent identifier of the digitized work
+     * @param pageNo physical page number within the work
+     * @param canvas IIIF canvas resource to annotate
+     * @param urlOnlyTarget if true, use URI-only specific resources as annotation targets
      * @return a {@link de.intranda.api.annotation.IAnnotation} object.
      */
     public AbstractAnnotation createAnnotation(GeometricData element, String pi, Integer pageNo, IResource canvas, boolean urlOnlyTarget) {
@@ -147,7 +147,7 @@ public class AltoAnnotationBuilder {
     /**
      * Method to construct alto element id if no id attribute is available.
      *
-     * @param e
+     * @param e the ALTO geometric element lacking an explicit id attribute
      * @return {@link String}
      */
     private static String buildId(GeometricData e) {
@@ -155,9 +155,9 @@ public class AltoAnnotationBuilder {
     }
 
     /**
-     * @param canvas
-     * @param area
-     * @param urlOnly
+     * @param canvas the IIIF canvas resource to target
+     * @param area the rectangular region on the canvas
+     * @param urlOnly if true, return a URI-only specific resource
      * @return {@link IResource}
      */
     private IResource createSpecificResource(IResource canvas, Rectangle area, boolean urlOnly) {
@@ -174,9 +174,9 @@ public class AltoAnnotationBuilder {
     }
 
     /**
-     * @param pi
-     * @param pageNo
-     * @param id
+     * @param pi persistent identifier of the digitized work
+     * @param pageNo physical page number within the work
+     * @param id element-level identifier within the ALTO document
      * @return {@link URI}
      */
     private URI createAnnotationId(String pi, Integer pageNo, String id) {

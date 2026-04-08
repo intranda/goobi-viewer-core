@@ -134,7 +134,7 @@ public class AnnotationResource {
 
     /**
      *
-     * @param page
+     * @param page 1-based page number within the annotation collection
      * @return &lt;a&gt;
      * @throws DAOException
      * @throws ContentLibException
@@ -243,7 +243,7 @@ public class AnnotationResource {
 
     /**
      *
-     * @param id
+     * @param id database identifier of the annotation
      * @return {@link IAnnotation}
      * @throws DAOException
      * @throws ContentLibException
@@ -266,7 +266,7 @@ public class AnnotationResource {
 
     /**
      *
-     * @param id
+     * @param id database identifier of the comment annotation
      * @return {@link IAnnotation}
      * @throws DAOException
      * @throws ContentLibException
@@ -289,7 +289,7 @@ public class AnnotationResource {
 
     /**
      *
-     * @param anno
+     * @param anno incoming annotation to persist
      * @return {@link IAnnotation}
      * @throws DAOException
      * @throws NotImplementedException
@@ -327,7 +327,7 @@ public class AnnotationResource {
 
     /**
      *
-     * @param id
+     * @param id database identifier of the annotation to delete
      * @return {@link IAnnotation}
      * @throws DAOException
      * @throws ContentLibException
@@ -373,7 +373,7 @@ public class AnnotationResource {
 
     /**
      *
-     * @param anno
+     * @param anno incoming annotation to convert
      * @return {@link CrowdsourcingAnnotation}
      */
     public CrowdsourcingAnnotation createPersistentAnnotation(IAnnotation anno) {

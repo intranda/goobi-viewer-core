@@ -93,7 +93,7 @@ public class ClientApplicationManager {
     }
 
     /**
-     * Get the {@link ClientApplication} representing all clients created in {@link #addGeneralClientApplicationToDB()}
+     * Get the {@link ClientApplication} representing all clients created in {@link #addGeneralClientApplicationToDB()}.
      * 
      * @return the allClients
      */
@@ -163,7 +163,7 @@ public class ClientApplicationManager {
     /**
      * Gets the client with the given {@link ClientApplication#getClientIdentifier()} from the database.
      * 
-     * @param clientIdentifier
+     * @param clientIdentifier the client identifier string to look up
      * @return An optional containing the client if one matches the identifier
      * @throws DAOException
      */
@@ -177,7 +177,7 @@ public class ClientApplicationManager {
     /**
      * The the client identifier from a request header.
      * 
-     * @param request
+     * @param request HTTP servlet request to read the client identifier header from
      * @return The identifier or null if non is in the header
      */
     public static String getClientIdentifier(HttpServletRequest request) {
@@ -209,7 +209,7 @@ public class ClientApplicationManager {
     /**
      * Check if the given client is the client instance representing all clients.
      * 
-     * @param client
+     * @param client the client application to check
      * @return true if the client does not represent all clients
      */
     public boolean isNotAllClients(ClientApplication client) {
@@ -219,7 +219,7 @@ public class ClientApplicationManager {
     /**
      * Check if the given client is the client instance representing all clients.
      * 
-     * @param client
+     * @param client the client application to check
      * @return true if the client represents all clients
      */
     public boolean isAllClients(ClientApplication client) {

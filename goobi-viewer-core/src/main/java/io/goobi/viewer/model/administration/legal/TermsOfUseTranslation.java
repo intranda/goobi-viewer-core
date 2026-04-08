@@ -49,9 +49,9 @@ public class TermsOfUseTranslation extends Translation {
     /**
      * Creates a new CMSCollectionTranslation instance.
      *
-     * @param language a {@link java.lang.String} object.
-     * @param value a {@link java.lang.String} object.
-     * @param owner
+     * @param language BCP 47 language code for this translation
+     * @param value translated text value
+     * @param owner owning TermsOfUse entity
      */
     public TermsOfUseTranslation(String language, String value, TermsOfUse owner) {
         super(language, value);

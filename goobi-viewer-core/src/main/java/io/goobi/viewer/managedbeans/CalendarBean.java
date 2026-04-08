@@ -411,7 +411,7 @@ public class CalendarBean implements Serializable {
     /**
      * Generates a search string for selected year, month and day.
      *
-     * @param day
+     * @param day Day of month as integer
      * @return String with format YYYYMMDD
      */
 
@@ -444,7 +444,7 @@ public class CalendarBean implements Serializable {
      * Set a new value for year. If the selected year is the same as the old selection, the data will be unselected. Otherwise the new data will be
      * generated.
      *
-     * @param currentYear a {@link io.goobi.viewer.model.calendar.CalendarItemYear} object.
+     * @param currentYear newly selected calendar year item
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -495,7 +495,7 @@ public class CalendarBean implements Serializable {
     /**
      * Setter for the field <code>monthRow</code>.
      *
-     * @param monthRow a {@link io.goobi.viewer.model.calendar.CalendarRow} object.
+     * @param monthRow calendar row containing month items to set
      */
     public void setMonthRow(CalendarRow monthRow) {
         this.monthRow = monthRow;
@@ -514,7 +514,7 @@ public class CalendarBean implements Serializable {
      * Set a new value for month. If the selected month is the same as the old selection, the month and day will be unselected. Otherwise the data for
      * the month gets generated.
      *
-     * @param currentMonth a {@link io.goobi.viewer.model.calendar.CalendarItemMonth} object.
+     * @param currentMonth newly selected calendar month item
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -542,7 +542,7 @@ public class CalendarBean implements Serializable {
     /**
      * Setter for the field <code>currentDay</code>.
      *
-     * @param currentDay a {@link io.goobi.viewer.model.calendar.CalendarItemDay} object.
+     * @param currentDay newly selected calendar day item
      */
     public void setCurrentDay(CalendarItemDay currentDay) {
         if (this.currentDay == currentDay) {
@@ -591,7 +591,7 @@ public class CalendarBean implements Serializable {
     /**
      * Setter for the field <code>dayRow</code>.
      *
-     * @param dayRow the dayRow to set
+     * @param dayRow calendar row containing day items to set
      */
     public void setDayRow(CalendarRow dayRow) {
         this.dayRow = dayRow;
@@ -805,9 +805,9 @@ public class CalendarBean implements Serializable {
      * It runs a facet search for YEARMONTH and YEARMONTHDAY for the current year. For each day of the year, the method checks if the count of the
      * field YEARMONTHDAY is greater than 0. If this is the case, the day is an active element, otherwise it has no hits.
      *
-     * @param selectYear a {@link java.lang.String} object.
-     * @param collection a {@link java.lang.String} object.
-     * @param filterQuery a {@link java.lang.String} object.
+     * @param selectYear four-digit year string to populate data for
+     * @param collection Solr collection filter value, or null for all
+     * @param filterQuery additional Solr filter query to restrict results
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -1028,10 +1028,10 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * Add as many {@link CalendarItemDay}s to 'currentWeek' as there are days between the start of the month and the previous monday
+     * Add as many {@link CalendarItemDay}s to 'currentWeek' as there are days between the start of the month and the previous monday.
      * 
-     * @param currentWeek
-     * @param date
+     * @param currentWeek Week item to prepend empty days to
+     * @param date First day of the month
      */
     protected static void addEmptyDays(CalendarItemWeek currentWeek, LocalDate date) {
 
@@ -1187,7 +1187,7 @@ public class CalendarBean implements Serializable {
     /**
      * Generates a search string to search for data with a value in YEAR but without a value in YEARMONTHDAY.
      *
-     * @param date
+     * @param date Year value used in the CALENDAR_YEAR query
      * @return Generated query
      */
     private String getQueryForIncompleteData(String date) {

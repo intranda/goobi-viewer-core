@@ -98,8 +98,8 @@ public class CommentBean implements Serializable {
     /**
      * createComment.
      *
-     * @param text a {@link java.lang.String} object
-     * @param restricted a boolean
+     * @param text comment body text
+     * @param restricted if true, apply restricted license requiring comment privileges
      * @throws io.goobi.viewer.exceptions.AjaxResponseException
      */
     public void createComment(String text, boolean restricted) throws AjaxResponseException {
@@ -133,9 +133,9 @@ public class CommentBean implements Serializable {
     /**
      * editComment.
      *
-     * @param original a {@link io.goobi.viewer.model.annotation.comments.Comment} object
-     * @param text a {@link java.lang.String} object
-     * @param restricted a boolean
+     * @param original existing comment to be updated
+     * @param text new comment body text
+     * @param restricted if true, apply restricted license requiring comment privileges
      * @throws io.goobi.viewer.exceptions.DAOException
      * @throws io.goobi.viewer.exceptions.PresentationException
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
@@ -174,7 +174,7 @@ public class CommentBean implements Serializable {
     /**
      * deleteComment.
      *
-     * @param annotation a {@link io.goobi.viewer.model.annotation.comments.Comment} object
+     * @param annotation comment to be deleted
      * @throws io.goobi.viewer.exceptions.DAOException
      * @throws io.goobi.viewer.exceptions.PresentationException
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
@@ -194,12 +194,12 @@ public class CommentBean implements Serializable {
     /**
      * getComments.
      *
-     * @param startIndex a int
-     * @param numItems a int
-     * @param filter a {@link java.lang.String} object
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object
-     * @param sortField a {@link java.lang.String} object
-     * @param descending a boolean
+     * @param startIndex zero-based index of the first result to return
+     * @param numItems maximum number of comments to return
+     * @param filter text filter applied to comment content
+     * @param user user whose comments are listed
+     * @param sortField name of the field to sort results by
+     * @param descending if true, sort in descending order
      * @return List of comments that match the search criteria
      */
     public List<Comment> getComments(int startIndex, int numItems, String filter, User user, String sortField, boolean descending) {
@@ -241,7 +241,7 @@ public class CommentBean implements Serializable {
     /**
      * isRestricted.
      *
-     * @param anno a {@link io.goobi.viewer.model.annotation.CrowdsourcingAnnotation} object
+     * @param anno annotation whose access condition is checked
      * @return true if given annotation requires special privileges for commenting; false otherwise
      */
     public boolean isRestricted(CrowdsourcingAnnotation anno) {
@@ -250,7 +250,7 @@ public class CommentBean implements Serializable {
 
     /**
      *
-     * @param restricted
+     * @param restricted true to return the restricted license; false for public
      * @return {@link String}
      */
     private static String getLicense(boolean restricted) {
@@ -350,7 +350,7 @@ public class CommentBean implements Serializable {
     /**
      * Enables edit/delete privileges for the current session for the given record identifier, based on admin status or {@link CommentGroup} settings.
      *
-     * @param pi
+     * @param pi persistent identifier of the record
      * @throws DAOException
      * @throws PresentationException
      * @throws IndexUnreachableException

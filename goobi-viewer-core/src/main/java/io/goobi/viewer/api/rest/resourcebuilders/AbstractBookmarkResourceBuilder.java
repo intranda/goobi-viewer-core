@@ -89,7 +89,7 @@ public abstract class AbstractBookmarkResourceBuilder {
     /**
      * getPageOrder.
      *
-     * @param pageString a {@link java.lang.String} object.
+     * @param pageString numeric page order as a string; null or non-numeric returns null
      * @return a {@link java.lang.Integer} object.
      */
     public Integer getPageOrder(String pageString) {
@@ -129,8 +129,8 @@ public abstract class AbstractBookmarkResourceBuilder {
     /**
      * getAsCollection.
      *
-     * @param sharedKey
-     * @param urls
+     * @param sharedKey the share key identifying the bookmark list
+     * @param urls URL manager used to build the collection URL
      * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -147,8 +147,8 @@ public abstract class AbstractBookmarkResourceBuilder {
     }
 
     /**
-     * @param list
-     * @param url
+     * @param list the bookmark list to represent as a IIIF collection
+     * @param url the IIIF collection URL
      * @return {@link Collection2}
      */
     protected Collection2 createCollection(BookmarkList list, String url) {
@@ -177,9 +177,9 @@ public abstract class AbstractBookmarkResourceBuilder {
     }
 
     /**
-     * @param shareKey
+     * @param shareKey the share key identifying the bookmark list
      * @return {@link BookmarkList}
-     * @throws DAOException If an error occured talking to the database
+     * @throws DAOException If an error occurred talking to the database
      * @throws RestApiException If no user session exists or if the user has no access to the requested list
      * @throws ContentNotFoundException If no list with the given key was found
      */
@@ -197,7 +197,7 @@ public abstract class AbstractBookmarkResourceBuilder {
     }
 
     /**
-     * @param orig
+     * @param orig the bookmark list to update
      * @throws IllegalRequestException
      * @throws DAOException
      */
