@@ -74,7 +74,7 @@ public class SelectableNavigationItem extends CMSNavigationItem {
     /**
      * Setter for the field <code>selected</code>.
      *
-     * @param selected the selected to set
+
      */
     public void setSelected(boolean selected) {
         this.selected = selected;

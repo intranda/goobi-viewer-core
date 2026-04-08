@@ -120,7 +120,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Setter for the field <code>id</code>.
      *
-     * @param id the id to set
+
      */
     public void setId(Long id) {
         this.id = id;
@@ -138,7 +138,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Setter for the field <code>jobId</code>.
      *
-     * @param jobId the jobId to set
+
      */
     public void setJobId(String jobId) {
         this.jobId = jobId;
@@ -156,7 +156,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Setter for the field <code>docId</code>.
      *
-     * @param docId the docId to set
+
      */
     public void setDocId(String docId) {
         this.docId = docId;
@@ -174,7 +174,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Setter for the field <code>pi</code>.
      *
-     * @param pi the pi to set
+
      */
     public void setPi(String pi) {
         this.pi = pi;
@@ -192,7 +192,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Setter for the field <code>ownerId</code>.
      *
-     * @param ownerId the ownerId to set
+
      */
     public void setOwnerId(String ownerId) {
         this.ownerId = ownerId;
@@ -210,7 +210,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Setter for the field <code>userCollectionId</code>.
      *
-     * @param userCollectionId the userCollectionId to set
+
      */
     public void setUserCollectionId(String userCollectionId) {
         this.userCollectionId = userCollectionId;
@@ -228,7 +228,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Setter for the field <code>viewerCollectionId</code>.
      *
-     * @param viewerCollectionId the viewerCollectionId to set
+
      */
     public void setViewerCollectionId(String viewerCollectionId) {
         this.viewerCollectionId = viewerCollectionId;
@@ -246,7 +246,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Setter for the field <code>message</code>.
      *
-     * @param message the message to set
+
      */
     public void setMessage(String message) {
         this.message = message;
@@ -264,7 +264,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Setter for the field <code>dateCreated</code>.
      *
-     * @param dateCreated the dateCreated to set
+
      */
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
@@ -282,7 +282,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Setter for the field <code>status</code>.
      *
-     * @param status the status to set
+
      */
     public void setStatus(JobStatus status) {
         this.status = status;
@@ -300,7 +300,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Setter for the field <code>description</code>.
      *
-     * @param description the description to set
+
      */
     public void setDescription(String description) {
         this.description = description;
@@ -318,7 +318,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Setter for the field <code>observers</code>.
      *
-     * @param observers the observers to set
+
      */
     public void setObservers(List<String> observers) {
         this.observers = observers;

@@ -28,8 +28,7 @@ import java.io.Serializable;
  */
 public class PresentationException extends Exception implements Serializable {
 
-    /**
-     */
+    
     private static final long serialVersionUID = -6158638123863313562L;
 
     /**

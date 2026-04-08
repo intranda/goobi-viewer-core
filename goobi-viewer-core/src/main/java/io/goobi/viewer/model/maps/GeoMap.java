@@ -149,30 +149,22 @@ public class GeoMap implements Serializable {
 
     }
 
-    /**
-     * @param id the id to set
-     */
+    
     public void setId(Long id) {
         this.id = id;
     }
 
-    /**
-
-     */
+    
     public Long getId() {
         return id;
     }
 
-    /**
-
-     */
+    
     public Long getCreatorId() {
         return creatorId;
     }
 
-    /**
-     * @param creatorId the creatorId to set
-     */
+    
     public void setCreatorId(Long creatorId) {
         this.creatorId = creatorId;
         this.creator = null;
@@ -199,30 +191,22 @@ public class GeoMap implements Serializable {
         }
     }
 
-    /**
-
-     */
+    
     public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
-    /**
-
-     */
+    
     public LocalDateTime getDateUpdated() {
         return dateUpdated;
     }
 
-    /**
-     * @param dateCreated the dateCreated to set
-     */
+    
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
 
-    /**
-     * @param dateUpdated the dateUpdated to set
-     */
+    
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
@@ -273,9 +257,7 @@ public class GeoMap implements Serializable {
         }
     }
 
-    /**
-     * @param initialView the initialView to set
-     */
+    
     public void setInitialView(String initialView) {
         this.initialView = initialView;
     }
@@ -327,16 +309,12 @@ public class GeoMap implements Serializable {
         return null;
     }
 
-    /**
-     * @param showPopover the showPopover to set
-     */
+    
     public void setShowPopover(boolean showPopover) {
         this.showPopover = showPopover;
     }
 
-    /**
-
-     */
+    
     public boolean isShowPopover() {
         return showPopover;
     }

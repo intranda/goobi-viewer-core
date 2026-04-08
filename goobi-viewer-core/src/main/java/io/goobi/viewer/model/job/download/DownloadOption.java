@@ -98,15 +98,13 @@ public class DownloadOption {
         return null;
     }
 
-    /**
-
-     */
+    
     public String getLabel() {
         return label;
     }
 
     /**
-     * @param label the label to set
+
      * @return this
      */
     public DownloadOption setLabel(String label) {
@@ -114,15 +112,13 @@ public class DownloadOption {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getFormat() {
         return format;
     }
 
     /**
-     * @param format the format to set
+
      * @return this
      */
     public DownloadOption setFormat(String format) {
@@ -130,9 +126,7 @@ public class DownloadOption {
         return this;
     }
 
-    /**
-
-     */
+    
     public Dimension getBoxSizeInPixel() {
         return boxSize;
     }
@@ -149,7 +143,7 @@ public class DownloadOption {
     }
 
     /**
-     * @param boxSizeInPixel the boxSizeInPixel to set
+
      * @return this
      */
     public DownloadOption setBoxSizeInPixel(String boxSizeInPixel) {

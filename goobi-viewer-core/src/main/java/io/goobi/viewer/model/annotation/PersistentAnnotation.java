@@ -223,7 +223,7 @@ public abstract class PersistentAnnotation {
     /**
      * Setter for the field <code>id</code>.
      *
-     * @param id the id to set
+
      */
     public void setId(Long id) {
         this.id = id;
@@ -241,7 +241,7 @@ public abstract class PersistentAnnotation {
     /**
      * Setter for the field <code>dateCreated</code>.
      *
-     * @param dateCreated the dateCreated to set
+
      */
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
@@ -259,7 +259,7 @@ public abstract class PersistentAnnotation {
     /**
      * Setter for the field <code>dateModified</code>.
      *
-     * @param dateModified the dateModified to set
+
      */
     public void setDateModified(LocalDateTime dateModified) {
         this.dateModified = dateModified;
@@ -289,7 +289,7 @@ public abstract class PersistentAnnotation {
     /**
      * setCreator.
      *
-     * @param creator the creator to set
+
      */
     public void setCreator(User creator) {
         this.creator = creator;
@@ -314,7 +314,7 @@ public abstract class PersistentAnnotation {
     /**
      * setReviewer.
      *
-     * @param reviewer the reviewer to set
+
      */
     public void setReviewer(User reviewer) {
         if (reviewer != null) {
@@ -338,7 +338,7 @@ public abstract class PersistentAnnotation {
     /**
      * setGenerator.
      *
-     * @param generator the generator to set
+
      */
     public void setGenerator(Question generator) {
         this.generatorId = Optional.ofNullable(generator).map(Question::getId).orElse(null);
@@ -356,7 +356,7 @@ public abstract class PersistentAnnotation {
     /**
      * Setter for the field <code>creatorId</code>.
      *
-     * @param creatorId the creatorId to set
+
      */
     public void setCreatorId(Long creatorId) {
         this.creatorId = creatorId;
@@ -374,7 +374,7 @@ public abstract class PersistentAnnotation {
     /**
      * Setter for the field <code>reviewerId</code>.
      *
-     * @param reviewerId the reviewerId to set
+
      */
     public void setReviewerId(Long reviewerId) {
         this.reviewerId = reviewerId;
@@ -392,7 +392,7 @@ public abstract class PersistentAnnotation {
     /**
      * Setter for the field <code>generatorId</code>.
      *
-     * @param generatorId the generatorId to set
+
      */
     public void setGeneratorId(Long generatorId) {
         this.generatorId = generatorId;
@@ -410,7 +410,7 @@ public abstract class PersistentAnnotation {
     /**
      * Setter for the field <code>body</code>.
      *
-     * @param body the body to set
+
      */
     public void setBody(String body) {
         this.body = body;
@@ -428,7 +428,7 @@ public abstract class PersistentAnnotation {
     /**
      * Setter for the field <code>motivation</code>.
      *
-     * @param motivation the motivation to set
+
      */
     public void setMotivation(String motivation) {
         this.motivation = motivation;
@@ -464,7 +464,7 @@ public abstract class PersistentAnnotation {
     /**
      * Setter for the field <code>targetPI</code>.
      *
-     * @param targetPI the targetPI to set
+
      */
     public void setTargetPI(String targetPI) {
         this.targetPI = targetPI;
@@ -473,7 +473,7 @@ public abstract class PersistentAnnotation {
     /**
      * Setter for the field <code>targetPageOrder</code>.
      *
-     * @param targetPageOrder the targetPageOrder to set
+
      */
     public void setTargetPageOrder(Integer targetPageOrder) {
         this.targetPageOrder = targetPageOrder;
@@ -482,7 +482,7 @@ public abstract class PersistentAnnotation {
     /**
      * Setter for the field <code>target</code>.
      *
-     * @param target the target to set
+
      */
     public void setTarget(String target) {
         this.target = target;
@@ -587,16 +587,12 @@ public abstract class PersistentAnnotation {
         return ret;
     }
 
-    /**
-
-     */
+    
     public String getAccessCondition() {
         return accessCondition;
     }
 
-    /**
-     * @param accessCondition the accessCondition to set
-     */
+    
     public void setAccessCondition(String accessCondition) {
         this.accessCondition = accessCondition;
     }
@@ -631,16 +627,12 @@ public abstract class PersistentAnnotation {
         return this.creatorId != null && user != null && this.creatorId.equals(user.getId());
     }
 
-    /**
-
-     */
+    
     public PublicationStatus getPublicationStatus() {
         return publicationStatus;
     }
 
-    /**
-     * @param publicationStatus the publicationStatus to set
-     */
+    
     public void setPublicationStatus(PublicationStatus publicationStatus) {
         this.publicationStatus = publicationStatus;
     }

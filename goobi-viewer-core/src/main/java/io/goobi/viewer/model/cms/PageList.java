@@ -120,7 +120,7 @@ public class PageList implements Iterable<String> {
     /**
      * Setter for the field <code>pages</code>.
      *
-     * @param pages the pages to set
+
      */
     public void setPages(List<String> pages) {
         this.pages = pages;

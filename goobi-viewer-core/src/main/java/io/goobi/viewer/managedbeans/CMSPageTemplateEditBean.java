@@ -298,44 +298,32 @@ public class CMSPageTemplateEditBean implements Serializable {
         return false;
     }
 
-    /**
-
-     */
+    
     public IDAO getDao() {
         return dao;
     }
 
-    /**
-     * @param dao the dao to set
-     */
+    
     public void setDao(IDAO dao) {
         this.dao = dao;
     }
 
-    /**
-     * @param templateManager the templateManager to set
-     */
+    
     public void setTemplateManager(CMSTemplateManager templateManager) {
         this.templateManager = templateManager;
     }
 
-    /**
-     * @param userBean the userBean to set
-     */
+    
     public void setUserBean(UserBean userBean) {
         this.userBean = userBean;
     }
 
-    /**
-     * @param widgetsBean the widgetsBean to set
-     */
+    
     public void setWidgetsBean(CMSSidebarWidgetsBean widgetsBean) {
         this.widgetsBean = widgetsBean;
     }
 
-    /**
-     * @param facesContext the facesContext to set
-     */
+    
     public void setFacesContext(FacesContext facesContext) {
         this.facesContext = facesContext;
     }

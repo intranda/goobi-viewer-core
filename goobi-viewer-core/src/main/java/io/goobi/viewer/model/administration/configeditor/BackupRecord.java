@@ -53,18 +53,12 @@ public class BackupRecord implements Serializable {
         return LocalDateTime.parse(name, DateTools.FORMATTERFILENAME);
     }
 
-    /**
-     * 
-
-     */
+    
     public String getName() {
         return name;
     }
 
-    /**
-     * 
-
-     */
+    
     public int getNumber() {
         return number;
     }

@@ -78,8 +78,7 @@ import jakarta.ws.rs.core.Response;
 @CORSBinding
 public class RecordsListResource {
 
-    /**
-     */
+    
     private static final int DEFAULT_MAX_ROWS = 100;
     private static final Logger logger = LogManager.getLogger(RecordsListResource.class);
     @Context

@@ -148,58 +148,42 @@ public class MediaItem {
         }
     }
 
-    /**
-
-     */
+    
     public Long getId() {
         return id;
     }
 
-    /**
-
-     */
+    
     public IMetadataValue getLabel() {
         return label;
     }
 
-    /**
-
-     */
+    
     public IMetadataValue getDescription() {
         return description;
     }
 
-    /**
-
-     */
+    
     public IContent getImage() {
         return image;
     }
 
-    /**
-
-     */
+    
     public String getLink() {
         return link;
     }
 
-    /**
-
-     */
+    
     public List<String> getTags() {
         return tags;
     }
 
-    /**
-
-     */
+    
     public boolean isImportant() {
         return important;
     }
 
-    /**
-
-     */
+    
     public Integer getOrder() {
         return order;
     }

@@ -54,7 +54,7 @@ public class VuAuthenticationResponse {
     /**
      * Setter for the field <code>user</code>.
      *
-     * @param user the user to set
+
      */
     public void setUser(User user) {
         this.user = user;
@@ -72,7 +72,7 @@ public class VuAuthenticationResponse {
     /**
      * Setter for the field <code>expired</code>.
      *
-     * @param expired the expired to set
+
      */
     public void setExpired(Expired expired) {
         this.expired = expired;
@@ -90,7 +90,7 @@ public class VuAuthenticationResponse {
     /**
      * Setter for the field <code>blocks</code>.
      *
-     * @param blocks the blocks to set
+
      */
     public void setBlocks(Blocks blocks) {
         this.blocks = blocks;
@@ -108,7 +108,7 @@ public class VuAuthenticationResponse {
     /**
      * Setter for the field <code>request</code>.
      *
-     * @param request the request to set
+
      */
     public void setRequest(Request request) {
         this.request = request;

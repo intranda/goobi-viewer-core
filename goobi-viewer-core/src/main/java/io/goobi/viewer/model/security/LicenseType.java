@@ -219,7 +219,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Setter for the field <code>id</code>.
      *
-     * @param id the id to set
+
      */
     public void setId(Long id) {
         this.id = id;
@@ -238,7 +238,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Setter for the field <code>name</code>.
      *
-     * @param name the name to set
+
      */
     public void setName(String name) {
         this.name = name;
@@ -256,7 +256,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Setter for the field <code>description</code>.
      *
-     * @param description the description to set
+
      */
     public void setDescription(String description) {
         this.description = description;
@@ -359,7 +359,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Setter for the field <code>openAccess</code>.
      *
-     * @param openAccess the openAccess to set
+
      */
     public void setOpenAccess(boolean openAccess) {
         this.openAccess = openAccess;
@@ -377,91 +377,69 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Setter for the field <code>core</code>.
      *
-     * @param core the core to set
+
      */
     public void setCore(boolean core) {
         this.core = core;
     }
 
-    /**
-
-     */
+    
     public boolean isMovingWall() {
         return movingWall;
     }
 
-    /**
-     * @param movingWall the movingWall to set
-     */
+    
     public void setMovingWall(boolean movingWall) {
         this.movingWall = movingWall;
     }
 
-    /**
-
-     */
+    
     public boolean isPdfDownloadQuota() {
         return pdfDownloadQuota;
     }
 
-    /**
-     * @param pdfDownloadQuota the pdfDownloadQuota to set
-     */
+    
     public void setPdfDownloadQuota(boolean pdfDownloadQuota) {
         this.pdfDownloadQuota = pdfDownloadQuota;
     }
 
-    /**
-
-     */
+    
     public boolean isConcurrentViewsLimit() {
         return concurrentViewsLimit;
     }
 
-    /**
-     * @param concurrentViewsLimit the concurrentViewsLimit to set
-     */
+    
     public void setConcurrentViewsLimit(boolean concurrentViewsLimit) {
         this.concurrentViewsLimit = concurrentViewsLimit;
     }
 
-    /**
-
-     */
+    
     public boolean isRedirect() {
         return redirect;
     }
 
-    /**
-     * @param redirect the redirect to set
-     */
+    
     public void setRedirect(boolean redirect) {
         this.redirect = redirect;
     }
 
-    /**
-
-     */
+    
     public String getRedirectUrl() {
         return redirectUrl;
     }
 
-    /**
-     * @param redirectUrl the redirectUrl to set
-     */
+    
     public void setRedirectUrl(String redirectUrl) {
         this.redirectUrl = redirectUrl;
     }
 
-    /**
-
-     */
+    
     public boolean isAccessTicketRequired() {
         return accessTicketRequired;
     }
 
     /**
-     * @param accessTicketRequired the accessTicketRequired to set
+
      * @should add or remove list privilege
      */
     public void setAccessTicketRequired(boolean accessTicketRequired) {
@@ -542,7 +520,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Setter for the field <code>privileges</code>.
      *
-     * @param privileges the privileges to set
+
      */
     public void setPrivileges(Set<String> privileges) {
         this.privileges = privileges;
@@ -790,7 +768,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Setter for the field <code>overriddenLicenseTypes</code>.
      *
-     * @param overriddenLicenseTypes the overriddenLicenseTypes to set
+
      */
     public void setOverriddenLicenseTypes(Set<LicenseType> overriddenLicenseTypes) {
         this.overriddenLicenseTypes = overriddenLicenseTypes;
@@ -806,9 +784,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
         return DataManager.getInstance().getDao().getOverridingLicenseType(this);
     }
 
-    /**
-
-     */
+    
     public Set<LicenseTypePlaceholderInfo> getImagePlaceholders() {
         return imagePlaceholders;
     }
@@ -891,16 +867,12 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
         return ret;
     }
 
-    /**
-
-     */
+    
     public Set<String> getPrivilegesCopy() {
         return privilegesCopy;
     }
 
-    /**
-     * @param privilegesCopy the privilegesCopy to set
-     */
+    
     public void setPrivilegesCopy(Set<String> privilegesCopy) {
         this.privilegesCopy = privilegesCopy;
     }
@@ -917,16 +889,12 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
         return restrictionsExpired.get(query) != null && restrictionsExpired.get(query);
     }
 
-    /**
-
-     */
+    
     public Map<String, Boolean> getRestrictionsExpired() {
         return restrictionsExpired;
     }
 
-    /**
-     * @param restrictionsExpired the restrictionsExpired to set
-     */
+    
     public void setRestrictionsExpired(Map<String, Boolean> restrictionsExpired) {
         this.restrictionsExpired = restrictionsExpired;
     }
@@ -934,36 +902,28 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * For unit tests.
      * 
-     * @param ugcType the ugcType to set
+
      */
     void setUgcType(Boolean ugcType) {
         this.ugcType = ugcType;
     }
 
-    /**
-
-     */
+    
     public Long getRecordCount() {
         return recordCount;
     }
 
-    /**
-     * @param recordCount the recordCount to set
-     */
+    
     public void setRecordCount(Long recordCount) {
         this.recordCount = recordCount;
     }
 
-    /**
-
-     */
+    
     public boolean isDisplayRecordSearchLink() {
         return displayRecordSearchLink;
     }
 
-    /**
-     * @param displayRecordSearchLink the displayRecordSearchLink to set
-     */
+    
     public void setDisplayRecordLink(boolean displayRecordSearchLink) {
         this.displayRecordSearchLink = displayRecordSearchLink;
     }

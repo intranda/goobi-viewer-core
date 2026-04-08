@@ -77,16 +77,12 @@ public class WebResourceConfiguration {
         this(vr.replaceFirst(config.getString("url", null)), vr.replaceFirst(config.getString("label", null)));
     }
 
-    /**
-
-     */
+    
     public URI getUri() {
         return uri;
     }
 
-    /**
-
-     */
+    
     public String getLabel() {
         return label;
     }

@@ -91,7 +91,7 @@ public class ConsentScope implements Serializable {
     /**
      * Sets the storageMode.
      * 
-     * @param storageMode the storageMode to set
+
      */
     public void setStorageMode(StorageMode storageMode) {
         this.storageMode = storageMode;
@@ -109,7 +109,7 @@ public class ConsentScope implements Serializable {
     /**
      * Set the number of days the consent is valid for.
      * 
-     * @param daysToLive the daysToLive to set
+
      */
     public void setDaysToLive(int daysToLive) {
         this.daysToLive = daysToLive;

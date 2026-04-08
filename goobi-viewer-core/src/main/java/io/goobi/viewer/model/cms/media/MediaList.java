@@ -37,9 +37,7 @@ public class MediaList {
         this.mediaItems = items.stream().map(item -> new MediaItem(item, servletRequest)).collect(Collectors.toList());
     }
 
-    /**
-
-     */
+    
     public List<MediaItem> getMediaItems() {
         return mediaItems;
     }

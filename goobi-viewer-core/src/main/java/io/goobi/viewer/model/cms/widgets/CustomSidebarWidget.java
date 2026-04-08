@@ -145,23 +145,17 @@ public class CustomSidebarWidget implements IPolyglott, Serializable {
         this.title.setSelectedLocale(locale);
     }
 
-    /**
-
-     */
+    
     public Long getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
+    
     public void setId(Long id) {
         this.id = id;
     }
 
-    /**
-
-     */
+    
     public TranslatedText getTitle() {
         return title;
     }
@@ -170,9 +164,7 @@ public class CustomSidebarWidget implements IPolyglott, Serializable {
         this.title = title;
     }
 
-    /**
-
-     */
+    
     public TranslatedText getDescription() {
         return description;
     }
@@ -213,7 +205,7 @@ public class CustomSidebarWidget implements IPolyglott, Serializable {
     /**
      * Sets this widget to be displayed as a collapseable.
      * 
-     * @param collapsed the collapsed to set
+
      */
     public void setCollapsed(boolean collapsed) {
         this.collapsed = collapsed;

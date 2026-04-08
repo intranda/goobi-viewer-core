@@ -85,16 +85,12 @@ public class CampaignLogMessage extends LogMessage {
         this.pi = pi;
     }
 
-    /**
-
-     */
+    
     public Campaign getCampaign() {
         return campaign;
     }
 
-    /**
-
-     */
+    
     public String getPi() {
         return pi;
     }

@@ -161,7 +161,7 @@ public class SitelinkBean implements Serializable {
     /**
      * Setter for the field <code>value</code>.
      *
-     * @param value the value to set
+
      */
     public void setValue(String value) {
         this.value = value;

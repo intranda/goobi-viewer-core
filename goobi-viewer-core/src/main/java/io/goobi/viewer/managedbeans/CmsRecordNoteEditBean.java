@@ -82,16 +82,12 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     @Inject
     private transient FacesContext facesContext;
 
-    /**
-
-     */
+    
     public CMSRecordNote getNote() {
         return note;
     }
 
-    /**
-     * @param note the note to set
-     */
+    
     public void setNote(CMSRecordNote note) {
         if (note == null) {
             this.note = null;
@@ -137,16 +133,12 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
                 .orElse("");
     }
 
-    /**
-
-     */
+    
     public String getReturnUrl() {
         return returnUrl;
     }
 
-    /**
-     * @param returnUrl the returnUrl to set
-     */
+    
     public void setReturnUrl(String returnUrl) {
         this.returnUrl = returnUrl;
     }
@@ -333,16 +325,12 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
         return locale;
     }
 
-    /**
-
-     */
+    
     public String getCurrentNoteType() {
         return currentNoteType;
     }
 
-    /**
-     * @param currentNoteType the currentNoteType to set
-     */
+    
     public void setCurrentNoteType(String currentNoteType) {
         this.currentNoteType = currentNoteType;
     }
@@ -358,7 +346,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     /**
      * For unit tests.
      * 
-     * @param testMode the testMode to set
+
      */
     void setTestMode(boolean testMode) {
         this.testMode = testMode;

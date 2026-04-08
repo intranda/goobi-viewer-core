@@ -39,23 +39,17 @@ public class MatchGroup {
         this.text = text;
     }
 
-    /**
-
-     */
+    
     public int getStart() {
         return start;
     }
 
-    /**
-
-     */
+    
     public int getEnd() {
         return end;
     }
 
-    /**
-
-     */
+    
     public String getText() {
         return text;
     }

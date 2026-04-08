@@ -185,51 +185,38 @@ public class CitationLink {
         return getValue();
     }
 
-    /**
-
-     */
+    
     public CitationLinkType getType() {
         return type;
     }
 
-    /**
-
-     */
+    
     public CitationLinkLevel getLevel() {
         return level;
     }
 
-    /**
-
-     */
+    
     public String getLabel() {
         return label;
     }
 
-    /**
-
-     */
+    
     public String getField() {
         return field;
     }
 
-    /**
-     * 
-
-     */
+    
     public String getValue() {
         return this.value;
     }
 
-    /**
-     * @param value the value to set
-     */
+    
     public void setValue(String value) {
         this.value = value;
     }
 
     /**
-     * @param field the field to set
+
      * @return this
      */
     public CitationLink setField(String field) {
@@ -237,15 +224,13 @@ public class CitationLink {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getPattern() {
         return pattern;
     }
 
     /**
-     * @param pattern the pattern to set
+
      * @return this
      */
     public CitationLink setPattern(String pattern) {
@@ -253,15 +238,13 @@ public class CitationLink {
         return this;
     }
 
-    /**
-
-     */
+    
     public boolean isTopstructValueFallback() {
         return topstructValueFallback;
     }
 
     /**
-     * @param topstructValueFallback the topstructValueFallback to set
+
      * @return this
      */
     public CitationLink setTopstructValueFallback(boolean topstructValueFallback) {

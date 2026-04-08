@@ -133,7 +133,7 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
     /**
      * Set custom bcrypt for testing.
      *
-     * @param bcrypt the bcrypt to set
+
      */
     protected void setBcrypt(BCrypt bcrypt) {
         this.bcrypt = bcrypt;

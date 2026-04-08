@@ -82,16 +82,12 @@ public class SearchSortingOption implements Serializable {
         this.ascending = ascending;
     }
 
-    /**
-
-     */
+    
     public String getField() {
         return field;
     }
 
-    /**
-
-     */
+    
     public boolean isAscending() {
         return ascending;
     }

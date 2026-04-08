@@ -304,7 +304,7 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * Setter for the field <code>currentCollection</code>.
      *
-     * @param currentCollection the currentCollection to set
+
      */
     public void setCurrentCollection(CMSCollection currentCollection) {
         this.currentCollection = currentCollection;
@@ -322,7 +322,7 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * Setter for the field <code>solrField</code>.
      *
-     * @param solrField the solrField to set
+
      */
     public void setSolrField(String solrField) {
         this.solrField = solrField;
@@ -339,7 +339,7 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * For unit tests.
      * 
-     * @param solrField the solrField to set
+
      */
     void setSolrFieldNoUpdates(String solrField) {
         this.solrField = solrField;
@@ -357,7 +357,7 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * Setter for the field <code>solrFieldValue</code>.
      *
-     * @param solrFieldValue the solrFieldValue to set
+
      */
     public void setSolrFieldValue(String solrFieldValue) {
         this.solrFieldValue = solrFieldValue;
@@ -606,16 +606,12 @@ public class CmsCollectionsBean implements Serializable {
         return true;
     }
 
-    /**
-
-     */
+    
     public CMSCollectionImageMode getImageMode() {
         return imageMode;
     }
 
-    /**
-     * @param imageMode the imageMode to set
-     */
+    
     public void setImageMode(CMSCollectionImageMode imageMode) {
         logger.trace("setImageMode: {}", imageMode);
         this.imageMode = imageMode;
@@ -640,16 +636,12 @@ public class CmsCollectionsBean implements Serializable {
         }
     }
 
-    /**
-
-     */
+    
     public CMSCollectionTreeTab getCurrentTab() {
         return currentTab;
     }
 
-    /**
-     * @param currentTab the currentTab to set
-     */
+    
     public void setCurrentTab(CMSCollectionTreeTab currentTab) {
         this.currentTab = currentTab;
     }

@@ -107,7 +107,7 @@ public class CMSCategory implements Comparable<CMSCategory>, Serializable {
     /**
      * Setter for the field <code>id</code>.
      *
-     * @param id the id to set
+
      */
     public void setId(Long id) {
         this.id = id;
@@ -125,7 +125,7 @@ public class CMSCategory implements Comparable<CMSCategory>, Serializable {
     /**
      * Setter for the field <code>name</code>.
      *
-     * @param name the name to set
+
      */
     public void setName(String name) {
         this.name = name;
@@ -143,7 +143,7 @@ public class CMSCategory implements Comparable<CMSCategory>, Serializable {
     /**
      * Setter for the field <code>description</code>.
      *
-     * @param description the description to set
+
      */
     public void setDescription(String description) {
         this.description = description;

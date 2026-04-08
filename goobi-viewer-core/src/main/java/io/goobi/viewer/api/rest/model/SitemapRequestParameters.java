@@ -45,7 +45,7 @@ public class SitemapRequestParameters extends TaskParameter {
     /**
      * Setter for the field <code>outputPath</code>.
      *
-     * @param outputPath the outputPath to set
+
      */
     public void setOutputPath(String outputPath) {
         this.outputPath = outputPath;

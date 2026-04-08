@@ -195,7 +195,7 @@ public class FeedbackBean implements Serializable {
     /**
      * Setter for the field <code>feedback</code>.
      *
-     * @param feedback the feedback to set
+
      */
     public void setFeedback(Feedback feedback) {
         this.feedback = feedback;
@@ -217,58 +217,42 @@ public class FeedbackBean implements Serializable {
         return this.captchaBean;
     }
 
-    /**
-     * @param captchaBean the captchaBean to set
-     */
+    
     void setCaptchaBean(CaptchaBean captchaBean) {
         this.captchaBean = captchaBean;
     }
 
-    /**
-
-     */
+    
     UserBean getUserBean() {
         return userBean;
     }
 
-    /**
-     * @param userBean the userBean to set
-     */
+    
     void setUserBean(UserBean userBean) {
         this.userBean = userBean;
     }
 
-    /**
-
-     */
+    
     NavigationHelper getNavigationHelper() {
         return navigationHelper;
     }
 
-    /**
-     * @param navigationHelper the navigationHelper to set
-     */
+    
     void setNavigationHelper(NavigationHelper navigationHelper) {
         this.navigationHelper = navigationHelper;
     }
 
-    /**
-
-     */
+    
     EMailSender getEmailSender() {
         return emailSender;
     }
 
-    /**
-     * @param emailSender the emailSender to set
-     */
+    
     void setEmailSender(EMailSender emailSender) {
         this.emailSender = emailSender;
     }
 
-    /**
-     * @param facesContext the facesContext to set
-     */
+    
     void setFacesContext(FacesContext facesContext) {
         this.facesContext = facesContext;
     }

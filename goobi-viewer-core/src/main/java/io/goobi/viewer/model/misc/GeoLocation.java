@@ -135,7 +135,7 @@ public class GeoLocation {
     /**
      * Setter for the field <code>longitude</code>.
      *
-     * @param longitude the longitude to set
+
      */
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
@@ -181,7 +181,7 @@ public class GeoLocation {
     /**
      * Setter for the field <code>info</code>.
      *
-     * @param info the info to set
+
      */
     public void setInfo(String info) {
         this.info = info;
@@ -199,7 +199,7 @@ public class GeoLocation {
     /**
      * Setter for the field <code>link</code>.
      *
-     * @param link the link to set
+
      */
     public void setLink(String link) {
         this.link = link;

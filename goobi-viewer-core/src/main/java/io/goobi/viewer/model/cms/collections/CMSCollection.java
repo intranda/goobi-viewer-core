@@ -617,7 +617,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /**
      * Setter for the field <code>representativeWorkPI</code>.
      *
-     * @param representativeWorkPI the representativeWorkPI to set
+
      */
     public void setRepresentativeWorkPI(String representativeWorkPI) {
         this.representativeWorkPI = representativeWorkPI;
@@ -703,16 +703,12 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         this.selectedLocale = locale;
     }
 
-    /**
-
-     */
+    
     public AccessPermission getAccessPermissionThumbnail() {
         return accessPermissionThumbnail;
     }
 
-    /**
-     * @param accessPermissionThumbnail the accessPermissionThumbnail to set
-     */
+    
     public void setAccessPermissionThumbnail(AccessPermission accessPermissionThumbnail) {
         this.accessPermissionThumbnail = accessPermissionThumbnail;
     }

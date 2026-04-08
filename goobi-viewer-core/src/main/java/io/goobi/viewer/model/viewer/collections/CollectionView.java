@@ -748,7 +748,7 @@ public class CollectionView implements Serializable {
     /**
      * Setter for the field <code>showAllHierarchyLevels</code>.
      *
-     * @param showAllHierarchyLevels the showAllHierarchyLevels to set
+
      */
     public void setShowAllHierarchyLevels(boolean showAllHierarchyLevels) {
         this.showAllHierarchyLevels = showAllHierarchyLevels;
@@ -994,30 +994,22 @@ public class CollectionView implements Serializable {
         return field;
     }
 
-    /**
-
-     */
+    
     public String getSearchUrl() {
         return searchUrl;
     }
 
-    /**
-     * @param searchUrl the searchUrl to set
-     */
+    
     public void setSearchUrl(String searchUrl) {
         this.searchUrl = searchUrl;
     }
 
-    /**
-
-     */
+    
     public boolean isIgnoreHierarchy() {
         return ignoreHierarchy;
     }
 
-    /**
-     * @param ignoreHierarchy the ignoreHierarchy to set
-     */
+    
     public void setIgnoreHierarchy(boolean ignoreHierarchy) {
         this.ignoreHierarchy = ignoreHierarchy;
     }
@@ -1043,16 +1035,12 @@ public class CollectionView implements Serializable {
         return "-";
     }
 
-    /**
-
-     */
+    
     public String getSplittingChar() {
         return splittingChar;
     }
 
-    /**
-
-     */
+    
     public int getDisplayNumberOfVolumesLevel() {
         return displayNumberOfVolumesLevel;
     }

@@ -34,58 +34,42 @@ public class ProcessCreationResponse {
 
     private int processId;
 
-    /**
-
-     */
+    
     public String getResult() {
         return result;
     }
 
-    /**
-     * @param result the result to set
-     */
+    
     public void setResult(String result) {
         this.result = result;
     }
 
-    /**
-
-     */
+    
     public String getErrorText() {
         return errorText;
     }
 
-    /**
-     * @param errorText the errorText to set
-     */
+    
     public void setErrorText(String errorText) {
         this.errorText = errorText;
     }
 
-    /**
-
-     */
+    
     public String getProcessName() {
         return processName;
     }
 
-    /**
-     * @param processName the processName to set
-     */
+    
     public void setProcessName(String processName) {
         this.processName = processName;
     }
 
-    /**
-
-     */
+    
     public int getProcessId() {
         return processId;
     }
 
-    /**
-     * @param processId the processId to set
-     */
+    
     public void setProcessId(int processId) {
         this.processId = processId;
     }

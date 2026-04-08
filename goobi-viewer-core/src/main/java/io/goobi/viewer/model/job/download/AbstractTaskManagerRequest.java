@@ -42,86 +42,62 @@ public class AbstractTaskManagerRequest {
         return type;
     }
 
-    /**
-
-     */
+    
     public String getGoobiId() {
         return goobiId;
     }
 
-    /**
-     * @param goobiId the goobiId to set
-     */
+    
     public void setGoobiId(String goobiId) {
         this.goobiId = goobiId;
     }
 
-    /**
-
-     */
+    
     public String getSourceDir() {
         return sourceDir;
     }
 
-    /**
-     * @param sourceDir the sourceDir to set
-     */
+    
     public void setSourceDir(String sourceDir) {
         this.sourceDir = sourceDir;
     }
 
-    /**
-
-     */
+    
     public String getTargetDir() {
         return targetDir;
     }
 
-    /**
-     * @param targetDir the targetDir to set
-     */
+    
     public void setTargetDir(String targetDir) {
         this.targetDir = targetDir;
     }
 
-    /**
-
-     */
+    
     public String getPi() {
         return pi;
     }
 
-    /**
-     * @param pi the pi to set
-     */
+    
     public void setPi(String pi) {
         this.pi = pi;
     }
 
-    /**
-
-     */
+    
     public String getLogId() {
         return logId;
     }
 
-    /**
-     * @param logId the logId to set
-     */
+    
     public void setLogId(String logId) {
         this.logId = logId;
     }
 
-    /**
-
-     */
+    
     public String getLanguage() {
         return language;
     }
 
-    /**
-     * @param language the language to set
-     */
+    
     public void setLanguage(String language) {
         this.language = language;
     }

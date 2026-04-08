@@ -54,16 +54,12 @@ public class CommentMailNotificator implements ChangeNotificator {
         this.recipients = recipients;
     }
 
-    /**
-
-     */
+    
     public List<String> getBcc() {
         return bcc;
     }
 
-    /**
-     * @param bcc the bcc to set
-     */
+    
     public void setBcc(List<String> bcc) {
         this.bcc = bcc;
     }

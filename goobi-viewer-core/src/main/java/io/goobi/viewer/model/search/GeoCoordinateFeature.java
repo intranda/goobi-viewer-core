@@ -194,18 +194,12 @@ public class GeoCoordinateFeature {
         return getVertices().length > 0;
     }
 
-    /**
-     * 
-
-     */
+    
     public String getShape() {
         return this.shape;
     }
 
-    /**
-     * 
-
-     */
+    
     public String getPredicate() {
         return this.predicate;
     }

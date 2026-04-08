@@ -51,15 +51,13 @@ public class PhysicalElementBuilder {
         return new PhysicalElement(physId, filePath, order, orderLabel, urn, purlPart, pi, mimeType, dataRepository);
     }
 
-    /**
-
-     */
+    
     public String getPi() {
         return pi;
     }
 
     /**
-     * @param pi the pi to set
+
      * @return this
      */
     public PhysicalElementBuilder setPi(String pi) {
@@ -67,15 +65,13 @@ public class PhysicalElementBuilder {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getFilePath() {
         return filePath;
     }
 
     /**
-     * @param filePath the filePath to set
+
      * @return this
      */
     public PhysicalElementBuilder setFilePath(String filePath) {
@@ -83,15 +79,13 @@ public class PhysicalElementBuilder {
         return this;
     }
 
-    /**
-
-     */
+    
     public int getOrder() {
         return order;
     }
 
     /**
-     * @param order the order to set
+
      * @return this
      */
     public PhysicalElementBuilder setOrder(int order) {
@@ -99,15 +93,13 @@ public class PhysicalElementBuilder {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getOrderLabel() {
         return orderLabel;
     }
 
     /**
-     * @param orderLabel the orderLabel to set
+
      * @return this
      */
     public PhysicalElementBuilder setOrderLabel(String orderLabel) {
@@ -115,15 +107,13 @@ public class PhysicalElementBuilder {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getPhysId() {
         return physId;
     }
 
     /**
-     * @param physId the physId to set
+
      * @return this
      */
     public PhysicalElementBuilder setPhysId(String physId) {
@@ -131,15 +121,13 @@ public class PhysicalElementBuilder {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getUrn() {
         return urn;
     }
 
     /**
-     * @param urn the urn to set
+
      * @return this
      */
     public PhysicalElementBuilder setUrn(String urn) {
@@ -147,15 +135,13 @@ public class PhysicalElementBuilder {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getPurlPart() {
         return purlPart;
     }
 
     /**
-     * @param purlPart the purlPart to set
+
      * @return this
      */
     public PhysicalElementBuilder setPurlPart(String purlPart) {
@@ -163,15 +149,13 @@ public class PhysicalElementBuilder {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getMimeType() {
         return mimeType;
     }
 
     /**
-     * @param mimeType the mimeType to set
+
      * @return this
      */
     public PhysicalElementBuilder setMimeType(String mimeType) {
@@ -179,15 +163,13 @@ public class PhysicalElementBuilder {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getDataRepository() {
         return dataRepository;
     }
 
     /**
-     * @param dataRepository the dataRepository to set
+
      * @return this
      */
     public PhysicalElementBuilder setDataRepository(String dataRepository) {

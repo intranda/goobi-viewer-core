@@ -73,170 +73,122 @@ public class RecordsRequestParameters {
     @Schema(description = "A list of SOLR field names to get facet results for", example = "[\"DC\",\"DOCSTRCT\"]")
     private List<String> facetFields = new ArrayList<>();
 
-    /**
-
-     */
+    
     public String getQuery() {
         return query;
     }
 
-    /**
-     * @param query the query to set
-     */
+    
     public void setQuery(String query) {
         this.query = query;
     }
 
-    /**
-
-     */
+    
     public List<String> getResultFields() {
         return resultFields;
     }
 
-    /**
-     * @param resultFields the resultFields to set
-     */
+    
     public void setResultFields(List<String> resultFields) {
         this.resultFields = resultFields;
     }
 
-    /**
-
-     */
+    
     public List<String> getSortFields() {
         return sortFields;
     }
 
-    /**
-     * @param sortFields the sortFields to set
-     */
+    
     public void setSortFields(List<String> sortFields) {
         this.sortFields = sortFields;
     }
 
-    /**
-
-     */
+    
     public String getSortOrder() {
         return sortOrder;
     }
 
-    /**
-     * @param sortOrder the sortOrder to set
-     */
+    
     public void setSortOrder(String sortOrder) {
         this.sortOrder = sortOrder;
     }
 
-    /**
-
-     */
+    
     public String getJsonFormat() {
         return jsonFormat;
     }
 
-    /**
-     * @param jsonFormat the jsonFormat to set
-     */
+    
     public void setJsonFormat(String jsonFormat) {
         this.jsonFormat = jsonFormat;
     }
 
-    /**
-
-     */
+    
     public int getCount() {
         return count;
     }
 
-    /**
-     * @param count the count to set
-     */
+    
     public void setCount(int count) {
         this.count = count;
     }
 
-    /**
-
-     */
+    
     public int getOffset() {
         return offset;
     }
 
-    /**
-     * @param offset the offset to set
-     */
+    
     public void setOffset(int offset) {
         this.offset = offset;
     }
 
-    /**
-
-     */
+    
     public boolean isRandomize() {
         return randomize;
     }
 
-    /**
-     * @param randomize the randomize to set
-     */
+    
     public void setRandomize(boolean randomize) {
         this.randomize = randomize;
     }
 
-    /**
-
-     */
+    
     public String getLanguage() {
         return language;
     }
 
-    /**
-     * @param language the language to set
-     */
+    
     public void setLanguage(String language) {
         this.language = language;
     }
 
-    /**
-
-     */
+    
     public boolean isIncludeChildHits() {
         return includeChildHits;
     }
 
-    /**
-     * @param includeChildHits the includeChildHits to set
-     */
+    
     public void setIncludeChildHits(boolean includeChildHits) {
         this.includeChildHits = includeChildHits;
     }
 
-    /**
-
-     */
+    
     public boolean isBoostTopLevelDocstructs() {
         return boostTopLevelDocstructs;
     }
 
-    /**
-     * @param boostTopLevelDocstructs the boostTopLevelDocstructs to set
-     */
+    
     public void setBoostTopLevelDocstructs(boolean boostTopLevelDocstructs) {
         this.boostTopLevelDocstructs = boostTopLevelDocstructs;
     }
 
-    /**
-
-     */
+    
     public List<String> getFacetFields() {
         return facetFields;
     }
 
-    /**
-     * @param facetFields the facetFields to set
-     */
+    
     public void setFacetFields(List<String> facetFields) {
         this.facetFields = facetFields;
     }

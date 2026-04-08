@@ -873,7 +873,7 @@ public class Search implements Serializable {
     /**
      * Setter for the field <code>id</code>.
      *
-     * @param id the id to set
+
      */
     public void setId(Long id) {
         this.id = id;
@@ -891,7 +891,7 @@ public class Search implements Serializable {
     /**
      * Setter for the field <code>owner</code>.
      *
-     * @param owner the owner to set
+
      */
     public void setOwner(User owner) {
         this.owner = owner;
@@ -909,7 +909,7 @@ public class Search implements Serializable {
     /**
      * Setter for the field <code>name</code>.
      *
-     * @param name the name to set
+
      */
     public void setName(String name) {
         this.name = name;
@@ -927,7 +927,7 @@ public class Search implements Serializable {
     /**
      * Setter for the field <code>userInput</code>.
      *
-     * @param userInput the userInput to set
+
      */
     public void setUserInput(String userInput) {
         this.userInput = userInput;
@@ -945,7 +945,7 @@ public class Search implements Serializable {
     /**
      * Setter for the field <code>searchType</code>.
      *
-     * @param searchType the searchType to set
+
      */
     public void setSearchType(int searchType) {
         this.searchType = searchType;
@@ -963,7 +963,7 @@ public class Search implements Serializable {
     /**
      * Setter for the field <code>searchFilter</code>.
      *
-     * @param searchFilter the searchFilter to set
+
      */
     public void setSearchFilter(String searchFilter) {
         this.searchFilter = searchFilter;
@@ -981,7 +981,7 @@ public class Search implements Serializable {
     /**
      * Setter for the field <code>query</code>.
      *
-     * @param query the query to set
+
      */
     public void setQuery(String query) {
         this.query = query;
@@ -999,22 +999,18 @@ public class Search implements Serializable {
     /**
      * Setter for the field <code>expandQuery</code>.
      *
-     * @param expandQuery the expandQuery to set
+
      */
     public void setExpandQuery(String expandQuery) {
         this.expandQuery = expandQuery;
     }
 
-    /**
-
-     */
+    
     public String getCustomFilterQuery() {
         return customFilterQuery;
     }
 
-    /**
-     * @param customFilterQuery the customFilterQuery to set
-     */
+    
     public void setCustomFilterQuery(String customFilterQuery) {
         this.customFilterQuery = customFilterQuery;
     }
@@ -1031,7 +1027,7 @@ public class Search implements Serializable {
     /**
      * Setter for the field <code>page</code>.
      *
-     * @param page the page to set
+
      */
     public void setPage(int page) {
         this.page = page;
@@ -1049,7 +1045,7 @@ public class Search implements Serializable {
     /**
      * Setter for the field <code>facetString</code>.
      *
-     * @param facetString the facetString to set
+
      */
     public void setFacetString(String facetString) {
         this.facetString = facetString;
@@ -1067,7 +1063,7 @@ public class Search implements Serializable {
     /**
      * Setter for the field <code>sortString</code>.
      *
-     * @param sortString the sortString to set
+
      */
     public void setSortString(String sortString) {
         if (StringUtils.isNotBlank(sortString)) {
@@ -1148,7 +1144,7 @@ public class Search implements Serializable {
     /**
      * Setter for the field <code>dateUpdated</code>.
      *
-     * @param dateUpdated the dateUpdated to set
+
      */
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
@@ -1166,7 +1162,7 @@ public class Search implements Serializable {
     /**
      * Setter for the field <code>lastHitsCount</code>.
      *
-     * @param lastHitsCount the lastHitsCount to set
+
      */
     public void setLastHitsCount(long lastHitsCount) {
         this.lastHitsCount = lastHitsCount;
@@ -1184,36 +1180,28 @@ public class Search implements Serializable {
     /**
      * Setter for the field <code>newHitsNotification</code>.
      *
-     * @param newHitsNotification the newHitsNotification to set
+
      */
     public void setNewHitsNotification(boolean newHitsNotification) {
         this.newHitsNotification = newHitsNotification;
     }
 
-    /**
-
-     */
+    
     public int getProximitySearchDistance() {
         return proximitySearchDistance;
     }
 
-    /**
-     * @param proximitySearchDistance the proximitySearchDistance to set
-     */
+    
     public void setProximitySearchDistance(int proximitySearchDistance) {
         this.proximitySearchDistance = proximitySearchDistance;
     }
 
-    /**
-
-     */
+    
     public List<SearchResultGroup> getResultGroups() {
         return resultGroups;
     }
 
-    /**
-     * @param resultGroups the resultGroups to set
-     */
+    
     public void setResultGroups(List<SearchResultGroup> resultGroups) {
         this.resultGroups = resultGroups;
     }
@@ -1230,7 +1218,7 @@ public class Search implements Serializable {
     /**
      * Setter for the field <code>saved</code>.
      *
-     * @param saved the saved to set
+
      */
     public void setSaved(boolean saved) {
         this.saved = saved;
@@ -1255,7 +1243,7 @@ public class Search implements Serializable {
     /**
      * Setter for the field <code>hitsCount</code>.
      *
-     * @param hitsCount the hitsCount to set
+
      */
     public void setHitsCount(long hitsCount) {
         if (!resultGroups.isEmpty()) {
@@ -1305,9 +1293,7 @@ public class Search implements Serializable {
         DataManager.getInstance().getDao().updateSearch(this);
     }
 
-    /**
-
-     */
+    
     public List<Location> getHitsLocationList() {
         if (!resultGroups.isEmpty()) {
             return resultGroups.get(0).getHitLocationList();
@@ -1316,9 +1302,7 @@ public class Search implements Serializable {
         return Collections.emptyList();
     }
 
-    /**
-
-     */
+    
     public boolean isHasGeoLocationHits() {
         if (!resultGroups.isEmpty()) {
             return resultGroups.get(0).isHasGeoLocationHits();
@@ -1335,16 +1319,12 @@ public class Search implements Serializable {
         return resultGroups.size() > 1;
     }
 
-    /**
-
-     */
+    
     public String getMetadataListType() {
         return metadataListType;
     }
 
-    /**
-     * @param metadataListType the metadataListType to set
-     */
+    
     public void setMetadataListType(String metadataListType) {
         this.metadataListType = metadataListType;
     }

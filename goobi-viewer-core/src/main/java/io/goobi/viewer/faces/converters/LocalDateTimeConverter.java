@@ -112,7 +112,7 @@ public class LocalDateTimeConverter implements Converter<LocalDateTime> {
     /**
      * For tests.
      * 
-     * @param locale the locale to set
+
      * @return this
      */
     LocalDateTimeConverter setLocale(Locale locale) {

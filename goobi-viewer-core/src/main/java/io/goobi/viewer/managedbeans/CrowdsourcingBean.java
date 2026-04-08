@@ -540,7 +540,7 @@ public class CrowdsourcingBean implements Serializable {
     /**
      * Sets the selected campaign to a clone of the given campaign.
      *
-     * @param campaign the campaign to set
+
      */
     public void setSelectedCampaign(Campaign campaign) {
 
@@ -597,7 +597,7 @@ public class CrowdsourcingBean implements Serializable {
     /**
      * Setter for the field <code>targetCampaign</code>.
      *
-     * @param targetCampaign the targetCampaign to set
+
      */
     public void setTargetCampaign(Campaign targetCampaign) {
         if (this.targetCampaign != null && !this.targetCampaign.equals(targetCampaign)) {
@@ -727,7 +727,7 @@ public class CrowdsourcingBean implements Serializable {
     /**
      * Setter for the field <code>targetIdentifier</code>.
      *
-     * @param targetIdentifier the targetIdentifier to set
+
      */
     public void setTargetIdentifier(String targetIdentifier) {
         this.targetIdentifier = targetIdentifier;
@@ -745,7 +745,7 @@ public class CrowdsourcingBean implements Serializable {
     /**
      * Setter for the field <code>targetPage</code>.
      *
-     * @param targetPage the targetPage to set
+
      */
     public void setTargetPage(int targetPage) {
         this.targetPage = targetPage;
@@ -975,7 +975,7 @@ public class CrowdsourcingBean implements Serializable {
     /**
      * Setter for the field <code>targetStatus</code>.
      *
-     * @param targetStatus the targetStatus to set
+
      */
     public void setTargetStatus(CrowdsourcingStatus targetStatus) {
         this.targetStatus = targetStatus;

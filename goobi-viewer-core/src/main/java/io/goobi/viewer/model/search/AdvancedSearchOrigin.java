@@ -43,23 +43,17 @@ public class AdvancedSearchOrigin {
         this.docstrct = docstrct;
     }
 
-    /**
-
-     */
+    
     public String getPi() {
         return pi;
     }
 
-    /**
-
-     */
+    
     public String getLabel() {
         return label;
     }
 
-    /**
-
-     */
+    
     public String getDocstrct() {
         return docstrct;
     }

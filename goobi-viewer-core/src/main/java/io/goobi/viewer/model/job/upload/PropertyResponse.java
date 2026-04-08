@@ -28,15 +28,13 @@ public class PropertyResponse {
     private String title;
     private String value;
 
-    /**
-
-     */
+    
     public String getTitle() {
         return title;
     }
 
     /**
-     * @param title the title to set
+
      * @return this;
      */
     public PropertyResponse setTitle(String title) {
@@ -44,15 +42,13 @@ public class PropertyResponse {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getValue() {
         return value;
     }
 
     /**
-     * @param value the value to set
+
      * @return this
      */
     public PropertyResponse setValue(String value) {

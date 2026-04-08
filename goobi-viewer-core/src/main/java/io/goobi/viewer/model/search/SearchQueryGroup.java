@@ -221,7 +221,7 @@ public class SearchQueryGroup implements Serializable {
     /**
      * Setter for the field <code>operator</code>.
      *
-     * @param operator the operator to set
+
      */
     public void setOperator(SearchQueryGroupOperator operator) {
         this.operator = operator;

@@ -91,7 +91,7 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     /**
      * Setter for the field <code>mode</code>.
      *
-     * @param mode the mode to set
+
      */
     public void setMode(ContentItemMode mode) {
         this.mode = mode;
@@ -117,7 +117,7 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     /**
      * Setter for the field <code>inlineHelp</code>.
      *
-     * @param inlineHelp the inlineHelp to set
+
      */
     public void setInlineHelp(String inlineHelp) {
         this.inlineHelp = inlineHelp;
@@ -130,12 +130,11 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     /**
      * Setter for the field <code>mediaFilter</code>.
      *
-     * @param mediaFilter the mediaFilter to set
+
      */
     public void setMediaFilter(String mediaFilter) {
         this.mediaFilter = mediaFilter == null ? "" : mediaFilter;
     }
-
 
     public boolean isPreview() {
         return this.preview;
@@ -144,34 +143,27 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     /**
      * Setter for the field <code>preview</code>.
      *
-     * @param preview the preview to set
+
      */
     public void setPreview(boolean preview) {
         this.preview = preview;
     }
 
-    /**
-     * @param mandatory the mandatory to set
-     */
+    
     public void setMandatory(boolean mandatory) {
         this.mandatory = mandatory;
     }
-
 
     public boolean isMandatory() {
         return this.mandatory;
     }
 
-    /**
-     * @param order the order to set
-     */
+    
     public void setOrder(int order) {
         this.order = order;
     }
 
-    /**
-
-     */
+    
     public int getOrder() {
         return order;
     }
@@ -180,49 +172,36 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
         this.itemLabel = itemLabel;
     }
 
-
     public String getItemLabel() {
         return this.itemLabel;
     }
 
-    /**
-
-     */
+    
     public boolean isIgnoreCollectionHierarchy() {
         return ignoreCollectionHierarchy;
     }
 
-    /**
-     * @param ignoreCollectionHierarchy the ignoreCollectionHierarchy to set
-     */
+    
     public void setIgnoreCollectionHierarchy(boolean ignoreCollectionHierarchy) {
         this.ignoreCollectionHierarchy = ignoreCollectionHierarchy;
     }
 
-    /**
-
-     */
+    
     public boolean isHitListOptions() {
         return hitListOptions;
     }
 
-    /**
-     * @param hitListOptions the hitListOptions to set
-     */
+    
     public void setHitListOptions(boolean hitListOptions) {
         this.hitListOptions = hitListOptions;
     }
 
-    /**
-     * @param radomizeItems the radomizeItems to set
-     */
+    
     public void setRandomizeItems(boolean radomizeItems) {
         this.randomizeItems = radomizeItems;
     }
 
-    /**
-
-     */
+    
     public boolean isRandomizeItems() {
         return this.randomizeItems;
     }

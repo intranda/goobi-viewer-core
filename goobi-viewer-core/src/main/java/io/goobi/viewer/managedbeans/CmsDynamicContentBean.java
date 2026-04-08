@@ -72,7 +72,7 @@ public class CmsDynamicContentBean implements Serializable {
     /**
      * setTopBarContent.
      *
-     * @param topBarGroup the topBarGroup to set
+
      */
     public void setTopBarContent(HtmlPanelGroup topBarGroup) {
         this.topBarGroup = topBarGroup;

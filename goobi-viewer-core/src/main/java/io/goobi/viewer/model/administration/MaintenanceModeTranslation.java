@@ -84,16 +84,12 @@ public class MaintenanceModeTranslation extends Translation {
         translations.add(new MaintenanceModeTranslation(lang, tag, value, owner));
     }
 
-    /**
-
-     */
+    
     public MaintenanceMode getOwner() {
         return owner;
     }
 
-    /**
-     * @param owner the owner to set
-     */
+    
     public void setOwner(MaintenanceMode owner) {
         this.owner = owner;
     }

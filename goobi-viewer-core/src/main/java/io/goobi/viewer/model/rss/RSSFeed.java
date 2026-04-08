@@ -78,8 +78,7 @@ import jakarta.servlet.http.HttpServletRequest;
  * Builds and serialises an RSS feed from Solr search results for the viewer's RSS endpoint.
  */
 public final class RSSFeed {
-    /**
-     */
+    
     private static final String DATE_FORMAT_STRING = "dd.MM.yyyy";
 
     private static final Logger logger = LogManager.getLogger(RSSFeed.class);
@@ -93,8 +92,7 @@ public final class RSSFeed {
 
     private static final String HTML_STRONG_PUBLISHED = "<strong>Published: </strong>";
 
-    /**
-     */
+    
     private RSSFeed() {
         //
     }

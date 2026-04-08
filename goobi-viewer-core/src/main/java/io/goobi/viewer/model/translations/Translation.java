@@ -173,7 +173,7 @@ public class Translation {
     /**
      * Setter for the field <code>id</code>.
      *
-     * @param id the id to set
+
      */
     public void setId(Long id) {
         this.id = id;
@@ -191,7 +191,7 @@ public class Translation {
     /**
      * Setter for the field <code>tag</code>.
      *
-     * @param tag the tag to set
+
      */
     public void setTag(String tag) {
         this.tag = tag;
@@ -209,7 +209,7 @@ public class Translation {
     /**
      * Setter for the field <code>language</code>.
      *
-     * @param language the language to set
+
      */
     public void setLanguage(String language) {
         this.language = language;
@@ -227,7 +227,7 @@ public class Translation {
     /**
      * Setter for the field <code>translationValue</code>.
      *
-     * @param translationValue the translationValue to set
+
      */
     public void setTranslationValue(String translationValue) {
         this.translationValue = translationValue;

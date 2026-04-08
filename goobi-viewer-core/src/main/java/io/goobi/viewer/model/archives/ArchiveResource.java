@@ -66,37 +66,27 @@ public class ArchiveResource implements Serializable {
         this.size = Long.parseLong(size);
     }
 
-    /**
-
-     */
+    
     public String getResourceName() {
         return resourceName;
     }
 
-    /**
-
-     */
+    
     public String getResourceId() {
         return resourceId;
     }
 
-    /**
-
-     */
+    
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
     }
 
-    /**
-
-     */
+    
     public Long getSize() {
         return size;
     }
 
-    /**
-
-     */
+    
     public List<String> getAccessConditions() {
         return accessConditions;
     }

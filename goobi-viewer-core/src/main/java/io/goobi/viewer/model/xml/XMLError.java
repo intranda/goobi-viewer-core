@@ -41,30 +41,22 @@ public class XMLError {
         this.message = message;
     }
 
-    /**
-
-     */
+    
     public int getLine() {
         return line;
     }
 
-    /**
-
-     */
+    
     public int getColumn() {
         return column;
     }
 
-    /**
-
-     */
+    
     public String getSeverity() {
         return severity;
     }
 
-    /**
-
-     */
+    
     public String getMessage() {
         return message;
     }

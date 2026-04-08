@@ -438,58 +438,42 @@ public class MediaDeliveryService {
             return this.length == this.total;
         }
 
-        /**
-
-         */
+        
         public long getStart() {
             return start;
         }
 
-        /**
-         * @param start the start to set
-         */
+        
         public void setStart(long start) {
             this.start = start;
         }
 
-        /**
-
-         */
+        
         public long getEnd() {
             return end;
         }
 
-        /**
-         * @param end the end to set
-         */
+        
         public void setEnd(long end) {
             this.end = end;
         }
 
-        /**
-
-         */
+        
         public long getLength() {
             return length;
         }
 
-        /**
-         * @param length the length to set
-         */
+        
         public void setLength(long length) {
             this.length = length;
         }
 
-        /**
-
-         */
+        
         public long getTotal() {
             return total;
         }
 
-        /**
-         * @param total the total to set
-         */
+        
         public void setTotal(long total) {
             this.total = total;
         }

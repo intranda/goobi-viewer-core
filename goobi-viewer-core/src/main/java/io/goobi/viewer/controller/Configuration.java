@@ -1353,7 +1353,6 @@ public class Configuration extends AbstractConfiguration {
         return false;
     }
 
-
     /**
      * isBrowsingMenuEnabled.
      *
@@ -3091,7 +3090,6 @@ public class Configuration extends AbstractConfiguration {
     public boolean isSidebarViewsWidgetObjectViewLinkVisible() {
         return getSidebarWidgetBooleanValue("views", "object[@enabled]", true);
     }
-
 
     /**
      * Checks whether the TOC <strong>link</strong> in the sidebar views widget is enabled. To check whether the sidebar TOC

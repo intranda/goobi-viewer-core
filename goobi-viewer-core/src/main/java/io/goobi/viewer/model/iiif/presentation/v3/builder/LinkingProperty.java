@@ -74,16 +74,12 @@ public class LinkingProperty {
         return new LabeledResource(id, target.type, target.mimeType.getLabel(), target.profile, label);
     }
 
-    /**
-
-     */
+    
     public LinkingTarget getTarget() {
         return target;
     }
 
-    /**
-
-     */
+    
     public IMetadataValue getLabel() {
         return label;
     }

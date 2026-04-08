@@ -254,7 +254,7 @@ public class SearchHitFactory {
     }
 
     /**
-     * @param additionalMetadataListType the additionalMetadataListType to set
+
      * @return this
      */
     public SearchHitFactory setAdditionalMetadataListType(String additionalMetadataListType) {
@@ -574,39 +574,29 @@ public class SearchHitFactory {
         return ret;
     }
 
-    /**
-
-     */
+    
     public Set<String> getAdditionalMetadataIgnoreFields() {
         return additionalMetadataIgnoreFields;
     }
 
-    /**
-
-     */
+    
     public Set<String> getAdditionalMetadataTranslateFields() {
         return additionalMetadataTranslateFields;
     }
 
-    /**
-
-     */
+    
     public Set<String> getAdditionalMetadataOneLineFields() {
         return
 
         additionalMetadataOneLineFields;
     }
 
-    /**
-
-     */
+    
     public Set<String> getAdditionalMetadataSnippetFields() {
         return additionalMetadataSnippetFields;
     }
 
-    /**
-
-     */
+    
     public Set<String> getAdditionalMetadataNoHighlightFields() {
         return additionalMetadataNoHighlightFields;
     }

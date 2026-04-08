@@ -158,37 +158,27 @@ public class AnnotationBean implements Serializable {
         return lazyModelAnnotations;
     }
 
-    /**
-
-     */
+    
     public String getOwnerCampaignId() {
         return ownerCampaignId;
     }
 
-    /**
-     * @param ownerCampaignId the ownerCampaignId to set
-     */
+    
     public void setOwnerCampaignId(String ownerCampaignId) {
         this.ownerCampaignId = ownerCampaignId;
     }
 
-    /**
-
-     */
+    
     public String getTargetRecordPI() {
         return targetRecordPI;
     }
 
-    /**
-     * @param targetRecordPI the targetRecordPI to set
-     */
+    
     public void setTargetRecordPI(String targetRecordPI) {
         this.targetRecordPI = targetRecordPI;
     }
 
-    /**
-
-     */
+    
     public SelectionManager<Long> getExportSelection() {
         return exportSelection;
     }

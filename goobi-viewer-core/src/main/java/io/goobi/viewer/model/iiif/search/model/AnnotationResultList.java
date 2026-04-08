@@ -85,30 +85,22 @@ public class AnnotationResultList {
         }
     }
 
-    /**
-
-     */
+    
     public long getNumHits() {
         return numHits;
     }
 
-    /**
-     * @param numHits the numHits to set
-     */
+    
     public void setNumHits(long numHits) {
         this.numHits = numHits;
     }
 
-    /**
-
-     */
+    
     public List<IAnnotation> getAnnotations() {
         return annotations;
     }
 
-    /**
-
-     */
+    
     public List<SearchHit> getHits() {
         return hits;
     }

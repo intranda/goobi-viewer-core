@@ -161,16 +161,12 @@ public class RISExport {
         return searchHits != null && !searchHits.isEmpty();
     }
 
-    /**
-
-     */
+    
     public String getFileName() {
         return fileName;
     }
 
-    /**
-
-     */
+    
     public List<SearchHit> getSearchHits() {
         return searchHits;
     }

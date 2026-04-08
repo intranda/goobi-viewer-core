@@ -124,7 +124,7 @@ public class LabeledLink implements Serializable {
     /**
      * Setter for the field <code>name</code>.
      *
-     * @param name the name to set
+
      */
     public void setName(String name) {
         this.name = new SimpleMetadataValue(name);
@@ -151,7 +151,7 @@ public class LabeledLink implements Serializable {
     /**
      * Setter for the field <code>url</code>.
      *
-     * @param url the url to set
+
      */
     public void setUrl(String url) {
         this.url = url;
@@ -169,7 +169,7 @@ public class LabeledLink implements Serializable {
     /**
      * Setter for the field <code>weight</code>.
      *
-     * @param weight the weight to set
+
      */
     public void setWeight(int weight) {
         this.weight = weight;

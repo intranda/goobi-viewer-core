@@ -922,7 +922,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Setter for the field <code>id</code>.
      *
-     * @param id the id to set
+
      */
     public void setId(Long id) {
         this.id = id;
@@ -940,7 +940,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Setter for the field <code>dateCreated</code>.
      *
-     * @param dateCreated the dateCreated to set
+
      */
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
@@ -958,7 +958,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Setter for the field <code>dateUpdated</code>.
      *
-     * @param dateUpdated the dateUpdated to set
+
      */
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
@@ -976,7 +976,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Setter for the field <code>visibility</code>.
      *
-     * @param visibility the visibility to set
+
      */
     public void setVisibility(CampaignVisibility visibility) {
         this.visibility = visibility;
@@ -1018,7 +1018,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Setter for the field <code>dateStart</code>.
      *
-     * @param dateStart the dateStart to set
+
      */
     public void setDateStart(LocalDateTime dateStart) {
         this.dateStart = dateStart;
@@ -1060,7 +1060,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Setter for the field <code>dateEnd</code>.
      *
-     * @param dateEnd the dateEnd to set
+
      */
     public void setDateEnd(LocalDateTime dateEnd) {
         this.dateEnd = dateEnd;
@@ -1078,7 +1078,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Setter for the field <code>solrQuery</code>.
      *
-     * @param solrQuery the solrQuery to set
+
      */
     public void setSolrQuery(String solrQuery) {
         this.solrQuery = solrQuery;
@@ -1098,7 +1098,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Setter for the field <code>permalink</code>.
      *
-     * @param permalink the permalink to set
+
      */
     public void setPermalink(String permalink) {
         this.permalink = permalink;
@@ -1116,7 +1116,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Setter for the field <code>breadcrumbParentCmsPageId</code>.
      *
-     * @param breadcrumbParentCmsPageId the breadcrumbParentCmsPageId to set
+
      */
     public void setBreadcrumbParentCmsPageId(String breadcrumbParentCmsPageId) {
         this.breadcrumbParentCmsPageId = breadcrumbParentCmsPageId;
@@ -1556,93 +1556,67 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
         return this.mediaItem != null;
     }
 
-    /**
-     * @param showLog the showLog to set
-     */
+    
     public void setShowLog(boolean showLog) {
         this.showLog = showLog;
     }
 
-    /**
-
-     */
+    
     public boolean isShowLog() {
         return showLog;
     }
 
-    /**
-
-     */
+    
     public boolean isLimitToGroup() {
         return limitToGroup;
     }
 
-    /**
-     * @param limitToGroup the limitToGroup to set
-     */
+    
     public void setLimitToGroup(boolean limitToGroup) {
         this.limitToGroup = limitToGroup;
     }
 
-    /**
-
-     */
+    
     public ReviewMode getReviewMode() {
         return reviewMode;
     }
 
-    /**
-     * @param reviewMode the reviewMode to set
-     */
+    
     public void setReviewMode(ReviewMode reviewMode) {
         this.reviewMode = reviewMode;
     }
 
-    /**
-
-     */
+    
     public StatisticMode getStatisticMode() {
         return statisticMode != null ? statisticMode : StatisticMode.RECORD;
     }
 
-    /**
-     * @param statisticMode the statisticMode to set
-     */
+    
     public void setStatisticMode(StatisticMode statisticMode) {
         this.statisticMode = statisticMode;
     }
 
-    /**
-
-     */
+    
     public UserGroup getUserGroup() {
         return userGroup;
     }
 
-    /**
-     * @param userGroup the userGroup to set
-     */
+    
     public void setUserGroup(UserGroup userGroup) {
         this.userGroup = userGroup;
     }
 
-    /**
-
-     */
+    
     public UserGroup getReviewerUserGroup() {
         return reviewerUserGroup;
     }
 
-    /**
-     * @param reviewerUserGroup the reviewerUserGroup to set
-     */
+    
     public void setReviewerUserGroup(UserGroup reviewerUserGroup) {
         this.reviewerUserGroup = reviewerUserGroup;
     }
 
-    /**
-
-     */
+    
     public boolean isTimePeriodEnabled() {
         return timePeriodEnabled;
     }
@@ -1661,17 +1635,13 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
         this.restrictAnnotationAccess = restrictAnnotationAccess;
     }
 
-    /**
-     * @param timePeriodEnabled the timePeriodEnabled to set
-     */
+    
     public void setTimePeriodEnabled(boolean timePeriodEnabled) {
         logger.trace("setTimePeriodEnabled: {}", timePeriodEnabled);
         this.timePeriodEnabled = timePeriodEnabled;
     }
 
-    /**
-
-     */
+    
     public List<CampaignLogMessage> getLogMessages() {
         return logMessages;
     }

@@ -29,8 +29,7 @@ package io.goobi.viewer.model.security.authentication;
  */
 public class AuthenticationProviderException extends Exception {
 
-    /**
-     */
+    
     private static final long serialVersionUID = 2454421697805524935L;
 
     /**

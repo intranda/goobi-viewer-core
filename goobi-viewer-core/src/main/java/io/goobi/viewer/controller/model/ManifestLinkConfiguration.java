@@ -41,16 +41,12 @@ public class ManifestLinkConfiguration {
         this.metadata = metadata;
     }
 
-    /**
-
-     */
+    
     public String getLabel() {
         return label;
     }
 
-    /**
-
-     */
+    
     public String getFormat() {
         return format;
     }

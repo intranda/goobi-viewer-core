@@ -97,9 +97,7 @@ public class CmsRecordNotesBean implements Serializable {
         }
     }
 
-    /**
-
-     */
+    
     public TableDataProvider<CMSRecordNote> getDataProvider() {
         return dataProvider;
     }

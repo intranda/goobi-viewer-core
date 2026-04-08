@@ -128,23 +128,17 @@ public class LicenseTypePlaceholderInfo extends Translation implements CMSMediaH
         return Optional.ofNullable(getMediaItem()).map(item -> item.getIconURI(0, 0).toString()).orElse(null);
     }
 
-    /**
-
-     */
+    
     public LicenseType getOwner() {
         return owner;
     }
 
-    /**
-     * @param owner the owner to set
-     */
+    
     public void setOwner(LicenseType owner) {
         this.owner = owner;
     }
 
-    /**
-
-     */
+    
     public LicenseTypeImageMode getImageMode() {
         if (imageMode == null) {
             imageMode = LicenseTypeImageMode.DEFAULT;
@@ -152,9 +146,7 @@ public class LicenseTypePlaceholderInfo extends Translation implements CMSMediaH
         return imageMode;
     }
 
-    /**
-     * @param imageMode the imageMode to set
-     */
+    
     public void setImageMode(LicenseTypeImageMode imageMode) {
         this.imageMode = imageMode;
     }

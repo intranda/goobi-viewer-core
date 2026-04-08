@@ -115,15 +115,13 @@ public class AccessPermission implements Serializable {
         }
     }
 
-    /**
-
-     */
+    
     public boolean isGranted() {
         return granted;
     }
 
     /**
-     * @param granted the granted to set
+
      * @return this
      */
     public AccessPermission setGranted(boolean granted) {
@@ -131,15 +129,13 @@ public class AccessPermission implements Serializable {
         return this;
     }
 
-    /**
-
-     */
+    
     public boolean isAccessTicketRequired() {
         return accessTicketRequired;
     }
 
     /**
-     * @param accessTicketRequired the accessTicketRequired to set
+
      * @return this;
      */
     public AccessPermission setAccessTicketRequired(boolean accessTicketRequired) {
@@ -147,15 +143,13 @@ public class AccessPermission implements Serializable {
         return this;
     }
 
-    /**
-
-     */
+    
     public boolean isDownloadTicketRequired() {
         return downloadTicketRequired;
     }
 
     /**
-     * @param downloadTicketRequired the downloadTicketRequired to set
+
      * @return this
      */
     public AccessPermission setDownloadTicketRequired(boolean downloadTicketRequired) {
@@ -163,15 +157,13 @@ public class AccessPermission implements Serializable {
         return this;
     }
 
-    /**
-
-     */
+    
     public boolean isRedirect() {
         return redirect;
     }
 
     /**
-     * @param redirect the redirect to set
+
      * @return this
      */
     public AccessPermission setRedirect(boolean redirect) {
@@ -179,15 +171,13 @@ public class AccessPermission implements Serializable {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getRedirectUrl() {
         return redirectUrl;
     }
 
     /**
-     * @param redirectUrl the redirectUrl to set
+
      * @return this
      */
     public AccessPermission setRedirectUrl(String redirectUrl) {
@@ -195,15 +185,13 @@ public class AccessPermission implements Serializable {
         return this;
     }
 
-    /**
-
-     */
+    
     public Map<String, AccessDeniedInfoConfig> getAccessDeniedPlaceholderInfo() {
         return accessDeniedPlaceholderInfo;
     }
 
     /**
-     * @param accessDeniedPlaceholderInfo the accessDeniedPlaceholderInfo to set
+
      * @return this
      */
     public AccessPermission setAccessDeniedPlaceholderInfo(Map<String, AccessDeniedInfoConfig> accessDeniedPlaceholderInfo) {
@@ -211,15 +199,13 @@ public class AccessPermission implements Serializable {
         return this;
     }
 
-    /**
-
-     */
+    
     public ILicensee getAddionalCheckRequired() {
         return addionalCheckRequired;
     }
 
     /**
-     * @param addionalCheckRequired the addionalCheckRequired to set
+
      * @return this
      */
     public AccessPermission setAddionalCheckRequired(ILicensee addionalCheckRequired) {

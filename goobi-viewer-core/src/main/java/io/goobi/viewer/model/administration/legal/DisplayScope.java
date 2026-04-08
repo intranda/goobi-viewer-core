@@ -91,30 +91,22 @@ public class DisplayScope implements Serializable {
 
     }
 
-    /**
-
-     */
+    
     public PageScope getPageScope() {
         return pageScope;
     }
 
-    /**
-     * @param pageScope the pageScope to set
-     */
+    
     public void setPageScope(PageScope pageScope) {
         this.pageScope = pageScope;
     }
 
-    /**
-
-     */
+    
     public String getFilterQuery() {
         return filterQuery;
     }
 
-    /**
-     * @param filterQuery the filterQuery to set
-     */
+    
     public void setFilterQuery(String filterQuery) {
         this.filterQuery = filterQuery;
     }

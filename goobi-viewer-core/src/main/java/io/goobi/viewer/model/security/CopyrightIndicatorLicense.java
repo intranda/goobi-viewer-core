@@ -44,16 +44,12 @@ public class CopyrightIndicatorLicense implements Serializable {
         this.icons = icons;
     }
 
-    /**
-
-     */
+    
     public String getDescription() {
         return description;
     }
 
-    /**
-
-     */
+    
     public List<String> getIcons() {
         return icons;
     }

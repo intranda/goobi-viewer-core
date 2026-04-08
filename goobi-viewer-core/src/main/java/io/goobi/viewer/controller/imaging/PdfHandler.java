@@ -217,9 +217,7 @@ public class PdfHandler {
         return sb.toString();
     }
 
-    /**
-
-     */
+    
     public WatermarkHandler getWatermarkHandler() {
         return watermarkHandler;
     }

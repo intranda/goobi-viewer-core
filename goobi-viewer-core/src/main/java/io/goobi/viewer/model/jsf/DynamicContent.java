@@ -47,37 +47,27 @@ public class DynamicContent implements Serializable {
         this.componentFilename = componentFilename;
     }
 
-    /**
-
-     */
+    
     public String getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
+    
     public void setId(String id) {
         this.id = id;
     }
 
-    /**
-
-     */
+    
     public Map<String, Object> getAttributes() {
         return attributes;
     }
 
-    /**
-     * @param attributes the attributes to set
-     */
+    
     public void setAttributes(Map<String, Object> attributes) {
         this.attributes = attributes;
     }
 
-    /**
-
-     */
+    
     public DynamicContentType getType() {
         return type;
     }

@@ -92,30 +92,22 @@ public class ProviderConfiguration {
 
     }
 
-    /**
-
-     */
+    
     public URI getUri() {
         return uri;
     }
 
-    /**
-
-     */
+    
     public String getLabel() {
         return label;
     }
 
-    /**
-
-     */
+    
     public List<URI> getLogos() {
         return logos;
     }
 
-    /**
-
-     */
+    
     public List<WebResourceConfiguration> getHomepages() {
         return homepages;
     }

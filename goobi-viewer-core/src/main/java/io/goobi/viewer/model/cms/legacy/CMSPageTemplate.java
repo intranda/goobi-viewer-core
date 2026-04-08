@@ -246,7 +246,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Setter for the field <code>id</code>.
      *
-     * @param id the id to set
+
      */
     public void setId(String id) {
         this.id = id;
@@ -264,7 +264,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Setter for the field <code>name</code>.
      *
-     * @param name the name to set
+
      */
     public void setName(String name) {
         this.name = name;
@@ -282,7 +282,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Setter for the field <code>version</code>.
      *
-     * @param version the version to set
+
      */
     public void setVersion(String version) {
         this.version = version;
@@ -300,7 +300,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Setter for the field <code>description</code>.
      *
-     * @param description the description to set
+
      */
     public void setDescription(String description) {
         this.description = description;
@@ -319,7 +319,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Setter for the field <code>htmlFileName</code>.
      *
-     * @param htmlFileName the htmlFileName to set
+
      */
     public void setHtmlFileName(String htmlFileName) {
         this.htmlFileName = htmlFileName;
@@ -337,7 +337,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Setter for the field <code>templateFileName</code>.
      *
-     * @param templateFileName the templateFileName to set
+
      */
     public void setTemplateFileName(String templateFileName) {
         this.templateFileName = templateFileName;
@@ -355,7 +355,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Setter for the field <code>iconFileName</code>.
      *
-     * @param iconFileName the iconFileName to set
+
      */
     public void setIconFileName(String iconFileName) {
         this.iconFileName = iconFileName;
@@ -395,7 +395,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Setter for the field <code>contentItems</code>.
      *
-     * @param contentItems the contentItems to set
+
      */
     public void setContentItems(List<CMSContentItemTemplate> contentItems) {
         this.contentItems = contentItems;
@@ -440,7 +440,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Setter for the field <code>appliesToExpandedUrl</code>.
      *
-     * @param appliesToExpandedUrl the appliesToExpandedUrl to set
+
      */
     public void setAppliesToExpandedUrl(boolean appliesToExpandedUrl) {
         this.appliesToExpandedUrl = appliesToExpandedUrl;
@@ -455,16 +455,12 @@ public class CMSPageTemplate implements Serializable {
         return appliesToExpandedUrl;
     }
 
-    /**
-     * @param mayHaveTopBarSlider the mayHaveTopBarSlider to set
-     */
+    
     public void setMayHaveTopBarSlider(boolean mayHaveTopBarSlider) {
         this.mayHaveTopBarSlider = mayHaveTopBarSlider;
     }
 
-    /**
-
-     */
+    
     public boolean isMayHaveTopBarSlider() {
         return mayHaveTopBarSlider;
     }

@@ -110,30 +110,22 @@ public class UserActivity {
         return new UserActivity(ActivityType.SEARCH, truncate(search.getName()), search.getDateUpdated(), false);
     }
 
-    /**
-
-     */
+    
     public ActivityType getType() {
         return type;
     }
 
-    /**
-
-     */
+    
     public String getLabel() {
         return label;
     }
 
-    /**
-
-     */
+    
     public LocalDateTime getDate() {
         return date;
     }
 
-    /**
-
-     */
+    
     public boolean isUpdate() {
         return update;
     }

@@ -89,7 +89,7 @@ public class Feedback implements Serializable {
     /**
      * Setter for the field <code>name</code>.
      *
-     * @param name the name to set
+
      */
     public void setName(String name) {
         this.name = name;
@@ -107,7 +107,7 @@ public class Feedback implements Serializable {
     /**
      * Setter for the field <code>senderAddress</code>.
      *
-     * @param senderAddress the senderAddress to set
+
      */
     public void setSenderAddress(String senderAddress) {
         this.senderAddress = senderAddress;
@@ -125,7 +125,7 @@ public class Feedback implements Serializable {
     /**
      * Setter for the field <code>url</code>.
      *
-     * @param url the url to set
+
      */
     public void setUrl(String url) {
         this.url = url;
@@ -143,7 +143,7 @@ public class Feedback implements Serializable {
     /**
      * Setter for the field <code>type</code>.
      *
-     * @param type the type to set
+
      */
     public void setType(String type) {
         this.type = type;
@@ -161,22 +161,18 @@ public class Feedback implements Serializable {
     /**
      * Setter for the field <code>message</code>.
      *
-     * @param message the message to set
+
      */
     public void setMessage(String message) {
         this.message = message;
     }
 
-    /**
-
-     */
+    
     public String getRecipientAddress() {
         return recipientAddress;
     }
 
-    /**
-     * @param recipientAddress the recipientAddress to set
-     */
+    
     public void setRecipientAddress(String recipientAddress) {
         this.recipientAddress = recipientAddress;
     }

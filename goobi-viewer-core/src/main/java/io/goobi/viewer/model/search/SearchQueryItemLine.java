@@ -56,7 +56,7 @@ public class SearchQueryItemLine implements Serializable {
     /**
      * Setter for the field <code>operator</code>.
      *
-     * @param operator the operator to set
+
      */
     public void setOperator(SearchItemOperator operator) {
         // logger.trace("setOperator: {}", operator);StringTools
@@ -78,7 +78,7 @@ public class SearchQueryItemLine implements Serializable {
     /**
      * Setter for the field <code>value</code>.
      *
-     * @param value the value to set
+
      */
     public void setValue(final String value) {
         // logger.trace("setValue: {}", value); //NOSONAR Debug
@@ -116,9 +116,7 @@ public class SearchQueryItemLine implements Serializable {
         }
     }
 
-    /**
-
-     */
+    
     public String getValue2() {
         if (values.size() < 2) {
             return null;
@@ -127,9 +125,7 @@ public class SearchQueryItemLine implements Serializable {
         return values.get(1);
     }
 
-    /**
-     * @param value2 the value2 to set
-     */
+    
     public void setValue2(final String value2) {
         logger.trace("setValue2: {}", value2);
         String val2 = StringTools.stripJS(value2);
@@ -139,16 +135,12 @@ public class SearchQueryItemLine implements Serializable {
         values.add(1, val2);
     }
 
-    /**
-
-     */
+    
     public List<String> getValues() {
         return values;
     }
 
-    /**
-     * @param values the values to set
-     */
+    
     public void setValues(List<String> values) {
         this.values = values;
     }

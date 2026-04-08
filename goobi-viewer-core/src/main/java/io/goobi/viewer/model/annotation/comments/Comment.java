@@ -48,8 +48,7 @@ public class Comment extends PersistentAnnotation implements Comparable<Comment>
 
     private static final long serialVersionUID = 1482656593761912187L;
 
-    /**
-     */
+    
     public Comment() {
         super();
     }

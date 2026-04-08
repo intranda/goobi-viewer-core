@@ -53,100 +53,72 @@ public class ProcessStatusResponse {
 
     private List<PropertyResponse> properties = new ArrayList<>();
 
-    /**
-
-     */
+    
     public String getResult() {
         return result;
     }
 
-    /**
-     * @param result the result to set
-     */
+    
     public void setResult(String result) {
         this.result = result;
     }
 
-    /**
-
-     */
+    
     public String getTitle() {
         return title;
     }
 
-    /**
-     * @param title the title to set
-     */
+    
     public void setTitle(String title) {
         this.title = title;
     }
 
-    /**
-
-     */
+    
     public int getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
+    
     public void setId(int id) {
         this.id = id;
     }
 
-    /**
-
-     */
+    
     public boolean isProcessCompleted() {
         return processCompleted;
     }
 
-    /**
-     * @param processCompleted the processCompleted to set
-     */
+    
     public void setProcessCompleted(boolean processCompleted) {
         this.processCompleted = processCompleted;
     }
 
-    /**
-
-     */
+    
     public Date getCreationDate() {
         return creationDate;
     }
 
-    /**
-     * @param creationDate the creationDate to set
-     */
+    
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
     }
 
-    /**
-
-     */
+    
     public List<StepResponse> getStep() {
         return step;
     }
 
-    /**
-     * @param step the step to set
-     */
+    
     public void setStep(List<StepResponse> step) {
         this.step = step;
     }
 
-    /**
-
-     */
+    
     public List<PropertyResponse> getProperties() {
         return properties;
     }
 
-    /**
-     * @param properties the properties to set
-     */
+    
     public void setProperties(List<PropertyResponse> properties) {
         this.properties = properties;
     }

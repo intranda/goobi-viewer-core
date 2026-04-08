@@ -30,9 +30,7 @@ public class ExportFieldConfiguration {
         this.field = field;
     }
 
-    /**
-
-     */
+    
     public String getField() {
         return field;
     }
@@ -50,7 +48,7 @@ public class ExportFieldConfiguration {
     }
 
     /**
-     * @param label the label to set
+
      * @return this
      */
     public ExportFieldConfiguration setLabel(String label) {

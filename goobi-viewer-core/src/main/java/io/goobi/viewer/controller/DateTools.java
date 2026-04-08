@@ -107,8 +107,7 @@ public final class DateTools {
 
     public static final DateTimeFormatter FORMATTERFILENAME = DateTimeFormatter.ofPattern("yyyy-MM-dd-HHmmssSSS");
 
-    /**
-     */
+    
     private DateTools() {
         //
     }

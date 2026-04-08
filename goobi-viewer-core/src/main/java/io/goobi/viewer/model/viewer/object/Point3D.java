@@ -58,7 +58,7 @@ public class Point3D {
     /**
      * Setter for the field <code>x</code>.
      *
-     * @param x the x to set
+
      */
     public void setX(double x) {
         this.x = x;
@@ -76,7 +76,7 @@ public class Point3D {
     /**
      * Setter for the field <code>y</code>.
      *
-     * @param y the y to set
+
      */
     public void setY(double y) {
         this.y = y;
@@ -94,7 +94,7 @@ public class Point3D {
     /**
      * Setter for the field <code>z</code>.
      *
-     * @param z the z to set
+
      */
     public void setZ(double z) {
         this.z = z;

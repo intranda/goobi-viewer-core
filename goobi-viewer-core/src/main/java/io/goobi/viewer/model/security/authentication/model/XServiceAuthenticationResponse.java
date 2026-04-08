@@ -105,7 +105,7 @@ public class XServiceAuthenticationResponse {
     /**
      * Setter for the field <code>errorMsg</code>.
      *
-     * @param errorMsg the errorMsg to set
+
      */
     public void setErrorMsg(String errorMsg) {
         this.errorMsg = errorMsg;
@@ -141,7 +141,7 @@ public class XServiceAuthenticationResponse {
     /**
      * Setter for the field <code>request</code>.
      *
-     * @param request the request to set
+
      */
     public void setRequest(Request request) {
         this.request = request;

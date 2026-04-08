@@ -161,79 +161,57 @@ public class Task {
         }
     }
 
-    /**
-
-     */
+    
     public long getId() {
         return id;
     }
 
-    /**
-
-     */
+    
     public TaskType getType() {
         return type;
     }
 
-    /**
-
-     */
+    
     public Optional<String> getException() {
         return exception;
     }
 
-    /**
-     * @param exception the exception to set
-     */
+    
     public void setException(Optional<String> exception) {
         this.exception = exception;
     }
 
-    /**
-
-     */
+    
     public Optional<String> getSessionId() {
         return sessionId;
     }
 
-    /**
-     * @param sessionId the sessionId to set
-     */
+    
     public void setSessionId(Optional<String> sessionId) {
         this.sessionId = sessionId;
     }
 
-    /**
-
-     */
+    
     public LocalDateTime getTimeCreated() {
         return timeCreated;
     }
 
-    /**
-
-     */
+    
     public BiConsumer<HttpServletRequest, Task> getWork() {
         return work;
     }
 
-    /**
-
-     */
+    
     public TaskParameter getParams() {
         return params;
     }
 
-    /**
-     * @param status the status to set
-     */
+    
     public void setStatus(TaskStatus status) {
         this.status = status;
     }
 
-    /**
-
-     */
+    
     public TaskStatus getStatus() {
         return status;
     }

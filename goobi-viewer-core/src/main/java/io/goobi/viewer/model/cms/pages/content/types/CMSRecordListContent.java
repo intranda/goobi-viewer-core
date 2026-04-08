@@ -138,16 +138,12 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
         this.groupingField = groupingField;
     }
 
-    /**
-
-     */
+    
     public String getResultGroupName() {
         return resultGroupName;
     }
 
-    /**
-     * @param resultGroupName the resultGroupName to set
-     */
+    
     public void setResultGroupName(String resultGroupName) {
         this.resultGroupName = resultGroupName;
     }
@@ -202,16 +198,12 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
         this.view = view;
     }
 
-    /**
-
-     */
+    
     public String getMetadataListType() {
         return metadataListType;
     }
 
-    /**
-     * @param metadataListType the metadataListType to set
-     */
+    
     public void setMetadataListType(String metadataListType) {
         this.metadataListType = metadataListType;
     }

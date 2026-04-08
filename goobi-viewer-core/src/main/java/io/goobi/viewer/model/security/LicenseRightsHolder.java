@@ -105,58 +105,44 @@ public class LicenseRightsHolder {
         };
     }
 
-    /**
-
-     */
+    
     public Long getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
+    
     public void setId(Long id) {
         this.id = id;
     }
 
-    /**
-
-     */
+    
     public AccessType getType() {
         return type;
     }
 
-    /**
-
-     */
+    
     public License getOwner() {
         return owner;
     }
 
-    /**
-     * @param owner the owner to set
-     */
+    
     public void setOwner(License owner) {
         this.owner = owner;
     }
 
-    /**
-     * @param type the type to set
-     */
+    
     public void setType(AccessType type) {
         logger.trace("setType: {}", type);
         this.type = type;
     }
 
-    /**
-
-     */
+    
     public User getUser() {
         return user;
     }
 
     /**
-     * @param user the user to set
+
      * @should set userGroup and ipRange to null if user not null
      * @should not set userGroup and ipRange to null if user null
      */
@@ -169,15 +155,13 @@ public class LicenseRightsHolder {
         }
     }
 
-    /**
-
-     */
+    
     public UserGroup getUserGroup() {
         return userGroup;
     }
 
     /**
-     * @param userGroup the userGroup to set
+
      * @should set user and ipRange to null if userGroup not null
      * @should not set user and ipRange to null if userGroup null
      */
@@ -190,15 +174,13 @@ public class LicenseRightsHolder {
         }
     }
 
-    /**
-
-     */
+    
     public IpRange getIpRange() {
         return ipRange;
     }
 
     /**
-     * @param ipRange the ipRange to set
+
      * @should set user and userGroup to null if ipRange not null
      * @should not set user and userGroup to null if ipRange null
      */
@@ -211,16 +193,12 @@ public class LicenseRightsHolder {
         }
     }
 
-    /**
-
-     */
+    
     public ClientApplication getClient() {
         return client;
     }
 
-    /**
-     * @param client the client to set
-     */
+    
     public void setClient(ClientApplication client) {
         this.client = client;
     }
@@ -230,7 +208,7 @@ public class LicenseRightsHolder {
     }
 
     /**
-     * @param clientId the clientId to set
+
      * @throws DAOException
      */
     public void setClientId(Long clientId) throws DAOException {

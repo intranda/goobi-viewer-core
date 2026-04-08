@@ -422,9 +422,7 @@ public final class DataManager {
         this.recordCampaignMap = recordCampaignMap;
     }
 
-    /**
-
-     */
+    
     public String getIndexerVersion() {
         return indexerVersion;
     }
@@ -436,9 +434,7 @@ public final class DataManager {
         this.indexerVersion = indexerVersion;
     }
 
-    /**
-
-     */
+    
     public String getConnectorVersion() {
         return connectorVersion;
     }
@@ -450,9 +446,7 @@ public final class DataManager {
         this.connectorVersion = connectorVersion;
     }
 
-    /**
-
-     */
+    
     public int getHotfolderFileCount() {
         return hotfolderFileCount;
     }
@@ -464,9 +458,7 @@ public final class DataManager {
         this.hotfolderFileCount = hotfolderFileCount;
     }
 
-    /**
-
-     */
+    
     public RestApiManager getRestApiManager() {
         if (this.restApiManager == null) {
             this.restApiManager = new RestApiManager(getConfiguration());
@@ -481,16 +473,12 @@ public final class DataManager {
         this.restApiManager = restApiManager;
     }
 
-    /**
-
-     */
+    
     public RecordLockManager getRecordLockManager() {
         return recordLockManager;
     }
 
-    /**
-
-     */
+    
     public TimeAnalysis getTiming() {
         return timing;
     }
@@ -522,9 +510,7 @@ public final class DataManager {
         throw new IllegalStateException("Must be called from within faces context");
     }
 
-    /**
-
-     */
+    
     public TaskManager getRestApiJobManager() {
         return restApiJobManager;
     }
@@ -547,10 +533,7 @@ public final class DataManager {
         return this.clientManager;
     }
 
-    /**
-     * 
-
-     */
+    
     public SecurityManager getSecurityManager() {
         if (securityManager == null) {
             synchronized (LOCK) {
@@ -579,9 +562,7 @@ public final class DataManager {
         this.usageStatisticsRecorder = usageStatisticsRecorder;
     }
 
-    /**
-
-     */
+    
     public BearerTokenManager getBearerTokenManager() {
         if (bearerTokenManager == null) {
             synchronized (LOCK) {

@@ -94,7 +94,7 @@ public class ObjectInfo {
     /**
      * Setter for the field <code>uri</code>.
      *
-     * @param uri the uri to set
+
      */
     public void setUri(URI uri) {
         this.uri = uri;
@@ -112,7 +112,7 @@ public class ObjectInfo {
     /**
      * Setter for the field <code>center</code>.
      *
-     * @param center the center to set
+
      */
     public void setCenter(Point3D center) {
         this.center = center;
@@ -130,7 +130,7 @@ public class ObjectInfo {
     /**
      * Setter for the field <code>rotation</code>.
      *
-     * @param rotation the rotation to set
+
      */
     public void setRotation(Point3D rotation) {
         this.rotation = rotation;

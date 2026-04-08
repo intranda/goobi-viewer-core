@@ -425,7 +425,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Setter for the field <code>id</code>.
      *
-     * @param id the id to set
+
      */
     public void setId(Long id) {
         this.id = id;
@@ -443,7 +443,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Setter for the field <code>dateCreated</code>.
      *
-     * @param dateCreated the dateCreated to set
+
      */
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
@@ -458,7 +458,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Setter for the field <code>dateUpdated</code>.
      *
-     * @param dateUpdated the dateUpdated to set
+
      */
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
@@ -476,7 +476,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Setter for the field <code>published</code>.
      *
-     * @param published the published to set
+
      */
     public void setPublished(boolean published) {
         this.publicationStatus = published ? PublicationStatus.PUBLISHED : PublicationStatus.PRIVATE;
@@ -494,7 +494,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Setter for the field <code>useDefaultSidebar</code>.
      *
-     * @param useDefaultSidebar the useDefaultSidebar to set
+
      */
     public void setUseDefaultSidebar(boolean useDefaultSidebar) {
         this.useDefaultSidebar = useDefaultSidebar;
@@ -512,7 +512,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Setter for the field <code>sidebarElements</code>.
      *
-     * @param sidebarElements the sidebarElements to set
+
      */
     public void setSidebarElements(List<CMSSidebarElement> sidebarElements) {
         this.sidebarElements = sidebarElements;
@@ -804,7 +804,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Setter for the field <code>persistentUrl</code>.
      *
-     * @param persistentUrl the persistentUrl to set
+
      */
     public void setPersistentUrl(final String persistentUrl) {
         // TODO null check
@@ -879,7 +879,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Setter for the field <code>parentPageId</code>.
      *
-     * @param parentPageId the parentPageId to set
+
      */
     public void setParentPageId(String parentPageId) {
         this.parentPageId = parentPageId;
@@ -919,23 +919,19 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Setter for the field <code>relatedPI</code>.
      *
-     * @param relatedPI the relatedPI to set
+
      */
     public void setRelatedPI(String relatedPI) {
         this.relatedPI = relatedPI;
     }
 
-    /**
-
-     */
+    
     public boolean isUseAsDefaultRecordView() {
         logger.trace("isUseAsDefaultRecordView: {}", useAsDefaultRecordView);
         return useAsDefaultRecordView;
     }
 
-    /**
-     * @param useAsDefaultRecordView the useAsDefaultRecordView to set
-     */
+    
     public void setUseAsDefaultRecordView(boolean useAsDefaultRecordView) {
         this.useAsDefaultRecordView = useAsDefaultRecordView;
     }
@@ -984,23 +980,17 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         this.wrapperElementClass = wrapperElementClass;
     }
 
-    /**
-
-     */
+    
     public boolean isSearchable() {
         return searchable;
     }
 
-    /**
-     * @param searchable the searchable to set
-     */
+    
     public void setSearchable(boolean searchable) {
         this.searchable = searchable;
     }
 
-    /**
-
-     */
+    
     public String getAccessCondition() {
         for (CMSProperty property : properties) {
             if (CMSProperty.KEY_ACCESS_CONDITION.equals(property.getKey())) {
@@ -1012,9 +1002,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         return null;
     }
 
-    /**
-     * @param accessCondition the accessCondition to set
-     */
+    
     public void setAccessCondition(String accessCondition) {
         logger.trace("setAccessCondition: {}", accessCondition);
         for (CMSProperty property : properties) {

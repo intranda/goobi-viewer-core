@@ -62,9 +62,7 @@ public class CMSSearchFacetsContent extends CMSContent {
         this.facetField = orig.facetField;
     }
 
-    /**
-
-     */
+    
     public String getFacetField() {
         return facetField;
     }
@@ -83,9 +81,7 @@ public class CMSSearchFacetsContent extends CMSContent {
         return facetField;
     }
 
-    /**
-     * @param facetField the facetField to set
-     */
+    
     public void setFacetField(String facetField) {
         this.facetField = facetField;
     }

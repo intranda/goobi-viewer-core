@@ -331,23 +331,17 @@ public class SearchQueryItem implements Serializable {
         return DataManager.getInstance().getConfiguration().getAdvancedSearchFieldDisplaySelectItemsThreshold(field, template, false);
     }
 
-    /**
-
-     */
+    
     public String getSelectType() {
         return DataManager.getInstance().getConfiguration().getAdvancedSearchFieldSelectType(field, template, false);
     }
 
-    /**
-
-     */
+    
     public String getReplaceRegex() {
         return DataManager.getInstance().getConfiguration().getAdvancedSearchFieldReplaceRegex(field, template, false);
     }
 
-    /**
-
-     */
+    
     public String getReplaceWith() {
         return DataManager.getInstance().getConfiguration().getAdvancedSearchFieldReplaceWith(field, template, false);
     }
@@ -365,7 +359,7 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * @param label the label to set
+
      * @return this
      */
     public SearchQueryItem setLabel(String label) {
@@ -385,16 +379,14 @@ public class SearchQueryItem implements Serializable {
     /**
      * Setter for the field <code>field</code>.
      *
-     * @param field the field to set
+
      */
     public void setField(String field) {
         this.field = field;
         toggleDisplaySelectItems();
     }
 
-    /**
-
-     */
+    
     public List<SearchQueryItemLine> getLines() {
         return lines;
     }
@@ -433,7 +425,7 @@ public class SearchQueryItem implements Serializable {
     /**
      * Backwards compatibility setter.
      *
-     * @param value the value to set
+
      */
     public void setValue(final String value) {
         // logger.trace("setValue: {}", value); //NOSONAR Debug
@@ -477,7 +469,7 @@ public class SearchQueryItem implements Serializable {
     /**
      * Backwards compatibility method.
      * 
-     * @param value2 the value2 to set
+
      */
     public void setValue2(final String value2) {
         if (!lines.isEmpty()) {
@@ -497,7 +489,7 @@ public class SearchQueryItem implements Serializable {
     /**
      * Setter for unit tets.
      * 
-     * @param displaySelectItems the displaySelectItems to set
+
      */
     public void setDisplaySelectItems(boolean displaySelectItems) {
         this.displaySelectItems = displaySelectItems;
@@ -874,16 +866,12 @@ public class SearchQueryItem implements Serializable {
         return proximitySearchDistance;
     }
 
-    /**
-
-     */
+    
     public String getPreselectValue() {
         return preselectValue;
     }
 
-    /**
-     * @param preselectValue the preselectValue to set
-     */
+    
     public void setPreselectValue(String preselectValue) {
         this.preselectValue = preselectValue;
     }

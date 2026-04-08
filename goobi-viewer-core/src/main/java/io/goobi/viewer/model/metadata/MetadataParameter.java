@@ -206,7 +206,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * @param source the source to set
+
      * @return this
      */
     public MetadataParameter setSource(String source) {
@@ -214,15 +214,13 @@ public class MetadataParameter implements Serializable {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getDestination() {
         return destination;
     }
 
     /**
-     * @param destination the destination to set
+
      * @return this
      */
     public MetadataParameter setDestination(String destination) {
@@ -242,7 +240,7 @@ public class MetadataParameter implements Serializable {
     /**
      * Setter for the field <code>type</code>.
      *
-     * @param type the type to set
+
      * @return this
      */
     public MetadataParameter setType(MetadataParameterType type) {
@@ -260,7 +258,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * @param key the key to set
+
      * @return this
      */
     public MetadataParameter setKey(String key) {
@@ -268,15 +266,13 @@ public class MetadataParameter implements Serializable {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getAltKey() {
         return altKey;
     }
 
     /**
-     * @param altKey the altKey to set
+
      * @return this
      */
     public MetadataParameter setAltKey(String altKey) {
@@ -294,7 +290,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * @param masterValueFragment the masterValueFragment to set
+
      * @return this
      */
     public MetadataParameter setMasterValueFragment(String masterValueFragment) {
@@ -312,7 +308,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * @param defaultValue the defaultValue to set
+
      * @return this
      */
     public MetadataParameter setDefaultValue(String defaultValue) {
@@ -330,7 +326,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * @param prefix the prefix to set
+
      * @return this
      */
     public MetadataParameter setPrefix(String prefix) {
@@ -348,7 +344,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * @param suffix the suffix to set
+
      * @return this
      */
     public MetadataParameter setSuffix(String suffix) {
@@ -365,15 +361,13 @@ public class MetadataParameter implements Serializable {
         return scope;
     }
 
-    /**
-
-     */
+    
     public String getCondition() {
         return condition;
     }
 
     /**
-     * @param condition the condition to set
+
      * @return this
      */
     public MetadataParameter setCondition(String condition) {
@@ -381,15 +375,13 @@ public class MetadataParameter implements Serializable {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getInputPattern() {
         return inputPattern;
     }
 
     /**
-     * @param inputPattern the inputPattern to set
+
      * @return this
      */
     public MetadataParameter setInputPattern(String inputPattern) {
@@ -397,15 +389,13 @@ public class MetadataParameter implements Serializable {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getOutputPattern() {
         return outputPattern;
     }
 
     /**
-     * @param outputPattern the outputPattern to set
+
      * @return this
      */
     public MetadataParameter setOutputPattern(String outputPattern) {
@@ -423,7 +413,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * @param addUrl the addUrl to set
+
      * @return this
      */
     public MetadataParameter setAddUrl(boolean addUrl) {
@@ -441,7 +431,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * @param topstructValueFallback the topstructValueFallback to set
+
      * @return this
      */
     public MetadataParameter setTopstructValueFallback(boolean topstructValueFallback) {
@@ -449,15 +439,13 @@ public class MetadataParameter implements Serializable {
         return this;
     }
 
-    /**
-
-     */
+    
     public boolean isRemoveHighlighting() {
         return removeHighlighting;
     }
 
     /**
-     * @param removeHighlighting the removeHighlighting to set
+
      * @return this
      */
     public MetadataParameter setRemoveHighlighting(boolean removeHighlighting) {
@@ -475,7 +463,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * @param replaceRules the replaceRules to set
+
      * @return {@link MetadataParameter}
      */
     public MetadataParameter setReplaceRules(List<MetadataReplaceRule> replaceRules) {

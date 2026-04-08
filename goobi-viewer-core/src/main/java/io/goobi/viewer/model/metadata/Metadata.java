@@ -334,7 +334,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-     * @param type the type to set
+
      * @return this
      */
     public Metadata setType(int type) {
@@ -354,15 +354,13 @@ public class Metadata implements MetadataListElement, Serializable {
         return Collections.singletonList(new StringPair(sortField, "asc"));
     }
 
-    /**
-
-     */
+    
     public String getSortField() {
         return sortField;
     }
 
     /**
-     * @param sortField the sortField to set
+
      * @return this
      */
     public Metadata setSortField(String sortField) {
@@ -1269,7 +1267,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-     * @param number the number to set
+
      * @return this
      */
     public Metadata setNumber(int number) {
@@ -1287,7 +1285,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-     * @param group the group to set
+
      * @return this
      */
     public Metadata setGroup(boolean group) {
@@ -1295,15 +1293,13 @@ public class Metadata implements MetadataListElement, Serializable {
         return this;
     }
 
-    /**
-
-     */
+    
     public boolean isSingleString() {
         return singleString;
     }
 
     /**
-     * @param singleString the singleString to set
+
      * @return this
      */
     public Metadata setSingleString(boolean singleString) {
@@ -1311,15 +1307,13 @@ public class Metadata implements MetadataListElement, Serializable {
         return this;
     }
 
-    /**
-
-     */
+    
     public boolean isHideIfOnlyMetadataField() {
         return hideIfOnlyMetadataField;
     }
 
     /**
-     * @param hideIfOnlyMetadataField the hideIfOnlyMetadataField to set
+
      * @return this
      */
     public Metadata setHideIfOnlyMetadataField(boolean hideIfOnlyMetadataField) {
@@ -1327,15 +1321,13 @@ public class Metadata implements MetadataListElement, Serializable {
         return this;
     }
 
-    /**
-
-     */
+    
     public boolean isTopstructOnly() {
         return topstructOnly;
     }
 
     /**
-     * @param topstructOnly the topstructOnly to set
+
      * @return this
      */
     public Metadata setTopstructOnly(boolean topstructOnly) {
@@ -1343,15 +1335,13 @@ public class Metadata implements MetadataListElement, Serializable {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getLabelField() {
         return labelField;
     }
 
     /**
-     * @param labelField the labelField to set
+
      * @return this
      */
     public Metadata setLabelField(String labelField) {
@@ -1359,15 +1349,13 @@ public class Metadata implements MetadataListElement, Serializable {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getSeparator() {
         return separator;
     }
 
     /**
-     * @param separator the separator to set
+
      * @return this
      */
     public Metadata setSeparator(String separator) {
@@ -1375,15 +1363,13 @@ public class Metadata implements MetadataListElement, Serializable {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getOwnerDocstrctType() {
         return ownerDocstrctType;
     }
 
     /**
-     * @param ownerDocstrctType the ownerDocstrctType to set
+
      * @return this
      */
     public Metadata setOwnerDocstrctType(String ownerDocstrctType) {
@@ -1400,29 +1386,23 @@ public class Metadata implements MetadataListElement, Serializable {
         return filterQuery;
     }
 
-    /**
-
-     */
+    
     public boolean isAccessGranted() {
         return accessGranted;
     }
 
-    /**
-     * @param accessGranted the accessGranted to set
-     */
+    
     public void setAccessGranted(boolean accessGranted) {
         this.accessGranted = accessGranted;
     }
 
-    /**
-
-     */
+    
     public String getCitationTemplate() {
         return citationTemplate;
     }
 
     /**
-     * @param citationTemplate the citationTemplate to set
+
      * @return this
      */
     public Metadata setCitationTemplate(String citationTemplate) {
@@ -1430,30 +1410,22 @@ public class Metadata implements MetadataListElement, Serializable {
         return this;
     }
 
-    /**
-
-     */
+    
     public CitationProcessorWrapper getCitationProcessorWrapper() {
         return citationProcessorWrapper;
     }
 
-    /**
-     * @param citationProcessorWrapper the citationProcessorWrapper to set
-     */
+    
     public void setCitationProcessorWrapper(CitationProcessorWrapper citationProcessorWrapper) {
         this.citationProcessorWrapper = citationProcessorWrapper;
     }
 
-    /**
-
-     */
+    
     public Metadata getParentMetadata() {
         return parentMetadata;
     }
 
-    /**
-     * @param parentMetadata the parentMetadata to set
-     */
+    
     public void setParentMetadata(Metadata parentMetadata) {
         this.parentMetadata = parentMetadata;
     }
@@ -1466,22 +1438,18 @@ public class Metadata implements MetadataListElement, Serializable {
         return !childMetadata.isEmpty();
     }
 
-    /**
-
-     */
+    
     public List<Metadata> getChildMetadata() {
         return childMetadata;
     }
 
-    /**
-
-     */
+    
     public int getIndentation() {
         return indentation;
     }
 
     /**
-     * @param indentation the indentation to set
+
      * @return this
      */
     public Metadata setIndentation(int indentation) {

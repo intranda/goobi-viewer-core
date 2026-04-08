@@ -58,9 +58,7 @@ public class CitationProcessorWrapper implements Serializable {
         return citationProcessors.get(style);
     }
 
-    /**
-
-     */
+    
     public CitationDataProvider getCitationItemDataProvider() {
         return citationItemDataProvider;
     }

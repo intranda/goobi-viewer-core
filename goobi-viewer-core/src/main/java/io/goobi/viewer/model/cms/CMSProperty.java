@@ -117,7 +117,7 @@ public class CMSProperty implements Serializable {
     /**
      * Setter for the field <code>id</code>.
      *
-     * @param id the id to set
+
      */
     public void setId(Long id) {
         this.id = id;
@@ -135,7 +135,7 @@ public class CMSProperty implements Serializable {
     /**
      * Setter for the field <code>key</code>.
      *
-     * @param key the key to set
+
      */
     public void setKey(String key) {
         this.key = key;
@@ -153,7 +153,7 @@ public class CMSProperty implements Serializable {
     /**
      * Setter for the field <code>value</code>.
      *
-     * @param value the value to set
+
      */
     public void setValue(String value) {
         this.value = value;

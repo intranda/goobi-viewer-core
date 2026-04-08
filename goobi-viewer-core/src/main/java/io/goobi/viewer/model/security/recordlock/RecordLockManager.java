@@ -183,9 +183,7 @@ public class RecordLockManager {
         return count;
     }
 
-    /**
-
-     */
+    
     Map<String, Set<RecordLock>> getLoadedRecordMap() {
         return loadedRecordMap;
     }
@@ -203,16 +201,12 @@ public class RecordLockManager {
         recordLimitsCache.remove(pi);
     }
 
-    /**
-
-     */
+    
     public Map<String, List<String>> getRecordAccessConditionsCache() {
         return recordAccessConditionsCache;
     }
 
-    /**
-
-     */
+    
     public Map<String, List<String>> getRecordLimitsCache() {
         return recordLimitsCache;
     }

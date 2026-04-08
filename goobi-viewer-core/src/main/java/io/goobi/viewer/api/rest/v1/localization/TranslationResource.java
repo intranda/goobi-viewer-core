@@ -106,9 +106,7 @@ public class TranslationResource {
             this.translations = new ArrayList<>();
         }
 
-        /**
-
-         */
+        
         @JsonValue
         @JsonSerialize(using = TranslationListSerializer.class)
         public List<Translation> getTranslations() {

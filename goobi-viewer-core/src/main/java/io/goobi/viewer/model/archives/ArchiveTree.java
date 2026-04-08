@@ -265,17 +265,13 @@ public class ArchiveTree implements Serializable {
         }
     }
 
-    /**
-
-     */
+    
     public ArchiveEntry getSelectedEntry() {
         // logger.trace("getSelectedEntry"); //NOSONAR Debug
         return selectedEntry;
     }
 
-    /**
-     * @param selectedEntry the selectedEntry to set
-     */
+    
     public void setSelectedEntry(ArchiveEntry selectedEntry) {
         logger.trace("setSelectedEntry: {}", selectedEntry != null ? selectedEntry.getLabel() : null);
 
@@ -306,16 +302,12 @@ public class ArchiveTree implements Serializable {
         }
     }
 
-    /**
-
-     */
+    
     public ArchiveEntry getTrueRootElement() {
         return trueRootElement;
     }
 
-    /**
-     * @param trueRootElement the trueRootElement to set
-     */
+    
     public void setTrueRootElement(ArchiveEntry trueRootElement) {
         this.trueRootElement = trueRootElement;
     }
@@ -392,9 +384,7 @@ public class ArchiveTree implements Serializable {
         }
     }
 
-    /**
-
-     */
+    
     Map<String, List<ArchiveEntry>> getEntryMap() {
         return entryMap;
     }

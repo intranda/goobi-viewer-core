@@ -260,157 +260,113 @@ public class ArchiveEntry implements Serializable {
         return ret;
     }
 
-    /**
-
-     */
+    
     public ArchiveEntry getParentNode() {
         return parentNode;
     }
 
-    /**
-     * @param parentNode the parentNode to set
-     */
+    
     public void setParentNode(ArchiveEntry parentNode) {
         this.parentNode = parentNode;
     }
 
-    /**
-
-     */
+    
     public List<ArchiveEntry> getSubEntryList() {
         return subEntryList;
     }
 
-    /**
-     * @param subEntryList the subEntryList to set
-     */
+    
     public void setSubEntryList(List<ArchiveEntry> subEntryList) {
         this.subEntryList = subEntryList;
     }
 
-    /**
-
-     */
+    
     public Integer getOrderNumber() {
         return orderNumber;
     }
 
-    /**
-     * @param orderNumber the orderNumber to set
-     */
+    
     public void setOrderNumber(Integer orderNumber) {
         this.orderNumber = orderNumber;
     }
 
-    /**
-
-     */
+    
     public Integer getHierarchyLevel() {
         return hierarchyLevel;
     }
 
-    /**
-     * @param hierarchyLevel the hierarchyLevel to set
-     */
+    
     public void setHierarchyLevel(Integer hierarchyLevel) {
         this.hierarchyLevel = hierarchyLevel;
     }
 
-    /**
-
-     */
+    
     public String getId() {
         // logger.trace("getId: {}", id); //NOSONAR Debug
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
+    
     public void setId(String id) {
         this.id = id;
     }
 
-    /**
-
-     */
+    
     public String getLabel() {
         return label;
     }
 
-    /**
-     * @param label the label to set
-     */
+    
     public void setLabel(String label) {
         this.label = label;
     }
 
-    /**
-
-     */
+    
     public String getTopstructPi() {
         return topstructPi;
     }
 
-    /**
-     * @param topstructPi the topstructPi to set
-     */
+    
     public void setTopstructPi(String topstructPi) {
         this.topstructPi = topstructPi;
     }
 
-    /**
-
-     */
+    
     public String getLogId() {
         return logId;
     }
 
-    /**
-     * @param logId the logId to set
-     */
+    
     public void setLogId(String logId) {
         this.logId = logId;
     }
 
-    /**
-
-     */
+    
     public boolean isSearchHit() {
         return searchHit;
     }
 
-    /**
-     * @param searchHit the searchHit to set
-     */
+    
     public void setSearchHit(boolean searchHit) {
         this.searchHit = searchHit;
     }
 
-    /**
-
-     */
+    
     public String getNodeType() {
         return nodeType;
     }
 
-    /**
-     * @param nodeType the nodeType to set
-     */
+    
     public void setNodeType(String nodeType) {
         this.nodeType = nodeType;
     }
 
-    /**
-
-     */
+    
     public boolean isDisplaySearch() {
         return displaySearch;
     }
 
-    /**
-     * @param displaySearch the displaySearch to set
-     */
+    
     public void setDisplaySearch(boolean displaySearch) {
         this.setDisplaySearch(displaySearch, false);
     }
@@ -485,37 +441,27 @@ public class ArchiveEntry implements Serializable {
         }
     }
 
-    /**
-
-     */
+    
     public boolean isValid() {
         return valid;
     }
 
-    /**
-     * @param valid the valid to set
-     */
+    
     public void setValid(boolean valid) {
         this.valid = valid;
     }
 
-    /**
-
-     */
+    
     public String getDescriptionLevel() {
         return descriptionLevel;
     }
 
-    /**
-     * @param descriptionLevel the descriptionLevel to set
-     */
+    
     public void setDescriptionLevel(String descriptionLevel) {
         this.descriptionLevel = descriptionLevel;
     }
 
-    /**
-
-     */
+    
     public String getUnitdate() {
         return unitdate;
     }
@@ -524,37 +470,27 @@ public class ArchiveEntry implements Serializable {
         this.unitdate = unitdate;
     }
 
-    /**
-
-     */
+    
     public List<String> getAccessConditions() {
         return accessConditions;
     }
 
-    /**
-     * @param accessConditions the accessConditions to set
-     */
+    
     public void setAccessConditions(List<String> accessConditions) {
         this.accessConditions = accessConditions;
     }
 
-    /**
-
-     */
+    
     public boolean isHasChild() {
         return isHasChildren();
     }
 
-    /**
-
-     */
+    
     public String getAssociatedRecordPi() {
         return associatedRecordPi;
     }
 
-    /**
-     * @param associatedRecordPi the associatedRecordPi to set
-     */
+    
     public void setAssociatedRecordPi(String associatedRecordPi) {
         this.associatedRecordPi = associatedRecordPi;
     }
@@ -588,37 +524,27 @@ public class ArchiveEntry implements Serializable {
         this.containsImage = containsImage;
     }
 
-    /**
-
-     */
+    
     public SolrDocument getDoc() {
         return doc;
     }
 
-    /**
-
-     */
+    
     public boolean isChildrenFound() {
         return childrenFound;
     }
 
-    /**
-     * @param childrenFound the childrenFound to set
-     */
+    
     public void setChildrenFound(boolean childrenFound) {
         this.childrenFound = childrenFound;
     }
 
-    /**
-
-     */
+    
     public boolean isChildrenLoaded() {
         return childrenLoaded;
     }
 
-    /**
-     * @param childrenLoaded the childrenLoaded to set
-     */
+    
     public void setChildrenLoaded(boolean childrenLoaded) {
         this.childrenLoaded = childrenLoaded;
     }

@@ -172,16 +172,12 @@ public abstract class CMSRecordNote implements Serializable {
         this.styleClass = styleClass;
     }
 
-    /**
-
-     */
+    
     public SolrDocument getSolrDoc() {
         return solrDoc;
     }
 
-    /**
-     * @param solrDoc the solrDoc to set
-     */
+    
     public void setSolrDoc(SolrDocument solrDoc) {
         this.solrDoc = solrDoc;
     }

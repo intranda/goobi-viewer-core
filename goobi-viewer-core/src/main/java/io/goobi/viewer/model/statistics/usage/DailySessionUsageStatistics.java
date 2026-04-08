@@ -117,23 +117,17 @@ public class DailySessionUsageStatistics {
         this.sessions.add(session);
     }
 
-    /**
-
-     */
+    
     public Long getId() {
         return id;
     }
 
-    /**
-
-     */
+    
     public LocalDate getDate() {
         return date;
     }
 
-    /**
-
-     */
+    
     public String getViewerInstance() {
         return viewerInstance;
     }

@@ -487,17 +487,13 @@ public class FacetItem implements Serializable, IFacetItem {
         }
     }
 
-    /**
-
-     */
+    
     @Override
     public FacetType getType() {
         return type;
     }
 
-    /**
-     * @param type the type to set
-     */
+    
     public void setType(FacetType type) {
         this.type = type;
     }
@@ -515,7 +511,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Setter for the field <code>field</code>.
      *
-     * @param field the field to set
+
      */
     @Override
     public void setField(String field) {
@@ -550,7 +546,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Setter for the field <code>value</code>.
      *
-     * @param value the value to set
+
      */
     @Override
     public void setValue(String value) {
@@ -570,7 +566,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Setter for the field <code>value2</code>.
      *
-     * @param value2 the value2 to set
+
      */
     @Override
     public void setValue2(String value2) {
@@ -590,7 +586,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Setter for the field <code>link</code>.
      *
-     * @param link the link to set
+
      */
     @Override
     public void setLink(String link) {
@@ -619,7 +615,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Setter for the field <code>label</code>.
      *
-     * @param label the label to set
+
      * @return this
      */
     @Override
@@ -645,7 +641,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Dummy setter to fulfill the interface contract.
      *
-     * @param translatedLabel the translatedLabel to set
+
      */
     @Override
     public void setTranslatedLabel(String translatedLabel) {
@@ -665,7 +661,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Setter for the field <code>count</code>.
      *
-     * @param count the count to set
+
      * @return this
      */
     @Override

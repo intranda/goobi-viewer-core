@@ -78,30 +78,22 @@ public class BibliothecaAuthenticationResponse {
         return StringUtils.isNotEmpty(userid) && !expired;
     }
 
-    /**
-
-     */
+    
     public String getUserid() {
         return userid;
     }
 
-    /**
-     * @param userid the userid to set
-     */
+    
     public void setUserid(String userid) {
         this.userid = userid;
     }
 
-    /**
-
-     */
+    
     public String getFsk() {
         return fsk;
     }
 
-    /**
-     * @param fsk the fsk to set
-     */
+    
     public void setFsk(String fsk) {
         this.fsk = fsk;
     }

@@ -59,7 +59,7 @@ public class CalendarItemDay extends AbstractCalendarItem implements Serializabl
     /**
      * Setter for the field <code>query</code>.
      *
-     * @param query the query to set
+
      */
     public void setQuery(String query) {
         this.query = query;
@@ -77,7 +77,7 @@ public class CalendarItemDay extends AbstractCalendarItem implements Serializabl
     /**
      * Setter for the field <code>singleResultUrl</code>.
      *
-     * @param singleResultUrl the singleResultUrl to set
+
      */
     public void setSingleResultUrl(String singleResultUrl) {
         this.singleResultUrl = singleResultUrl;
@@ -95,7 +95,7 @@ public class CalendarItemDay extends AbstractCalendarItem implements Serializabl
     /**
      * Setter for the field <code>dayOfWeek</code>.
      *
-     * @param dayOfWeek the dayOfWeek to set
+
      */
     public void setDayOfWeek(String dayOfWeek) {
         this.dayOfWeek = dayOfWeek;

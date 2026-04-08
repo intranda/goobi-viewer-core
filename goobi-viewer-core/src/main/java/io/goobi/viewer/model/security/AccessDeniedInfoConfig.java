@@ -38,23 +38,17 @@ public class AccessDeniedInfoConfig {
         return new AccessDeniedInfoConfig(language, imageUri, description);
     }
 
-    /**
-
-     */
+    
     public String getLanguage() {
         return language;
     }
 
-    /**
-
-     */
+    
     public String getImageUri() {
         return imageUri;
     }
 
-    /**
-
-     */
+    
     public String getDescription() {
         return description;
     }

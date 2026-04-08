@@ -55,9 +55,7 @@ public class AdvancedSearchFieldConfiguration {
         this.field = field;
     }
 
-    /**
-
-     */
+    
     public String getField() {
         return field;
     }
@@ -74,7 +72,7 @@ public class AdvancedSearchFieldConfiguration {
     }
 
     /**
-     * @param label the label to set
+
      * @return this object
      */
     public AdvancedSearchFieldConfiguration setLabel(String label) {
@@ -82,15 +80,13 @@ public class AdvancedSearchFieldConfiguration {
         return this;
     }
 
-    /**
-
-     */
+    
     public boolean isHierarchical() {
         return hierarchical;
     }
 
     /**
-     * @param hierarchical the hierarchical to set
+
      * @return this object
      */
     public AdvancedSearchFieldConfiguration setHierarchical(boolean hierarchical) {
@@ -98,15 +94,13 @@ public class AdvancedSearchFieldConfiguration {
         return this;
     }
 
-    /**
-
-     */
+    
     public boolean isRange() {
         return range;
     }
 
     /**
-     * @param range the range to set
+
      * @return this object
      */
     public AdvancedSearchFieldConfiguration setRange(boolean range) {
@@ -114,15 +108,13 @@ public class AdvancedSearchFieldConfiguration {
         return this;
     }
 
-    /**
-
-     */
+    
     public boolean isDatepicker() {
         return datepicker;
     }
 
     /**
-     * @param datepicker the datepicker to set
+
      * @return this object
      */
     public AdvancedSearchFieldConfiguration setDatepicker(boolean datepicker) {
@@ -130,15 +122,13 @@ public class AdvancedSearchFieldConfiguration {
         return this;
     }
 
-    /**
-
-     */
+    
     public boolean isUntokenizeForPhraseSearch() {
         return untokenizeForPhraseSearch;
     }
 
     /**
-     * @param untokenizeForPhraseSearch the untokenizeForPhraseSearch to set
+
      * @return this object
      */
     public AdvancedSearchFieldConfiguration setUntokenizeForPhraseSearch(boolean untokenizeForPhraseSearch) {
@@ -146,15 +136,13 @@ public class AdvancedSearchFieldConfiguration {
         return this;
     }
 
-    /**
-
-     */
+    
     public boolean isDisabled() {
         return disabled;
     }
 
     /**
-     * @param disabled the disabled to set
+
      * @return this object
      */
     public AdvancedSearchFieldConfiguration setDisabled(boolean disabled) {
@@ -162,22 +150,18 @@ public class AdvancedSearchFieldConfiguration {
         return this;
     }
 
-    /**
-
-     */
+    
     public boolean isVisible() {
         return visible;
     }
 
-    /**
-
-     */
+    
     public boolean isAllowMultipleItems() {
         return allowMultipleItems;
     }
 
     /**
-     * @param allowMultipleItems the allowMultipleItems to set
+
      * @return this
      */
     public AdvancedSearchFieldConfiguration setAllowMultipleItems(boolean allowMultipleItems) {
@@ -186,7 +170,7 @@ public class AdvancedSearchFieldConfiguration {
     }
 
     /**
-     * @param visible the visible to set
+
      * @return this
      */
     public AdvancedSearchFieldConfiguration setVisible(boolean visible) {
@@ -194,15 +178,13 @@ public class AdvancedSearchFieldConfiguration {
         return this;
     }
 
-    /**
-
-     */
+    
     public int getDisplaySelectItemsThreshold() {
         return displaySelectItemsThreshold;
     }
 
     /**
-     * @param displaySelectItemsThreshold the displaySelectItemsThreshold to set
+
      * @return this
      */
     public AdvancedSearchFieldConfiguration setDisplaySelectItemsThreshold(int displaySelectItemsThreshold) {
@@ -210,15 +192,13 @@ public class AdvancedSearchFieldConfiguration {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getSelectType() {
         return selectType;
     }
 
     /**
-     * @param selectType the selectType to set
+
      * @return this
      */
     public AdvancedSearchFieldConfiguration setSelectType(String selectType) {
@@ -226,15 +206,13 @@ public class AdvancedSearchFieldConfiguration {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getReplaceRegex() {
         return replaceRegex;
     }
 
     /**
-     * @param replaceRegex the replaceRegex to set
+
      * @return this
      */
     public AdvancedSearchFieldConfiguration setReplaceRegex(String replaceRegex) {
@@ -242,15 +220,13 @@ public class AdvancedSearchFieldConfiguration {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getReplaceWith() {
         return replaceWith;
     }
 
     /**
-     * @param replaceWith the replaceWith to set
+
      * @return this
      */
     public AdvancedSearchFieldConfiguration setReplaceWith(String replaceWith) {
@@ -258,15 +234,13 @@ public class AdvancedSearchFieldConfiguration {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getPreselectValue() {
         return preselectValue;
     }
 
     /**
-     * @param preselectValue the preselectValue to set
+
      * @return this
      */
     public AdvancedSearchFieldConfiguration setPreselectValue(String preselectValue) {

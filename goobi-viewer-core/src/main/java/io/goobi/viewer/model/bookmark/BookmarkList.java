@@ -362,7 +362,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Setter for the field <code>id</code>.
      *
-     * @param id the id to set
+
      */
     public void setId(Long id) {
         this.id = id;
@@ -380,7 +380,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Setter for the field <code>name</code>.
      *
-     * @param name the name to set
+
      */
     public void setName(String name) {
         if (name != null) {
@@ -402,7 +402,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Setter for the field <code>description</code>.
      *
-     * @param description the description to set
+
      */
     public void setDescription(String description) {
         this.description = description;
@@ -429,7 +429,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Setter for the field <code>owner</code>.
      *
-     * @param owner the owner to set
+
      */
     public void setOwner(User owner) {
         this.owner = owner;
@@ -464,7 +464,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Setter for the field <code>isPublic</code>.
      *
-     * @param isPublic the isPublic to set
+
      */
     public void setIsPublic(boolean isPublic) {
         this.isPublic = isPublic;
@@ -482,7 +482,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Setter for the field <code>shareKey</code>.
      *
-     * @param shareKey the shareKey to set
+
      */
     public void setShareKey(String shareKey) {
         this.shareKey = shareKey;
@@ -506,16 +506,12 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
         setShareKey(null);
     }
 
-    /**
-
-     */
+    
     public LocalDateTime getDateUpdated() {
         return dateUpdated;
     }
 
-    /**
-     * @param dateUpdated the dateUpdated to set
-     */
+    
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
@@ -543,7 +539,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Setter for the field <code>items</code>.
      *
-     * @param items the items to set
+
      */
     public void setItems(List<Bookmark> items) {
         this.items = items;
@@ -564,7 +560,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Setter for the field <code>groupShares</code>.
      *
-     * @param groupShares the groupShares to set
+
      */
     public void setGroupShares(List<UserGroup> groupShares) {
         this.groupShares = groupShares;

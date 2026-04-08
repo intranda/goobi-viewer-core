@@ -408,50 +408,38 @@ public class UploadJob implements Serializable {
     /**
      * Setter for the field <code>id</code>.
      *
-     * @param id the id to set
+
      */
     public void setId(Long id) {
         this.id = id;
     }
 
-    /**
-
-     */
+    
     public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
-    /**
-     * @param dateCreated the dateCreated to set
-     */
+    
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
 
-    /**
-
-     */
+    
     public Long getCreatorId() {
         return creatorId;
     }
 
-    /**
-     * @param creatorId the creatorId to set
-     */
+    
     public void setCreatorId(Long creatorId) {
         this.creatorId = creatorId;
     }
 
-    /**
-
-     */
+    
     public String getEmail() {
         return email;
     }
 
-    /**
-     * @param email the email to set
-     */
+    
     public void setEmail(String email) {
         this.email = email;
     }
@@ -471,7 +459,7 @@ public class UploadJob implements Serializable {
     /**
      * Setter for the field <code>status</code>.
      *
-     * @param status the status to set
+
      */
     public void setStatus(JobStatus status) {
         this.status = status;
@@ -489,7 +477,7 @@ public class UploadJob implements Serializable {
     /**
      * Setter for the field <code>message</code>.
      *
-     * @param message the message to set
+
      */
     public void setMessage(String message) {
         this.message = message;
@@ -507,36 +495,28 @@ public class UploadJob implements Serializable {
     /**
      * Setter for the field <code>pi</code>.
      *
-     * @param pi the pi to set
+
      */
     public void setPi(String pi) {
         this.pi = pi;
     }
 
-    /**
-
-     */
+    
     public Integer getProcessId() {
         return processId;
     }
 
-    /**
-     * @param processId the processId to set
-     */
+    
     public void setProcessId(Integer processId) {
         this.processId = processId;
     }
 
-    /**
-
-     */
+    
     public String getTitle() {
         return title;
     }
 
-    /**
-     * @param title the title to set
-     */
+    
     public void setTitle(String title) {
         this.title = title;
     }
@@ -553,64 +533,48 @@ public class UploadJob implements Serializable {
     /**
      * Setter for the field <code>description</code>.
      *
-     * @param description the description to set
+
      */
     public void setDescription(String description) {
         this.description = description;
     }
 
-    /**
-
-     */
+    
     String getTemplateName() {
         return templateName;
     }
 
-    /**
-     * @param templateName the templateName to set
-     */
+    
     void setTemplateName(String templateName) {
         this.templateName = templateName;
     }
 
-    /**
-
-     */
+    
     String getDocstruct() {
         return docstruct;
     }
 
-    /**
-     * @param docstruct the docstruct to set
-     */
+    
     void setDocstruct(String docstruct) {
         this.docstruct = docstruct;
     }
 
-    /**
-
-     */
+    
     public boolean isConsent() {
         return consent;
     }
 
-    /**
-     * @param consent the consent to set
-     */
+    
     public void setConsent(boolean consent) {
         this.consent = consent;
     }
 
-    /**
-
-     */
+    
     public List<Part> getFiles() {
         return files;
     }
 
-    /**
-     * @param files the files to set
-     */
+    
     public void setFiles(List<Part> files) {
         this.files = files;
     }

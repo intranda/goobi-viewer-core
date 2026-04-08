@@ -963,7 +963,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Setter for the field <code>id</code>.
      *
-     * @param id the id to set
+
      */
     public void setId(Long id) {
         this.id = id;
@@ -981,7 +981,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Setter for the field <code>passwordHash</code>.
      *
-     * @param passwordHash the passwordHash to set
+
      */
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
@@ -999,7 +999,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Setter for the field <code>activationKey</code>.
      *
-     * @param activationKey the activationKey to set
+
      */
     public void setActivationKey(String activationKey) {
         this.activationKey = activationKey;
@@ -1017,7 +1017,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Setter for the field <code>lastLogin</code>.
      *
-     * @param lastLogin the lastLogin to set
+
      */
     public void setLastLogin(LocalDateTime lastLogin) {
         this.lastLogin = lastLogin;
@@ -1035,7 +1035,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Setter for the field <code>active</code>.
      *
-     * @param active the active to set
+
      */
     public void setActive(boolean active) {
         this.active = active;
@@ -1053,7 +1053,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Setter for the field <code>suspended</code>.
      *
-     * @param suspended the suspended to set
+
      */
     public void setSuspended(boolean suspended) {
         this.suspended = suspended;
@@ -1071,7 +1071,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Setter for the field <code>nickName</code>.
      *
-     * @param nickName the nickName to set
+
      */
     public void setNickName(String nickName) {
         this.nickName = nickName;
@@ -1089,7 +1089,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Setter for the field <code>lastName</code>.
      *
-     * @param lastName the lastName to set
+
      */
     public void setLastName(String lastName) {
         this.lastName = lastName;
@@ -1107,7 +1107,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Setter for the field <code>firstName</code>.
      *
-     * @param firstName the firstName to set
+
      */
     public void setFirstName(String firstName) {
         this.firstName = firstName;
@@ -1125,7 +1125,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Setter for the field <code>openIdAccounts</code>.
      *
-     * @param openIdAccounts the openIdAccounts to set
+
      */
     public void setOpenIdAccounts(List<String> openIdAccounts) {
         this.openIdAccounts = openIdAccounts;
@@ -1134,7 +1134,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Setter for the field <code>email</code>.
      *
-     * @param email the email to set
+
      */
     public void setEmail(String email) {
         this.email = email;
@@ -1161,7 +1161,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Setter for the field <code>comments</code>.
      *
-     * @param comments the comments to set
+
      */
     public void setComments(String comments) {
         this.comments = comments;
@@ -1179,7 +1179,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Setter for the field <code>score</code>.
      *
-     * @param score the score to set
+
      */
     public void setScore(long score) {
         this.score = score;
@@ -1223,16 +1223,12 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         return 3;
     }
 
-    /**
-
-     */
+    
     public Map<String, String> getUserProperties() {
         return userProperties;
     }
 
-    /**
-     * @param userProperties the userProperties to set
-     */
+    
     public void setUserProperties(Map<String, String> userProperties) {
         this.userProperties = userProperties;
     }
@@ -1266,7 +1262,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Setter for the field <code>superuser</code>.
      *
-     * @param superuser the superuser to set
+
      */
     public void setSuperuser(boolean superuser) {
         this.superuser = superuser;
@@ -1293,7 +1289,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Setter for the field <code>copy</code>.
      *
-     * @param copy the copy to set
+
      */
     public void setCopy(User copy) {
         this.copy = copy;
@@ -1311,7 +1307,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Setter for the field <code>transkribusSession</code>.
      *
-     * @param transkribusSession the transkribusSession to set
+
      */
     public void setTranskribusSession(TranskribusSession transkribusSession) {
         this.transkribusSession = transkribusSession;
@@ -1417,30 +1413,22 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         return URI.create(URI_ID_TEMPLATE.replace("{id}", this.getId().toString()));
     }
 
-    /**
-     * @param agreedToTermsOfUse the agreedToTermsOfUse to set
-     */
+    
     public void setAgreedToTermsOfUse(boolean agreedToTermsOfUse) {
         this.agreedToTermsOfUse = agreedToTermsOfUse;
     }
 
-    /**
-
-     */
+    
     public boolean isAgreedToTermsOfUse() {
         return agreedToTermsOfUse;
     }
 
-    /**
-
-     */
+    
     public UserAvatarOption getAvatarType() {
         return Optional.ofNullable(avatarType).orElse(UserAvatarOption.DEFAULT);
     }
 
-    /**
-     * @param avatarType the avatarType to set
-     */
+    
     public void setAvatarType(UserAvatarOption avatarType) {
         this.avatarType = avatarType;
     }
@@ -1498,16 +1486,12 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         });
     }
 
-    /**
-
-     */
+    
     public Long getLocalAvatarUpdated() {
         return localAvatarUpdated;
     }
 
-    /**
-     * @param localAvatarUpdated the localAvatarUpdated to set
-     */
+    
     public void setLocalAvatarUpdated(Long localAvatarUpdated) {
         this.localAvatarUpdated = localAvatarUpdated;
     }

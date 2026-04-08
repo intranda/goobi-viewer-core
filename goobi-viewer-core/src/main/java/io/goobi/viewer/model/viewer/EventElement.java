@@ -246,7 +246,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     /**
      * Setter for the field <code>type</code>.
      *
-     * @param type the type to set
+
      */
     public void setType(String type) {
         this.type = type;
@@ -264,7 +264,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     /**
      * Setter for the field <code>dateStart</code>.
      *
-     * @param dateStart the dateStart to set
+
      */
     public void setDateStart(LocalDateTime dateStart) {
         this.dateStart = dateStart;
@@ -282,7 +282,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     /**
      * Setter for the field <code>dateEnd</code>.
      *
-     * @param dateEnd the dateEnd to set
+
      */
     public void setDateEnd(LocalDateTime dateEnd) {
         this.dateEnd = dateEnd;
@@ -337,9 +337,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
         return sidebarMetadata;
     }
 
-    /**
-
-     */
+    
     public List<Metadata> getSearchHitMetadata() {
         return searchHitMetadata;
     }

@@ -199,16 +199,12 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
         return accessPermissionPdf;
     }
 
-    /**
-
-     */
+    
     public AccessPermission getAccessPermissionThumbnail() {
         return accessPermissionThumbnail;
     }
 
-    /**
-     * @param accessPermissionThumbnail the accessPermissionThumbnail to set
-     */
+    
     public void setAccessPermissionThumbnail(AccessPermission accessPermissionThumbnail) {
         this.accessPermissionThumbnail = accessPermissionThumbnail;
     }

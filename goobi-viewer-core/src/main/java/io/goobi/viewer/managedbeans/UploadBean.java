@@ -61,7 +61,7 @@ public class UploadBean implements Serializable {
     /**
      * Required setter for ManagedProperty injection.
      *
-     * @param userBean the userBean to set
+
      */
     public void setBreadcrumbBean(UserBean userBean) {
         this.userBean = userBean;
@@ -132,7 +132,7 @@ public class UploadBean implements Serializable {
     /**
      * Setter for the field <code>currentUploadJob</code>.
      *
-     * @param currentUploadJob the currentUploadJob to set
+
      */
     public void setCurrentUploadJob(UploadJob currentUploadJob) {
         this.currentUploadJob = currentUploadJob;

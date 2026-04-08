@@ -119,72 +119,52 @@ public class SearchResultGroup implements Serializable {
         return !StringConstants.DEFAULT_NAME.equals(name) && hitsCount > previewHitCount;
     }
 
-    /**
-
-     */
+    
     public String getName() {
         return name;
     }
 
-    /**
-
-     */
+    
     public String getQuery() {
         return query;
     }
 
-    /**
-
-     */
+    
     public int getPreviewHitCount() {
         return previewHitCount;
     }
 
-    /**
-
-     */
+    
     public long getHitsCount() {
         return hitsCount;
     }
 
-    /**
-     * @param hitsCount the hitsCount to set
-     */
+    
     public void setHitsCount(long hitsCount) {
         this.hitsCount = hitsCount;
     }
 
-    /**
-
-     */
+    
     public List<Location> getHitLocationList() {
         return hitLocationList;
     }
 
-    /**
-     * @param hitLocationList the hitLocationList to set
-     */
+    
     public void setHitLocationList(List<Location> hitLocationList) {
         this.hitLocationList = hitLocationList;
     }
 
-    /**
-
-     */
+    
     public boolean isHasGeoLocationHits() {
         return hasGeoLocationHits;
     }
 
-    /**
-     * @param hasGeoLocationHits the hasGeoLocationHits to set
-     */
+    
     public void setHasGeoLocationHits(boolean hasGeoLocationHits) {
         this.hasGeoLocationHits = hasGeoLocationHits;
     }
 
-    /**
-
-     */
+    
     public List<SearchHit> getHits() {
         return hits;
     }

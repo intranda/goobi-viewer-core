@@ -104,167 +104,121 @@ public class CommentGroup implements Serializable {
         return commentGroupAll;
     }
 
-    /**
-
-     */
+    
     public Long getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
+    
     public void setId(Long id) {
         this.id = id;
     }
 
-    /**
-
-     */
+    
     public String getTitle() {
         return title;
     }
 
-    /**
-     * @param title the title to set
-     */
+    
     public void setTitle(String title) {
         this.title = title;
     }
 
-    /**
-
-     */
+    
     public String getSolrQuery() {
         return solrQuery;
     }
 
-    /**
-     * @param solrQuery the solrQuery to set
-     */
+    
     public void setSolrQuery(String solrQuery) {
         this.solrQuery = solrQuery;
     }
 
-    /**
-
-     */
+    
     public String getDescription() {
         return description;
     }
 
-    /**
-     * @param description the description to set
-     */
+    
     public void setDescription(String description) {
         this.description = description;
     }
 
-    /**
-
-     */
+    
     public UserGroup getUserGroup() {
         return userGroup;
     }
 
-    /**
-     * @param userGroup the userGroup to set
-     */
+    
     public void setUserGroup(UserGroup userGroup) {
         logger.trace("setUserGroup: {}", userGroup);
         this.userGroup = userGroup;
     }
 
-    /**
-
-     */
+    
     public boolean isSendEmailNotifications() {
         return sendEmailNotifications;
     }
 
-    /**
-     * @param sendEmailNotifications the sendEmailNotifications to set
-     */
+    
     public void setSendEmailNotifications(boolean sendEmailNotifications) {
         logger.trace("setSendEmailNotifications: {}", sendEmailNotifications);
         this.sendEmailNotifications = sendEmailNotifications;
     }
 
-    /**
-
-     */
+    
     public boolean isMembersMayEditComments() {
         return membersMayEditComments;
     }
 
-    /**
-     * @param membersMayEditComments the membersMayEditComments to set
-     */
+    
     public void setMembersMayEditComments(boolean membersMayEditComments) {
         logger.trace("setMembersMayEditComments: {}", membersMayEditComments);
         this.membersMayEditComments = membersMayEditComments;
     }
 
-    /**
-
-     */
+    
     public boolean isMembersMayDeleteComments() {
         return membersMayDeleteComments;
     }
 
-    /**
-     * @param membersMayDeleteComments the membersMayDeleteComments to set
-     */
+    
     public void setMembersMayDeleteComments(boolean membersMayDeleteComments) {
         logger.trace("setMembersMayDeleteComments: {}", membersMayDeleteComments);
         this.membersMayDeleteComments = membersMayDeleteComments;
     }
 
-    /**
-
-     */
+    
     public boolean isCoreType() {
         return coreType;
     }
 
-    /**
-     * @param coreType the coreType to set
-     */
+    
     public void setCoreType(boolean coreType) {
         this.coreType = coreType;
     }
 
-    /**
-
-     */
+    
     public boolean isEnabled() {
         return enabled;
     }
 
-    /**
-     * @param enabled the enabled to set
-     */
+    
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
-    /**
-
-     */
+    
     public Set<String> getIdentifiers() {
         return identifiers;
     }
 
-    /**
-
-     */
+    
     public boolean isIdentifiersQueried() {
         return identifiersQueried;
     }
 
-    /**
-     * @param identifiersQueried the identifiersQueried to set
-     */
+    
     public void setIdentifiersQueried(boolean identifiersQueried) {
         this.identifiersQueried = identifiersQueried;
     }

@@ -66,15 +66,13 @@ public class ExcelExport {
         }
     }
 
-    /**
-
-     */
+    
     public SXSSFWorkbook getWorkbook() {
         return workbook;
     }
 
     /**
-     * @param workbook the workbook to set
+
      * @return this
      */
     public ExcelExport setWorkbook(SXSSFWorkbook workbook) {
@@ -82,15 +80,13 @@ public class ExcelExport {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getFileName() {
         return fileName;
     }
 
     /**
-     * @param fileName the fileName to set
+
      * @return this
      */
     public ExcelExport setFileName(String fileName) {

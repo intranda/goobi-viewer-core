@@ -196,7 +196,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Setter for the field <code>type</code>.
      *
-     * @param type the type to set
+
      */
     public void setType(ContentType type) {
         this.type = type;
@@ -214,7 +214,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Setter for the field <code>pi</code>.
      *
-     * @param pi the pi to set
+
      */
     public void setPi(String pi) {
         this.pi = pi;
@@ -232,7 +232,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Setter for the field <code>page</code>.
      *
-     * @param page the page to set
+
      */
     public void setPage(Integer page) {
         this.page = page;
@@ -250,7 +250,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Setter for the field <code>label</code>.
      *
-     * @param label the label to set
+
      */
     public void setLabel(String label) {
         this.label = label;
@@ -265,9 +265,7 @@ public class DisplayUserGeneratedContent {
         return StringUtils.isNotEmpty(label) ? label : pi;
     }
 
-    /**
-
-     */
+    
     public String getExtendendLabel() {
         if (StringUtils.isNotBlank(this.extendendLabel)) {
             return extendendLabel;
@@ -275,9 +273,7 @@ public class DisplayUserGeneratedContent {
         return label;
     }
 
-    /**
-     * @param extendendLabel the extendendLabel to set
-     */
+    
     public void setExtendendLabel(String extendendLabel) {
         this.extendendLabel = extendendLabel;
     }
@@ -294,7 +290,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Setter for the field <code>updatedBy</code>.
      *
-     * @param updatedBy the updatedBy to set
+
      */
     public void setUpdatedBy(User updatedBy) {
         this.updatedBy = updatedBy;
@@ -336,22 +332,18 @@ public class DisplayUserGeneratedContent {
     /**
      * Setter for the field <code>dateUpdated</code>.
      *
-     * @param dateUpdated the dateUpdated to set
+
      */
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
 
-    /**
-
-     */
+    
     public String getAccessCondition() {
         return accessCondition;
     }
 
-    /**
-     * @param accessCondition the accessCondition to set
-     */
+    
     public void setAccessCondition(String accessCondition) {
         this.accessCondition = accessCondition;
     }
@@ -368,7 +360,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Setter for the field <code>areaString</code>.
      *
-     * @param areaString the areaString to set
+
      */
     public void setAreaString(String areaString) {
         this.areaString = areaString;
@@ -476,16 +468,12 @@ public class DisplayUserGeneratedContent {
         return getType().getName();
     }
 
-    /**
-
-     */
+    
     public ITypedResource getAnnotationBody() {
         return annotationBody;
     }
 
-    /**
-     * @param annotationBody the annotationBody to set
-     */
+    
     public void setAnnotationBody(ITypedResource annotationBody) {
         this.annotationBody = annotationBody;
     }

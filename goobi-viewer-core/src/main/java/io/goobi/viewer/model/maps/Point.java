@@ -75,16 +75,12 @@ public class Point implements IArea {
         return false;
     }
 
-    /**
-
-     */
+    
     public double getLng() {
         return lng;
     }
 
-    /**
-
-     */
+    
     public double getLat() {
         return lat;
     }

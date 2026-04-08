@@ -709,16 +709,12 @@ public class SearchHit implements Comparable<SearchHit> {
         return browseElement;
     }
 
-    /**
-
-     */
+    
     public long getHitNumber() {
         return hitNumber;
     }
 
-    /**
-     * @param hitNumber the hitNumber to set
-     */
+    
     public void setHitNumber(long hitNumber) {
         this.hitNumber = hitNumber;
     }
@@ -744,7 +740,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Setter for the field <code>childDocs</code>.
      *
-     * @param childDocs the childDocs to set
+
      */
     public void setChildDocs(SolrDocumentList childDocs) {
         this.childDocs = childDocs;
@@ -935,30 +931,22 @@ public class SearchHit implements Comparable<SearchHit> {
         return url;
     }
 
-    /**
-
-     */
+    
     public String getAltUrl() {
         return altUrl;
     }
 
-    /**
-     * @param altUrl the altUrl to set
-     */
+    
     public void setAltUrl(String altUrl) {
         this.altUrl = altUrl;
     }
 
-    /**
-
-     */
+    
     public String getAltLabel() {
         return altLabel;
     }
 
-    /**
-     * @param altLabel the altLabel to set
-     */
+    
     public void setAltLabel(String altLabel) {
         this.altLabel = altLabel;
     }

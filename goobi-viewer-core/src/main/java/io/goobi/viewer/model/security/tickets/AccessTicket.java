@@ -210,134 +210,98 @@ public class AccessTicket {
     /**
      * Setter for the field <code>id</code>.
      *
-     * @param id the id to set
+
      */
     public void setId(Long id) {
         this.id = id;
     }
 
-    /**
-
-     */
+    
     public AccessTicketType getType() {
         return type;
     }
 
-    /**
-     * @param type the type to set
-     */
+    
     public void setType(AccessTicketType type) {
         this.type = type;
     }
 
-    /**
-
-     */
+    
     public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
-    /**
-     * @param dateCreated the dateCreated to set
-     */
+    
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
 
-    /**
-
-     */
+    
     public LocalDateTime getExpirationDate() {
         return expirationDate;
     }
 
-    /**
-     * @param expirationDate the expirationDate to set
-     */
+    
     public void setExpirationDate(LocalDateTime expirationDate) {
         this.expirationDate = expirationDate;
     }
 
-    /**
-
-     */
+    
     public String getPassword() {
         return password;
     }
 
-    /**
-     * @param password the password to set
-     */
+    
     public void setPassword(String password) {
         this.password = password;
     }
 
-    /**
-
-     */
+    
     public String getPasswordHash() {
         return passwordHash;
     }
 
-    /**
-     * @param passwordHash the passwordHash to set
-     */
+    
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
     }
 
-    /**
-
-     */
+    
     public String getEmail() {
         return email;
     }
 
-    /**
-     * @param email the email to set
-     */
+    
     public void setEmail(String email) {
         this.email = email;
     }
 
-    /**
-
-     */
+    
     public String getPi() {
         return pi;
     }
 
-    /**
-     * @param pi the pi to set
-     */
+    
     public void setPi(String pi) {
         this.pi = pi;
     }
 
-    /**
-
-     */
+    
     public String getTitle() {
         return title;
     }
 
-    /**
-     * @param title the title to set
-     */
+    
     public void setTitle(String title) {
         this.title = title;
     }
 
-    /**
-
-     */
+    
     public String getRequestMessage() {
         return requestMessage;
     }
 
-    /**
-     * @param requestMessage the requestMessage to set
-     */
+    
     public void setRequestMessage(String requestMessage) {
         this.requestMessage = requestMessage;
     }

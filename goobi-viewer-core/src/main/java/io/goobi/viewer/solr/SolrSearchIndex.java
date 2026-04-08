@@ -1437,9 +1437,7 @@ public class SolrSearchIndex implements java.io.Closeable {
         return pageLoader.getPage(order);
     }
 
-    /**
-
-     */
+    
     public Map<String, String> getDataRepositoryNames() {
         return dataRepositoryNames;
     }

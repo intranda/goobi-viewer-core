@@ -88,16 +88,12 @@ public abstract class FeatureSet implements Serializable {
 
     public abstract boolean isQueryResultSet();
 
-    /**
-
-     */
+    
     public String getMarker() {
         return Optional.ofNullable(this.marker).orElse(DEFAULT_MARKER_NAME);
     }
 
-    /**
-     * @param marker the marker to set
-     */
+    
     public void setMarker(String marker) {
         this.marker = marker;
     }

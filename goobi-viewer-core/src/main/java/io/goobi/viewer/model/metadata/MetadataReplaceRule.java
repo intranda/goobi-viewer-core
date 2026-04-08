@@ -65,30 +65,22 @@ public class MetadataReplaceRule implements Serializable {
         this.type = type;
     }
 
-    /**
-
-     */
+    
     public MetadataReplaceRuleType getType() {
         return type;
     }
 
-    /**
-
-     */
+    
     public Object getKey() {
         return key;
     }
 
-    /**
-
-     */
+    
     public String getReplacement() {
         return replacement;
     }
 
-    /**
-
-     */
+    
     public String getConditions() {
         return conditions;
     }

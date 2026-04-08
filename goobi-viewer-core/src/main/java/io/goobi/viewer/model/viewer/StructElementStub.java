@@ -147,7 +147,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Setter for the field <code>work</code>.
      *
-     * @param work the work to set
+
      */
     public void setWork(boolean work) {
         this.work = work;
@@ -165,7 +165,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Setter for the field <code>anchor</code>.
      *
-     * @param anchor the anchor to set
+
      */
     public void setAnchor(boolean anchor) {
         this.anchor = anchor;
@@ -183,22 +183,18 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Setter for the field <code>volume</code>.
      *
-     * @param volume the volume to set
+
      */
     public void setVolume(boolean volume) {
         this.volume = volume;
     }
 
-    /**
-
-     */
+    
     public boolean isCmsPage() {
         return cmsPage;
     }
 
-    /**
-     * @param cmsPage the cmsPage to set
-     */
+    
     public void setCmsPage(boolean cmsPage) {
         this.cmsPage = cmsPage;
     }
@@ -233,7 +229,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Setter for the field <code>pi</code>.
      *
-     * @param pi the pi to set
+
      */
     public void setPi(String pi) {
         this.pi = pi;
@@ -260,7 +256,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Setter for the field <code>logid</code>.
      *
-     * @param logid the logid to set
+
      */
     public void setLogid(String logid) {
         this.logid = logid;
@@ -278,22 +274,18 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Setter for the field <code>docStructType</code>.
      *
-     * @param docStructType the docStructType to set
+
      */
     public void setDocStructType(String docStructType) {
         this.docStructType = docStructType;
     }
 
-    /**
-
-     */
+    
     public DocType getDocType() {
         return docType;
     }
 
-    /**
-     * @param docType the docType to set
-     */
+    
     public void setDocType(DocType docType) {
         this.docType = docType;
     }
@@ -310,7 +302,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Setter for the field <code>imageNumber</code>.
      *
-     * @param imageNumber the imageNumber to set
+
      */
     public void setImageNumber(int imageNumber) {
         this.imageNumber = imageNumber;
@@ -328,7 +320,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Setter for the field <code>volumeNo</code>.
      *
-     * @param volumeNo the volumeNo to set
+
      */
     public void setVolumeNo(String volumeNo) {
         this.volumeNo = volumeNo;
@@ -346,7 +338,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Setter for the field <code>volumeNoSort</code>.
      *
-     * @param volumeNoSort the volumeNoSort to set
+
      */
     public void setVolumeNoSort(String volumeNoSort) {
         this.volumeNoSort = volumeNoSort;
@@ -488,7 +480,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Setter for the field <code>sourceDocFormat</code>.
      *
-     * @param sourceDocFormat the sourceDocFormat to set
+
      */
     public void setSourceDocFormat(String sourceDocFormat) {
         // logger.trace("setSourceDocFormat: {}", sourceDocFormat);  //NOSONAR Debug
@@ -528,7 +520,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Setter for the field <code>label</code>.
      *
-     * @param label the label to set
+
      */
     public void setLabel(String label) {
         this.label = label;
@@ -546,7 +538,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Setter for the field <code>dataRepository</code>.
      *
-     * @param dataRepository the dataRepository to set
+
      */
     public void setDataRepository(String dataRepository) {
         this.dataRepository = dataRepository;
@@ -564,7 +556,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Setter for the field <code>metadataFields</code>.
      *
-     * @param metadataFields the metadataFields to set
+
      */
     public void setMetadataFields(Map<String, List<String>> metadataFields) {
         this.metadataFields = metadataFields;

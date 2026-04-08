@@ -227,7 +227,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Setter for the field <code>id</code>.
      *
-     * @param id the id to set
+
      */
     public void setId(Long id) {
         this.id = id;
@@ -245,7 +245,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Setter for the field <code>pi</code>.
      *
-     * @param pi the pi to set
+
      */
     public void setPi(String pi) {
         this.pi = pi;
@@ -263,7 +263,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Setter for the field <code>page</code>.
      *
-     * @param page the page to set
+
      */
     public void setPage(Integer page) {
         this.page = page;
@@ -281,7 +281,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Setter for the field <code>owner</code>.
      *
-     * @param owner the owner to set
+
      */
     public void setOwner(User owner) {
         this.owner = owner;
@@ -290,7 +290,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Setter for the field <code>text</code>.
      *
-     * @param text the text to set
+
      */
     public void setText(String text) {
         this.oldText = this.text;
@@ -336,7 +336,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Setter for the field <code>dateCreated</code>.
      *
-     * @param dateCreated the dateCreated to set
+
      */
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
@@ -354,7 +354,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Setter for the field <code>dateUpdated</code>.
      *
-     * @param dateUpdated the dateUpdated to set
+
      */
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;

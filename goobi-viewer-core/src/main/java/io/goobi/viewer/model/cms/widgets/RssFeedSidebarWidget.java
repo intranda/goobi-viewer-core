@@ -79,7 +79,7 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
     /**
      * Set the {@link #getFilterQuery() filter query}.
      * 
-     * @param filterQuery the filterQuery to set
+
      */
     public void setFilterQuery(String filterQuery) {
         this.filterQuery = filterQuery;
@@ -97,7 +97,7 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
     /**
      * Set the {@link #getSortField() sort field}.
      * 
-     * @param sortField the sortField to set
+
      */
     public void setSortField(String sortField) {
         this.sortField = sortField;
@@ -115,7 +115,7 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
     /**
      * Set the {@link #isDescendingSorting() descending sorting}.
      * 
-     * @param descendingSorting the descendingSorting to set
+
      */
     public void setDescendingSorting(boolean descendingSorting) {
         this.descendingSorting = descendingSorting;
@@ -133,7 +133,7 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
     /**
      * Sets the number of entries to display.
      * 
-     * @param numEntries the numEntries to set
+
      */
     public void setNumEntries(int numEntries) {
         this.numEntries = numEntries;

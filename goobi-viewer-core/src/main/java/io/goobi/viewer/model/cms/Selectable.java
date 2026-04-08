@@ -68,7 +68,7 @@ public class Selectable<T> implements Comparable<Selectable<T>>, Serializable {
     /**
      * Setter for the field <code>selected</code>.
      *
-     * @param selected the selected to set
+
      */
     public void setSelected(boolean selected) {
         this.selected = selected;

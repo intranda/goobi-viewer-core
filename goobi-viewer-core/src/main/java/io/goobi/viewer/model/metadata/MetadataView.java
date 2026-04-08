@@ -111,15 +111,13 @@ public class MetadataView {
         return MetadataViewLocation.OBJECTVIEW.equals(location);
     }
 
-    /**
-
-     */
+    
     public int getIndex() {
         return index;
     }
 
     /**
-     * @param index the index to set
+
      * @return this
      */
     public MetadataView setIndex(int index) {
@@ -127,15 +125,13 @@ public class MetadataView {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getLabel() {
         return label;
     }
 
     /**
-     * @param label the label to set
+
      * @return this
      */
     public MetadataView setLabel(String label) {
@@ -143,15 +139,13 @@ public class MetadataView {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getUrl() {
         return url;
     }
 
     /**
-     * @param url the url to set
+
      * @return this
      */
     public MetadataView setUrl(String url) {
@@ -159,15 +153,13 @@ public class MetadataView {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getCondition() {
         return condition;
     }
 
     /**
-     * @param condition the condition to set
+
      * @return this
      */
     public MetadataView setCondition(String condition) {
@@ -175,15 +167,13 @@ public class MetadataView {
         return this;
     }
 
-    /**
-
-     */
+    
     public MetadataViewLocation getLocation() {
         return location;
     }
 
     /**
-     * @param location the location to set
+
      * @return this
      */
     public MetadataView setLocation(MetadataViewLocation location) {

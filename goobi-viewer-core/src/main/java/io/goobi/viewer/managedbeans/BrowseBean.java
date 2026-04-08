@@ -126,7 +126,7 @@ public class BrowseBean implements Serializable {
     /**
      * Required setter for ManagedProperty injection.
      *
-     * @param breadcrumbBean the breadcrumbBean to set
+
      */
     public void setBreadcrumbBean(BreadcrumbBean breadcrumbBean) {
         this.breadcrumbBean = breadcrumbBean;
@@ -283,7 +283,7 @@ public class BrowseBean implements Serializable {
     /**
      * Setter for the field <code>topVisibleCollection</code>.
      *
-     * @param topVisibleCollecion the topVisibleCollecion to set
+
      */
     public void setTopVisibleCollection(String topVisibleCollecion) {
         this.topVisibleCollection = topVisibleCollecion;
@@ -563,7 +563,7 @@ public class BrowseBean implements Serializable {
     /**
      * Setter for the field <code>browsingMenuField</code>.
      *
-     * @param browsingMenuField the browsingMenuField to set
+
      */
     public void setBrowsingMenuField(final String browsingMenuField) {
         synchronized (this) {
@@ -706,7 +706,7 @@ public class BrowseBean implements Serializable {
     /**
      * Setter for the field <code>currentStringFilter</code>.
      *
-     * @param currentStringFilter the currentStringFilter to set
+
      */
     public void setCurrentStringFilter(final String currentStringFilter) {
         synchronized (this) {
@@ -737,7 +737,7 @@ public class BrowseBean implements Serializable {
     /**
      * Setter for the field <code>filterQuery</code>.
      *
-     * @param filterQuery the filterQuery to set
+
      */
     public void setFilterQuery(String filterQuery) {
         this.filterQuery = "-".equals(filterQuery) ? null : filterQuery;
@@ -757,7 +757,7 @@ public class BrowseBean implements Serializable {
     /**
      * Setter for the field <code>currentPage</code>.
      *
-     * @param currentPage the currentPage to set
+
      */
     public void setCurrentPage(int currentPage) {
         synchronized (this) {
@@ -976,7 +976,7 @@ public class BrowseBean implements Serializable {
     /**
      * Setter for the field <code>collectionField</code>.
      *
-     * @param collectionField the collectionField to set
+
      */
     public void setCollectionField(String collectionField) {
         this.collectionField = collectionField;

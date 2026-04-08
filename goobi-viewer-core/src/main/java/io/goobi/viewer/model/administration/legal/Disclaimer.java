@@ -119,7 +119,7 @@ public class Disclaimer {
     /**
      * Set the database id.
      * 
-     * @param id the id to set
+
      */
     public void setId(Long id) {
         this.id = id;
@@ -137,7 +137,7 @@ public class Disclaimer {
     /**
      * Set the disclaimer text.
      * 
-     * @param text the text to set
+
      */
     public void setText(TranslatedText text) {
         this.text = text;
@@ -155,7 +155,7 @@ public class Disclaimer {
     /**
      * Set the disclaimer to active/inactive state.
      * 
-     * @param active the active to set
+
      */
     public void setActive(boolean active) {
         this.active = active;
@@ -173,7 +173,7 @@ public class Disclaimer {
     /**
      * Set the date after which acceptance of the disclaimer must have happened to be valid.
      * 
-     * @param requiresConsentAfter the requiresConsentAfter to set
+
      */
     public void setRequiresConsentAfter(LocalDateTime requiresConsentAfter) {
         this.requiresConsentAfter = requiresConsentAfter;

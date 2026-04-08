@@ -177,10 +177,7 @@ public class LoginResult {
         return refused;
     }
 
-    /**
-     * 
-
-     */
+    
     public long getDelay() {
         return delay;
     }

@@ -52,16 +52,12 @@ public class RequestTypeSummary {
         this.endDate = endDate;
     }
 
-    /**
-
-     */
+    
     public long getTotalRequests() {
         return totalRequests;
     }
 
-    /**
-
-     */
+    
     public long getUniqueRequests() {
         return uniqueRequests;
     }

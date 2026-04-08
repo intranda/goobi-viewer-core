@@ -385,9 +385,7 @@ public class Sitemap {
         return ret;
     }
 
-    /**
-     * @param viewerRootUrl the viewerRootUrl to set
-     */
+    
     void setViewerRootUrl(String viewerRootUrl) {
         this.viewerRootUrl = viewerRootUrl;
         if (this.viewerRootUrl != null && !this.viewerRootUrl.endsWith("/")) {

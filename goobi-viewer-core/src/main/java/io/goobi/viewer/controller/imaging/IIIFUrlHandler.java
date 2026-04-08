@@ -248,9 +248,7 @@ public class IIIFUrlHandler {
                 format == null ? null : format.getFileExtension());
     }
 
-    /**
-
-     */
+    
     public AbstractApiUrlManager getUrlManager() {
         return urls;
     }

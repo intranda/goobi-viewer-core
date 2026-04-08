@@ -106,7 +106,7 @@ public class CMSStaticPage implements Serializable {
     /**
      * Setter for the field <code>cmsPage</code>.
      *
-     * @param cmsPage the cmsPage to set
+
      */
     public void setCmsPage(CMSPage cmsPage) {
         this.cmsPage = Optional.ofNullable(cmsPage);
@@ -165,7 +165,7 @@ public class CMSStaticPage implements Serializable {
     /**
      * Setter for the field <code>cmsPageId</code>.
      *
-     * @param cmsPageId the cmsPageId to set
+
      */
     public void setCmsPageId(Long cmsPageId) {
         this.cmsPageId = cmsPageId;

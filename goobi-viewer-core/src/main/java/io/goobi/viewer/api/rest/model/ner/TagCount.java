@@ -70,7 +70,7 @@ public class TagCount implements Comparable<TagCount> {
     /**
      * Setter for the field <code>value</code>.
      *
-     * @param value the value to set
+
      */
     public void setValue(String value) {
         this.value = value;
@@ -104,16 +104,12 @@ public class TagCount implements Comparable<TagCount> {
         this.type = type;
     }
 
-    /**
-
-     */
+    
     public String getIdentifier() {
         return identifier;
     }
 
-    /**
-     * @param identifier the identifier to set
-     */
+    
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }

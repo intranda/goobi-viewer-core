@@ -129,16 +129,12 @@ public class MetadataElement implements Serializable {
             //
         }
 
-        /**
-
-         */
+        
         public int getType() {
             return type;
         }
 
-        /**
-         * @param type the type to set
-         */
+        
         public void setType(int type) {
             this.type = type;
         }
@@ -419,7 +415,7 @@ public class MetadataElement implements Serializable {
     /**
      * Setter for the field <code>metadataList</code>.
      *
-     * @param metadataList the metadataList to set
+
      */
     public void setMetadataList(List<Metadata> metadataList) {
         this.metadataList = metadataList;
@@ -516,7 +512,7 @@ public class MetadataElement implements Serializable {
     /**
      * Setter for the field <code>sidebarMetadataList</code>.
      *
-     * @param sidebarMetadataList the sidebarMetadataList to set
+
      */
     public void setSidebarMetadataList(List<Metadata> sidebarMetadataList) {
         this.sidebarMetadataList = sidebarMetadataList;
@@ -621,30 +617,22 @@ public class MetadataElement implements Serializable {
         return docStructType;
     }
 
-    /**
-     * @param docStructType the docStructType to set
-     */
+    
     void setDocStructType(String docStructType) {
         this.docStructType = docStructType;
     }
 
-    /**
-
-     */
+    
     public String getGroupType() {
         return groupType;
     }
 
-    /**
-     * @param groupType the groupType to set
-     */
+    
     void setGroupType(String groupType) {
         this.groupType = groupType;
     }
 
-    /**
-
-     */
+    
     public String getPi() {
         return pi;
     }
@@ -667,9 +655,7 @@ public class MetadataElement implements Serializable {
         return filesOnly;
     }
 
-    /**
-
-     */
+    
     public boolean isHasImages() {
         return hasImages;
     }

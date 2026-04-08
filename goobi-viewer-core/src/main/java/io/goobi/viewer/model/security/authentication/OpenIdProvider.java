@@ -363,15 +363,13 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         return false;
     }
 
-    /**
-
-     */
+    
     public String getDiscoveryUri() {
         return discoveryUri;
     }
 
     /**
-     * @param discoveryUri the discoveryUri to set
+
      * @return this
      */
     public OpenIdProvider setDiscoveryUri(String discoveryUri) {
@@ -397,15 +395,13 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         return clientSecret;
     }
 
-    /**
-
-     */
+    
     public String getTokenEndpoint() {
         return tokenEndpoint;
     }
 
     /**
-     * @param tokenEndpoint the tokenEndpoint to set
+
      * @return this
      */
     public OpenIdProvider setTokenEndpoint(String tokenEndpoint) {
@@ -415,15 +411,13 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getJwksUri() {
         return jwksUri;
     }
 
     /**
-     * @param jwksUri the jwksUri to set
+
      * @return this
      */
     public OpenIdProvider setJwksUri(String jwksUri) {
@@ -431,15 +425,13 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getRedirectionEndpoint() {
         return redirectionEndpoint;
     }
 
     /**
-     * @param redirectionEndpoint the redirectionEndpoint to set
+
      * @return this
      */
     public OpenIdProvider setRedirectionEndpoint(String redirectionEndpoint) {
@@ -449,15 +441,13 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getScope() {
         return scope;
     }
 
     /**
-     * @param scope the scope to set
+
      * @return this
      */
     public OpenIdProvider setScope(String scope) {
@@ -467,15 +457,13 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getResponseType() {
         return responseType;
     }
 
     /**
-     * @param responseType the responseType to set
+
      * @return this
      */
     public OpenIdProvider setResponseType(String responseType) {
@@ -483,15 +471,13 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getResponseMode() {
         return responseMode;
     }
 
     /**
-     * @param responseMode the responseMode to set
+
      * @return this
      */
     public OpenIdProvider setResponseMode(String responseMode) {
@@ -499,15 +485,13 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getIssuer() {
         return issuer;
     }
 
     /**
-     * @param issuer the issuer to set
+
      * @return this
      */
     public OpenIdProvider setIssuer(String issuer) {
@@ -515,15 +499,13 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         return this;
     }
 
-    /**
-
-     */
+    
     public long getTokenCheckDelay() {
         return tokenCheckDelay;
     }
 
     /**
-     * @param tokenCheckDelay the tokenCheckDelay to set
+
      * @return this
      */
     public OpenIdProvider setTokenCheckDelay(long tokenCheckDelay) {
@@ -576,7 +558,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     /**
      * Setter for the field <code>oAuthState</code>.
      *
-     * @param oAuthState the oAuthState to set
+
      */
     public void setoAuthState(String oAuthState) {
         this.oAuthState = oAuthState;
@@ -594,7 +576,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     /**
      * Setter for the field <code>oAuthAccessToken</code>.
      *
-     * @param oAuthAccessToken the oAuthAccessToken to set
+
      */
     public void setoAuthAccessToken(String oAuthAccessToken) {
         this.oAuthAccessToken = oAuthAccessToken;

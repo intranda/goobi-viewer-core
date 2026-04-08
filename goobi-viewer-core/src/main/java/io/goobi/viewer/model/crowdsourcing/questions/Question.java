@@ -220,7 +220,7 @@ public class Question implements Serializable {
     /**
      * Setter for the field <code>id</code>.
      *
-     * @param id the id to set
+
      */
     public void setId(Long id) {
         this.id = id;
@@ -238,15 +238,13 @@ public class Question implements Serializable {
     /**
      * Setter for the field <code>owner</code>.
      *
-     * @param owner the owner to set
+
      */
     public void setOwner(Campaign owner) {
         this.owner = owner;
     }
 
-    /**
-
-     */
+    
     public TranslatedText getText() {
         return text;
     }
@@ -263,7 +261,7 @@ public class Question implements Serializable {
     /**
      * Setter for the field <code>questionType</code>.
      *
-     * @param questionType the questionType to set
+
      */
     public void setQuestionType(QuestionType questionType) {
         this.questionType = questionType;
@@ -281,7 +279,7 @@ public class Question implements Serializable {
     /**
      * Setter for the field <code>targetSelector</code>.
      *
-     * @param targetSelector the targetSelector to set
+
      */
     public void setTargetSelector(TargetSelector targetSelector) {
         this.targetSelector = targetSelector;
@@ -296,16 +294,12 @@ public class Question implements Serializable {
         return targetFrequency;
     }
 
-    /**
-
-     */
+    
     public List<String> getMetadataFields() {
         return metadataFields;
     }
 
-    /**
-     * @param metadataFields the metadataFields to set
-     */
+    
     public void setMetadataFields(List<String> metadataFields) {
         this.metadataFields = new ArrayList<>(metadataFields);
     }
@@ -318,18 +312,14 @@ public class Question implements Serializable {
         this.metadataFields.remove(field);
     }
 
-    /**
-     * @param metadataToAdd the metadataToAdd to set
-     */
+    
     public void setMetadataToAdd(String metadataToAdd) {
         if (StringUtils.isNotBlank(metadataToAdd)) {
             addMetadataField(metadataToAdd);
         }
     }
 
-    /**
-
-     */
+    
     public String getMetadataToAdd() {
         return "";
     }
@@ -359,7 +349,7 @@ public class Question implements Serializable {
     /**
      * Setter for the field <code>targetFrequency</code>.
      *
-     * @param targetFrequency the targetFrequency to set
+
      */
     public void setTargetFrequency(int targetFrequency) {
         this.targetFrequency = targetFrequency;

@@ -257,7 +257,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /**
      * Setter for the field <code>id</code>.
      *
-     * @param id the id to set
+
      */
     public void setId(Long id) {
         this.id = id;
@@ -275,7 +275,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /**
      * Setter for the field <code>fileName</code>.
      *
-     * @param fileName the fileName to set
+
      */
     public void setFileName(String fileName) {
         this.fileName = fileName;
@@ -285,7 +285,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /**
      * Setter for the field <code>alternativeText</code>.
      *
-     * @param alternativeText the alternativeText to set
+
      */
     @Deprecated(since = "2026.01")
     public void setAlternativeText(String alternativeText) {
@@ -337,7 +337,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /**
      * Setter for the field <code>metadata</code>.
      *
-     * @param metadata the metadata to set
+
      */
     public void setMetadata(List<CMSMediaItemMetadata> metadata) {
         this.metadata = metadata;
@@ -444,7 +444,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /**
      * Setter for the field <code>priority</code>.
      *
-     * @param priority the priority to set
+
      */
     public void setPriority(Priority priority) {
         this.priority = priority;
@@ -594,7 +594,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /**
      * Setter for the field <code>displayOrder</code>.
      *
-     * @param displayOrder the displayOrder to set
+
      */
     public void setDisplayOrder(int displayOrder) {
         this.displayOrder = displayOrder;

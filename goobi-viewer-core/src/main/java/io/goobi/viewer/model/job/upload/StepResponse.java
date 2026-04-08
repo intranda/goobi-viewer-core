@@ -49,100 +49,72 @@ public class StepResponse {
 
     private int order;
 
-    /**
-
-     */
+    
     public Date getStartDate() {
         return startDate;
     }
 
-    /**
-     * @param startDate the startDate to set
-     */
+    
     public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
 
-    /**
-
-     */
+    
     public Date getEndDate() {
         return endDate;
     }
 
-    /**
-     * @param endDate the endDate to set
-     */
+    
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
     }
 
-    /**
-
-     */
+    
     public String getUser() {
         return user;
     }
 
-    /**
-     * @param user the user to set
-     */
+    
     public void setUser(String user) {
         this.user = user;
     }
 
-    /**
-
-     */
+    
     public String getStatus() {
         return status;
     }
 
-    /**
-     * @param status the status to set
-     */
+    
     public void setStatus(String status) {
         this.status = status;
     }
 
-    /**
-
-     */
+    
     public int getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
+    
     public void setId(int id) {
         this.id = id;
     }
 
-    /**
-
-     */
+    
     public String getTitle() {
         return title;
     }
 
-    /**
-     * @param title the title to set
-     */
+    
     public void setTitle(String title) {
         this.title = title;
     }
 
-    /**
-
-     */
+    
     public int getOrder() {
         return order;
     }
 
-    /**
-     * @param order the order to set
-     */
+    
     public void setOrder(int order) {
         this.order = order;
     }

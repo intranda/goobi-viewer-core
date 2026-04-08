@@ -106,13 +106,9 @@ public interface IAuthenticationProvider {
      */
     public void setAddUserToGroups(List<String> addUserToGroups);
 
-    /**
-
-     */
+    
     public String getRedirectUrl();
 
-    /**
-     * @param redirectUrl the redirectUrl to set
-     */
+    
     public void setRedirectUrl(String redirectUrl);
 }

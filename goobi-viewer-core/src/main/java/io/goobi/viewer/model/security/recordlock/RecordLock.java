@@ -87,23 +87,17 @@ public class RecordLock {
         return true;
     }
 
-    /**
-
-     */
+    
     public String getPi() {
         return pi;
     }
 
-    /**
-
-     */
+    
     public String getSessionId() {
         return sessionId;
     }
 
-    /**
-
-     */
+    
     public long getTimeCreated() {
         return timeCreated;
     }

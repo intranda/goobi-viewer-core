@@ -247,7 +247,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Required setter for ManagedProperty injection for unit tests.
      *
-     * @param navigationHelper the navigationHelper to set
+
      */
     public void setNavigationHelper(NavigationHelper navigationHelper) {
         this.navigationHelper = navigationHelper;
@@ -1328,7 +1328,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * For unit tests.
      * 
-     * @param searchStringInternal the searchStringInternal to set
+
      */
     void setSearchStringInternal(String searchStringInternal) {
         this.searchStringInternal = searchStringInternal;
@@ -1386,7 +1386,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Setter for the field <code>searchSortingOption</code>.
      *
-     * @param searchSortingOption the searchSortingOption to set
+
      */
     public void setSearchSortingOption(SearchSortingOption searchSortingOption) {
         logger.trace("setSearchSortingOption: {}", searchSortingOption);
@@ -1502,9 +1502,7 @@ public class SearchBean implements SearchInterface, Serializable {
         activeResultGroup = null;
     }
 
-    /**
-
-     */
+    
     public String getAdvancedSearchFieldTemplate() {
         return advancedSearchFieldTemplate;
     }
@@ -1686,7 +1684,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Setter for the field <code>currentPage</code>.
      *
-     * @param currentPage the currentPage to set
+
      */
     public void setCurrentPage(int currentPage) {
         logger.trace("setCurrentPage: {}", currentPage);
@@ -1709,7 +1707,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * setHitsCount.
      *
-     * @param hitsCount the hitsCount to set
+
      */
     public void setHitsCount(long hitsCount) {
         if (currentSearch != null) {
@@ -1738,7 +1736,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * For unit tests.
      * 
-     * @param currentHitIndex the currentHitIndex to set
+
      */
     void setCurrentHitIndex(int currentHitIndex) {
         this.currentHitIndex = currentHitIndex;
@@ -1796,7 +1794,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Setter for the field <code>hitIndexOperand</code>.
      *
-     * @param hitIndexOperand the hitIndexOperand to set
+
      */
     public void setHitIndexOperand(int hitIndexOperand) {
         logger.trace("setHitIndexOperand: {}", hitIndexOperand);
@@ -1984,7 +1982,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * For unit tests.
      * 
-     * @param advancedSearchQueryGroup the advancedSearchQueryGroup to set
+
      */
     void setAdvancedSearchQueryGroup(SearchQueryGroup advancedSearchQueryGroup) {
         this.advancedSearchQueryGroup = advancedSearchQueryGroup;
@@ -2186,7 +2184,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Setter for the field <code>currentSearch</code>.
      *
-     * @param currentSearch the currentSearch to set
+
      */
     public void setCurrentSearch(Search currentSearch) {
         logger.trace("Setting current search to {}", currentSearch);
@@ -2205,7 +2203,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Setter for the field <code>fuzzySearchEnabled</code>.
      *
-     * @param fuzzySearchEnabled the fuzzySearchEnabled to set
+
      */
     public void setFuzzySearchEnabled(boolean fuzzySearchEnabled) {
         this.fuzzySearchEnabled = fuzzySearchEnabled;
@@ -2559,7 +2557,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Setter for the field <code>hitsPerPage</code>.
      *
-     * @param hitsPerPage the hitsPerPage to set
+
      */
     public void setHitsPerPage(int hitsPerPage) {
         logger.trace("setHitsPerPage: {}", hitsPerPage);
@@ -2570,7 +2568,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Like setHitsPerPage() but doesn't trigger the boolean.
      *
-     * @param hitsPerPage the hitsPerPage to set
+
      * @should not change hitsPerPageSetterCalled value
      */
     public void setHitsPerPageNoTrigger(int hitsPerPage) {
@@ -2590,7 +2588,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Setter for the field <code>hitsPerPageSetterCalled</code>.
      *
-     * @param hitsPerPageSetterCalled the hitsPerPageSetterCalled to set
+
      */
     public void setHitsPerPageSetterCalled(boolean hitsPerPageSetterCalled) {
         // logger.trace("setHitsPerPageSetterCalled: {}", hitsPerPageSetterCalled); //NOSONAR Debug

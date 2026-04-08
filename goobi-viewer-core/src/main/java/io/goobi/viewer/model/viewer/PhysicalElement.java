@@ -558,15 +558,13 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         return filePath;
     }
 
-    /**
-
-     */
+    
     public String getFilePathTiff() {
         return filePathTiff;
     }
 
     /**
-     * @param filePathTiff the filePathTiff to set
+
      * @return this
      */
     public PhysicalElement setFilePathTiff(String filePathTiff) {
@@ -574,15 +572,13 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         return this;
     }
 
-    /**
-
-     */
+    
     public String getFilePathJpeg() {
         return filePathJpeg;
     }
 
     /**
-     * @param filePathJpeg the filePathJpeg to set
+
      * @return this
      */
     public PhysicalElement setFilePathJpeg(String filePathJpeg) {
@@ -620,7 +616,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Setter for the field <code>purlPart</code>.
      *
-     * @param purlPart the purlPart to set
+
      */
     public void setPurlPart(String purlPart) {
         this.purlPart = purlPart;
@@ -695,7 +691,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Setter for the field <code>mimeType</code>.
      *
-     * @param mimeType the mimeType to set
+
      */
     public void setMimeType(String mimeType) {
         this.mimeType = mimeType;
@@ -704,7 +700,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Setter for the field <code>width</code>.
      *
-     * @param width the width to set
+
      */
     public void setWidth(int width) {
         this.width = width;
@@ -713,7 +709,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Setter for the field <code>height</code>.
      *
-     * @param height the height to set
+
      */
     public void setHeight(int height) {
         this.height = height;
@@ -731,7 +727,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Setter for the field <code>fileIdRoot</code>.
      *
-     * @param fileIdRoot the fileIdRoot to set
+
      */
     public void setFileIdRoot(String fileIdRoot) {
         this.fileIdRoot = fileIdRoot;
@@ -759,45 +755,33 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
                 .isGranted();
     }
 
-    /**
-
-     */
+    
     public boolean isHasImage() {
         return hasImage;
     }
 
-    /**
-     * @param hasImage the hasImage to set
-     */
+    
     public void setHasImage(boolean hasImage) {
         this.hasImage = hasImage;
     }
 
-    /**
-
-     */
+    
     public boolean isDoubleImage() {
         // logger.trace("isDoubleImage: {}", doubleImage); //NOSONAR Debug
         return doubleImage;
     }
 
-    /**
-     * @param doubleImage the doubleImage to set
-     */
+    
     public void setDoubleImage(boolean doubleImage) {
         this.doubleImage = doubleImage;
     }
 
-    /**
-
-     */
+    
     public boolean isFlipRectoVerso() {
         return flipRectoVerso;
     }
 
-    /**
-     * @param flipRectoVerso the flipRectoVerso to set
-     */
+    
     public void setFlipRectoVerso(boolean flipRectoVerso) {
         this.flipRectoVerso = flipRectoVerso;
     }
@@ -870,7 +854,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Setter for the field <code>fulltextAvailable</code>.
      *
-     * @param fulltextAvailable the fulltextAvailable to set
+
      */
     public void setFulltextAvailable(boolean fulltextAvailable) {
         this.fulltextAvailable = fulltextAvailable;
@@ -924,7 +908,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Setter for the field <code>fulltextFileName</code>.
      *
-     * @param fulltextFileName the fulltextFileName to set
+
      */
     public void setFulltextFileName(String fulltextFileName) {
         this.fulltextFileName = fulltextFileName;
@@ -942,7 +926,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Setter for the field <code>altoFileName</code>.
      *
-     * @param altoFileName the altoFileName to set
+
      */
     public void setAltoFileName(String altoFileName) {
         this.altoFileName = altoFileName;
@@ -1023,7 +1007,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Setter for the field <code>fullText</code>.
      *
-     * @param fullText the fullText to set
+
      */
     public void setFullText(String fullText) {
         this.fullText = fullText;
@@ -1158,7 +1142,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Setter for the field <code>fileNames</code>.
      *
-     * @param fileNames the fileNames to set
+
      */
     public void setFileNames(Map<String, String> fileNames) {
         this.fileNames = fileNames;
@@ -1411,7 +1395,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Setter for the field <code>accessConditions</code>.
      *
-     * @param accessConditions the accessConditions to set
+
      */
     public void setAccessConditions(Set<String> accessConditions) {
         this.accessConditions = accessConditions;
@@ -1764,9 +1748,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         return altoText;
     }
 
-    /**
-
-     */
+    
     public String getAltoCharset() {
         return altoCharset;
     }
@@ -1801,7 +1783,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Setter for the field <code>fileSize</code>.
      *
-     * @param fileSize the fileSize to set
+
      */
     public void setFileSize(long fileSize) {
         this.fileSize = fileSize;
@@ -1910,9 +1892,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         }
     }
 
-    /**
-
-     */
+    
     public List<Metadata> getMetadata() {
         return metadata;
     }

@@ -43,86 +43,62 @@ public class IndexerDataRequestParameters {
     @JsonProperty("record-identifiers")
     private List<String> recordIdentifiers;
 
-    /**
-
-     */
+    
     public String getApplication() {
         return application;
     }
 
-    /**
-     * @param application the application to set
-     */
+    
     public void setApplication(String application) {
         this.application = application;
     }
 
-    /**
-
-     */
+    
     public String getVersion() {
         return version;
     }
 
-    /**
-     * @param version the version to set
-     */
+    
     public void setVersion(String version) {
         this.version = version;
     }
 
-    /**
-
-     */
+    
     public String getBuildDate() {
         return buildDate;
     }
 
-    /**
-     * @param buildDate the buildDate to set
-     */
+    
     public void setBuildDate(String buildDate) {
         this.buildDate = buildDate;
     }
 
-    /**
-
-     */
+    
     public String getGitRevision() {
         return gitRevision;
     }
 
-    /**
-     * @param gitRevision the gitRevision to set
-     */
+    
     public void setGitRevision(String gitRevision) {
         this.gitRevision = gitRevision;
     }
 
-    /**
-
-     */
+    
     public int getHotfolderFileCount() {
         return hotfolderFileCount;
     }
 
-    /**
-     * @param hotfolderFileCount the hotfolderFileCount to set
-     */
+    
     public void setHotfolderFileCount(int hotfolderFileCount) {
         this.hotfolderFileCount = hotfolderFileCount;
     }
 
-    /**
-
-     */
+    
     public List<String> getRecordIdentifiers() {
         return recordIdentifiers;
     }
 
-    /**
-     * @param recordIdentifiers the recordIdentifiers to set
-     */
+    
     public void setRecordIdentifiers(List<String> recordIdentifiers) {
         this.recordIdentifiers = recordIdentifiers;
     }

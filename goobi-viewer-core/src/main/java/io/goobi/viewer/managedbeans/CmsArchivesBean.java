@@ -162,16 +162,12 @@ public class CmsArchivesBean implements Serializable {
         return lazyModelArchiveConfigurations.getPaginatorList();
     }
 
-    /**
-
-     */
+    
     public ArchiveResourceWrapper getSelectedArchiveWrapper() {
         return selectedArchiveWrapper;
     }
 
-    /**
-     * @param selectedArchiveWrapper the selectedArchiveWrapper to set
-     */
+    
     public void setSelectedArchiveWrapper(ArchiveResourceWrapper selectedArchiveWrapper) {
         this.selectedArchiveWrapper = selectedArchiveWrapper;
     }
@@ -190,30 +186,22 @@ public class CmsArchivesBean implements Serializable {
         this.selectedArchiveWrapper = null;
     }
 
-    /**
-
-     */
+    
     public CMSCollectionImageMode getImageModeTile() {
         return imageModeTile;
     }
 
-    /**
-     * @param imageModeTile the imageModeTile to set
-     */
+    
     public void setImageModeTile(CMSCollectionImageMode imageModeTile) {
         this.imageModeTile = imageModeTile;
     }
 
-    /**
-
-     */
+    
     public CMSCollectionImageMode getImageModeHeader() {
         return imageModeHeader;
     }
 
-    /**
-     * @param imageModeHeader the imageModeHeader to set
-     */
+    
     public void setImageModeHeader(CMSCollectionImageMode imageModeHeader) {
         this.imageModeHeader = imageModeHeader;
     }

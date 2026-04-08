@@ -110,7 +110,7 @@ public class StringPair implements Comparable<StringPair>, Serializable {
     /**
      * Setter for the field <code>one</code>.
      *
-     * @param one the one to set
+
      */
     public void setOne(String one) {
         this.one = one;
@@ -128,7 +128,7 @@ public class StringPair implements Comparable<StringPair>, Serializable {
     /**
      * Setter for the field <code>two</code>.
      *
-     * @param two the two to set
+
      */
     public void setTwo(String two) {
         this.two = two;

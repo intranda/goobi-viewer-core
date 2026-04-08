@@ -59,9 +59,7 @@ public class DynamicBean implements Serializable {
         this.formGroup = group;
     }
 
-    /**
-     * @param headGroup the headGroup to set
-     */
+    
     public void setHeadGroup(HtmlPanelGroup headGroup) {
         this.headGroup = headGroup;
     }

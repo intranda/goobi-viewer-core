@@ -100,7 +100,7 @@ public class SearchFilter implements Serializable {
     /**
      * Setter for the field <code>label</code>.
      *
-     * @param label the label to set
+
      */
     public void setLabel(String label) {
         this.label = label;
@@ -118,22 +118,18 @@ public class SearchFilter implements Serializable {
     /**
      * Setter for the field <code>field</code>.
      *
-     * @param field the field to set
+
      */
     public void setField(String field) {
         this.field = field;
     }
 
-    /**
-
-     */
+    
     public boolean isDefaultFilter() {
         return defaultFilter;
     }
 
-    /**
-     * @param defaultFilter the defaultFilter to set
-     */
+    
     public void setDefaultFilter(boolean defaultFilter) {
         this.defaultFilter = defaultFilter;
     }

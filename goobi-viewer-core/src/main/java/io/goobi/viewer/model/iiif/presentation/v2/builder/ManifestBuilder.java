@@ -660,7 +660,7 @@ public class ManifestBuilder extends AbstractBuilder {
     /**
      * Setter for the field <code>buildMode</code>.
      *
-     * @param buildMode the buildMode to set
+
      * @return a {@link io.goobi.viewer.model.iiif.presentation.v2.builder.ManifestBuilder} object.
      */
     public ManifestBuilder setBuildMode(BuildMode buildMode) {

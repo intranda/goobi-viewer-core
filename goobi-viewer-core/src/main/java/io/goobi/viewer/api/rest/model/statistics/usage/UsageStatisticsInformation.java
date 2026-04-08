@@ -46,16 +46,12 @@ public class UsageStatisticsInformation {
         this.query = query == null ? "" : query;
     }
 
-    /**
-
-     */
+    
     public String getStartDate() {
         return startDate;
     }
 
-    /**
-
-     */
+    
     public String getEndDate() {
         return endDate;
     }
@@ -69,9 +65,7 @@ public class UsageStatisticsInformation {
         }
     }
 
-    /**
-
-     */
+    
     public String getQuery() {
         return query;
     }

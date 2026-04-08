@@ -87,9 +87,7 @@ public class CmsSliderBean implements Serializable {
         return DataManager.getInstance().getDao().deleteSlider(slider);
     }
 
-    /**
-
-     */
+    
     public TableDataFilter getFilter() {
         return filter;
     }

@@ -66,7 +66,7 @@ public class OEmbedRecord {
     /**
      * Setter for the field <code>structElement</code>.
      *
-     * @param structElement the structElement to set
+
      */
     public void setStructElement(StructElement structElement) {
         this.structElement = structElement;
@@ -84,7 +84,7 @@ public class OEmbedRecord {
     /**
      * Setter for the field <code>physicalElement</code>.
      *
-     * @param physicalElement the physicalElement to set
+
      */
     public void setPhysicalElement(PhysicalElement physicalElement) {
         this.physicalElement = physicalElement;
@@ -111,7 +111,7 @@ public class OEmbedRecord {
     /**
      * <p>Setter for the field <code>uri</code>.
      *
-     * @param uri the uri to set
+
      */
     public void setUri(URI uri) {
         this.uri = uri;

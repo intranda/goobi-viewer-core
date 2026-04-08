@@ -147,57 +147,43 @@ public class ArchiveEntryMetadataList {
         }
     }
 
-    /**
-
-     */
+    
     public List<Metadata> getIdentityStatementAreaList() {
         // logger.trace("getIdentityStatementAreaList ({})", id); //NOSONAR Debug
         return identityStatementAreaList;
     }
 
-    /**
-
-     */
+    
     public List<Metadata> getContextAreaList() {
         // logger.trace("getContextAreaList ({})", id); //NOSONAR Debug
         return contextAreaList;
     }
 
-    /**
-
-     */
+    
     public List<Metadata> getContentAndStructureAreaAreaList() {
         // logger.trace("getContentAndStructureAreaAreaList ({})", id); //NOSONAR Debug
         return contentAndStructureAreaAreaList;
     }
 
-    /**
-
-     */
+    
     public List<Metadata> getAccessAndUseAreaList() {
         // logger.trace("getAccessAndUseAreaList ({})", id); //NOSONAR Debug
         return accessAndUseAreaList;
     }
 
-    /**
-
-     */
+    
     public List<Metadata> getAlliedMaterialsAreaList() {
         // logger.trace("getAlliedMaterialsAreaList ({})", id); //NOSONAR Debug
         return alliedMaterialsAreaList;
     }
 
-    /**
-
-     */
+    
     public List<Metadata> getNotesAreaList() {
         // logger.trace("getNotesAreaList ({})", id); //NOSONAR Debug
         return notesAreaList;
     }
 
-    /**
-
-     */
+    
     public List<Metadata> getDescriptionControlAreaList() {
         // logger.trace("getDescriptionControlAreaList ({})", id); //NOSONAR Debug
         return descriptionControlAreaList;

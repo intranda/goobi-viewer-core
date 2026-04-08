@@ -52,16 +52,12 @@ public class SelectionManager<T> implements Map<T, Boolean> {
         this.selectionMap = new HashMap<>();
     }
 
-    /**
-
-     */
+    
     public boolean isSelectAll() {
         return selectAll;
     }
 
-    /**
-     * @param selectAll the selectAll to set
-     */
+    
     public void setSelectAll(boolean selectAll) {
         this.selectAll = selectAll;
     }

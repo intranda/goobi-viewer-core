@@ -101,37 +101,27 @@ public class MessageValue {
         return TranslationStatus.FULL;
     }
 
-    /**
-
-     */
+    
     public String getLanguage() {
         return language;
     }
 
-    /**
-
-     */
+    
     public String getGlobalValue() {
         return globalValue;
     }
 
-    /**
-
-     */
+    
     public String getValue() {
         return value;
     }
 
-    /**
-     * @param value the value to set
-     */
+    
     public void setValue(String value) {
         this.value = value;
     }
 
-    /**
-
-     */
+    
     public String getLoadedValue() {
         return loadedValue;
     }

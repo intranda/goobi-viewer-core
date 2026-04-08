@@ -139,9 +139,7 @@ public class GeoFacetItem implements IFacetItem {
         return "";
     }
 
-    /**
-
-     */
+    
     public String getSolrField() {
         return solrField;
     }

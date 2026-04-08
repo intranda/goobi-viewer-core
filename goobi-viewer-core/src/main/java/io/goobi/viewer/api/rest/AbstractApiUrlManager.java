@@ -284,23 +284,17 @@ public abstract class AbstractApiUrlManager {
             this.specification = specification;
         }
 
-        /**
-
-         */
+        
         public String getName() {
             return name;
         }
 
-        /**
-
-         */
+        
         public String getSpecification() {
             return specification;
         }
 
-        /**
-
-         */
+        
         public String getVersion() {
             return version;
         }

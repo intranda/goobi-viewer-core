@@ -736,7 +736,7 @@ public class AdminLicenseBean implements Serializable {
     /**
      * Setter for the field <code>currentRole</code>.
      *
-     * @param currentRole the currentRole to set
+
      */
     public void setCurrentRole(Role currentRole) {
         this.currentRole = currentRole;
@@ -754,7 +754,7 @@ public class AdminLicenseBean implements Serializable {
     /**
      * Setter for the field <code>currentLicenseType</code>.
      *
-     * @param currentLicenseType the currentLicenseType to set
+
      */
     public void setCurrentLicenseType(LicenseType currentLicenseType) {
         if (currentLicenseType != null) {
@@ -802,7 +802,7 @@ public class AdminLicenseBean implements Serializable {
     /**
      * Setter for the field <code>currentLicense</code>.
      *
-     * @param currentLicense the currentLicense to set
+
      */
     public void setCurrentLicense(License currentLicense) {
         if (currentLicense != null) {
@@ -841,16 +841,12 @@ public class AdminLicenseBean implements Serializable {
         }
     }
 
-    /**
-
-     */
+    
     public Locale getSelectedLanguage() {
         return selectedLanguage;
     }
 
-    /**
-     * @param selectedLanguage the selectedLanguage to set
-     */
+    
     public void setSelectedLanguage(Locale selectedLanguage) {
         this.selectedLanguage = selectedLanguage;
     }

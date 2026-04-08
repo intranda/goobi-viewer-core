@@ -60,8 +60,7 @@ public class GravatarUserAvatar implements UserAvatar {
         this.email = email;
     }
 
-    /**
-     */
+    
     @Override
     public String getIconUrl(int size, HttpServletRequest request) {
         return getGravatarUrl(size);

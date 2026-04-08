@@ -60,16 +60,12 @@ public class ReportErrorsErrorHandler implements ErrorHandler {
         addError(exception, "WARNING");
     }
 
-    /**
-
-     */
+    
     public List<XMLError> getErrors() {
         return errors;
     }
 
-    /**
-     * @param errors the errors to set
-     */
+    
     public void setErrors(List<XMLError> errors) {
         this.errors = errors;
     }

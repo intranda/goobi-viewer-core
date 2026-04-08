@@ -178,37 +178,27 @@ public final class TranslationGroup {
         return false;
     }
 
-    /**
-
-     */
+    
     public int getId() {
         return id;
     }
 
-    /**
-
-     */
+    
     public TranslationGroupType getType() {
         return type;
     }
 
-    /**
-
-     */
+    
     public String getName() {
         return name;
     }
 
-    /**
-
-     */
+    
     public String getDescription() {
         return description;
     }
 
-    /**
-
-     */
+    
     public List<TranslationGroupItem> getItems() {
         return items;
     }
@@ -407,9 +397,7 @@ public final class TranslationGroup {
         return allEntries;
     }
 
-    /**
-
-     */
+    
     public MessageEntry getSelectedEntry() {
         if (selectedEntry == null && getFilteredEntries().size() > selectedEntryIndex) {
             setSelectedEntry(allEntries.get(selectedEntryIndex));
@@ -418,9 +406,7 @@ public final class TranslationGroup {
         return selectedEntry;
     }
 
-    /**
-     * @param selectedEntry the selectedEntry to set
-     */
+    
     public void setSelectedEntry(MessageEntry selectedEntry) {
         saveSelectedEntry();
         this.selectedEntry = selectedEntry;
@@ -438,37 +424,27 @@ public final class TranslationGroup {
         this.selectedEntryIndex = 0;
     }
 
-    /**
-
-     */
+    
     public int getSelectedEntryIndex() {
         return selectedEntryIndex;
     }
 
-    /**
-     * @param selectedEntryIndex the selectedEntryIndex to set
-     */
+    
     public void setSelectedEntryIndex(int selectedEntryIndex) {
         this.selectedEntryIndex = selectedEntryIndex;
     }
 
-    /**
-
-     */
+    
     public String getFilterString() {
         return filterString;
     }
 
-    /**
-     * @param filterString the filterString to set
-     */
+    
     public void setFilterString(String filterString) {
         this.filterString = filterString;
     }
 
-    /**
-
-     */
+    
     public boolean isLoadError() {
         if (loadError == null) {
             getAllEntries();
@@ -476,23 +452,17 @@ public final class TranslationGroup {
         return loadError;
     }
 
-    /**
-     * @param loadError the loadError to set
-     */
+    
     public void setLoadError(boolean loadError) {
         this.loadError = loadError;
     }
 
-    /**
-
-     */
+    
     public boolean isNewEntryMode() {
         return newEntryMode;
     }
 
-    /**
-     * @param newEntryMode the newEntryMode to set
-     */
+    
     public void setNewEntryMode(boolean newEntryMode) {
         this.newEntryMode = newEntryMode;
     }

@@ -471,30 +471,22 @@ public class CampaignItemResource {
         private String id;
         private List<WebAnnotation> annotations;
 
-        /**
-
-         */
+        
         public String getId() {
             return id;
         }
 
-        /**
-         * @param id the id to set
-         */
+        
         public void setId(String id) {
             this.id = id;
         }
 
-        /**
-
-         */
+        
         public List<WebAnnotation> getAnnotations() {
             return annotations;
         }
 
-        /**
-         * @param annotations the annotations to set
-         */
+        
         public void setAnnotations(List<WebAnnotation> annotations) {
             this.annotations = annotations;
         }

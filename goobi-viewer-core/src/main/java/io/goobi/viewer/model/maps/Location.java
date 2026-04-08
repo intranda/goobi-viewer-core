@@ -99,23 +99,17 @@ public class Location implements Serializable {
         return URI.create(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + mappedUrl.toString());
     }
 
-    /**
-
-     */
+    
     public IArea getArea() {
         return area;
     }
 
-    /**
-
-     */
+    
     public String getLabel() {
         return label;
     }
 
-    /**
-
-     */
+    
     public URI getLink() {
         return uri;
     }

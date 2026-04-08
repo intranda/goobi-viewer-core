@@ -1339,7 +1339,7 @@ public class ViewManager implements Serializable {
     /**
      * currentPageOrder.
      *
-     * @param currentImageOrder the currentImageOrder to set
+
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws RecordNotFoundException
@@ -1575,7 +1575,7 @@ public class ViewManager implements Serializable {
     /**
      * Setter for the field <code>dropdownSelected</code>.
      *
-     * @param dropdownSelected the dropdownSelected to set
+
      */
     public void setDropdownSelected(String dropdownSelected) {
         this.dropdownSelected = dropdownSelected;
@@ -2281,16 +2281,12 @@ public class ViewManager implements Serializable {
         this.allowUserComments = null;
     }
 
-    /**
-
-     */
+    
     public Boolean isAllowUserComments() {
         return allowUserComments;
     }
 
-    /**
-     * @param allowUserComments the allowUserComments to set
-     */
+    
     public void setAllowUserComments(Boolean allowUserComments) {
         this.allowUserComments = allowUserComments;
     }
@@ -2313,9 +2309,7 @@ public class ViewManager implements Serializable {
         return recordAccessTicketRequired;
     }
 
-    /**
-     * @param recordAccessTicketRequired the recordAccessTicketRequired to set
-     */
+    
     public void setRecordAccessTicketRequired(Boolean recordAccessTicketRequired) {
         this.recordAccessTicketRequired = recordAccessTicketRequired;
     }
@@ -2704,16 +2698,12 @@ public class ViewManager implements Serializable {
         return workHasTEIFiles;
     }
 
-    /**
-
-     */
+    
     public TOC getToc() {
         return toc;
     }
 
-    /**
-     * @param toc the toc to set
-     */
+    
     public void setToc(TOC toc) {
         this.toc = toc;
     }
@@ -2996,7 +2986,7 @@ public class ViewManager implements Serializable {
     /**
      * setTopStructElement.
      *
-     * @param topStructElement the topStructElement to set
+
      */
     public void setTopStructElement(StructElement topStructElement) {
         this.topStructElement = topStructElement;
@@ -3014,7 +3004,7 @@ public class ViewManager implements Serializable {
     /**
      * Setter for the field <code>currentStructElementIddoc</code>.
      *
-     * @param currentStructElementIddoc the currentStructElementIddoc to set
+
      */
     public void setCurrentStructElementtIddoc(String currentStructElementIddoc) {
         this.currentStructElementIddoc = currentStructElementIddoc;
@@ -3038,7 +3028,7 @@ public class ViewManager implements Serializable {
     /**
      * Setter for the field <code>currentStructElement</code>.
      *
-     * @param currentStructElement the currentStructElement to set
+
      */
     public void setCurrentStructElement(StructElement currentStructElement) {
         this.currentStructElement = currentStructElement;
@@ -3081,7 +3071,7 @@ public class ViewManager implements Serializable {
     /**
      * Setter for the field <code>logId</code>.
      *
-     * @param logId the logId to set
+
      */
     public void setLogId(String logId) {
         this.logId = logId;
@@ -3402,7 +3392,7 @@ public class ViewManager implements Serializable {
     /**
      * Setter for the field <code>doublePageMode</code>.
      *
-     * @param doublePageMode the doublePageMode to set
+
      */
     public void setDoublePageMode(boolean doublePageMode) {
         setPageNavigation(doublePageMode ? PageNavigation.DOUBLE : PageNavigation.SINGLE);
@@ -3434,7 +3424,7 @@ public class ViewManager implements Serializable {
     /**
      * Setter for the field <code>firstPdfPage</code>.
      *
-     * @param firstPdfPage the firstPdfPage to set
+
      */
     public void setFirstPdfPage(String firstPdfPage) {
         if (StringUtils.isNotBlank(firstPdfPage) && firstPdfPage.matches(StringConstants.POSITIVE_INTEGER)) {
@@ -3454,7 +3444,7 @@ public class ViewManager implements Serializable {
     /**
      * Setter for the field <code>lastPdfPage</code>.
      *
-     * @param lastPdfPage the lastPdfPage to set
+
      */
     public void setLastPdfPage(String lastPdfPage) {
         logger.trace("setLastPdfPage: {}", lastPdfPage);
@@ -3527,7 +3517,7 @@ public class ViewManager implements Serializable {
     /**
      * Setter for the field <code>firstPageOrientation</code>.
      *
-     * @param firstPageOrientation the firstPageOrientation to set
+
      */
     public void setFirstPageOrientation(PageOrientation firstPageOrientation) {
         this.firstPageOrientation = firstPageOrientation;
@@ -3818,30 +3808,22 @@ public class ViewManager implements Serializable {
         return "";
     }
 
-    /**
-
-     */
+    
     public String getCitationStyle() {
         return citationStyle;
     }
 
-    /**
-     * @param citationStyle the citationStyle to set
-     */
+    
     public void setCitationStyle(String citationStyle) {
         this.citationStyle = citationStyle;
     }
 
-    /**
-
-     */
+    
     public CitationProcessorWrapper getCitationProcessorWrapper() {
         return citationProcessorWrapper;
     }
 
-    /**
-     * @param citationProcessorWrapper the citationProcessorWrapper to set
-     */
+    
     public void setCitationProcessorWrapper(CitationProcessorWrapper citationProcessorWrapper) {
         this.citationProcessorWrapper = citationProcessorWrapper;
     }

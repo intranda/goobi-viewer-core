@@ -87,23 +87,17 @@ public class CaptchaBean implements Serializable {
         return securityQuestion != null && securityQuestion.isAnswerCorrect(securityAnswer);
     }
 
-    /**
-
-     */
+    
     public SecurityQuestion getSecurityQuestion() {
         return securityQuestion;
     }
 
-    /**
-
-     */
+    
     public String getSecurityAnswer() {
         return securityAnswer;
     }
 
-    /**
-     * @param securityAnswer the securityAnswer to set
-     */
+    
     public void setSecurityAnswer(String securityAnswer) {
         this.securityAnswer = securityAnswer;
     }

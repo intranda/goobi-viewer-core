@@ -63,8 +63,7 @@ import io.goobi.viewer.solr.SolrConstants;
 @SessionScoped
 public class CommentBean implements Serializable {
 
-    /**
-     */
+    
     private static final String REQUIRES_COMMENT_RIGHTS = "REQUIRES_COMMENT_RIGHTS";
     private static final long serialVersionUID = -3653100353345867739L;
 

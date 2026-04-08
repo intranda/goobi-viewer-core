@@ -213,7 +213,7 @@ public class DisclaimerBean implements Serializable {
     /**
      * Setter for unit tests.
      * 
-     * @param activeDocumentBean the activeDocumentBean to set
+
      */
     void setActiveDocumentBean(ActiveDocumentBean activeDocumentBean) {
         this.activeDocumentBean = activeDocumentBean;
@@ -222,7 +222,7 @@ public class DisclaimerBean implements Serializable {
     /**
      * Setter for unit tests.
      * 
-     * @param navigationHelper the navigationHelper to set
+
      */
     void setNavigationHelper(NavigationHelper navigationHelper) {
         this.navigationHelper = navigationHelper;
@@ -231,7 +231,7 @@ public class DisclaimerBean implements Serializable {
     /**
      * Setter for unit tests.
      * 
-     * @param userBean the userBean to set
+
      */
     void setUserBean(UserBean userBean) {
         this.userBean = userBean;

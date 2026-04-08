@@ -132,39 +132,29 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
     public LogMessage() {
     }
 
-    /**
-
-     */
+    
     public Long getId() {
         return id;
     }
 
-    /**
-
-     */
+    
     @JsonIgnore
     public Long getCreatorId() {
         return creatorId;
     }
 
-    /**
-
-     */
+    
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
-    /**
-
-     */
+    
     public String getMessage() {
         return message;
     }
 
-    /**
-
-     */
+    
     public UserJsonFacade getCreator() {
         return creator;
     }

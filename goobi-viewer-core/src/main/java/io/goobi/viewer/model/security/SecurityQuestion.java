@@ -61,23 +61,17 @@ public class SecurityQuestion {
         return correctAnswers.contains(answer.toLowerCase());
     }
 
-    /**
-
-     */
+    
     public String getQuestionKey() {
         return questionKey;
     }
 
-    /**
-
-     */
+    
     public Set<String> getCorrectAnswers() {
         return correctAnswers;
     }
 
-    /**
-
-     */
+    
     public boolean isAnswered() {
         return answered;
     }

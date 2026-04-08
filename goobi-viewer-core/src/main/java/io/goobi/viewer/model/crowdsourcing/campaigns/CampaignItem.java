@@ -69,7 +69,7 @@ public class CampaignItem {
     /**
      * Setter for the field <code>source</code>.
      *
-     * @param source the source to set
+
      */
     public void setSource(URI source) {
         this.source = source;
@@ -87,7 +87,7 @@ public class CampaignItem {
     /**
      * Setter for the field <code>campaign</code>.
      *
-     * @param campaign the campaign to set
+
      */
     public void setCampaign(Campaign campaign) {
         this.campaign = campaign;
@@ -115,7 +115,7 @@ public class CampaignItem {
     /**
      * Setter for the field <code>recordStatus</code>.
      *
-     * @param recordStatus the recordStatus to set
+
      */
     public void setRecordStatus(CrowdsourcingStatus recordStatus) {
         this.recordStatus = recordStatus;
@@ -154,78 +154,58 @@ public class CampaignItem {
     /**
      * Setter for the field <code>creatorURI</code>.
      *
-     * @param creatorURI the creatorURI to set
+
      */
     public void setCreatorURI(URI creatorURI) {
         this.creatorURI = creatorURI;
     }
 
-    /**
-     * @param log the log to set
-     */
+    
     public void setLog(List<LogMessage> log) {
         this.log = log;
     }
 
-    /**
-
-     */
+    
     public List<LogMessage> getLog() {
         return log;
     }
 
-    /**
-
-     */
+    
     public Map<String, List<String>> getMetadata() {
         return Collections.unmodifiableMap(this.metadata);
     }
 
-    /**
-     * @param metadata the metadata to set
-     */
+    
     public void setMetadata(Map<String, List<String>> metadata) {
         this.metadata = metadata;
     }
 
-    /**
-
-     */
+    
     public boolean isPageStatisticMode() {
         return pageStatisticMode;
     }
 
-    /**
-     * @param pageStatisticMode the pageStatisticMode to set
-     */
+    
     public void setPageStatisticMode(boolean pageStatisticMode) {
         this.pageStatisticMode = pageStatisticMode;
     }
 
-    /**
-
-     */
+    
     public Map<Integer, String> getPageStatusMap() {
         return pageStatusMap;
     }
 
-    /**
-     * @param pageStatusMap the pageStatusMap to set
-     */
+    
     public void setPageStatusMap(Map<Integer, String> pageStatusMap) {
         this.pageStatusMap = pageStatusMap;
     }
 
-    /**
-
-     */
+    
     public String getRecordIdentifier() {
         return recordIdentifier;
     }
 
-    /**
-     * @param recordIdentifier the recordIdentifier to set
-     */
+    
     public void setRecordIdentifier(String recordIdentifier) {
         this.recordIdentifier = recordIdentifier;
     }

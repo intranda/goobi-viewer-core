@@ -38,23 +38,17 @@ public class LicenseDescription {
         this.url = url;
     }
 
-    /**
-
-     */
+    
     public String getLabel() {
         return label;
     }
 
-    /**
-     * @param label the label to set
-     */
+    
     public void setLabel(String label) {
         this.label = label;
     }
 
-    /**
-
-     */
+    
     public String getUrl() {
         return url;
     }

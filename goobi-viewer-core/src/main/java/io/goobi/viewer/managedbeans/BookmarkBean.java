@@ -794,16 +794,12 @@ public class BookmarkBean implements Serializable {
                 .orElse(0);
     }
 
-    /**
-
-     */
+    
     public String getNewBookmarkListName() {
         return newBookmarkListName;
     }
 
-    /**
-     * @param newBookmarkListName the newBookmarkListName to set
-     */
+    
     public void setNewBookmarkListName(String newBookmarkListName) {
         this.newBookmarkListName = newBookmarkListName;
     }

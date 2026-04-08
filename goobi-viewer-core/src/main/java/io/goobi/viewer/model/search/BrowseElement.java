@@ -759,7 +759,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Setter for the field <code>labelShort</code>.
      *
-     * @param labelShort the labelShort to set
+
      */
     public void setLabelShort(IMetadataValue labelShort) {
         this.labelShort = labelShort;
@@ -831,9 +831,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         return imageNo;
     }
 
-    /**
-     * @param imageNo the imageNo to set
-     */
+    
     public void setImageNo(int imageNo) {
         this.imageNo = imageNo;
     }
@@ -860,9 +858,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         return structElements.get(structElements.size() - 1);
     }
 
-    /**
-
-     */
+    
     public List<EventElement> getEvents() {
         return events;
     }
@@ -870,7 +866,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Setter for the field <code>fulltext</code>.
      *
-     * @param fulltext the fulltext to set
+
      */
     public void setFulltext(String fulltext) {
         this.fulltext = fulltext;
@@ -916,7 +912,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Setter for the field <code>volumeNo</code>.
      *
-     * @param volumeNo the volumeNo to set
+
      */
     public void setVolumeNo(String volumeNo) {
         this.volumeNo = volumeNo;
@@ -947,30 +943,22 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         return DocType.ARCHIVE.equals(docType);
     }
 
-    /**
-
-     */
+    
     public boolean isCmsPage() {
         return cmsPage;
     }
 
-    /**
-     * @param cmsPage the cmsPage to set
-     */
+    
     public void setCmsPage(boolean cmsPage) {
         this.cmsPage = cmsPage;
     }
 
-    /**
-
-     */
+    
     public boolean isWork() {
         return work;
     }
 
-    /**
-     * @param work the work to set
-     */
+    
     public void setWork(boolean work) {
         this.work = work;
     }
@@ -987,7 +975,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Setter for the field <code>anchor</code>.
      *
-     * @param anchor the anchor to set
+
      */
     public void setAnchor(boolean anchor) {
         this.anchor = anchor;
@@ -1005,22 +993,18 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Setter for the field <code>hasImages</code>.
      *
-     * @param hasImages the hasImages to set
+
      */
     public void setHasImages(boolean hasImages) {
         this.hasImages = hasImages;
     }
 
-    /**
-
-     */
+    
     public boolean isHasTeiFiles() {
         return hasTeiFiles;
     }
 
-    /**
-     * @param hasTeiFiles the hasTeiFiles to set
-     */
+    
     public void setHasTeiFiles(boolean hasTeiFiles) {
         this.hasTeiFiles = hasTeiFiles;
     }
@@ -1045,7 +1029,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Setter for the field <code>pi</code>.
      *
-     * @param pi the identifier to set
+
      */
     public void setPi(String pi) {
         this.pi = pi;
@@ -1200,9 +1184,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         return sb.toString();
     }
 
-    /**
-
-     */
+    
     public String getRisExport() {
         return risExport;
     }
@@ -1311,9 +1293,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         return Collections.emptyList();
     }
 
-    /**
-
-     */
+    
     public Set<String> getExistingMetadataFields() {
         return existingMetadataFields;
     }
@@ -1361,16 +1341,12 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         return dataRepository;
     }
 
-    /**
-
-     */
+    
     public AccessPermission getAccessPermissionThumbnail() {
         return accessPermissionThumbnail;
     }
 
-    /**
-     * @param accessPermissionThumbnail the accessPermissionThumbnail to set
-     */
+    
     public void setAccessPermissionThumbnail(AccessPermission accessPermissionThumbnail) {
         this.accessPermissionThumbnail = accessPermissionThumbnail;
     }
@@ -1408,7 +1384,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Setter for the field <code>hasMedia</code>.
      *
-     * @param hasMedia the hasMedia to set
+
      */
     public void setHasMedia(boolean hasMedia) {
         this.hasMedia = hasMedia;
@@ -1450,9 +1426,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         return logId;
     }
 
-    /**
-     * @param logId the logId to set
-     */
+    
     public void setLogId(String logId) {
         this.logId = logId;
     }

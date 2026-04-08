@@ -75,7 +75,7 @@ public class TermsOfUseTranslation extends Translation {
     /**
      * Setter for the field <code>owner</code>.
      *
-     * @param owner the owner to set
+
      */
     public void setOwner(TermsOfUse owner) {
         this.owner = owner;

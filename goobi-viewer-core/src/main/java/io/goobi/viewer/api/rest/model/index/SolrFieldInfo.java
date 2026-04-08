@@ -70,86 +70,62 @@ public class SolrFieldInfo {
         this.field = field;
     }
 
-    /**
-
-     */
+    
     public String getField() {
         return field;
     }
 
-    /**
-
-     */
+    
     public String getSortField() {
         return sortField;
     }
 
-    /**
-     * @param sortField the sortField to set
-     */
+    
     public void setSortField(String sortField) {
         this.sortField = sortField;
     }
 
-    /**
-
-     */
+    
     public String getFacetField() {
         return facetField;
     }
 
-    /**
-     * @param facetField the facetField to set
-     */
+    
     public void setFacetField(String facetField) {
         this.facetField = facetField;
     }
 
-    /**
-
-     */
+    
     public String getBoolField() {
         return boolField;
     }
 
-    /**
-     * @param boolField the boolField to set
-     */
+    
     public void setBoolField(String boolField) {
         this.boolField = boolField;
     }
 
-    /**
-
-     */
+    
     public boolean isIndexed() {
         return indexed;
     }
 
-    /**
-     * @param indexed the indexed to set
-     */
+    
     public void setIndexed(boolean indexed) {
         this.indexed = indexed;
     }
 
-    /**
-
-     */
+    
     public boolean isStored() {
         return stored;
     }
 
-    /**
-     * @param stored the stored to set
-     */
+    
     public void setStored(boolean stored) {
         this.stored = stored;
     }
 
-    /**
-
-     */
+    
     public Map<String, String> getTranslations() {
         if (translations == null) {
             translations = new HashMap<>();

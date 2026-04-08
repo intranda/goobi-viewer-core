@@ -154,10 +154,7 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
         this.order = Optional.ofNullable(order).orElse(jpa.map(PersistentCMSComponent::getOrder).orElse(0));
     }
 
-    /**
-     * 
-
-     */
+    
     public PersistentCMSComponent getPersistentComponent() {
         return persistentComponent;
     }

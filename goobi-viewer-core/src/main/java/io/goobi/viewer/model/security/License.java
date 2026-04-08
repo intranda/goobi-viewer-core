@@ -91,9 +91,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
             this.labelKey = labelKey;
         }
 
-        /**
-
-         */
+        
         public String getLabelKey() {
             return labelKey;
         }
@@ -620,7 +618,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Setter for the field <code>id</code>.
      *
-     * @param id the id to set
+
      */
     public void setId(Long id) {
         this.id = id;
@@ -638,22 +636,18 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Setter for the field <code>licenseType</code>.
      *
-     * @param licenseType the licenseType to set
+
      */
     public void setLicenseType(LicenseType licenseType) {
         this.licenseType = licenseType;
     }
 
-    /**
-
-     */
+    
     public List<LicenseRightsHolder> getLicensees() {
         return licensees;
     }
 
-    /**
-     * @param licensees the licensees to set
-     */
+    
     public void setLicensees(List<LicenseRightsHolder> licensees) {
         this.licensees = licensees;
     }
@@ -671,7 +665,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Setter for the field <code>user</code>.
      *
-     * @param user the user to set
+
      * @should set userGroup and ipRange to null if user not null
      * @should not set userGroup and ipRange to null if user null
      */
@@ -697,7 +691,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Setter for the field <code>userGroup</code>.
      *
-     * @param userGroup the userGroup to set
+
      * @should set user and ipRange to null if userGroup not null
      * @should not set user and ipRange to null if userGroup null
      */
@@ -723,7 +717,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Setter for the field <code>ipRange</code>.
      *
-     * @param ipRange the ipRange to set
+
      * @should set user and userGroup to null if ipRange not null
      * @should not set user and userGroup to null if ipRange null
      */
@@ -748,7 +742,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Setter for the field <code>start</code>.
      *
-     * @param start the start to set
+
      */
     public void setStart(LocalDateTime start) {
         this.start = start;
@@ -766,7 +760,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Setter for the field <code>end</code>.
      *
-     * @param end the end to set
+
      */
     public void setEnd(LocalDateTime end) {
         this.end = end;
@@ -784,7 +778,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Setter for the field <code>privileges</code>.
      *
-     * @param privileges the privileges to set
+
      */
     public void setPrivileges(Set<String> privileges) {
         this.privileges = privileges;
@@ -802,7 +796,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Setter for the field <code>conditions</code>.
      *
-     * @param conditions the conditions to set
+
      */
     public void setConditions(String conditions) {
         this.conditions = conditions;
@@ -820,22 +814,18 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Setter for the field <code>description</code>.
      *
-     * @param description the description to set
+
      */
     public void setDescription(String description) {
         this.description = description;
     }
 
-    /**
-
-     */
+    
     public boolean isTicketRequired() {
         return ticketRequired;
     }
 
-    /**
-     * @param ticketRequired the ticketRequired to set
-     */
+    
     public void setTicketRequired(boolean ticketRequired) {
         this.ticketRequired = ticketRequired;
     }
@@ -860,7 +850,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Setter for the field <code>subthemeDiscriminatorValues</code>.
      *
-     * @param subthemeDiscriminatorValues the subthemeDiscriminatorValues to set
+
      */
     public void setSubthemeDiscriminatorValues(List<String> subthemeDiscriminatorValues) {
         this.subthemeDiscriminatorValues = subthemeDiscriminatorValues;
@@ -878,7 +868,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Setter for the field <code>allowedCategories</code>.
      *
-     * @param allowedCategories the allowedCategories to set
+
      */
     public void setAllowedCategories(List<CMSCategory> allowedCategories) {
         this.allowedCategories = allowedCategories;
@@ -896,7 +886,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Setter for the field <code>allowedCmsTemplates</code>.
      *
-     * @param allowedCmsTemplates the allowedCmsTemplates to set
+
      */
     public void setAllowedCmsTemplates(List<CMSPageTemplate> allowedCmsTemplates) {
         this.allowedCmsTemplates = allowedCmsTemplates;
@@ -914,22 +904,18 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Setter for the field <code>allowedCrowdsourcingCampaigns</code>.
      *
-     * @param allowedCrowdsourcingCampaigns the allowedCrowdsourcingCampaigns to set
+
      */
     public void setAllowedCrowdsourcingCampaigns(List<Campaign> allowedCrowdsourcingCampaigns) {
         this.allowedCrowdsourcingCampaigns = allowedCrowdsourcingCampaigns;
     }
 
-    /**
-
-     */
+    
     public Set<String> getPrivilegesCopy() {
         return privilegesCopy;
     }
 
-    /**
-     * @param privilegesCopy the privilegesCopy to set
-     */
+    
     public void setPrivilegesCopy(Set<String> privilegesCopy) {
         this.privilegesCopy = privilegesCopy;
     }
@@ -938,9 +924,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
         return disclaimerScope;
     }
 
-    /**
-
-     */
+    
     @Deprecated(since = "2026.01")
     public Long getClientId() {
         return Optional.ofNullable(client).map(ClientApplication::getId).orElse(null);
@@ -951,9 +935,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
         return this.client;
     }
 
-    /**
-     * @param client the client to set
-     */
+    
     @Deprecated(since = "2026.01")
     public void setClient(ClientApplication client) {
         this.client = client;

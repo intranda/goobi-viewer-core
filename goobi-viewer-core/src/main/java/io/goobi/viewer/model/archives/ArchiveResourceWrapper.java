@@ -61,23 +61,17 @@ public class ArchiveResourceWrapper implements Serializable {
         return archiveResource.getResourceName();
     }
 
-    /**
-
-     */
+    
     public ArchiveResource getArchiveResource() {
         return archiveResource;
     }
 
-    /**
-
-     */
+    
     public CMSArchiveConfig getArchiveConfig() {
         return archiveConfig;
     }
 
-    /**
-     * @param archiveConfig the archiveConfig to set
-     */
+    
     public void setArchiveConfig(CMSArchiveConfig archiveConfig) {
         this.archiveConfig = archiveConfig;
     }

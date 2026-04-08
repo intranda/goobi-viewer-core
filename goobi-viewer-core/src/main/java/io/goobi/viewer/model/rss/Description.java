@@ -69,7 +69,7 @@ public class Description {
     /**
      * Setter for the field <code>image</code>.
      *
-     * @param image the image to set
+
      */
     public void setImage(String image) {
         this.image = image;
@@ -87,7 +87,7 @@ public class Description {
     /**
      * Setter for the field <code>text</code>.
      *
-     * @param description the description to set
+
      */
     public void setText(String description) {
         this.text = description;

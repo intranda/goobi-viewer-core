@@ -113,72 +113,52 @@ public class ThemeConfiguration {
         this.footerLinks = orig.footerLinks.stream().map(l -> new ThemeLink(l.getService(), l.getLinkUrl())).collect(Collectors.toList());
     }
 
-    /**
-
-     */
+    
     public String getLabel() {
         return label;
     }
 
-    /**
-     * @param label the label to set
-     */
+    
     public void setLabel(String label) {
         this.label = label;
     }
 
-    /**
-
-     */
+    
     public String getStyleSheet() {
         return styleSheet;
     }
 
-    /**
-     * @param styleSheet the styleSheet to set
-     */
+    
     public void setStyleSheet(String styleSheet) {
         this.styleSheet = styleSheet;
     }
 
-    /**
-
-     */
+    
     public List<ThemeLink> getSocialMediaUrls() {
         return socialMediaUrls;
     }
 
-    /**
-     * @param socialMediaUrls the socialMediaUrls to set
-     */
+    
     public void setSocialMediaUrls(List<ThemeLink> socialMediaUrls) {
         this.socialMediaUrls = socialMediaUrls;
     }
 
-    /**
-
-     */
+    
     public List<ThemeLink> getFooterLinks() {
         return footerLinks;
     }
 
-    /**
-     * @param footerLinks the footerLinks to set
-     */
+    
     public void setFooterLinks(List<ThemeLink> footerLinks) {
         this.footerLinks = footerLinks;
     }
 
-    /**
-
-     */
+    
     public String getName() {
         return name;
     }
 
-    /**
-
-     */
+    
     public Long getId() {
         return id;
     }

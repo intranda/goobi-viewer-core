@@ -139,10 +139,7 @@ public abstract class CMSContent {
         return this instanceof TranslatableCMSContent;
     }
 
-    /**
-     * 
-
-     */
+    
     public Long getId() {
         return this.id;
     }
@@ -167,10 +164,7 @@ public abstract class CMSContent {
         return this.getData((Integer) null, (Integer) null);
     }
 
-    /**
-     * 
-
-     */
+    
     public boolean isRequired() {
         return required;
     }

@@ -163,19 +163,14 @@ public class ArchiveBean implements Serializable {
         return getArchiveTree().getRootElement();
     }
 
-    /**
-     *
-
-     */
+    
     public ArchiveTree getArchiveTree() {
         // logger.trace("getArchiveTree: {} from ArchiveBean {}", archiveTree != null ?
         // archiveTree.toString() : "null", this.toString()); //NOSONAR Debug
         return archiveTree;
     }
 
-    /**
-
-     */
+    
     public CMSArchiveConfig getArchiveConfig() {
         return archiveConfig;
     }
@@ -299,16 +294,12 @@ public class ArchiveBean implements Serializable {
         }
     }
 
-    /**
-
-     */
+    
     public String getSearchString() {
         return searchString;
     }
 
-    /**
-     * @param searchString the searchString to set
-     */
+    
     public void setSearchString(String searchString) {
         logger.trace("setSearchString: {}", searchString);
         if (!Strings.CS.equals(this.searchString, searchString)) {
@@ -383,9 +374,7 @@ public class ArchiveBean implements Serializable {
         return Optional.ofNullable(getArchiveTree().getSelectedEntry()).orElse(getArchiveTree().getRootElement());
     }
 
-    /**
-
-     */
+    
     public DatabaseState getDatabaseState() {
         logger.trace("getDatabaseState"); //NOSONAR Debug
         if (isDatabaseLoaded()) {
@@ -404,16 +393,12 @@ public class ArchiveBean implements Serializable {
         return this.databaseLoaded;
     }
 
-    /**
-
-     */
+    
     public String getCurrentResource() {
         return currentResource;
     }
 
-    /**
-     * @param currentResource the currentResource to set
-     */
+    
     public void setCurrentResource(String currentResource) {
         this.currentResource = StringTools.decodeUrl(currentResource);
     }
@@ -585,7 +570,7 @@ public class ArchiveBean implements Serializable {
     /**
      * For tests.
      * 
-     * @param databaseLoaded the databaseLoaded to set
+
      */
     void setDatabaseLoaded(boolean databaseLoaded) {
         this.databaseLoaded = databaseLoaded;
@@ -594,7 +579,7 @@ public class ArchiveBean implements Serializable {
     /**
      * For tests.
      * 
-     * @param archiveTree the archiveTree to set
+
      */
     void setArchiveTree(ArchiveTree archiveTree) {
         this.archiveTree = archiveTree;

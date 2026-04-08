@@ -42,30 +42,22 @@ public class EmailRecipient {
         this.defaultRecipient = defaultRecipient;
     }
 
-    /**
-
-     */
+    
     public String getLabel() {
         return label;
     }
 
-    /**
-
-     */
+    
     public String getEmailAddress() {
         return emailAddress;
     }
 
-    /**
-
-     */
+    
     public boolean isDefaultRecipient() {
         return defaultRecipient;
     }
 
-    /**
-
-     */
+    
     public String getId() {
         return id;
     }

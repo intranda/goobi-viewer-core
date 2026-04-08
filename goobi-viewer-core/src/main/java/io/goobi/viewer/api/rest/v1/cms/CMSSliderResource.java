@@ -75,10 +75,7 @@ import io.goobi.viewer.solr.SolrTools;
 @ViewerRestServiceBinding
 public class CMSSliderResource {
 
-    /**
-     */
-
-    private static final Logger logger = LogManager.getLogger(CMSSliderResource.class);
+        private static final Logger logger = LogManager.getLogger(CMSSliderResource.class);
 
     private final CMSSlider slider;
 

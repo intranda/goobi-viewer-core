@@ -69,37 +69,27 @@ public class CMSComponentAttribute implements Serializable {
         this.booleanValue = orig.booleanValue;
     }
 
-    /**
-
-     */
+    
     public String getValue() {
         return value;
     }
 
-    /**
-
-     */
+    
     public String getName() {
         return name;
     }
 
-    /**
-
-     */
+    
     public String getLabel() {
         return label;
     }
 
-    /**
-
-     */
+    
     public String getType() {
         return type;
     }
 
-    /**
-
-     */
+    
     public List<Option> getOptions() {
         return options;
     }

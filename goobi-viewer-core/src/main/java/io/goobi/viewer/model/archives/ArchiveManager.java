@@ -618,9 +618,7 @@ public class ArchiveManager implements Serializable {
         return this.databaseState == DatabaseState.ERROR_NOT_REACHABLE;
     }
 
-    /**
-
-     */
+    
     public ArchiveParser getEadParser() {
         return eadParser;
     }

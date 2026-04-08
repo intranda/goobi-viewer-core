@@ -193,7 +193,7 @@ public class IpRange extends AbstractLicensee implements Serializable {
     /**
      * Setter for the field <code>id</code>.
      *
-     * @param id the id to set
+
      */
     public void setId(Long id) {
         this.id = id;
@@ -208,7 +208,7 @@ public class IpRange extends AbstractLicensee implements Serializable {
     /**
      * Setter for the field <code>name</code>.
      *
-     * @param name the name to set
+
      */
     public void setName(String name) {
         this.name = name;
@@ -226,7 +226,7 @@ public class IpRange extends AbstractLicensee implements Serializable {
     /**
      * Setter for the field <code>subnetMask</code>.
      *
-     * @param subnetMask the subnetMask to set
+
      */
     public void setSubnetMask(String subnetMask) {
         this.subnetMask = subnetMask;
@@ -244,7 +244,7 @@ public class IpRange extends AbstractLicensee implements Serializable {
     /**
      * Setter for the field <code>description</code>.
      *
-     * @param description the description to set
+
      */
     public void setDescription(String description) {
         this.description = description;

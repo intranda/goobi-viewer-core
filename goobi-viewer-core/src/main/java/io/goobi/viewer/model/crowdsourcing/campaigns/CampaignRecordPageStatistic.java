@@ -151,7 +151,7 @@ public class CampaignRecordPageStatistic implements Serializable {
     /**
      * Setter for the field <code>id</code>.
      *
-     * @param id the id to set
+
      */
     public void setId(Long id) {
         this.id = id;
@@ -169,7 +169,7 @@ public class CampaignRecordPageStatistic implements Serializable {
     /**
      * Setter for the field <code>dateCreated</code>.
      *
-     * @param dateCreated the dateCreated to set
+
      */
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
@@ -187,7 +187,7 @@ public class CampaignRecordPageStatistic implements Serializable {
     /**
      * Setter for the field <code>dateUpdated</code>.
      *
-     * @param dateUpdated the dateUpdated to set
+
      */
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
@@ -205,7 +205,7 @@ public class CampaignRecordPageStatistic implements Serializable {
     /**
      * Setter for the field <code>owner</code>.
      *
-     * @param owner the owner to set
+
      */
     public void setOwner(CampaignRecordStatistic owner) {
         this.owner = owner;
@@ -223,36 +223,28 @@ public class CampaignRecordPageStatistic implements Serializable {
     /**
      * Setter for the field <code>pi</code>.
      *
-     * @param pi the pi to set
+
      */
     public void setPi(String pi) {
         this.pi = pi;
     }
 
-    /**
-
-     */
+    
     public Integer getPage() {
         return page;
     }
 
-    /**
-     * @param page the page to set
-     */
+    
     public void setPage(Integer page) {
         this.page = page;
     }
 
-    /**
-
-     */
+    
     public String getKey() {
         return key;
     }
 
-    /**
-     * @param key the key to set
-     */
+    
     public void setKey(String key) {
         this.key = key;
     }
@@ -269,7 +261,7 @@ public class CampaignRecordPageStatistic implements Serializable {
     /**
      * Setter for the field <code>status</code>.
      *
-     * @param status the status to set
+
      */
     public void setStatus(CrowdsourcingStatus status) {
         this.status = status;
@@ -287,7 +279,7 @@ public class CampaignRecordPageStatistic implements Serializable {
     /**
      * Setter for the field <code>annotators</code>.
      *
-     * @param annotators the annotators to set
+
      */
     public void setAnnotators(List<User> annotators) {
         this.annotators = annotators;
@@ -305,7 +297,7 @@ public class CampaignRecordPageStatistic implements Serializable {
     /**
      * Setter for the field <code>reviewers</code>.
      *
-     * @param reviewers the reviewers to set
+
      */
     public void setReviewers(List<User> reviewers) {
         this.reviewers = reviewers;

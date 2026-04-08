@@ -233,23 +233,17 @@ public class AccessTicketBean implements Serializable {
         }
     }
 
-    /**
-
-     */
+    
     public String getTicketPassword() {
         return ticketPassword;
     }
 
-    /**
-     * @param ticketPassword the ticketPassword to set
-     */
+    
     public void setTicketPassword(String ticketPassword) {
         this.ticketPassword = ticketPassword;
     }
 
-    /**
-
-     */
+    
     public String getTicketEmail() {
         if (ticketEmail == null && userBean != null && userBean.getUser() != null) {
             ticketEmail = userBean.getUser().getEmail();
@@ -257,23 +251,17 @@ public class AccessTicketBean implements Serializable {
         return ticketEmail;
     }
 
-    /**
-     * @param ticketEmail the ticketEmail to set
-     */
+    
     public void setTicketEmail(String ticketEmail) {
         this.ticketEmail = ticketEmail;
     }
 
-    /**
-
-     */
+    
     public String getTicketRequestMessage() {
         return ticketRequestMessage;
     }
 
-    /**
-     * @param ticketRequestMessage the ticketRequestMessage to set
-     */
+    
     public void setTicketRequestMessage(String ticketRequestMessage) {
         this.ticketRequestMessage = ticketRequestMessage;
     }

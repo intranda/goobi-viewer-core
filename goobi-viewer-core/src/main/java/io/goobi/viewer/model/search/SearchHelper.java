@@ -199,8 +199,7 @@ public final class SearchHelper {
     private static final Pattern PATTERN_RANGE_PAIRS =
             Pattern.compile("(\\w++:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]++ TO [\\wäáàâöóòôüúùûëéèêßñ]++\\]\\))"); //NOSONAR
 
-    /**
-     */
+    
     private SearchHelper() {
         //
     }

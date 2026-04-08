@@ -63,7 +63,6 @@ public class BrowseTerm implements Serializable {
         this.translations = translations;
     }
 
-
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -72,7 +71,6 @@ public class BrowseTerm implements Serializable {
         result = prime * result + (term == null ? 0 : term.hashCode());
         return result;
     }
-
 
     /** {@inheritDoc} */
     @Override
@@ -115,9 +113,7 @@ public class BrowseTerm implements Serializable {
         return sortTerm;
     }
 
-    /**
-
-     */
+    
     public IMetadataValue getTranslations() {
         return translations;
     }
@@ -142,7 +138,7 @@ public class BrowseTerm implements Serializable {
     }
 
     /**
-     * @param hitCount the hitCount to set
+
      * @return this
      */
     public BrowseTerm setHitCount(long hitCount) {

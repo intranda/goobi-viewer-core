@@ -88,9 +88,7 @@ public class CmsSliderEditBean implements Serializable {
         }
     }
 
-    /**
-     * @param selectedSlider the selectedSlider to set
-     */
+    
     public void setSelectedSlider(CMSSlider selectedSlider) {
         this.selectedSlider = selectedSlider;
         readCategories();
@@ -130,9 +128,7 @@ public class CmsSliderEditBean implements Serializable {
         setSelectedSlider(DataManager.getInstance().getDao().getSlider(id));
     }
 
-    /**
-
-     */
+    
     public CMSSlider getSelectedSlider() {
         return selectedSlider;
     }
@@ -230,9 +226,7 @@ public class CmsSliderEditBean implements Serializable {
         }
     }
 
-    /**
-
-     */
+    
     public List<Selectable<CMSCategory>> getSelectableCategories() {
         return selectableCategories;
     }
@@ -259,16 +253,12 @@ public class CmsSliderEditBean implements Serializable {
         return "";
     }
 
-    /**
-
-     */
+    
     public String getCollectionField() {
         return collectionField;
     }
 
-    /**
-     * @param collectionField the collectionField to set
-     */
+    
     public void setCollectionField(String collectionField) {
         this.collectionField = collectionField;
         this.cmsCollections = null;

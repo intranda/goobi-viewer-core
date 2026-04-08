@@ -128,7 +128,7 @@ public class IIIFSearchBuilder {
     /**
      * Setter for the field <code>motivation</code>.
      *
-     * @param motivation the motivation to set
+
      * @return a {@link io.goobi.viewer.model.iiif.search.IIIFSearchBuilder} object.
      */
     public IIIFSearchBuilder setMotivation(final String motivation) {
@@ -157,7 +157,7 @@ public class IIIFSearchBuilder {
     /**
      * Setter for the field <code>user</code>.
      *
-     * @param user the user to set
+
      * @return a {@link io.goobi.viewer.model.iiif.search.IIIFSearchBuilder} object.
      */
     public IIIFSearchBuilder setUser(String user) {
@@ -177,7 +177,7 @@ public class IIIFSearchBuilder {
     /**
      * Setter for the field <code>date</code>.
      *
-     * @param date the date to set
+
      * @return a {@link io.goobi.viewer.model.iiif.search.IIIFSearchBuilder} object.
      */
     public IIIFSearchBuilder setDate(String date) {
@@ -206,7 +206,7 @@ public class IIIFSearchBuilder {
     /**
      * Setter for the field <code>min</code>.
      *
-     * @param min the min to set
+
      * @return a {@link io.goobi.viewer.model.iiif.search.IIIFSearchBuilder} object.
      */
     public IIIFSearchBuilder setMin(String min) {
@@ -217,7 +217,7 @@ public class IIIFSearchBuilder {
     /**
      * Setter for the field <code>page</code>.
      *
-     * @param page the page to set
+
      * @return a {@link io.goobi.viewer.model.iiif.search.IIIFSearchBuilder} object.
      */
     public IIIFSearchBuilder setPage(Integer page) {
@@ -248,7 +248,7 @@ public class IIIFSearchBuilder {
     /**
      * Setter for the field <code>hitsPerPage</code>.
      *
-     * @param hitsPerPage the hitsPerPage to set
+
      * @return a {@link io.goobi.viewer.model.iiif.search.IIIFSearchBuilder} object.
      */
     public IIIFSearchBuilder setHitsPerPage(int hitsPerPage) {

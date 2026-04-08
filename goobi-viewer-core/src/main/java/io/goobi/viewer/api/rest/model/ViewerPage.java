@@ -76,30 +76,22 @@ public class ViewerPage {
                 .orElse(null);
     }
 
-    /**
-
-     */
+    
     public URI getLink() {
         return link;
     }
 
-    /**
-
-     */
+    
     public IContent getImage() {
         return image;
     }
 
-    /**
-
-     */
+    
     public IMetadataValue getLabel() {
         return label;
     }
 
-    /**
-
-     */
+    
     public long getOrder() {
         return order;
     }

@@ -756,7 +756,7 @@ public class AdminBean implements Serializable {
     /**
      * Setter for the field <code>currentUser</code>.
      *
-     * @param currentUser the currentUser to set
+
      */
     public void setCurrentUser(User currentUser) {
         this.currentUser = currentUser;
@@ -838,7 +838,7 @@ public class AdminBean implements Serializable {
     /**
      * Setter for the field <code>currentRole</code>.
      *
-     * @param currentRole the currentRole to set
+
      */
     public void setCurrentRole(Role currentRole) {
         this.currentRole = currentRole;
@@ -865,7 +865,7 @@ public class AdminBean implements Serializable {
     /**
      * Setter for the field <code>currentUserRole</code>.
      *
-     * @param currentUserRole the currentUserRole to set
+
      */
     public void setCurrentUserRole(UserRole currentUserRole) {
         this.currentUserRole = currentUserRole;
@@ -883,7 +883,7 @@ public class AdminBean implements Serializable {
     /**
      * Setter for the field <code>currentIpRange</code>.
      *
-     * @param currentIpRange the currentIpRange to set
+
      */
     public void setCurrentIpRange(IpRange currentIpRange) {
         this.currentIpRange = currentIpRange;
@@ -944,7 +944,7 @@ public class AdminBean implements Serializable {
     /**
      * Setter for the field <code>currentPassword</code>.
      *
-     * @param currentPassword the currentPassword to set
+
      */
     public void setCurrentPassword(String currentPassword) {
         this.currentPassword = currentPassword;
@@ -962,7 +962,7 @@ public class AdminBean implements Serializable {
     /**
      * Setter for the field <code>passwordOne</code>.
      *
-     * @param passwordOne the passwordOne to set
+
      */
     public void setPasswordOne(String passwordOne) {
         this.passwordOne = passwordOne;
@@ -980,7 +980,7 @@ public class AdminBean implements Serializable {
     /**
      * Setter for the field <code>passwordTwo</code>.
      *
-     * @param passwordTwo the passwordTwo to set
+
      */
     public void setPasswordTwo(String passwordTwo) {
         this.passwordTwo = passwordTwo;
@@ -998,7 +998,7 @@ public class AdminBean implements Serializable {
     /**
      * Setter for the field <code>emailConfirmation</code>.
      *
-     * @param emailConfirmation the emailConfirmation to set
+
      */
     public void setEmailConfirmation(String emailConfirmation) {
         this.emailConfirmation = emailConfirmation;
@@ -1016,7 +1016,7 @@ public class AdminBean implements Serializable {
     /**
      * Setter for the field <code>deleteUserContributions</code>.
      *
-     * @param deleteUserContributions the deleteUserContributions to set
+
      */
     public void setDeleteUserContributions(boolean deleteUserContributions) {
         logger.trace("setDeleteUserContributions: {}", deleteUserContributions);
@@ -1309,7 +1309,7 @@ public class AdminBean implements Serializable {
     /**
      * Setter for the field <code>currentTranslationGroup</code>.
      *
-     * @param currentTranslationGroup the currentTranslationGroup to set
+
      */
     public void setCurrentTranslationGroup(TranslationGroup currentTranslationGroup) {
         this.currentTranslationGroup = currentTranslationGroup;
@@ -1463,7 +1463,7 @@ public class AdminBean implements Serializable {
     /**
      * Setter for the field <code>translationGroupsEditorSession</code>.
      *
-     * @param translationGroupsEditorSession the translationGroupsEditorSession to set
+
      */
     public static void setTranslationGroupsEditorSession(String translationGroupsEditorSession) {
         logger.trace("setTranslationGroupsEditorSession: {}", translationGroupsEditorSession);
@@ -1498,7 +1498,7 @@ public class AdminBean implements Serializable {
     /**
      * Setter for the field <code>uploadedAvatarFile</code>.
      *
-     * @param uploadedAvatarFile the uploadedAvatarFile to set
+
      */
     public void setUploadedAvatarFile(Part uploadedAvatarFile) {
         this.uploadedAvatarFile = uploadedAvatarFile;
@@ -1513,9 +1513,7 @@ public class AdminBean implements Serializable {
         return uploadedAvatarFile;
     }
 
-    /**
-
-     */
+    
     public MaintenanceMode getMaintenanceMode() {
         if (this.maintenanceMode == null) {
             try {
@@ -1527,9 +1525,7 @@ public class AdminBean implements Serializable {
         return maintenanceMode;
     }
 
-    /**
-     * @param maintenanceMode the maintenanceMode to set
-     */
+    
     public void setMaintenanceMode(MaintenanceMode maintenanceMode) {
         this.maintenanceMode = maintenanceMode;
     }

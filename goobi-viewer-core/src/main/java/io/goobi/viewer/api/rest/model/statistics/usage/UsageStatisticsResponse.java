@@ -46,16 +46,12 @@ public class UsageStatisticsResponse {
         this.values = values;
     }
 
-    /**
-
-     */
+    
     public StatisticsSummary getSummary() {
         return summary;
     }
 
-    /**
-
-     */
+    
     public List<StatisticsSummary> getValues() {
         return values;
     }

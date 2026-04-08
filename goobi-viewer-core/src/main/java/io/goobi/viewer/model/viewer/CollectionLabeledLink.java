@@ -35,8 +35,7 @@ import io.goobi.viewer.model.viewer.collections.CollectionView;
  */
 public class CollectionLabeledLink extends CompoundLabeledLink {
 
-    /**
-     */
+    
     private static final long serialVersionUID = -318199786884811710L;
     private final CollectionView collection;
 

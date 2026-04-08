@@ -70,16 +70,12 @@ public class BearerTokenManager {
         return toPurge.size();
     }
 
-    /**
-
-     */
+    
     public Map<String, AuthAccessToken2> getTokenMap() {
         return tokenMap;
     }
 
-    /**
-
-     */
+    
     public Map<String, HttpSession> getTokenSessionMap() {
         return tokenSessionMap;
     }

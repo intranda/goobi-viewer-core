@@ -657,7 +657,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * Setter for the field <code>fulltextAvailable</code>.
      *
-     * @param fulltextAvailable the fulltextAvailable to set
+
      */
     public void setFulltextAvailable(boolean fulltextAvailable) {
         this.fulltextAvailable = fulltextAvailable;
@@ -1006,30 +1006,22 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         return ret;
     }
 
-    /**
-
-     */
+    
     public List<ShapeMetadata> getShapeMetadata() {
         return shapeMetadata;
     }
 
-    /**
-     * @param shapeMetadata the shapeMetadata to set
-     */
+    
     public void setShapeMetadata(List<ShapeMetadata> shapeMetadata) {
         this.shapeMetadata = shapeMetadata;
     }
 
-    /**
-
-     */
+    
     public boolean isRtl() {
         return rtl;
     }
 
-    /**
-     * @param rtl the rtl to set
-     */
+    
     public void setRtl(boolean rtl) {
         this.rtl = rtl;
     }
@@ -1070,30 +1062,22 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             this.pageNo = pageNo;
         }
 
-        /**
-
-         */
+        
         public String getLabel() {
             return label;
         }
 
-        /**
-
-         */
+        
         public String getShape() {
             return shape;
         }
 
-        /**
-
-         */
+        
         public String getCoords() {
             return coords;
         }
 
-        /**
-
-         */
+        
         public String getUrl() {
             PageType pageType =
                     Optional.ofNullable(BeanUtils.getNavigationHelper()).map(NavigationHelper::getCurrentPageType).orElse(PageType.viewImage);
@@ -1113,17 +1097,13 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             return sbUrl.toString();
         }
 
-        /**
-
-         */
+        
         public String getLogId() {
 
             return logId;
         }
 
-        /**
-
-         */
+        
         public int getPageNo() {
             return pageNo;
         }

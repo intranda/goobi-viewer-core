@@ -143,37 +143,27 @@ public class PersistentCMSComponent implements IPolyglott, Serializable, Compara
         this.id = id;
     }
 
-    /**
-
-     */
+    
     public ContentItemPublicationState getPublicationState() {
         return publicationState;
     }
 
-    /**
-     * @param publicationState the publicationState to set
-     */
+    
     public void setPublicationState(ContentItemPublicationState publicationState) {
         this.publicationState = publicationState;
     }
 
-    /**
-
-     */
+    
     public Integer getOrder() {
         return order;
     }
 
-    /**
-     * @param order the order to set
-     */
+    
     public void setOrder(Integer order) {
         this.order = order;
     }
 
-    /**
-
-     */
+    
     public List<CMSContent> getContentItems() {
         return contentItems;
     }

@@ -101,9 +101,7 @@ public class ClientApplicationManager {
         return allClients;
     }
 
-    /**
-     * @param allClients the allClients to set
-     */
+    
     public void setAllClients(ClientApplication allClients) {
         this.allClients = allClients;
     }

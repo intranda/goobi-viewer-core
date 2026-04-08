@@ -125,58 +125,42 @@ public class UserJsonFacade {
         this(null, name, null, 0, false, false, true, false);
     }
 
-    /**
-
-     */
+    
     public Long getUserId() {
         return userId;
     }
 
-    /**
-
-     */
+    
     public String getName() {
         return name;
     }
 
-    /**
-
-     */
+    
     public String getAvatar() {
         return avatar;
     }
 
-    /**
-
-     */
+    
     public long getScore() {
         return score;
     }
 
-    /**
-
-     */
+    
     public boolean isActive() {
         return active;
     }
 
-    /**
-
-     */
+    
     public boolean isSuspended() {
         return suspended;
     }
 
-    /**
-
-     */
+    
     public boolean isAnonymous() {
         return anonymous;
     }
 
-    /**
-
-     */
+    
     public boolean isSuperuser() {
         return superuser;
     }

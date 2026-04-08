@@ -81,9 +81,7 @@ public class CMSSingleRecordNote extends CMSRecordNote {
         }
     }
 
-    /**
-
-     */
+    
     public String getRecordPi() {
         return recordPi;
     }
@@ -92,9 +90,7 @@ public class CMSSingleRecordNote extends CMSRecordNote {
         this.recordPi = recordPi;
     }
 
-    /**
-
-     */
+    
     public TranslatedText getRecordTitle() {
         return recordTitle;
     }

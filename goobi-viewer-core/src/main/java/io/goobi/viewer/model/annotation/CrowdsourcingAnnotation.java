@@ -40,8 +40,7 @@ public class CrowdsourcingAnnotation extends PersistentAnnotation {
 
     public static final Set<String> VALID_COLUMNS_FOR_ORDER_BY = new HashSet<>(Arrays.asList("id", "dateCreated", "dateModified"));
 
-    /**
-     */
+    
     public CrowdsourcingAnnotation() {
         super();
     }

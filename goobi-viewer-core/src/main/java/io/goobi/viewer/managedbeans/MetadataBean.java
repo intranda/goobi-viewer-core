@@ -87,7 +87,7 @@ public class MetadataBean {
     /**
      * Required setter for ManagedProperty injection.
      *
-     * @param activeDocumentBean the activeDocumentBean to set
+
      */
     public void setActiveDocumentBean(ActiveDocumentBean activeDocumentBean) {
         this.activeDocumentBean = activeDocumentBean;
@@ -354,9 +354,7 @@ public class MetadataBean {
         return DataManager.getInstance().getConfiguration().getMetadataViews();
     }
 
-    /**
-
-     */
+    
     public String getMetadataViewUrl() {
         return metadataViewUrl;
     }
@@ -410,9 +408,7 @@ public class MetadataBean {
         activeMetadataView = null;
     }
 
-    /**
-
-     */
+    
     public MetadataView getActiveMetadataView() {
         return activeMetadataView;
     }

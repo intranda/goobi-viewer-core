@@ -91,16 +91,12 @@ public class CMSMultiRecordNote extends CMSRecordNote {
         }
     }
 
-    /**
-
-     */
+    
     public String getQuery() {
         return query;
     }
 
-    /**
-     * @param query the query to set
-     */
+    
     public void setQuery(String query) {
         if (!Strings.CS.equals(query, this.query)) {
             this.records = null;

@@ -148,16 +148,12 @@ public abstract class TranslationGroupItem {
         return TranslationStatus.PARTIAL;
     }
 
-    /**
-
-     */
+    
     public String getKey() {
         return key;
     }
 
-    /**
-
-     */
+    
     public boolean isRegex() {
         return regex;
     }

@@ -776,7 +776,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Setter for unit tests.
      * 
-     * @param dao the dao to set
+
      */
     void setDao(IDAO dao) {
         this.dao = dao;
@@ -785,7 +785,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Setter for unit tests.
      * 
-     * @param templateManager the templateManager to set
+
      */
     void setTemplateManager(CMSTemplateManager templateManager) {
         this.templateManager = templateManager;
@@ -794,7 +794,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Setter for unit tests.
      * 
-     * @param userBean the userBean to set
+
      */
     void setUserBean(UserBean userBean) {
         this.userBean = userBean;
@@ -803,7 +803,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Setter for unit tests.
      * 
-     * @param widgetsBean the widgetsBean to set
+
      */
     void setWidgetsBean(CMSSidebarWidgetsBean widgetsBean) {
         this.widgetsBean = widgetsBean;
@@ -821,7 +821,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Setter for unit tests.
      * 
-     * @param collectionViewBean the collectionViewBean to set
+
      */
     void setCollectionViewBean(CollectionViewBean collectionViewBean) {
         this.collectionViewBean = collectionViewBean;
@@ -830,7 +830,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Setter for unit tests.
      * 
-     * @param facesContext the facesContext to set
+
      */
     void setFacesContext(FacesContext facesContext) {
         this.facesContext = facesContext;

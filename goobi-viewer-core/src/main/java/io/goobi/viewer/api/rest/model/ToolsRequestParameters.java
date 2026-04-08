@@ -35,30 +35,22 @@ public class ToolsRequestParameters extends TaskParameter {
     @Schema(description = "Value of the SOLR field 'DATAREPOSITORY' of the given record", example = "/opt/digiverso/viewer/data/1")
     private String dataRepositoryName;
 
-    /**
-
-     */
+    
     public String getPi() {
         return pi;
     }
 
-    /**
-     * @param pi the pi to set
-     */
+    
     public void setPi(String pi) {
         this.pi = pi;
     }
 
-    /**
-
-     */
+    
     public String getDataRepositoryName() {
         return dataRepositoryName;
     }
 
-    /**
-     * @param dataRepositoryName the dataRepositoryName to set
-     */
+    
     public void setDataRepositoryName(String dataRepositoryName) {
         this.dataRepositoryName = dataRepositoryName;
     };

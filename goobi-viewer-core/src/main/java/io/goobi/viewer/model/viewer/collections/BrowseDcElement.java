@@ -281,16 +281,12 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
         return number;
     }
 
-    /**
-
-     */
+    
     public String getSingleRecordUrl() {
         return singleRecordUrl;
     }
 
-    /**
-     * @param singleRecordUrl the singleRecordUrl to set
-     */
+    
     public void setSingleRecordUrl(String singleRecordUrl) {
         this.singleRecordUrl = singleRecordUrl;
     }
@@ -439,7 +435,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     /**
      * Setter for the field <code>info</code>.
      *
-     * @param info the info to set
+
      */
     public void setInfo(BrowseElementInfo info) {
         this.info = info;
@@ -495,16 +491,12 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
         return null;
     }
 
-    /**
-
-     */
+    
     public List<String> getFacetValues() {
         return facetValues;
     }
 
-    /**
-     * @param facetValues the facetValues to set
-     */
+    
     public void setFacetValues(Collection<String> facetValues) {
         this.facetValues = new ArrayList<>(facetValues);
     }

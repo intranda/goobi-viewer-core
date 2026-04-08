@@ -96,7 +96,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     /**
      * Sets the current map to a clone of the given map.
      *
-     * @param currentMap the currentMap to set
+
      */
     public void setCurrentMap(GeoMap currentMap) {
         this.currentMap = new GeoMap(currentMap);
@@ -230,7 +230,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     /**
      * Setter for the field <code>selectedLanguage</code>.
      *
-     * @param selectedLanguage the selectedLanguage to set
+
      */
     public void setSelectedLanguage(Locale selectedLanguage) {
         this.selectedLanguage = selectedLanguage;

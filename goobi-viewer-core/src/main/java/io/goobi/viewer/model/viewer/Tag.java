@@ -85,7 +85,7 @@ public class Tag implements Comparable<Tag>, Serializable {
     /**
      * Setter for the field <code>size</code>.
      *
-     * @param size the size to set
+
      */
     public void setSize(long size) {
         this.size = size;
@@ -103,7 +103,7 @@ public class Tag implements Comparable<Tag>, Serializable {
     /**
      * Setter for the field <code>name</code>.
      *
-     * @param name the name to set
+
      */
     public void setName(String name) {
         this.name = name;
@@ -143,7 +143,7 @@ public class Tag implements Comparable<Tag>, Serializable {
     /**
      * Setter for the field <code>field</code>.
      *
-     * @param field the field to set
+
      */
     public void setField(String field) {
         this.field = field;

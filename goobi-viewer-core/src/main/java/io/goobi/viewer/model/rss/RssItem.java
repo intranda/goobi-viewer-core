@@ -78,7 +78,7 @@ public class RssItem implements Comparable<RssItem>, IAccessDeniedThumbnailOutpu
     /**
      * Setter for the field <code>title</code>.
      *
-     * @param title the title to set
+
      */
     public void setTitle(String title) {
         this.title = title;
@@ -96,7 +96,7 @@ public class RssItem implements Comparable<RssItem>, IAccessDeniedThumbnailOutpu
     /**
      * Setter for the field <code>link</code>.
      *
-     * @param link the link to set
+
      */
     public void setLink(String link) {
         this.link = link;
@@ -114,7 +114,7 @@ public class RssItem implements Comparable<RssItem>, IAccessDeniedThumbnailOutpu
     /**
      * Setter for the field <code>description</code>.
      *
-     * @param description the description to set
+
      */
     public void setDescription(Description description) {
         this.description = description;
@@ -132,7 +132,7 @@ public class RssItem implements Comparable<RssItem>, IAccessDeniedThumbnailOutpu
     /**
      * Setter for the field <code>pubDate</code>.
      *
-     * @param pubDate the pubDate to set
+
      */
     public void setPubDate(Date pubDate) {
         this.pubDate = pubDate;
@@ -150,7 +150,7 @@ public class RssItem implements Comparable<RssItem>, IAccessDeniedThumbnailOutpu
     /**
      * Setter for the field <code>creator</code>.
      *
-     * @param creator the creator to set
+
      */
     public void setCreator(String creator) {
         this.creator = creator;
@@ -159,7 +159,7 @@ public class RssItem implements Comparable<RssItem>, IAccessDeniedThumbnailOutpu
     /**
      * Setter for the field <code>docType</code>.
      *
-     * @param docType the docType to set
+
      */
     public void setDocType(String docType) {
         this.docType = docType;
@@ -174,9 +174,7 @@ public class RssItem implements Comparable<RssItem>, IAccessDeniedThumbnailOutpu
         return docType;
     }
 
-    /**
-     * @param accessPermissionThumbnail the accessPermissionThumbnail to set
-     */
+    
     public void setAccessPermissionThumbnail(AccessPermission accessPermissionThumbnail) {
         this.accessPermissionThumbnail = accessPermissionThumbnail;
     }

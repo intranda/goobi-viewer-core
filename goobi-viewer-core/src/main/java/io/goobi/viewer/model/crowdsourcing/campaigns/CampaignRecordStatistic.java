@@ -168,7 +168,7 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Setter for the field <code>id</code>.
      *
-     * @param id the id to set
+
      */
     public void setId(Long id) {
         this.id = id;
@@ -186,7 +186,7 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Setter for the field <code>dateCreated</code>.
      *
-     * @param dateCreated the dateCreated to set
+
      */
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
@@ -204,7 +204,7 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Setter for the field <code>dateUpdated</code>.
      *
-     * @param dateUpdated the dateUpdated to set
+
      */
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
@@ -222,7 +222,7 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Setter for the field <code>owner</code>.
      *
-     * @param owner the owner to set
+
      */
     public void setOwner(Campaign owner) {
         this.owner = owner;
@@ -240,22 +240,18 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Setter for the field <code>pi</code>.
      *
-     * @param pi the pi to set
+
      */
     public void setPi(String pi) {
         this.pi = pi;
     }
 
-    /**
-
-     */
+    
     public Map<String, CampaignRecordPageStatistic> getPageStatistics() {
         return pageStatistics;
     }
 
-    /**
-     * @param pageStatistics the pageStatistics to set
-     */
+    
     public void setPageStatistics(Map<String, CampaignRecordPageStatistic> pageStatistics) {
         this.pageStatistics = pageStatistics;
     }
@@ -272,7 +268,7 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Setter for the field <code>status</code>.
      *
-     * @param status the status to set
+
      */
     public void setStatus(CrowdsourcingStatus status) {
         this.status = status;
@@ -290,7 +286,7 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Setter for the field <code>annotators</code>.
      *
-     * @param annotators the annotators to set
+
      */
     public void setAnnotators(List<User> annotators) {
         this.annotators = annotators;
@@ -308,7 +304,7 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Setter for the field <code>reviewers</code>.
      *
-     * @param reviewers the reviewers to set
+
      */
     public void setReviewers(List<User> reviewers) {
         this.reviewers = reviewers;
@@ -354,9 +350,7 @@ public class CampaignRecordStatistic implements Serializable {
         }
     }
 
-    /**
-
-     */
+    
     public Integer getTotalPages() {
         if (totalPages == null) {
             this.totalPages = calculateTotalPages();
@@ -364,9 +358,7 @@ public class CampaignRecordStatistic implements Serializable {
         return totalPages;
     }
 
-    /**
-     * @param totalPages the totalPages to set
-     */
+    
     public void setTotalPages(Integer totalPages) {
         this.totalPages = totalPages;
     }

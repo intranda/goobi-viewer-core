@@ -213,9 +213,7 @@ public class CMSSidebarElement implements Serializable {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
+    
     public void setId(Long id) {
         this.id = id;
     }
@@ -229,9 +227,7 @@ public class CMSSidebarElement implements Serializable {
         return ownerPage;
     }
 
-    /**
-     * @param ownerPage the ownerPage to set
-     */
+    
     public void setOwnerPage(CMSPage ownerPage) {
         this.ownerPage = ownerPage;
     }
@@ -253,9 +249,7 @@ public class CMSSidebarElement implements Serializable {
         return order;
     }
 
-    /**
-     * @param order the order to set
-     */
+    
     public void setOrder(int order) {
         this.order = order;
     }
@@ -269,9 +263,7 @@ public class CMSSidebarElement implements Serializable {
         return generationType;
     }
 
-    /**
-     * @param generationType the generationType to set
-     */
+    
     public void setGenerationType(WidgetGenerationType generationType) {
         this.generationType = generationType;
     }
@@ -285,9 +277,7 @@ public class CMSSidebarElement implements Serializable {
         return contentType;
     }
 
-    /**
-     * @param contentType the contentType to set
-     */
+    
     public void setContentType(WidgetContentType contentType) {
         this.contentType = contentType;
     }

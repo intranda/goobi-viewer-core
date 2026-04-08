@@ -174,16 +174,12 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
         this.addUserToGroups = addUserToGroups;
     }
 
-    /**
-
-     */
+    
     public String getRedirectUrl() {
         return redirectUrl;
     }
 
-    /**
-     * @param redirectUrl the redirectUrl to set
-     */
+    
     public void setRedirectUrl(String redirectUrl) {
         logger.trace("setRedirectUrl: {}", redirectUrl);
         this.redirectUrl = redirectUrl;

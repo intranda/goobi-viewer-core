@@ -93,9 +93,7 @@ public class CreateRecordBean implements Serializable {
                 .resolve(uuid + "_tif");
     }
 
-    /**
-
-     */
+    
     public Path getTempImagesFolder() {
         return tempImagesFolder;
     }
@@ -108,100 +106,72 @@ public class CreateRecordBean implements Serializable {
         return this.uuid;
     }
 
-    /**
-
-     */
+    
     public String getTitle() {
         return title;
     }
 
-    /**
-     * @param title the title to set
-     */
+    
     public void setTitle(String title) {
         this.title = title;
     }
 
-    /**
-
-     */
+    
     public String getDescription() {
         return description;
     }
 
-    /**
-     * @param description the description to set
-     */
+    
     public void setDescription(String description) {
         this.description = description;
     }
 
-    /**
-
-     */
+    
     public String getLanguage() {
         return language;
     }
 
-    /**
-     * @param language the language to set
-     */
+    
     public void setLanguage(String language) {
         this.language = language;
     }
 
-    /**
-
-     */
+    
     public String getDate() {
         return date;
     }
 
-    /**
-     * @param date the date to set
-     */
+    
     public void setDate(String date) {
         this.date = date;
     }
 
-    /**
-
-     */
+    
     public String getCreator() {
         return creator;
     }
 
-    /**
-     * @param creator the creator to set
-     */
+    
     public void setCreator(String creator) {
         this.creator = creator;
     }
 
-    /**
-
-     */
+    
     public String getCollection() {
         return collection;
     }
 
-    /**
-     * @param collection the collection to set
-     */
+    
     public void setCollection(String collection) {
         this.collection = collection;
     }
 
-    /**
-
-     */
+    
     public String getAccessCondition() {
         return accessCondition;
     }
 
-    /**
-     * @param accessCondition the accessCondition to set
-     */
+    
     public void setAccessCondition(String accessCondition) {
         this.accessCondition = accessCondition;
     }
@@ -213,9 +183,7 @@ public class CreateRecordBean implements Serializable {
         return license;
     }
 
-    /**
-     * @param license the license to set
-     */
+    
     public void setLicense(String license) {
         this.license = license;
     }

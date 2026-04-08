@@ -72,44 +72,32 @@ public class GeoMapFeature {
         this.geoJson = new Feature(geometry);
     }
 
-    /**
-
-     */
+    
     public IMetadataValue getTitle() {
         return title;
     }
 
-    /**
-     * @param title the title to set
-     */
+    
     public void setTitle(IMetadataValue title) {
         this.title = title;
     }
 
-    /**
-
-     */
+    
     public IMetadataValue getDescription() {
         return description;
     }
 
-    /**
-     * @param description the description to set
-     */
+    
     public void setDescription(IMetadataValue description) {
         this.description = description;
     }
 
-    /**
-
-     */
+    
     public String getLink() {
         return link;
     }
 
-    /**
-     * @param link the link to set
-     */
+    
     public void setLink(String link) {
         this.link = link;
     }
@@ -122,16 +110,12 @@ public class GeoMapFeature {
         this.filterQuery = filterQuery;
     }
 
-    /**
-     * @param documentId the documentId to set
-     */
+    
     public void setDocumentId(String documentId) {
         this.documentId = documentId;
     }
 
-    /**
-
-     */
+    
     public String getDocumentId() {
         return documentId;
     }
@@ -144,30 +128,22 @@ public class GeoMapFeature {
         this.pageNo = pageNo;
     }
 
-    /**
-
-     */
+    
     public String getJson() {
         return FeatureConverter.toStringValue(this.geoJson);
     }
 
-    /**
-     * @param json the json to set
-     */
+    
     public void setJson(String json) {
         this.geoJson = FeatureConverter.toFeature(json);
     }
 
-    /**
-
-     */
+    
     public int getCount() {
         return count;
     }
 
-    /**
-     * @param count the count to set
-     */
+    
     public void setCount(int count) {
         this.count = count;
     }

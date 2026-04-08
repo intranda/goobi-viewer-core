@@ -109,7 +109,7 @@ public class CMSMediaItemMetadata implements Serializable {
     /**
      * Setter for the field <code>language</code>.
      *
-     * @param language the language to set
+
      */
     public void setLanguage(String language) {
         this.language = language;
@@ -127,7 +127,7 @@ public class CMSMediaItemMetadata implements Serializable {
     /**
      * Setter for the field <code>name</code>.
      *
-     * @param name the name to set
+
      */
     public void setName(String name) {
         this.name = name;
@@ -145,22 +145,18 @@ public class CMSMediaItemMetadata implements Serializable {
     /**
      * Setter for the field <code>description</code>.
      *
-     * @param description the description to set
+
      */
     public void setDescription(String description) {
         this.description = description;
     }
 
-    /**
-
-     */
+    
     public String getAlternativeText() {
         return alternativeText;
     }
 
-    /**
-     * @param alternativeText the alternativeText to set
-     */
+    
     public void setAlternativeText(String alternativeText) {
         this.alternativeText = alternativeText;
     }

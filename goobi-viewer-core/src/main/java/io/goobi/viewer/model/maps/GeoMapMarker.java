@@ -82,170 +82,122 @@ public class GeoMapMarker {
     public GeoMapMarker() {
     }
 
-    /**
-
-     */
+    
     public String getIcon() {
         return icon;
     }
 
-    /**
-     * @param icon the icon to set
-     */
+    
     public void setIcon(String icon) {
         this.icon = icon;
     }
 
-    /**
-
-     */
+    
     public String getMarkerColor() {
         return markerColor;
     }
 
-    /**
-     * @param markerColor the markerColor to set
-     */
+    
     public void setMarkerColor(String markerColor) {
         this.markerColor = markerColor;
     }
 
-    /**
-
-     */
+    
     public String getShape() {
         return shape;
     }
 
-    /**
-     * @param shape the shape to set
-     */
+    
     public void setShape(String shape) {
         this.shape = shape;
     }
 
-    /**
-
-     */
+    
     public String getExtraClasses() {
         return extraClasses;
     }
 
-    /**
-     * @param extraClasses the extraClasses to set
-     */
+    
     public void setExtraClasses(String extraClasses) {
         this.extraClasses = extraClasses;
     }
 
-    /**
-
-     */
+    
     public String getPrefix() {
         return prefix;
     }
 
-    /**
-     * @param prefix the prefix to set
-     */
+    
     public void setPrefix(String prefix) {
         this.prefix = prefix;
     }
 
-    /**
-
-     */
+    
     public String getIconColor() {
         return iconColor;
     }
 
-    /**
-     * @param iconColor the iconColor to set
-     */
+    
     public void setIconColor(String iconColor) {
         this.iconColor = iconColor;
     }
 
-    /**
-
-     */
+    
     public int getIconRotate() {
         return iconRotate;
     }
 
-    /**
-     * @param iconRotation the iconRotation to set
-     */
+    
     public void setIconRotate(int iconRotation) {
         this.iconRotate = iconRotation;
     }
 
-    /**
-
-     */
+    
     public String getNumber() {
         return number;
     }
 
-    /**
-     * @param number the number to set
-     */
+    
     public void setNumber(String number) {
         this.number = number;
     }
 
-    /**
-
-     */
+    
     public boolean isSvg() {
         return svg;
     }
 
-    /**
-     * @param svg the svg to set
-     */
+    
     public void setSvg(boolean svg) {
         this.svg = svg;
     }
 
-    /**
-
-     */
+    
     public String getName() {
         return name;
     }
 
-    /**
-     * @param name the name to set
-     */
+    
     public void setName(String name) {
         this.name = name;
     }
 
-    /**
-
-     */
+    
     public boolean isShadow() {
         return shadow;
     }
 
-    /**
-     * @param shadow the shadow to set
-     */
+    
     public void setShadow(boolean shadow) {
         this.shadow = shadow;
     }
 
-    /**
-
-     */
+    
     public String getHighlightColor() {
         return highlightColor;
     }
 
-    /**
-     * @param highlightColor the highlightColor to set
-     */
+    
     public void setHighlightColor(String highlightColor) {
         this.highlightColor = highlightColor;
     }
@@ -260,30 +212,22 @@ public class GeoMapMarker {
         return mapper.readValue(json, GeoMapMarker.class);
     }
 
-    /**
-     * @param useDefault the useDefault to set
-     */
+    
     public void setUseDefault(boolean useDefault) {
         this.useDefault = useDefault;
     }
 
-    /**
-
-     */
+    
     public boolean isUseDefault() {
         return useDefault;
     }
 
-    /**
-     * @param highlightIcon the highlightIcon to set
-     */
+    
     public void setHighlightIcon(String highlightIcon) {
         this.highlightIcon = highlightIcon;
     }
 
-    /**
-
-     */
+    
     public String getHighlightIcon() {
         return highlightIcon;
     }

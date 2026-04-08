@@ -112,114 +112,82 @@ public class CMSSlider implements Serializable {
         this.sourceType = type;
     }
 
-    /**
-
-     */
+    
     public Long getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
+    
     public void setId(Long id) {
         this.id = id;
     }
 
-    /**
-
-     */
+    
     public String getName() {
         return name;
     }
 
-    /**
-     * @param name the name to set
-     */
+    
     public void setName(String name) {
         this.name = name;
     }
 
-    /**
-
-     */
+    
     public String getDescription() {
         return description;
     }
 
-    /**
-     * @param description the description to set
-     */
+    
     public void setDescription(String description) {
         this.description = description;
     }
 
-    /**
-
-     */
+    
     public String getSolrQuery() {
         return solrQuery;
     }
 
-    /**
-     * @param solrQuery the solrQuery to set
-     */
+    
     public void setSolrQuery(String solrQuery) {
         this.solrQuery = solrQuery;
     }
 
-    /**
-
-     */
+    
     public List<String> getCategories() {
         return categories;
     }
 
-    /**
-     * @param categories the categories to set
-     */
+    
     public void setCategories(List<String> categories) {
         this.categories = categories;
     }
 
-    /**
-
-     */
+    
     public List<String> getCollections() {
         return collections;
     }
 
-    /**
-     * @param collections the collections to set
-     */
+    
     public void setCollections(List<String> collections) {
         this.collections = collections;
     }
 
-    /**
-
-     */
+    
     public static long getSerialversionuid() {
         return serialVersionUID;
     }
 
-    /**
-
-     */
+    
     public String getStyle() {
         return style;
     }
 
-    /**
-     * @param style the style to set
-     */
+    
     public void setStyle(String style) {
         this.style = style;
     }
 
-    /**
-
-     */
+    
     public SourceType getSourceType() {
         return sourceType;
     }
@@ -259,30 +227,22 @@ public class CMSSlider implements Serializable {
         }
     }
 
-    /**
-
-     */
+    
     public String getSortField() {
         return sortField;
     }
 
-    /**
-     * @param sortField the sortField to set
-     */
+    
     public void setSortField(String sortField) {
         this.sortField = sortField;
     }
 
-    /**
-     * @param maxEntries the maxEntries to set
-     */
+    
     public void setMaxEntries(int maxEntries) {
         this.maxEntries = maxEntries;
     }
 
-    /**
-
-     */
+    
     public int getMaxEntries() {
         return maxEntries;
     }

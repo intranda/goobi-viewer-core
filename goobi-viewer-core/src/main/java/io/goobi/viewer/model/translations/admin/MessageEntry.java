@@ -206,30 +206,22 @@ public class MessageEntry implements Comparable<MessageEntry> {
         return keyPrefix + (keySuffix != null ? keySuffix.trim() : "");
     }
 
-    /**
-
-     */
+    
     public String getKeyPrefix() {
         return keyPrefix;
     }
 
-    /**
-     * @param keyPrefix the keyPrefix to set
-     */
+    
     public void setKeyPrefix(String keyPrefix) {
         this.keyPrefix = keyPrefix;
     }
 
-    /**
-
-     */
+    
     public String getKeySuffix() {
         return keySuffix;
     }
 
-    /**
-     * @param keySuffix the keySuffix to set
-     */
+    
     public void setKeySuffix(String keySuffix) {
         this.keySuffix = keySuffix;
     }
@@ -242,23 +234,17 @@ public class MessageEntry implements Comparable<MessageEntry> {
         return StringUtils.isBlank(keySuffix);
     }
 
-    /**
-
-     */
+    
     public List<MessageValue> getValues() {
         return values;
     }
 
-    /**
-
-     */
+    
     public boolean isNewEntryMode() {
         return newEntryMode;
     }
 
-    /**
-     * @param newEntryMode the newEntryMode to set
-     */
+    
     public void setNewEntryMode(boolean newEntryMode) {
         this.newEntryMode = newEntryMode;
     }

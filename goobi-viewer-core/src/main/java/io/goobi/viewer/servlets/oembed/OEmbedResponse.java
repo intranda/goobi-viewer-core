@@ -57,7 +57,7 @@ public abstract class OEmbedResponse {
     /**
      * Setter for the field <code>version</code>.
      *
-     * @param version the version to set
+
      */
     public void setVersion(String version) {
         this.version = version;
@@ -75,7 +75,7 @@ public abstract class OEmbedResponse {
     /**
      * Setter for the field <code>type</code>.
      *
-     * @param type the type to set
+
      */
     public void setType(String type) {
         this.type = type;
@@ -93,7 +93,7 @@ public abstract class OEmbedResponse {
     /**
      * Setter for the field <code>width</code>.
      *
-     * @param width the width to set
+
      */
     public void setWidth(Integer width) {
         this.width = width;
@@ -111,7 +111,7 @@ public abstract class OEmbedResponse {
     /**
      * Setter for the field <code>height</code>.
      *
-     * @param height the height to set
+
      */
     public void setHeight(Integer height) {
         this.height = height;
@@ -129,7 +129,7 @@ public abstract class OEmbedResponse {
     /**
      * Setter for the field <code>title</code>.
      *
-     * @param title the title to set
+
      */
     public void setTitle(String title) {
         this.title = title;
@@ -147,7 +147,7 @@ public abstract class OEmbedResponse {
     /**
      * Setter for the field <code>authorName</code>.
      *
-     * @param authorName the authorName to set
+
      */
     public void setAuthorName(String authorName) {
         this.authorName = authorName;
@@ -165,7 +165,7 @@ public abstract class OEmbedResponse {
     /**
      * Setter for the field <code>authorUrl</code>.
      *
-     * @param authorUrl the authorUrl to set
+
      */
     public void setAuthorUrl(String authorUrl) {
         this.authorUrl = authorUrl;
@@ -183,7 +183,7 @@ public abstract class OEmbedResponse {
     /**
      * Setter for the field <code>providerName</code>.
      *
-     * @param providerName the providerName to set
+
      */
     public void setProviderName(String providerName) {
         this.providerName = providerName;
@@ -201,7 +201,7 @@ public abstract class OEmbedResponse {
     /**
      * Setter for the field <code>providerUrl</code>.
      *
-     * @param providerUrl the providerUrl to set
+
      */
     public void setProviderUrl(String providerUrl) {
         this.providerUrl = providerUrl;
@@ -219,7 +219,7 @@ public abstract class OEmbedResponse {
     /**
      * Setter for the field <code>cacheAge</code>.
      *
-     * @param cacheAge the cacheAge to set
+
      */
     public void setCacheAge(Integer cacheAge) {
         this.cacheAge = cacheAge;
@@ -237,7 +237,7 @@ public abstract class OEmbedResponse {
     /**
      * Setter for the field <code>thumbnailUrl</code>.
      *
-     * @param thumbnailUrl the thumbnailUrl to set
+
      */
     public void setThumbnailUrl(String thumbnailUrl) {
         this.thumbnailUrl = thumbnailUrl;
@@ -255,7 +255,7 @@ public abstract class OEmbedResponse {
     /**
      * Setter for the field <code>thumbnailWidth</code>.
      *
-     * @param thumbnailWidth the thumbnailWidth to set
+
      */
     public void setThumbnailWidth(Integer thumbnailWidth) {
         this.thumbnailWidth = thumbnailWidth;
@@ -273,7 +273,7 @@ public abstract class OEmbedResponse {
     /**
      * Setter for the field <code>thumbnailHeight</code>.
      *
-     * @param thumbnailHeight the thumbnailHeight to set
+
      */
     public void setThumbnailHeight(Integer thumbnailHeight) {
         this.thumbnailHeight = thumbnailHeight;

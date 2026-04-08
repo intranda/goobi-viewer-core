@@ -113,114 +113,82 @@ public class CMSArchiveConfig implements CMSMediaMultiHolder, Serializable {
         this.headerImage = orig.headerImage;
     }
 
-    /**
-
-     */
+    
     public Long getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
+    
     public void setId(Long id) {
         this.id = id;
     }
 
-    /**
-
-     */
+    
     public String getPi() {
         return pi;
     }
 
-    /**
-     * @param pi the pi to set
-     */
+    
     public void setPi(String pi) {
         this.pi = pi;
     }
 
-    /**
-
-     */
+    
     public LocalDateTime getDateUpdated() {
         return dateUpdated;
     }
 
-    /**
-     * @param dateUpdated the dateUpdated to set
-     */
+    
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
 
-    /**
-
-     */
+    
     public TranslatedText getTitle() {
         return title;
     }
 
-    /**
-     * @param title the title to set
-     */
+    
     public void setTitle(TranslatedText title) {
         this.title = title;
     }
 
-    /**
-
-     */
+    
     public TranslatedText getPreviewText() {
         return previewText;
     }
 
-    /**
-     * @param previewText the previewText to set
-     */
+    
     public void setPreviewText(TranslatedText previewText) {
         this.previewText = previewText;
     }
 
-    /**
-
-     */
+    
     public TranslatedText getDescription() {
         return description;
     }
 
-    /**
-     * @param description the description to set
-     */
+    
     public void setDescription(TranslatedText description) {
         this.description = description;
     }
 
-    /**
-
-     */
+    
     public CMSMediaItem getTileImage() {
         return tileImage;
     }
 
-    /**
-     * @param tileImage the tileImage to set
-     */
+    
     public void setTileImage(CMSMediaItem tileImage) {
         this.tileImage = tileImage;
     }
 
-    /**
-
-     */
+    
     public CMSMediaItem getHeaderImage() {
         return headerImage;
     }
 
-    /**
-     * @param headerImage the headerImage to set
-     */
+    
     public void setHeaderImage(CMSMediaItem headerImage) {
         this.headerImage = headerImage;
     }

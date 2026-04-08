@@ -326,16 +326,12 @@ public class MetadataValue implements Serializable {
         return normDataUrls.get(key);
     }
 
-    /**
-
-     */
+    
     public Map<String, List<String>> getCitationValues() {
         return citationValues;
     }
 
-    /**
-
-     */
+    
     public List<Metadata> getChildMetadata() {
         return childMetadata;
     }
@@ -353,9 +349,7 @@ public class MetadataValue implements Serializable {
         return this.accessConditions.contains(StringConstants.ACCESSCONDITION_METADATA_ACCESS_RESTRICTED);
     }
 
-    /**
-
-     */
+    
     public Set<String> getAccessConditions() {
         return accessConditions;
     }
@@ -426,30 +420,22 @@ public class MetadataValue implements Serializable {
         }
     }
 
-    /**
-
-     */
+    
     public String getIddoc() {
         return iddoc;
     }
 
-    /**
-     * @param iddoc the iddoc to set
-     */
+    
     public void setIddoc(String iddoc) {
         this.iddoc = iddoc;
     }
 
-    /**
-
-     */
+    
     public String getOwnerIddoc() {
         return ownerIddoc;
     }
 
-    /**
-     * @param ownerIddoc the ownerIddoc to set
-     */
+    
     public void setOwnerIddoc(String ownerIddoc) {
         this.ownerIddoc = ownerIddoc;
     }
@@ -516,7 +502,7 @@ public class MetadataValue implements Serializable {
     /**
      * Setter for the field <code>masterValue</code>.
      *
-     * @param masterValue the masterValue to set
+
      */
     public void setMasterValue(String masterValue) {
         this.masterValue = masterValue;
@@ -537,7 +523,7 @@ public class MetadataValue implements Serializable {
     /**
      * Setter for the field <code>groupType</code>.
      *
-     * @param groupType the groupType to set
+
      * @return this
      */
     public MetadataValue setGroupType(String groupType) {
@@ -545,15 +531,13 @@ public class MetadataValue implements Serializable {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getDocstrct() {
         return docstrct;
     }
 
     /**
-     * @param docstrct the docstrct to set
+
      * @return this
      */
     public MetadataValue setDocstrct(String docstrct) {
@@ -561,29 +545,23 @@ public class MetadataValue implements Serializable {
         return this;
     }
 
-    /**
-
-     */
+    
     public String getTopstruct() {
         return topstruct;
     }
 
-    /**
-     * @param topstruct the topstruct to set
-     */
+    
     public void setTopstruct(String topstruct) {
         this.topstruct = topstruct;
     }
 
-    /**
-
-     */
+    
     public String getLabel() {
         return label;
     }
 
     /**
-     * @param label the label to set
+
      * @return this
      */
     public MetadataValue setLabel(String label) {
@@ -592,7 +570,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * @param citationProcessor the citationProcessor to set
+
      * @return this
      */
     public MetadataValue setCitationProcessor(CSL citationProcessor) {
@@ -601,7 +579,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * @param citationItemDataProvider the citationItemDataProvider to set
+
      * @return this
      */
     public MetadataValue setCitationItemDataProvider(CitationDataProvider citationItemDataProvider) {

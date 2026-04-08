@@ -73,16 +73,12 @@ public class MapTranslation extends Translation implements Serializable {
         this.owner = t.owner;
     }
 
-    /**
-
-     */
+    
     public GeoMap getOwner() {
         return owner;
     }
 
-    /**
-     * @param owner the owner to set
-     */
+    
     public void setOwner(GeoMap owner) {
         this.owner = owner;
     }

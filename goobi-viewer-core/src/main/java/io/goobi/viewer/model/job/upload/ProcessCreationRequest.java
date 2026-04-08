@@ -39,100 +39,72 @@ public class ProcessCreationRequest {
     @JsonProperty("properties")
     private Map<String, String> properties;
 
-    /**
-
-     */
+    
     public String getIdentifier() {
         return identifier;
     }
 
-    /**
-     * @param identifier the identifier to set
-     */
+    
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }
 
-    /**
-
-     */
+    
     public String getProcesstitle() {
         return processtitle;
     }
 
-    /**
-     * @param processtitle the processtitle to set
-     */
+    
     public void setProcesstitle(String processtitle) {
         this.processtitle = processtitle;
     }
 
-    /**
-
-     */
+    
     public String getLogicalDSType() {
         return logicalDSType;
     }
 
-    /**
-     * @param logicalDSType the logicalDSType to set
-     */
+    
     public void setLogicalDSType(String logicalDSType) {
         this.logicalDSType = logicalDSType;
     }
 
-    /**
-
-     */
+    
     public Integer getTemplateId() {
         return templateId;
     }
 
-    /**
-     * @param templateId the templateId to set
-     */
+    
     public void setTemplateId(Integer templateId) {
         this.templateId = templateId;
     }
 
-    /**
-
-     */
+    
     public String getTemplateName() {
         return templateName;
     }
 
-    /**
-     * @param templateName the templateName to set
-     */
+    
     public void setTemplateName(String templateName) {
         this.templateName = templateName;
     }
 
-    /**
-
-     */
+    
     public Map<String, String> getMetadata() {
         return metadata;
     }
 
-    /**
-     * @param metadata the metadata to set
-     */
+    
     public void setMetadata(Map<String, String> metadata) {
         this.metadata = metadata;
     }
 
-    /**
-
-     */
+    
     public Map<String, String> getProperties() {
         return properties;
     }
 
-    /**
-     * @param properties the properties to set
-     */
+    
     public void setProperties(Map<String, String> properties) {
         this.properties = properties;
     }

@@ -354,7 +354,7 @@ public class Bookmark implements Serializable {
     /**
      * Setter for the field <code>id</code>.
      *
-     * @param id the id to set
+
      */
     public void setId(Long id) {
         this.id = id;
@@ -372,7 +372,7 @@ public class Bookmark implements Serializable {
     /**
      * Setter for the field <code>bookmarkList</code>.
      *
-     * @param bookmarkList the bookmarkList to set
+
      */
     public void setBookmarkList(BookmarkList bookmarkList) {
         this.bookmarkList = bookmarkList;
@@ -392,7 +392,7 @@ public class Bookmark implements Serializable {
     /**
      * Setter for the field <code>pi</code>.
      *
-     * @param pi the pi to set
+
      */
     public void setPi(String pi) {
         this.pi = pi;
@@ -410,7 +410,7 @@ public class Bookmark implements Serializable {
     /**
      * Setter for the field <code>logId</code>.
      *
-     * @param logId the logId to set
+
      */
     public void setLogId(String logId) {
         this.logId = logId;
@@ -428,7 +428,7 @@ public class Bookmark implements Serializable {
     /**
      * Setter for the field <code>urn</code>.
      *
-     * @param urn the urn to set
+
      */
     public void setUrn(String urn) {
         this.urn = urn;
@@ -446,7 +446,7 @@ public class Bookmark implements Serializable {
     /**
      * Setter for the field <code>name</code>.
      *
-     * @param name the name to set
+
      */
     public void setName(String name) {
         this.name = name;
@@ -464,7 +464,7 @@ public class Bookmark implements Serializable {
     /**
      * Setter for the field <code>description</code>.
      *
-     * @param description the description to set
+
      */
     public void setDescription(String description) {
         this.description = description;
@@ -485,7 +485,7 @@ public class Bookmark implements Serializable {
     /**
      * Setter for the field <code>dateAdded</code>.
      *
-     * @param dateAdded the dateAdded to set
+
      */
     public void setDateAdded(LocalDateTime dateAdded) {
         this.dateAdded = dateAdded;
@@ -503,7 +503,7 @@ public class Bookmark implements Serializable {
     /**
      * Setter for the field <code>order</code>.
      *
-     * @param order the order to set
+
      */
     public void setOrder(Integer order) {
         this.order = order;

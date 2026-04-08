@@ -128,15 +128,13 @@ public class BrowsingMenuFieldConfig implements Serializable {
         return filterQueries;
     }
 
-    /**
-
-     */
+    
     public boolean isTranslate() {
         return translate;
     }
 
     /**
-     * @param translate the translate to set
+
      * @return this
      */
     public BrowsingMenuFieldConfig setTranslate(boolean translate) {
@@ -144,15 +142,13 @@ public class BrowsingMenuFieldConfig implements Serializable {
         return this;
     }
 
-    /**
-
-     */
+    
     public boolean isAlwaysApplyFilter() {
         return alwaysApplyFilter;
     }
 
     /**
-     * @param alwaysApplyFilter the alwaysApplyFilter to set
+
      * @return this
      */
     public BrowsingMenuFieldConfig setAlwaysApplyFilter(boolean alwaysApplyFilter) {
@@ -160,15 +156,13 @@ public class BrowsingMenuFieldConfig implements Serializable {
         return this;
     }
 
-    /**
-
-     */
+    
     public boolean isSkipInWidget() {
         return skipInWidget;
     }
 
     /**
-     * @param skipInWidget the skipInWidget to set
+
      * @return this;
      */
     public BrowsingMenuFieldConfig setSkipInWidget(boolean skipInWidget) {

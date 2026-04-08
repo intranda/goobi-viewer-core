@@ -67,23 +67,17 @@ public final class StatisticsSummaryFilter {
         this.filterQuery = filterQuery;
     }
 
-    /**
-
-     */
+    
     public LocalDate getStartDate() {
         return startDate;
     }
 
-    /**
-
-     */
+    
     public LocalDate getEndDate() {
         return endDate;
     }
 
-    /**
-
-     */
+    
     public String getFilterQuery() {
         return filterQuery;
     }

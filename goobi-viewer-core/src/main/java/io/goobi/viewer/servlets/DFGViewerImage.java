@@ -59,8 +59,7 @@ public class DFGViewerImage extends HttpServlet implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(DFGViewerImage.class);
 
-    /**
-     */
+    
     private static final long serialVersionUID = 683037127834153441L;
 
     /**

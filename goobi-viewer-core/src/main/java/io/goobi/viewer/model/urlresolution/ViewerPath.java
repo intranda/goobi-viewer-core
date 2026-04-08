@@ -184,16 +184,12 @@ public class ViewerPath implements Serializable {
         this.parameterPath = parameterPath;
     }
 
-    /**
-
-     */
+    
     public String getQueryString() {
         return queryString;
     }
 
-    /**
-     * @param queryString the queryString to set
-     */
+    
     public void setQueryString(String queryString) {
         this.queryString = queryString;
     }
@@ -357,7 +353,7 @@ public class ViewerPath implements Serializable {
     /**
      * Setter for the field <code>campaign</code>.
      *
-     * @param campaign the campaign to set
+
      */
     public void setCampaign(Campaign campaign) {
         this.campaign = campaign;

@@ -77,45 +77,33 @@ public class MaintenanceMode implements IPolyglott {
         this.selectedLocale = BeanUtils.getLocale();
     }
 
-    /**
-
-     */
+    
     public Long getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
+    
     public void setId(Long id) {
         this.id = id;
     }
 
-    /**
-
-     */
+    
     public boolean isEnabled() {
         return enabled;
     }
 
-    /**
-     * @param enabled the enabled to set
-     */
+    
     public void setEnabled(boolean enabled) {
         logger.trace("setEnabled: {}", enabled);
         this.enabled = enabled;
     }
 
-    /**
-
-     */
+    
     public List<MaintenanceModeTranslation> getTranslations() {
         return translations;
     }
 
-    /**
-     * @param translations the translations to set
-     */
+    
     public void setTranslations(List<MaintenanceModeTranslation> translations) {
         this.translations = translations;
     }

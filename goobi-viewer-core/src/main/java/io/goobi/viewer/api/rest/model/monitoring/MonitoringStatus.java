@@ -50,23 +50,17 @@ public class MonitoringStatus {
         this.theme = DataManager.getInstance().getConfiguration().getTheme();
     }
 
-    /**
-
-     */
+    
     public Map<String, String> getMonitoring() {
         return monitoring;
     }
 
-    /**
-
-     */
+    
     public Map<String, Map<String, String>> getVersions() {
         return versions;
     }
 
-    /**
-
-     */
+    
     public String getTheme() {
         return theme;
     }

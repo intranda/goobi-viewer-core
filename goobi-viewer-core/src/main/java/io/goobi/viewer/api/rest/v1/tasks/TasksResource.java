@@ -75,8 +75,8 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 /**
- * REST resource for creating and monitoring asynchronous {@link io.goobi.viewer.api.rest.model.tasks.TaskManager} tasks within the viewer, such as PDF
- * pre-rendering.
+ * REST resource for creating and monitoring asynchronous
+ * {@link io.goobi.viewer.api.rest.model.tasks.TaskManager} tasks within the viewer, such as PDF pre-rendering.
  *
  * @author Florian Alpers
  */

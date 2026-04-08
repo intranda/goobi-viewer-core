@@ -431,9 +431,7 @@ public class ImageDeliveryBean implements Serializable {
         return presentation;
     }
 
-    /**
-
-     */
+    
     private String getServletPath() {
         if (servletPath == null) {
             init();
@@ -592,7 +590,7 @@ public class ImageDeliveryBean implements Serializable {
     /**
      * Setter for the field <code>thumbs</code>.
      *
-     * @param thumbs the thumbs to set
+
      */
     public void setThumbs(ThumbnailHandler thumbs) {
         this.thumbs = thumbs;
@@ -601,7 +599,7 @@ public class ImageDeliveryBean implements Serializable {
     /**
      * Setter for the field <code>images</code>.
      *
-     * @param images the images to set
+
      */
     public void setImages(ImageHandler images) {
         this.images = images;
@@ -610,7 +608,7 @@ public class ImageDeliveryBean implements Serializable {
     /**
      * Setter for the field <code>pdf</code>.
      *
-     * @param pdf the pdf to set
+
      */
     public void setPdf(PdfHandler pdf) {
         this.pdf = pdf;

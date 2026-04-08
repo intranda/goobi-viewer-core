@@ -102,7 +102,7 @@ public class GeoLocationInfo {
     /**
      * Setter for the field <code>centerLocation</code>.
      *
-     * @param centerLocation the centerLocation to set
+
      */
     public void setCenterLocation(GeoLocation centerLocation) {
         this.centerLocation = centerLocation;
@@ -120,7 +120,7 @@ public class GeoLocationInfo {
     /**
      * Setter for the field <code>locationList</code>.
      *
-     * @param locationList the locationList to set
+
      */
     public void setLocationList(List<GeoLocation> locationList) {
         this.locationList = locationList;

@@ -267,7 +267,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * Setter for the field <code>order</code>.
      *
-     * @param order the order to set
+
      */
     public void setOrder(Integer order) {
         this.order = order;
@@ -285,7 +285,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * Setter for the field <code>parentItem</code>.
      *
-     * @param parentItem the parentItem to set
+
      */
     public void setParentItem(CMSNavigationItem parentItem) {
         this.parentItem = parentItem;
@@ -544,7 +544,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * Setter for the field <code>sortingListId</code>.
      *
-     * @param sortingListId the sortingListId to set
+
      */
     public void setSortingListId(Integer sortingListId) {
         this.sortingListId = sortingListId;
@@ -650,7 +650,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * Sets the {@link #associatedTheme} to the given theme, or to null if the given theme is empty or blank.
      *
-     * @param associatedTheme the associatedTheme to set
+
      */
     public void setAssociatedTheme(String associatedTheme) {
         this.associatedTheme = StringUtils.isBlank(associatedTheme) ? null : associatedTheme;
@@ -733,9 +733,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
         }
     }
 
-    /**
-
-     */
+    
     public boolean isAccessGranted() {
         return accessGranted;
     }

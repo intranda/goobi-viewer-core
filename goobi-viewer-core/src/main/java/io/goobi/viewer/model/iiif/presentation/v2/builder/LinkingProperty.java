@@ -83,9 +83,7 @@ public class LinkingProperty {
         return link;
     }
 
-    /**
-
-     */
+    
     public LinkingTarget getTarget() {
         return target;
     }

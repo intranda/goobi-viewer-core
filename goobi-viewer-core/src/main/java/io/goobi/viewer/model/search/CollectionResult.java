@@ -59,37 +59,27 @@ public class CollectionResult implements Serializable {
         this.recordCount = recordCount;
     }
 
-    /**
-
-     */
+    
     public Set<String> getFacetValues() {
         return facetValues;
     }
 
-    /**
-     * @param facetValues the facetValues to set
-     */
+    
     public void setFacetValues(Set<String> facetValues) {
         this.facetValues = facetValues;
     }
 
-    /**
-
-     */
+    
     public Long getCount() {
         return recordCount;
     }
 
-    /**
-     * @param count the count to set
-     */
+    
     public void setCount(Long count) {
         this.recordCount = count;
     }
 
-    /**
-
-     */
+    
     public String getName() {
         return name;
     }

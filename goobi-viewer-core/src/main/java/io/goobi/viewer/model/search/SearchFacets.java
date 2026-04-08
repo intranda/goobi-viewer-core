@@ -1149,7 +1149,7 @@ public class SearchFacets implements Serializable {
     /**
      * Setter for the field <code>tempValue</code>.
      *
-     * @param tempValue the tempValue to set
+
      */
     public void setTempValue(String tempValue) {
         this.tempValue = tempValue;
@@ -1246,16 +1246,12 @@ public class SearchFacets implements Serializable {
         return facet.getValue();
     }
 
-    /**
-
-     */
+    
     public Map<String, String> getLabelMap() {
         return labelMap;
     }
 
-    /**
-
-     */
+    
     public GeoFacetItem getGeoFacetting() {
         synchronized (lock) {
             List<String> geoFacetFields = DataManager.getInstance().getConfiguration().getGeoFacetFields();

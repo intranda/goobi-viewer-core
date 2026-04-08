@@ -70,16 +70,12 @@ public class ManualFeatureSet extends FeatureSet {
         return new ManualFeatureSet(this);
     }
 
-    /**
-
-     */
+    
     public List<String> getFeatures() {
         return features;
     }
 
-    /**
-     * @param features the features to set
-     */
+    
     public void setFeatures(List<String> features) {
         this.features = features;
         this.featuresAsString = null;
