@@ -319,7 +319,7 @@ public class Role implements Serializable {
     /**
      * Setter for the field <code>id</code>.
      *
-
+     * @param id the database primary key for this role
      */
     public void setId(Long id) {
         this.id = id;
@@ -337,7 +337,7 @@ public class Role implements Serializable {
     /**
      * Setter for the field <code>name</code>.
      *
-
+     * @param name the unique name identifying this role
      */
     public void setName(String name) {
         this.name = name;
@@ -355,7 +355,7 @@ public class Role implements Serializable {
     /**
      * Setter for the field <code>description</code>.
      *
-
+     * @param description the human-readable description of this role
      */
     public void setDescription(String description) {
         this.description = description;
@@ -373,7 +373,7 @@ public class Role implements Serializable {
     /**
      * Setter for the field <code>privileges</code>.
      *
-
+     * @param privileges the set of privilege names granted by this role
      */
     public void setPrivileges(Set<String> privileges) {
         this.privileges = privileges;
@@ -391,7 +391,7 @@ public class Role implements Serializable {
     /**
      * Setter for the field <code>inheritedRoles</code>.
      *
-
+     * @param inheritedRoles the set of roles whose privileges are inherited by this role
      */
     public void setInheritedRoles(Set<Role> inheritedRoles) {
         this.inheritedRoles = inheritedRoles;

@@ -132,7 +132,7 @@ public class UserRole implements Serializable {
     /**
      * Setter for the field <code>id</code>.
      *
-
+     * @param id the database identifier to set
      */
     public void setId(Long id) {
         this.id = id;
@@ -150,7 +150,7 @@ public class UserRole implements Serializable {
     /**
      * Setter for the field <code>userGroup</code>.
      *
-
+     * @param userGroup the user group this role assignment belongs to
      */
     public void setUserGroup(UserGroup userGroup) {
         this.userGroup = userGroup;
@@ -168,7 +168,7 @@ public class UserRole implements Serializable {
     /**
      * Setter for the field <code>user</code>.
      *
-
+     * @param user the user this role assignment belongs to
      */
     public void setUser(User user) {
         this.user = user;
@@ -186,7 +186,7 @@ public class UserRole implements Serializable {
     /**
      * Setter for the field <code>role</code>.
      *
-
+     * @param role the role assigned to the user within the group
      */
     public void setRole(Role role) {
         this.role = role;

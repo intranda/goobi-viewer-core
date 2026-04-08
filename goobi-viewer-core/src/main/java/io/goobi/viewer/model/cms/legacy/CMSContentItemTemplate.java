@@ -91,7 +91,7 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     /**
      * Setter for the field <code>mode</code>.
      *
-
+     * @param mode the display mode to set for this content item
      */
     public void setMode(ContentItemMode mode) {
         this.mode = mode;
@@ -117,7 +117,7 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     /**
      * Setter for the field <code>inlineHelp</code>.
      *
-
+     * @param inlineHelp the message key to display when clicking the inline help button
      */
     public void setInlineHelp(String inlineHelp) {
         this.inlineHelp = inlineHelp;
@@ -130,7 +130,7 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     /**
      * Setter for the field <code>mediaFilter</code>.
      *
-
+     * @param mediaFilter the media type filter string; null is treated as empty string
      */
     public void setMediaFilter(String mediaFilter) {
         this.mediaFilter = mediaFilter == null ? "" : mediaFilter;
@@ -143,7 +143,7 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     /**
      * Setter for the field <code>preview</code>.
      *
-
+     * @param preview true if this item should be rendered in preview mode
      */
     public void setPreview(boolean preview) {
         this.preview = preview;

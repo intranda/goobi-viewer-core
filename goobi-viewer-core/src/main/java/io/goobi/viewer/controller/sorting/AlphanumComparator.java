@@ -72,6 +72,8 @@ public class AlphanumComparator<T> implements Comparator<T>, Serializable {
 
     /**
      *
+     * @param o1 first object to compare
+     * @param o2 second object to compare
      * @should compare correctly
      * @should use sort term if provided
      * @should use translated term if provided

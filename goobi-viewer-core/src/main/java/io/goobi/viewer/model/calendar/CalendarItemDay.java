@@ -59,7 +59,7 @@ public class CalendarItemDay extends AbstractCalendarItem implements Serializabl
     /**
      * Setter for the field <code>query</code>.
      *
-
+     * @param query the Solr query string used to retrieve hits for this calendar day
      */
     public void setQuery(String query) {
         this.query = query;
@@ -77,7 +77,7 @@ public class CalendarItemDay extends AbstractCalendarItem implements Serializabl
     /**
      * Setter for the field <code>singleResultUrl</code>.
      *
-
+     * @param singleResultUrl the URL to navigate to when exactly one hit exists for this day
      */
     public void setSingleResultUrl(String singleResultUrl) {
         this.singleResultUrl = singleResultUrl;
@@ -95,7 +95,7 @@ public class CalendarItemDay extends AbstractCalendarItem implements Serializabl
     /**
      * Setter for the field <code>dayOfWeek</code>.
      *
-
+     * @param dayOfWeek the localised name of the day of the week (e.g. "Monday")
      */
     public void setDayOfWeek(String dayOfWeek) {
         this.dayOfWeek = dayOfWeek;

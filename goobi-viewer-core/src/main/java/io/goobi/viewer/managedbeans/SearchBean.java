@@ -247,7 +247,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Required setter for ManagedProperty injection for unit tests.
      *
-
+     * @param navigationHelper the NavigationHelper instance to inject for testing
      */
     public void setNavigationHelper(NavigationHelper navigationHelper) {
         this.navigationHelper = navigationHelper;
@@ -1386,7 +1386,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Setter for the field <code>searchSortingOption</code>.
      *
-
+     * @param searchSortingOption the sort option to apply to the current search results
      */
     public void setSearchSortingOption(SearchSortingOption searchSortingOption) {
         logger.trace("setSearchSortingOption: {}", searchSortingOption);
@@ -1684,7 +1684,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Setter for the field <code>currentPage</code>.
      *
-
+     * @param currentPage the 1-based page number to navigate to in the search results
      */
     public void setCurrentPage(int currentPage) {
         logger.trace("setCurrentPage: {}", currentPage);
@@ -1707,7 +1707,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * setHitsCount.
      *
-
+     * @param hitsCount the total number of search hits to store on the current search
      */
     public void setHitsCount(long hitsCount) {
         if (currentSearch != null) {
@@ -1794,7 +1794,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Setter for the field <code>hitIndexOperand</code>.
      *
-
+     * @param hitIndexOperand the operand used to calculate the next or previous hit index to navigate to
      */
     public void setHitIndexOperand(int hitIndexOperand) {
         logger.trace("setHitIndexOperand: {}", hitIndexOperand);
@@ -2184,7 +2184,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Setter for the field <code>currentSearch</code>.
      *
-
+     * @param currentSearch the Search object representing the active search query and its results
      */
     public void setCurrentSearch(Search currentSearch) {
         logger.trace("Setting current search to {}", currentSearch);
@@ -2203,7 +2203,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Setter for the field <code>fuzzySearchEnabled</code>.
      *
-
+     * @param fuzzySearchEnabled true to enable fuzzy matching in search queries, false for exact matching
      */
     public void setFuzzySearchEnabled(boolean fuzzySearchEnabled) {
         this.fuzzySearchEnabled = fuzzySearchEnabled;
@@ -2557,7 +2557,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Setter for the field <code>hitsPerPage</code>.
      *
-
+     * @param hitsPerPage the number of search results to display per page
      */
     public void setHitsPerPage(int hitsPerPage) {
         logger.trace("setHitsPerPage: {}", hitsPerPage);
@@ -2568,7 +2568,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Like setHitsPerPage() but doesn't trigger the boolean.
      *
-
+     * @param hitsPerPage the number of search results to display per page
      * @should not change hitsPerPageSetterCalled value
      */
     public void setHitsPerPageNoTrigger(int hitsPerPage) {
@@ -2588,7 +2588,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Setter for the field <code>hitsPerPageSetterCalled</code>.
      *
-
+     * @param hitsPerPageSetterCalled true if the hits-per-page setter has been explicitly invoked during the current request
      */
     public void setHitsPerPageSetterCalled(boolean hitsPerPageSetterCalled) {
         // logger.trace("setHitsPerPageSetterCalled: {}", hitsPerPageSetterCalled); //NOSONAR Debug

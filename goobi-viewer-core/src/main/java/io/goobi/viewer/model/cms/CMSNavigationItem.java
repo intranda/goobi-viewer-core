@@ -267,7 +267,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * Setter for the field <code>order</code>.
      *
-
+     * @param order the sort position of this navigation item within its parent or the top-level menu
      */
     public void setOrder(Integer order) {
         this.order = order;
@@ -285,7 +285,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * Setter for the field <code>parentItem</code>.
      *
-
+     * @param parentItem the parent navigation item; also registers this item as a child of the parent
      */
     public void setParentItem(CMSNavigationItem parentItem) {
         this.parentItem = parentItem;
@@ -544,7 +544,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * Setter for the field <code>sortingListId</code>.
      *
-
+     * @param sortingListId the ID used to associate this item with a specific sorting list group
      */
     public void setSortingListId(Integer sortingListId) {
         this.sortingListId = sortingListId;
@@ -650,7 +650,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * Sets the {@link #associatedTheme} to the given theme, or to null if the given theme is empty or blank.
      *
-
+     * @param associatedTheme the theme name to associate with this navigation item, or blank/null to clear the association
      */
     public void setAssociatedTheme(String associatedTheme) {
         this.associatedTheme = StringUtils.isBlank(associatedTheme) ? null : associatedTheme;

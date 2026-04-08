@@ -740,7 +740,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Setter for the field <code>childDocs</code>.
      *
-
+     * @param childDocs the list of unpopulated child Solr documents to be lazily expanded for this hit
      */
     public void setChildDocs(SolrDocumentList childDocs) {
         this.childDocs = childDocs;

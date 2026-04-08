@@ -130,7 +130,7 @@ public class CalendarBean implements Serializable {
     /**
      * Required setter for ManagedProperty injection.
      *
-
+     * @param searchBean the SearchBean instance to inject for testing
      */
     public void setSearchBean(SearchBean searchBean) {
         this.searchBean = searchBean;
@@ -771,7 +771,7 @@ public class CalendarBean implements Serializable {
     /**
      * Select a year. If the new value differs from the old one, the data for the new value gets generated.
      *
-
+     * @param selectYear four-digit year string to select and populate calendar data for
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -1071,7 +1071,7 @@ public class CalendarBean implements Serializable {
     /**
      * Setter for the field <code>yearEnd</code>.
      *
-
+     * @param yearEnd the last year (inclusive) of the date range to display
      */
     public void setYearEnd(int yearEnd) {
         this.yearEnd = yearEnd;
@@ -1080,7 +1080,7 @@ public class CalendarBean implements Serializable {
     /**
      * Setter for the field <code>yearStart</code>.
      *
-
+     * @param yearStart the first year (inclusive) of the date range to display
      */
     public void setYearStart(int yearStart) {
         this.yearStart = yearStart;
@@ -1089,7 +1089,7 @@ public class CalendarBean implements Serializable {
     /**
      * Setter for the field <code>collection</code>.
      *
-
+     * @param collection Solr collection filter value to restrict the calendar view, or null for all collections
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */

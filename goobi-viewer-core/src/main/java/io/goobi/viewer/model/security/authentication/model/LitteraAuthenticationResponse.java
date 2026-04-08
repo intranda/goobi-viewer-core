@@ -58,7 +58,7 @@ public class LitteraAuthenticationResponse {
     /**
      * Setter for the field <code>authenticationSuccessful</code>.
      *
-
+     * @param authenticationSuccessful true if the authentication attempt succeeded
      */
     public void setAuthenticationSuccessful(boolean authenticationSuccessful) {
         this.authenticationSuccessful = authenticationSuccessful;

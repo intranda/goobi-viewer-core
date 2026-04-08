@@ -173,7 +173,7 @@ public class Translation {
     /**
      * Setter for the field <code>id</code>.
      *
-
+     * @param id the database identifier to set
      */
     public void setId(Long id) {
         this.id = id;
@@ -191,7 +191,7 @@ public class Translation {
     /**
      * Setter for the field <code>tag</code>.
      *
-
+     * @param tag the message key or category tag identifying this translation to set
      */
     public void setTag(String tag) {
         this.tag = tag;
@@ -209,7 +209,7 @@ public class Translation {
     /**
      * Setter for the field <code>language</code>.
      *
-
+     * @param language the ISO 639-1 language code for this translation to set
      */
     public void setLanguage(String language) {
         this.language = language;
@@ -227,7 +227,7 @@ public class Translation {
     /**
      * Setter for the field <code>translationValue</code>.
      *
-
+     * @param translationValue the translated text value to set
      */
     public void setTranslationValue(String translationValue) {
         this.translationValue = translationValue;
@@ -252,6 +252,8 @@ public class Translation {
 
     /**
      * Two Translations are equal if they are of the same class and both tag and language match.
+     *
+     * @param obj the object to compare to this translation
      */
     @Override
     public boolean equals(Object obj) {

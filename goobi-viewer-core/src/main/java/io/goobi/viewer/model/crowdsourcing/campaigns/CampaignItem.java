@@ -69,7 +69,7 @@ public class CampaignItem {
     /**
      * Setter for the field <code>source</code>.
      *
-
+     * @param source the URI identifying the resource to be annotated in this campaign item
      */
     public void setSource(URI source) {
         this.source = source;
@@ -87,7 +87,7 @@ public class CampaignItem {
     /**
      * Setter for the field <code>campaign</code>.
      *
-
+     * @param campaign the campaign this item belongs to
      */
     public void setCampaign(Campaign campaign) {
         this.campaign = campaign;
@@ -115,7 +115,7 @@ public class CampaignItem {
     /**
      * Setter for the field <code>recordStatus</code>.
      *
-
+     * @param recordStatus the crowdsourcing processing status of the record in this campaign
      */
     public void setRecordStatus(CrowdsourcingStatus recordStatus) {
         this.recordStatus = recordStatus;
@@ -154,7 +154,7 @@ public class CampaignItem {
     /**
      * Setter for the field <code>creatorURI</code>.
      *
-
+     * @param creatorURI the URI identifying the user who last edited the status of this campaign item
      */
     public void setCreatorURI(URI creatorURI) {
         this.creatorURI = creatorURI;

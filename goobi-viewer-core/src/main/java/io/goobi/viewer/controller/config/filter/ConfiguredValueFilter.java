@@ -120,6 +120,9 @@ public final class ConfiguredValueFilter extends AbstractFilterConfiguration {
 
     /**
      * alias for {@link #passes(VariableReplacer)}. The given value is ignored
+     *
+     * @param value ignored; this implementation uses the internal filter value instead
+     * @param vr variable replacer providing values to test against the filter
      */
     @Override
     public boolean passes(String value, VariableReplacer vr) {

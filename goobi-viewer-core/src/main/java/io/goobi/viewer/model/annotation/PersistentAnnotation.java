@@ -223,7 +223,7 @@ public abstract class PersistentAnnotation {
     /**
      * Setter for the field <code>id</code>.
      *
-
+     * @param id the database ID to set
      */
     public void setId(Long id) {
         this.id = id;
@@ -241,7 +241,7 @@ public abstract class PersistentAnnotation {
     /**
      * Setter for the field <code>dateCreated</code>.
      *
-
+     * @param dateCreated the creation timestamp to set
      */
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
@@ -259,7 +259,7 @@ public abstract class PersistentAnnotation {
     /**
      * Setter for the field <code>dateModified</code>.
      *
-
+     * @param dateModified the last-modified timestamp to set
      */
     public void setDateModified(LocalDateTime dateModified) {
         this.dateModified = dateModified;
@@ -289,7 +289,7 @@ public abstract class PersistentAnnotation {
     /**
      * setCreator.
      *
-
+     * @param creator the user who created this annotation; also updates {@code creatorId}
      */
     public void setCreator(User creator) {
         this.creator = creator;
@@ -314,7 +314,7 @@ public abstract class PersistentAnnotation {
     /**
      * setReviewer.
      *
-
+     * @param reviewer the user assigned to review this annotation; also updates {@code reviewerId}
      */
     public void setReviewer(User reviewer) {
         if (reviewer != null) {
@@ -338,7 +338,7 @@ public abstract class PersistentAnnotation {
     /**
      * setGenerator.
      *
-
+     * @param generator the crowdsourcing question that generated this annotation; its ID is stored in {@code generatorId}
      */
     public void setGenerator(Question generator) {
         this.generatorId = Optional.ofNullable(generator).map(Question::getId).orElse(null);
@@ -356,7 +356,7 @@ public abstract class PersistentAnnotation {
     /**
      * Setter for the field <code>creatorId</code>.
      *
-
+     * @param creatorId the database ID of the user who created this annotation
      */
     public void setCreatorId(Long creatorId) {
         this.creatorId = creatorId;
@@ -374,7 +374,7 @@ public abstract class PersistentAnnotation {
     /**
      * Setter for the field <code>reviewerId</code>.
      *
-
+     * @param reviewerId the database ID of the user assigned to review this annotation
      */
     public void setReviewerId(Long reviewerId) {
         this.reviewerId = reviewerId;
@@ -392,7 +392,7 @@ public abstract class PersistentAnnotation {
     /**
      * Setter for the field <code>generatorId</code>.
      *
-
+     * @param generatorId the database ID of the crowdsourcing question that generated this annotation
      */
     public void setGeneratorId(Long generatorId) {
         this.generatorId = generatorId;
@@ -410,7 +410,7 @@ public abstract class PersistentAnnotation {
     /**
      * Setter for the field <code>body</code>.
      *
-
+     * @param body the annotation body content (typically a JSON-LD or plain-text value)
      */
     public void setBody(String body) {
         this.body = body;
@@ -428,7 +428,7 @@ public abstract class PersistentAnnotation {
     /**
      * Setter for the field <code>motivation</code>.
      *
-
+     * @param motivation the Web Annotation motivation URI (e.g. "commenting", "tagging")
      */
     public void setMotivation(String motivation) {
         this.motivation = motivation;
@@ -464,7 +464,7 @@ public abstract class PersistentAnnotation {
     /**
      * Setter for the field <code>targetPI</code>.
      *
-
+     * @param targetPI the persistent identifier of the record this annotation targets
      */
     public void setTargetPI(String targetPI) {
         this.targetPI = targetPI;
@@ -473,7 +473,7 @@ public abstract class PersistentAnnotation {
     /**
      * Setter for the field <code>targetPageOrder</code>.
      *
-
+     * @param targetPageOrder the 1-based page order number within the target record, or null if the annotation targets the whole record
      */
     public void setTargetPageOrder(Integer targetPageOrder) {
         this.targetPageOrder = targetPageOrder;
@@ -482,7 +482,7 @@ public abstract class PersistentAnnotation {
     /**
      * Setter for the field <code>target</code>.
      *
-
+     * @param target the serialized target descriptor (URI or JSON-LD specific resource)
      */
     public void setTarget(String target) {
         this.target = target;

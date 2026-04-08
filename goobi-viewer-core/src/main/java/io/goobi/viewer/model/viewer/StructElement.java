@@ -657,7 +657,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * Setter for the field <code>fulltextAvailable</code>.
      *
-
+     * @param fulltextAvailable true if fulltext content is available for this document
      */
     public void setFulltextAvailable(boolean fulltextAvailable) {
         this.fulltextAvailable = fulltextAvailable;

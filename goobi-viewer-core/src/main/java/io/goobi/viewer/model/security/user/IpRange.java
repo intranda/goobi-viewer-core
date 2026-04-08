@@ -193,7 +193,7 @@ public class IpRange extends AbstractLicensee implements Serializable {
     /**
      * Setter for the field <code>id</code>.
      *
-
+     * @param id the database identifier to set
      */
     public void setId(Long id) {
         this.id = id;
@@ -208,7 +208,7 @@ public class IpRange extends AbstractLicensee implements Serializable {
     /**
      * Setter for the field <code>name</code>.
      *
-
+     * @param name the display name of this IP range to set
      */
     public void setName(String name) {
         this.name = name;
@@ -226,7 +226,7 @@ public class IpRange extends AbstractLicensee implements Serializable {
     /**
      * Setter for the field <code>subnetMask</code>.
      *
-
+     * @param subnetMask the CIDR subnet mask defining the IP range to set
      */
     public void setSubnetMask(String subnetMask) {
         this.subnetMask = subnetMask;
@@ -244,7 +244,7 @@ public class IpRange extends AbstractLicensee implements Serializable {
     /**
      * Setter for the field <code>description</code>.
      *
-
+     * @param description a human-readable description of this IP range to set
      */
     public void setDescription(String description) {
         this.description = description;

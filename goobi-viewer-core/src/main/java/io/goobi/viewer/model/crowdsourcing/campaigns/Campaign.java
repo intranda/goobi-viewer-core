@@ -922,7 +922,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Setter for the field <code>id</code>.
      *
-
+     * @param id the database primary key to set
      */
     public void setId(Long id) {
         this.id = id;
@@ -940,7 +940,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Setter for the field <code>dateCreated</code>.
      *
-
+     * @param dateCreated the date and time when this campaign was created
      */
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
@@ -958,7 +958,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Setter for the field <code>dateUpdated</code>.
      *
-
+     * @param dateUpdated the date and time when this campaign was last updated
      */
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
@@ -976,7 +976,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Setter for the field <code>visibility</code>.
      *
-
+     * @param visibility the visibility setting controlling who can see and participate in this campaign
      */
     public void setVisibility(CampaignVisibility visibility) {
         this.visibility = visibility;
@@ -1018,7 +1018,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Setter for the field <code>dateStart</code>.
      *
-
+     * @param dateStart the date and time when this campaign becomes active
      */
     public void setDateStart(LocalDateTime dateStart) {
         this.dateStart = dateStart;
@@ -1060,7 +1060,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Setter for the field <code>dateEnd</code>.
      *
-
+     * @param dateEnd the date and time when this campaign ends
      */
     public void setDateEnd(LocalDateTime dateEnd) {
         this.dateEnd = dateEnd;
@@ -1078,7 +1078,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Setter for the field <code>solrQuery</code>.
      *
-
+     * @param solrQuery the Solr query defining the set of records covered by this campaign
      */
     public void setSolrQuery(String solrQuery) {
         this.solrQuery = solrQuery;
@@ -1098,7 +1098,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Setter for the field <code>permalink</code>.
      *
-
+     * @param permalink the permanent URL path for this campaign's public page
      */
     public void setPermalink(String permalink) {
         this.permalink = permalink;
@@ -1116,7 +1116,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Setter for the field <code>breadcrumbParentCmsPageId</code>.
      *
-
+     * @param breadcrumbParentCmsPageId the ID of the CMS page to use as parent in the breadcrumb navigation
      */
     public void setBreadcrumbParentCmsPageId(String breadcrumbParentCmsPageId) {
         this.breadcrumbParentCmsPageId = breadcrumbParentCmsPageId;
@@ -1223,6 +1223,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
+     * @param locale the locale to check validity for
      * @return true if the title is not empty for the given locale
      */
     @Override

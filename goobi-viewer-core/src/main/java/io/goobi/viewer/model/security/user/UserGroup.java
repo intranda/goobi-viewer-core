@@ -201,7 +201,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     /**
      * Setter for the field <code>id</code>.
      *
-
+     * @param id the database identifier to set
      */
     public void setId(Long id) {
         this.id = id;
@@ -216,7 +216,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     /**
      * Setter for the field <code>name</code>.
      *
-
+     * @param name the display name of this user group to set
      */
     public void setName(String name) {
         this.name = name;
@@ -234,7 +234,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     /**
      * Setter for the field <code>description</code>.
      *
-
+     * @param description a human-readable description of this user group to set
      */
     public void setDescription(String description) {
         this.description = description;
@@ -257,7 +257,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     /**
      * Setter for the field <code>owner</code>.
      *
-
+     * @param owner the user who owns this group to set
      */
     public void setOwner(User owner) {
         this.owner = owner;
@@ -275,7 +275,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     /**
      * Setter for the field <code>active</code>.
      *
-
+     * @param active true if this user group is active; false otherwise
      */
     public void setActive(boolean active) {
         this.active = active;

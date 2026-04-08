@@ -90,8 +90,8 @@ public class ConsentScope implements Serializable {
 
     /**
      * Sets the storageMode.
-     * 
-
+     *
+     * @param storageMode the storage mode determining where and how long the consent is persisted
      */
     public void setStorageMode(StorageMode storageMode) {
         this.storageMode = storageMode;
@@ -108,8 +108,8 @@ public class ConsentScope implements Serializable {
 
     /**
      * Set the number of days the consent is valid for.
-     * 
-
+     *
+     * @param daysToLive the number of days before the stored consent expires
      */
     public void setDaysToLive(int daysToLive) {
         this.daysToLive = daysToLive;
@@ -138,6 +138,8 @@ public class ConsentScope implements Serializable {
 
     /**
      * An object is equals to a consentScope if it is also a consentScope and has the same string representation.
+     *
+     * @param obj the object to compare with this ConsentScope
      */
     @Override
     public boolean equals(Object obj) {

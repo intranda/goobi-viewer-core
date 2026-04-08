@@ -322,7 +322,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * Setter for the field <code>id</code>.
      *
-
+     * @param id the database primary key to set
      */
     public void setId(Long id) {
         this.id = id;
@@ -340,7 +340,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * Setter for the field <code>dateCreated</code>.
      *
-
+     * @param dateCreated the date and time when this page template was created
      */
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
@@ -353,7 +353,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * Setter for the field <code>dateUpdated</code>.
      *
-
+     * @param dateUpdated the date and time when this page template was last updated
      */
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
@@ -371,7 +371,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * Setter for the field <code>published</code>.
      *
-
+     * @param published true sets the publication status to PUBLISHED, false sets it to PRIVATE
      */
     public void setPublished(boolean published) {
         this.publicationStatus = published ? PublicationStatus.PUBLISHED : PublicationStatus.PRIVATE;
@@ -389,7 +389,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * Setter for the field <code>useDefaultSidebar</code>.
      *
-
+     * @param useDefaultSidebar true if this template should use the default sidebar instead of a custom one
      */
     public void setUseDefaultSidebar(boolean useDefaultSidebar) {
         this.useDefaultSidebar = useDefaultSidebar;
@@ -407,7 +407,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * Setter for the field <code>sidebarElements</code>.
      *
-
+     * @param sidebarElements the list of sidebar widget elements to assign to this template
      */
     public void setSidebarElements(List<CMSSidebarElement> sidebarElements) {
         this.sidebarElements = sidebarElements;
@@ -536,7 +536,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * Setter for the field <code>sidebarElementString</code>.
      *
-
+     * @param sidebarElementString the serialized string representation of sidebar elements
      */
     public void setSidebarElementString(String sidebarElementString) {
         logger.trace("setSidebarElementString: {}", sidebarElementString);
@@ -606,7 +606,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * Setter for the field <code>subTheme</code>.
      *
-
+     * @param subTheme the sub-theme name to associate with this template; null is treated as empty string
      */
     public void setSubTheme(String subTheme) {
         this.subTheme = subTheme == null ? "" : subTheme;

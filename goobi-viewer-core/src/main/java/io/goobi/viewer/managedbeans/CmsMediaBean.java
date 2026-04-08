@@ -613,7 +613,7 @@ public class CmsMediaBean implements Serializable {
     /**
      * Setter for the field <code>selectedTag</code>.
      *
-
+     * @param selectedTag the tag name to filter the media list by
      */
     public void setSelectedTag(String selectedTag) {
         this.selectedTag = selectedTag;
@@ -695,7 +695,7 @@ public class CmsMediaBean implements Serializable {
     /**
      * Setter for the field <code>filter</code>.
      *
-
+     * @param filter the media type filter string; triggers a reload of the media list if changed
      */
     public void setFilter(String filter) {
         if (!this.filter.equals(filter)) {
@@ -716,7 +716,7 @@ public class CmsMediaBean implements Serializable {
     /**
      * Setter for the field <code>filenameFilter</code>.
      *
-
+     * @param filter the filename filter string; triggers a reload of the media list if changed
      */
     public void setFilenameFilter(String filter) {
         if (!this.filenameFilter.equals(filter)) {
@@ -728,7 +728,7 @@ public class CmsMediaBean implements Serializable {
     /**
      * Setter for the field <code>selectedMediaItem</code>.
      *
-
+     * @param selectedMediaItem the media item to mark as selected, or null to clear the selection
      */
     public void setSelectedMediaItem(CategorizableTranslatedSelectable<CMSMediaItem> selectedMediaItem) {
         this.selectedMediaItem = selectedMediaItem;
@@ -759,7 +759,7 @@ public class CmsMediaBean implements Serializable {
     /**
      * Setter for the field <code>allSelected</code>.
      *
-
+     * @param allSelected true to mark all media items as selected, false to deselect all
      */
     public void setAllSelected(boolean allSelected) {
         this.allSelected = allSelected;

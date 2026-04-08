@@ -34,7 +34,7 @@ public class MetadataWrapper {
     }
 
     /**
-
+     * @param metadata the wrapped Metadata instance
      * @return this
      */
     public MetadataWrapper setMetadata(Metadata metadata) {
@@ -48,7 +48,7 @@ public class MetadataWrapper {
     }
 
     /**
-
+     * @param valuePair the key-value pair representing the selected metadata value and its label
      * @return this
      */
     public MetadataWrapper setValuePair(StringPair valuePair) {

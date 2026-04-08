@@ -121,7 +121,7 @@ public class AccessPermission implements Serializable {
     }
 
     /**
-
+     * @param granted true if access is granted; false otherwise
      * @return this
      */
     public AccessPermission setGranted(boolean granted) {
@@ -135,7 +135,7 @@ public class AccessPermission implements Serializable {
     }
 
     /**
-
+     * @param accessTicketRequired true if an access ticket must be presented to gain access; false otherwise
      * @return this;
      */
     public AccessPermission setAccessTicketRequired(boolean accessTicketRequired) {
@@ -149,7 +149,7 @@ public class AccessPermission implements Serializable {
     }
 
     /**
-
+     * @param downloadTicketRequired true if a download ticket must be presented to download content; false otherwise
      * @return this
      */
     public AccessPermission setDownloadTicketRequired(boolean downloadTicketRequired) {
@@ -163,7 +163,7 @@ public class AccessPermission implements Serializable {
     }
 
     /**
-
+     * @param redirect true if the user should be redirected instead of seeing a denial page; false otherwise
      * @return this
      */
     public AccessPermission setRedirect(boolean redirect) {
@@ -177,7 +177,7 @@ public class AccessPermission implements Serializable {
     }
 
     /**
-
+     * @param redirectUrl the URL to redirect the user to when access is denied with redirect enabled
      * @return this
      */
     public AccessPermission setRedirectUrl(String redirectUrl) {
@@ -191,7 +191,7 @@ public class AccessPermission implements Serializable {
     }
 
     /**
-
+     * @param accessDeniedPlaceholderInfo map of language code to placeholder configuration shown when access is denied
      * @return this
      */
     public AccessPermission setAccessDeniedPlaceholderInfo(Map<String, AccessDeniedInfoConfig> accessDeniedPlaceholderInfo) {
@@ -205,7 +205,7 @@ public class AccessPermission implements Serializable {
     }
 
     /**
-
+     * @param addionalCheckRequired the licensee for which an additional access check must be performed
      * @return this
      */
     public AccessPermission setAddionalCheckRequired(ILicensee addionalCheckRequired) {

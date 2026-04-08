@@ -309,6 +309,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      * Returns the user bookmark list with the given ID.
      *
      * @param id database ID of the bookmark list to serialize
+     * @param urls API URL manager used to construct absolute resource URLs
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
@@ -432,6 +433,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      * getAsCollection.
      *
      * @param id database ID of the bookmark list to convert
+     * @param urls API URL manager used to construct absolute resource URLs
      * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.

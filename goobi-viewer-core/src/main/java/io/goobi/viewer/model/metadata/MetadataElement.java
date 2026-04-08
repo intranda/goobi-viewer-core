@@ -415,7 +415,7 @@ public class MetadataElement implements Serializable {
     /**
      * Setter for the field <code>metadataList</code>.
      *
-
+     * @param metadataList the list of metadata fields to display in the main metadata section
      */
     public void setMetadataList(List<Metadata> metadataList) {
         this.metadataList = metadataList;
@@ -512,7 +512,7 @@ public class MetadataElement implements Serializable {
     /**
      * Setter for the field <code>sidebarMetadataList</code>.
      *
-
+     * @param sidebarMetadataList the list of metadata fields to display in the sidebar section
      */
     public void setSidebarMetadataList(List<Metadata> sidebarMetadataList) {
         this.sidebarMetadataList = sidebarMetadataList;

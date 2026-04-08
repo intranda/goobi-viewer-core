@@ -778,8 +778,8 @@ public final class NetTools {
 
     /**
      * Appends one or more query parameters to an existing URI.
-     * 
-
+     *
+     * @param uri the base URI to which query parameters are appended
      * @param queryParams A list of parameters. Each element of the list is assumed to be a list of size 2, whith the first element being the
      *            parameter name and the second the parameter value. If the list has only one item, it is assumed to be a parameter name without
      *            value, any elements after the second will be ignored

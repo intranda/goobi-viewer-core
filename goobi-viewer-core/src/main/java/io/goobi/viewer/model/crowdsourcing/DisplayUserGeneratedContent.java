@@ -196,7 +196,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Setter for the field <code>type</code>.
      *
-
+     * @param type the content type of this user-generated content entry
      */
     public void setType(ContentType type) {
         this.type = type;
@@ -214,7 +214,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Setter for the field <code>pi</code>.
      *
-
+     * @param pi the persistent identifier of the associated record
      */
     public void setPi(String pi) {
         this.pi = pi;
@@ -232,7 +232,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Setter for the field <code>page</code>.
      *
-
+     * @param page the page number within the record where the content is located
      */
     public void setPage(Integer page) {
         this.page = page;
@@ -250,7 +250,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Setter for the field <code>label</code>.
      *
-
+     * @param label the display label for this user-generated content entry
      */
     public void setLabel(String label) {
         this.label = label;
@@ -290,7 +290,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Setter for the field <code>updatedBy</code>.
      *
-
+     * @param updatedBy the user who last updated this content entry
      */
     public void setUpdatedBy(User updatedBy) {
         this.updatedBy = updatedBy;
@@ -332,7 +332,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Setter for the field <code>dateUpdated</code>.
      *
-
+     * @param dateUpdated the date and time when this content entry was last updated
      */
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
@@ -360,7 +360,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Setter for the field <code>areaString</code>.
      *
-
+     * @param areaString the string representation of the geographic or image area coordinates
      */
     public void setAreaString(String areaString) {
         this.areaString = areaString;

@@ -1339,7 +1339,7 @@ public class ViewManager implements Serializable {
     /**
      * currentPageOrder.
      *
-
+     * @param currentImageOrder the 1-based order number of the page to navigate to
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws RecordNotFoundException
@@ -1575,7 +1575,7 @@ public class ViewManager implements Serializable {
     /**
      * Setter for the field <code>dropdownSelected</code>.
      *
-
+     * @param dropdownSelected the currently selected value in the page navigation dropdown
      */
     public void setDropdownSelected(String dropdownSelected) {
         this.dropdownSelected = dropdownSelected;
@@ -2986,7 +2986,7 @@ public class ViewManager implements Serializable {
     /**
      * setTopStructElement.
      *
-
+     * @param topStructElement the top-level structure element of the current record
      */
     public void setTopStructElement(StructElement topStructElement) {
         this.topStructElement = topStructElement;
@@ -3004,7 +3004,7 @@ public class ViewManager implements Serializable {
     /**
      * Setter for the field <code>currentStructElementIddoc</code>.
      *
-
+     * @param currentStructElementIddoc the Lucene IDDOC of the current structure element
      */
     public void setCurrentStructElementtIddoc(String currentStructElementIddoc) {
         this.currentStructElementIddoc = currentStructElementIddoc;
@@ -3028,7 +3028,7 @@ public class ViewManager implements Serializable {
     /**
      * Setter for the field <code>currentStructElement</code>.
      *
-
+     * @param currentStructElement the currently active structure element
      */
     public void setCurrentStructElement(StructElement currentStructElement) {
         this.currentStructElement = currentStructElement;
@@ -3071,7 +3071,7 @@ public class ViewManager implements Serializable {
     /**
      * Setter for the field <code>logId</code>.
      *
-
+     * @param logId the logical structure identifier to navigate to
      */
     public void setLogId(String logId) {
         this.logId = logId;
@@ -3392,7 +3392,7 @@ public class ViewManager implements Serializable {
     /**
      * Setter for the field <code>doublePageMode</code>.
      *
-
+     * @param doublePageMode true to enable double-page display mode, false for single-page
      */
     public void setDoublePageMode(boolean doublePageMode) {
         setPageNavigation(doublePageMode ? PageNavigation.DOUBLE : PageNavigation.SINGLE);
@@ -3424,7 +3424,7 @@ public class ViewManager implements Serializable {
     /**
      * Setter for the field <code>firstPdfPage</code>.
      *
-
+     * @param firstPdfPage the first page number (as string) to include in a PDF export range
      */
     public void setFirstPdfPage(String firstPdfPage) {
         if (StringUtils.isNotBlank(firstPdfPage) && firstPdfPage.matches(StringConstants.POSITIVE_INTEGER)) {
@@ -3444,7 +3444,7 @@ public class ViewManager implements Serializable {
     /**
      * Setter for the field <code>lastPdfPage</code>.
      *
-
+     * @param lastPdfPage the last page number (as string) to include in a PDF export range
      */
     public void setLastPdfPage(String lastPdfPage) {
         logger.trace("setLastPdfPage: {}", lastPdfPage);
@@ -3517,7 +3517,7 @@ public class ViewManager implements Serializable {
     /**
      * Setter for the field <code>firstPageOrientation</code>.
      *
-
+     * @param firstPageOrientation the orientation (recto/verso) of the first page in double-page mode
      */
     public void setFirstPageOrientation(PageOrientation firstPageOrientation) {
         this.firstPageOrientation = firstPageOrientation;

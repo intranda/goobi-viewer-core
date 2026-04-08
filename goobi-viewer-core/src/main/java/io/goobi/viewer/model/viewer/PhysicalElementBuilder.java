@@ -57,7 +57,7 @@ public class PhysicalElementBuilder {
     }
 
     /**
-
+     * @param pi the persistent identifier of the record this page belongs to
      * @return this
      */
     public PhysicalElementBuilder setPi(String pi) {
@@ -71,7 +71,7 @@ public class PhysicalElementBuilder {
     }
 
     /**
-
+     * @param filePath the relative file path to the primary media file
      * @return this
      */
     public PhysicalElementBuilder setFilePath(String filePath) {
@@ -85,7 +85,7 @@ public class PhysicalElementBuilder {
     }
 
     /**
-
+     * @param order the physical sequence order number of this page
      * @return this
      */
     public PhysicalElementBuilder setOrder(int order) {
@@ -99,7 +99,7 @@ public class PhysicalElementBuilder {
     }
 
     /**
-
+     * @param orderLabel the human-readable label for the page order (e.g. page number)
      * @return this
      */
     public PhysicalElementBuilder setOrderLabel(String orderLabel) {
@@ -113,7 +113,7 @@ public class PhysicalElementBuilder {
     }
 
     /**
-
+     * @param physId the physical identifier of this page as given in the source document
      * @return this
      */
     public PhysicalElementBuilder setPhysId(String physId) {
@@ -127,7 +127,7 @@ public class PhysicalElementBuilder {
     }
 
     /**
-
+     * @param urn the URN identifier of this page
      * @return this
      */
     public PhysicalElementBuilder setUrn(String urn) {
@@ -141,7 +141,7 @@ public class PhysicalElementBuilder {
     }
 
     /**
-
+     * @param purlPart the persistent URL fragment for this page
      * @return this
      */
     public PhysicalElementBuilder setPurlPart(String purlPart) {
@@ -155,7 +155,7 @@ public class PhysicalElementBuilder {
     }
 
     /**
-
+     * @param mimeType the MIME type of the primary media file for this page
      * @return this
      */
     public PhysicalElementBuilder setMimeType(String mimeType) {
@@ -169,7 +169,7 @@ public class PhysicalElementBuilder {
     }
 
     /**
-
+     * @param dataRepository the data repository name where the media files are stored
      * @return this
      */
     public PhysicalElementBuilder setDataRepository(String dataRepository) {

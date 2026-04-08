@@ -69,7 +69,7 @@ public class Description {
     /**
      * Setter for the field <code>image</code>.
      *
-
+     * @param image the URL of the thumbnail image for this RSS item description
      */
     public void setImage(String image) {
         this.image = image;
@@ -87,7 +87,7 @@ public class Description {
     /**
      * Setter for the field <code>text</code>.
      *
-
+     * @param description the HTML or plain-text body of this RSS item description
      */
     public void setText(String description) {
         this.text = description;

@@ -115,7 +115,7 @@ public class CampaignTranslation extends Translation implements Serializable {
     /**
      * Setter for the field <code>owner</code>.
      *
-
+     * @param owner the campaign this translation belongs to
      */
     public void setOwner(Campaign owner) {
         this.owner = owner;

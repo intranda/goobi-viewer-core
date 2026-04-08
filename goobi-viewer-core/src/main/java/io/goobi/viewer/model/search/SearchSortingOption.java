@@ -155,6 +155,7 @@ public class SearchSortingOption implements Serializable {
      * Two SearchSortingOptions are equal if they either both have an empty {@link #getField()} or if both {@link #getField()} and
      * {@link #isAscending()} are equal.
      *
+     * @param obj the object to compare with this sorting option
      * @should return true if both options are random
      */
     @Override

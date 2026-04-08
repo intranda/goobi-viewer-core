@@ -78,8 +78,8 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
 
     /**
      * Set the {@link #getFilterQuery() filter query}.
-     * 
-
+     *
+     * @param filterQuery the Solr filter query to restrict which RSS feed entries are shown
      */
     public void setFilterQuery(String filterQuery) {
         this.filterQuery = filterQuery;
@@ -96,8 +96,8 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
 
     /**
      * Set the {@link #getSortField() sort field}.
-     * 
-
+     *
+     * @param sortField the Solr field name to sort the RSS feed entries by
      */
     public void setSortField(String sortField) {
         this.sortField = sortField;
@@ -114,8 +114,8 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
 
     /**
      * Set the {@link #isDescendingSorting() descending sorting}.
-     * 
-
+     *
+     * @param descendingSorting true to sort entries in descending order, false for ascending
      */
     public void setDescendingSorting(boolean descendingSorting) {
         this.descendingSorting = descendingSorting;
@@ -132,8 +132,8 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
 
     /**
      * Sets the number of entries to display.
-     * 
-
+     *
+     * @param numEntries the maximum number of RSS feed entries to show in the widget
      */
     public void setNumEntries(int numEntries) {
         this.numEntries = numEntries;

@@ -227,7 +227,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Setter for the field <code>id</code>.
      *
-
+     * @param id the database ID to set
      */
     public void setId(Long id) {
         this.id = id;
@@ -245,7 +245,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Setter for the field <code>pi</code>.
      *
-
+     * @param pi the persistent identifier of the record this comment belongs to
      */
     public void setPi(String pi) {
         this.pi = pi;
@@ -263,7 +263,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Setter for the field <code>page</code>.
      *
-
+     * @param page the 1-based page order number within the record this comment targets
      */
     public void setPage(Integer page) {
         this.page = page;
@@ -281,7 +281,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Setter for the field <code>owner</code>.
      *
-
+     * @param owner the user who authored this comment
      */
     public void setOwner(User owner) {
         this.owner = owner;
@@ -290,7 +290,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Setter for the field <code>text</code>.
      *
-
+     * @param text the new comment text; the previous value is preserved in {@code oldText}
      */
     public void setText(String text) {
         this.oldText = this.text;
@@ -336,7 +336,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Setter for the field <code>dateCreated</code>.
      *
-
+     * @param dateCreated the creation timestamp to set
      */
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
@@ -354,7 +354,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Setter for the field <code>dateUpdated</code>.
      *
-
+     * @param dateUpdated the last-updated timestamp to set
      */
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;

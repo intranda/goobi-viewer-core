@@ -408,7 +408,7 @@ public class UploadJob implements Serializable {
     /**
      * Setter for the field <code>id</code>.
      *
-
+     * @param id the database primary key to set
      */
     public void setId(Long id) {
         this.id = id;
@@ -459,7 +459,7 @@ public class UploadJob implements Serializable {
     /**
      * Setter for the field <code>status</code>.
      *
-
+     * @param status the current processing status of this upload job
      */
     public void setStatus(JobStatus status) {
         this.status = status;
@@ -477,7 +477,7 @@ public class UploadJob implements Serializable {
     /**
      * Setter for the field <code>message</code>.
      *
-
+     * @param message the status or error message describing the current processing state
      */
     public void setMessage(String message) {
         this.message = message;
@@ -495,7 +495,7 @@ public class UploadJob implements Serializable {
     /**
      * Setter for the field <code>pi</code>.
      *
-
+     * @param pi the persistent identifier of the record associated with this upload job
      */
     public void setPi(String pi) {
         this.pi = pi;
@@ -533,7 +533,7 @@ public class UploadJob implements Serializable {
     /**
      * Setter for the field <code>description</code>.
      *
-
+     * @param description the human-readable description of this upload job
      */
     public void setDescription(String description) {
         this.description = description;

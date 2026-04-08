@@ -617,7 +617,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /**
      * Setter for the field <code>representativeWorkPI</code>.
      *
-
+     * @param representativeWorkPI the persistent identifier of the record whose thumbnail represents this collection
      */
     public void setRepresentativeWorkPI(String representativeWorkPI) {
         this.representativeWorkPI = representativeWorkPI;

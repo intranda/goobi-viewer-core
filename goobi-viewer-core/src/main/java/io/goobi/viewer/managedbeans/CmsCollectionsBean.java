@@ -304,7 +304,7 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * Setter for the field <code>currentCollection</code>.
      *
-
+     * @param currentCollection the CMSCollection to set as the currently selected collection
      */
     public void setCurrentCollection(CMSCollection currentCollection) {
         this.currentCollection = currentCollection;
@@ -322,7 +322,7 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * Setter for the field <code>solrField</code>.
      *
-
+     * @param solrField the Solr field name used to group and display collections
      */
     public void setSolrField(String solrField) {
         this.solrField = solrField;
@@ -357,7 +357,7 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * Setter for the field <code>solrFieldValue</code>.
      *
-
+     * @param solrFieldValue the value of the Solr field identifying the current collection
      */
     public void setSolrFieldValue(String solrFieldValue) {
         this.solrFieldValue = solrFieldValue;

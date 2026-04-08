@@ -77,7 +77,7 @@ public class Language implements Comparable<Language>, Serializable {
     /**
      * Setter for the field <code>isoCode6391</code>.
      *
-
+     * @param isoCode6391 ISO 639-1 two-letter language code to set
      */
     public void setIsoCode6391(String isoCode6391) {
         this.isoCode6391 = isoCode6391;
@@ -86,7 +86,7 @@ public class Language implements Comparable<Language>, Serializable {
     /**
      * setIsoCode_639_2B.
      *
-
+     * @param isoCode6392B ISO 639-2/B bibliographic language code to set
      */
     public void setIsoCode6392B(String isoCode6392B) {
         this.isoCode6392B = isoCode6392B;
@@ -95,7 +95,7 @@ public class Language implements Comparable<Language>, Serializable {
     /**
      * setIsoCode_639_2T.
      *
-
+     * @param isoCode6392T ISO 639-2/T terminology language code to set
      */
     public void setIsoCode6392T(String isoCode6392T) {
         this.isoCode6392T = isoCode6392T;
@@ -149,7 +149,7 @@ public class Language implements Comparable<Language>, Serializable {
     /**
      * Setter for the field <code>englishName</code>.
      *
-
+     * @param englishName English name of this language to set
      */
     public void setEnglishName(String englishName) {
         this.englishName = englishName;
@@ -167,7 +167,7 @@ public class Language implements Comparable<Language>, Serializable {
     /**
      * Setter for the field <code>frenchName</code>.
      *
-
+     * @param frenchName French name of this language to set
      */
     public void setFrenchName(String frenchName) {
         this.frenchName = frenchName;
@@ -185,7 +185,7 @@ public class Language implements Comparable<Language>, Serializable {
     /**
      * Setter for the field <code>germanName</code>.
      *
-
+     * @param germanName German name of this language to set
      */
     public void setGermanName(String germanName) {
         this.germanName = germanName;

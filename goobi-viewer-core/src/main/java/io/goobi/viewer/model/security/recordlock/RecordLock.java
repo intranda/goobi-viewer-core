@@ -56,6 +56,7 @@ public class RecordLock {
 
     /**
      * @see java.lang.Object#equals(java.lang.Object)
+     * @param obj the object to compare to this record lock
      * @should return true if pi and sessionId same
      */
     @Override

@@ -84,7 +84,7 @@ public class UserDataBean implements Serializable {
     /**
      * Required setter for ManagedProperty injection.
      *
-
+     * @param userBean the UserBean instance to inject for testing
      */
     public void setBreadcrumbBean(UserBean userBean) {
         this.userBean = userBean;

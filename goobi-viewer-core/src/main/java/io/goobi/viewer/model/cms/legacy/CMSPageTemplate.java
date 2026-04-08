@@ -246,7 +246,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Setter for the field <code>id</code>.
      *
-
+     * @param id the template identifier to set
      */
     public void setId(String id) {
         this.id = id;
@@ -264,7 +264,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Setter for the field <code>name</code>.
      *
-
+     * @param name the display name of this page template
      */
     public void setName(String name) {
         this.name = name;
@@ -282,7 +282,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Setter for the field <code>version</code>.
      *
-
+     * @param version the version string of this page template
      */
     public void setVersion(String version) {
         this.version = version;
@@ -300,7 +300,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Setter for the field <code>description</code>.
      *
-
+     * @param description the human-readable description of this page template
      */
     public void setDescription(String description) {
         this.description = description;
@@ -319,7 +319,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Setter for the field <code>htmlFileName</code>.
      *
-
+     * @param htmlFileName the name of the HTML file used to render pages of this template
      */
     public void setHtmlFileName(String htmlFileName) {
         this.htmlFileName = htmlFileName;
@@ -337,7 +337,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Setter for the field <code>templateFileName</code>.
      *
-
+     * @param templateFileName the file name of the template descriptor (e.g. XML file)
      */
     public void setTemplateFileName(String templateFileName) {
         this.templateFileName = templateFileName;
@@ -355,7 +355,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Setter for the field <code>iconFileName</code>.
      *
-
+     * @param iconFileName the file name of the icon image representing this template
      */
     public void setIconFileName(String iconFileName) {
         this.iconFileName = iconFileName;
@@ -395,7 +395,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Setter for the field <code>contentItems</code>.
      *
-
+     * @param contentItems the list of content item templates to assign to this page template
      */
     public void setContentItems(List<CMSContentItemTemplate> contentItems) {
         this.contentItems = contentItems;
@@ -440,7 +440,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Setter for the field <code>appliesToExpandedUrl</code>.
      *
-
+     * @param appliesToExpandedUrl true if this template applies to expanded record URLs
      */
     public void setAppliesToExpandedUrl(boolean appliesToExpandedUrl) {
         this.appliesToExpandedUrl = appliesToExpandedUrl;

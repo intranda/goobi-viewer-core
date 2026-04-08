@@ -435,7 +435,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     /**
      * Setter for the field <code>info</code>.
      *
-
+     * @param info the browse element info providing display metadata for this collection entry
      */
     public void setInfo(BrowseElementInfo info) {
         this.info = info;

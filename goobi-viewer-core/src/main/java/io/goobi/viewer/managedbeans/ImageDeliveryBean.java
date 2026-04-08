@@ -590,7 +590,7 @@ public class ImageDeliveryBean implements Serializable {
     /**
      * Setter for the field <code>thumbs</code>.
      *
-
+     * @param thumbs the ThumbnailHandler instance to inject for testing
      */
     public void setThumbs(ThumbnailHandler thumbs) {
         this.thumbs = thumbs;
@@ -599,7 +599,7 @@ public class ImageDeliveryBean implements Serializable {
     /**
      * Setter for the field <code>images</code>.
      *
-
+     * @param images the ImageHandler instance to inject for testing
      */
     public void setImages(ImageHandler images) {
         this.images = images;
@@ -608,7 +608,7 @@ public class ImageDeliveryBean implements Serializable {
     /**
      * Setter for the field <code>pdf</code>.
      *
-
+     * @param pdf the PdfHandler instance to inject for testing
      */
     public void setPdf(PdfHandler pdf) {
         this.pdf = pdf;

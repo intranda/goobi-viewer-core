@@ -60,7 +60,7 @@ public class TranslatedSelectable<T> extends Selectable<T> {
     /**
      * Setter for the field <code>locale</code>.
      *
-
+     * @param locale the locale used to determine the display language for this selectable item
      */
     public void setLocale(Locale locale) {
         this.locale = locale;

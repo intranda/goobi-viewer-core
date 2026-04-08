@@ -142,7 +142,7 @@ public class LicenseRightsHolder {
     }
 
     /**
-
+     * @param user the user this rights holder represents (clears userGroup, ipRange and client when non-null)
      * @should set userGroup and ipRange to null if user not null
      * @should not set userGroup and ipRange to null if user null
      */
@@ -161,7 +161,7 @@ public class LicenseRightsHolder {
     }
 
     /**
-
+     * @param userGroup the user group this rights holder represents (clears user, ipRange and client when non-null)
      * @should set user and ipRange to null if userGroup not null
      * @should not set user and ipRange to null if userGroup null
      */
@@ -180,7 +180,7 @@ public class LicenseRightsHolder {
     }
 
     /**
-
+     * @param ipRange the IP range this rights holder represents (clears user, userGroup and client when non-null)
      * @should set user and userGroup to null if ipRange not null
      * @should not set user and userGroup to null if ipRange null
      */
@@ -208,7 +208,7 @@ public class LicenseRightsHolder {
     }
 
     /**
-
+     * @param clientId the database ID of the client application to associate with this rights holder
      * @throws DAOException
      */
     public void setClientId(Long clientId) throws DAOException {

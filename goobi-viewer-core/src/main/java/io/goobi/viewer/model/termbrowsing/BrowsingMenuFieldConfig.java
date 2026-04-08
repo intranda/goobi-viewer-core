@@ -134,7 +134,7 @@ public class BrowsingMenuFieldConfig implements Serializable {
     }
 
     /**
-
+     * @param translate true if browse term values should be translated via message keys
      * @return this
      */
     public BrowsingMenuFieldConfig setTranslate(boolean translate) {
@@ -148,7 +148,7 @@ public class BrowsingMenuFieldConfig implements Serializable {
     }
 
     /**
-
+     * @param alwaysApplyFilter true if a filter query should always be applied when browsing this field
      * @return this
      */
     public BrowsingMenuFieldConfig setAlwaysApplyFilter(boolean alwaysApplyFilter) {
@@ -162,7 +162,7 @@ public class BrowsingMenuFieldConfig implements Serializable {
     }
 
     /**
-
+     * @param skipInWidget true if this field should be excluded from the browse widget display
      * @return this;
      */
     public BrowsingMenuFieldConfig setSkipInWidget(boolean skipInWidget) {

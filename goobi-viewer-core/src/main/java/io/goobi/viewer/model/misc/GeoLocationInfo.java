@@ -102,7 +102,7 @@ public class GeoLocationInfo {
     /**
      * Setter for the field <code>centerLocation</code>.
      *
-
+     * @param centerLocation the geographic coordinates used as the initial center of the map view
      */
     public void setCenterLocation(GeoLocation centerLocation) {
         this.centerLocation = centerLocation;
@@ -120,7 +120,7 @@ public class GeoLocationInfo {
     /**
      * Setter for the field <code>locationList</code>.
      *
-
+     * @param locationList the list of geographic locations to display as markers on the map
      */
     public void setLocationList(List<GeoLocation> locationList) {
         this.locationList = locationList;

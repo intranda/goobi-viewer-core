@@ -334,7 +334,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-
+     * @param type the metadata display type (e.g. 0 for default, 1 for group, 2 for citation)
      * @return this
      */
     public Metadata setType(int type) {
@@ -360,7 +360,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-
+     * @param sortField the Solr field name used for sorting this metadata field
      * @return this
      */
     public Metadata setSortField(String sortField) {
@@ -1267,7 +1267,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-
+     * @param number the display order number of this metadata field within its section
      * @return this
      */
     public Metadata setNumber(int number) {
@@ -1285,7 +1285,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-
+     * @param group true if this metadata represents a grouped metadata element
      * @return this
      */
     public Metadata setGroup(boolean group) {
@@ -1299,7 +1299,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-
+     * @param singleString true if all parameter values should be concatenated into a single string for display
      * @return this
      */
     public Metadata setSingleString(boolean singleString) {
@@ -1313,7 +1313,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-
+     * @param hideIfOnlyMetadataField true if this field should be hidden when it is the only metadata field displayed
      * @return this
      */
     public Metadata setHideIfOnlyMetadataField(boolean hideIfOnlyMetadataField) {
@@ -1327,7 +1327,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-
+     * @param topstructOnly true if this metadata should only be displayed for the top-level structure element
      * @return this
      */
     public Metadata setTopstructOnly(boolean topstructOnly) {
@@ -1341,7 +1341,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-
+     * @param labelField the Solr field name whose value is used as the display label for this metadata
      * @return this
      */
     public Metadata setLabelField(String labelField) {
@@ -1355,7 +1355,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-
+     * @param separator the string used to separate multiple values when rendering this metadata field
      * @return this
      */
     public Metadata setSeparator(String separator) {
@@ -1369,7 +1369,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-
+     * @param ownerDocstrctType the document structure type of the owning structure element
      * @return this
      */
     public Metadata setOwnerDocstrctType(String ownerDocstrctType) {
@@ -1402,7 +1402,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-
+     * @param citationTemplate the CSL citation style template name used to format citation output
      * @return this
      */
     public Metadata setCitationTemplate(String citationTemplate) {
@@ -1449,7 +1449,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-
+     * @param indentation the nesting level used for visual indentation when rendering child metadata
      * @return this
      */
     public Metadata setIndentation(int indentation) {

@@ -254,7 +254,7 @@ public class SearchHitFactory {
     }
 
     /**
-
+     * @param additionalMetadataListType the key of the metadata list type to use for additional metadata on search hits
      * @return this
      */
     public SearchHitFactory setAdditionalMetadataListType(String additionalMetadataListType) {

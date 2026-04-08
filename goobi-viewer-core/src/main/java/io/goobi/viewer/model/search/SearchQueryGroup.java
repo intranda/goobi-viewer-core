@@ -221,7 +221,7 @@ public class SearchQueryGroup implements Serializable {
     /**
      * Setter for the field <code>operator</code>.
      *
-
+     * @param operator the logical operator (AND/OR) used to combine items within this query group
      */
     public void setOperator(SearchQueryGroupOperator operator) {
         this.operator = operator;

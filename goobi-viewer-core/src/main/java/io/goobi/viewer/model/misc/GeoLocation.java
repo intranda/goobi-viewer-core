@@ -135,7 +135,7 @@ public class GeoLocation {
     /**
      * Setter for the field <code>longitude</code>.
      *
-
+     * @param longitude the geographic longitude in decimal degrees (WGS84)
      */
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
@@ -181,7 +181,7 @@ public class GeoLocation {
     /**
      * Setter for the field <code>info</code>.
      *
-
+     * @param info the descriptive text or HTML content shown in the map popup for this location
      */
     public void setInfo(String info) {
         this.info = info;
@@ -199,7 +199,7 @@ public class GeoLocation {
     /**
      * Setter for the field <code>link</code>.
      *
-
+     * @param link the URL linked from the map popup for this location
      */
     public void setLink(String link) {
         this.link = link;

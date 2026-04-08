@@ -87,7 +87,7 @@ public class MetadataBean {
     /**
      * Required setter for ManagedProperty injection.
      *
-
+     * @param activeDocumentBean the ActiveDocumentBean instance to inject
      */
     public void setActiveDocumentBean(ActiveDocumentBean activeDocumentBean) {
         this.activeDocumentBean = activeDocumentBean;

@@ -48,7 +48,7 @@ public class ExportFieldConfiguration {
     }
 
     /**
-
+     * @param label the display label to use instead of the field name; if null, the field name is used
      * @return this
      */
     public ExportFieldConfiguration setLabel(String label) {

@@ -540,7 +540,7 @@ public class CrowdsourcingBean implements Serializable {
     /**
      * Sets the selected campaign to a clone of the given campaign.
      *
-
+     * @param campaign the campaign to select; a deep copy is stored internally
      */
     public void setSelectedCampaign(Campaign campaign) {
 
@@ -597,7 +597,7 @@ public class CrowdsourcingBean implements Serializable {
     /**
      * Setter for the field <code>targetCampaign</code>.
      *
-
+     * @param targetCampaign the campaign to use as the annotation or review target
      */
     public void setTargetCampaign(Campaign targetCampaign) {
         if (this.targetCampaign != null && !this.targetCampaign.equals(targetCampaign)) {
@@ -727,7 +727,7 @@ public class CrowdsourcingBean implements Serializable {
     /**
      * Setter for the field <code>targetIdentifier</code>.
      *
-
+     * @param targetIdentifier the persistent identifier (PI) of the record selected for annotation or review
      */
     public void setTargetIdentifier(String targetIdentifier) {
         this.targetIdentifier = targetIdentifier;
@@ -745,7 +745,7 @@ public class CrowdsourcingBean implements Serializable {
     /**
      * Setter for the field <code>targetPage</code>.
      *
-
+     * @param targetPage the page number within the target record to annotate or review
      */
     public void setTargetPage(int targetPage) {
         this.targetPage = targetPage;
@@ -975,7 +975,7 @@ public class CrowdsourcingBean implements Serializable {
     /**
      * Setter for the field <code>targetStatus</code>.
      *
-
+     * @param targetStatus the crowdsourcing status to filter or assign to the target
      */
     public void setTargetStatus(CrowdsourcingStatus targetStatus) {
         this.targetStatus = targetStatus;

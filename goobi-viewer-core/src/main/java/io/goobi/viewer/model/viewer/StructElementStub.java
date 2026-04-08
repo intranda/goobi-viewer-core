@@ -147,7 +147,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Setter for the field <code>work</code>.
      *
-
+     * @param work true if this element represents a top-level work record
      */
     public void setWork(boolean work) {
         this.work = work;
@@ -165,7 +165,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Setter for the field <code>anchor</code>.
      *
-
+     * @param anchor true if this element represents a multi-volume anchor record
      */
     public void setAnchor(boolean anchor) {
         this.anchor = anchor;
@@ -183,7 +183,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Setter for the field <code>volume</code>.
      *
-
+     * @param volume true if this element represents a volume within a multi-volume work
      */
     public void setVolume(boolean volume) {
         this.volume = volume;
@@ -229,7 +229,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Setter for the field <code>pi</code>.
      *
-
+     * @param pi the persistent identifier of the record
      */
     public void setPi(String pi) {
         this.pi = pi;
@@ -256,7 +256,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Setter for the field <code>logid</code>.
      *
-
+     * @param logid the logical structure identifier from the source document
      */
     public void setLogid(String logid) {
         this.logid = logid;
@@ -274,7 +274,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Setter for the field <code>docStructType</code>.
      *
-
+     * @param docStructType the document structure type (e.g. Monograph, Chapter)
      */
     public void setDocStructType(String docStructType) {
         this.docStructType = docStructType;
@@ -302,7 +302,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Setter for the field <code>imageNumber</code>.
      *
-
+     * @param imageNumber the representative image order number for this element
      */
     public void setImageNumber(int imageNumber) {
         this.imageNumber = imageNumber;
@@ -320,7 +320,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Setter for the field <code>volumeNo</code>.
      *
-
+     * @param volumeNo the volume number string for sorting within a multi-volume work
      */
     public void setVolumeNo(String volumeNo) {
         this.volumeNo = volumeNo;
@@ -338,7 +338,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Setter for the field <code>volumeNoSort</code>.
      *
-
+     * @param volumeNoSort the sortable volume number string for ordering volumes
      */
     public void setVolumeNoSort(String volumeNoSort) {
         this.volumeNoSort = volumeNoSort;
@@ -480,7 +480,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Setter for the field <code>sourceDocFormat</code>.
      *
-
+     * @param sourceDocFormat the format of the source document (e.g. METS, LIDO)
      */
     public void setSourceDocFormat(String sourceDocFormat) {
         // logger.trace("setSourceDocFormat: {}", sourceDocFormat);  //NOSONAR Debug
@@ -520,7 +520,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Setter for the field <code>label</code>.
      *
-
+     * @param label the display label (title) of this structural element
      */
     public void setLabel(String label) {
         this.label = label;
@@ -538,7 +538,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Setter for the field <code>dataRepository</code>.
      *
-
+     * @param dataRepository the data repository name where this record's files are stored
      */
     public void setDataRepository(String dataRepository) {
         this.dataRepository = dataRepository;
@@ -556,7 +556,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Setter for the field <code>metadataFields</code>.
      *
-
+     * @param metadataFields map of Solr field names to their indexed values for this element
      */
     public void setMetadataFields(Map<String, List<String>> metadataFields) {
         this.metadataFields = metadataFields;

@@ -56,7 +56,7 @@ public class SearchQueryItemLine implements Serializable {
     /**
      * Setter for the field <code>operator</code>.
      *
-
+     * @param operator the logical operator (AND/OR/NOT/PHRASE) used for this query line
      */
     public void setOperator(SearchItemOperator operator) {
         // logger.trace("setOperator: {}", operator);StringTools
@@ -78,7 +78,7 @@ public class SearchQueryItemLine implements Serializable {
     /**
      * Setter for the field <code>value</code>.
      *
-
+     * @param value the search term to store as the first entry in the values list (stripped of JavaScript)
      */
     public void setValue(final String value) {
         // logger.trace("setValue: {}", value); //NOSONAR Debug

@@ -147,6 +147,8 @@ public class UserActivity {
 
     /**
      * Equals if label and type are equal.
+     *
+     * @param obj the object to compare to this user activity
      */
     @Override
     public boolean equals(Object obj) {

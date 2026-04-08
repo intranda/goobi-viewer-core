@@ -219,7 +219,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Setter for the field <code>id</code>.
      *
-
+     * @param id the database primary key for this license type
      */
     public void setId(Long id) {
         this.id = id;
@@ -238,7 +238,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Setter for the field <code>name</code>.
      *
-
+     * @param name the unique name of this license type, typically matching an access condition in Solr
      */
     public void setName(String name) {
         this.name = name;
@@ -256,7 +256,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Setter for the field <code>description</code>.
      *
-
+     * @param description the human-readable description of this license type
      */
     public void setDescription(String description) {
         this.description = description;
@@ -359,7 +359,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Setter for the field <code>openAccess</code>.
      *
-
+     * @param openAccess true if this license type grants open/unrestricted access; false otherwise
      */
     public void setOpenAccess(boolean openAccess) {
         this.openAccess = openAccess;
@@ -377,7 +377,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Setter for the field <code>core</code>.
      *
-
+     * @param core true if this is a built-in core license type that cannot be deleted; false otherwise
      */
     public void setCore(boolean core) {
         this.core = core;
@@ -439,7 +439,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-
+     * @param accessTicketRequired true if an access ticket is required; also adds/removes the LIST privilege accordingly
      * @should add or remove list privilege
      */
     public void setAccessTicketRequired(boolean accessTicketRequired) {
@@ -502,6 +502,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Returns a sorted list (according to PRIVS_RECORD) based on the given set of privileges.
      *
+     * @param privileges the set of privilege names to sort and filter
      * @return Sorted list of privileges contained in <code>privileges</code>
      */
     @Override
@@ -520,7 +521,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Setter for the field <code>privileges</code>.
      *
-
+     * @param privileges the set of privilege names defined for this license type
      */
     public void setPrivileges(Set<String> privileges) {
         this.privileges = privileges;
@@ -768,7 +769,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Setter for the field <code>overriddenLicenseTypes</code>.
      *
-
+     * @param overriddenLicenseTypes the set of license types that this license type overrides
      */
     public void setOverriddenLicenseTypes(Set<LicenseType> overriddenLicenseTypes) {
         this.overriddenLicenseTypes = overriddenLicenseTypes;

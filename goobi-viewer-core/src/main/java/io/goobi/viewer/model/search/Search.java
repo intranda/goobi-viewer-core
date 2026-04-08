@@ -873,7 +873,7 @@ public class Search implements Serializable {
     /**
      * Setter for the field <code>id</code>.
      *
-
+     * @param id the database primary key for this saved search
      */
     public void setId(Long id) {
         this.id = id;
@@ -891,7 +891,7 @@ public class Search implements Serializable {
     /**
      * Setter for the field <code>owner</code>.
      *
-
+     * @param owner the user who owns this saved search
      */
     public void setOwner(User owner) {
         this.owner = owner;
@@ -909,7 +909,7 @@ public class Search implements Serializable {
     /**
      * Setter for the field <code>name</code>.
      *
-
+     * @param name the user-defined display name for this saved search
      */
     public void setName(String name) {
         this.name = name;
@@ -927,7 +927,7 @@ public class Search implements Serializable {
     /**
      * Setter for the field <code>userInput</code>.
      *
-
+     * @param userInput the raw search string entered by the user
      */
     public void setUserInput(String userInput) {
         this.userInput = userInput;
@@ -945,7 +945,7 @@ public class Search implements Serializable {
     /**
      * Setter for the field <code>searchType</code>.
      *
-
+     * @param searchType the numeric type constant identifying the search mode (e.g. simple, advanced)
      */
     public void setSearchType(int searchType) {
         this.searchType = searchType;
@@ -963,7 +963,7 @@ public class Search implements Serializable {
     /**
      * Setter for the field <code>searchFilter</code>.
      *
-
+     * @param searchFilter the active search filter expression limiting the search scope
      */
     public void setSearchFilter(String searchFilter) {
         this.searchFilter = searchFilter;
@@ -981,7 +981,7 @@ public class Search implements Serializable {
     /**
      * Setter for the field <code>query</code>.
      *
-
+     * @param query the Solr query string used for this search
      */
     public void setQuery(String query) {
         this.query = query;
@@ -999,7 +999,7 @@ public class Search implements Serializable {
     /**
      * Setter for the field <code>expandQuery</code>.
      *
-
+     * @param expandQuery the Solr query used to expand child documents into the result set
      */
     public void setExpandQuery(String expandQuery) {
         this.expandQuery = expandQuery;
@@ -1027,7 +1027,7 @@ public class Search implements Serializable {
     /**
      * Setter for the field <code>page</code>.
      *
-
+     * @param page the current result page number (1-based)
      */
     public void setPage(int page) {
         this.page = page;
@@ -1045,7 +1045,7 @@ public class Search implements Serializable {
     /**
      * Setter for the field <code>facetString</code>.
      *
-
+     * @param facetString the serialized string representation of active facet filters
      */
     public void setFacetString(String facetString) {
         this.facetString = facetString;
@@ -1063,7 +1063,7 @@ public class Search implements Serializable {
     /**
      * Setter for the field <code>sortString</code>.
      *
-
+     * @param sortString the serialized sort order string (prefix "!" for descending)
      */
     public void setSortString(String sortString) {
         if (StringUtils.isNotBlank(sortString)) {
@@ -1144,7 +1144,7 @@ public class Search implements Serializable {
     /**
      * Setter for the field <code>dateUpdated</code>.
      *
-
+     * @param dateUpdated the timestamp of the last update check for new hits in this saved search
      */
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
@@ -1162,7 +1162,7 @@ public class Search implements Serializable {
     /**
      * Setter for the field <code>lastHitsCount</code>.
      *
-
+     * @param lastHitsCount the number of hits recorded during the last notification check
      */
     public void setLastHitsCount(long lastHitsCount) {
         this.lastHitsCount = lastHitsCount;
@@ -1180,7 +1180,7 @@ public class Search implements Serializable {
     /**
      * Setter for the field <code>newHitsNotification</code>.
      *
-
+     * @param newHitsNotification true if email notification for new hits should be enabled for this saved search; false otherwise
      */
     public void setNewHitsNotification(boolean newHitsNotification) {
         this.newHitsNotification = newHitsNotification;
@@ -1218,7 +1218,7 @@ public class Search implements Serializable {
     /**
      * Setter for the field <code>saved</code>.
      *
-
+     * @param saved true if this search has been saved by the user; false otherwise
      */
     public void setSaved(boolean saved) {
         this.saved = saved;
@@ -1243,7 +1243,7 @@ public class Search implements Serializable {
     /**
      * Setter for the field <code>hitsCount</code>.
      *
-
+     * @param hitsCount the total number of search hits to store in the first result group
      */
     public void setHitsCount(long hitsCount) {
         if (!resultGroups.isEmpty()) {

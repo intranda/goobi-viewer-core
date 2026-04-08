@@ -963,7 +963,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Setter for the field <code>id</code>.
      *
-
+     * @param id the database identifier to set
      */
     public void setId(Long id) {
         this.id = id;
@@ -981,7 +981,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Setter for the field <code>passwordHash</code>.
      *
-
+     * @param passwordHash the hashed password to set
      */
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
@@ -999,7 +999,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Setter for the field <code>activationKey</code>.
      *
-
+     * @param activationKey the account activation key sent by email to set
      */
     public void setActivationKey(String activationKey) {
         this.activationKey = activationKey;
@@ -1017,7 +1017,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Setter for the field <code>lastLogin</code>.
      *
-
+     * @param lastLogin the timestamp of the most recent login to set
      */
     public void setLastLogin(LocalDateTime lastLogin) {
         this.lastLogin = lastLogin;
@@ -1035,7 +1035,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Setter for the field <code>active</code>.
      *
-
+     * @param active true if the user account is active; false otherwise
      */
     public void setActive(boolean active) {
         this.active = active;
@@ -1053,7 +1053,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Setter for the field <code>suspended</code>.
      *
-
+     * @param suspended true if the user account is suspended; false otherwise
      */
     public void setSuspended(boolean suspended) {
         this.suspended = suspended;
@@ -1071,7 +1071,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Setter for the field <code>nickName</code>.
      *
-
+     * @param nickName the display nickname of the user to set
      */
     public void setNickName(String nickName) {
         this.nickName = nickName;
@@ -1089,7 +1089,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Setter for the field <code>lastName</code>.
      *
-
+     * @param lastName the last name of the user to set
      */
     public void setLastName(String lastName) {
         this.lastName = lastName;
@@ -1107,7 +1107,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Setter for the field <code>firstName</code>.
      *
-
+     * @param firstName the first name of the user to set
      */
     public void setFirstName(String firstName) {
         this.firstName = firstName;
@@ -1125,7 +1125,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Setter for the field <code>openIdAccounts</code>.
      *
-
+     * @param openIdAccounts the list of OpenID account identifiers linked to this user to set
      */
     public void setOpenIdAccounts(List<String> openIdAccounts) {
         this.openIdAccounts = openIdAccounts;
@@ -1134,7 +1134,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Setter for the field <code>email</code>.
      *
-
+     * @param email the email address of the user to set
      */
     public void setEmail(String email) {
         this.email = email;
@@ -1161,7 +1161,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Setter for the field <code>comments</code>.
      *
-
+     * @param comments administrative comments about the user account to set
      */
     public void setComments(String comments) {
         this.comments = comments;
@@ -1179,7 +1179,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Setter for the field <code>score</code>.
      *
-
+     * @param score the user's contribution score to set
      */
     public void setScore(long score) {
         this.score = score;
@@ -1262,7 +1262,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Setter for the field <code>superuser</code>.
      *
-
+     * @param superuser true if the user should have superuser privileges; false otherwise
      */
     public void setSuperuser(boolean superuser) {
         this.superuser = superuser;
@@ -1289,7 +1289,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Setter for the field <code>copy</code>.
      *
-
+     * @param copy the user instance representing an unsaved copy of this user to set
      */
     public void setCopy(User copy) {
         this.copy = copy;
@@ -1307,7 +1307,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Setter for the field <code>transkribusSession</code>.
      *
-
+     * @param transkribusSession the active Transkribus session for this user to set
      */
     public void setTranskribusSession(TranskribusSession transkribusSession) {
         this.transkribusSession = transkribusSession;

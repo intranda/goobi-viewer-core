@@ -425,7 +425,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Setter for the field <code>id</code>.
      *
-
+     * @param id the database primary key to set
      */
     public void setId(Long id) {
         this.id = id;
@@ -443,7 +443,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Setter for the field <code>dateCreated</code>.
      *
-
+     * @param dateCreated the date and time when this page was created
      */
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
@@ -458,7 +458,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Setter for the field <code>dateUpdated</code>.
      *
-
+     * @param dateUpdated the date and time when this page was last updated
      */
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
@@ -476,7 +476,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Setter for the field <code>published</code>.
      *
-
+     * @param published true sets the publication status to PUBLISHED, false sets it to PRIVATE
      */
     public void setPublished(boolean published) {
         this.publicationStatus = published ? PublicationStatus.PUBLISHED : PublicationStatus.PRIVATE;
@@ -494,7 +494,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Setter for the field <code>useDefaultSidebar</code>.
      *
-
+     * @param useDefaultSidebar true if this page should use the default sidebar instead of a custom one
      */
     public void setUseDefaultSidebar(boolean useDefaultSidebar) {
         this.useDefaultSidebar = useDefaultSidebar;
@@ -512,7 +512,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Setter for the field <code>sidebarElements</code>.
      *
-
+     * @param sidebarElements the list of sidebar widget elements to assign to this page
      */
     public void setSidebarElements(List<CMSSidebarElement> sidebarElements) {
         this.sidebarElements = sidebarElements;
@@ -804,7 +804,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Setter for the field <code>persistentUrl</code>.
      *
-
+     * @param persistentUrl the custom URL path for this page; leading and trailing slashes are stripped
      */
     public void setPersistentUrl(final String persistentUrl) {
         // TODO null check
@@ -879,7 +879,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Setter for the field <code>parentPageId</code>.
      *
-
+     * @param parentPageId the string ID of the parent CMS page, or null if this page has no parent
      */
     public void setParentPageId(String parentPageId) {
         this.parentPageId = parentPageId;
@@ -919,7 +919,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Setter for the field <code>relatedPI</code>.
      *
-
+     * @param relatedPI the persistent identifier of the record associated with this CMS page
      */
     public void setRelatedPI(String relatedPI) {
         this.relatedPI = relatedPI;

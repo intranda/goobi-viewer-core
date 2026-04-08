@@ -117,7 +117,7 @@ public class MetadataView {
     }
 
     /**
-
+     * @param index the position index of this view within the ordered list of metadata views
      * @return this
      */
     public MetadataView setIndex(int index) {
@@ -131,7 +131,7 @@ public class MetadataView {
     }
 
     /**
-
+     * @param label the message key used as the display label for this metadata view tab
      * @return this
      */
     public MetadataView setLabel(String label) {
@@ -145,7 +145,7 @@ public class MetadataView {
     }
 
     /**
-
+     * @param url the URL or navigation target linked from this metadata view tab
      * @return this
      */
     public MetadataView setUrl(String url) {
@@ -159,7 +159,7 @@ public class MetadataView {
     }
 
     /**
-
+     * @param condition the Solr-query-style condition that must be satisfied for this view to be shown
      * @return this
      */
     public MetadataView setCondition(String condition) {
@@ -173,7 +173,7 @@ public class MetadataView {
     }
 
     /**
-
+     * @param location the UI location where this metadata view is rendered (e.g. main content or sidebar)
      * @return this
      */
     public MetadataView setLocation(MetadataViewLocation location) {

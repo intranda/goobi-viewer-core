@@ -206,7 +206,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-
+     * @param source the Solr field name from which this parameter's value is read
      * @return this
      */
     public MetadataParameter setSource(String source) {
@@ -220,7 +220,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-
+     * @param destination the target placeholder name in the master value template where this parameter's value is inserted
      * @return this
      */
     public MetadataParameter setDestination(String destination) {
@@ -240,7 +240,7 @@ public class MetadataParameter implements Serializable {
     /**
      * Setter for the field <code>type</code>.
      *
-
+     * @param type the parameter type controlling how the value is retrieved and rendered
      * @return this
      */
     public MetadataParameter setType(MetadataParameterType type) {
@@ -258,7 +258,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-
+     * @param key the Solr field name used as the primary key for value lookup
      * @return this
      */
     public MetadataParameter setKey(String key) {
@@ -272,7 +272,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-
+     * @param altKey the alternative Solr field name used as a fallback when the primary key yields no value
      * @return this
      */
     public MetadataParameter setAltKey(String altKey) {
@@ -290,7 +290,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-
+     * @param masterValueFragment the message key referencing a fragment of the master value template for this parameter
      * @return this
      */
     public MetadataParameter setMasterValueFragment(String masterValueFragment) {
@@ -308,7 +308,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-
+     * @param defaultValue the fallback value to use when no value is found in the index
      * @return this
      */
     public MetadataParameter setDefaultValue(String defaultValue) {
@@ -326,7 +326,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-
+     * @param prefix the string prepended to the rendered value in the output
      * @return this
      */
     public MetadataParameter setPrefix(String prefix) {
@@ -344,7 +344,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-
+     * @param suffix the string appended to the rendered value in the output
      * @return this
      */
     public MetadataParameter setSuffix(String suffix) {
@@ -367,7 +367,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-
+     * @param condition the Solr-query-style condition that must be satisfied for this parameter to be rendered
      * @return this
      */
     public MetadataParameter setCondition(String condition) {
@@ -381,7 +381,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-
+     * @param inputPattern the regular expression pattern applied to the raw input value before transformation
      * @return this
      */
     public MetadataParameter setInputPattern(String inputPattern) {
@@ -395,7 +395,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-
+     * @param outputPattern the replacement pattern applied to the value after input-pattern matching
      * @return this
      */
     public MetadataParameter setOutputPattern(String outputPattern) {
@@ -413,7 +413,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-
+     * @param addUrl true if a hyperlink URL should be generated and attached to this parameter's rendered value
      * @return this
      */
     public MetadataParameter setAddUrl(boolean addUrl) {
@@ -431,7 +431,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-
+     * @param topstructValueFallback true if the top-level structure element's value should be used as a fallback when no value is found
      * @return this
      */
     public MetadataParameter setTopstructValueFallback(boolean topstructValueFallback) {
@@ -445,7 +445,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-
+     * @param removeHighlighting true if search-term highlighting markup should be stripped from the rendered value
      * @return this
      */
     public MetadataParameter setRemoveHighlighting(boolean removeHighlighting) {
@@ -463,7 +463,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-
+     * @param replaceRules the list of find-and-replace rules applied to the value during rendering
      * @return {@link MetadataParameter}
      */
     public MetadataParameter setReplaceRules(List<MetadataReplaceRule> replaceRules) {

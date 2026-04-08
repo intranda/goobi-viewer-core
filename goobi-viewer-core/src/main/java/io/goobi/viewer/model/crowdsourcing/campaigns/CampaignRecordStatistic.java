@@ -168,7 +168,7 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Setter for the field <code>id</code>.
      *
-
+     * @param id the database primary key to set
      */
     public void setId(Long id) {
         this.id = id;
@@ -186,7 +186,7 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Setter for the field <code>dateCreated</code>.
      *
-
+     * @param dateCreated the date and time when this record statistic entry was created
      */
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
@@ -204,7 +204,7 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Setter for the field <code>dateUpdated</code>.
      *
-
+     * @param dateUpdated the date and time when this record statistic entry was last updated
      */
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
@@ -222,7 +222,7 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Setter for the field <code>owner</code>.
      *
-
+     * @param owner the campaign this record statistic belongs to
      */
     public void setOwner(Campaign owner) {
         this.owner = owner;
@@ -240,7 +240,7 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Setter for the field <code>pi</code>.
      *
-
+     * @param pi the persistent identifier of the record this statistic tracks
      */
     public void setPi(String pi) {
         this.pi = pi;
@@ -268,7 +268,7 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Setter for the field <code>status</code>.
      *
-
+     * @param status the crowdsourcing processing status for this record within the campaign
      */
     public void setStatus(CrowdsourcingStatus status) {
         this.status = status;
@@ -286,7 +286,7 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Setter for the field <code>annotators</code>.
      *
-
+     * @param annotators the list of users who have contributed annotations for this record
      */
     public void setAnnotators(List<User> annotators) {
         this.annotators = annotators;
@@ -304,7 +304,7 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Setter for the field <code>reviewers</code>.
      *
-
+     * @param reviewers the list of users who have reviewed annotations for this record
      */
     public void setReviewers(List<User> reviewers) {
         this.reviewers = reviewers;

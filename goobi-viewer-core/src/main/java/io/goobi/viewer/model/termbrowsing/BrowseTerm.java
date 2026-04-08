@@ -138,7 +138,7 @@ public class BrowseTerm implements Serializable {
     }
 
     /**
-
+     * @param hitCount the number of index hits for this browse term to set
      * @return this
      */
     public BrowseTerm setHitCount(long hitCount) {

@@ -148,7 +148,7 @@ public class CalendarView implements Serializable {
     /**
      * Setter for the field <code>year</code>.
      *
-
+     * @param year the four-digit year string to display; triggers calendar population
      */
     public void setYear(String year) {
         this.year = year;

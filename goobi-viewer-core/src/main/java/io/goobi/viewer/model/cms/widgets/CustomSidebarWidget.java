@@ -204,8 +204,8 @@ public class CustomSidebarWidget implements IPolyglott, Serializable {
 
     /**
      * Sets this widget to be displayed as a collapseable.
-     * 
-
+     *
+     * @param collapsed true if the widget should be rendered in collapsed state by default
      */
     public void setCollapsed(boolean collapsed) {
         this.collapsed = collapsed;

@@ -71,7 +71,7 @@ public class PhotoOEmbedResponse extends OEmbedResponse {
     /**
      * Setter for the field <code>url</code>.
      *
-
+     * @param url the direct URL to the photo resource
      */
     public void setUrl(String url) {
         this.url = url;

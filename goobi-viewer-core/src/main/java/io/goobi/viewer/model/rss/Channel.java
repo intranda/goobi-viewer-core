@@ -59,7 +59,7 @@ public class Channel {
     /**
      * Setter for the field <code>title</code>.
      *
-
+     * @param title the RSS channel title
      */
     public void setTitle(String title) {
         this.title = title;
@@ -77,7 +77,7 @@ public class Channel {
     /**
      * Setter for the field <code>link</code>.
      *
-
+     * @param link the URL of the website associated with this RSS channel
      */
     public void setLink(String link) {
         this.link = link;
@@ -95,7 +95,7 @@ public class Channel {
     /**
      * Setter for the field <code>description</code>.
      *
-
+     * @param description the human-readable description of this RSS channel
      */
     public void setDescription(String description) {
         this.description = description;
@@ -113,7 +113,7 @@ public class Channel {
     /**
      * Setter for the field <code>language</code>.
      *
-
+     * @param language the BCP 47 language code of the channel content (e.g. "de", "en")
      */
     public void setLanguage(String language) {
         this.language = language;
@@ -131,7 +131,7 @@ public class Channel {
     /**
      * Setter for the field <code>copyright</code>.
      *
-
+     * @param copyright the copyright notice for the channel content
      */
     public void setCopyright(String copyright) {
         this.copyright = copyright;
@@ -149,7 +149,7 @@ public class Channel {
     /**
      * Setter for the field <code>pubDate</code>.
      *
-
+     * @param pubDate the publication date of this RSS channel
      */
     public void setPubDate(Date pubDate) {
         this.pubDate = pubDate;

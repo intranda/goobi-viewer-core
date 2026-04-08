@@ -57,7 +57,7 @@ public abstract class OEmbedResponse {
     /**
      * Setter for the field <code>version</code>.
      *
-
+     * @param version the oEmbed spec version string (e.g. "1.0")
      */
     public void setVersion(String version) {
         this.version = version;
@@ -75,7 +75,7 @@ public abstract class OEmbedResponse {
     /**
      * Setter for the field <code>type</code>.
      *
-
+     * @param type the oEmbed response type (e.g. "photo", "rich", "video", "link")
      */
     public void setType(String type) {
         this.type = type;
@@ -93,7 +93,7 @@ public abstract class OEmbedResponse {
     /**
      * Setter for the field <code>width</code>.
      *
-
+     * @param width the width in pixels of the embedded content
      */
     public void setWidth(Integer width) {
         this.width = width;
@@ -111,7 +111,7 @@ public abstract class OEmbedResponse {
     /**
      * Setter for the field <code>height</code>.
      *
-
+     * @param height the height in pixels of the embedded content
      */
     public void setHeight(Integer height) {
         this.height = height;
@@ -129,7 +129,7 @@ public abstract class OEmbedResponse {
     /**
      * Setter for the field <code>title</code>.
      *
-
+     * @param title the title of the embedded resource
      */
     public void setTitle(String title) {
         this.title = title;
@@ -147,7 +147,7 @@ public abstract class OEmbedResponse {
     /**
      * Setter for the field <code>authorName</code>.
      *
-
+     * @param authorName the name of the author or creator of the embedded resource
      */
     public void setAuthorName(String authorName) {
         this.authorName = authorName;
@@ -165,7 +165,7 @@ public abstract class OEmbedResponse {
     /**
      * Setter for the field <code>authorUrl</code>.
      *
-
+     * @param authorUrl the URL of the author's profile or homepage
      */
     public void setAuthorUrl(String authorUrl) {
         this.authorUrl = authorUrl;
@@ -183,7 +183,7 @@ public abstract class OEmbedResponse {
     /**
      * Setter for the field <code>providerName</code>.
      *
-
+     * @param providerName the name of the oEmbed content provider
      */
     public void setProviderName(String providerName) {
         this.providerName = providerName;
@@ -201,7 +201,7 @@ public abstract class OEmbedResponse {
     /**
      * Setter for the field <code>providerUrl</code>.
      *
-
+     * @param providerUrl the homepage URL of the oEmbed content provider
      */
     public void setProviderUrl(String providerUrl) {
         this.providerUrl = providerUrl;
@@ -219,7 +219,7 @@ public abstract class OEmbedResponse {
     /**
      * Setter for the field <code>cacheAge</code>.
      *
-
+     * @param cacheAge the suggested cache lifetime of this response in seconds
      */
     public void setCacheAge(Integer cacheAge) {
         this.cacheAge = cacheAge;
@@ -237,7 +237,7 @@ public abstract class OEmbedResponse {
     /**
      * Setter for the field <code>thumbnailUrl</code>.
      *
-
+     * @param thumbnailUrl the URL of the thumbnail image for the embedded resource
      */
     public void setThumbnailUrl(String thumbnailUrl) {
         this.thumbnailUrl = thumbnailUrl;
@@ -255,7 +255,7 @@ public abstract class OEmbedResponse {
     /**
      * Setter for the field <code>thumbnailWidth</code>.
      *
-
+     * @param thumbnailWidth the width in pixels of the thumbnail image
      */
     public void setThumbnailWidth(Integer thumbnailWidth) {
         this.thumbnailWidth = thumbnailWidth;
@@ -273,7 +273,7 @@ public abstract class OEmbedResponse {
     /**
      * Setter for the field <code>thumbnailHeight</code>.
      *
-
+     * @param thumbnailHeight the height in pixels of the thumbnail image
      */
     public void setThumbnailHeight(Integer thumbnailHeight) {
         this.thumbnailHeight = thumbnailHeight;

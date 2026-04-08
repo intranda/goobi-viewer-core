@@ -369,7 +369,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-
+     * @param discoveryUri the OpenID Connect discovery endpoint URI used to retrieve provider metadata
      * @return this
      */
     public OpenIdProvider setDiscoveryUri(String discoveryUri) {
@@ -401,7 +401,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-
+     * @param tokenEndpoint the URL of the token endpoint used to exchange authorization codes for tokens
      * @return this
      */
     public OpenIdProvider setTokenEndpoint(String tokenEndpoint) {
@@ -417,7 +417,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-
+     * @param jwksUri the URL of the JSON Web Key Set endpoint used to retrieve signing keys
      * @return this
      */
     public OpenIdProvider setJwksUri(String jwksUri) {
@@ -431,7 +431,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-
+     * @param redirectionEndpoint the redirect URI registered with the provider to receive the authorization response
      * @return this
      */
     public OpenIdProvider setRedirectionEndpoint(String redirectionEndpoint) {
@@ -447,7 +447,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-
+     * @param scope the space-separated OAuth 2.0 scope values requested during authorization
      * @return this
      */
     public OpenIdProvider setScope(String scope) {
@@ -463,7 +463,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-
+     * @param responseType the OAuth 2.0 response type requested (e.g. "code" for authorization code flow)
      * @return this
      */
     public OpenIdProvider setResponseType(String responseType) {
@@ -477,7 +477,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-
+     * @param responseMode the OAuth 2.0 response mode specifying how the authorization response is returned (e.g. "query", "fragment")
      * @return this
      */
     public OpenIdProvider setResponseMode(String responseMode) {
@@ -491,7 +491,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-
+     * @param issuer the expected issuer claim value used to validate ID tokens from this provider
      * @return this
      */
     public OpenIdProvider setIssuer(String issuer) {
@@ -505,7 +505,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-
+     * @param tokenCheckDelay the delay in milliseconds before performing the token validation check
      * @return this
      */
     public OpenIdProvider setTokenCheckDelay(long tokenCheckDelay) {
@@ -558,7 +558,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     /**
      * Setter for the field <code>oAuthState</code>.
      *
-
+     * @param oAuthState the OAuth 2.0 state parameter used to prevent cross-site request forgery
      */
     public void setoAuthState(String oAuthState) {
         this.oAuthState = oAuthState;
@@ -576,7 +576,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     /**
      * Setter for the field <code>oAuthAccessToken</code>.
      *
-
+     * @param oAuthAccessToken the OAuth 2.0 access token received from the provider
      */
     public void setoAuthAccessToken(String oAuthAccessToken) {
         this.oAuthAccessToken = oAuthAccessToken;

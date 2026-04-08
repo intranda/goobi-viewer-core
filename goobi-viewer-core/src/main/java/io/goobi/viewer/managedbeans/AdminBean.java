@@ -756,7 +756,7 @@ public class AdminBean implements Serializable {
     /**
      * Setter for the field <code>currentUser</code>.
      *
-
+     * @param currentUser the user currently being edited in the admin interface
      */
     public void setCurrentUser(User currentUser) {
         this.currentUser = currentUser;
@@ -838,7 +838,7 @@ public class AdminBean implements Serializable {
     /**
      * Setter for the field <code>currentRole</code>.
      *
-
+     * @param currentRole the role currently being edited in the admin interface
      */
     public void setCurrentRole(Role currentRole) {
         this.currentRole = currentRole;
@@ -865,7 +865,7 @@ public class AdminBean implements Serializable {
     /**
      * Setter for the field <code>currentUserRole</code>.
      *
-
+     * @param currentUserRole the user-role assignment currently being edited
      */
     public void setCurrentUserRole(UserRole currentUserRole) {
         this.currentUserRole = currentUserRole;
@@ -883,7 +883,7 @@ public class AdminBean implements Serializable {
     /**
      * Setter for the field <code>currentIpRange</code>.
      *
-
+     * @param currentIpRange the IP range currently being edited in the admin interface
      */
     public void setCurrentIpRange(IpRange currentIpRange) {
         this.currentIpRange = currentIpRange;
@@ -944,7 +944,7 @@ public class AdminBean implements Serializable {
     /**
      * Setter for the field <code>currentPassword</code>.
      *
-
+     * @param currentPassword the current password entered for verification
      */
     public void setCurrentPassword(String currentPassword) {
         this.currentPassword = currentPassword;
@@ -962,7 +962,7 @@ public class AdminBean implements Serializable {
     /**
      * Setter for the field <code>passwordOne</code>.
      *
-
+     * @param passwordOne the new password entered in the first password field
      */
     public void setPasswordOne(String passwordOne) {
         this.passwordOne = passwordOne;
@@ -980,7 +980,7 @@ public class AdminBean implements Serializable {
     /**
      * Setter for the field <code>passwordTwo</code>.
      *
-
+     * @param passwordTwo the new password entered in the confirmation password field
      */
     public void setPasswordTwo(String passwordTwo) {
         this.passwordTwo = passwordTwo;
@@ -998,7 +998,7 @@ public class AdminBean implements Serializable {
     /**
      * Setter for the field <code>emailConfirmation</code>.
      *
-
+     * @param emailConfirmation the email address entered for confirmation during account deletion
      */
     public void setEmailConfirmation(String emailConfirmation) {
         this.emailConfirmation = emailConfirmation;
@@ -1016,7 +1016,7 @@ public class AdminBean implements Serializable {
     /**
      * Setter for the field <code>deleteUserContributions</code>.
      *
-
+     * @param deleteUserContributions true to delete all user contributions (comments, bookmarks) when deleting the user account
      */
     public void setDeleteUserContributions(boolean deleteUserContributions) {
         logger.trace("setDeleteUserContributions: {}", deleteUserContributions);
@@ -1309,7 +1309,7 @@ public class AdminBean implements Serializable {
     /**
      * Setter for the field <code>currentTranslationGroup</code>.
      *
-
+     * @param currentTranslationGroup the translation group currently being edited
      */
     public void setCurrentTranslationGroup(TranslationGroup currentTranslationGroup) {
         this.currentTranslationGroup = currentTranslationGroup;
@@ -1463,7 +1463,7 @@ public class AdminBean implements Serializable {
     /**
      * Setter for the field <code>translationGroupsEditorSession</code>.
      *
-
+     * @param translationGroupsEditorSession session identifier used to coordinate the translation groups editor
      */
     public static void setTranslationGroupsEditorSession(String translationGroupsEditorSession) {
         logger.trace("setTranslationGroupsEditorSession: {}", translationGroupsEditorSession);
@@ -1498,7 +1498,7 @@ public class AdminBean implements Serializable {
     /**
      * Setter for the field <code>uploadedAvatarFile</code>.
      *
-
+     * @param uploadedAvatarFile the uploaded file part containing the new avatar image
      */
     public void setUploadedAvatarFile(Part uploadedAvatarFile) {
         this.uploadedAvatarFile = uploadedAvatarFile;

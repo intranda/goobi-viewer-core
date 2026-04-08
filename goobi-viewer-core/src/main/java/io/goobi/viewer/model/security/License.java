@@ -618,7 +618,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Setter for the field <code>id</code>.
      *
-
+     * @param id the database primary key for this license
      */
     public void setId(Long id) {
         this.id = id;
@@ -636,7 +636,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Setter for the field <code>licenseType</code>.
      *
-
+     * @param licenseType the license type defining the access conditions and privileges for this license
      */
     public void setLicenseType(LicenseType licenseType) {
         this.licenseType = licenseType;
@@ -665,7 +665,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Setter for the field <code>user</code>.
      *
-
+     * @param user the user this license is granted to (clears userGroup and ipRange when non-null)
      * @should set userGroup and ipRange to null if user not null
      * @should not set userGroup and ipRange to null if user null
      */
@@ -691,7 +691,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Setter for the field <code>userGroup</code>.
      *
-
+     * @param userGroup the user group this license is granted to (clears user and ipRange when non-null)
      * @should set user and ipRange to null if userGroup not null
      * @should not set user and ipRange to null if userGroup null
      */
@@ -717,7 +717,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Setter for the field <code>ipRange</code>.
      *
-
+     * @param ipRange the IP range this license is granted to (clears user and userGroup when non-null)
      * @should set user and userGroup to null if ipRange not null
      * @should not set user and userGroup to null if ipRange null
      */
@@ -742,7 +742,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Setter for the field <code>start</code>.
      *
-
+     * @param start the date/time from which this license becomes valid; null means no start restriction
      */
     public void setStart(LocalDateTime start) {
         this.start = start;
@@ -760,7 +760,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Setter for the field <code>end</code>.
      *
-
+     * @param end the date/time after which this license expires; null means no end restriction
      */
     public void setEnd(LocalDateTime end) {
         this.end = end;
@@ -778,7 +778,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Setter for the field <code>privileges</code>.
      *
-
+     * @param privileges the set of privilege names granted by this license
      */
     public void setPrivileges(Set<String> privileges) {
         this.privileges = privileges;
@@ -796,7 +796,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Setter for the field <code>conditions</code>.
      *
-
+     * @param conditions the Solr query expression restricting the records this license applies to
      */
     public void setConditions(String conditions) {
         this.conditions = conditions;
@@ -814,7 +814,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Setter for the field <code>description</code>.
      *
-
+     * @param description the human-readable description of this license
      */
     public void setDescription(String description) {
         this.description = description;
@@ -850,7 +850,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Setter for the field <code>subthemeDiscriminatorValues</code>.
      *
-
+     * @param subthemeDiscriminatorValues the list of subtheme discriminator values that restrict the scope of this license
      */
     public void setSubthemeDiscriminatorValues(List<String> subthemeDiscriminatorValues) {
         this.subthemeDiscriminatorValues = subthemeDiscriminatorValues;
@@ -868,7 +868,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Setter for the field <code>allowedCategories</code>.
      *
-
+     * @param allowedCategories the list of CMS categories accessible under this license
      */
     public void setAllowedCategories(List<CMSCategory> allowedCategories) {
         this.allowedCategories = allowedCategories;
@@ -886,7 +886,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Setter for the field <code>allowedCmsTemplates</code>.
      *
-
+     * @param allowedCmsTemplates the list of CMS page templates accessible under this license
      */
     public void setAllowedCmsTemplates(List<CMSPageTemplate> allowedCmsTemplates) {
         this.allowedCmsTemplates = allowedCmsTemplates;
@@ -904,7 +904,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Setter for the field <code>allowedCrowdsourcingCampaigns</code>.
      *
-
+     * @param allowedCrowdsourcingCampaigns the list of crowdsourcing campaigns accessible under this license
      */
     public void setAllowedCrowdsourcingCampaigns(List<Campaign> allowedCrowdsourcingCampaigns) {
         this.allowedCrowdsourcingCampaigns = allowedCrowdsourcingCampaigns;

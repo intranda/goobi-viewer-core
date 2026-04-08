@@ -231,7 +231,7 @@ public class DownloadBean implements Serializable {
     /**
      * Setter for the field <code>downloadIdentifier</code>.
      *
-
+     * @param downloadIdentifier the persistent identifier of the record whose download job is being managed
      */
     public void setDownloadIdentifier(String downloadIdentifier) {
         this.downloadIdentifier = downloadIdentifier;

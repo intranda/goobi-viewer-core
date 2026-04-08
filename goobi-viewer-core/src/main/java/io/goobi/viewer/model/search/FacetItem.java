@@ -511,7 +511,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Setter for the field <code>field</code>.
      *
-
+     * @param field the Solr field name this facet item belongs to
      */
     @Override
     public void setField(String field) {
@@ -546,7 +546,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Setter for the field <code>value</code>.
      *
-
+     * @param value the facet value string
      */
     @Override
     public void setValue(String value) {
@@ -566,7 +566,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Setter for the field <code>value2</code>.
      *
-
+     * @param value2 the upper bound value for range facets
      */
     @Override
     public void setValue2(String value2) {
@@ -586,7 +586,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Setter for the field <code>link</code>.
      *
-
+     * @param link the colon-separated field:value string used as the facet link
      */
     @Override
     public void setLink(String link) {
@@ -615,7 +615,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Setter for the field <code>label</code>.
      *
-
+     * @param label the display label for this facet item
      * @return this
      */
     @Override
@@ -641,7 +641,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Dummy setter to fulfill the interface contract.
      *
-
+     * @param translatedLabel ignored; translations are computed dynamically from {@link #label}
      */
     @Override
     public void setTranslatedLabel(String translatedLabel) {
@@ -661,7 +661,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Setter for the field <code>count</code>.
      *
-
+     * @param count the number of search results matching this facet value
      * @return this
      */
     @Override

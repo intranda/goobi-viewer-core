@@ -736,7 +736,7 @@ public class AdminLicenseBean implements Serializable {
     /**
      * Setter for the field <code>currentRole</code>.
      *
-
+     * @param currentRole the role currently being edited in the license admin interface
      */
     public void setCurrentRole(Role currentRole) {
         this.currentRole = currentRole;
@@ -754,7 +754,7 @@ public class AdminLicenseBean implements Serializable {
     /**
      * Setter for the field <code>currentLicenseType</code>.
      *
-
+     * @param currentLicenseType the license type currently being edited in the admin interface
      */
     public void setCurrentLicenseType(LicenseType currentLicenseType) {
         if (currentLicenseType != null) {
@@ -802,7 +802,7 @@ public class AdminLicenseBean implements Serializable {
     /**
      * Setter for the field <code>currentLicense</code>.
      *
-
+     * @param currentLicense the license currently being edited in the admin interface
      */
     public void setCurrentLicense(License currentLicense) {
         if (currentLicense != null) {

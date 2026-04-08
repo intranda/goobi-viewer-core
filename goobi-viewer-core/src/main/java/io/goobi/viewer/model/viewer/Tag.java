@@ -85,7 +85,7 @@ public class Tag implements Comparable<Tag>, Serializable {
     /**
      * Setter for the field <code>size</code>.
      *
-
+     * @param size the relative size or weight of this tag in a tag cloud
      */
     public void setSize(long size) {
         this.size = size;
@@ -103,7 +103,7 @@ public class Tag implements Comparable<Tag>, Serializable {
     /**
      * Setter for the field <code>name</code>.
      *
-
+     * @param name the tag text value to display
      */
     public void setName(String name) {
         this.name = name;
@@ -143,7 +143,7 @@ public class Tag implements Comparable<Tag>, Serializable {
     /**
      * Setter for the field <code>field</code>.
      *
-
+     * @param field the Solr field name this tag is associated with
      */
     public void setField(String field) {
         this.field = field;

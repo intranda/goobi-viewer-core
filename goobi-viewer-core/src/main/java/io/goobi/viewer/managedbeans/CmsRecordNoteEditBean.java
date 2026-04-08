@@ -263,7 +263,8 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     /**
      * Return true if text and title are both complete (not empty) for both title and text. If locale is not the default locale, text/title counts as
      * complete if they are empty as long as the corresponding field in the default language is also empty.
-     * 
+     *
+     * @param locale the locale for which to check completeness
      * @return true if title and text of the note are complete; false otherwise;
      */
     @Override

@@ -503,7 +503,7 @@ public class TOC implements Serializable {
     /**
      * Setter for the field <code>tocVisible</code>.
      *
-
+     * @param tocVisible the number of visible TOC entries on the current page to set
      */
     public void setTocVisible(int tocVisible) {
         this.tocVisible = tocVisible;
@@ -521,7 +521,7 @@ public class TOC implements Serializable {
     /**
      * Setter for the field <code>tocInvisible</code>.
      *
-
+     * @param tocInvisible the number of hidden (collapsed) TOC entries on the current page to set
      */
     public void setTocInvisible(int tocInvisible) {
         this.tocInvisible = tocInvisible;
@@ -545,7 +545,7 @@ public class TOC implements Serializable {
     /**
      * Setter for the field <code>maxTocDepth</code>.
      *
-
+     * @param maxTocDepth the maximum nesting depth of the TOC tree to set
      */
     public void setMaxTocDepth(int maxTocDepth) {
         this.maxTocDepth = maxTocDepth;
@@ -563,7 +563,7 @@ public class TOC implements Serializable {
     /**
      * Setter for the field <code>totalTocSize</code>.
      *
-
+     * @param totalTocSize the total number of TOC entries across all pages to set
      */
     public void setTotalTocSize(int totalTocSize) {
         this.totalTocSize = totalTocSize;
@@ -581,7 +581,7 @@ public class TOC implements Serializable {
     /**
      * Setter for the field <code>currentPage</code>.
      *
-
+     * @param currentPage the 1-based page number of the TOC page to display
      * @should set value to 1 if given value too low
      * @should set value to last page number if given value too high
      */

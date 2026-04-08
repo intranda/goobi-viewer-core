@@ -195,7 +195,7 @@ public class FeedbackBean implements Serializable {
     /**
      * Setter for the field <code>feedback</code>.
      *
-
+     * @param feedback the Feedback object containing the user's feedback data
      */
     public void setFeedback(Feedback feedback) {
         this.feedback = feedback;

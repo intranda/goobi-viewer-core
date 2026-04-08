@@ -72,7 +72,7 @@ public class Object {
     /**
      * Setter for the field <code>type</code>.
      *
-
+     * @param type the 3D object format type
      */
     public void setType(ObjectFormat type) {
         this.type = type;
@@ -90,7 +90,7 @@ public class Object {
     /**
      * Setter for the field <code>uri</code>.
      *
-
+     * @param uri the URI pointing to the 3D object resource
      */
     public void setUri(URI uri) {
         this.uri = uri;
@@ -108,7 +108,7 @@ public class Object {
     /**
      * Setter for the field <code>center</code>.
      *
-
+     * @param center the 3D center point of the object for viewer positioning
      */
     public void setCenter(Point3D center) {
         this.center = center;
@@ -126,7 +126,7 @@ public class Object {
     /**
      * Setter for the field <code>rotation</code>.
      *
-
+     * @param rotation the initial rotation angles of the 3D object in the viewer
      */
     public void setRotation(Point3D rotation) {
         this.rotation = rotation;

@@ -220,7 +220,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Required setter for ManagedProperty injection.
      *
-
+     * @param navigationHelper the NavigationHelper instance to inject for testing
      */
     public void setNavigationHelper(NavigationHelper navigationHelper) {
         this.navigationHelper = navigationHelper;
@@ -229,7 +229,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Required setter for ManagedProperty injection.
      *
-
+     * @param cmsBean the CmsBean instance to inject for testing
      */
     public void setCmsBean(CmsBean cmsBean) {
         this.cmsBean = cmsBean;
@@ -238,7 +238,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Required setter for ManagedProperty injection.
      *
-
+     * @param searchBean the SearchBean instance to inject for testing
      */
     public void setSearchBean(SearchBean searchBean) {
         this.searchBean = searchBean;
@@ -247,7 +247,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Required setter for ManagedProperty injection.
      *
-
+     * @param bookshelfBean the BookmarkBean instance to inject for testing
      */
     public void setBookshelfBean(BookmarkBean bookshelfBean) {
         this.bookmarkBean = bookshelfBean;
@@ -256,7 +256,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Required setter for ManagedProperty injection.
      *
-
+     * @param breadcrumbBean the BreadcrumbBean instance to inject for testing
      */
     public void setBreadcrumbBean(BreadcrumbBean breadcrumbBean) {
         this.breadcrumbBean = breadcrumbBean;
@@ -883,7 +883,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Setter for the field <code>logid</code>.
      *
-
+     * @param logid structural element LOGID to navigate to, or "-" / empty for the top-level document
      * @throws io.goobi.viewer.exceptions.PresentationException
      */
     public void setLogid(String logid) throws IllegalUrlParameterException {
@@ -927,7 +927,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Setter for the field <code>anchor</code>.
      *
-
+     * @param anchor true if the current record is an anchor document
      */
     public void setAnchor(boolean anchor) {
         this.anchor = anchor;
@@ -965,7 +965,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Setter for the field <code>action</code>.
      *
-
+     * @param action navigation action string (e.g. "nextHit", "prevHit") to execute
      */
     public void setAction(String action) {
         synchronized (this) {
@@ -1943,7 +1943,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Setter for the field <code>lastReceivedIdentifier</code>.
      *
-
+     * @param lastReceivedIdentifier the persistent identifier of the last successfully loaded record
      */
     public void setLastReceivedIdentifier(String lastReceivedIdentifier) {
         this.lastReceivedIdentifier = lastReceivedIdentifier;
@@ -1961,7 +1961,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Setter for the field <code>recordLanguages</code>.
      *
-
+     * @param recordLanguages list of ISO 639-1 language codes available for the current record
      */
     public void setRecordLanguages(List<String> recordLanguages) {
         this.recordLanguages = recordLanguages;
@@ -1979,7 +1979,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Setter for the field <code>selectedRecordLanguage</code>.
      *
-
+     * @param selectedRecordLanguageCode ISO 639-1 language code of the language to select for this record
      */
     public void setSelectedRecordLanguage(String selectedRecordLanguageCode) {
         logger.trace("setSelectedRecordLanguage: {}", selectedRecordLanguageCode);
@@ -2350,7 +2350,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Setter for the field <code>deleteRecordKeepTrace</code>.
      *
-
+     * @param deleteRecordKeepTrace true to keep a deletion trace entry when deleting the record; false to remove completely
      */
     public void setDeleteRecordKeepTrace(Boolean deleteRecordKeepTrace) {
         this.deleteRecordKeepTrace = deleteRecordKeepTrace;
@@ -2368,7 +2368,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Setter for the field <code>clearCacheMode</code>.
      *
-
+     * @param clearCacheMode cache clearing mode string indicating which caches to clear
      */
     public void setClearCacheMode(String clearCacheMode) {
         logger.trace("setClearCacheMode: {}", clearCacheMode);
@@ -2551,7 +2551,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Setter for the field <code>selectedDownloadOptionLabel</code>.
      *
-
+     * @param selectedDownloadOptionLabel label of the download option selected by the user
      */
     public void setSelectedDownloadOptionLabel(String selectedDownloadOptionLabel) {
         logger.trace("setSelectedDownloadOption: {}", selectedDownloadOptionLabel != null ? selectedDownloadOptionLabel : null);

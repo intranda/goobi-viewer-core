@@ -109,7 +109,7 @@ public class CMSMediaItemMetadata implements Serializable {
     /**
      * Setter for the field <code>language</code>.
      *
-
+     * @param language the BCP 47 language code for this metadata entry
      */
     public void setLanguage(String language) {
         this.language = language;
@@ -127,7 +127,7 @@ public class CMSMediaItemMetadata implements Serializable {
     /**
      * Setter for the field <code>name</code>.
      *
-
+     * @param name the localized name of the media item
      */
     public void setName(String name) {
         this.name = name;
@@ -145,7 +145,7 @@ public class CMSMediaItemMetadata implements Serializable {
     /**
      * Setter for the field <code>description</code>.
      *
-
+     * @param description the localized description text for the media item
      */
     public void setDescription(String description) {
         this.description = description;

@@ -761,7 +761,7 @@ public class UserBean implements Serializable {
     /**
      * Setter for the field <code>user</code>.
      *
-
+     * @param user the currently authenticated user to set
      */
     public void setUser(User user) {
         this.user = user;
@@ -779,7 +779,7 @@ public class UserBean implements Serializable {
     /**
      * Setter for the field <code>nickName</code>.
      *
-
+     * @param nickName the desired nickname for the user account
      */
     public void setNickName(String nickName) {
         this.nickName = nickName;
@@ -797,7 +797,7 @@ public class UserBean implements Serializable {
     /**
      * Setter for the field <code>email</code>.
      *
-
+     * @param email the email address for login or registration
      */
     public void setEmail(String email) {
         this.email = email;
@@ -815,7 +815,7 @@ public class UserBean implements Serializable {
     /**
      * Setter for the field <code>password</code>.
      *
-
+     * @param password the plain-text password entered by the user for login or registration
      */
     public void setPassword(String password) {
         this.password = password;
@@ -999,7 +999,7 @@ public class UserBean implements Serializable {
     /**
      * Setter for the field <code>lastName</code>.
      *
-
+     * @param lastName the last name of the user
      */
     public void setLastName(String lastName) {
         this.lastName = lastName;
@@ -1017,7 +1017,7 @@ public class UserBean implements Serializable {
     /**
      * Setter for the field <code>redirectUrl</code>.
      *
-
+     * @param redirectUrl the URL to redirect to after a successful login, or null to use the default
      */
     public void setRedirectUrl(String redirectUrl) {
         if (!"RES_NOT_FOUND".equals(redirectUrl)) {
@@ -1054,7 +1054,7 @@ public class UserBean implements Serializable {
     /**
      * Setter for the field <code>activationKey</code>.
      *
-
+     * @param activationKey the account activation key sent to the user by email
      */
     public void setActivationKey(String activationKey) {
         this.activationKey = activationKey;
@@ -1072,7 +1072,7 @@ public class UserBean implements Serializable {
     /**
      * Setter for the field <code>transkribusUserName</code>.
      *
-
+     * @param transkribusUserName the Transkribus account username for the linked integration
      */
     public void setTranskribusUserName(String transkribusUserName) {
         this.transkribusUserName = transkribusUserName;
@@ -1090,7 +1090,7 @@ public class UserBean implements Serializable {
     /**
      * Setter for the field <code>transkribusPassword</code>.
      *
-
+     * @param transkribusPassword the Transkribus account password for the linked integration
      */
     public void setTranskribusPassword(String transkribusPassword) {
         this.transkribusPassword = transkribusPassword;
@@ -1121,7 +1121,7 @@ public class UserBean implements Serializable {
     /**
      * Setter for the field <code>hasAdminBackendAccess</code>.
      *
-
+     * @param hasAdminBackendAccess true if the current user has access to the admin backend; false otherwise
      */
     public void setHasAdminBackendAccess(Boolean hasAdminBackendAccess) {
         this.hasAdminBackendAccess = hasAdminBackendAccess;

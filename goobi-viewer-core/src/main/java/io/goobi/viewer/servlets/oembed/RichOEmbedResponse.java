@@ -121,7 +121,7 @@ public class RichOEmbedResponse extends OEmbedResponse {
     /**
      * Setter for the field <code>html</code>.
      *
-
+     * @param html the HTML snippet to embed for a rich oEmbed response
      */
     public void setHtml(String html) {
         this.html = html;

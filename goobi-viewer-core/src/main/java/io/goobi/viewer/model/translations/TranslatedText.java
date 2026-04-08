@@ -244,6 +244,8 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
 
     /**
      * Alias for {@link #isValid(Locale)}.
+     *
+     * @param locale the locale to check for completeness
      */
     @Override
     public boolean isComplete(Locale locale) {
@@ -251,6 +253,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     }
 
     /**
+     * @param locale the locale to check for a non-empty value
      * @return true if at least one locale has a non empty text set
      */
     @Override
@@ -259,6 +262,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     }
 
     /**
+     * @param locale the locale for which to retrieve the text value
      * @return an optional containing the text for the given locale if one exists, or an empty optional otherwise
      */
     @Override
@@ -297,6 +301,8 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
 
     /**
      * Two TranslatedTexts are considered equal if the have the same locales and the same texts for each locale.
+     *
+     * @param obj the object to compare to this translated text
      */
     @Override
     public boolean equals(Object obj) {

@@ -564,7 +564,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-
+     * @param filePathTiff the TIFF file path for this page
      * @return this
      */
     public PhysicalElement setFilePathTiff(String filePathTiff) {
@@ -578,7 +578,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-
+     * @param filePathJpeg the JPEG file path for this page
      * @return this
      */
     public PhysicalElement setFilePathJpeg(String filePathJpeg) {
@@ -616,7 +616,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Setter for the field <code>purlPart</code>.
      *
-
+     * @param purlPart the persistent URL fragment for this page
      */
     public void setPurlPart(String purlPart) {
         this.purlPart = purlPart;
@@ -691,7 +691,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Setter for the field <code>mimeType</code>.
      *
-
+     * @param mimeType the MIME type of the primary media file for this page
      */
     public void setMimeType(String mimeType) {
         this.mimeType = mimeType;
@@ -700,7 +700,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Setter for the field <code>width</code>.
      *
-
+     * @param width the image width in pixels
      */
     public void setWidth(int width) {
         this.width = width;
@@ -709,7 +709,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Setter for the field <code>height</code>.
      *
-
+     * @param height the image height in pixels
      */
     public void setHeight(int height) {
         this.height = height;
@@ -727,7 +727,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Setter for the field <code>fileIdRoot</code>.
      *
-
+     * @param fileIdRoot the root identifier used to build file IDs for this page
      */
     public void setFileIdRoot(String fileIdRoot) {
         this.fileIdRoot = fileIdRoot;
@@ -854,7 +854,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Setter for the field <code>fulltextAvailable</code>.
      *
-
+     * @param fulltextAvailable true if fulltext content is available for this page
      */
     public void setFulltextAvailable(boolean fulltextAvailable) {
         this.fulltextAvailable = fulltextAvailable;
@@ -908,7 +908,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Setter for the field <code>fulltextFileName</code>.
      *
-
+     * @param fulltextFileName the file name of the plain-text fulltext file for this page
      */
     public void setFulltextFileName(String fulltextFileName) {
         this.fulltextFileName = fulltextFileName;
@@ -926,7 +926,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Setter for the field <code>altoFileName</code>.
      *
-
+     * @param altoFileName the file name of the ALTO XML file for this page
      */
     public void setAltoFileName(String altoFileName) {
         this.altoFileName = altoFileName;
@@ -1007,7 +1007,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Setter for the field <code>fullText</code>.
      *
-
+     * @param fullText the plain-text fulltext content for this page
      */
     public void setFullText(String fullText) {
         this.fullText = fullText;
@@ -1142,7 +1142,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Setter for the field <code>fileNames</code>.
      *
-
+     * @param fileNames map of media format keys to file name values for this page
      */
     public void setFileNames(Map<String, String> fileNames) {
         this.fileNames = fileNames;
@@ -1395,7 +1395,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Setter for the field <code>accessConditions</code>.
      *
-
+     * @param accessConditions set of access condition identifiers restricting this page
      */
     public void setAccessConditions(Set<String> accessConditions) {
         this.accessConditions = accessConditions;
@@ -1783,7 +1783,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Setter for the field <code>fileSize</code>.
      *
-
+     * @param fileSize the size of the primary media file in bytes
      */
     public void setFileSize(long fileSize) {
         this.fileSize = fileSize;

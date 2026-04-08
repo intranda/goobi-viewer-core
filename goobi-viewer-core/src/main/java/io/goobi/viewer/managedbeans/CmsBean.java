@@ -277,7 +277,7 @@ public class CmsBean implements Serializable {
     /**
      * Required setter for ManagedProperty injection.
      *
-
+     * @param searchBean the SearchBean instance to inject for testing
      */
     public void setSearchBean(SearchBean searchBean) {
         this.searchBean = searchBean;
@@ -1478,7 +1478,7 @@ public class CmsBean implements Serializable {
     /**
      * Setter for the field <code>currentWorkPi</code>.
      *
-
+     * @param currentWorkPi persistent identifier of the record currently associated with the CMS page
      */
     public void setCurrentWorkPi(String currentWorkPi) {
         this.currentWorkPi = currentWorkPi == null ? "" : currentWorkPi;

@@ -151,7 +151,7 @@ public class CampaignRecordPageStatistic implements Serializable {
     /**
      * Setter for the field <code>id</code>.
      *
-
+     * @param id the database primary key to set
      */
     public void setId(Long id) {
         this.id = id;
@@ -169,7 +169,7 @@ public class CampaignRecordPageStatistic implements Serializable {
     /**
      * Setter for the field <code>dateCreated</code>.
      *
-
+     * @param dateCreated the date and time when this statistic entry was created
      */
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
@@ -187,7 +187,7 @@ public class CampaignRecordPageStatistic implements Serializable {
     /**
      * Setter for the field <code>dateUpdated</code>.
      *
-
+     * @param dateUpdated the date and time when this statistic entry was last updated
      */
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
@@ -205,7 +205,7 @@ public class CampaignRecordPageStatistic implements Serializable {
     /**
      * Setter for the field <code>owner</code>.
      *
-
+     * @param owner the campaign record statistic that owns this per-page statistic entry
      */
     public void setOwner(CampaignRecordStatistic owner) {
         this.owner = owner;
@@ -223,7 +223,7 @@ public class CampaignRecordPageStatistic implements Serializable {
     /**
      * Setter for the field <code>pi</code>.
      *
-
+     * @param pi the persistent identifier of the record this page statistic belongs to
      */
     public void setPi(String pi) {
         this.pi = pi;
@@ -261,7 +261,7 @@ public class CampaignRecordPageStatistic implements Serializable {
     /**
      * Setter for the field <code>status</code>.
      *
-
+     * @param status the crowdsourcing processing status for this page within the campaign
      */
     public void setStatus(CrowdsourcingStatus status) {
         this.status = status;
@@ -279,7 +279,7 @@ public class CampaignRecordPageStatistic implements Serializable {
     /**
      * Setter for the field <code>annotators</code>.
      *
-
+     * @param annotators the list of users who have contributed annotations to this page
      */
     public void setAnnotators(List<User> annotators) {
         this.annotators = annotators;
@@ -297,7 +297,7 @@ public class CampaignRecordPageStatistic implements Serializable {
     /**
      * Setter for the field <code>reviewers</code>.
      *
-
+     * @param reviewers the list of users who have reviewed annotations on this page
      */
     public void setReviewers(List<User> reviewers) {
         this.reviewers = reviewers;

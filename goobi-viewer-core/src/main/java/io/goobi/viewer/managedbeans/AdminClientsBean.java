@@ -127,8 +127,8 @@ public class AdminClientsBean implements Serializable {
 
     /**
      * Sets the currently edited client.
-     * 
-
+     *
+     * @param selectedClient the client application currently being edited in the admin interface
      */
     public void setSelectedClient(ClientApplication selectedClient) {
         this.selectedClient = selectedClient;

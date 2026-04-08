@@ -124,7 +124,7 @@ public class LabeledLink implements Serializable {
     /**
      * Setter for the field <code>name</code>.
      *
-
+     * @param name the plain-text display label to assign
      */
     public void setName(String name) {
         this.name = new SimpleMetadataValue(name);
@@ -151,7 +151,7 @@ public class LabeledLink implements Serializable {
     /**
      * Setter for the field <code>url</code>.
      *
-
+     * @param url the URL this link points to
      */
     public void setUrl(String url) {
         this.url = url;
@@ -169,7 +169,7 @@ public class LabeledLink implements Serializable {
     /**
      * Setter for the field <code>weight</code>.
      *
-
+     * @param weight the sort weight determining the display order of this link
      */
     public void setWeight(int weight) {
         this.weight = weight;

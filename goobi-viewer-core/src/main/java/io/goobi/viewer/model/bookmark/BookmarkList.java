@@ -178,6 +178,8 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
 
     /**
      * Descending order by dateUpdated.
+     *
+     * @param o the other bookmark list to compare to
      */
     @Override
     public int compareTo(BookmarkList o) {
@@ -362,7 +364,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Setter for the field <code>id</code>.
      *
-
+     * @param id the database ID to set
      */
     public void setId(Long id) {
         this.id = id;
@@ -380,7 +382,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Setter for the field <code>name</code>.
      *
-
+     * @param name the display name of this bookmark list; leading and trailing whitespace is trimmed
      */
     public void setName(String name) {
         if (name != null) {
@@ -402,7 +404,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Setter for the field <code>description</code>.
      *
-
+     * @param description an optional description of this bookmark list
      */
     public void setDescription(String description) {
         this.description = description;
@@ -429,7 +431,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Setter for the field <code>owner</code>.
      *
-
+     * @param owner the user who owns this bookmark list
      */
     public void setOwner(User owner) {
         this.owner = owner;
@@ -464,7 +466,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Setter for the field <code>isPublic</code>.
      *
-
+     * @param isPublic true to make this list publicly visible without authentication
      */
     public void setIsPublic(boolean isPublic) {
         this.isPublic = isPublic;
@@ -482,7 +484,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Setter for the field <code>shareKey</code>.
      *
-
+     * @param shareKey the unique key used to share this list via a public URL; null removes sharing
      */
     public void setShareKey(String shareKey) {
         this.shareKey = shareKey;
@@ -539,7 +541,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Setter for the field <code>items</code>.
      *
-
+     * @param items the list of bookmarks contained in this bookmark list
      */
     public void setItems(List<Bookmark> items) {
         this.items = items;
@@ -560,7 +562,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Setter for the field <code>groupShares</code>.
      *
-
+     * @param groupShares the user groups that have shared access to this bookmark list
      */
     public void setGroupShares(List<UserGroup> groupShares) {
         this.groupShares = groupShares;

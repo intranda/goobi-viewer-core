@@ -400,6 +400,8 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
 
     /**
      * Two clients are equal if heir {@link #clientIdentifier}s are equals.
+     *
+     * @param obj the object to compare to this client
      */
     @Override
     public boolean equals(Object obj) {

@@ -72,7 +72,7 @@ public class ExcelExport {
     }
 
     /**
-
+     * @param workbook the Apache POI streaming workbook to set
      * @return this
      */
     public ExcelExport setWorkbook(SXSSFWorkbook workbook) {
@@ -86,7 +86,7 @@ public class ExcelExport {
     }
 
     /**
-
+     * @param fileName the desired file name for the exported Excel file
      * @return this
      */
     public ExcelExport setFileName(String fileName) {

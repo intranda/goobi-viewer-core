@@ -70,7 +70,7 @@ public class TagCount implements Comparable<TagCount> {
     /**
      * Setter for the field <code>value</code>.
      *
-
+     * @param value text value of the named entity tag to set
      */
     public void setValue(String value) {
         this.value = value;

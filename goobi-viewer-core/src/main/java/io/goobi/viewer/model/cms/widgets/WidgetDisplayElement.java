@@ -176,6 +176,8 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
 
     /**
      * Both title and description are filled.
+     *
+     * @param locale the locale to check translation completeness for
      */
     @Override
     public boolean isComplete(Locale locale) {
@@ -184,6 +186,8 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
 
     /**
      * At least one of title and description is filled.
+     *
+     * @param locale the locale to check validity for
      */
     @Override
     public boolean isValid(Locale locale) {
@@ -202,6 +206,8 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
 
     /**
      * Not used, since this element isn't editable.
+     *
+     * @param locale the locale to set (ignored)
      */
     @Override
     public void setSelectedLocale(Locale locale) {
@@ -234,6 +240,8 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
 
     /**
      * Two elements are equal if their titles are equal.
+     *
+     * @param other the widget display element to compare to
      */
     @Override
     public int compareTo(WidgetDisplayElement other) {

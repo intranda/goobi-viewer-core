@@ -87,7 +87,7 @@ public class CMSCollectionTranslation extends Translation implements Serializabl
     /**
      * Setter for the field <code>owner</code>.
      *
-
+     * @param owner the CMS collection this translation belongs to
      */
     public void setOwner(CMSCollection owner) {
         this.owner = owner;

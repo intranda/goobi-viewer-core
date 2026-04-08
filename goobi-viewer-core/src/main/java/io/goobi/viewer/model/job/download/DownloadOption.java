@@ -104,7 +104,7 @@ public class DownloadOption {
     }
 
     /**
-
+     * @param label the human-readable display label for this download option
      * @return this
      */
     public DownloadOption setLabel(String label) {
@@ -118,7 +118,7 @@ public class DownloadOption {
     }
 
     /**
-
+     * @param format the image format identifier (e.g. "jpg", "png", "master") for the download
      * @return this
      */
     public DownloadOption setFormat(String format) {
@@ -143,7 +143,7 @@ public class DownloadOption {
     }
 
     /**
-
+     * @param boxSizeInPixel the maximum bounding box size in pixels as a number string, "max" for maximum resolution, or blank for no limit
      * @return this
      */
     public DownloadOption setBoxSizeInPixel(String boxSizeInPixel) {

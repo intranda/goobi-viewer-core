@@ -216,7 +216,7 @@ public class CitationLink {
     }
 
     /**
-
+     * @param field the Solr field name from which the citation value is retrieved
      * @return this
      */
     public CitationLink setField(String field) {
@@ -230,7 +230,7 @@ public class CitationLink {
     }
 
     /**
-
+     * @param pattern the URL pattern template used to build the citation link, with placeholders for field values
      * @return this
      */
     public CitationLink setPattern(String pattern) {
@@ -244,7 +244,7 @@ public class CitationLink {
     }
 
     /**
-
+     * @param topstructValueFallback true to fall back to the top-level structure element's field value when the current element has none
      * @return this
      */
     public CitationLink setTopstructValueFallback(boolean topstructValueFallback) {

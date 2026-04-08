@@ -748,7 +748,7 @@ public class CollectionView implements Serializable {
     /**
      * Setter for the field <code>showAllHierarchyLevels</code>.
      *
-
+     * @param showAllHierarchyLevels true to expand and display all collection hierarchy levels
      */
     public void setShowAllHierarchyLevels(boolean showAllHierarchyLevels) {
         this.showAllHierarchyLevels = showAllHierarchyLevels;

@@ -1149,7 +1149,7 @@ public class SearchFacets implements Serializable {
     /**
      * Setter for the field <code>tempValue</code>.
      *
-
+     * @param tempValue a temporary value held during facet editing before it is applied
      */
     public void setTempValue(String tempValue) {
         this.tempValue = tempValue;

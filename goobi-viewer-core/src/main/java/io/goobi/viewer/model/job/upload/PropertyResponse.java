@@ -34,7 +34,7 @@ public class PropertyResponse {
     }
 
     /**
-
+     * @param title the property title/name to set
      * @return this;
      */
     public PropertyResponse setTitle(String title) {
@@ -48,7 +48,7 @@ public class PropertyResponse {
     }
 
     /**
-
+     * @param value the property value to set
      * @return this
      */
     public PropertyResponse setValue(String value) {

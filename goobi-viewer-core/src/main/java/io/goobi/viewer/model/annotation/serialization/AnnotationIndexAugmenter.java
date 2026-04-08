@@ -177,6 +177,8 @@ public class AnnotationIndexAugmenter implements IndexAugmenter {
 
     /**
      * Two instances are equal if they contain the same annotations (disregarding order).
+     *
+     * @param obj the object to compare with
      */
     @Override
     public boolean equals(Object obj) {

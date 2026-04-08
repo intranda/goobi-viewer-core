@@ -89,7 +89,7 @@ public class Feedback implements Serializable {
     /**
      * Setter for the field <code>name</code>.
      *
-
+     * @param name the sender's name to set
      */
     public void setName(String name) {
         this.name = name;
@@ -107,7 +107,7 @@ public class Feedback implements Serializable {
     /**
      * Setter for the field <code>senderAddress</code>.
      *
-
+     * @param senderAddress the sender's email address to set
      */
     public void setSenderAddress(String senderAddress) {
         this.senderAddress = senderAddress;
@@ -125,7 +125,7 @@ public class Feedback implements Serializable {
     /**
      * Setter for the field <code>url</code>.
      *
-
+     * @param url the page URL from which the feedback was submitted
      */
     public void setUrl(String url) {
         this.url = url;
@@ -143,7 +143,7 @@ public class Feedback implements Serializable {
     /**
      * Setter for the field <code>type</code>.
      *
-
+     * @param type the feedback type or category to set
      */
     public void setType(String type) {
         this.type = type;
@@ -161,7 +161,7 @@ public class Feedback implements Serializable {
     /**
      * Setter for the field <code>message</code>.
      *
-
+     * @param message the feedback message text to set
      */
     public void setMessage(String message) {
         this.message = message;

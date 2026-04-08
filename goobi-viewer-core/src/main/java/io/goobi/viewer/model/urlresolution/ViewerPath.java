@@ -353,7 +353,7 @@ public class ViewerPath implements Serializable {
     /**
      * Setter for the field <code>campaign</code>.
      *
-
+     * @param campaign the crowdsourcing campaign associated with this path
      */
     public void setCampaign(Campaign campaign) {
         this.campaign = campaign;

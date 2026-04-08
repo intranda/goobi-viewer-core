@@ -85,8 +85,8 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
 
     /**
      * Sets the SOLR field for which to list values.
-     * 
-
+     *
+     * @param facetField the name of the Solr field to facet on
      */
     public void setFacetField(String facetField) {
         this.facetField = facetField;
@@ -132,8 +132,8 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
 
     /**
      * Set the value of {@link #getFilterQuery()}.
-     * 
-
+     *
+     * @param filterQuery an additional Solr query to restrict which field values are shown
      */
     public void setFilterQuery(String filterQuery) {
         this.filterQuery = filterQuery;

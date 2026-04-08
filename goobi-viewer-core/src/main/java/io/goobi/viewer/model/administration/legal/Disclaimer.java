@@ -118,8 +118,8 @@ public class Disclaimer {
 
     /**
      * Set the database id.
-     * 
-
+     *
+     * @param id the database primary key of this disclaimer
      */
     public void setId(Long id) {
         this.id = id;
@@ -136,8 +136,8 @@ public class Disclaimer {
 
     /**
      * Set the disclaimer text.
-     * 
-
+     *
+     * @param text the translated text to display in the disclaimer
      */
     public void setText(TranslatedText text) {
         this.text = text;
@@ -154,8 +154,8 @@ public class Disclaimer {
 
     /**
      * Set the disclaimer to active/inactive state.
-     * 
-
+     *
+     * @param active true to enable display of the disclaimer, false to hide it
      */
     public void setActive(boolean active) {
         this.active = active;
@@ -172,8 +172,8 @@ public class Disclaimer {
 
     /**
      * Set the date after which acceptance of the disclaimer must have happened to be valid.
-     * 
-
+     *
+     * @param requiresConsentAfter the cutoff date; prior acceptances are no longer considered valid
      */
     public void setRequiresConsentAfter(LocalDateTime requiresConsentAfter) {
         this.requiresConsentAfter = requiresConsentAfter;

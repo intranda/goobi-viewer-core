@@ -359,7 +359,7 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-
+     * @param label the display label for this search query item
      * @return this
      */
     public SearchQueryItem setLabel(String label) {
@@ -379,7 +379,7 @@ public class SearchQueryItem implements Serializable {
     /**
      * Setter for the field <code>field</code>.
      *
-
+     * @param field the Solr field name to search in for this query item
      */
     public void setField(String field) {
         this.field = field;
@@ -425,7 +425,7 @@ public class SearchQueryItem implements Serializable {
     /**
      * Backwards compatibility setter.
      *
-
+     * @param value the search value to set on the first query line
      */
     public void setValue(final String value) {
         // logger.trace("setValue: {}", value); //NOSONAR Debug
@@ -468,8 +468,8 @@ public class SearchQueryItem implements Serializable {
 
     /**
      * Backwards compatibility method.
-     * 
-
+     *
+     * @param value2 the upper bound value to set on the first query line (used for range searches)
      */
     public void setValue2(final String value2) {
         if (!lines.isEmpty()) {
@@ -488,8 +488,8 @@ public class SearchQueryItem implements Serializable {
 
     /**
      * Setter for unit tets.
-     * 
-
+     *
+     * @param displaySelectItems true if the field should show a select list instead of a free-text input; false otherwise
      */
     public void setDisplaySelectItems(boolean displaySelectItems) {
         this.displaySelectItems = displaySelectItems;

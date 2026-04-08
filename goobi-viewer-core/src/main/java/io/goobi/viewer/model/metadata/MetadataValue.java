@@ -502,7 +502,7 @@ public class MetadataValue implements Serializable {
     /**
      * Setter for the field <code>masterValue</code>.
      *
-
+     * @param masterValue the template string into which parameter values are substituted during rendering
      */
     public void setMasterValue(String masterValue) {
         this.masterValue = masterValue;
@@ -523,7 +523,7 @@ public class MetadataValue implements Serializable {
     /**
      * Setter for the field <code>groupType</code>.
      *
-
+     * @param groupType the METADATATYPE value of the owning grouped metadata structure element
      * @return this
      */
     public MetadataValue setGroupType(String groupType) {
@@ -537,7 +537,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-
+     * @param docstrct the document structure type of the owning structure element
      * @return this
      */
     public MetadataValue setDocstrct(String docstrct) {
@@ -561,7 +561,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-
+     * @param label the display label for this metadata value
      * @return this
      */
     public MetadataValue setLabel(String label) {
@@ -570,7 +570,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-
+     * @param citationProcessor the configured CSL citation processor used to format this value as a citation
      * @return this
      */
     public MetadataValue setCitationProcessor(CSL citationProcessor) {
@@ -579,7 +579,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-
+     * @param citationItemDataProvider the data provider that supplies citation item data to the CSL processor
      * @return this
      */
     public MetadataValue setCitationItemDataProvider(CitationDataProvider citationItemDataProvider) {

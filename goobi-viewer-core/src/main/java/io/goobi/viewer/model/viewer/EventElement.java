@@ -246,7 +246,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     /**
      * Setter for the field <code>type</code>.
      *
-
+     * @param type the event type string (e.g. from MODS/LIDO metadata)
      */
     public void setType(String type) {
         this.type = type;
@@ -264,7 +264,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     /**
      * Setter for the field <code>dateStart</code>.
      *
-
+     * @param dateStart the start date and time of this event
      */
     public void setDateStart(LocalDateTime dateStart) {
         this.dateStart = dateStart;
@@ -282,7 +282,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     /**
      * Setter for the field <code>dateEnd</code>.
      *
-
+     * @param dateEnd the end date and time of this event
      */
     public void setDateEnd(LocalDateTime dateEnd) {
         this.dateEnd = dateEnd;

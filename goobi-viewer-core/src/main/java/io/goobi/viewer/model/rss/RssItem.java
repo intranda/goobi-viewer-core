@@ -78,7 +78,7 @@ public class RssItem implements Comparable<RssItem>, IAccessDeniedThumbnailOutpu
     /**
      * Setter for the field <code>title</code>.
      *
-
+     * @param title the title of this RSS item
      */
     public void setTitle(String title) {
         this.title = title;
@@ -96,7 +96,7 @@ public class RssItem implements Comparable<RssItem>, IAccessDeniedThumbnailOutpu
     /**
      * Setter for the field <code>link</code>.
      *
-
+     * @param link the URL of the record or resource represented by this RSS item
      */
     public void setLink(String link) {
         this.link = link;
@@ -114,7 +114,7 @@ public class RssItem implements Comparable<RssItem>, IAccessDeniedThumbnailOutpu
     /**
      * Setter for the field <code>description</code>.
      *
-
+     * @param description the structured description object containing image and text for this RSS item
      */
     public void setDescription(Description description) {
         this.description = description;
@@ -132,7 +132,7 @@ public class RssItem implements Comparable<RssItem>, IAccessDeniedThumbnailOutpu
     /**
      * Setter for the field <code>pubDate</code>.
      *
-
+     * @param pubDate the publication date of this RSS item, used for sorting
      */
     public void setPubDate(Date pubDate) {
         this.pubDate = pubDate;
@@ -150,7 +150,7 @@ public class RssItem implements Comparable<RssItem>, IAccessDeniedThumbnailOutpu
     /**
      * Setter for the field <code>creator</code>.
      *
-
+     * @param creator the Dublin Core creator (author or responsible party) of this RSS item
      */
     public void setCreator(String creator) {
         this.creator = creator;
@@ -159,7 +159,7 @@ public class RssItem implements Comparable<RssItem>, IAccessDeniedThumbnailOutpu
     /**
      * Setter for the field <code>docType</code>.
      *
-
+     * @param docType the Solr document type of the record represented by this RSS item (e.g. "monograph", "periodical")
      */
     public void setDocType(String docType) {
         this.docType = docType;

@@ -100,7 +100,7 @@ public class SearchFilter implements Serializable {
     /**
      * Setter for the field <code>label</code>.
      *
-
+     * @param label the display label shown for this search filter in the UI
      */
     public void setLabel(String label) {
         this.label = label;
@@ -118,7 +118,7 @@ public class SearchFilter implements Serializable {
     /**
      * Setter for the field <code>field</code>.
      *
-
+     * @param field the Solr field name this search filter applies to
      */
     public void setField(String field) {
         this.field = field;

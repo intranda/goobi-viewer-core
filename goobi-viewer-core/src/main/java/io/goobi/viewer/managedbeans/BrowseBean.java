@@ -126,7 +126,7 @@ public class BrowseBean implements Serializable {
     /**
      * Required setter for ManagedProperty injection.
      *
-
+     * @param breadcrumbBean the BreadcrumbBean instance to inject for testing
      */
     public void setBreadcrumbBean(BreadcrumbBean breadcrumbBean) {
         this.breadcrumbBean = breadcrumbBean;
@@ -283,7 +283,7 @@ public class BrowseBean implements Serializable {
     /**
      * Setter for the field <code>topVisibleCollection</code>.
      *
-
+     * @param topVisibleCollecion name of the top-level collection currently visible in the collection view
      */
     public void setTopVisibleCollection(String topVisibleCollecion) {
         this.topVisibleCollection = topVisibleCollecion;
@@ -563,7 +563,7 @@ public class BrowseBean implements Serializable {
     /**
      * Setter for the field <code>browsingMenuField</code>.
      *
-
+     * @param browsingMenuField Solr field name to use for term browsing, or "-" / null for none
      */
     public void setBrowsingMenuField(final String browsingMenuField) {
         synchronized (this) {
@@ -706,7 +706,7 @@ public class BrowseBean implements Serializable {
     /**
      * Setter for the field <code>currentStringFilter</code>.
      *
-
+     * @param currentStringFilter the alphabetical filter character(s) to apply to the browse term list
      */
     public void setCurrentStringFilter(final String currentStringFilter) {
         synchronized (this) {
@@ -737,7 +737,7 @@ public class BrowseBean implements Serializable {
     /**
      * Setter for the field <code>filterQuery</code>.
      *
-
+     * @param filterQuery Solr filter query to restrict the browse results, or "-" for none
      */
     public void setFilterQuery(String filterQuery) {
         this.filterQuery = "-".equals(filterQuery) ? null : filterQuery;
@@ -757,7 +757,7 @@ public class BrowseBean implements Serializable {
     /**
      * Setter for the field <code>currentPage</code>.
      *
-
+     * @param currentPage the 1-based page number to display in the browse term list
      */
     public void setCurrentPage(int currentPage) {
         synchronized (this) {
@@ -976,7 +976,7 @@ public class BrowseBean implements Serializable {
     /**
      * Setter for the field <code>collectionField</code>.
      *
-
+     * @param collectionField Solr field name used to identify the collection hierarchy
      */
     public void setCollectionField(String collectionField) {
         this.collectionField = collectionField;

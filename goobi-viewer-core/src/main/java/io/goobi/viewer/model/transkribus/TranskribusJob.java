@@ -120,7 +120,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Setter for the field <code>id</code>.
      *
-
+     * @param id the database identifier to set
      */
     public void setId(Long id) {
         this.id = id;
@@ -138,7 +138,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Setter for the field <code>jobId</code>.
      *
-
+     * @param jobId the Transkribus job identifier to set
      */
     public void setJobId(String jobId) {
         this.jobId = jobId;
@@ -156,7 +156,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Setter for the field <code>docId</code>.
      *
-
+     * @param docId the Transkribus document identifier to set
      */
     public void setDocId(String docId) {
         this.docId = docId;
@@ -174,7 +174,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Setter for the field <code>pi</code>.
      *
-
+     * @param pi the persistent identifier of the Goobi viewer record to set
      */
     public void setPi(String pi) {
         this.pi = pi;
@@ -192,7 +192,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Setter for the field <code>ownerId</code>.
      *
-
+     * @param ownerId the identifier of the user who submitted this job to set
      */
     public void setOwnerId(String ownerId) {
         this.ownerId = ownerId;
@@ -210,7 +210,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Setter for the field <code>userCollectionId</code>.
      *
-
+     * @param userCollectionId the user's Transkribus collection identifier to set
      */
     public void setUserCollectionId(String userCollectionId) {
         this.userCollectionId = userCollectionId;
@@ -228,7 +228,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Setter for the field <code>viewerCollectionId</code>.
      *
-
+     * @param viewerCollectionId the viewer's Transkribus collection identifier to set
      */
     public void setViewerCollectionId(String viewerCollectionId) {
         this.viewerCollectionId = viewerCollectionId;
@@ -246,7 +246,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Setter for the field <code>message</code>.
      *
-
+     * @param message the status or error message from Transkribus to set
      */
     public void setMessage(String message) {
         this.message = message;
@@ -264,7 +264,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Setter for the field <code>dateCreated</code>.
      *
-
+     * @param dateCreated the timestamp when this job was created to set
      */
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
@@ -282,7 +282,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Setter for the field <code>status</code>.
      *
-
+     * @param status the current processing status of this job to set
      */
     public void setStatus(JobStatus status) {
         this.status = status;
@@ -300,7 +300,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Setter for the field <code>description</code>.
      *
-
+     * @param description a human-readable description of this job to set
      */
     public void setDescription(String description) {
         this.description = description;
@@ -318,7 +318,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Setter for the field <code>observers</code>.
      *
-
+     * @param observers the list of email addresses to notify about job status changes to set
      */
     public void setObservers(List<String> observers) {
         this.observers = observers;

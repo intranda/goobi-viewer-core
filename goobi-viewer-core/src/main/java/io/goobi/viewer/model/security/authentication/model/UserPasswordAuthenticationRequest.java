@@ -70,7 +70,7 @@ public class UserPasswordAuthenticationRequest {
     /**
      * Setter for the field <code>username</code>.
      *
-
+     * @param username login name of the user to set
      */
     public void setUsername(String username) {
         this.username = username;
@@ -79,7 +79,7 @@ public class UserPasswordAuthenticationRequest {
     /**
      * Setter for the field <code>password</code>.
      *
-
+     * @param password plaintext password for authentication to set
      */
     public void setPassword(String password) {
         this.password = password;

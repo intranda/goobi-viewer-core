@@ -210,13 +210,13 @@ public class AccessTicket {
     /**
      * Setter for the field <code>id</code>.
      *
-
+     * @param id the database identifier to set
      */
     public void setId(Long id) {
         this.id = id;
     }
 
-    
+
     public AccessTicketType getType() {
         return type;
     }

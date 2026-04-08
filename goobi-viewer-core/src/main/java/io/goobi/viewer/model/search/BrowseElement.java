@@ -759,7 +759,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Setter for the field <code>labelShort</code>.
      *
-
+     * @param labelShort the abbreviated label value to display in compact search result views
      */
     public void setLabelShort(IMetadataValue labelShort) {
         this.labelShort = labelShort;
@@ -866,7 +866,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Setter for the field <code>fulltext</code>.
      *
-
+     * @param fulltext the full-text content associated with this browse element
      */
     public void setFulltext(String fulltext) {
         this.fulltext = fulltext;
@@ -912,7 +912,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Setter for the field <code>volumeNo</code>.
      *
-
+     * @param volumeNo the volume number string for this browse element
      */
     public void setVolumeNo(String volumeNo) {
         this.volumeNo = volumeNo;
@@ -975,7 +975,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Setter for the field <code>anchor</code>.
      *
-
+     * @param anchor true if this element represents an anchor document; false otherwise
      */
     public void setAnchor(boolean anchor) {
         this.anchor = anchor;
@@ -993,7 +993,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Setter for the field <code>hasImages</code>.
      *
-
+     * @param hasImages true if this element has associated image content; false otherwise
      */
     public void setHasImages(boolean hasImages) {
         this.hasImages = hasImages;
@@ -1029,7 +1029,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Setter for the field <code>pi</code>.
      *
-
+     * @param pi the persistent identifier of the record associated with this browse element
      */
     public void setPi(String pi) {
         this.pi = pi;
@@ -1384,7 +1384,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Setter for the field <code>hasMedia</code>.
      *
-
+     * @param hasMedia true if this element has associated non-image media content; false otherwise
      */
     public void setHasMedia(boolean hasMedia) {
         this.hasMedia = hasMedia;

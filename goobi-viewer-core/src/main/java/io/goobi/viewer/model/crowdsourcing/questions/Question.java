@@ -220,7 +220,7 @@ public class Question implements Serializable {
     /**
      * Setter for the field <code>id</code>.
      *
-
+     * @param id the database primary key to set
      */
     public void setId(Long id) {
         this.id = id;
@@ -238,7 +238,7 @@ public class Question implements Serializable {
     /**
      * Setter for the field <code>owner</code>.
      *
-
+     * @param owner the campaign this question belongs to
      */
     public void setOwner(Campaign owner) {
         this.owner = owner;
@@ -261,7 +261,7 @@ public class Question implements Serializable {
     /**
      * Setter for the field <code>questionType</code>.
      *
-
+     * @param questionType the type of annotation this question requests from contributors
      */
     public void setQuestionType(QuestionType questionType) {
         this.questionType = questionType;
@@ -279,7 +279,7 @@ public class Question implements Serializable {
     /**
      * Setter for the field <code>targetSelector</code>.
      *
-
+     * @param targetSelector the selector defining which part of the record this question targets
      */
     public void setTargetSelector(TargetSelector targetSelector) {
         this.targetSelector = targetSelector;
@@ -349,7 +349,7 @@ public class Question implements Serializable {
     /**
      * Setter for the field <code>targetFrequency</code>.
      *
-
+     * @param targetFrequency the number of times this question should be answered per target resource
      */
     public void setTargetFrequency(int targetFrequency) {
         this.targetFrequency = targetFrequency;
