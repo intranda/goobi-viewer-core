@@ -1198,6 +1198,15 @@
 				<configuration>
 					<doclint>none</doclint>
 					<failOnWarnings>true</failOnWarnings>
+					<source>21</source>
+					<windowtitle>Goobi viewer core ${project.version} API</windowtitle>
+					<doctitle>Goobi viewer core ${project.version} API</doctitle>
+					<notimestamp>true</notimestamp>
+					<splitindex>true</splitindex>
+					<links>
+						<link>https://docs.oracle.com/en/java/javase/21/docs/api/</link>
+						<link>https://jakarta.ee/specifications/platform/10/apidocs/</link>
+					</links>
 					<tags>
 						<tag>
 							<!-- Disables custom @should tag in Javadoc see:
@@ -1312,10 +1321,19 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.10.1</version>
+				<version>3.12.0</version>
 				<configuration>
 					<doclint>none</doclint>
 					<failOnWarnings>true</failOnWarnings>
+					<source>21</source>
+					<windowtitle>Goobi viewer core ${project.version} API</windowtitle>
+					<doctitle>Goobi viewer core ${project.version} API</doctitle>
+					<notimestamp>true</notimestamp>
+					<splitindex>true</splitindex>
+					<links>
+						<link>https://docs.oracle.com/en/java/javase/21/docs/api/</link>
+						<link>https://jakarta.ee/specifications/platform/10/apidocs/</link>
+					</links>
 					<tags>
 						<tag>
 							<name>should</name>
