@@ -43,6 +43,10 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
 
+/**
+ * Abstract JPA base entity representing a set of geo-map features with a marker style and optional name,
+ * persisted in a single table with subclass-specific discriminator values.
+ */
 @Entity
 @Table(name = "cms_geomap_featureset")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)

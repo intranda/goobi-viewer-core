@@ -24,6 +24,10 @@ package io.goobi.viewer.model.job;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.modules.IModule;
 
+/**
+ * Enumerates the built-in asynchronous task types available in the Goobi viewer, each carrying
+ * a default Quartz cron expression (empty string for on-demand tasks without a fixed schedule).
+ */
 public enum TaskType implements ITaskType {
     /** Send emails to all search owners if their searches have changed results. */
     NOTIFY_SEARCH_UPDATE("0 42 8,12,17 * * ?"),

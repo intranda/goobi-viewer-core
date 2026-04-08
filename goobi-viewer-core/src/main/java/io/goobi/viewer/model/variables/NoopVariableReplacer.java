@@ -23,6 +23,10 @@ package io.goobi.viewer.model.variables;
 
 import java.util.Collections;
 
+/**
+ * A no-operation {@link VariableReplacer} that is initialised with an empty variable map
+ * and leaves all input strings unchanged.
+ */
 public class NoopVariableReplacer extends VariableReplacer {
 
     public NoopVariableReplacer() {

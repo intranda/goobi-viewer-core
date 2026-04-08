@@ -21,6 +21,10 @@
  */
 package io.goobi.viewer.model.metadata;
 
+/**
+ * A {@link MetadataListElement} that acts as a visual separator between groups of metadata entries
+ * in a displayed metadata list.
+ */
 public class MetadataListSeparator implements MetadataListElement {
 
 }

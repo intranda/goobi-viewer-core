@@ -31,6 +31,10 @@ import io.goobi.viewer.model.metadata.ComplexMetadataContainer;
 import io.goobi.viewer.model.metadata.MetadataContainer;
 import io.goobi.viewer.solr.SolrConstants;
 
+/**
+ * Aggregates a Solr main document together with its inline metadata, grouped METADATA child documents,
+ * and structural child docstructs, used to supply data for geo-map feature generation.
+ */
 public class MetadataDocument {
 
     private final String pi;

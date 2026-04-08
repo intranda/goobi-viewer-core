@@ -21,6 +21,10 @@
  */
 package io.goobi.viewer.exceptions;
 
+/**
+ * Abstract base class for all exceptions related to archive resource operations, providing a
+ * message-template mechanism that substitutes named resource placeholders.
+ */
 public abstract class ArchiveException extends PresentationException {
 
     private static final long serialVersionUID = -6999584810651228875L;

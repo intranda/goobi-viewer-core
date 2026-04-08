@@ -31,6 +31,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+/**
+ * Manages per-session exclusive edit locks for configuration files in the config editor, preventing
+ * concurrent modifications by different HTTP sessions.
+ */
 public class FileLocks {
 
     private static final Logger logger = LogManager.getLogger(FileLocks.class);

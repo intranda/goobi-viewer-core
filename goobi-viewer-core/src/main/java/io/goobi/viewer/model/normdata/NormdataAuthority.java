@@ -24,6 +24,10 @@ package io.goobi.viewer.model.normdata;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Enumerates supported norm-data authorities (currently only {@code GND}), each providing
+ * the JSON-LD context URL and base URI used to resolve authority record identifiers.
+ */
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum NormdataAuthority {
 

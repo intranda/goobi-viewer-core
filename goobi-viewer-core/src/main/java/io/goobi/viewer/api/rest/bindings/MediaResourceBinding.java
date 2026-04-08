@@ -26,6 +26,10 @@ import java.lang.annotation.RetentionPolicy;
 
 import jakarta.ws.rs.NameBinding;
 
+/**
+ * JAX-RS name binding annotation used to mark REST endpoints that serve media resources.
+ * Filters bound to this annotation can intercept media resource requests for authentication or content-type handling.
+ */
 @NameBinding
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MediaResourceBinding {

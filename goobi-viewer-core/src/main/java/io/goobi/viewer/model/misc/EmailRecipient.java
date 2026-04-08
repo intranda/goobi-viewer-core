@@ -21,6 +21,10 @@
  */
 package io.goobi.viewer.model.misc;
 
+/**
+ * Represents a named email recipient with an identifier, a display label, an email address,
+ * and a flag indicating whether it is the default recipient.
+ */
 public class EmailRecipient {
 
     private final String id;

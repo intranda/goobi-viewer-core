@@ -40,6 +40,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+/**
+ * JPA entity that stores per-language placeholder information (e.g. description text and an optional
+ * CMS media image) for a {@link LicenseType}, persisted in the {@code license_type_placeholder_info} table.
+ */
 @Entity
 @Table(name = "license_type_placeholder_info")
 public class LicenseTypePlaceholderInfo extends Translation implements CMSMediaHolder, Serializable {

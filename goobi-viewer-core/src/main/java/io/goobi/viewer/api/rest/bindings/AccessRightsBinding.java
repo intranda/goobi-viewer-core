@@ -28,6 +28,10 @@ import java.lang.annotation.Target;
 
 import jakarta.ws.rs.NameBinding;
 
+/**
+ * JAX-RS name binding annotation used to restrict REST endpoint access based on required access rights.
+ * Apply to a resource class or method together with a filter that checks the specified rights values.
+ */
 @NameBinding
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })

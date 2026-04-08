@@ -24,6 +24,10 @@ package io.goobi.viewer.model.search.query;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Immutable value object holding the result of a parsed search query, containing the user-facing
+ * display string, the internal Solr query, extracted search terms, and the proximity distance.
+ */
 public final class QueryResult {
 
     private final String displaySearchString;

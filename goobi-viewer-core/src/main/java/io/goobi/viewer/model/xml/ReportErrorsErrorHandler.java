@@ -28,6 +28,10 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+/**
+ * SAX {@link ErrorHandler} implementation that collects all warnings, errors, and fatal errors
+ * into a list of {@link XMLError} objects instead of throwing exceptions immediately.
+ */
 public class ReportErrorsErrorHandler implements ErrorHandler {
 
     private List<XMLError> errors;

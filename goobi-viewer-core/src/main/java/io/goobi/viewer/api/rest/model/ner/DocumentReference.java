@@ -32,7 +32,9 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * DocumentReference class.
+ * REST API model representing a digitized document identified by its persistent identifier (PI), together with the NER tag groups
+ * found across its pages.
+ * Page ranges are kept in sorted order and are accessible both as a whole list and by individual page order number.
  */
 @JsonInclude(Include.NON_NULL)
 public class DocumentReference {

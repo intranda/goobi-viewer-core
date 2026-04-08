@@ -30,6 +30,10 @@ import mil.nga.sf.geojson.Geometry;
 import mil.nga.sf.geojson.Point;
 import mil.nga.sf.geojson.Position;
 
+/**
+ * {@link ICoordinateReader} implementation that parses WKT point strings (e.g. {@code POINT(lon lat)})
+ * or bare coordinate sequences into a {@link mil.nga.sf.geojson.Point} geometry.
+ */
 public class WKTPointReader implements ICoordinateReader {
 
     private static final String COORDINATE_REGEX = "[+-]?(?:\\d+\\.\\d*|\\d*\\.\\d+|\\d+)\\b";

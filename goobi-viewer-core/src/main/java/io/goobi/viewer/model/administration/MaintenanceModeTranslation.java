@@ -29,6 +29,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+/**
+ * JPA entity that stores a single language-specific translation of a {@link MaintenanceMode} text field.
+ * Each instance is linked to an owning {@link MaintenanceMode} and inherits the generic translation
+ * infrastructure from {@link io.goobi.viewer.model.translations.Translation}.
+ */
 @Entity
 @Table(name = "maintenance_mode_translations")
 public class MaintenanceModeTranslation extends Translation {

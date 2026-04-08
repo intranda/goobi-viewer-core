@@ -29,7 +29,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
- * MultiPageReference class.
+ * REST API model representing a contiguous range of pages (defined by a first and last page order number) that share a set of NER tag counts.
+ * Implements {@link TagGroup} to allow uniform handling alongside single-page references.
  */
 @JsonPropertyOrder({ "firstPage, lastPage, tags" })
 public class MultiPageReference implements TagGroup {

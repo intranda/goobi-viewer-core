@@ -26,6 +26,10 @@ import java.util.Map;
 
 import io.goobi.viewer.controller.DataManager;
 
+/**
+ * Data transfer object representing the current monitoring status of the Goobi viewer,
+ * including the health of Solr, the database, the image server, the message queue, and version information.
+ */
 public class MonitoringStatus {
 
     public static final String KEY_DATABASE = "database";

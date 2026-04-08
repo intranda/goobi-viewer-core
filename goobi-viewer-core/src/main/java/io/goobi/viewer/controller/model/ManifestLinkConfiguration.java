@@ -23,6 +23,10 @@ package io.goobi.viewer.controller.model;
 
 import io.goobi.viewer.model.metadata.Metadata;
 
+/**
+ * Configuration for a manifest link entry displayed in the viewer, combining a display label,
+ * a format identifier, and the metadata object that provides the target URL.
+ */
 public class ManifestLinkConfiguration {
 
     private final String label;

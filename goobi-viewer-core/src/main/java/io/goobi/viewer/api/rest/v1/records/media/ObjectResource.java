@@ -86,7 +86,9 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 
 /**
- * ObjectResource class.
+ * JAX-RS resource that serves 3D object files (scene, auxiliary files, and scene-info JSON) for a given record.
+ * Endpoints are bound under the {@code RECORDS_FILES_3D} path and enforce access-condition checks; scene metadata
+ * can also be written back via PUT requests by authenticated admins.
  *
  * @author Florian Alpers
  */

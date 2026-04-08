@@ -42,6 +42,10 @@ import io.goobi.viewer.model.security.user.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+/**
+ * Authentication provider that authenticates users by reading a user identifier from an HTTP
+ * request header (or parameter), then looking up or creating the corresponding {@link User} account.
+ */
 public class HttpHeaderProvider extends HttpAuthenticationProvider {
 
     private static final Logger logger = LogManager.getLogger(HttpHeaderProvider.class);

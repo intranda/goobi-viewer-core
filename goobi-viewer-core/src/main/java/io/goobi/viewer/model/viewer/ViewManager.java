@@ -154,7 +154,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.UriBuilder;
 
 /**
- * Holds information about the currently open record (structure, pages, etc.). Used to reduced the size of ActiveDocumentBean.
+ * Holds the full state of the currently open record: document structure, physical pages, TOC,
+ * image delivery settings, and navigation. Created by
+ * {@link io.goobi.viewer.managedbeans.ActiveDocumentBean} when a record is opened and discarded
+ * when a new record is loaded or the session ends.
+ *
+ * <p><b>Lifecycle:</b> Instantiated per record-open inside the session-scoped
+ * {@code ActiveDocumentBean}; not a CDI bean itself.
+ *
+ * <p><b>Thread safety:</b> Not thread-safe on its own. All access is expected to occur on the
+ * JSF request thread of the owning session. The surrounding {@code ActiveDocumentBean} guards
+ * concurrent access with {@code synchronized} blocks where necessary.
  */
 public class ViewManager implements Serializable {
 

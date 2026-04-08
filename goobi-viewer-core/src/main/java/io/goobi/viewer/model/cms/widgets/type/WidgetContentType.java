@@ -24,6 +24,11 @@ package io.goobi.viewer.model.cms.widgets.type;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 
+/**
+ * Common interface for all CMS sidebar-widget content types ({@code DefaultWidgetType},
+ * {@code AutomaticWidgetType}, {@code CustomWidgetType}), providing metadata such as label,
+ * icon, filename, and page-level display constraints.
+ */
 public interface WidgetContentType {
 
     String getIconName();

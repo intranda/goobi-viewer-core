@@ -25,6 +25,10 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * Represents a security question with a message-key for the question text and a set of
+ * accepted answers, tracking whether the question has already been answered.
+ */
 public class SecurityQuestion {
 
     private final String questionKey;

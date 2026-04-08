@@ -26,6 +26,10 @@ import java.util.Locale;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
 
+/**
+ * Marks a CMS content type whose primary text can be stored and retrieved in multiple locales,
+ * extending {@link IPolyglott} with convenience accessors for the underlying {@link TranslatedText}.
+ */
 public interface TranslatableCMSContent extends IPolyglott {
 
     public TranslatedText getText();

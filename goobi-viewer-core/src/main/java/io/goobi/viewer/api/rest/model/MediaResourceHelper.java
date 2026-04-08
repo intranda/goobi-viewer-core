@@ -37,6 +37,10 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.model.variables.VariableReplacer;
 
+/**
+ * Helper class for serving media resources via the REST API, handling content-type detection,
+ * redirect decisions, and HTTP response header configuration based on viewer media-type settings.
+ */
 public class MediaResourceHelper {
 
     private static final Logger logger = LogManager.getLogger(MediaResourceHelper.class);

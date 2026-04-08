@@ -27,6 +27,10 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * Configuration model for JSON metadata export, holding a template name, a Solr query, and the list
+ * of field mappings that define which Solr fields are included in the output.
+ */
 public class JsonMetadataConfiguration {
 
     private final String template;

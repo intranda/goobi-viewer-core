@@ -30,6 +30,12 @@ import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * Comparator implementing the Alphanum algorithm, which sorts strings containing numbers in natural
+ * numeric order rather than ASCII order, with locale-aware collation and optional translation support.
+ *
+ * @param <T> the type of elements to be compared
+ */
 public class AlphanumComparator<T> implements Comparator<T>, Serializable {
 
     private static final long serialVersionUID = 8047374873015931547L;

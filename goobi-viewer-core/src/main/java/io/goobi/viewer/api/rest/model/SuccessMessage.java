@@ -22,7 +22,8 @@
 package io.goobi.viewer.api.rest.model;
 
 /**
- * SuccessMessage class.
+ * REST API response model indicating whether an operation succeeded, together with an optional human-readable result description.
+ * Implements {@link IResponseMessage} and is serialized as JSON for operation-result responses.
  *
  * @author Florian Alpers
  */

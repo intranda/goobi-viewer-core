@@ -25,6 +25,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 
+/**
+ * Represents a single editable configuration file entry in the config editor, providing metadata
+ * such as the file path, display index, type, and read/write accessibility.
+ */
 public class FileRecord {
 
     private final Path file;

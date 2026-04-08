@@ -30,6 +30,10 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
+/**
+ * Database migration step that performs miscellaneous housekeeping tasks, such as dropping
+ * obsolete tables that are no longer used by the application.
+ */
 public class MiscUpdate implements IModelUpdate {
 
     private static final Logger logger = LogManager.getLogger(MiscUpdate.class);

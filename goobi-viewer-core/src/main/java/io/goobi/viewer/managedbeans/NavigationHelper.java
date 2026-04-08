@@ -97,7 +97,15 @@ import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * JSF backing bean providing navigation state, URL building, and breadcrumb tracking for the viewer frontend.
+ * JSF session-scoped backing bean providing navigation state, URL building, and breadcrumb
+ * tracking for the viewer frontend. Initialised via {@code @PostConstruct init()} which resolves
+ * the user's locale from the current JSF view root and seeds the status map with default values.
+ *
+ * <p><b>Lifecycle:</b> Created once per HTTP session; survives across page navigations and is
+ * destroyed when the session expires.
+ *
+ * <p><b>Thread safety:</b> Not explicitly synchronised; all state is expected to be accessed
+ * from the JSF request thread of the owning session only.
  */
 @Named
 @SessionScoped

@@ -27,6 +27,10 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
+/**
+ * Database migration step that removes the obsolete {@code main_title} column from the
+ * {@code bookshelf_items} table.
+ */
 public class BookmarkUpdate implements IModelUpdate {
 
     /** {@inheritDoc} */

@@ -22,7 +22,9 @@
 package io.goobi.viewer.model.calendar;
 
 /**
- * ICalendarItem interface.
+ * Represents a single selectable item in a calendar navigation (e.g. a year, month, or day entry).
+ * Each item has a display name, a numeric value used for ordering, a hit count reflecting how many records fall within it,
+ * and a selected state.
  */
 public interface ICalendarItem extends Comparable<ICalendarItem> {
 

@@ -30,7 +30,9 @@ import org.apache.commons.lang3.StringUtils;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 
 /**
- * BrowseElementInfo interface.
+ * Interface for metadata and navigation information attached to a collection browse element.
+ * Provides multilingual name and description, navigation and icon URIs (optionally scaled to a requested size),
+ * and a flag indicating whether a description is available.
  */
 public interface BrowseElementInfo {
 

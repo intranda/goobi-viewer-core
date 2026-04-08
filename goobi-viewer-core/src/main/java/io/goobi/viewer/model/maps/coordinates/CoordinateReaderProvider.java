@@ -30,6 +30,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.reflections.Reflections;
 
+/**
+ * Discovers and holds all available {@link ICoordinateReader} implementations via classpath scanning
+ * and provides the appropriate reader for a given coordinate string.
+ */
 public class CoordinateReaderProvider {
 
     private static final Logger logger = LogManager.getLogger(CoordinateReaderProvider.class);

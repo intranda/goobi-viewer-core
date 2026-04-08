@@ -31,6 +31,10 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.statistics.usage.RequestTypeSummary;
 import io.goobi.viewer.model.statistics.usage.StatisticsSummary;
 
+/**
+ * REST response object for usage statistics requests, containing an aggregated summary and a list
+ * of per-date statistics entries that can also be serialized as CSV.
+ */
 public class UsageStatisticsResponse {
 
     private final StatisticsSummary summary;

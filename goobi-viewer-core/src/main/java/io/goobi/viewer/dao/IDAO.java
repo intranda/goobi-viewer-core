@@ -86,7 +86,9 @@ import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.PersistenceException;
 
 /**
- * IDAO interface.
+ * Central data-access interface for the Goobi viewer, defining all persistence operations for the application's domain objects.
+ * Covers users, user groups, roles, licenses, CMS pages and components, crowdsourcing campaigns, bookmarks, annotations, search history,
+ * geo-maps, upload jobs, message-queue entries, usage statistics, and more.
  */
 public interface IDAO {
 

@@ -45,6 +45,10 @@ import io.goobi.viewer.solr.SolrTools;
 import jakarta.faces.context.FacesContext;
 import jakarta.servlet.http.HttpServletRequest;
 
+/**
+ * Represents a physical file resource belonging to a digitised record, encapsulating the file path,
+ * record identifier, page order, file size, MIME type, and access-permission checks.
+ */
 public class PhysicalResource {
 
     private static final Logger logger = LogManager.getLogger(PhysicalResource.class);

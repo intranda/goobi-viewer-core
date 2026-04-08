@@ -26,6 +26,12 @@ import java.io.IOException;
 import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.controller.StringTools;
 
+/**
+ * Converts loosely-formatted JSON-like strings (e.g. with unquoted keys, backtick delimiters, or
+ * unquoted string values) into a properly quoted JSON string and deserializes it into the target type.
+ *
+ * @param <T> the target type to deserialize the JSON string into
+ */
 public final class JsonStringConverter<T> {
 
     private static final String JSON_KEY_REGEX = "(?<=[{,]\\s*)(\\w+)(?=\\s*:\\s*)";

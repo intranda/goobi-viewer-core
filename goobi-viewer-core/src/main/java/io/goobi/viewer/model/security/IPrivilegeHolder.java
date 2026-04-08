@@ -25,7 +25,9 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * IPrivilegeHolder interface.
+ * Interface for entities that carry a set of named access privileges (e.g. a role or a license).
+ * Defines constants for all known privilege names spanning data access, CMS administration, and crowdsourcing,
+ * as well as generic add/remove/check operations and convenience boolean accessors for individual privileges.
  */
 public interface IPrivilegeHolder {
 

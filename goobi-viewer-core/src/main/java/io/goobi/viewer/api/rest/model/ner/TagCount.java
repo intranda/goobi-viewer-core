@@ -32,7 +32,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.goobi.viewer.api.rest.model.ner.NERTag.Type;
 
 /**
- * TagCount class.
+ * REST API model aggregating the occurrences of a single named-entity tag value and type within a page group.
+ * Holds the tag's text value, its NER type, an optional authority identifier, and the list of {@link ElementReference} objects
+ * indicating every position where the tag appears; the occurrence count is derived from that list.
  */
 @JsonPropertyOrder({ "value", "type", "counter", "references" })
 @JsonInclude(Include.NON_NULL)

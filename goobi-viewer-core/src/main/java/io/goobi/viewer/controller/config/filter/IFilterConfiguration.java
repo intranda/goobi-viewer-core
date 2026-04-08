@@ -29,6 +29,10 @@ import org.apache.commons.configuration2.tree.ImmutableNode;
 
 import io.goobi.viewer.model.variables.VariableReplacer;
 
+/**
+ * Interface for filter configurations that evaluate whether a given value passes a set of conditions.
+ * Implementations define a regex match pattern, a pass-on-match flag, and nested filter conditions.
+ */
 public interface IFilterConfiguration {
 
     public boolean passes(String value, VariableReplacer vr);

@@ -21,6 +21,31 @@
  */
 package io.goobi.viewer.model.cms.legacy;
 
+/**
+ * Enumerates the content item types used by the legacy CMS template system, allowing lookup by
+ * the type name string as found in CMS template XML files.
+ *
+ * <ul>
+ *   <li>{@code TEXT} – plain short text</li>
+ *   <li>{@code HTML} – rich HTML text</li>
+ *   <li>{@code MEDIA} – a CMS media item (image/video/…)</li>
+ *   <li>{@code SOLRQUERY} – record list driven by a Solr query</li>
+ *   <li>{@code PAGELIST} – list of CMS pages</li>
+ *   <li>{@code COLLECTION} – hierarchical collection browse</li>
+ *   <li>{@code TILEGRID} – image tile grid</li>
+ *   <li>{@code TOC} – table of contents</li>
+ *   <li>{@code RSS} – RSS feed</li>
+ *   <li>{@code SEARCH} – search interface</li>
+ *   <li>{@code COMPONENT} – generic CMS component</li>
+ *   <li>{@code TAGS} – tag cloud</li>
+ *   <li>{@code METADATA} – metadata display</li>
+ *   <li>{@code CAMPAIGNOVERVIEW} – crowdsourcing campaign overview</li>
+ *   <li>{@code BOOKMARKLISTS} – bookmark list display</li>
+ *   <li>{@code BROWSETERMS} – browse terms index</li>
+ *   <li>{@code GEOMAP} – geographic map</li>
+ *   <li>{@code SLIDER} – image/content slider</li>
+ * </ul>
+ */
 public enum CMSContentItemType {
     TEXT,
     HTML,

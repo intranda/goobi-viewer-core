@@ -40,6 +40,10 @@ import io.goobi.viewer.model.maps.ManualFeatureSet;
 import io.goobi.viewer.model.maps.SolrFeatureSet;
 import io.goobi.viewer.model.maps.SolrSearchScope;
 
+/**
+ * Database migration step that converts the legacy flat GeoMap structure into the feature-set
+ * model and migrates the {@code aggregate_results} column to the {@code search_scope} field.
+ */
 public class GeoMapUpdate implements IModelUpdate {
 
     @Override

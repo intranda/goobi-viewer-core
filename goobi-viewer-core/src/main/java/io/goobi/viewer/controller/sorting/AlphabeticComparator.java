@@ -26,6 +26,12 @@ import java.util.Comparator;
 import java.util.Locale;
 import java.util.function.Function;
 
+/**
+ * Comparator that orders elements alphabetically by their locale-sensitive translated string representation,
+ * using a {@link java.text.Collator} with primary strength and supporting ascending or descending order.
+ *
+ * @param <T> the type of elements to be compared
+ */
 public class AlphabeticComparator<T> implements Comparator<T> {
 
     private final int reverse;

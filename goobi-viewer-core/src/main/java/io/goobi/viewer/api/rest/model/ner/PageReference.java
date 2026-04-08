@@ -31,7 +31,8 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * PageReference class.
+ * REST API model representing a single page of a digitized document and the NER tag counts found on it.
+ * Implements {@link TagGroup} to allow uniform handling alongside multi-page references.
  */
 @JsonInclude(Include.NON_ABSENT)
 @JsonIgnoreProperties(ignoreUnknown = true)

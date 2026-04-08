@@ -21,6 +21,10 @@
  */
 package io.goobi.viewer.model.xml;
 
+/**
+ * Immutable value object representing a single XML parse error, holding the line number,
+ * column number, severity level, and human-readable message.
+ */
 public class XMLError {
     private final int line;
     private final int column;

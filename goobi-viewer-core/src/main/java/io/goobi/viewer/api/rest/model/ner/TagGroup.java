@@ -24,7 +24,9 @@ package io.goobi.viewer.api.rest.model.ner;
 import java.util.List;
 
 /**
- * TagGroup interface.
+ * Common interface for NER result containers that group {@link TagCount} entries by page scope — either a single page ({@link PageReference})
+ * or a contiguous page range ({@link MultiPageReference}).
+ * Extends {@link Comparable} so that groups can be sorted by page order.
  */
 public interface TagGroup extends Comparable<TagGroup> {
 

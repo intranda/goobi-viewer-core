@@ -27,6 +27,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+/**
+ * Metadata describing a usage statistics query, including the reporting period (start and end date)
+ * and an optional Solr filter query string used to restrict the statistics data.
+ */
 @JsonInclude(Include.NON_EMPTY)
 public class UsageStatisticsInformation {
 

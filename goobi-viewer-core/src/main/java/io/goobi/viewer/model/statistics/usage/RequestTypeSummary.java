@@ -25,6 +25,10 @@ import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+/**
+ * Summarises usage statistics for a single request type over an optional date range,
+ * holding the total number of requests and the number of unique requests.
+ */
 public class RequestTypeSummary {
 
     private final long totalRequests;

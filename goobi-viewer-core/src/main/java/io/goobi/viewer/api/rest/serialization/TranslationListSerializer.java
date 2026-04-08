@@ -36,7 +36,9 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import io.goobi.viewer.model.translations.Translation;
 
 /**
- * TranslationListSerializer class.
+ * Jackson serializer for a collection of {@link io.goobi.viewer.model.translations.Translation} objects.
+ * Groups translations by their tag label and serializes them as a nested JSON object of the form
+ * {@code { "<tag>": { "<language>": ["<value>"] } }}, or {@code null} if the collection is empty.
  *
  * @author Florian Alpers
  */

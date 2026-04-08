@@ -21,6 +21,10 @@
  */
 package io.goobi.viewer.model.metadata;
 
+/**
+ * Marker interface for elements that can appear in a displayed metadata list,
+ * such as individual metadata entries or separators.
+ */
 public interface MetadataListElement {
 
 }

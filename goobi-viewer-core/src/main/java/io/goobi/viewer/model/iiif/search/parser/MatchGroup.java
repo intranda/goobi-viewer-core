@@ -21,6 +21,10 @@
  */
 package io.goobi.viewer.model.iiif.search.parser;
 
+/**
+ * Captures a single text match found during IIIF search parsing, holding the matched string
+ * together with its start and end character offsets within the source text.
+ */
 public class MatchGroup {
 
     private final int start;

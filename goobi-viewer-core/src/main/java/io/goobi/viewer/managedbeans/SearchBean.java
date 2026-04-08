@@ -123,7 +123,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * JSF backing bean for the search interface, managing search queries, facets, sorting, and result pagination.
+ * JSF session-scoped backing bean for the search interface, managing search queries, facets,
+ * sorting, and result pagination. Initialised via {@code @PostConstruct init()} which resets the
+ * advanced search parameters to their defaults.
+ *
+ * <p><b>Lifecycle:</b> Created once per HTTP session by the CDI container; survives across
+ * multiple page navigations within the same session and is destroyed when the session expires.
+ *
+ * <p><b>Thread safety:</b> Mostly confined to the JSF request thread of the owning session.
+ * The async Excel-export download state ({@code downloadReady}, {@code downloadComplete}) is
+ * held in {@code volatile} fields and guarded by a {@code synchronized} block to allow safe
+ * hand-off between the JSF thread and the background download thread.
  */
 @Named
 @SessionScoped

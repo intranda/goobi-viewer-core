@@ -23,6 +23,12 @@ package io.goobi.viewer.model.viewer.record.views;
 
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * A numeric {@link Condition} that matches a test value by comparing it against a threshold,
+ * either requiring the test value to be greater than or equal to the threshold, or strictly less.
+ *
+ * @param <T> the numeric type used for comparison
+ */
 public class ComparisonCondition<T extends Number> extends Condition<T> {
 
     protected ComparisonCondition(T value, boolean matchIfLarger) {

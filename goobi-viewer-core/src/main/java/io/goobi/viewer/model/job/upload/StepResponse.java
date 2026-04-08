@@ -28,6 +28,11 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+/**
+ * Represents a single workflow step returned as part of a {@link ProcessStatusResponse} from the
+ * Goobi workflow REST API, carrying the step title, execution status, assigned user, start/end
+ * dates, and position order.
+ */
 @XmlRootElement
 
 @JsonPropertyOrder({ "title", "status", "id", "user", "startDate", "endDate", "status", "order" })

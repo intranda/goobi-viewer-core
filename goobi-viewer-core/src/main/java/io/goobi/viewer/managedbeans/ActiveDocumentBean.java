@@ -129,7 +129,17 @@ import jakarta.servlet.http.HttpSession;
 import mil.nga.sf.geojson.Geometry;
 
 /**
- * This bean opens the requested record and provides all data relevant to this record.
+ * JSF session-scoped backing bean that opens the requested record and provides all data relevant
+ * to it. Owns the {@link io.goobi.viewer.model.viewer.ViewManager} for the current record and
+ * coordinates access to its structure elements, physical pages, TOC, and download jobs.
+ *
+ * <p><b>Lifecycle:</b> Created once per HTTP session; a new {@code ViewManager} is instantiated
+ * each time a different record PI is requested. The bean is destroyed when the session expires.
+ *
+ * <p><b>Thread safety:</b> Explicitly synchronised. Multiple {@code synchronized(this)} and
+ * {@code synchronized(lock)} blocks guard concurrent access to shared record state, since JSF
+ * AJAX requests and background threads (PDF/EPUB generation, TOC building) may run concurrently
+ * within the same session.
  */
 @Named
 @SessionScoped

@@ -26,6 +26,10 @@ import java.time.LocalDateTime;
 
 import io.goobi.viewer.controller.DateTools;
 
+/**
+ * Represents a single backup file entry in the configuration editor, holding the timestamp-derived
+ * name and position index of the backup within the backup list.
+ */
 public class BackupRecord implements Serializable {
 
     private static final long serialVersionUID = -7935008140086500081L;

@@ -32,7 +32,9 @@ import io.goobi.viewer.modules.interfaces.IURLBuilder;
 import io.goobi.viewer.modules.interfaces.IndexAugmenter;
 
 /**
- * IModule interface.
+ * Contract that every Goobi viewer extension module must implement.
+ * Provides identity and version information, configuration access, UI contribution hooks (sidebar widgets, admin links,
+ * CMS menu entries), task-type registration, and lifecycle callbacks for record resets and user-content management.
  */
 public interface IModule extends IndexAugmenter {
 

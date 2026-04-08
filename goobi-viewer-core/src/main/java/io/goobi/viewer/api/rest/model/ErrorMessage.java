@@ -24,7 +24,8 @@ package io.goobi.viewer.api.rest.model;
 import io.goobi.viewer.exceptions.RestApiException;
 
 /**
- * ErrorMessage class.
+ * REST API response model that carries an HTTP status code, a human-readable error description, and an optional stack trace.
+ * Implements {@link IResponseMessage} and is serialized as JSON for error responses.
  *
  * @author Florian Alpers
  */

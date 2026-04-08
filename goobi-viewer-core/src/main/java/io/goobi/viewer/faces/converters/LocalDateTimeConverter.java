@@ -37,6 +37,10 @@ import jakarta.faces.convert.Converter;
 import jakarta.faces.convert.ConverterException;
 import jakarta.faces.convert.FacesConverter;
 
+/**
+ * JSF {@link Converter} that converts between {@link LocalDateTime} objects and their locale- and
+ * timezone-aware string representations for use in UI form components.
+ */
 @FacesConverter("localDateTimeConverter")
 public class LocalDateTimeConverter implements Converter<LocalDateTime> {
 

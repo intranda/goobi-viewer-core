@@ -25,6 +25,11 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Request payload sent to the Goobi workflow REST API to create a new digitisation process,
+ * carrying the record identifier, process title, logical docstruct type, workflow template
+ * reference, and optional metadata and property maps.
+ */
 public class ProcessCreationRequest {
 
     private String identifier;

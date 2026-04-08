@@ -31,6 +31,10 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 import io.goobi.viewer.model.security.LicenseType;
 
+/**
+ * Database migration step that removes the obsolete crowdsourcing-campaigns license type and
+ * drops the deprecated {@code conditions} column from the {@code license_types} table.
+ */
 public class LicenseTypeUpdate implements IModelUpdate {
 
     private static final Logger logger = LogManager.getLogger(LicenseTypeUpdate.class);

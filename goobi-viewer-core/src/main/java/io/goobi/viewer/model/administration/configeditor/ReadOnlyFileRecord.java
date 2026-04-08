@@ -25,6 +25,10 @@ import java.nio.file.Path;
 
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * A {@link FileRecord} variant that is always non-writable, used to expose read-only default
+ * configuration files (e.g. bundled defaults) in the configuration editor.
+ */
 public class ReadOnlyFileRecord extends FileRecord {
 
     private String fileName;

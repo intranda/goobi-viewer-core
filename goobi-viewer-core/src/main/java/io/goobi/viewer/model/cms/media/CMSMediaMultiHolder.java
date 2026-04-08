@@ -23,6 +23,10 @@ package io.goobi.viewer.model.cms.media;
 
 import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
 
+/**
+ * Extension of {@link CMSMediaHolder} for content components that manage multiple CMS media items,
+ * each addressed by a zero-based index.
+ */
 public interface CMSMediaMultiHolder extends CMSMediaHolder {
 
     /**

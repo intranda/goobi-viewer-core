@@ -21,6 +21,11 @@
  */
 package io.goobi.viewer.controller.mq;
 
+/**
+ * Interface for handlers that process {@link ViewerMessage} tickets from the message queue and return a result.
+ *
+ * @param <V> the type of result returned after processing a message
+ */
 public interface MessageHandler<V> {
 
     /**

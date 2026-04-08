@@ -37,6 +37,10 @@ import io.goobi.viewer.controller.FileTools;
 import jakarta.faces.model.DataModel;
 import jakarta.faces.model.ListDataModel;
 
+/**
+ * Builds and caches the list of {@link FileRecord} entries shown in the configuration editor,
+ * scanning the configured directories and appending read-only default configuration files.
+ */
 public class FilesListing implements Serializable {
 
     private static final long serialVersionUID = -1261644749731156548L;

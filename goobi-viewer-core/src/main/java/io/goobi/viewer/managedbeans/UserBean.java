@@ -83,7 +83,18 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 /**
- * Primarily for user authentication.
+ * JSF session-scoped backing bean responsible for user authentication, registration, and account
+ * management. Holds the currently logged-in {@link io.goobi.viewer.model.security.user.User}
+ * and mediates login/logout across local and OpenID Connect providers.
+ *
+ * <p><b>Lifecycle:</b> Created once per HTTP session; destroyed when the session expires or the
+ * user explicitly logs out. Sensitive credential fields ({@code password}, {@code passwordOne},
+ * {@code passwordTwo}) are declared {@code transient} and are therefore not included in session
+ * serialisation.
+ *
+ * <p><b>Thread safety:</b> Mostly confined to the JSF request thread. The
+ * {@code getAuthenticationProviders()} method is {@code synchronized} to prevent concurrent
+ * lazy initialisation of the provider list.
  */
 @Named
 @SessionScoped

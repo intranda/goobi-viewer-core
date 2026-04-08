@@ -28,6 +28,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import de.undercouch.citeproc.CSL;
 
+/**
+ * Session-scoped wrapper that manages lazily created {@link CSL} citation processors, keyed by
+ * CSL style name, and provides shared access to the underlying {@link CitationDataProvider}.
+ */
 public class CitationProcessorWrapper implements Serializable {
 
     private static final long serialVersionUID = 1599943007739055358L;

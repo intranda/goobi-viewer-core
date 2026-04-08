@@ -22,7 +22,8 @@
 package io.goobi.viewer.model.cms.itemfunctionality;
 
 /**
- * Functionality interface.
+ * Marker interface for CMS component functionality objects that are aware of a current page number.
+ * Implementors expose a settable and gettable page-number property used to drive paginated CMS content components.
  *
  * @author Florian Alpers
  */

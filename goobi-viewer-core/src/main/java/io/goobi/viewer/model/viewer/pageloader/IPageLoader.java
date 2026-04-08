@@ -31,7 +31,9 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 
 /**
- * IPageLoader interface.
+ * Interface for loading and navigating the physical pages of a digitized record.
+ * Implementors resolve page order numbers and file names to {@link PhysicalElement} instances and
+ * populate the drop-down page navigation lists used in the viewer UI.
  */
 public interface IPageLoader extends Serializable {
 

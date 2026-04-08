@@ -23,6 +23,10 @@ package io.goobi.viewer.model.viewer.pageloader;
 
 import jakarta.faces.model.SelectItem;
 
+/**
+ * Extends JSF {@link jakarta.faces.model.SelectItem} to support a double-page mode where the
+ * item value is returned as a hyphen-joined pair (e.g. {@code "5-5"}) for double-page display.
+ */
 public class SelectPageItem extends SelectItem {
 
     private static final long serialVersionUID = -7384015705477411687L;

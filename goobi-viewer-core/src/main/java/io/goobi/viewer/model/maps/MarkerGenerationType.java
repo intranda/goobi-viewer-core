@@ -21,6 +21,10 @@
  */
 package io.goobi.viewer.model.maps;
 
+/**
+ * Defines how geo-map markers are rendered: {@code FEATURELIST} displays individual feature markers,
+ * while {@code HEATMAP} renders an aggregated heat-map layer.
+ */
 public enum MarkerGenerationType {
     FEATURELIST,
     HEATMAP;

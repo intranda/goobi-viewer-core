@@ -37,6 +37,10 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+/**
+ * Builder that constructs a Smithsonian Voyager scene document (JSON) for one or more 3D model assets,
+ * including asset metadata, scene nodes, and derivative descriptions.
+ */
 public class VoyagerSceneBuilder {
 
     private static final Logger logger = LogManager.getLogger(VoyagerSceneBuilder.class);

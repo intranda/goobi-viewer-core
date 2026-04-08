@@ -55,6 +55,10 @@ import io.goobi.viewer.model.cms.pages.content.types.CMSSliderContent;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
 
+/**
+ * Database migration step that converts CMS pages from the legacy content-item/language-version
+ * schema to the current component-based schema, including template creation and table cleanup.
+ */
 public class CMSPageUpdate implements IModelUpdate {
 
     private static final Logger logger = LogManager.getLogger(CMSPageUpdate.class);

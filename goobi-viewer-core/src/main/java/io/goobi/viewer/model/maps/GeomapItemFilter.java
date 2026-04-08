@@ -31,6 +31,10 @@ import io.goobi.viewer.controller.model.LabeledValue;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
+/**
+ * Represents a named filter group for geo-map items, consisting of a set of labeled filter values
+ * that can be serialised to JSON for use in the map frontend.
+ */
 public class GeomapItemFilter {
 
     private final String name;

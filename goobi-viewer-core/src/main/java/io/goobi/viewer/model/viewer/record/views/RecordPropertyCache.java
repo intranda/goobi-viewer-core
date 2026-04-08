@@ -43,6 +43,10 @@ import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.ViewManager;
 
+/**
+ * Thread-safe cache that stores per-record and per-page file-type and access-permission lookups
+ * to avoid redundant Solr queries and access-condition evaluations within a single request cycle.
+ */
 public class RecordPropertyCache {
 
     private static final Logger logger = LogManager.getLogger(RecordPropertyCache.class);

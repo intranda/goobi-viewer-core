@@ -27,9 +27,11 @@ import java.util.Map;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 
 /**
- * TableDataSource interface.
+ * Data-source interface for paginated, sortable, and filterable table data used by {@link TableDataProvider}.
+ * Implementors supply a page of entries for a given offset and page size as well as the total record count,
+ * both taking an arbitrary map of filter criteria into account.
  *
- * @param <T>
+ * @param <T> the type of entities returned by this data source
  */
 public interface TableDataSource<T> {
 

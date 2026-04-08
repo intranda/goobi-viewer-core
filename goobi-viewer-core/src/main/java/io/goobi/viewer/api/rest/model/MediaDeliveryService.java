@@ -45,7 +45,9 @@ import org.apache.commons.lang3.StringUtils;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 
 /**
- * MediaDeliveryService class.
+ * Service class that handles HTTP file delivery with support for byte-range requests, conditional caching headers (ETag, If-Modified-Since), and
+ * optional GZIP encoding for text content.
+ * Processes full-file as well as single- and multi-part partial-content (HTTP 206) responses.
  *
  * @author Florian Alpers
  */

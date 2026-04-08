@@ -29,7 +29,9 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.security.License.AccessType;
 
 /**
- * ILicensee interface.
+ * Represents an entity (user, user group, IP range, or client application) that can hold access licenses in the Goobi viewer.
+ * Provides methods to retrieve assigned licenses and to check whether a particular license — optionally restricted to a
+ * specific privilege and record identifier — has been granted.
  */
 public interface ILicensee {
 

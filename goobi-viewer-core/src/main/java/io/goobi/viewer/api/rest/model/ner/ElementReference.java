@@ -28,7 +28,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * ElementReference class.
+ * REST API model referencing a single named-entity element within a page of a digitized document.
+ * Holds the element's XML ID, bounding-box coordinates, text content, optional URI, and the page order number on which it appears.
  */
 public class ElementReference {
 

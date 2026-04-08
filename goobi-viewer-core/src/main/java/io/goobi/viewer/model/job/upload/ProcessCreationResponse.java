@@ -23,6 +23,10 @@ package io.goobi.viewer.model.job.upload;
 
 import jakarta.xml.bind.annotation.XmlRootElement;
 
+/**
+ * Response returned by the Goobi workflow REST API after a process-creation request, indicating
+ * success or failure and providing the newly created process name and ID on success.
+ */
 @XmlRootElement
 public class ProcessCreationResponse {
 

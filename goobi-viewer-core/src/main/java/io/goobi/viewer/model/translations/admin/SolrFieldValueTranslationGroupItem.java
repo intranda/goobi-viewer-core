@@ -39,6 +39,10 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 
+/**
+ * A {@link TranslationGroupItem} whose keys are Solr field values, loaded via facet queries
+ * and expanded hierarchically using the configured collection splitting character.
+ */
 public class SolrFieldValueTranslationGroupItem extends TranslationGroupItem {
 
     /** Logger for this class. */

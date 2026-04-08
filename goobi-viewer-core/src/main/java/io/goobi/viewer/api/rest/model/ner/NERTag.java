@@ -32,7 +32,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * NERTag class.
+ * REST API model representing a single named-entity recognition (NER) tag extracted from a digitized document.
+ * Each tag carries a unique ID, a text value, a {@link Type} category (person, location, corporation, event, or miscellaneous), and a reference
+ * to the element on the page where it appears.
  */
 @JsonInclude(Include.NON_NULL)
 public class NERTag {

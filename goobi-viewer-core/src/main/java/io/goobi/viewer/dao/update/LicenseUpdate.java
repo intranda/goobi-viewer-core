@@ -33,6 +33,11 @@ import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.License.AccessType;
 import io.goobi.viewer.model.security.LicenseRightsHolder;
 
+/**
+ * Database migration step that migrates existing licenses to the new
+ * {@link io.goobi.viewer.model.security.LicenseRightsHolder} model and removes obsolete columns
+ * from the {@code licenses} table.
+ */
 public class LicenseUpdate implements IModelUpdate {
 
     private static final Logger logger = LogManager.getLogger(LicenseUpdate.class);

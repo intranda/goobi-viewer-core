@@ -28,6 +28,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.model.administration.legal.ConsentScope;
 
+/**
+ * JPA {@link AttributeConverter} that maps {@link ConsentScope} objects to and from their string
+ * representation for persistent storage.
+ */
 @Converter
 public class ConsentScopeConverter implements AttributeConverter<ConsentScope, String> {
 

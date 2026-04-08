@@ -32,6 +32,11 @@ import org.jdom2.Element;
 
 import io.goobi.viewer.controller.XmlTools;
 
+/**
+ * Represents a configurable attribute of a CMS component, loaded from a component template XML
+ * element, carrying a name, label, type, a list of selectable {@link Option}s, and the currently
+ * active value.
+ */
 public class CMSComponentAttribute implements Serializable {
 
     private static final long serialVersionUID = -1054428745597079708L;

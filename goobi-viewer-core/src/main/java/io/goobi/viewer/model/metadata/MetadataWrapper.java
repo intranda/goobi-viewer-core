@@ -23,6 +23,10 @@ package io.goobi.viewer.model.metadata;
 
 import io.goobi.viewer.model.viewer.StringPair;
 
+/**
+ * Wraps a {@link Metadata} instance together with a key-value pair representing the currently
+ * selected metadata value and its display label.
+ */
 public class MetadataWrapper {
 
     private Metadata metadata;

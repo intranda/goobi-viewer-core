@@ -25,6 +25,10 @@ import java.io.Serializable;
 
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * Represents a JSF component identified by its library and name, providing helpers
+ * to resolve the component's filename and check whether it exists.
+ */
 public class JsfComponent implements Serializable {
 
     private static final long serialVersionUID = 2205896851743823811L;

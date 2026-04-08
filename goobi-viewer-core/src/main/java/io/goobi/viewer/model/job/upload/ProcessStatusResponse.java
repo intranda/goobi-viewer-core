@@ -30,6 +30,11 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+/**
+ * Response returned by the Goobi workflow REST API when querying the status of an existing
+ * process, including its title, ID, creation date, completion flag, associated workflow steps,
+ * and process properties.
+ */
 @XmlRootElement
 @JsonPropertyOrder({ "result", "title", "id", "creationDate", "processCompleted", "step", "project" })
 public class ProcessStatusResponse {

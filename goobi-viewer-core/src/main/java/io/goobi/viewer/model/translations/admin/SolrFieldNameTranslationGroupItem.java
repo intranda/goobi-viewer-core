@@ -31,6 +31,10 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 
+/**
+ * A {@link TranslationGroupItem} whose keys are Solr field names, resolved either as a literal
+ * field name or as a regular expression matched against all known Solr fields.
+ */
 public class SolrFieldNameTranslationGroupItem extends TranslationGroupItem {
 
     /** Logger for this class. */

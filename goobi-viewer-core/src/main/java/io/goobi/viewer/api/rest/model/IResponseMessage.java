@@ -21,6 +21,9 @@
  */
 package io.goobi.viewer.api.rest.model;
 
+/**
+ * Common interface for REST API response message objects that carry a human-readable message string.
+ */
 public interface IResponseMessage {
 
     /**

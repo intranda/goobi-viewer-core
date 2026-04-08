@@ -55,6 +55,11 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.user.User;
 
+/**
+ * Renders {@link CrowdsourcingAnnotation} records into an XLSX workbook, grouping annotations
+ * by sheet name and writing one row per annotation with columns for ID, record, page, campaign,
+ * author, and body value.
+ */
 public class ExcelRenderer {
 
     private static final Logger logger = LogManager.getLogger(ExcelRenderer.class);

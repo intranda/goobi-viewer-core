@@ -30,6 +30,10 @@ import io.goobi.viewer.model.administration.legal.ConsentScope;
 import io.goobi.viewer.model.administration.legal.DisplayScope;
 import io.goobi.viewer.model.administration.legal.DisplayScope.PageScope;
 
+/**
+ * JPA {@link AttributeConverter} that serialises {@link DisplayScope} objects to a JSON string for
+ * database storage and deserialises them back on read.
+ */
 @Converter
 public class DisplayScopeConverter implements AttributeConverter<DisplayScope, String> {
 
