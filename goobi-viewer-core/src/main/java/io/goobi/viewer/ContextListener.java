@@ -125,24 +125,25 @@ public class ContextListener implements ServletContextListener {
 
         try {
             DataManager.getInstance().getDao().shutdown();
-            ContentServerCacheManager.getInstance().close();
-            // EhCache's disk-store scheduler (MappedByteBufferSource Async Flush Thread) blocks
-            // in ScheduledThreadPoolExecutor and does not terminate on close() alone. Interrupt
-            // it explicitly so the park/await unblocks, then wait briefly for clean exit.
-            Thread.getAllStackTraces().keySet().stream()
-                    .filter(t -> t.getName().contains("MappedByteBufferSource") || t.getName().contains("Async Flush"))
-                    .forEach(t -> {
-                        t.interrupt();
-                        try {
-                            t.join(2000);
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                        }
-                    });
             logger.info("Successfully stopped DAO");
         } catch (DAOException e) {
             logger.error("Error stopping DAO", e);
         }
+        // Close EhCache independently so a DAO shutdown failure cannot prevent cleanup.
+        // EhCache's disk-store scheduler (MappedByteBufferSource Async Flush Thread) blocks
+        // in ScheduledThreadPoolExecutor and does not terminate on close() alone. Interrupt
+        // it explicitly so the park/await unblocks, then wait briefly for clean exit.
+        ContentServerCacheManager.getInstance().close();
+        Thread.getAllStackTraces().keySet().stream()
+                .filter(t -> t.getName().contains("MappedByteBufferSource") || t.getName().contains("Async Flush"))
+                .forEach(t -> {
+                    t.interrupt();
+                    try {
+                        t.join(2000);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                });
         try {
             DataManager.getInstance().closeSearchIndex();
             logger.info("Successfully closed Solr client");
