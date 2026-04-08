@@ -209,7 +209,7 @@ public class CmsCategoriesBean implements Serializable {
     /**
      * Getter for the field <code>categoryName</code>.
      *
-
+     * @return the name entered for the new or edited category
      */
     public String getCategoryName() {
         return categoryName;
@@ -227,7 +227,7 @@ public class CmsCategoriesBean implements Serializable {
     /**
      * Getter for the field <code>categoryDescription</code>.
      *
-
+     * @return the description entered for the new or edited category
      */
     public String getCategoryDescription() {
         return categoryDescription;
@@ -245,7 +245,7 @@ public class CmsCategoriesBean implements Serializable {
     /**
      * Getter for the field <code>selectedCategory</code>.
      *
-
+     * @return the currently selected CMS category, or null if none is selected
      */
     public CMSCategory getSelectedCategory() {
         return selectedCategory;

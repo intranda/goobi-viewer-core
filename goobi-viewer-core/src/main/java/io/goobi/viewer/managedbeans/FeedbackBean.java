@@ -186,7 +186,7 @@ public class FeedbackBean implements Serializable {
     /**
      * Getter for the field <code>feedback</code>.
      *
-
+     * @return the Feedback object containing the user's feedback data
      */
     public Feedback getFeedback() {
         return feedback;

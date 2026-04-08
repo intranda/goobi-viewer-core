@@ -142,7 +142,7 @@ public class CampaignRecordPageStatistic implements Serializable {
     /**
      * Getter for the field <code>id</code>.
      *
-
+     * @return the database primary key of this page statistic entry
      */
     public Long getId() {
         return id;
@@ -160,7 +160,7 @@ public class CampaignRecordPageStatistic implements Serializable {
     /**
      * Getter for the field <code>dateCreated</code>.
      *
-
+     * @return the date and time when this statistic entry was created
      */
     public LocalDateTime getDateCreated() {
         return dateCreated;
@@ -178,7 +178,7 @@ public class CampaignRecordPageStatistic implements Serializable {
     /**
      * Getter for the field <code>dateUpdated</code>.
      *
-
+     * @return the date and time when this statistic entry was last updated
      */
     public LocalDateTime getDateUpdated() {
         return dateUpdated;
@@ -196,7 +196,7 @@ public class CampaignRecordPageStatistic implements Serializable {
     /**
      * Getter for the field <code>owner</code>.
      *
-
+     * @return the campaign record statistic that owns this per-page statistic entry
      */
     public CampaignRecordStatistic getOwner() {
         return owner;
@@ -214,7 +214,7 @@ public class CampaignRecordPageStatistic implements Serializable {
     /**
      * Getter for the field <code>pi</code>.
      *
-
+     * @return the persistent identifier of the record this page statistic belongs to
      */
     public String getPi() {
         return pi;
@@ -252,7 +252,7 @@ public class CampaignRecordPageStatistic implements Serializable {
     /**
      * Getter for the field <code>status</code>.
      *
-
+     * @return the crowdsourcing processing status for this page within the campaign
      */
     public CrowdsourcingStatus getStatus() {
         return status;
@@ -270,7 +270,7 @@ public class CampaignRecordPageStatistic implements Serializable {
     /**
      * Getter for the field <code>annotators</code>.
      *
-
+     * @return the list of users who have contributed annotations to this page
      */
     public List<User> getAnnotators() {
         return annotators;
@@ -288,7 +288,7 @@ public class CampaignRecordPageStatistic implements Serializable {
     /**
      * Getter for the field <code>reviewers</code>.
      *
-
+     * @return the list of users who have reviewed annotations on this page
      */
     public List<User> getReviewers() {
         return reviewers;

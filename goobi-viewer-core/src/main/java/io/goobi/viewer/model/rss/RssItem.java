@@ -69,7 +69,7 @@ public class RssItem implements Comparable<RssItem>, IAccessDeniedThumbnailOutpu
     /**
      * Getter for the field <code>title</code>.
      *
-
+     * @return the title of this RSS item
      */
     public String getTitle() {
         return title;
@@ -87,7 +87,7 @@ public class RssItem implements Comparable<RssItem>, IAccessDeniedThumbnailOutpu
     /**
      * Getter for the field <code>link</code>.
      *
-
+     * @return the URL of the record or resource represented by this RSS item
      */
     public String getLink() {
         return link;
@@ -105,7 +105,7 @@ public class RssItem implements Comparable<RssItem>, IAccessDeniedThumbnailOutpu
     /**
      * Getter for the field <code>description</code>.
      *
-
+     * @return the structured description object containing image and text for this RSS item
      */
     public Description getDescription() {
         return description;
@@ -123,7 +123,7 @@ public class RssItem implements Comparable<RssItem>, IAccessDeniedThumbnailOutpu
     /**
      * Getter for the field <code>pubDate</code>.
      *
-
+     * @return the publication date of this RSS item, used for sorting
      */
     public Date getPubDate() {
         return pubDate;
@@ -141,7 +141,7 @@ public class RssItem implements Comparable<RssItem>, IAccessDeniedThumbnailOutpu
     /**
      * Getter for the field <code>creator</code>.
      *
-
+     * @return the Dublin Core creator (author or responsible party) of this RSS item
      */
     public String getCreator() {
         return creator;
@@ -168,7 +168,7 @@ public class RssItem implements Comparable<RssItem>, IAccessDeniedThumbnailOutpu
     /**
      * Getter for the field <code>docType</code>.
      *
-
+     * @return the Solr document type of the record represented by this RSS item (e.g. "monograph", "periodical")
      */
     public String getDocType() {
         return docType;

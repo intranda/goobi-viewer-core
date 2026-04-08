@@ -87,7 +87,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     /**
      * Getter for the field <code>currentMap</code>.
      *
-
+     * @return the GeoMap currently being edited, or null if none is selected
      */
     public GeoMap getCurrentMap() {
         return currentMap;
@@ -221,7 +221,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     /**
      * Getter for the field <code>selectedLanguage</code>.
      *
-
+     * @return the locale representing the language currently selected for editing map translations
      */
     public Locale getSelectedLanguage() {
         return selectedLanguage;

@@ -39,9 +39,9 @@ public class CitationProcessorWrapper implements Serializable {
     private final CitationDataProvider citationItemDataProvider = new CitationDataProvider();
 
     /**
-     * 
+     *
      * @param style CSL citation style name (e.g. "apa", "chicago-notes")
-
+     * @return the CSL citation processor for the given style, creating it if it does not yet exist
      * @throws IOException
      * @should create citation processor correctly
      */

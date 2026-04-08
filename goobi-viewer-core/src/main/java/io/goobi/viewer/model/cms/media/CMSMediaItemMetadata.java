@@ -100,7 +100,7 @@ public class CMSMediaItemMetadata implements Serializable {
     /**
      * Getter for the field <code>language</code>.
      *
-
+     * @return the BCP 47 language code for this metadata entry
      */
     public String getLanguage() {
         return language;
@@ -118,7 +118,7 @@ public class CMSMediaItemMetadata implements Serializable {
     /**
      * Getter for the field <code>name</code>.
      *
-
+     * @return the localized name of the media item
      */
     public String getName() {
         return name;
@@ -136,7 +136,7 @@ public class CMSMediaItemMetadata implements Serializable {
     /**
      * Getter for the field <code>description</code>.
      *
-
+     * @return the localized description text for the media item
      */
     public String getDescription() {
         return description;

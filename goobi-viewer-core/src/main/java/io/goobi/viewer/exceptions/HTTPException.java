@@ -46,7 +46,7 @@ public class HTTPException extends Exception implements Serializable {
     /**
      * Getter for the field <code>code</code>.
      *
-
+     * @return the HTTP status code associated with this exception
      */
     public int getCode() {
         return code;

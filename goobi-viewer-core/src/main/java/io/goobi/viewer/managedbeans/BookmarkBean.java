@@ -407,7 +407,7 @@ public class BookmarkBean implements Serializable {
     /**
      * isNewBookmarkList.
      *
-     * @return a boolean.
+     * @return true if the current bookmark list has not yet been persisted (has no database ID), false otherwise
      */
     public boolean isNewBookmarkList() {
         if (currentBookmarkList == null) {
@@ -475,7 +475,7 @@ public class BookmarkBean implements Serializable {
     /**
      * isCurrentBookmarkListMine.
      *
-     * @return a boolean.
+     * @return true if the current bookmark list belongs to the logged-in user (or is a new unsaved list), false otherwise
      */
     public boolean isCurrentBookmarkListMine() {
         return currentBookmarkList != null && (isNewBookmarkList() || currentBookmarkList.getOwner().equals(userBean.getUser()));
@@ -486,7 +486,7 @@ public class BookmarkBean implements Serializable {
     /**
      * Getter for the field <code>currentBookmarkList</code>.
      *
-
+     * @return the {@link io.goobi.viewer.model.bookmark.BookmarkList} currently selected by the user, or null if none selected
      */
     public BookmarkList getCurrentBookmarkList() {
         return currentBookmarkList;
@@ -604,7 +604,7 @@ public class BookmarkBean implements Serializable {
     /**
      * Getter for the field <code>currentBookmark</code>.
      *
-
+     * @return the {@link io.goobi.viewer.model.bookmark.Bookmark} currently active for editing or display, or null if none selected
      */
     public Bookmark getCurrentBookmark() {
         return currentBookmark;
@@ -622,7 +622,7 @@ public class BookmarkBean implements Serializable {
     /**
      * Getter for the field <code>currentUserGroup</code>.
      *
-
+     * @return the {@link io.goobi.viewer.model.security.user.UserGroup} currently selected for sharing a bookmark list, or null if none selected
      */
     public UserGroup getCurrentUserGroup() {
         return currentUserGroup;
@@ -649,7 +649,7 @@ public class BookmarkBean implements Serializable {
     /**
      * Getter for the field <code>sessionBookmarkListEmail</code>.
      *
-
+     * @return the email address for sending the session bookmark list, or null if not set
      */
     public String getSessionBookmarkListEmail() {
         return sessionBookmarkListEmail;

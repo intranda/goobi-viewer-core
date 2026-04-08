@@ -139,7 +139,7 @@ public class CalendarView implements Serializable {
     /**
      * Getter for the field <code>year</code>.
      *
-
+     * @return the four-digit year string currently displayed in the calendar
      */
     public String getYear() {
         return year;
@@ -165,7 +165,7 @@ public class CalendarView implements Serializable {
      * <p>For anchor volumes this is the anchor PI, for group members it is the group identifier value
      * (i.e. the PI of the GROUP document).
      *
-
+     * @return the parent persistent identifier used for calendar hit queries
      */
     public String getAnchorPi() {
         return anchorPi;
@@ -177,7 +177,7 @@ public class CalendarView implements Serializable {
      * <p>For anchor volumes this is {@code PI_ANCHOR}, for group members it is the group identifier field
      * (e.g. {@code GROUPID_NEWSPAPER}).
      *
-
+     * @return the Solr field name used for parent identifier lookups in calendar queries
      */
     public String getAnchorField() {
         return anchorField;
@@ -186,7 +186,7 @@ public class CalendarView implements Serializable {
     /**
      * Getter for the field <code>calendarItems</code>.
      *
-
+     * @return list of calendar month items representing the current calendar year
      */
     public List<CalendarItemMonth> getCalendarItems() {
         return calendarItems;

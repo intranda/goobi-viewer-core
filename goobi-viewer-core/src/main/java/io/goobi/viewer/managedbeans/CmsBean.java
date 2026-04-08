@@ -546,7 +546,7 @@ public class CmsBean implements Serializable {
      * isLinkedFromNavBar.
      *
      * @param page CMS page to check for navigation bar links
-     * @return a boolean.
+     * @return true if the given CMS page is referenced by at least one navigation bar item, false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isLinkedFromNavBar(CMSPage page) throws DAOException {
@@ -881,7 +881,7 @@ public class CmsBean implements Serializable {
     /**
      * hasSearchResults.
      *
-     * @return a boolean.
+     * @return true if the current search returned at least one hit, false otherwise
      */
     public boolean hasSearchResults() {
         return searchBean != null && searchBean.getCurrentSearch() != null && searchBean.getCurrentSearch().getHitsCount() > 0;
@@ -1237,7 +1237,7 @@ public class CmsBean implements Serializable {
      * isHasRelatedPages.
      *
      * @param pi persistent identifier of the record to check
-     * @return a boolean.
+     * @return true if there are CMS pages related to the given persistent identifier, false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isHasRelatedPages(String pi) throws DAOException {
@@ -1469,7 +1469,7 @@ public class CmsBean implements Serializable {
     /**
      * Getter for the field <code>currentWorkPi</code>.
      *
-
+     * @return the persistent identifier of the record currently associated with the CMS page
      */
     public String getCurrentWorkPi() {
         return currentWorkPi;
@@ -1588,7 +1588,7 @@ public class CmsBean implements Serializable {
      * mayEdit.
      *
      * @param page CMS page to check edit permissions for
-     * @return a boolean.
+     * @return true if the currently logged-in user has privileges to edit the given CMS page, false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.

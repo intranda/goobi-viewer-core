@@ -653,7 +653,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Getter for the field <code>type</code>.
      *
-
+     * @return the hit type classifying the kind of content this search hit represents
      */
     public HitType getType() {
         return type;
@@ -662,7 +662,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Getter for the field <code>translatedType</code>.
      *
-
+     * @return the message key for the translated hit type label, or an empty string if no type is set
      */
     public String getTranslatedType() {
         return type != null ? SEARCH_HIT_TYPE_PREFIX + type.name() : "";
@@ -703,7 +703,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Getter for the field <code>browseElement</code>.
      *
-
+     * @return the browse element containing the display metadata for this search hit
      */
     public BrowseElement getBrowseElement() {
         return browseElement;
@@ -722,7 +722,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Getter for the field <code>childDocs</code>.
      *
-
+     * @return the list of unpopulated child Solr documents to be lazily expanded for this hit
      */
     public List<SolrDocument> getChildDocs() {
         return childDocs;
@@ -731,7 +731,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Getter for the field <code>hitsPopulated</code>.
      *
-
+     * @return the number of child hits that have already been populated for display
      */
     public int getHitsPopulated() {
         return hitsPopulated;
@@ -749,7 +749,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Returns true if this hit has populated child elements.
      *
-     * @return a boolean.
+     * @return true if this hit has at least one populated child search hit, false otherwise
      */
     public boolean isHasChildren() {
         return !children.isEmpty();
@@ -758,7 +758,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Returns true if this hit has any unpopulated child hits left.
      *
-     * @return a boolean.
+     * @return true if there are more child hits available beyond those already populated, false otherwise
      */
     public boolean isHasMoreChildren() {
         return childDocs != null && !childDocs.isEmpty() && getHitsPopulated() < childDocs.size();
@@ -767,7 +767,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Getter for the field <code>ugcDocIddocs</code>.
      *
-
+     * @return the set of IDDOC values for user-generated content documents associated with this hit
      */
     public Set<String> getUgcDocIddocs() {
         return ugcDocIddocs;
@@ -776,7 +776,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Getter for the field <code>children</code>.
      *
-
+     * @return the list of populated child search hits for this result
      */
     public List<SearchHit> getChildren() {
         return children;
@@ -785,7 +785,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Getter for the field <code>hitTypeCounts</code>.
      *
-
+     * @return the map of hit type to count of child hits of that type
      */
     public Map<HitType, Integer> getHitTypeCounts() {
         return hitTypeCounts;
@@ -794,7 +794,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * isHasHitCount.
      *
-     * @return a boolean.
+     * @return true if at least one hit type has a count greater than zero, false otherwise
      */
     public boolean isHasHitCount() {
         for (Entry<HitType, Integer> entry : hitTypeCounts.entrySet()) {
@@ -912,7 +912,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Getter for the field <code>foundMetadata</code>.
      *
-
+     * @return an unmodifiable list of label-value pairs for metadata fields that matched the search query
      */
     public List<StringPair> getFoundMetadata() {
         return Collections.unmodifiableList(foundMetadata);
@@ -925,7 +925,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Getter for the field <code>url</code>.
      *
-
+     * @return the URL for this search hit's detail page
      */
     public String getUrl() {
         return url;
@@ -954,7 +954,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Getter for the field <code>exportMetadata</code>.
      *
-
+     * @return the map of metadata field names to values used for exporting this search hit
      */
     public Map<String, String> getExportMetadata() {
         return exportMetadata;

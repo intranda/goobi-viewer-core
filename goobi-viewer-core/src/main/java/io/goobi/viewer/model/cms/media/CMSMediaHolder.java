@@ -63,7 +63,7 @@ public interface CMSMediaHolder {
     /**
      * hasMediaItem.
      *
-     * @return a boolean.
+     * @return true if this holder has an associated CMS media item, false otherwise
      */
     public boolean hasMediaItem();
 

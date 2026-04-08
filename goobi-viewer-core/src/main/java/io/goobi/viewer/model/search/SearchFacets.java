@@ -272,7 +272,7 @@ public class SearchFacets implements Serializable {
      * Checks whether the given facet is currently in use.
      *
      * @param facet facet item to check for active use
-     * @return a boolean.
+     * @return true if the given facet item is currently active (i.e. selected by the user), false otherwise
      * @should return correct value
      */
     public boolean isFacetCurrentlyUsed(IFacetItem facet) {
@@ -289,7 +289,7 @@ public class SearchFacets implements Serializable {
      * isFacetListSizeSufficient.
      *
      * @param field Solr facet field name to check
-     * @return a boolean.
+     * @return true if the facet list for the given field has enough elements to be shown (more than one, or more than zero for DOCSTRCT_SUB), false otherwise
      */
     public boolean isFacetListSizeSufficient(String field) {
         // logger.trace("isFacetListSizeSufficient: {}", field); //NOSONAR Debug
@@ -467,7 +467,7 @@ public class SearchFacets implements Serializable {
      * @should return false if facet expanded
      * @should return false if DC facet smaller than default
      * @should return false if facet smaller than default
-     * @return a boolean.
+     * @return true if the facet is collapsed and has more elements than the configured initial display count, false otherwise
      */
     public boolean isDisplayFacetExpandLink(String field) {
         List<IFacetItem> facetItems = availableFacets.get(field);
@@ -480,7 +480,7 @@ public class SearchFacets implements Serializable {
      * isDisplayFacetCollapseLink.
      *
      * @param field Solr facet field name to check expansion state for
-     * @return a boolean.
+     * @return true if the facet for the given field is currently expanded and a collapse link should be shown, false otherwise
      */
     public boolean isDisplayFacetCollapseLink(String field) {
         return isFacetExpanded(field);
@@ -969,7 +969,7 @@ public class SearchFacets implements Serializable {
      * @param field Solr facet field name to check
      * @should return false if value null
      * @should return true if value true
-     * @return a boolean.
+     * @return true if the facet for the given field has been explicitly expanded, false otherwise
      */
     public boolean isFacetExpanded(String field) {
         return facetsExpanded.get(field) != null && facetsExpanded.get(field);
@@ -997,7 +997,7 @@ public class SearchFacets implements Serializable {
      * isFacetCollapsed.
      *
      * @param field Solr facet field name to check
-     * @return a boolean.
+     * @return true if the facet for the given field is not expanded (i.e. collapsed), false otherwise
      */
     public boolean isFacetCollapsed(String field) {
         return !isFacetExpanded(field);
@@ -1109,7 +1109,7 @@ public class SearchFacets implements Serializable {
     /**
      * Getter for the field <code>availableFacets</code>.
      *
-
+     * @return the map of Solr field names to their available facet items
      */
     public Map<String, List<IFacetItem>> getAvailableFacets() {
         return availableFacets;
@@ -1118,7 +1118,7 @@ public class SearchFacets implements Serializable {
     /**
      * Getter for the field <code>activeFacets</code>.
      *
-
+     * @return the list of currently active facet filters applied to the search
      */
     public synchronized List<IFacetItem> getActiveFacets() {
         return activeFacets;
@@ -1140,7 +1140,7 @@ public class SearchFacets implements Serializable {
     /**
      * Getter for the field <code>tempValue</code>.
      *
-
+     * @return the temporary value held during facet editing before it is applied
      */
     public String getTempValue() {
         return tempValue;
@@ -1164,7 +1164,7 @@ public class SearchFacets implements Serializable {
      * @should return false if language code same
      * @should return false if no language code
      * @should return false if language code different but active facet selected
-     * @return a boolean.
+     * @return true if the field has a language code suffix that does not match the given language and no active facet is selected for it, false otherwise
      */
     public boolean isHasWrongLanguageCode(String field, String language) {
         if (SolrTools.isHasWrongLanguageCode(field, language)) {

@@ -108,7 +108,7 @@ public class GeoLocation {
     /**
      * Getter for the field <code>latitude</code>.
      *
-
+     * @return the geographic latitude in decimal degrees, or null if not set
      */
     public Double getLatitude() {
         return latitude;
@@ -126,7 +126,7 @@ public class GeoLocation {
     /**
      * Getter for the field <code>longitude</code>.
      *
-
+     * @return the geographic longitude in decimal degrees (WGS84), or null if not set
      */
     public Double getLongitude() {
         return longitude;
@@ -172,7 +172,7 @@ public class GeoLocation {
     /**
      * Getter for the field <code>info</code>.
      *
-
+     * @return the descriptive text or HTML content shown in the map popup for this location
      */
     public String getInfo() {
         return info;
@@ -190,7 +190,7 @@ public class GeoLocation {
     /**
      * Getter for the field <code>link</code>.
      *
-
+     * @return the URL linked from the map popup for this location
      */
     public String getLink() {
         return link;

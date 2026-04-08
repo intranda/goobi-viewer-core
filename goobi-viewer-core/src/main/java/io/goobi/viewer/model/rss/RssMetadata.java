@@ -74,7 +74,7 @@ public class RssMetadata {
     /**
      * Getter for the field <code>link</code>.
      *
-
+     * @return the URL associated with this metadata entry
      */
     public String getLink() {
         return link;
@@ -83,7 +83,7 @@ public class RssMetadata {
     /**
      * Getter for the field <code>label</code>.
      *
-
+     * @return the display label for this metadata entry
      */
     public String getLabel() {
         return label;
@@ -92,7 +92,7 @@ public class RssMetadata {
     /**
      * Getter for the field <code>value</code>.
      *
-
+     * @return the metadata value associated with this entry
      */
     public String getValue() {
         return value;

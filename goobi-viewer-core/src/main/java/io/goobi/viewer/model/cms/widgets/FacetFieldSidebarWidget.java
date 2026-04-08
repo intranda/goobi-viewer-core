@@ -76,8 +76,8 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
 
     /**
      * Contains the SOLR field holding the values to list.
-     * 
-
+     *
+     * @return the name of the Solr field whose values are listed in this widget
      */
     public String getFacetField() {
         return facetField;
@@ -95,8 +95,8 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
     /**
      * An additional SOLR query. If this is not empty, only values of the {@link #getFacetField()} are listed that are contained in documents meeting
      * this query. This is also true for the linked result lists
-     * 
-
+     *
+     * @return the additional Solr filter query, or an empty string if no filter is set
      */
     public String getFilterQuery() {
         return filterQuery;
@@ -163,6 +163,8 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
 
     /**
      * Override default title to always show the selected facetField.
+     *
+     * @return a {@link TranslatedText} built from the translations of the configured facet field name
      */
     @Override
     public TranslatedText getTitle() {

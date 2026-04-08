@@ -180,6 +180,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
      * Descending order by dateUpdated.
      *
      * @param o the other bookmark list to compare to
+     * @return a negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the specified object
      */
     @Override
     public int compareTo(BookmarkList o) {
@@ -300,7 +301,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
      * isMayView.
      *
      * @param user user requesting view access; may be null for anonymous
-     * @return a boolean.
+     * @return true if the list is public, if the user is the owner, or if the list has been shared with the user, false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isMayView(User user) {
@@ -330,7 +331,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
      * isMayEdit.
      *
      * @param user user requesting edit access; may be null
-     * @return a boolean.
+     * @return true if the user is the owner or a member/owner of a group with which this list is shared, false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isMayEdit(User user) throws DAOException {
@@ -355,7 +356,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Getter for the field <code>id</code>.
      *
-
+     * @return the database primary key of this bookmark list
      */
     public Long getId() {
         return id;
@@ -373,7 +374,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Getter for the field <code>name</code>.
      *
-
+     * @return the display name of this bookmark list
      */
     public String getName() {
         return name;
@@ -395,7 +396,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Getter for the field <code>description</code>.
      *
-
+     * @return an optional description of this bookmark list
      */
     public String getDescription() {
         return description;
@@ -413,7 +414,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * hasDescription.
      *
-     * @return a boolean.
+     * @return true if this bookmark list has a non-blank description, false otherwise
      */
     public boolean hasDescription() {
         return StringUtils.isNotBlank(getDescription());
@@ -422,7 +423,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Getter for the field <code>owner</code>.
      *
-
+     * @return the user who owns this bookmark list
      */
     public User getOwner() {
         return owner;
@@ -440,7 +441,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * isIsPublic.
      *
-
+     * @return true if this bookmark list is publicly visible without authentication, false otherwise
      */
     public boolean isIsPublic() {
         return isPublic;
@@ -475,7 +476,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Getter for the field <code>shareKey</code>.
      *
-
+     * @return the unique key used to share this list via a public URL, or null if sharing is disabled
      */
     public String getShareKey() {
         return shareKey;
@@ -532,7 +533,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Getter for the field <code>items</code>.
      *
-
+     * @return the list of bookmarks contained in this bookmark list
      */
     public List<Bookmark> getItems() {
         return items;
@@ -550,7 +551,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Getter for the field <code>groupShares</code>.
      *
-
+     * @return the list of user groups with whom this bookmark list is shared
      */
     public List<UserGroup> getGroupShares() {
         if (groupShares == null) {

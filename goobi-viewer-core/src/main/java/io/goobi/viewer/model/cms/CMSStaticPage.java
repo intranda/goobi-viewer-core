@@ -85,7 +85,7 @@ public class CMSStaticPage implements Serializable {
     /**
      * getCmsPageOptional.
      *
-
+     * @return the associated CMS page wrapped in an Optional, or an empty Optional if no page is assigned
      */
     public Optional<CMSPage> getCmsPageOptional() {
         if (!cmsPage.isPresent()) {
@@ -116,7 +116,7 @@ public class CMSStaticPage implements Serializable {
     /**
      * Getter for the field <code>id</code>.
      *
-
+     * @return the database primary key of this static page mapping
      */
     public Long getId() {
         return id;
@@ -125,7 +125,7 @@ public class CMSStaticPage implements Serializable {
     /**
      * Getter for the field <code>pageName</code>.
      *
-
+     * @return the internal page name identifying this static page
      */
     public String getPageName() {
         return pageName;
@@ -135,7 +135,7 @@ public class CMSStaticPage implements Serializable {
      * isLanguageComplete.
      *
      * @param locale locale to check for completeness
-     * @return a boolean.
+     * @return true if the associated CMS page is complete for the given locale, false otherwise
      */
     public boolean isLanguageComplete(Locale locale) {
         if (getCmsPageOptional().isPresent()) {
@@ -156,7 +156,7 @@ public class CMSStaticPage implements Serializable {
     /**
      * Getter for the field <code>cmsPageId</code>.
      *
-
+     * @return the database ID of the associated CMS page wrapped in an Optional, or an empty Optional if no page is assigned
      */
     public Optional<Long> getCmsPageId() {
         return Optional.ofNullable(cmsPageId);

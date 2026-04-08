@@ -149,6 +149,7 @@ public class UserActivity {
      * Equals if label and type are equal.
      *
      * @param obj the object to compare to this user activity
+     * @return true if the given object is equal to this instance, false otherwise
      */
     @Override
     public boolean equals(Object obj) {
@@ -161,6 +162,8 @@ public class UserActivity {
 
     /**
      * Builds from label and type.
+     *
+     * @return the hash code value for this object
      */
     @Override
     public int hashCode() {

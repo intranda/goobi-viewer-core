@@ -121,14 +121,14 @@ public interface IPrivilegeHolder {
      * hasPrivilege.
      *
      * @param privilege privilege name constant to check
-     * @return a boolean.
+     * @return true if this holder has the given privilege, false otherwise
      */
     public boolean hasPrivilege(String privilege);
 
     /**
      * isPrivCmsPages.
      *
-     * @return a boolean.
+     * @return true if this holder has the privilege to manage CMS pages, false otherwise
      */
     public boolean isPrivCmsPages();
 
@@ -142,7 +142,7 @@ public interface IPrivilegeHolder {
     /**
      * isPrivCmsMenu.
      *
-     * @return a boolean.
+     * @return true if this holder has the privilege to manage the CMS navigation menu, false otherwise
      */
     public boolean isPrivCmsMenu();
 
@@ -156,7 +156,7 @@ public interface IPrivilegeHolder {
     /**
      * isPrivCmsAllSubthemes.
      *
-     * @return a boolean.
+     * @return true if this holder has the privilege to access all CMS subthemes, false otherwise
      */
     public boolean isPrivCmsAllSubthemes();
 
@@ -170,7 +170,7 @@ public interface IPrivilegeHolder {
     /**
      * isPrivCmsAllCategories.
      *
-     * @return a boolean.
+     * @return true if this holder has the privilege to access all CMS categories, false otherwise
      */
     public boolean isPrivCmsAllCategories();
 
@@ -184,7 +184,7 @@ public interface IPrivilegeHolder {
     /**
      * isPrivCmsAllTemplates.
      *
-     * @return a boolean.
+     * @return true if this holder has the privilege to access all CMS page templates, false otherwise
      */
     public boolean isPrivCmsAllTemplates();
 
@@ -198,7 +198,7 @@ public interface IPrivilegeHolder {
     /**
      * isPrivCmsStaticPages.
      *
-     * @return a boolean.
+     * @return true if this holder has the privilege to manage CMS static pages, false otherwise
      */
     public boolean isPrivCmsStaticPages();
 
@@ -212,7 +212,7 @@ public interface IPrivilegeHolder {
     /**
      * isPrivCmsCollections.
      *
-     * @return a boolean.
+     * @return true if this holder has the privilege to manage CMS collections, false otherwise
      */
     public boolean isPrivCmsCollections();
 
@@ -226,7 +226,7 @@ public interface IPrivilegeHolder {
     /**
      * isPrivCmsCategories.
      *
-     * @return a boolean.
+     * @return true if this holder has the privilege to manage CMS categories, false otherwise
      */
     public boolean isPrivCmsCategories();
 
@@ -240,7 +240,7 @@ public interface IPrivilegeHolder {
     /**
      * isPrivCrowdsourcingAllCampaigns.
      *
-     * @return a boolean.
+     * @return true if this holder has the privilege to access all crowdsourcing campaigns, false otherwise
      */
     public boolean isPrivCrowdsourcingAllCampaigns();
 
@@ -254,7 +254,7 @@ public interface IPrivilegeHolder {
     /**
      * isPrivCrowdsourcingAnnotateCampaign.
      *
-     * @return a boolean.
+     * @return true if this holder has the privilege to annotate in crowdsourcing campaigns, false otherwise
      */
     public boolean isPrivCrowdsourcingAnnotateCampaign();
 
@@ -268,7 +268,7 @@ public interface IPrivilegeHolder {
     /**
      * isPrivCrowdsourcingReviewCampaign.
      *
-     * @return a boolean.
+     * @return true if this holder has the privilege to review crowdsourcing campaign contributions, false otherwise
      */
     public boolean isPrivCrowdsourcingReviewCampaign();
 
@@ -282,7 +282,7 @@ public interface IPrivilegeHolder {
     /**
      * isPrivViewUgc.
      *
-     * @return a boolean.
+     * @return true if this holder has the privilege to view user-generated content (UGC), false otherwise
      */
     public boolean isPrivViewUgc();
 

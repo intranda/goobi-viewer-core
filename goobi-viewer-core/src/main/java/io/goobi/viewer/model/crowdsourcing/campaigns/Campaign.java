@@ -886,7 +886,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Getter for the field <code>id</code>.
      *
-
+     * @return the database primary key of this campaign
      */
     public Long getId() {
         return id;
@@ -931,7 +931,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Getter for the field <code>dateCreated</code>.
      *
-
+     * @return the date and time when this campaign was created
      */
     public LocalDateTime getDateCreated() {
         return dateCreated;
@@ -949,7 +949,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Getter for the field <code>dateUpdated</code>.
      *
-
+     * @return the date and time when this campaign was last updated
      */
     public LocalDateTime getDateUpdated() {
         return dateUpdated;
@@ -967,7 +967,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Getter for the field <code>visibility</code>.
      *
-
+     * @return the visibility setting controlling who can see and participate in this campaign
      */
     public CampaignVisibility getVisibility() {
         return visibility;
@@ -1009,7 +1009,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Getter for the field <code>dateStart</code>.
      *
-
+     * @return the date and time when this campaign becomes active
      */
     public LocalDateTime getDateStart() {
         return dateStart;
@@ -1051,7 +1051,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Getter for the field <code>dateEnd</code>.
      *
-
+     * @return the date and time when this campaign ends
      */
     public LocalDateTime getDateEnd() {
         return dateEnd;
@@ -1069,7 +1069,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Getter for the field <code>solrQuery</code>.
      *
-
+     * @return the Solr query defining the set of records covered by this campaign
      */
     public String getSolrQuery() {
         return solrQuery;
@@ -1089,7 +1089,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Getter for the field <code>permalink</code>.
      *
-
+     * @return the permanent URL path for this campaign's public page
      */
     public String getPermalink() {
         return permalink;
@@ -1107,7 +1107,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Getter for the field <code>breadcrumbParentCmsPageId</code>.
      *
-
+     * @return the ID of the CMS page to use as parent in the breadcrumb navigation
      */
     public String getBreadcrumbParentCmsPageId() {
         return breadcrumbParentCmsPageId;
@@ -1125,7 +1125,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Getter for the field <code>translations</code>.
      *
-
+     * @return the list of translations for this campaign's localizable text fields
      */
     public List<CampaignTranslation> getTranslations() {
         return translations;
@@ -1143,7 +1143,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Getter for the field <code>questions</code>.
      *
-
+     * @return the list of annotation question templates belonging to this campaign
      */
     public List<Question> getQuestions() {
         return questions;
@@ -1161,7 +1161,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Getter for the field <code>statistics</code>.
      *
-
+     * @return the map of record statistics keyed by persistent identifier
      */
     public Map<String, CampaignRecordStatistic> getStatistics() {
         return statistics;
@@ -1179,7 +1179,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Getter for the field <code>selectedLocale</code>.
      *
-
+     * @return the locale used to select the active translation tab in the UI
      */
     @Override
     public Locale getSelectedLocale() {

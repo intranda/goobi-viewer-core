@@ -399,7 +399,7 @@ public class UploadJob implements Serializable {
     /**
      * Getter for the field <code>id</code>.
      *
-
+     * @return the database primary key of this upload job
      */
     public Long getId() {
         return id;
@@ -447,7 +447,7 @@ public class UploadJob implements Serializable {
     /**
      * Getter for the field <code>status</code>.
      *
-
+     * @return the current processing status of this upload job
      */
     public JobStatus getStatus() {
         if (status == null) {
@@ -468,7 +468,7 @@ public class UploadJob implements Serializable {
     /**
      * Getter for the field <code>message</code>.
      *
-
+     * @return the status or error message describing the current processing state
      */
     public String getMessage() {
         return message;
@@ -486,7 +486,7 @@ public class UploadJob implements Serializable {
     /**
      * Getter for the field <code>pi</code>.
      *
-
+     * @return the persistent identifier of the record associated with this upload job
      */
     public String getPi() {
         return pi;
@@ -524,7 +524,7 @@ public class UploadJob implements Serializable {
     /**
      * Getter for the field <code>description</code>.
      *
-
+     * @return the human-readable description of this upload job
      */
     public String getDescription() {
         return description;

@@ -242,7 +242,7 @@ public class CmsNavigationBean implements Serializable {
     /**
      * isEditMode.
      *
-     * @return a boolean.
+     * @return true if the navigation item editing mode is active, false otherwise
      */
     public boolean isEditMode() {
         return this.editMode;
@@ -279,7 +279,7 @@ public class CmsNavigationBean implements Serializable {
     /**
      * getSelectedTheme.
      *
-
+     * @return the theme name currently associated with the navigation menu
      */
     public String getSelectedTheme() {
         return getItemManager().getAssociatedTheme();

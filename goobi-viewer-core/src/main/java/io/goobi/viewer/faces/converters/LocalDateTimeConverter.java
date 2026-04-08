@@ -46,6 +46,7 @@ public class LocalDateTimeConverter implements Converter<LocalDateTime> {
      * @param context the current JSF faces context
      * @param component the UI component this converter is attached to
      * @param submittedValue the string value submitted from the UI form field
+     * @return the parsed LocalDateTime in UTC, or null if the submitted value is null or empty
      * @should convert English dateTime correctly
      * @should convert German dateTime correctly
      * @should covert generic dateTime correctly
@@ -67,6 +68,7 @@ public class LocalDateTimeConverter implements Converter<LocalDateTime> {
      * @param context the current JSF faces context
      * @param component the UI component this converter is attached to
      * @param ldt the LocalDateTime value to convert to a string
+     * @return the formatted date-time string, or an empty string if {@code ldt} is null
      * @should convert English dateTime correctly
      * @should convert German dateTime correctly
      * @should covert generic dateTime correctly

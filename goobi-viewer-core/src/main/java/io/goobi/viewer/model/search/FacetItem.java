@@ -501,7 +501,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Getter for the field <code>field</code>.
      *
-
+     * @return the Solr field name this facet item belongs to
      */
     @Override
     public String getField() {
@@ -536,7 +536,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Getter for the field <code>value</code>.
      *
-
+     * @return the facet value string
      */
     @Override
     public String getValue() {
@@ -556,7 +556,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Getter for the field <code>value2</code>.
      *
-
+     * @return the upper bound value for range facets
      */
     @Override
     public String getValue2() {
@@ -576,7 +576,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Getter for the field <code>link</code>.
      *
-
+     * @return the colon-separated field:value string used as the facet link
      */
     @Override
     public String getLink() {
@@ -605,7 +605,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Getter for the field <code>label</code>.
      *
-
+     * @return the display label for this facet item
      */
     @Override
     public String getLabel() {
@@ -627,7 +627,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Getter for the field <code>translatedLabel</code>.
      *
-
+     * @return the translated label if translation is configured for this field, otherwise the raw label
      */
     @Override
     public String getTranslatedLabel() {
@@ -651,7 +651,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Getter for the field <code>count</code>.
      *
-
+     * @return the number of search results matching this facet value
      */
     @Override
     public long getCount() {
@@ -690,7 +690,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * isHierarchial.
      *
-
+     * @return true if this facet item belongs to a hierarchical facet field, false otherwise
      */
     @Override
     public boolean isHierarchial() {

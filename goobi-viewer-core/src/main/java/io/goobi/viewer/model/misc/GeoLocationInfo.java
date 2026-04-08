@@ -93,7 +93,7 @@ public class GeoLocationInfo {
     /**
      * Getter for the field <code>centerLocation</code>.
      *
-
+     * @return the geographic coordinates used as the initial center of the map view
      */
     public GeoLocation getCenterLocation() {
         return centerLocation;
@@ -111,7 +111,7 @@ public class GeoLocationInfo {
     /**
      * Getter for the field <code>locationList</code>.
      *
-
+     * @return the list of geographic locations to display as markers on the map
      */
     public List<GeoLocation> getLocationList() {
         return locationList;

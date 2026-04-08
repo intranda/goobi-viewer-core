@@ -199,7 +199,7 @@ public class MessageEntry implements Comparable<MessageEntry> {
     }
 
     /**
-
+     * @return the full message key composed of prefix and trimmed suffix
      * @should trim suffix
      */
     public String getKey() {

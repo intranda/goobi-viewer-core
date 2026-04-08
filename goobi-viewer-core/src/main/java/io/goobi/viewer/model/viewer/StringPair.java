@@ -101,7 +101,7 @@ public class StringPair implements Comparable<StringPair>, Serializable {
     /**
      * Getter for the field <code>one</code>.
      *
-
+     * @return the first value of this pair
      */
     public String getOne() {
         return one;
@@ -119,7 +119,7 @@ public class StringPair implements Comparable<StringPair>, Serializable {
     /**
      * Getter for the field <code>two</code>.
      *
-
+     * @return the second value of this pair
      */
     public String getTwo() {
         return two;

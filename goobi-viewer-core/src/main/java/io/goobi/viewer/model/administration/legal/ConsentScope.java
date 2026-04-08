@@ -81,8 +81,8 @@ public class ConsentScope implements Serializable {
 
     /**
      * Gets the storage mode, determining if the scope is limited to a http session or a span of time.
-     * 
-
+     *
+     * @return the storage mode of this consent scope
      */
     public StorageMode getStorageMode() {
         return storageMode;
@@ -99,8 +99,8 @@ public class ConsentScope implements Serializable {
 
     /**
      * Get the number of days the consent is valid for.
-     * 
-
+     *
+     * @return the number of days before the stored consent expires
      */
     public int getDaysToLive() {
         return daysToLive;
@@ -140,6 +140,7 @@ public class ConsentScope implements Serializable {
      * An object is equals to a consentScope if it is also a consentScope and has the same string representation.
      *
      * @param obj the object to compare with this ConsentScope
+     * @return true if the given object is equal to this instance, false otherwise
      */
     @Override
     public boolean equals(Object obj) {

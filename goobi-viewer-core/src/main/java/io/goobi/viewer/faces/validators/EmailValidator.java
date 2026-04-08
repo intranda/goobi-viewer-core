@@ -65,7 +65,7 @@ public class EmailValidator implements Validator<String> {
      * @should match correct email addresses
      * @should match entire email address only
      * @should not match invalid addresses
-     * @return a boolean.
+     * @return true if the given email address is syntactically valid (or empty and allowed), false otherwise
      */
     public static boolean validateEmailAddress(String email, boolean allowEmptyString) {
         if (allowEmptyString && StringUtils.isBlank(email)) {

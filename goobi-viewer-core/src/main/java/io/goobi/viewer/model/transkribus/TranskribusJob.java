@@ -111,7 +111,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Getter for the field <code>id</code>.
      *
-
+     * @return the database identifier of this Transkribus job
      */
     public Long getId() {
         return id;
@@ -129,7 +129,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Getter for the field <code>jobId</code>.
      *
-
+     * @return the Transkribus job identifier
      */
     public String getJobId() {
         return jobId;
@@ -147,7 +147,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Getter for the field <code>docId</code>.
      *
-
+     * @return the Transkribus document identifier
      */
     public String getDocId() {
         return docId;
@@ -165,7 +165,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Getter for the field <code>pi</code>.
      *
-
+     * @return the persistent identifier of the associated Goobi viewer record
      */
     public String getPi() {
         return pi;
@@ -183,7 +183,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Getter for the field <code>ownerId</code>.
      *
-
+     * @return the identifier of the user who submitted this job
      */
     public String getOwnerId() {
         return ownerId;
@@ -201,7 +201,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Getter for the field <code>userCollectionId</code>.
      *
-
+     * @return the user's Transkribus collection identifier
      */
     public String getUserCollectionId() {
         return userCollectionId;
@@ -219,7 +219,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Getter for the field <code>viewerCollectionId</code>.
      *
-
+     * @return the viewer's Transkribus collection identifier
      */
     public String getViewerCollectionId() {
         return viewerCollectionId;
@@ -237,7 +237,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Getter for the field <code>message</code>.
      *
-
+     * @return the status or error message from Transkribus
      */
     public String getMessage() {
         return message;
@@ -255,7 +255,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Getter for the field <code>dateCreated</code>.
      *
-
+     * @return the timestamp when this job was created
      */
     public LocalDateTime getDateCreated() {
         return dateCreated;
@@ -273,7 +273,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Getter for the field <code>status</code>.
      *
-
+     * @return the current processing status of this job
      */
     public JobStatus getStatus() {
         return status;
@@ -291,7 +291,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Getter for the field <code>description</code>.
      *
-
+     * @return a human-readable description of this job
      */
     public String getDescription() {
         return description;
@@ -309,7 +309,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Getter for the field <code>observers</code>.
      *
-
+     * @return the list of email addresses to notify about job status changes
      */
     public List<String> getObservers() {
         return observers;

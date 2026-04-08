@@ -61,7 +61,7 @@ public class TagCount implements Comparable<TagCount> {
     /**
      * Getter for the field <code>value</code>.
      *
-
+     * @return the text value of the named entity tag
      */
     public String getValue() {
         return value;
@@ -79,7 +79,7 @@ public class TagCount implements Comparable<TagCount> {
     /**
      * getCounter.
      *
-
+     * @return the number of element references for this tag, i.e. how often it occurs
      */
     @JsonProperty("counter")
     public Integer getCounter() {
@@ -89,7 +89,7 @@ public class TagCount implements Comparable<TagCount> {
     /**
      * Getter for the field <code>type</code>.
      *
-
+     * @return the NER category of this tag (e.g. person, location, organisation)
      */
     public NERTag.Type getType() {
         return type;
@@ -117,7 +117,7 @@ public class TagCount implements Comparable<TagCount> {
     /**
      * Getter for the field <code>references</code>.
      *
-
+     * @return the list of element references where this named entity tag occurs
      */
     public List<ElementReference> getReferences() {
         return references;

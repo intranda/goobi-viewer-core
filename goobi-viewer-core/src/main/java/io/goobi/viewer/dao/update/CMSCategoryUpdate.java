@@ -150,7 +150,7 @@ public class CMSCategoryUpdate implements IModelUpdate {
     /**
      * convertData.
      *
-     * @return a boolean.
+     * @return true if data was converted and written to the DAO, false if no update was required
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean convertData() throws DAOException {

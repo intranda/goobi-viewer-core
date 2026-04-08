@@ -84,6 +84,7 @@ public class CampaignEndpoint {
         }
 
         /**
+         * @param obj object to compare against
          * @return true if both locks have the same campaignId, recordIdentifier and pageNumber. Session is disregarded for comparison
          */
         @Override

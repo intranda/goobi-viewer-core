@@ -424,7 +424,7 @@ public class MetadataElement implements Serializable {
     /**
      * Getter for the field <code>metadataList</code>.
      *
-
+     * @return the full list of {@link Metadata} objects for this element, filtered by the selected record language
      */
     public List<Metadata> getMetadataList() {
         return getMetadataList(false);
@@ -434,7 +434,7 @@ public class MetadataElement implements Serializable {
      * Getter for the field <code>metadataList</code>.
      *
      * @param beforeFold if true, only list metadata before index #{@link #metadataFoldIndex}
-
+     * @return the list of {@link Metadata} objects, optionally truncated at the fold index
      */
     public List<Metadata> getMetadataList(boolean beforeFold) {
         List<Metadata> mdList = (beforeFold && isHasMetadataListFold()) ? metadataList.subList(0, this.metadataFoldIndex) : metadataList;
@@ -443,8 +443,8 @@ public class MetadataElement implements Serializable {
 
     /**
      * Alias for {@link #getMetadataList(boolean) getMetadataList(true)}.
-     * 
-
+     *
+     * @return the list of {@link Metadata} objects that appear before the fold index
      */
     public List<Metadata> getMetadataListBeforeFold() {
         return getMetadataList(true);
@@ -458,7 +458,7 @@ public class MetadataElement implements Serializable {
     /**
      * hasMetadata.
      *
-     * @return a boolean.
+     * @return true if this element has at least one non-blank metadata entry in the main metadata list, false otherwise
      */
     public boolean hasMetadata() {
         if (metadataList != null) {
@@ -491,7 +491,7 @@ public class MetadataElement implements Serializable {
     /**
      * hasSidebarMetadata.
      *
-     * @return a boolean.
+     * @return true if this element has at least one non-blank metadata entry in the sidebar metadata list, false otherwise
      */
     public boolean hasSidebarMetadata() {
         if (sidebarMetadataList != null) {
@@ -503,7 +503,7 @@ public class MetadataElement implements Serializable {
     /**
      * Getter for the field <code>sidebarMetadataList</code>.
      *
-
+     * @return the list of {@link Metadata} objects configured for display in the sidebar, filtered by the selected record language
      */
     public List<Metadata> getSidebarMetadataList() {
         return Metadata.filterMetadata(this.sidebarMetadataList, selectedRecordLanguage, null);
@@ -521,7 +521,7 @@ public class MetadataElement implements Serializable {
     /**
      * isHasSidebarMetadata.
      *
-     * @return a boolean.
+     * @return true if the sidebar metadata list is non-null and not empty, false otherwise
      */
     public boolean isHasSidebarMetadata() {
         return sidebarMetadataList != null && !sidebarMetadataList.isEmpty();
@@ -566,7 +566,7 @@ public class MetadataElement implements Serializable {
     /**
      * Getter for the field <code>title</code>.
      *
-
+     * @return the title of the record or structure element represented by this metadata element
      */
     public String getTitle() {
         return title;
@@ -602,7 +602,7 @@ public class MetadataElement implements Serializable {
     /**
      * Getter for the field <code>docType</code>.
      *
-
+     * @return the document type string (e.g. "monograph", "periodical") of the record represented by this element
      */
     public String getDocType() {
         return docType;
@@ -611,7 +611,7 @@ public class MetadataElement implements Serializable {
     /**
      * Getter for the field <code>docStructType</code>.
      *
-
+     * @return the document structure type (e.g. "Chapter", "Article") of the record represented by this element
      */
     public String getDocStructType() {
         return docStructType;
@@ -640,7 +640,7 @@ public class MetadataElement implements Serializable {
     /**
      * isAnchor.
      *
-     * @return a boolean.
+     * @return true if this metadata element belongs to an anchor (multi-volume) record, false otherwise
      */
     public boolean isAnchor() {
         return anchor;
@@ -649,7 +649,7 @@ public class MetadataElement implements Serializable {
     /**
      * isFilesOnly.
      *
-     * @return a boolean.
+     * @return true if this metadata element represents a files-only record (no displayable image), false otherwise
      */
     public boolean isFilesOnly() {
         return filesOnly;

@@ -156,7 +156,7 @@ public class MetadataBean {
      * Getter for the field <code>metadataElementList</code>.
      *
      * @param index Metadata view index to retrieve
-
+     * @return the list of metadata elements for the given view index
      */
     public List<MetadataElement> getMetadataElementList(int index) {
         return getMetadataElementList(index, false);
@@ -308,7 +308,7 @@ public class MetadataBean {
     /**
      * Getter for the field <code>events</code>.
      *
-
+     * @return the list of LIDO event elements for the current record
      */
     public List<EventElement> getEvents() {
         return events;
@@ -326,7 +326,7 @@ public class MetadataBean {
     /**
      * displayChildStructs.
      *
-     * @return a boolean.
+     * @return true if child structural elements should be displayed in the metadata view, false otherwise
      */
     public boolean displayChildStructs() {
         return true;

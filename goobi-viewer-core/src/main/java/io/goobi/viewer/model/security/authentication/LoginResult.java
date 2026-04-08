@@ -109,7 +109,7 @@ public class LoginResult {
     /**
      * Getter for the field <code>request</code>.
      *
-
+     * @return the HTTP request associated with this login attempt
      */
     public HttpServletRequest getRequest() {
         return request;
@@ -118,7 +118,7 @@ public class LoginResult {
     /**
      * Getter for the field <code>response</code>.
      *
-
+     * @return the HTTP response associated with this login attempt
      */
     public HttpServletResponse getResponse() {
         return response;
@@ -171,7 +171,7 @@ public class LoginResult {
     /**
      * isRefused.
      *
-
+     * @return true if the login attempt was explicitly refused, false otherwise
      */
     public boolean isRefused() {
         return refused;

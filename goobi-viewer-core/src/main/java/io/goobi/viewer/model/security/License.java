@@ -609,7 +609,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Getter for the field <code>id</code>.
      *
-
+     * @return the database primary key for this license
      */
     public Long getId() {
         return id;
@@ -627,7 +627,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Getter for the field <code>licenseType</code>.
      *
-
+     * @return the license type defining the access conditions and privileges for this license
      */
     public LicenseType getLicenseType() {
         return licenseType;
@@ -655,7 +655,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Getter for the field <code>user</code>.
      *
-
+     * @return the user this license is granted to, or null if granted to a group or IP range
      */
     @Deprecated(since = "2026.01")
     public User getUser() {
@@ -681,7 +681,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Getter for the field <code>userGroup</code>.
      *
-
+     * @return the user group this license is granted to, or null if granted to a user or IP range
      */
     @Deprecated(since = "2026.01")
     public UserGroup getUserGroup() {
@@ -707,7 +707,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Getter for the field <code>ipRange</code>.
      *
-
+     * @return the IP range this license is granted to, or null if granted to a user or user group
      */
     @Deprecated(since = "2026.01")
     public IpRange getIpRange() {
@@ -733,7 +733,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Getter for the field <code>start</code>.
      *
-
+     * @return the date/time from which this license becomes valid, or null if there is no start restriction
      */
     public LocalDateTime getStart() {
         return start;
@@ -751,7 +751,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Getter for the field <code>end</code>.
      *
-
+     * @return the date/time after which this license expires, or null if there is no end restriction
      */
     public LocalDateTime getEnd() {
         return end;
@@ -769,7 +769,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Getter for the field <code>privileges</code>.
      *
-
+     * @return the set of privilege names granted by this license
      */
     public Set<String> getPrivileges() {
         return privileges;
@@ -787,7 +787,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Getter for the field <code>conditions</code>.
      *
-
+     * @return the Solr query expression restricting the records this license applies to
      */
     public String getConditions() {
         return conditions;
@@ -805,7 +805,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Getter for the field <code>description</code>.
      *
-
+     * @return the human-readable description of this license
      */
     public String getDescription() {
         return description;
@@ -841,7 +841,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Getter for the field <code>subthemeDiscriminatorValues</code>.
      *
-
+     * @return the list of subtheme discriminator values that restrict the scope of this license
      */
     public List<String> getSubthemeDiscriminatorValues() {
         return subthemeDiscriminatorValues;
@@ -859,7 +859,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Getter for the field <code>allowedCategories</code>.
      *
-
+     * @return the list of CMS categories accessible under this license
      */
     public List<CMSCategory> getAllowedCategories() {
         return allowedCategories;
@@ -877,7 +877,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Getter for the field <code>allowedCmsTemplates</code>.
      *
-
+     * @return the list of CMS page templates accessible under this license
      */
     public List<CMSPageTemplate> getAllowedCmsTemplates() {
         return allowedCmsTemplates;
@@ -895,7 +895,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Getter for the field <code>allowedCrowdsourcingCampaigns</code>.
      *
-
+     * @return the list of crowdsourcing campaigns accessible under this license
      */
     public List<Campaign> getAllowedCrowdsourcingCampaigns() {
         return allowedCrowdsourcingCampaigns;

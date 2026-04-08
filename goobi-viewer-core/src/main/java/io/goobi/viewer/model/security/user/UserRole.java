@@ -123,7 +123,7 @@ public class UserRole implements Serializable {
     /**
      * Getter for the field <code>id</code>.
      *
-
+     * @return the database identifier of this user role assignment
      */
     public Long getId() {
         return id;
@@ -141,7 +141,7 @@ public class UserRole implements Serializable {
     /**
      * Getter for the field <code>userGroup</code>.
      *
-
+     * @return the user group this role assignment belongs to
      */
     public UserGroup getUserGroup() {
         return userGroup;
@@ -159,7 +159,7 @@ public class UserRole implements Serializable {
     /**
      * Getter for the field <code>user</code>.
      *
-
+     * @return the user this role assignment belongs to
      */
     public User getUser() {
         return user;
@@ -177,7 +177,7 @@ public class UserRole implements Serializable {
     /**
      * Getter for the field <code>role</code>.
      *
-
+     * @return the role assigned to the user within the group
      */
     public Role getRole() {
         return role;

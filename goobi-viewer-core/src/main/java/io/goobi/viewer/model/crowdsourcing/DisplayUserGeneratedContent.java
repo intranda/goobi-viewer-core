@@ -187,7 +187,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Getter for the field <code>type</code>.
      *
-
+     * @return the content type of this user-generated content entry
      */
     public ContentType getType() {
         return type;
@@ -205,7 +205,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Getter for the field <code>pi</code>.
      *
-
+     * @return the persistent identifier of the associated record
      */
     public String getPi() {
         return pi;
@@ -223,7 +223,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Getter for the field <code>page</code>.
      *
-
+     * @return the page number within the record where the content is located
      */
     public Integer getPage() {
         return page;
@@ -241,7 +241,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Getter for the field <code>label</code>.
      *
-
+     * @return the display label for this user-generated content entry
      */
     public String getLabel() {
         return label;
@@ -281,7 +281,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Getter for the field <code>updatedBy</code>.
      *
-
+     * @return the user who last updated this content entry
      */
     public User getUpdatedBy() {
         return updatedBy;
@@ -299,7 +299,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Getter for the field <code>dateUpdated</code>.
      *
-
+     * @return the date and time when this content entry was last updated
      */
     public LocalDateTime getDateUpdated() {
         return dateUpdated;
@@ -351,7 +351,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Getter for the field <code>areaString</code>.
      *
-
+     * @return the string representation of the geographic or image area coordinates
      */
     public String getAreaString() {
         return areaString;
@@ -369,7 +369,7 @@ public class DisplayUserGeneratedContent {
     /**
      * hasArea.
      *
-     * @return a boolean.
+     * @return true if this user-generated content item has a non-null, non-empty area string, false otherwise
      */
     public boolean hasArea() {
         return getAreaString() != null && !getAreaString().isEmpty();
@@ -378,7 +378,7 @@ public class DisplayUserGeneratedContent {
     /**
      * mayHaveArea.
      *
-     * @return a boolean.
+     * @return true if this type of user-generated content may potentially have an area annotation, false otherwise
      */
     public boolean mayHaveArea() {
         return true;

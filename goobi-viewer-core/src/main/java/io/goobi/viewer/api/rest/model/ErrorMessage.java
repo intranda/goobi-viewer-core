@@ -82,7 +82,7 @@ public class ErrorMessage implements IResponseMessage {
     /**
      * Getter for the field <code>status</code>.
      *
-
+     * @return the HTTP status code of this error response
      */
     public int getStatus() {
         return status;
@@ -91,7 +91,7 @@ public class ErrorMessage implements IResponseMessage {
     /**
      * Getter for the field <code>message</code>.
      *
-
+     * @return the human-readable error description
      */
     @Override
     public String getMessage() {
@@ -101,7 +101,7 @@ public class ErrorMessage implements IResponseMessage {
     /**
      * Getter for the field <code>stackTrace</code>.
      *
-
+     * @return the stack trace string for diagnostic purposes, or null if not set
      */
     public String getStackTrace() {
         return stackTrace;

@@ -69,8 +69,8 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
 
     /**
      * If this query is not empty only records matching this SOLR query are listed.
-     * 
-
+     *
+     * @return the Solr filter query restricting which RSS feed entries are shown, or an empty string if no filter is set
      */
     public String getFilterQuery() {
         return filterQuery;
@@ -87,8 +87,8 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
 
     /**
      * A SOLR field to select and sort the listed entries by.
-     * 
-
+     *
+     * @return the Solr field name used for sorting RSS feed entries
      */
     public String getSortField() {
         return sortField;
@@ -105,8 +105,8 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
 
     /**
      * Returns whether records are sorted in descending order.
-     * 
-
+     *
+     * @return true if entries are sorted in descending order, false otherwise
      */
     public boolean isDescendingSorting() {
         return descendingSorting;

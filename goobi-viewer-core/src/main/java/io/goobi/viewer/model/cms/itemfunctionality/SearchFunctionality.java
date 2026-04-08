@@ -280,7 +280,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /**
      * getSearchBean.
      *
-
+     * @return the SearchBean used by this search functionality
      */
     public SearchBean getSearchBean() {
         return searchBean;
@@ -298,7 +298,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /**
      * getHitsPerPage.
      *
-
+     * @return the number of search hits displayed per page
      */
     public int getHitsPerPage() {
         return getSearchBean().getHitsPerPage();
@@ -331,7 +331,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /**
      * getFacetString.
      *
-
+     * @return the currently active facet filter string
      */
     public String getFacetString() {
         return getSearchBean().getFacets().getActiveFacetString();
@@ -373,7 +373,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /**
      * Getter for the field <code>baseUrl</code>.
      *
-
+     * @return the base URL of the CMS page hosting this search functionality
      */
     public String getBaseUrl() {
         return baseUrl;
@@ -399,7 +399,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /**
      * Getter for the field <code>pageFacetString</code>.
      *
-
+     * @return the facet filter string applied to the current search page
      */
     public String getPageFacetString() {
         return pageFacetString;

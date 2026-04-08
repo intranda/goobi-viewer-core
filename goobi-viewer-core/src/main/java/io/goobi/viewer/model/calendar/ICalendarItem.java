@@ -57,7 +57,7 @@ public interface ICalendarItem extends Comparable<ICalendarItem> {
     /**
      * isSelected.
      *
-     * @return a boolean.
+     * @return true if this calendar item is currently selected, false otherwise
      */
     public boolean isSelected();
 

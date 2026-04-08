@@ -50,7 +50,7 @@ public class Channel {
     /**
      * Getter for the field <code>title</code>.
      *
-
+     * @return the RSS channel title
      */
     public String getTitle() {
         return title;
@@ -68,7 +68,7 @@ public class Channel {
     /**
      * Getter for the field <code>link</code>.
      *
-
+     * @return the URL of the website associated with this RSS channel
      */
     public String getLink() {
         return link;
@@ -86,7 +86,7 @@ public class Channel {
     /**
      * Getter for the field <code>description</code>.
      *
-
+     * @return the human-readable description of this RSS channel
      */
     public String getDescription() {
         return description;
@@ -104,7 +104,7 @@ public class Channel {
     /**
      * Getter for the field <code>language</code>.
      *
-
+     * @return the BCP 47 language code of the channel content (e.g. "de", "en")
      */
     public String getLanguage() {
         return language;
@@ -122,7 +122,7 @@ public class Channel {
     /**
      * Getter for the field <code>copyright</code>.
      *
-
+     * @return the copyright notice for the channel content
      */
     public String getCopyright() {
         return copyright;
@@ -140,7 +140,7 @@ public class Channel {
     /**
      * Getter for the field <code>pubDate</code>.
      *
-
+     * @return the publication date of this RSS channel
      */
     public Date getPubDate() {
         return pubDate;
@@ -158,7 +158,7 @@ public class Channel {
     /**
      * Getter for the field <code>items</code>.
      *
-
+     * @return the list of RSS items contained in this channel
      */
     public List<RssItem> getItems() {
         return items;

@@ -65,7 +65,7 @@ public class DynamicBean implements Serializable {
     }
 
     /**
-
+     * @return the JSF panel group containing the dynamically built CMS form components
      * @throws DAOException
      */
     public HtmlPanelGroup getFormGroup() {
@@ -76,7 +76,7 @@ public class DynamicBean implements Serializable {
     }
 
     /**
-
+     * @return the JSF panel group containing the dynamically built CMS head components
      * @throws DAOException
      */
     public HtmlPanelGroup getHeadGroup() {

@@ -104,7 +104,7 @@ public class TableDataFilter implements Serializable {
     /**
      * Getter for the field <code>joinTable</code>.
      *
-
+     * @return an Optional containing the name of the table to join when filtering, or empty if no join is required
      */
     public Optional<String> getJoinTable() {
         return Optional.ofNullable(joinTable);

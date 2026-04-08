@@ -87,8 +87,8 @@ public class CMSSidebarElementAutomatic extends CMSSidebarElement {
 
     /**
      * The underlying {@link GeoMap}.
-     * 
-
+     *
+     * @return the {@link GeoMap} providing the data for this automatic sidebar element
      */
     public GeoMap getMap() {
         return map;
@@ -101,8 +101,8 @@ public class CMSSidebarElementAutomatic extends CMSSidebarElement {
 
     /**
      * The title of the underlying geomap.
-     * 
-
+     *
+     * @return the title of the underlying {@link GeoMap} as a {@link TranslatedText}
      */
     @Override
     public TranslatedText getTitle() {

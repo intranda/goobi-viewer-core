@@ -61,7 +61,7 @@ public class AdvancedSearchFieldConfiguration {
     }
 
     /**
-
+     * @return the display label for this search field configuration, or the field name if no label is set
      * @should return field if label null
      */
     public String getLabel() {

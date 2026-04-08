@@ -159,7 +159,7 @@ public final class BeanUtils {
     /**
      * hasJsfContext.
      *
-     * @return a boolean.
+     * @return true if a JSF FacesContext is available in the current thread, false otherwise
      */
     public static boolean hasJsfContext() {
         return FacesContext.getCurrentInstance() != null;

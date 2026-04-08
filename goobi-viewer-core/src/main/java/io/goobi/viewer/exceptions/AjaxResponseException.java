@@ -35,7 +35,7 @@ public class AjaxResponseException extends PresentationException {
 
     /**
      * @param string the exception message
-
+     * @param e the cause of this exception
      */
     public AjaxResponseException(String string, Throwable e) {
         super(string, e);

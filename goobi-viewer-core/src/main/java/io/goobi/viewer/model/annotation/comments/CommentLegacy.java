@@ -143,7 +143,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
      * @param comment comment that was created or modified
      * @param oldText previous comment text, or empty/null if this is a new comment
      * @param locale Language locale for the email text.
-     * @return a boolean.
+     * @return true if the email notification was sent successfully, false otherwise
      */
     public static boolean sendEmailNotifications(CommentLegacy comment, String oldText, Locale locale) {
         List<String> addresses = new ArrayList<>(); // Static configured list of email addresses is no longer available
@@ -218,7 +218,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Getter for the field <code>id</code>.
      *
-
+     * @return the database primary key of this comment
      */
     public Long getId() {
         return id;
@@ -236,7 +236,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Getter for the field <code>pi</code>.
      *
-
+     * @return the persistent identifier of the record this comment belongs to
      */
     public String getPi() {
         return pi;
@@ -254,7 +254,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Getter for the field <code>page</code>.
      *
-
+     * @return the 1-based page order number within the record this comment targets
      */
     public Integer getPage() {
         return page;
@@ -272,7 +272,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Getter for the field <code>owner</code>.
      *
-
+     * @return the user who authored this comment
      */
     public User getOwner() {
         return owner;
@@ -300,7 +300,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Getter for the field <code>text</code>.
      *
-
+     * @return the current comment text
      */
     public String getText() {
         return text;
@@ -318,7 +318,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Getter for the field <code>oldText</code>.
      *
-
+     * @return the previous comment text before the last update, or null if the text has not been changed
      */
     public String getOldText() {
         return oldText;
@@ -327,7 +327,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Getter for the field <code>dateCreated</code>.
      *
-
+     * @return the timestamp when this comment was created
      */
     public LocalDateTime getDateCreated() {
         return dateCreated;
@@ -345,7 +345,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Getter for the field <code>dateUpdated</code>.
      *
-
+     * @return the timestamp when this comment was last updated
      */
     public LocalDateTime getDateUpdated() {
         return dateUpdated;

@@ -722,7 +722,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>label</code>.
      *
-
+     * @return the translated label for the current locale, falling back to the default value or an empty string
      */
     public String getLabel() {
         return label.getValue(BeanUtils.getLocale()).orElse(label.getValue().orElse(""));
@@ -750,7 +750,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>labelShort</code>.
      *
-
+     * @return the abbreviated label for the current locale, falling back to the default value or an empty string
      */
     public String getLabelShort() {
         return labelShort.getValue(BeanUtils.getLocale()).orElse(labelShort.getValue().orElse(""));
@@ -768,7 +768,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>docStructType</code>.
      *
-
+     * @return the document structure type identifier (e.g. "monograph", "chapter") for this browse element
      */
     public String getDocStructType() {
         return docStructType;
@@ -777,7 +777,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>iddoc</code>.
      *
-
+     * @return the internal Solr document ID for this browse element
      */
     public String getIddoc() {
         return iddoc;
@@ -786,7 +786,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>thumbnailUrl</code>.
      *
-
+     * @return the URL of the thumbnail image for this browse element
      */
     public String getThumbnailUrl() {
         //        logger.trace("thumbnailUrl {}", thumbnailUrl); //NOSONAR Debug
@@ -839,7 +839,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>structElements</code>.
      *
-
+     * @return the list of structure element stubs from the record hierarchy (outermost first)
      */
     public List<StructElementStub> getStructElements() {
         return structElements;
@@ -875,7 +875,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>fulltext</code>.
      *
-
+     * @return the full-text content associated with this browse element
      */
     public String getFulltext() {
         return fulltext;
@@ -903,7 +903,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>volumeNo</code>.
      *
-
+     * @return the volume number string for this browse element
      */
     public String getVolumeNo() {
         return volumeNo;
@@ -966,7 +966,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * isAnchor.
      *
-
+     * @return true if this element represents an anchor document, false otherwise
      */
     public boolean isAnchor() {
         return anchor;
@@ -984,7 +984,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * isHasImages.
      *
-
+     * @return true if this element has associated image content, false otherwise
      */
     public boolean isHasImages() {
         return hasImages;
@@ -1020,7 +1020,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>numVolumes</code>.
      *
-
+     * @return the number of volumes contained in this anchor record
      */
     public long getNumVolumes() {
         return numVolumes;
@@ -1038,7 +1038,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>pi</code>.
      *
-
+     * @return the persistent identifier of the record associated with this browse element
      */
     public String getPi() {
         return pi;
@@ -1047,7 +1047,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Returns the search hint URL (without the application root!).
      *
-
+     * @return the relative URL for this browse element's detail page
      */
     public String getUrl() {
         return url;
@@ -1056,7 +1056,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>sidebarPrevUrl</code>.
      *
-
+     * @return the URL for navigating to the previous search hit in the sidebar
      */
     public String getSidebarPrevUrl() {
         return sidebarPrevUrl;
@@ -1065,7 +1065,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>sidebarNextUrl</code>.
      *
-
+     * @return the URL for navigating to the next search hit in the sidebar
      */
     public String getSidebarNextUrl() {
         return sidebarNextUrl;
@@ -1301,7 +1301,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>metadataGroupType</code>.
      *
-
+     * @return the metadata group type classifying the kind of grouped metadata this element represents
      */
     public MetadataGroupType getMetadataGroupType() {
         return metadataGroupType;
@@ -1326,7 +1326,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>foundMetadataList</code>.
      *
-
+     * @return the list of metadata entries that matched the search query
      */
     public List<Metadata> getFoundMetadataList() {
         return foundMetadataList;
@@ -1335,7 +1335,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>dataRepository</code>.
      *
-
+     * @return the name of the data repository storing the content files for this record
      */
     public String getDataRepository() {
         return dataRepository;
@@ -1375,7 +1375,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>recordLanguages</code>.
      *
-
+     * @return the list of language codes in which the record content is available
      */
     public List<String> getRecordLanguages() {
         return recordLanguages;
@@ -1393,7 +1393,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * isHasMedia.
      *
-
+     * @return true if this element has associated non-image media content, false otherwise
      */
     public boolean isHasMedia() {
         return hasMedia;
@@ -1402,7 +1402,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>originalFieldName</code>.
      *
-
+     * @return the original Solr field name from which this browse element's label was derived
      */
     public String getOriginalFieldName() {
         return originalFieldName;
@@ -1420,7 +1420,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>logId</code>.
      *
-
+     * @return the logical structure element ID (LOG_ID) of the record associated with this browse element
      */
     public String getLogId() {
         return logId;
@@ -1434,7 +1434,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>docType</code>.
      *
-
+     * @return the document type of this browse element (e.g. DOCSTRCT, UGC, CMS)
      */
     public DocType getDocType() {
         return docType;

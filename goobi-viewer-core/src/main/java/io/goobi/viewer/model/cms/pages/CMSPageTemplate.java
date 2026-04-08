@@ -313,7 +313,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * Getter for the field <code>id</code>.
      *
-
+     * @return the database primary key of this page template
      */
     public Long getId() {
         return id;
@@ -331,7 +331,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * Getter for the field <code>dateCreated</code>.
      *
-
+     * @return the date and time when this page template was created
      */
     public LocalDateTime getDateCreated() {
         return dateCreated;
@@ -362,7 +362,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * isPublished.
      *
-
+     * @return true if the publication status is PUBLISHED, false otherwise
      */
     public boolean isPublished() {
         return PublicationStatus.PUBLISHED.equals(this.publicationStatus);
@@ -380,7 +380,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * isUseDefaultSidebar.
      *
-
+     * @return true if this template uses the default sidebar instead of a custom one, false otherwise
      */
     public boolean isUseDefaultSidebar() {
         return useDefaultSidebar;
@@ -398,7 +398,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * Getter for the field <code>sidebarElements</code>.
      *
-
+     * @return the list of sidebar elements configured for this template
      */
     public List<CMSSidebarElement> getSidebarElements() {
         return sidebarElements;
@@ -489,7 +489,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * Getter for the field <code>categories</code>.
      *
-
+     * @return the list of categories assigned to this template
      */
     public List<CMSCategory> getCategories() {
         return categories;
@@ -527,7 +527,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * Getter for the field <code>sidebarElementString</code>.
      *
-
+     * @return the serialized string representation of the sidebar elements
      */
     public String getSidebarElementString() {
         return sidebarElementString;
@@ -547,7 +547,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
      * isLanguageComplete.
      *
      * @param locale locale to check translation completeness for.
-     * @return a boolean.
+     * @return true if the title and all persistent components are complete for the given locale, false otherwise
      */
     public boolean isLanguageComplete(Locale locale) {
         if (!this.title.isComplete(locale)) {
@@ -597,7 +597,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * Getter for the field <code>subTheme</code>.
      *
-
+     * @return the sub-theme name associated with this template, or an empty string if none is set
      */
     public String getSubTheme() {
         return subTheme;
@@ -615,7 +615,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * isHasSidebarElements.
      *
-     * @return a boolean.
+     * @return true if this template uses the default sidebar or has at least one custom sidebar element, false otherwise
      */
     public boolean isHasSidebarElements() {
         if (!isUseDefaultSidebar()) {
@@ -680,7 +680,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * Getter for the field <code>selectableCategories</code>.
      *
-
+     * @return the list of all allowed categories wrapped as selectable items, with selection state reflecting current template categories
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<Selectable<CMSCategory>> getSelectableCategories() throws DAOException {

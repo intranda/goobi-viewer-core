@@ -201,7 +201,7 @@ public class AccessTicket {
     /**
      * Getter for the field <code>id</code>.
      *
-
+     * @return the database primary key for this access ticket
      */
     public Long getId() {
         return id;

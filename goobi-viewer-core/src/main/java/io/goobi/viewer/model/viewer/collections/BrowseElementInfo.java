@@ -97,7 +97,7 @@ public interface BrowseElementInfo {
     /**
      * hasDescription.
      *
-     * @return a boolean.
+     * @return true if this browse element has a non-blank description, false otherwise
      */
     default boolean hasDescription() {
         return StringUtils.isNotBlank(getDescription());

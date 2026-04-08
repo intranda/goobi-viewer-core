@@ -237,7 +237,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     /**
      * Getter for the field <code>type</code>.
      *
-
+     * @return the event type string (e.g. from MODS/LIDO metadata)
      */
     public String getType() {
         return type;
@@ -255,7 +255,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     /**
      * Getter for the field <code>dateStart</code>.
      *
-
+     * @return the start date and time of this event
      */
     public LocalDateTime getDateStart() {
         return dateStart;
@@ -273,7 +273,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     /**
      * Getter for the field <code>dateEnd</code>.
      *
-
+     * @return the end date and time of this event
      */
     public LocalDateTime getDateEnd() {
         return dateEnd;
@@ -291,7 +291,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     /**
      * Getter for the field <code>metadata</code>.
      *
-
+     * @return the list of metadata entries for this event, filtered by current display language
      */
     public List<Metadata> getMetadata() {
         ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
@@ -305,7 +305,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     /**
      * hasMetadata.
      *
-     * @return a boolean.
+     * @return true if this event element has at least one non-blank metadata entry, false otherwise
      */
     public boolean isHasMetadata() {
         if (metadata != null) {
@@ -318,7 +318,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     /**
      * hasSidebarMetadata.
      *
-     * @return a boolean.
+     * @return true if this event element has at least one non-blank sidebar metadata entry, false otherwise
      */
     public boolean isHasSidebarMetadata() {
         if (sidebarMetadata != null) {
@@ -331,7 +331,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     /**
      * Getter for the field <code>sidebarMetadata</code>.
      *
-
+     * @return the list of metadata entries displayed in the sidebar for this event
      */
     public List<Metadata> getSidebarMetadata() {
         return sidebarMetadata;

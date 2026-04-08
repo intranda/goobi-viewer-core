@@ -210,7 +210,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Getter for the field <code>id</code>.
      *
-
+     * @return the database primary key for this license type
      */
     public Long getId() {
         return id;
@@ -228,7 +228,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Getter for the field <code>name</code>.
      *
-
+     * @return the unique name of this license type, typically matching an access condition in Solr
      */
     @Override
     public String getName() {
@@ -247,7 +247,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Getter for the field <code>description</code>.
      *
-
+     * @return the human-readable description of this license type
      */
     public String getDescription() {
         return description;
@@ -309,7 +309,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Checks whether only Solr documents of the UGC type have the access condition upon which this license type is based.
      *
-
+     * @return true if only UGC documents carry this license type's access condition, false otherwise
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -350,7 +350,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * isOpenAccess.
      *
-
+     * @return true if this license type grants open/unrestricted access, false otherwise
      */
     public boolean isOpenAccess() {
         return openAccess;
@@ -368,7 +368,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * isCore.
      *
-
+     * @return true if this is a built-in core license type that cannot be deleted, false otherwise
      */
     public boolean isCore() {
         return core;
@@ -462,7 +462,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Getter for the field <code>privileges</code>.
      *
-
+     * @return the set of privilege names granted by this license type
      */
     public Set<String> getPrivileges() {
         return privileges;
@@ -760,7 +760,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Getter for the field <code>overridingLicenseTypes</code>.
      *
-
+     * @return the set of license types that this license type overrides
      */
     public Set<LicenseType> getOverriddenLicenseTypes() {
         return overriddenLicenseTypes;
@@ -855,8 +855,8 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
 
     /**
      * Returns configurations as a map for further usage.
-     * 
-
+     *
+     * @return a map from language code to {@link AccessDeniedInfoConfig} for each image placeholder
      */
     public Map<String, AccessDeniedInfoConfig> getImagePlaceholdersAsMap() {
         Map<String, AccessDeniedInfoConfig> ret = HashMap.newHashMap(imagePlaceholders.size());

@@ -570,7 +570,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * isEditMode.
      *
-     * @return a boolean.
+     * @return true if an existing CMS page is being edited (as opposed to creating a new one), false otherwise
      */
     public boolean isEditMode() {
         return editMode;

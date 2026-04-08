@@ -57,7 +57,7 @@ public class SuccessMessage implements IResponseMessage {
     /**
      * isSuccess.
      *
-
+     * @return true if the operation succeeded, false otherwise
      */
     public boolean isSuccess() {
         return success;
@@ -66,7 +66,7 @@ public class SuccessMessage implements IResponseMessage {
     /**
      * Getter for the field <code>message</code>.
      *
-
+     * @return the human-readable result description
      */
     @Override
     public String getMessage() {

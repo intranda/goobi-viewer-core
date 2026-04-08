@@ -51,7 +51,7 @@ public class TranslatedSelectable<T> extends Selectable<T> {
     /**
      * Getter for the field <code>locale</code>.
      *
-
+     * @return the locale used to determine the display language for this selectable item
      */
     public Locale getLocale() {
         return locale;

@@ -62,7 +62,7 @@ public class PhotoOEmbedResponse extends OEmbedResponse {
     /**
      * Getter for the field <code>url</code>.
      *
-
+     * @return the direct URL to the photo resource
      */
     public String getUrl() {
         return url;

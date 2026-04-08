@@ -91,7 +91,7 @@ public class RestApiException extends Exception {
     /**
      * Getter for the field <code>statusCode</code>.
      *
-
+     * @return the HTTP status code associated with this REST API exception
      */
     public int getStatusCode() {
         return statusCode;

@@ -106,7 +106,7 @@ public class CampaignTranslation extends Translation implements Serializable {
     /**
      * Getter for the field <code>owner</code>.
      *
-
+     * @return the campaign this translation belongs to
      */
     public Campaign getOwner() {
         return owner;

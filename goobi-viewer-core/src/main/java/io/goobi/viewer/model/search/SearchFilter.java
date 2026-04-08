@@ -91,7 +91,7 @@ public class SearchFilter implements Serializable {
     /**
      * Getter for the field <code>label</code>.
      *
-
+     * @return the display label shown for this search filter in the UI
      */
     public String getLabel() {
         return label;
@@ -109,7 +109,7 @@ public class SearchFilter implements Serializable {
     /**
      * Getter for the field <code>field</code>.
      *
-
+     * @return the Solr field name this search filter applies to
      */
     public String getField() {
         return field;

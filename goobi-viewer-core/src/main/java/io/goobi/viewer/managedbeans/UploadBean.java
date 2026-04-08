@@ -111,7 +111,7 @@ public class UploadBean implements Serializable {
     /**
      * Getter for the field <code>lazyModelUploadJobs</code>.
      *
-
+     * @return the lazy-loading table data provider for upload jobs
      */
     public TableDataProvider<UploadJob> getLazyModelUploadJobs() {
         return lazyModelUploadJobs;
@@ -120,7 +120,7 @@ public class UploadBean implements Serializable {
     /**
      * Getter for the field <code>currentUploadJob</code>.
      *
-
+     * @return the currently selected or newly created upload job
      */
     public UploadJob getCurrentUploadJob() {
         if (currentUploadJob == null) {

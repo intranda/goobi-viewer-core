@@ -75,7 +75,7 @@ public class NicknameValidator implements Validator<String> {
      * @param name nickname string to check against the allowed character pattern
      * @should match correct name
      * @should not match invalid name
-     * @return a boolean.
+     * @return true if the given nickname is empty or matches the allowed character pattern, false otherwise
      */
     public static boolean validate(String name) {
         if (StringUtils.isEmpty(name)) {

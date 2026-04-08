@@ -140,8 +140,8 @@ public final class PassedValueFilter extends AbstractFilterConfiguration {
 
     /**
      * Gets get {@link #matchRegex}.
-     * 
-
+     *
+     * @return the regular expression pattern used to match filter values
      */
     public String getMatchRegex() {
         return matchRegex;

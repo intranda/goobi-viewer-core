@@ -584,7 +584,7 @@ public class SequenceBuilder extends AbstractBuilder {
     /**
      * Getter for the field <code>buildMode</code>.
      *
-
+     * @return the build mode controlling whether full IIIF or thumbnail-only canvases are built
      */
     public BuildMode getBuildMode() {
         return buildMode;
@@ -604,7 +604,7 @@ public class SequenceBuilder extends AbstractBuilder {
     /**
      * Getter for the field <code>preferredView</code>.
      *
-
+     * @return the page type used when constructing viewer links for canvas renderings
      */
     public PageType getPreferedView() {
         return preferedView;

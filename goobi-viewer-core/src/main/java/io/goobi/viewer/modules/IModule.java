@@ -65,7 +65,7 @@ public interface IModule extends IndexAugmenter {
     /**
      * isLoaded.
      *
-     * @return a boolean.
+     * @return true if this module has been successfully loaded and is active, false otherwise
      */
     public boolean isLoaded();
 

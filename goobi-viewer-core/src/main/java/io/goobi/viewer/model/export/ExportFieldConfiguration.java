@@ -36,7 +36,7 @@ public class ExportFieldConfiguration {
     }
 
     /**
-
+     * @return the display label for this field, or the field name if no label is configured
      * @should return field if label null
      */
     public String getLabel() {

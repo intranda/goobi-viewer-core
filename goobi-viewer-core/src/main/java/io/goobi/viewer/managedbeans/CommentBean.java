@@ -284,7 +284,7 @@ public class CommentBean implements Serializable {
     /**
      * isUserCommentsEnabled.
      *
-     * @return a boolean.
+     * @return true if the user comments feature is globally enabled, false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException
      */
     public boolean isUserCommentsEnabled() throws DAOException {

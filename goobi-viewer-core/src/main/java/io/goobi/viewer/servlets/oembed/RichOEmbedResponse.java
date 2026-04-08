@@ -112,7 +112,7 @@ public class RichOEmbedResponse extends OEmbedResponse {
     /**
      * Getter for the field <code>html</code>.
      *
-
+     * @return the HTML snippet to embed for a rich oEmbed response
      */
     public String getHtml() {
         return html;

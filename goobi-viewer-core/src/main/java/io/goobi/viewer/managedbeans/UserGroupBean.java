@@ -224,7 +224,7 @@ public class UserGroupBean implements Serializable {
     /**
      * Getter for the field <code>currentOtherUserGroup</code>.
      *
-
+     * @return the user group the current user may join or leave
      */
     public UserGroup getCurrentOtherUserGroup() {
         return currentOtherUserGroup;
@@ -242,7 +242,7 @@ public class UserGroupBean implements Serializable {
     /**
      * Getter for the field <code>currentOwnUserGroupId</code>.
      *
-
+     * @return the database ID of the user group owned by the current user that is currently selected
      */
     public int getCurrentOwnUserGroupId() {
         return currentOwnUserGroupId;
@@ -260,7 +260,7 @@ public class UserGroupBean implements Serializable {
     /**
      * Getter for the field <code>currentOwnUserGroup</code>.
      *
-
+     * @return the user group owned by the current user that is currently selected for editing
      */
     public UserGroup getCurrentOwnUserGroup() {
         return currentOwnUserGroup;
@@ -292,7 +292,7 @@ public class UserGroupBean implements Serializable {
     /**
      * Getter for the field <code>currentMember</code>.
      *
-
+     * @return the group member currently selected for removal
      */
     public User getCurrentMember() {
         return currentMember;
@@ -310,7 +310,7 @@ public class UserGroupBean implements Serializable {
     /**
      * Getter for the field <code>currentRole</code>.
      *
-
+     * @return the role to assign to the selected group member
      */
     public Role getCurrentRole() {
         return currentRole;
@@ -349,7 +349,7 @@ public class UserGroupBean implements Serializable {
     /**
      * isNewUserGroup.
      *
-     * @return a boolean.
+     * @return true if the current user group has not yet been saved (i.e. has no name assigned), false otherwise
      */
     public boolean isNewUserGroup() {
         return StringUtils.isEmpty(currentOwnUserGroup.getName());

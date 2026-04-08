@@ -156,6 +156,7 @@ public class SearchSortingOption implements Serializable {
      * {@link #isAscending()} are equal.
      *
      * @param obj the object to compare with this sorting option
+     * @return true if the given object is equal to this instance, false otherwise
      * @should return true if both options are random
      */
     @Override

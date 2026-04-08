@@ -389,7 +389,7 @@ public class CMSTemplateManager implements Serializable {
     /**
      * Getter for the field <code>themeFolderPath</code>.
      *
-
+     * @return an Optional containing the path to the theme's CMS template folder, or empty if no theme folder is configured
      */
     public Optional<Path> getThemeFolderPath() {
         return themeFolderPath;
@@ -398,7 +398,7 @@ public class CMSTemplateManager implements Serializable {
     /**
      * Getter for the field <code>coreFolderPath</code>.
      *
-
+     * @return an Optional containing the path to the core CMS template folder, or empty if no core folder is configured
      */
     public Optional<Path> getCoreFolderPath() {
         return coreFolderPath;

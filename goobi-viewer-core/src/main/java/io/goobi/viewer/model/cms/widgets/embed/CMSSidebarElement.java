@@ -206,8 +206,8 @@ public class CMSSidebarElement implements Serializable {
 
     /**
      * The database id.
-     * 
-
+     *
+     * @return the database primary key of this sidebar element
      */
     public Long getId() {
         return id;
@@ -220,8 +220,8 @@ public class CMSSidebarElement implements Serializable {
 
     /**
      * The {@link CMSPage} containing the element.
-     * 
-
+     *
+     * @return the {@link CMSPage} that owns this sidebar element
      */
     public CMSPage getOwnerPage() {
         return ownerPage;
@@ -242,8 +242,8 @@ public class CMSSidebarElement implements Serializable {
 
     /**
      * The order in which the element is shown. Low numbers are displayed on top of the sidebar, high numbers at the bottom
-     * 
-
+     *
+     * @return the display order of this element within the sidebar
      */
     public int getOrder() {
         return order;
@@ -256,8 +256,8 @@ public class CMSSidebarElement implements Serializable {
 
     /**
      * The {@link WidgetGenerationType} of the underlying widget.
-     * 
-
+     *
+     * @return the {@link WidgetGenerationType} describing how this widget's data is generated
      */
     public WidgetGenerationType getGenerationType() {
         return generationType;
@@ -270,8 +270,8 @@ public class CMSSidebarElement implements Serializable {
 
     /**
      * The {@link WidgetContentType} of the underlying widget.
-     * 
-
+     *
+     * @return the {@link WidgetContentType} identifying the xhtml component used for this sidebar element
      */
     public WidgetContentType getContentType() {
         return contentType;

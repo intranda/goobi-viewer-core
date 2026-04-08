@@ -142,7 +142,7 @@ public final class DataManager {
     /**
      * Getter for the field <code>modules</code>.
      *
-
+     * @return the list of all registered viewer modules
      */
     public List<IModule> getModules() {
         return modules;
@@ -151,7 +151,7 @@ public final class DataManager {
     /**
      * getUrlBuilder.
      *
-
+     * @return the URL builder provided by a registered module, or the default URL builder if no module provides one
      */
     public IURLBuilder getUrlBuilder() {
         return getModules().stream()
@@ -187,7 +187,7 @@ public final class DataManager {
      * isModuleLoaded.
      *
      * @param id unique identifier of the module to check
-     * @return a boolean.
+     * @return true if a module with the given ID is currently registered, false otherwise
      */
     public boolean isModuleLoaded(String id) {
         if (StringUtils.isEmpty(id)) {
@@ -208,7 +208,7 @@ public final class DataManager {
      *
      * @param module module instance to register
      * @should not add module if it's already registered
-     * @return a boolean.
+     * @return true if the module was successfully registered, false if a module with the same ID is already registered
      */
     public boolean registerModule(IModule module) {
         if (module == null) {
@@ -242,7 +242,7 @@ public final class DataManager {
     /**
      * Getter for the field <code>sessionMap</code>.
      *
-
+     * @return the map of active HTTP session data, keyed by session ID
      */
     public Map<String, Map<String, String>> getSessionMap() {
         return sessionMap;
@@ -251,7 +251,7 @@ public final class DataManager {
     /**
      * Getter for the field <code>configuration</code>.
      *
-
+     * @return the global viewer configuration instance, initialised lazily on first access
      */
     public Configuration getConfiguration() {
         if (configuration == null) {
@@ -266,7 +266,7 @@ public final class DataManager {
     /**
      * Getter for the field <code>languageHelper</code>.
      *
-
+     * @return the language helper instance for ISO language code lookups, initialised lazily on first access
      */
     public LanguageHelper getLanguageHelper() {
         if (languageHelper == null) {
@@ -281,7 +281,7 @@ public final class DataManager {
     /**
      * Getter for the field <code>searchIndex</code>.
      *
-
+     * @return the Solr search index instance, initialised lazily on first access
      */
     public SolrSearchIndex getSearchIndex() {
         if (searchIndex == null) {
@@ -311,7 +311,7 @@ public final class DataManager {
     /**
      * Getter for the field <code>dao</code>.
      *
-
+     * @return the data access object for database operations, initialised lazily on first access
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public IDAO getDao() throws DAOException {
@@ -407,7 +407,7 @@ public final class DataManager {
     /**
      * Getter for the field <code>recordCampaignMap</code>.
      *
-
+     * @return the map of persistent identifiers (PI) to associated crowdsourcing campaigns
      */
     public Map<String, List<Campaign>> getRecordCampaignMap() {
         return recordCampaignMap;

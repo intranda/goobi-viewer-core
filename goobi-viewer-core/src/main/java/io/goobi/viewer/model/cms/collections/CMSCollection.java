@@ -197,7 +197,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /**
      * Getter for the field <code>mediaItem</code>.
      *
-
+     * @return the CMS media item used as the representative image for this collection, or null if none is set
      */
     public CMSMediaItem getMediaItem() {
         return mediaItem;
@@ -211,7 +211,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /**
      * Getter for the field <code>collectionUrl</code>.
      *
-
+     * @return the custom URL overriding the default collection browse URL, or null if not set
      */
     public String getCollectionUrl() {
         return collectionUrl;
@@ -497,7 +497,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /**
      * hasMediaItem.
      *
-     * @return a boolean.
+     * @return true if this collection has an associated media item, false otherwise
      */
     public boolean hasMediaItem() {
         return getMediaItem() != null;
@@ -506,7 +506,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /**
      * hasRepresentativeWork.
      *
-     * @return a boolean.
+     * @return true if this collection has a non-blank representative work persistent identifier, false otherwise
      */
     public boolean hasRepresentativeWork() {
         return StringUtils.isNotBlank(getRepresentativeWorkPI());
@@ -515,7 +515,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /**
      * hasImage.
      *
-     * @return a boolean.
+     * @return true if this collection has a representative work or an associated media item, false otherwise
      */
     public boolean hasImage() {
         return hasRepresentativeWork() || hasMediaItem();
@@ -524,7 +524,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /**
      * Getter for the field <code>id</code>.
      *
-
+     * @return the database primary key of this collection
      */
     public Long getId() {
         return id;
@@ -608,7 +608,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /**
      * Getter for the field <code>representativeWorkPI</code>.
      *
-
+     * @return the persistent identifier of the record whose thumbnail represents this collection
      */
     public String getRepresentativeWorkPI() {
         return representativeWorkPI;

@@ -98,7 +98,7 @@ public class BrowseTerm implements Serializable {
     /**
      * Getter for the field <code>term</code>.
      *
-
+     * @return the browse term value
      */
     public String getTerm() {
         return term;
@@ -107,7 +107,7 @@ public class BrowseTerm implements Serializable {
     /**
      * Getter for the field <code>sortTerm</code>.
      *
-
+     * @return the sort key for this browse term, or null if none is set
      */
     public String getSortTerm() {
         return sortTerm;
@@ -131,7 +131,7 @@ public class BrowseTerm implements Serializable {
     /**
      * Getter for the field <code>hitCount</code>.
      *
-
+     * @return the number of index hits for this browse term
      */
     public long getHitCount() {
         return hitCount;
@@ -149,7 +149,7 @@ public class BrowseTerm implements Serializable {
     /**
      * Getter for the field <code>piList</code>.
      *
-
+     * @return the set of persistent identifiers associated with this browse term
      */
     public Set<String> getPiList() {
         return piList;

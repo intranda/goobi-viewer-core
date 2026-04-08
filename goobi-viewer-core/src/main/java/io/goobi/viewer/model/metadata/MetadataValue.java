@@ -214,7 +214,7 @@ public class MetadataValue implements Serializable {
      * getParamLabelWithColon.
      *
      * @param index zero-based parameter index to look up
-
+     * @return the translated label for the given parameter index with an appended colon, or an empty string if the index is out of range
      */
     public String getParamLabelWithColon(int index) {
         // logger.trace("getParamLabelWithColon: {}", index); //NOSONAR Debug
@@ -228,7 +228,7 @@ public class MetadataValue implements Serializable {
     /**
      * Getter for the field <code>paramLabels</code>.
      *
-
+     * @return the list of label keys for each metadata parameter
      */
     public List<String> getParamLabels() {
         return paramLabels;
@@ -237,7 +237,7 @@ public class MetadataValue implements Serializable {
     /**
      * Getter for the field <code>paramValues</code>.
      *
-
+     * @return the list of value lists for each metadata parameter
      */
     public List<List<String>> getParamValues() {
         return paramValues;
@@ -246,7 +246,7 @@ public class MetadataValue implements Serializable {
     /**
      * Getter for the field <code>paramMasterValueFragments</code>.
      *
-
+     * @return the list of master value template fragments associated with each metadata parameter
      */
     public List<String> getParamMasterValueFragments() {
         return paramMasterValueFragments;
@@ -255,7 +255,7 @@ public class MetadataValue implements Serializable {
     /**
      * Getter for the field <code>paramPrefixes</code>.
      *
-
+     * @return the list of prefix strings prepended to each parameter value during rendering
      */
     public List<String> getParamPrefixes() {
         return paramPrefixes;
@@ -264,7 +264,7 @@ public class MetadataValue implements Serializable {
     /**
      * Getter for the field <code>paramSuffixes</code>.
      *
-
+     * @return the list of suffix strings appended to each parameter value during rendering
      */
     public List<String> getParamSuffixes() {
         return paramSuffixes;
@@ -273,7 +273,7 @@ public class MetadataValue implements Serializable {
     /**
      * Getter for the field <code>paramUrls</code>.
      *
-
+     * @return the list of URLs associated with each metadata parameter value
      */
     public List<String> getParamUrls() {
         return paramUrls;
@@ -282,7 +282,7 @@ public class MetadataValue implements Serializable {
     /**
      * Getter for the field <code>normDataUrls</code>.
      *
-
+     * @return the map of norm data type keys to their resolved URLs
      */
     public Map<String, String> getNormDataUrls() {
         return normDataUrls;
@@ -358,7 +358,7 @@ public class MetadataValue implements Serializable {
      * hasParamValue.
      *
      * @param paramLabel label key identifying the parameter
-     * @return a boolean.
+     * @return true if this metadata value has a value for the parameter identified by the given label, false otherwise
      */
     public boolean hasParamValue(String paramLabel) {
         int index = paramLabels.indexOf(paramLabel);
@@ -489,7 +489,7 @@ public class MetadataValue implements Serializable {
     /**
      * Getter for the field <code>masterValue</code>.
      *
-
+     * @return the template string into which parameter values are substituted during rendering, defaulting to "{0}" if empty
      */
     public String getMasterValue() {
         if (StringUtils.isEmpty(masterValue)) {
@@ -511,7 +511,7 @@ public class MetadataValue implements Serializable {
     /**
      * getGroupTypeForUrl.
      *
-
+     * @return the METADATATYPE value of the owning grouped metadata structure element, or "-" if not set
      */
     public String getGroupTypeForUrl() {
         if (StringUtils.isEmpty(groupType)) {

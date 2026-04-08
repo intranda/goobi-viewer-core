@@ -500,7 +500,7 @@ public class IIIFPresentation2ResourceBuilder {
     /**
      * Getter for the field <code>collectionBuilder</code>.
      *
-
+     * @return the {@link CollectionBuilder} instance used to build IIIF collection responses
      */
     public CollectionBuilder getCollectionBuilder() {
         if (this.collectionBuilder == null) {

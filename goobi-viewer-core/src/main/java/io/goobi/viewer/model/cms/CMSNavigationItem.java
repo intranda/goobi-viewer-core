@@ -258,7 +258,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * Getter for the field <code>order</code>.
      *
-
+     * @return the sort position of this navigation item within its parent or the top-level menu
      */
     public Integer getOrder() {
         return order;
@@ -276,7 +276,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * Getter for the field <code>parentItem</code>.
      *
-
+     * @return the parent navigation item, or null if this is a top-level item
      */
     public CMSNavigationItem getParentItem() {
         return parentItem;
@@ -445,7 +445,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * isValid.
      *
-     * @return a boolean.
+     * @return true if this navigation item has no unpublished and no deleted CMS page, false otherwise
      */
     public boolean isValid() {
         return !hasUnpublishedCmsPage() && !hasDeletedCmsPage();
@@ -454,7 +454,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * isShouldDisplay.
      *
-     * @return a boolean.
+     * @return true if this navigation item should be displayed to the current user according to its display rule, false otherwise
      */
     public boolean isShouldDisplay() {
         UserBean userBean = BeanUtils.getUserBean();
@@ -490,7 +490,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * hasCmsPage.
      *
-     * @return a boolean.
+     * @return true if this navigation item has an associated CMS page, false otherwise
      */
     public boolean hasCmsPage() {
         return getCmsPage() != null;
@@ -500,7 +500,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
      * Check to highlight this item as 'currentPage'. Checks both the items label and all child labels whether they equal currentPage
      *
      * @param currentPage navigation page identifier to match against this item and its children
-     * @return a boolean.
+     * @return true if this item's label or any child item's label equals the given page identifier, false otherwise
      */
     public boolean matchesLabel(String currentPage) {
         if (getItemLabel().equals(currentPage)) {
@@ -535,7 +535,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * Getter for the field <code>sortingListId</code>.
      *
-
+     * @return the temporary ID used to identify this item in the navigation menu hierarchy
      */
     public Integer getSortingListId() {
         return sortingListId;
@@ -553,7 +553,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * isAbsoluteLink.
      *
-     * @return a boolean.
+     * @return true if the URL of this navigation item is an absolute link, false otherwise
      */
     public boolean isAbsoluteLink() {
         return absoluteLink;
@@ -571,7 +571,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * isVisible.
      *
-     * @return a boolean.
+     * @return true if this navigation item is visible (always returns true for the base implementation), false otherwise
      */
     public boolean isVisible() {
         return true;
@@ -623,7 +623,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * isDisplayForUsersOnly.
      *
-     * @return a boolean.
+     * @return true if this item is restricted to logged-in users or administrators, false if it is always visible
      */
     public boolean isDisplayForUsersOnly() {
         return displayRule.equals(DisplayRule.LOGGED_IN) || displayRule.equals(DisplayRule.ADMIN);
@@ -641,7 +641,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * isDisplayForAdminsOnly.
      *
-     * @return a boolean.
+     * @return true if this item is restricted to administrators only, false otherwise
      */
     public boolean isDisplayForAdminsOnly() {
         return displayRule.equals(DisplayRule.ADMIN);

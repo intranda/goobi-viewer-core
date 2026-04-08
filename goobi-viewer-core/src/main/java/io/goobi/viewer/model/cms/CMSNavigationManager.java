@@ -345,7 +345,7 @@ public class CMSNavigationManager implements Serializable {
     /**
      * Getter for the field <code>associatedTheme</code>.
      *
-
+     * @return the theme name whose navigation items are managed by this instance
      */
     public String getAssociatedTheme() {
         return associatedTheme;

@@ -60,7 +60,7 @@ public interface ILicensee {
      * @param licenseName License name.
      * @param privilegeName Required privilege (optional).
      * @param pi Checks the privilege in connection with a specific record identifier (optional).
-     * @return a boolean.
+     * @return true if the licensee holds a matching license (and the required privilege if specified), false otherwise
      * @throws DAOException
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.

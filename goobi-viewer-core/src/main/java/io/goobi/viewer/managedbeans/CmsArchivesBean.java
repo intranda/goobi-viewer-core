@@ -147,7 +147,7 @@ public class CmsArchivesBean implements Serializable {
     /**
      * Getter for the field <code>lazyModelArchiveConfigurations</code>.
      *
-
+     * @return the lazy-loading table data provider for archive resource configurations
      */
     public TableDataProvider<ArchiveResourceWrapper> getLazyModelArchiveConfigurations() {
         return lazyModelArchiveConfigurations;

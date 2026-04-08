@@ -168,7 +168,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     /**
      * Getter for the field <code>name</code>. If the <code>CMSCollection</code> translation is desired, use <code>getLabel()</code> instead.
      *
-
+     * @return the internal collection name (Solr field value)
      */
     public String getName() {
         return name;
@@ -230,7 +230,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     /**
      * getLuceneName.
      *
-
+     * @return the Lucene-compatible name of this collection element
      */
     public String getLuceneName() {
         return getName();
@@ -257,7 +257,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     /**
      * isHasSubelements.
      *
-     * @return a boolean.
+     * @return true if this collection element has sub-collection elements, false otherwise
      */
     public boolean isHasSubelements() {
         return hasSubelements;
@@ -266,7 +266,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     /**
      * isDisplayNumberOfVolumes.
      *
-     * @return a boolean.
+     * @return true if the number of volumes should be displayed for this collection element (i.e. the element level meets the configured threshold), false otherwise
      */
     public boolean isDisplayNumberOfVolumes() {
         return getLevel() >= displayNumberOfVolumesLevel;
@@ -316,7 +316,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     /**
      * Getter for the field <code>sortField</code>.
      *
-
+     * @return the Solr field name used for sorting this collection
      */
     public String getSortField() {
         return sortField;
@@ -334,7 +334,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     /**
      * isShowSubElements.
      *
-     * @return a boolean.
+     * @return true if the sub-collections of this element are currently expanded for display, false otherwise
      */
     public boolean isShowSubElements() {
         return showSubElements;
@@ -352,7 +352,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     /**
      * isShowDescription.
      *
-
+     * @return true if the collection description should be displayed, false otherwise
      */
     public boolean isShowDescription() {
         return showDescription;
@@ -444,7 +444,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     /**
      * Getter for the field <code>info</code>.
      *
-
+     * @return the browse element info providing CMS-based metadata for this collection
      */
     public BrowseElementInfo getInfo() {
         return info;
@@ -463,7 +463,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     /**
      * hasCMSDescription.
      *
-     * @return a boolean.
+     * @return true if this element has a CMS-provided (non-simple) description that is not blank, false otherwise
      */
     public boolean hasCMSDescription() {
         return !(this.info instanceof SimpleBrowseElementInfo) && StringUtils.isNotBlank(info.getDescription());
@@ -472,7 +472,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     /**
      * hasIcon.
      *
-     * @return a boolean.
+     * @return true if this collection element has an icon URI configured, false otherwise
      */
     public boolean hasIcon() {
         return getInfo() != null && getInfo().getIconURI() != null;

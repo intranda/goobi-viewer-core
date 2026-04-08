@@ -651,7 +651,7 @@ public class ManifestBuilder extends AbstractBuilder {
     /**
      * Getter for the field <code>buildMode</code>.
      *
-
+     * @return the build mode controlling which parts of the manifest are generated
      */
     public BuildMode getBuildMode() {
         return buildMode;

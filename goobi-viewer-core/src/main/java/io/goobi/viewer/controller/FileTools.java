@@ -373,7 +373,7 @@ public final class FileTools {
      *
      * @param path filesystem path to check for existence
      * @param create true to create the directory if it does not exist
-     * @return a boolean.
+     * @return true if the path exists (or was successfully created), false otherwise
      * @throws java.io.IOException if any.
      */
     public static boolean checkPathExistance(Path path, boolean create) throws IOException {

@@ -36,7 +36,7 @@ public class SitemapRequestParameters extends TaskParameter {
     /**
      * Getter for the field <code>outputPath</code>.
      *
-
+     * @return the directory path in which to write the sitemap file
      */
     public String getOutputPath() {
         return outputPath;

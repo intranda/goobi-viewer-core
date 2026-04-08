@@ -488,7 +488,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
 
     /**
      * @param privilegeName Access privilege name to check
-
+     * @return the access permission result for the given privilege
      * @throws DAOException
      * @throws IndexUnreachableException
      */
@@ -499,7 +499,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * @param privilegeName Access privilege name to check
      * @param user The User requesting access. If null, it is fetched from the jsfContext if one exists
-
+     * @return the access permission result for the given privilege and user
      * @throws DAOException
      * @throws IndexUnreachableException
      */
@@ -607,7 +607,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Getter for the field <code>urn</code>.
      *
-
+     * @return the URN (Uniform Resource Name) of this page
      */
     public String getUrn() {
         return urn;
@@ -625,7 +625,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Getter for the field <code>purlPart</code>.
      *
-
+     * @return the persistent URL fragment for this page
      */
     public String getPurlPart() {
         return purlPart;
@@ -682,7 +682,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Getter for the field <code>mimeType</code>.
      *
-
+     * @return the MIME type of the primary media file for this page
      */
     public String getMimeType() {
         return mimeType;
@@ -718,7 +718,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Getter for the field <code>fileIdRoot</code>.
      *
-
+     * @return the root identifier used to build file IDs for this page
      */
     public String getFileIdRoot() {
         return fileIdRoot;
@@ -789,7 +789,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * isFulltextAvailableForPage.
      *
-     * @return a boolean.
+     * @return true if fulltext is available for this page and the current user has permission to view it, false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -824,14 +824,14 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * isFulltextAvailable.
      *
-
+     * @return true if fulltext content is available for this page, false otherwise
      */
     public boolean isFulltextAvailable() {
         return fulltextAvailable;
     }
 
     /**
-
+     * @return true if fulltext access is permitted for this page, false otherwise
      * @throws ViewerConfigurationException
      * @should return true if access allowed for this page
      * @should return false if access denied for this page
@@ -863,7 +863,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * isAltoAvailableForPage.
      *
-     * @return a boolean.
+     * @return true if ALTO content is available for this page and the current user has permission to view it, false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -888,7 +888,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * isTeiAvailableForPage.
      *
-     * @return a boolean.
+     * @return true if TEI content is available for this page and the current user has permission to view it, false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -899,7 +899,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Getter for the field <code>fulltextFileName</code>.
      *
-
+     * @return the file name of the plain-text fulltext file for this page
      */
     public String getFulltextFileName() {
         return fulltextFileName;
@@ -917,7 +917,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Getter for the field <code>altoFileName</code>.
      *
-
+     * @return the file name of the ALTO XML file for this page
      */
     public String getAltoFileName() {
         return altoFileName;
@@ -935,7 +935,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Getter for the field <code>fullText</code>.
      *
-
+     * @return the full-text content of this page, loaded from ALTO or plain-text file
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getFullText() throws ViewerConfigurationException {
@@ -1133,7 +1133,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Getter for the field <code>fileNames</code>.
      *
-
+     * @return map of media format keys to file name values for this page
      */
     public Map<String, String> getFileNames() {
         return fileNames;
@@ -1377,7 +1377,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Getter for the field <code>pi</code>.
      *
-
+     * @return the persistent identifier of the record this page belongs to
      */
     public String getPi() {
         return pi;
@@ -1386,7 +1386,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Getter for the field <code>accessConditions</code>.
      *
-
+     * @return set of access condition identifiers restricting this page
      */
     public Set<String> getAccessConditions() {
         return accessConditions;
@@ -1426,7 +1426,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Checks if the media type is displayable as a 3d object and access is granted for viewing it.
      *
-     * @return a boolean.
+     * @return true if the media type is a 3D model and the current user has permission to view it, false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1455,7 +1455,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Checks if the media type is displayable as an image and access is granted for viewing an image.
      *
-     * @return a boolean.
+     * @return true if the media type supports image view and the current user has permission to view it, false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1467,7 +1467,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      * Remnant from when image access had to be checked for each tile. Still used for OpenSeaDragon, so it just redirects to the access permission
      * check.
      *
-     * @return a boolean.
+     * @return true if the media type supports image view and the current user has permission to view it, false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1625,7 +1625,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
 
     /**
      *
-     * @return a boolean.
+     * @return true if the current user has permission to view the video content of this page and the concurrent view limit is not exceeded, false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1643,7 +1643,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
 
     /**
      *
-     * @return a boolean.
+     * @return true if the current user has permission to view the audio content of this page and the concurrent view limit is not exceeded, false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1713,7 +1713,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Return true if this image has its own width/height measurements, and does not rely on default width/height.
      *
-     * @return a boolean.
+     * @return true if both width and height are greater than zero (i.e. individual size is known), false otherwise
      */
     public boolean hasIndividualSize() {
         return (width > 0 && height > 0);
@@ -1722,7 +1722,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Getter for the field <code>altoText</code>.
      *
-
+     * @return the ALTO XML text content for this page, or null if not yet loaded
      */
     public String getAltoText() {
         return altoText;
@@ -1756,7 +1756,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Getter for the field <code>wordCoordsFormat</code>.
      *
-
+     * @return the coordinate format used for word-level coordinates in the ALTO/fulltext data
      */
     public CoordsFormat getWordCoordsFormat() {
         return wordCoordsFormat;
@@ -1765,7 +1765,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Getter for the field <code>dataRepository</code>.
      *
-
+     * @return the data repository name where this page's files are stored
      */
     public String getDataRepository() {
         return dataRepository;
@@ -1774,7 +1774,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Getter for the field <code>fileSize</code>.
      *
-
+     * @return the size of the primary media file in bytes
      */
     public long getFileSize() {
         return fileSize;

@@ -248,7 +248,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /**
      * Getter for the field <code>id</code>.
      *
-
+     * @return the database primary key of this media item
      */
     public Long getId() {
         return id;
@@ -266,7 +266,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /**
      * Getter for the field <code>fileName</code>.
      *
-
+     * @return the file name of the media file
      */
     public String getFileName() {
         return fileName;
@@ -328,7 +328,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /**
      * Getter for the field <code>metadata</code>.
      *
-
+     * @return the list of language-specific metadata entries for this media item
      */
     public List<CMSMediaItemMetadata> getMetadata() {
         return metadata;
@@ -379,7 +379,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /**
      * hasCateories.
      *
-     * @return a boolean.
+     * @return true if this media item has at least one assigned category, false otherwise
      */
     public boolean hasCateories() {
         return !this.categories.isEmpty();
@@ -402,7 +402,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
      * removeCategory.
      *
      * @param cat category to remove from this item
-     * @return a boolean.
+     * @return true if the category was present and has been removed, false otherwise
      */
     public boolean removeCategory(CMSCategory cat) {
         return this.categories.remove(cat);
@@ -412,7 +412,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
      * addCategory.
      *
      * @param cat category to add if not already present
-     * @return a boolean.
+     * @return true if the category was added, false if it was already present
      */
     public boolean addCategory(CMSCategory cat) {
         if (this.categories.contains(cat)) {
@@ -661,7 +661,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
      * isFinished.
      *
      * @param locale locale to check for a non-blank name entry
-     * @return a boolean.
+     * @return true if the metadata name for the given locale is non-blank, false otherwise
      */
     public boolean isFinished(Locale locale) {
         return StringUtils.isNotBlank(getMetadataForLocale(locale).getName());

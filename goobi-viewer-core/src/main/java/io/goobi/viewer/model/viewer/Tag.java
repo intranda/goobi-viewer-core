@@ -94,7 +94,7 @@ public class Tag implements Comparable<Tag>, Serializable {
     /**
      * Getter for the field <code>size</code>.
      *
-
+     * @return the relative frequency or weight of this tag
      */
     public long getSize() {
         return size;
@@ -112,7 +112,7 @@ public class Tag implements Comparable<Tag>, Serializable {
     /**
      * Getter for the field <code>name</code>.
      *
-
+     * @return the tag text value
      */
     public String getName() {
         return name;
@@ -134,7 +134,7 @@ public class Tag implements Comparable<Tag>, Serializable {
     /**
      * Getter for the field <code>field</code>.
      *
-
+     * @return the Solr field name this tag is associated with
      */
     public String getField() {
         return field;

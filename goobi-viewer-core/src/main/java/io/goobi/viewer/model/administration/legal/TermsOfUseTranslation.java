@@ -66,7 +66,7 @@ public class TermsOfUseTranslation extends Translation {
     /**
      * Getter for the field <code>owner</code>.
      *
-
+     * @return the TermsOfUse entity that this translation belongs to
      */
     public TermsOfUse getOwner() {
         return owner;

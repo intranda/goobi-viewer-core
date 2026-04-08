@@ -388,6 +388,8 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
 
     /**
      * Use hash code of the {@link #clientIdentifier}.
+     *
+     * @return the hash code value for this object
      */
     @Override
     public int hashCode() {
@@ -402,6 +404,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
      * Two clients are equal if heir {@link #clientIdentifier}s are equals.
      *
      * @param obj the object to compare to this client
+     * @return true if the given object is equal to this instance, false otherwise
      */
     @Override
     public boolean equals(Object obj) {
@@ -515,7 +518,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
      * Checks if the given IP address matches the {@link #subnetMask} of this client.
      *
      * @param inIp IP address of the connecting client
-     * @return a boolean.
+     * @return true if the given IP address matches the subnet mask of this client application, false otherwise
      */
     public boolean matchIp(String inIp) {
 

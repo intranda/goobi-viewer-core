@@ -114,8 +114,8 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
 
     /**
      * The displayed title of the element.
-     * 
-
+     *
+     * @return the title of this widget display element as a {@link TranslatedText}
      */
     public TranslatedText getTitle() {
         return title;
@@ -123,8 +123,8 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
 
     /**
      * A description of the element.
-     * 
-
+     *
+     * @return the description of this widget display element as a {@link TranslatedText}
      */
     public TranslatedText getDescription() {
         return description;
@@ -140,8 +140,8 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
 
     /**
      * A list of CMS pages using this element. Only used to automatic and custom widgets
-     * 
-
+     *
+     * @return the list of {@link CMSPage} instances that embed this widget
      */
     public List<CMSPage> getEmbeddingPages() {
         return embeddingPages;
@@ -158,8 +158,8 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
 
     /**
      * Describes the specific xhtml component used for this widget.
-     * 
-
+     *
+     * @return the {@link WidgetContentType} identifying the xhtml component for this widget
      */
     public WidgetContentType getContentType() {
         return contentType;
@@ -167,8 +167,8 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
 
     /**
      * Identifier of the underlying data, if any.
-     * 
-
+     *
+     * @return the database identifier of the underlying widget data, or null if no persistent data exists
      */
     public Long getId() {
         return id;
@@ -178,6 +178,7 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
      * Both title and description are filled.
      *
      * @param locale the locale to check translation completeness for
+     * @return true if both title and description are non-empty for the given locale, false otherwise
      */
     @Override
     public boolean isComplete(Locale locale) {
@@ -188,6 +189,7 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
      * At least one of title and description is filled.
      *
      * @param locale the locale to check validity for
+     * @return true if the title is non-empty for any locale, false otherwise
      */
     @Override
     public boolean isValid(Locale locale) {
@@ -242,6 +244,7 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
      * Two elements are equal if their titles are equal.
      *
      * @param other the widget display element to compare to
+     * @return a negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the specified object
      */
     @Override
     public int compareTo(WidgetDisplayElement other) {

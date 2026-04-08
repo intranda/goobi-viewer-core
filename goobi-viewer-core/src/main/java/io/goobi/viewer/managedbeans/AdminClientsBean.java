@@ -92,8 +92,8 @@ public class AdminClientsBean implements Serializable {
 
     /**
      * Gets the model used for paginated listing configured clients.
-     * 
-
+     *
+     * @return the {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider} used for paginated listing of configured client applications
      */
     public TableDataProvider<ClientApplication> getConfiguredClientsModel() {
         return configuredClientsModel;
@@ -136,8 +136,8 @@ public class AdminClientsBean implements Serializable {
 
     /**
      * Gets the currently edited client.
-     * 
-
+     *
+     * @return the {@link io.goobi.viewer.model.security.clients.ClientApplication} currently being edited, or null if none selected
      */
     public ClientApplication getSelectedClient() {
         return selectedClient;
@@ -337,8 +337,8 @@ public class AdminClientsBean implements Serializable {
 
     /**
      * Gets the internally created client representing all clients for access rights purposes.
-     * 
-
+     *
+     * @return the {@link io.goobi.viewer.model.security.clients.ClientApplication} representing all clients in access rights configuration
      * @throws DAOException
      */
     public ClientApplication getAllClients() throws DAOException {

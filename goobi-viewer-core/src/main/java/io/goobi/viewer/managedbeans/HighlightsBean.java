@@ -173,9 +173,9 @@ public class HighlightsBean implements Serializable {
 
     /**
      * Get the URL to the highlighted object. Either the record page URL of the URL given in highlight creation
-     * 
+     *
      * @param object the highlight object
-
+     * @return the URL of the highlighted object, or an empty string if none can be determined
      */
     public String getUrl(Highlight object) {
         if (object != null) {

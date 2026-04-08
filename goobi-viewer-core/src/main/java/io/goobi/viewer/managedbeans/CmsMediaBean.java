@@ -496,7 +496,7 @@ public class CmsMediaBean implements Serializable {
      * isImage.
      *
      * @param item media item whose filename is tested
-     * @return a boolean.
+     * @return true if the given media item's filename matches the image file filter pattern, false otherwise
      */
     public boolean isImage(CMSMediaItem item) {
         return item != null && item.getFileName().matches(getImageFilter());
@@ -506,7 +506,7 @@ public class CmsMediaBean implements Serializable {
      * isVideo.
      *
      * @param item media item whose filename is tested
-     * @return a boolean.
+     * @return true if the given media item's filename matches the video file filter pattern, false otherwise
      */
     public boolean isVideo(CMSMediaItem item) {
         return item != null && item.getFileName().matches(getVideoFilter());
@@ -516,7 +516,7 @@ public class CmsMediaBean implements Serializable {
      * isAudio.
      *
      * @param item media item whose filename is tested
-     * @return a boolean.
+     * @return true if the given media item's filename matches the audio file filter pattern, false otherwise
      */
     public boolean isAudio(CMSMediaItem item) {
         return item != null && item.getFileName().matches(getAudioFilter());
@@ -526,7 +526,7 @@ public class CmsMediaBean implements Serializable {
      * isText.
      *
      * @param item media item whose filename is tested
-     * @return a boolean.
+     * @return true if the given media item's filename matches the document/text file filter pattern, false otherwise
      */
     public boolean isText(CMSMediaItem item) {
         return item != null && item.getFileName().matches(getDocumentFilter());
@@ -622,7 +622,7 @@ public class CmsMediaBean implements Serializable {
     /**
      * Getter for the field <code>selectedTag</code>.
      *
-
+     * @return the tag currently selected to filter the media list
      */
     public String getSelectedTag() {
         return selectedTag;
@@ -686,7 +686,7 @@ public class CmsMediaBean implements Serializable {
     /**
      * Getter for the field <code>filter</code>.
      *
-
+     * @return the media type filter string currently applied to the media list
      */
     public String getFilter() {
         return filter;
@@ -707,7 +707,7 @@ public class CmsMediaBean implements Serializable {
     /**
      * Getter for the field <code>filenameFilter</code>.
      *
-
+     * @return the filename filter string currently applied to restrict the media list
      */
     public String getFilenameFilter() {
         return filenameFilter;
@@ -750,7 +750,7 @@ public class CmsMediaBean implements Serializable {
     /**
      * Getter for the field <code>selectedMediaItem</code>.
      *
-
+     * @return the currently selected media item, or null if none is selected
      */
     public TranslatedSelectable<CMSMediaItem> getSelectedMediaItem() {
         return selectedMediaItem;
@@ -768,7 +768,7 @@ public class CmsMediaBean implements Serializable {
     /**
      * isAllSelected.
      *
-
+     * @return true if all media items are currently marked as selected, false otherwise
      */
     public boolean isAllSelected() {
         return allSelected;

@@ -119,7 +119,7 @@ public final class IndexerTools {
      *
      * @param pi record identifier to re-index
      * @should write overview page data
-     * @return a boolean.
+     * @return true if the record was successfully exported for re-indexing, false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.RecordNotFoundException if any.
      */
@@ -222,7 +222,7 @@ public final class IndexerTools {
      *
      * @param pi record identifier to re-index
      * @param page order number of the page to re-index
-     * @return a boolean.
+     * @return true if the page was successfully exported for re-indexing, false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -336,7 +336,7 @@ public final class IndexerTools {
      * @should create delete file correctly
      * @should create purge file correctly
      * @param hotfolderPath path to the indexer hotfolder
-     * @return a boolean.
+     * @return true if the deletion trigger file was successfully created in the hotfolder, false otherwise
      * @throws java.io.IOException if any.
      */
     public static synchronized boolean deleteRecord(String pi, boolean createTraceDocument, Path hotfolderPath) throws IOException {

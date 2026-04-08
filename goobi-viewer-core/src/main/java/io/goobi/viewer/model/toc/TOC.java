@@ -494,7 +494,7 @@ public class TOC implements Serializable {
     /**
      * Getter for the field <code>tocVisible</code>.
      *
-
+     * @return the number of visible TOC entries on the current page
      */
     public int getTocVisible() {
         return tocVisible;
@@ -512,7 +512,7 @@ public class TOC implements Serializable {
     /**
      * Getter for the field <code>tocInvisible</code>.
      *
-
+     * @return the number of hidden (collapsed) TOC entries on the current page
      */
     public int getTocInvisible() {
         return tocInvisible;
@@ -530,7 +530,7 @@ public class TOC implements Serializable {
     /**
      * Getter for the field <code>maxTocDepth</code>.
      *
-
+     * @return the maximum nesting depth of the TOC tree
      */
     public int getMaxTocDepth() {
         // If this method is called before getTreeView, the depth will always be 0
@@ -554,7 +554,7 @@ public class TOC implements Serializable {
     /**
      * Getter for the field <code>totalTocSize</code>.
      *
-
+     * @return the total number of TOC entries across all pages
      */
     public int getTotalTocSize() {
         return totalTocSize;
@@ -572,7 +572,7 @@ public class TOC implements Serializable {
     /**
      * Getter for the field <code>currentPage</code>.
      *
-
+     * @return the 1-based page number of the currently displayed TOC page
      */
     public int getCurrentPage() {
         return currentPage;
@@ -622,7 +622,7 @@ public class TOC implements Serializable {
     /**
      * hasChildren.
      *
-     * @return a boolean.
+     * @return true if the TOC contains more than one element or any element has child entries, false otherwise
      */
     public boolean isHasChildren() {
         if (tocElementMap == null || tocElementMap.get(StringConstants.DEFAULT_NAME) == null

@@ -271,7 +271,7 @@ public class BrowseBean implements Serializable {
     /**
      * Getter for the field <code>topVisibleCollection</code>.
      *
-
+     * @return the name of the top-level collection currently visible in the collection view, or the collection to expand if not yet set
      */
     public String getTopVisibleCollection() {
         if (topVisibleCollection == null && collectionToExpand != null) {
@@ -548,7 +548,7 @@ public class BrowseBean implements Serializable {
     /**
      * Getter for the field <code>browsingMenuField</code>.
      *
-
+     * @return the Solr field name used for term browsing, or "-" if none is set
      */
     public String getBrowsingMenuField() {
         synchronized (this) {
@@ -601,7 +601,7 @@ public class BrowseBean implements Serializable {
     /**
      * Getter for the field <code>browseTermList</code>.
      *
-
+     * @return list of browse terms for the current page and field, or null if not yet loaded
      */
     public List<String> getBrowseTermList() {
         return browseTermList;
@@ -610,7 +610,7 @@ public class BrowseBean implements Serializable {
     /**
      * Getter for the field <code>browseTermListEscaped</code>.
      *
-
+     * @return list of URL-escaped browse terms for the current page and field, or null if not yet loaded
      */
     public List<String> getBrowseTermListEscaped() {
         return browseTermListEscaped;
@@ -619,7 +619,7 @@ public class BrowseBean implements Serializable {
     /**
      * Getter for the field <code>browseTermHitCountList</code>.
      *
-
+     * @return list of hit counts corresponding to each browse term in the current browse term list
      */
     public List<Long> getBrowseTermHitCountList() {
         return browseTermHitCountList;
@@ -666,7 +666,7 @@ public class BrowseBean implements Serializable {
     /**
      * Getter for the field <code>availableStringFilters</code>.
      *
-
+     * @return list of available alphabetical filter characters for the current browse field, or null if not yet loaded
      */
     public List<String> getAvailableStringFilters() {
         String field = getBrowsingMenuFieldForLanguage(navigationHelper != null ? navigationHelper.getLocaleString() : null);
@@ -692,7 +692,7 @@ public class BrowseBean implements Serializable {
     /**
      * Getter for the field <code>currentStringFilter</code>.
      *
-
+     * @return the active alphabetical filter character(s) for the browse term list, or "-" if none is set
      */
     public String getCurrentStringFilter() {
         synchronized (this) {
@@ -725,7 +725,7 @@ public class BrowseBean implements Serializable {
     /**
      * Getter for the field <code>filterQuery</code>.
      *
-
+     * @return the Solr filter query restricting the browse results, or "-" if none is set
      */
     public String getFilterQuery() {
         if (StringUtils.isEmpty(filterQuery)) {
@@ -746,7 +746,7 @@ public class BrowseBean implements Serializable {
     /**
      * Getter for the field <code>currentPage</code>.
      *
-
+     * @return the 1-based current page number in the browse term list
      */
     public int getCurrentPage() {
         synchronized (this) {
@@ -784,7 +784,7 @@ public class BrowseBean implements Serializable {
     /**
      * isBrowsingMenuEnabled.
      *
-     * @return a boolean.
+     * @return true if the browsing menu is enabled in the configuration, false otherwise
      */
     public boolean isBrowsingMenuEnabled() {
         return DataManager.getInstance().getConfiguration().isBrowsingMenuEnabled();
@@ -967,7 +967,7 @@ public class BrowseBean implements Serializable {
     /**
      * Getter for the field <code>collectionField</code>.
      *
-
+     * @return the Solr field name used to identify the collection hierarchy
      */
     public String getCollectionField() {
         return collectionField;

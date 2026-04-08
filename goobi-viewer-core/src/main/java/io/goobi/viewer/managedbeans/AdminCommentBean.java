@@ -362,7 +362,7 @@ public class AdminCommentBean implements Serializable {
     /**
      * Getter for the field <code>lazyModelComments</code>.
      *
-
+     * @return the {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider} used for paginated comment listing in the admin interface
      */
     public TableDataProvider<Comment> getLazyModelComments() {
         return lazyModelComments;
@@ -380,7 +380,7 @@ public class AdminCommentBean implements Serializable {
     /**
      * <p>Getter for the field <code>currentCommentGroup</code>.
      *
-
+     * @return the {@link io.goobi.viewer.model.annotation.comments.CommentGroup} currently active in the admin interface, or null if none selected
      */
     public CommentGroup getCurrentCommentGroup() {
         return currentCommentGroup;
@@ -434,7 +434,7 @@ public class AdminCommentBean implements Serializable {
     /**
      * Getter for the field <code>selectedComment</code>.
      *
-
+     * @return the {@link io.goobi.viewer.model.annotation.comments.Comment} currently selected for editing or deletion, or null if none selected
      */
     public Comment getSelectedComment() {
         return currentComment;

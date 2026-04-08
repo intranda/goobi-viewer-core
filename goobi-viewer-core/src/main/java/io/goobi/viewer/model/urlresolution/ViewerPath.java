@@ -344,7 +344,7 @@ public class ViewerPath implements Serializable {
     /**
      * Getter for the field <code>campaign</code>.
      *
-
+     * @return the crowdsourcing campaign associated with this path
      */
     public Campaign getCampaign() {
         return campaign;
@@ -380,7 +380,7 @@ public class ViewerPath implements Serializable {
     /**
      * isCmsPage.
      *
-     * @return a boolean.
+     * @return true if this viewer path resolves to a CMS page, false otherwise
      */
     public boolean isCmsPage() {
         return getCmsPage() != null;

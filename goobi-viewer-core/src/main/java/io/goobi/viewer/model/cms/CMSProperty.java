@@ -108,7 +108,7 @@ public class CMSProperty implements Serializable {
     /**
      * Getter for the field <code>id</code>.
      *
-
+     * @return the database primary key of this property
      */
     public Long getId() {
         return id;
@@ -126,7 +126,7 @@ public class CMSProperty implements Serializable {
     /**
      * Getter for the field <code>key</code>.
      *
-
+     * @return the property key used to look up this CMS property
      */
     public String getKey() {
         return key;
@@ -144,7 +144,7 @@ public class CMSProperty implements Serializable {
     /**
      * Getter for the field <code>value</code>.
      *
-
+     * @return the string value stored for this CMS property
      */
     public String getValue() {
         return value;
@@ -168,7 +168,7 @@ public class CMSProperty implements Serializable {
     /**
      * getBooleanValue.
      *
-     * @return a boolean.
+     * @return true if the string value of this property parses to {@code true}, false otherwise
      */
     public boolean getBooleanValue() {
         return Boolean.parseBoolean(value);

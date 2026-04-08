@@ -80,7 +80,7 @@ public class Feedback implements Serializable {
     /**
      * Getter for the field <code>name</code>.
      *
-
+     * @return the sender's name
      */
     public String getName() {
         return name;
@@ -98,7 +98,7 @@ public class Feedback implements Serializable {
     /**
      * Getter for the field <code>senderAddress</code>.
      *
-
+     * @return the sender's email address
      */
     public String getSenderAddress() {
         return senderAddress;
@@ -116,7 +116,7 @@ public class Feedback implements Serializable {
     /**
      * Getter for the field <code>url</code>.
      *
-
+     * @return the page URL from which the feedback was submitted
      */
     public String getUrl() {
         return url;
@@ -134,7 +134,7 @@ public class Feedback implements Serializable {
     /**
      * Getter for the field <code>type</code>.
      *
-
+     * @return the feedback type or category
      */
     public String getType() {
         return type;
@@ -152,7 +152,7 @@ public class Feedback implements Serializable {
     /**
      * Getter for the field <code>message</code>.
      *
-
+     * @return the feedback message text
      */
     public String getMessage() {
         return message;

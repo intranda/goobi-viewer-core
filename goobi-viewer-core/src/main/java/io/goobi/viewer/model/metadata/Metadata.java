@@ -285,7 +285,7 @@ public class Metadata implements MetadataListElement, Serializable {
     /**
      * isHasLabel.
      *
-     * @return a boolean.
+     * @return true if this metadata field has a non-blank display label, false otherwise
      */
     public boolean isHasLabel() {
         return StringUtils.isNotBlank(label);
@@ -294,7 +294,7 @@ public class Metadata implements MetadataListElement, Serializable {
     /**
      * Getter for the field <code>label</code>.
      *
-
+     * @return the display label of this metadata field
      */
     public String getLabel() {
         return label;
@@ -327,7 +327,7 @@ public class Metadata implements MetadataListElement, Serializable {
     /**
      * Getter for the field <code>type</code>.
      *
-
+     * @return the metadata display type (e.g. 0 for default, 1 for group, 2 for citation)
      */
     public int getType() {
         return type;
@@ -371,7 +371,7 @@ public class Metadata implements MetadataListElement, Serializable {
     /**
      * Getter for the field <code>values</code>.
      *
-
+     * @return the list of {@link MetadataValue} objects associated with this metadata field
      */
     public List<MetadataValue> getValues() {
         return values;
@@ -733,7 +733,7 @@ public class Metadata implements MetadataListElement, Serializable {
     /**
      * Getter for the field <code>params</code>.
      *
-
+     * @return the list of {@link MetadataParameter} objects that define how values are retrieved for this metadata field
      */
     public List<MetadataParameter> getParams() {
         return params;
@@ -751,7 +751,7 @@ public class Metadata implements MetadataListElement, Serializable {
      * hasParam.
      *
      * @param paramName Solr field name of the parameter to find
-     * @return a boolean.
+     * @return true if this metadata has a parameter with the given field name, false otherwise
      */
     public boolean hasParam(String paramName) {
         for (MetadataParameter param : params) {
@@ -827,7 +827,7 @@ public class Metadata implements MetadataListElement, Serializable {
      * @param ownerIddoc IDDOC of the owner document
      * @param sortFields field/order pairs used for sorting grouped metadata
      * @param locale locale used for value translation and formatting
-     * @return a boolean.
+     * @return true if at least one value was populated successfully, false otherwise
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -846,7 +846,7 @@ public class Metadata implements MetadataListElement, Serializable {
      * @param searchTerms map of search terms for adding highlighting to matched values
      * @param truncateLength maximum character length before truncation; 0 to disable
      * @param locale locale for value translation and formatting
-     * @return a boolean.
+     * @return true if at least one value was populated successfully, false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @should use default value of no value found
@@ -1278,7 +1278,7 @@ public class Metadata implements MetadataListElement, Serializable {
     /**
      * isGroup.
      *
-
+     * @return true if this metadata represents a grouped metadata element, false otherwise
      */
     public boolean isGroup() {
         return group;

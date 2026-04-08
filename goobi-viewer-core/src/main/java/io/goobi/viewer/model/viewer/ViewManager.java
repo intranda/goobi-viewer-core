@@ -1182,7 +1182,7 @@ public class ViewManager implements Serializable {
     /**
      * Defines the criteria whether to list all remaining volumes in the TOC if the current record is a volume.
      *
-     * @return a boolean.
+     * @return true if all sibling volumes should be listed in the TOC (either by configuration or because the record has no pages), false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1320,7 +1320,7 @@ public class ViewManager implements Serializable {
     /**
      * currentImageOrder.
      *
-
+     * @return the order number of the currently displayed image
      */
     public int getCurrentImageOrder() {
         return currentImageOrder;
@@ -1492,7 +1492,7 @@ public class ViewManager implements Serializable {
     /**
      * isMultiPageRecord.
      *
-     * @return a boolean.
+     * @return true if the current record has more than one page, false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public boolean isMultiPageRecord() throws IndexUnreachableException {
@@ -1537,7 +1537,7 @@ public class ViewManager implements Serializable {
     /**
      * Getter for the field <code>dropdownPages</code>.
      *
-
+     * @return the list of page items for the page navigation dropdown
      */
     public List<SelectPageItem> getDropdownPages() {
         return dropdownPages;
@@ -1556,7 +1556,7 @@ public class ViewManager implements Serializable {
     /**
      * Getter for the field <code>dropdownFulltext</code>.
      *
-
+     * @return the list of page items for the fulltext navigation dropdown
      */
     public List<SelectPageItem> getDropdownFulltext() {
         return dropdownFulltext;
@@ -1584,7 +1584,7 @@ public class ViewManager implements Serializable {
     /**
      * Getter for the field <code>dropdownSelected</code>.
      *
-
+     * @return the currently selected value in the page navigation dropdown
      */
     public String getDropdownSelected() {
         return dropdownSelected;
@@ -1696,7 +1696,7 @@ public class ViewManager implements Serializable {
     /**
      * hasPreviousThumbnailSection.
      *
-     * @return a boolean.
+     * @return true if there is a previous thumbnail section available before the currently displayed range, false otherwise
      */
     public boolean hasPreviousThumbnailSection() {
         int currentFirstThumbnailIndex = getFirstDisplayedThumbnailIndex();
@@ -1707,7 +1707,7 @@ public class ViewManager implements Serializable {
     /**
      * hasNextThumbnailSection.
      *
-     * @return a boolean.
+     * @return true if there is a next thumbnail section available after the currently displayed range, false otherwise
      */
     public boolean hasNextThumbnailSection() {
         int currentFirstThumbnailIndex = getFirstDisplayedThumbnailIndex();
@@ -2194,7 +2194,7 @@ public class ViewManager implements Serializable {
     /**
      * isPdfPartDownloadLinkEnabled.
      *
-     * @return a boolean.
+     * @return true if the selected PDF page range is valid (first PDF page is not after the last PDF page), false otherwise
      */
     public boolean isPdfPartDownloadLinkEnabled() {
         return firstPdfPage <= lastPdfPage;
@@ -2317,7 +2317,7 @@ public class ViewManager implements Serializable {
     /**
      * isDisplayMetadataPdfLink.
      *
-     * @return a boolean.
+     * @return true if the metadata PDF download link should be shown (record is a top-level work, PDF is enabled in config, and access is permitted), false otherwise
      */
     public boolean isDisplayMetadataPdfLink() {
         return topStructElement != null && topStructElement.isWork() && DataManager.getInstance().getConfiguration().isMetadataPdfEnabled()
@@ -2552,7 +2552,7 @@ public class ViewManager implements Serializable {
     /**
      * isBelowFulltextThreshold.
      *
-     * @return a boolean.
+     * @return true if the percentage of pages with full-text content is below the configured warning threshold, false otherwise
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -2650,7 +2650,7 @@ public class ViewManager implements Serializable {
     /**
      * isTeiAvailableForWork.
      *
-     * @return a boolean.
+     * @return true if the current record has pages, the user has fulltext access, and the record has either fulltext or TEI files, false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -2711,7 +2711,7 @@ public class ViewManager implements Serializable {
     /**
      * isAltoAvailableForWork.
      *
-     * @return a boolean.
+     * @return true if the current user has fulltext access and at least one page has ALTO content available, false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -2890,7 +2890,7 @@ public class ViewManager implements Serializable {
      * Returns true if original content download has been enabled in the configuration and there are files in the original content folder for this
      * record.
      *
-     * @return a boolean.
+     * @return true if there is at least one downloadable original content file available for this record, false otherwise
      */
     public boolean isDisplayContentDownloadMenu() {
         try {
@@ -2941,7 +2941,7 @@ public class ViewManager implements Serializable {
     /**
      * Getter for the field <code>topStructElementIddoc</code>.
      *
-
+     * @return the Lucene IDDOC of the top-level structure element of the current record
      */
     public String getTopStructElementIddoc() {
         return topStructElementIddoc;
@@ -2995,7 +2995,7 @@ public class ViewManager implements Serializable {
     /**
      * Getter for the field <code>currentStructElementIddoc</code>.
      *
-
+     * @return the Lucene IDDOC of the current structure element
      */
     public String getCurrentStructElementIddoc() {
         return currentStructElementIddoc;
@@ -3013,7 +3013,7 @@ public class ViewManager implements Serializable {
     /**
      * Getter for the field <code>currentStructElement</code>.
      *
-
+     * @return the currently active structure element, loaded by IDDOC if necessary
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public StructElement getCurrentStructElement() throws IndexUnreachableException {
@@ -3062,7 +3062,7 @@ public class ViewManager implements Serializable {
     /**
      * Getter for the field <code>logId</code>.
      *
-
+     * @return the logical structure identifier used for navigation
      */
     public String getLogId() {
         return logId;
@@ -3082,7 +3082,7 @@ public class ViewManager implements Serializable {
     /**
      * Getter for the field <code>pageLoader</code>.
      *
-
+     * @return the page loader responsible for loading physical elements of the current record
      */
     public IPageLoader getPageLoader() {
         return pageLoader;
@@ -3115,7 +3115,7 @@ public class ViewManager implements Serializable {
     /**
      * isHasVersionHistory.
      *
-     * @return a boolean.
+     * @return true if version history fields are configured and this record has more than one version entry, false otherwise
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -3300,7 +3300,7 @@ public class ViewManager implements Serializable {
      * isRecordAddedToTranskribus.
      *
      * @param session active Transkribus session with user credentials
-     * @return a boolean.
+     * @return true if at least one Transkribus job exists for this record and the session's user, false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isRecordAddedToTranskribus(TranskribusSession session) throws DAOException {
@@ -3315,7 +3315,7 @@ public class ViewManager implements Serializable {
     /**
      * useTiles.
      *
-     * @return a boolean.
+     * @return true if tiled image loading is enabled in the configuration and a current page is available, false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -3332,7 +3332,7 @@ public class ViewManager implements Serializable {
     /**
      * useTilesFullscreen.
      *
-     * @return a boolean.
+     * @return true if tiled image loading for fullscreen mode is enabled in the configuration and a current page is available, false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -3349,7 +3349,7 @@ public class ViewManager implements Serializable {
     /**
      * Getter for the field <code>pi</code>.
      *
-
+     * @return the persistent identifier of the current record
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getPi() throws IndexUnreachableException {
@@ -3376,7 +3376,7 @@ public class ViewManager implements Serializable {
     /**
      * Getter for the field <code>mimeType</code>.
      *
-
+     * @return the MIME type of the primary content of the current record
      */
     public String getMimeType() {
         return mimeType;
@@ -3402,7 +3402,7 @@ public class ViewManager implements Serializable {
     /**
      * isDoublePageMode.
      *
-
+     * @return true if double-page display mode is active, false otherwise
      */
     public boolean isDoublePageMode() {
         return PageNavigation.DOUBLE.equals(getPageNavigation());
@@ -3415,7 +3415,7 @@ public class ViewManager implements Serializable {
     /**
      * Getter for the field <code>firstPdfPage</code>.
      *
-
+     * @return the first page number (as string) included in the PDF export range
      */
     public String getFirstPdfPage() {
         return String.valueOf(firstPdfPage);
@@ -3435,7 +3435,7 @@ public class ViewManager implements Serializable {
     /**
      * Getter for the field <code>lastPdfPage</code>.
      *
-
+     * @return the last page number (as string) included in the PDF export range
      */
     public String getLastPdfPage() {
         return String.valueOf(lastPdfPage);
@@ -3490,7 +3490,7 @@ public class ViewManager implements Serializable {
     /**
      * Getter for the field <code>calendarView</code>.
      *
-
+     * @return the calendar view for this record, created on first access
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
@@ -3504,7 +3504,7 @@ public class ViewManager implements Serializable {
     /**
      * Getter for the field <code>firstPageOrientation</code>.
      *
-
+     * @return the orientation (recto/verso) of the first page in double-page mode, adjusted for flipped pages
      */
     public PageOrientation getFirstPageOrientation() {
         if (getCurrentPage() != null && getCurrentPage().isFlipRectoVerso()) {
@@ -3639,7 +3639,7 @@ public class ViewManager implements Serializable {
     /**
      * isDisplayCiteLinkWork.
      *
-     * @return a boolean.
+     * @return true if citation links are enabled in the configuration and a top-level structure element is loaded, false otherwise
      */
     public boolean isDisplayCiteLinkWork() {
         return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetCitationCitationLinks() && topStructElement != null;
@@ -3692,7 +3692,7 @@ public class ViewManager implements Serializable {
     /**
      * isDisplayCiteLinkDocstruct.
      *
-     * @return a boolean.
+     * @return true if citation links are enabled, a current structure element is loaded, and it differs from the top-level structure element, false otherwise
      */
     public boolean isDisplayCiteLinkDocstruct() {
         return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetCitationCitationLinks() && currentStructElement != null
@@ -3732,7 +3732,7 @@ public class ViewManager implements Serializable {
     /**
      * isDisplayCiteLinkPage.
      *
-     * @return a boolean.
+     * @return true if citation links are enabled in the configuration and a current page is available, false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -4041,7 +4041,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-
+     * @return the copyright indicator license applicable to the current record
      * @should return correct license
      * @should return default license if no licenses found
      */

@@ -123,6 +123,7 @@ public final class ConfiguredValueFilter extends AbstractFilterConfiguration {
      *
      * @param value ignored; this implementation uses the internal filter value instead
      * @param vr variable replacer providing values to test against the filter
+     * @return true if the object represented by the variable replacer passes the filter, false otherwise
      */
     @Override
     public boolean passes(String value, VariableReplacer vr) {

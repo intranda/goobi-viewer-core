@@ -57,7 +57,7 @@ public class OEmbedRecord {
     /**
      * Getter for the field <code>structElement</code>.
      *
-
+     * @return the top-level structure element of the record to embed
      */
     public StructElement getStructElement() {
         return structElement;
@@ -75,7 +75,7 @@ public class OEmbedRecord {
     /**
      * Getter for the field <code>physicalElement</code>.
      *
-
+     * @return the physical page element used for the oEmbed response
      */
     public PhysicalElement getPhysicalElement() {
         return physicalElement;
@@ -102,7 +102,7 @@ public class OEmbedRecord {
     /**
      * <p>Getter for the field <code>uri</code>.
      *
-
+     * @return the URI of the resource to embed
      */
     public URI getUri() {
         return uri;

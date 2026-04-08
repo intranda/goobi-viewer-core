@@ -122,7 +122,7 @@ public abstract class DownloadJob {
      * @param email recipient email address to notify
      * @param status a {@link io.goobi.viewer.model.job.JobStatus} object.
      * @param downloadUri the URI under which the download is made available
-     * @return a boolean.
+     * @return true if the notification email was sent successfully, false otherwise
      * @throws java.io.UnsupportedEncodingException if any.
      * @throws jakarta.mail.MessagingException if any.
      */
@@ -196,7 +196,7 @@ public abstract class DownloadJob {
      * isExpired.
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if this download job has passed its expiration time, false otherwise
      */
     public boolean isExpired() {
 

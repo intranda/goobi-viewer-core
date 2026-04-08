@@ -94,8 +94,8 @@ public class ClientApplicationManager {
 
     /**
      * Get the {@link ClientApplication} representing all clients created in {@link #addGeneralClientApplicationToDB()}.
-     * 
-
+     *
+     * @return the {@link ClientApplication} representing all clients
      */
     public ClientApplication getAllClients() {
         return allClients;
@@ -226,8 +226,8 @@ public class ClientApplicationManager {
 
     /**
      * Loads the "all clients" ClientApplication directly from the database, so it comes with all licenses.
-     * 
-
+     *
+     * @return the {@link ClientApplication} representing all clients, loaded fresh from the database
      */
     public ClientApplication getAllClientsFromDatabase() {
         try {

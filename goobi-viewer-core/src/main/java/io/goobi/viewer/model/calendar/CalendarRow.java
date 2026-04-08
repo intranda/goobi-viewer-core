@@ -66,7 +66,7 @@ public class CalendarRow implements Serializable {
     /**
      * isSelected.
      *
-     * @return a boolean.
+     * @return true if this calendar row is currently selected, false otherwise
      */
     public boolean isSelected() {
         return selected;

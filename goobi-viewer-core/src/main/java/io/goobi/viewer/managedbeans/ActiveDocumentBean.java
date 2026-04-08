@@ -766,7 +766,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * getCurrentElement.
      *
-
+     * @return the {@link io.goobi.viewer.model.viewer.StructElement} for the currently displayed structural unit, or null if no record is loaded
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public StructElement getCurrentElement() throws IndexUnreachableException {
@@ -872,7 +872,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Getter for the field <code>imageToShow</code>.
      *
-
+     * @return single page number (e.g. "1") or range (e.g. "2-3") of the image(s) currently displayed
      */
     public String getImageToShow() {
         synchronized (lock) {
@@ -903,7 +903,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Getter for the field <code>logid</code>.
      *
-
+     * @return the LOGID of the current structural element, or "-" if at top-level document
      */
     public String getLogid() {
         synchronized (this) {
@@ -918,7 +918,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * isAnchor.
      *
-
+     * @return true if the current record is an anchor document (e.g. a multi-volume work); false otherwise
      */
     public boolean isAnchor() {
         return anchor;
@@ -936,7 +936,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * isVolume.
      *
-     * @return a boolean.
+     * @return true if the current record is a volume (child of a multi-volume work), false otherwise
      */
     public boolean isVolume() {
         return volume;
@@ -945,7 +945,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * isGroup.
      *
-     * @return a boolean.
+     * @return true if the current record is a group document, false otherwise
      */
     public boolean isGroup() {
         return group;
@@ -954,7 +954,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Getter for the field <code>action</code>.
      *
-
+     * @return the navigation action string (e.g. "nextHit", "prevHit"), or null if none set
      */
     public String getAction() {
         synchronized (this) {
@@ -1555,7 +1555,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Getter for the field <code>toc</code>.
      *
-
+     * @return the {@link io.goobi.viewer.model.toc.TOC} for the currently loaded record, or null if no record is loaded
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1805,7 +1805,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Indicates whether a record is currently properly loaded in this bean. Use to determine whether to display components.
      *
-     * @return a boolean.
+     * @return true if a record is currently loaded in this bean, false otherwise
      */
     public boolean isRecordLoaded() {
         return viewManager != null;
@@ -1814,7 +1814,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Checks if there is an anchor in this docStruct's hierarchy.
      *
-     * @return a boolean.
+     * @return true if the current record has an anchor (i.e. is a child of a multi-volume work), false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public boolean hasAnchor() throws IndexUnreachableException {
@@ -1925,7 +1925,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * isHasLanguages.
      *
-     * @return a boolean.
+     * @return true if the current record is available in multiple languages, false otherwise
      */
     public boolean isHasLanguages() {
         return recordLanguages != null && !recordLanguages.isEmpty();
@@ -1934,7 +1934,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Getter for the field <code>lastReceivedIdentifier</code>.
      *
-
+     * @return the persistent identifier of the last successfully loaded record
      */
     public String getLastReceivedIdentifier() {
         return lastReceivedIdentifier;
@@ -1952,7 +1952,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Getter for the field <code>recordLanguages</code>.
      *
-
+     * @return list of ISO 639-1 language codes available for the current record
      */
     public List<String> getRecordLanguages() {
         return recordLanguages;
@@ -2021,7 +2021,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * isAccessPermissionEpub.
      *
-     * @return a boolean.
+     * @return true if the current user has permission to download an EPUB of the current record, false otherwise
      */
     public boolean isAccessPermissionEpub() {
         synchronized (this) {
@@ -2053,7 +2053,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * isAccessPermissionPdf.
      *
-     * @return a boolean.
+     * @return true if the current user has permission to download a PDF of the current record, false otherwise
      */
     public boolean isAccessPermissionPdf() {
         synchronized (this) {
@@ -2341,7 +2341,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Getter for the field <code>deleteRecordKeepTrace</code>.
      *
-
+     * @return true to keep a deletion trace entry when deleting the record; false to remove completely; null if not yet set
      */
     public Boolean getDeleteRecordKeepTrace() {
         return deleteRecordKeepTrace;
@@ -2359,7 +2359,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Getter for the field <code>clearCacheMode</code>.
      *
-
+     * @return cache clearing mode string indicating which caches to clear, or null if not set
      */
     public String getClearCacheMode() {
         return clearCacheMode;
@@ -2512,7 +2512,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * isDownloadImageModalVisible.
      *
-
+     * @return true if the download image modal dialog is currently visible; false otherwise
      */
     public boolean isDownloadImageModalVisible() {
         return downloadImageModalVisible;
@@ -2542,7 +2542,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Getter for the field <code>selectedDownloadOptionLabel</code>.
      *
-
+     * @return the label of the download option currently selected by the user, or null if none selected
      */
     public String getSelectedDownloadOptionLabel() {
         return selectedDownloadOptionLabel;
@@ -2616,7 +2616,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Indicates whether user comments are allowed for the current record based on several criteria.
      *
-     * @return a boolean.
+     * @return true if user comments are allowed for the current record, false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException
      */
     public synchronized boolean isAllowUserComments() throws DAOException {

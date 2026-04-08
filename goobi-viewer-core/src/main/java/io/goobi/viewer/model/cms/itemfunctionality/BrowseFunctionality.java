@@ -67,7 +67,7 @@ public class BrowseFunctionality implements Functionality {
     /**
      * Gets the SOLR field which to browse to create the list.
      *
-
+     * @return the Solr field name used to browse and generate the list
      */
     public String getBrowseField() {
         return this.browseField;

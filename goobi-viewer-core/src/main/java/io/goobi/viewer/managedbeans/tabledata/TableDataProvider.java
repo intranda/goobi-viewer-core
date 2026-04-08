@@ -334,7 +334,7 @@ public class TableDataProvider<T> implements Serializable {
     /**
      * isFirstPage.
      *
-     * @return a boolean.
+     * @return true if the current page is the first page of the data table, false otherwise
      */
     public boolean isFirstPage() {
         return this.currentPage == 0;
@@ -343,7 +343,7 @@ public class TableDataProvider<T> implements Serializable {
     /**
      * isLastPage.
      *
-     * @return a boolean.
+     * @return true if the current page is the last page of the data table, false otherwise
      */
     public boolean isLastPage() {
         return this.currentPage >= getLastPageNumber();
@@ -352,7 +352,7 @@ public class TableDataProvider<T> implements Serializable {
     /**
      * hasNextPage.
      *
-     * @return a boolean.
+     * @return true if there is a next page available in the data table, false otherwise
      */
     public boolean hasNextPage() {
         return this.currentPage == getLastPageNumber();
@@ -361,7 +361,7 @@ public class TableDataProvider<T> implements Serializable {
     /**
      * hasPreviousPage.
      *
-     * @return a boolean.
+     * @return true if there is a previous page available in the data table, false otherwise
      */
     public boolean hasPreviousPage() {
         return this.currentPage > 0;

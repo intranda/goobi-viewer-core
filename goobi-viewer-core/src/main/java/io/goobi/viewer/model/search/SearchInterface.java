@@ -97,7 +97,7 @@ public interface SearchInterface {
     /**
      * Returns if search is performed only within a DC.
      *
-     * @return a boolean.
+     * @return true if the search is restricted to a specific DC (collection) field, false otherwise
      */
     public boolean isSearchInDcFlag();
 
@@ -105,7 +105,7 @@ public interface SearchInterface {
      * Returns if search is performed only within a certain facet field.
      *
      * @param fieldName Solr facet field name to check
-     * @return a boolean.
+     * @return true if the search is restricted to the given facet field, false otherwise
      */
     public boolean isSearchInFacetFieldFlag(String fieldName);
 

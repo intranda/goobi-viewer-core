@@ -92,7 +92,7 @@ public class BrowsingMenuFieldConfig implements Serializable {
     /**
      * Getter for the field <code>field</code>.
      *
-
+     * @return the Solr field name used for term browsing
      */
     public String getField() {
         return field;
@@ -113,7 +113,7 @@ public class BrowsingMenuFieldConfig implements Serializable {
     /**
      * Getter for the field <code>sortField</code>.
      *
-
+     * @return the Solr field used for sorting browse terms
      */
     public String getSortField() {
         return sortField;
@@ -122,7 +122,7 @@ public class BrowsingMenuFieldConfig implements Serializable {
     /**
      * Getter for the field <code>filterQueries</code>.
      *
-
+     * @return the list of Solr filter queries applied when browsing this field
      */
     public List<String> getFilterQueries() {
         return filterQueries;

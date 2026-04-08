@@ -275,7 +275,7 @@ public final class ViewerPathBuilder {
      *
      * @param uri URI whose leading path segments are compared
      * @param string path string to match against the URI prefix
-     * @return a boolean.
+     * @return true if the leading path segments of the URI match all segments of the given string, false otherwise
      */
     public static boolean startsWith(URI uri, final String string) {
         if (uri != null && string != null) {

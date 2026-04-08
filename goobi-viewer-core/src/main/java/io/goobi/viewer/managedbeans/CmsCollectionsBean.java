@@ -295,7 +295,7 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * Getter for the field <code>currentCollection</code>.
      *
-
+     * @return the currently selected CMS collection being edited
      */
     public CMSCollection getCurrentCollection() {
         return currentCollection;
@@ -313,7 +313,7 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * Getter for the field <code>solrField</code>.
      *
-
+     * @return the Solr field name used to group and display collections
      */
     public String getSolrField() {
         return solrField;
@@ -348,7 +348,7 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * Getter for the field <code>solrFieldValue</code>.
      *
-
+     * @return the value of the Solr field identifying the current collection
      */
     public String getSolrFieldValue() {
         return solrFieldValue;
@@ -409,7 +409,7 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * Getter for the field <code>collections</code>.
      *
-
+     * @return the list of all CMS collections for the currently selected Solr field
      */
     public List<CMSCollection> getCollections() {
         return collections;
@@ -552,7 +552,7 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * Checks the current collection for validity. Currently only checks if a possibly entered PI exists in the solr
      *
-     * @return a boolean.
+     * @return true if the current collection is valid (i.e. any configured representative work PI exists in Solr), false otherwise
      */
     public boolean isCurrentCollectionValid() {
         if (getCurrentCollection() != null && StringUtils.isNotBlank(getCurrentCollection().getRepresentativeWorkPI())) {

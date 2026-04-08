@@ -141,7 +141,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
      *
      * @param user user whose role to update in this group
      * @param role new role to assign to the user
-     * @return a boolean.
+     * @return true if the role was changed successfully (i.e. both user and role are non-null), false otherwise
      */
     public boolean changeMemberRole(User user, Role role) {
         if (user != null && role != null) {
@@ -157,7 +157,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
      * Remove User from Group.
      *
      * @param user user to remove from this group
-     * @return a boolean.
+     * @return true if the user was removed (i.e. the user argument is non-null), false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean removeMember(User user) throws DAOException {
@@ -174,7 +174,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
      * hasUserPrivilege.
      *
      * @param privilegeName name of the privilege to check
-     * @return a boolean.
+     * @return true if any member role of this group grants the given privilege, false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean hasUserPrivilege(String privilegeName) throws DAOException {
@@ -192,7 +192,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     /**
      * Getter for the field <code>id</code>.
      *
-
+     * @return the database identifier of this user group
      */
     public Long getId() {
         return id;
@@ -225,7 +225,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     /**
      * Getter for the field <code>description</code>.
      *
-
+     * @return a human-readable description of this user group
      */
     public String getDescription() {
         return description;
@@ -248,7 +248,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     /**
      * Getter for the field <code>owner</code>.
      *
-
+     * @return the user who owns this group
      */
     public User getOwner() {
         return owner;
@@ -266,7 +266,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     /**
      * isActive.
      *
-
+     * @return true if this user group is active, false otherwise
      */
     public boolean isActive() {
         return active;

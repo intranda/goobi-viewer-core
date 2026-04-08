@@ -61,7 +61,7 @@ public interface CMSMediaMultiHolder extends CMSMediaHolder {
      * hasMediaItem.
      *
      * @param index Index of the media item
-     * @return a boolean.
+     * @return true if this holder has an associated CMS media item at the given index, false otherwise
      */
     public boolean hasMediaItem(int index);
 

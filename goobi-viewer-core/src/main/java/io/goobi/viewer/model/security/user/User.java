@@ -356,7 +356,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
      * isGroupMember.
      *
      * @param group the user group to check membership in
-     * @return a boolean.
+     * @return true if this user is a member of the given group, false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isGroupMember(UserGroup group) throws DAOException {
@@ -495,7 +495,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Checks whether this user has the permission to delete all ocr-content of one page in crowdsourcing.
      *
-     * @return a boolean.
+     * @return true if this user is allowed to delete OCR page content for the current record, false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -610,7 +610,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
      * Generates salt and a password hash for the given password string.
      *
      * @param password the plain-text password to hash and store
-     * @return a boolean.
+     * @return true if the password was set successfully (i.e. the given password is not blank), false otherwise
      */
     public boolean setNewPassword(String password) {
         if (StringUtils.isNotBlank(password)) {
@@ -644,7 +644,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * hasPriviledgeForAllTemplates.
      *
-     * @return a boolean.
+     * @return true if this user has access to all CMS page templates (as superuser or via an unrestricted CMS admin license), false otherwise
      */
     public boolean hasPriviledgeForAllTemplates() {
 
@@ -788,7 +788,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * hasPrivilegeForAllCategories.
      *
-     * @return a boolean.
+     * @return true if this user has access to all CMS categories (as superuser or via an unrestricted CMS admin license), false otherwise
      */
     public boolean hasPrivilegeForAllCategories() {
 
@@ -871,7 +871,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * hasPrivilegeForAllSubthemeDiscriminatorValues.
      *
-     * @return a boolean.
+     * @return true if this user has access to all CMS subtheme discriminator values (as superuser or via an unrestricted CMS admin license), false otherwise
      */
     public boolean hasPrivilegeForAllSubthemeDiscriminatorValues() {
 
@@ -954,7 +954,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Getter for the field <code>id</code>.
      *
-
+     * @return the database identifier of this user
      */
     public Long getId() {
         return id;
@@ -972,7 +972,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Getter for the field <code>passwordHash</code>.
      *
-
+     * @return the hashed password of this user
      */
     public String getPasswordHash() {
         return passwordHash;
@@ -990,7 +990,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Getter for the field <code>activationKey</code>.
      *
-
+     * @return the account activation key sent by email
      */
     public String getActivationKey() {
         return activationKey;
@@ -1008,7 +1008,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Getter for the field <code>lastLogin</code>.
      *
-
+     * @return the timestamp of the most recent login
      */
     public LocalDateTime getLastLogin() {
         return lastLogin;
@@ -1026,7 +1026,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * isActive.
      *
-
+     * @return true if the user account is active; false otherwise
      */
     public boolean isActive() {
         return active;
@@ -1044,7 +1044,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * isSuspended.
      *
-
+     * @return true if the user account is suspended; false otherwise
      */
     public boolean isSuspended() {
         return suspended;
@@ -1062,7 +1062,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Getter for the field <code>nickName</code>.
      *
-
+     * @return the display nickname of this user
      */
     public String getNickName() {
         return nickName;
@@ -1080,7 +1080,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Getter for the field <code>lastName</code>.
      *
-
+     * @return the last name of this user
      */
     public String getLastName() {
         return lastName;
@@ -1098,7 +1098,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Getter for the field <code>firstName</code>.
      *
-
+     * @return the first name of this user
      */
     public String getFirstName() {
         return firstName;
@@ -1116,7 +1116,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Getter for the field <code>openIdAccounts</code>.
      *
-
+     * @return the list of OpenID account identifiers linked to this user
      */
     public List<String> getOpenIdAccounts() {
         return openIdAccounts;
@@ -1143,7 +1143,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Getter for the field <code>email</code>.
      *
-
+     * @return the email address of this user
      */
     public String getEmail() {
         return email;
@@ -1152,7 +1152,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Getter for the field <code>comments</code>.
      *
-
+     * @return administrative comments about this user account
      */
     public String getComments() {
         return comments;
@@ -1170,7 +1170,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Getter for the field <code>score</code>.
      *
-
+     * @return the contribution score of this user
      */
     public long getScore() {
         return score;
@@ -1236,7 +1236,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * isSuperuser.
      *
-
+     * @return true if this user has superuser privileges; false otherwise
      */
     public boolean isSuperuser() {
         return superuser;
@@ -1271,7 +1271,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * isOpenIdUser.
      *
-     * @return a boolean.
+     * @return true if this user has at least one linked OpenID account, false otherwise
      */
     public boolean isOpenIdUser() {
         return openIdAccounts != null && !openIdAccounts.isEmpty();
@@ -1280,7 +1280,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Getter for the field <code>copy</code>.
      *
-
+     * @return the unsaved copy of this user instance
      */
     public User getCopy() {
         return copy;
@@ -1298,7 +1298,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Getter for the field <code>transkribusSession</code>.
      *
-
+     * @return the active Transkribus session for this user
      */
     public TranskribusSession getTranskribusSession() {
         return transkribusSession;

@@ -206,7 +206,7 @@ public class UserDataBean implements Serializable {
     /**
      * Getter for the field <code>lazyModelAnnotations</code>.
      *
-
+     * @return the lazy-loading table data provider for the current user's annotations
      */
     public TableDataProvider<PersistentAnnotation> getLazyModelAnnotations() {
         return lazyModelAnnotations;

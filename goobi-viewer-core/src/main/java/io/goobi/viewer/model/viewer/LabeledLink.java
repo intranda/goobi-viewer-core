@@ -115,7 +115,7 @@ public class LabeledLink implements Serializable {
     /**
      * Getter for the field <code>name</code>.
      *
-
+     * @return the display label for this link in the current locale
      */
     public String getName() {
         return name.getValue(BeanUtils.getLocale()).orElse("");
@@ -142,7 +142,7 @@ public class LabeledLink implements Serializable {
     /**
      * Getter for the field <code>url</code>.
      *
-
+     * @return the URL this link points to
      */
     public String getUrl() {
         return url;
@@ -160,7 +160,7 @@ public class LabeledLink implements Serializable {
     /**
      * Getter for the field <code>weight</code>.
      *
-
+     * @return the sort weight determining the display order of this link
      */
     public int getWeight() {
         return weight;
@@ -178,7 +178,7 @@ public class LabeledLink implements Serializable {
     /**
      * isLink.
      *
-     * @return a boolean.
+     * @return true if this labeled link has a non-blank URL, false otherwise
      */
     public boolean isLink() {
         return StringUtils.isNotBlank(getUrl());

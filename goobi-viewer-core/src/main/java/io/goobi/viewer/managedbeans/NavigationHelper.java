@@ -232,7 +232,7 @@ public class NavigationHelper implements Serializable {
     /**
      * isCmsPage.
      *
-
+     * @return true if the current page is a CMS page, false otherwise
      */
     public boolean isCmsPage() {
         return isCmsPage;
@@ -586,7 +586,7 @@ public class NavigationHelper implements Serializable {
     /**
      * getCurrentView.
      *
-
+     * @return the name of the currently selected content view
      * @should return value correctly
      */
     public String getCurrentView() {
@@ -1480,7 +1480,7 @@ public class NavigationHelper implements Serializable {
     /**
      * Getter for the field <code>statusMap</code>.
      *
-
+     * @return the navigation status map holding key-value pairs for the current navigation state
      */
     public Map<String, String> getStatusMap() {
         return statusMap;
@@ -1581,7 +1581,7 @@ public class NavigationHelper implements Serializable {
      * Checks if the current page displays document information, solely based on the String getCurrentPage() The Pages for which this method should
      * return true are set in the PageType class.
      *
-     * @return a boolean.
+     * @return true if the current page is a document display page (as defined in {@link io.goobi.viewer.model.viewer.PageType}), false otherwise
      */
     public boolean isDocumentPage() {
         PageType page = PageType.getByName(getCurrentPage());

@@ -233,7 +233,7 @@ public class AdminConfigEditorBean implements Serializable {
     /**
      * Getter for the field <code>currentFileRecord</code>.
      *
-
+     * @return the {@link io.goobi.viewer.model.administration.configeditor.FileRecord} currently open in the config editor, or null if none selected
      */
     public FileRecord getCurrentFileRecord() {
         return currentFileRecord;

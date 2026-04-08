@@ -159,6 +159,7 @@ public class CMSContentItem {
      * Two CMSContentItems are equal if their {@link #itemId}s are equal.
      *
      * @param obj the object to compare for equality
+     * @return true if the given object is equal to this instance, false otherwise
      */
     @Override
     public boolean equals(Object obj) {

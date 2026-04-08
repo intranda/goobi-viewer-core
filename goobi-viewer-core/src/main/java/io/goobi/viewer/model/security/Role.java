@@ -154,7 +154,7 @@ public class Role implements Serializable {
     /**
      * isPrivDeleteOcrPage.
      *
-     * @return a boolean.
+     * @return true if this role grants the privilege to delete OCR page content, false otherwise
      */
     public boolean isPrivDeleteOcrPage() {
         return hasPrivilege(IPrivilegeHolder.PRIV_DELETE_OCR_PAGE);
@@ -176,7 +176,7 @@ public class Role implements Serializable {
     /**
      * isPrivSetRepresentativeImage.
      *
-     * @return a boolean.
+     * @return true if this role grants the privilege to set the representative image for a record, false otherwise
      */
     public boolean isPrivSetRepresentativeImage() {
         return hasPrivilege(IPrivilegeHolder.PRIV_SET_REPRESENTATIVE_IMAGE);
@@ -198,7 +198,7 @@ public class Role implements Serializable {
     /**
      * isPrivCmsPages.
      *
-     * @return a boolean.
+     * @return true if this role grants the privilege to manage CMS pages, false otherwise
      */
     public boolean isPrivCmsPages() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES);
@@ -220,7 +220,7 @@ public class Role implements Serializable {
     /**
      * isPrivCmsMenu.
      *
-     * @return a boolean.
+     * @return true if this role grants the privilege to manage the CMS navigation menu, false otherwise
      */
     public boolean isPrivCmsMenu() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_MENU);
@@ -242,7 +242,7 @@ public class Role implements Serializable {
     /**
      * isPrivCmsStaticPages.
      *
-     * @return a boolean.
+     * @return true if this role grants the privilege to manage CMS static pages, false otherwise
      */
     public boolean isPrivCmsStaticPages() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
@@ -264,7 +264,7 @@ public class Role implements Serializable {
     /**
      * isPrivCmsCollections.
      *
-     * @return a boolean.
+     * @return true if this role grants the privilege to manage CMS collections, false otherwise
      */
     public boolean isPrivCmsCollections() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
@@ -286,7 +286,7 @@ public class Role implements Serializable {
     /**
      * isPrivCmsCategories.
      *
-     * @return a boolean.
+     * @return true if this role grants the privilege to manage CMS categories, false otherwise
      */
     public boolean isPrivCmsCategories() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_CATEGORIES);
@@ -310,7 +310,7 @@ public class Role implements Serializable {
     /**
      * Getter for the field <code>id</code>.
      *
-
+     * @return the database primary key for this role
      */
     public Long getId() {
         return id;
@@ -328,7 +328,7 @@ public class Role implements Serializable {
     /**
      * Getter for the field <code>name</code>.
      *
-
+     * @return the unique name identifying this role
      */
     public String getName() {
         return name;
@@ -346,7 +346,7 @@ public class Role implements Serializable {
     /**
      * Getter for the field <code>description</code>.
      *
-
+     * @return the human-readable description of this role
      */
     public String getDescription() {
         return description;
@@ -364,7 +364,7 @@ public class Role implements Serializable {
     /**
      * Getter for the field <code>privileges</code>.
      *
-
+     * @return the set of privilege names granted by this role
      */
     public Set<String> getPrivileges() {
         return privileges;
@@ -382,7 +382,7 @@ public class Role implements Serializable {
     /**
      * Getter for the field <code>inheritedRoles</code>.
      *
-
+     * @return the set of roles whose privileges are inherited by this role
      */
     public Set<Role> getInheritedRoles() {
         return inheritedRoles;

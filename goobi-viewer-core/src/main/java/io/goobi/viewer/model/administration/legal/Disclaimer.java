@@ -109,8 +109,8 @@ public class Disclaimer {
 
     /**
      * Database id.
-     * 
-
+     *
+     * @return the database primary key of this disclaimer
      */
     public Long getId() {
         return id;
@@ -127,8 +127,8 @@ public class Disclaimer {
 
     /**
      * The text to show in the disclaimer.
-     * 
-
+     *
+     * @return the translated text displayed in the disclaimer
      */
     public TranslatedText getText() {
         return text;

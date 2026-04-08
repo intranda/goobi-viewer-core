@@ -242,7 +242,7 @@ public class MessageQueueBean implements Serializable {
     /**
      * Get a list of all active messages in the goobi_slow queue.
      *
-     * @return List<ViewerMessage>
+     * @return list of all currently active {@link ViewerMessage} objects in the queue
      */
     public List<ViewerMessage> getActiveQueryMesssages() {
         return getQueryMessages(this.messageType);

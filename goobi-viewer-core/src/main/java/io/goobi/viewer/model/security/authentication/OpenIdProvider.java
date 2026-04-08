@@ -380,7 +380,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     /**
      * Getter for the field <code>clientId</code>.
      *
-
+     * @return the OAuth 2.0 client identifier registered with the OpenID provider
      */
     public String getClientId() {
         return clientId;
@@ -389,7 +389,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     /**
      * Getter for the field <code>clientSecret</code>.
      *
-
+     * @return the OAuth 2.0 client secret used to authenticate with the OpenID provider
      */
     public String getClientSecret() {
         return clientSecret;
@@ -549,7 +549,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     /**
      * Getter for the field <code>oAuthState</code>.
      *
-
+     * @return the OAuth 2.0 state parameter used to prevent cross-site request forgery
      */
     public String getoAuthState() {
         return oAuthState;
@@ -567,7 +567,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     /**
      * Getter for the field <code>oAuthAccessToken</code>.
      *
-
+     * @return the OAuth 2.0 access token received from the provider
      */
     public String getoAuthAccessToken() {
         return oAuthAccessToken;

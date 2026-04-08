@@ -60,7 +60,7 @@ public class CampaignItem {
     /**
      * URI to a iiif manifest or other collection of iiif canvases. All generated annotations target either the source itself or one of its canvases
      *
-
+     * @return the URI identifying the IIIF resource to be annotated in this campaign item
      */
     public URI getSource() {
         return source;
@@ -78,7 +78,7 @@ public class CampaignItem {
     /**
      * The {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} to create the annotations.
      *
-
+     * @return the campaign this item belongs to
      */
     public Campaign getCampaign() {
         return campaign;
@@ -106,7 +106,7 @@ public class CampaignItem {
     /**
      * The {@link CrowdsourcingStatus status} of the resource within the {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign}.
      *
-
+     * @return the crowdsourcing processing status of the record in this campaign
      */
     public CrowdsourcingStatus getRecordStatus() {
         return recordStatus;
@@ -145,7 +145,7 @@ public class CampaignItem {
      * URI for a user who edited the status of this item in the crowdsourcing frontend. The actual {@link io.goobi.viewer.model.security.user.User}-Id
      * may be determined by calling {@link io.goobi.viewer.model.security.user.User#getId(URI)}
      *
-
+     * @return the URI identifying the user who last edited the status of this campaign item
      */
     public URI getCreatorURI() {
         return creatorURI;

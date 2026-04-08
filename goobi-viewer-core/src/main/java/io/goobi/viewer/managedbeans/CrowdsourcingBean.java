@@ -522,7 +522,7 @@ public class CrowdsourcingBean implements Serializable {
     /**
      * Getter for the field <code>lazyModelCampaigns</code>.
      *
-
+     * @return the lazy-loading table data provider for crowdsourcing campaigns
      */
     public TableDataProvider<Campaign> getLazyModelCampaigns() {
         return lazyModelCampaigns;
@@ -531,7 +531,7 @@ public class CrowdsourcingBean implements Serializable {
     /**
      * Getter for the field <code>selectedCampaign</code>.
      *
-
+     * @return the currently selected crowdsourcing campaign, or null if none is selected
      */
     public Campaign getSelectedCampaign() {
         return selectedCampaign;
@@ -579,7 +579,7 @@ public class CrowdsourcingBean implements Serializable {
     /**
      * isEditMode.
      *
-
+     * @return true if a campaign with a persisted ID is currently selected (edit mode), false otherwise
      */
     public boolean isEditMode() {
         return selectedCampaign != null && selectedCampaign.getId() != null;
@@ -736,7 +736,7 @@ public class CrowdsourcingBean implements Serializable {
     /**
      * Getter for the field <code>targetPage</code>.
      *
-
+     * @return the page number within the target record to annotate or review
      */
     public int getTargetPage() {
         return targetPage;
@@ -966,7 +966,7 @@ public class CrowdsourcingBean implements Serializable {
     /**
      * Getter for the field <code>targetStatus</code>.
      *
-
+     * @return the crowdsourcing status used to filter or assign to the target
      */
     public CrowdsourcingStatus getTargetStatus() {
         return targetStatus;

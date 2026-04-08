@@ -221,7 +221,7 @@ public class Bookmark implements Serializable {
      *
      * @param o1 first object to compare
      * @param o2 second object to compare
-     * @return a boolean.
+     * @return true if both objects are null or if o1 equals o2, false otherwise
      */
     public boolean bothEqualOrNull(Object o1, Object o2) {
         if (o1 == null) {
@@ -235,7 +235,7 @@ public class Bookmark implements Serializable {
      *
      * @param o1 first string to compare
      * @param o2 second string to compare
-     * @return a boolean.
+     * @return true if both strings are blank or if they are equal after trimming, false otherwise
      */
     public boolean bothEqualOrBlank(String o1, String o2) {
         if (StringUtils.isBlank(o1)) {
@@ -345,7 +345,7 @@ public class Bookmark implements Serializable {
     /**
      * Getter for the field <code>id</code>.
      *
-
+     * @return the database primary key of this bookmark
      */
     public Long getId() {
         return id;
@@ -363,7 +363,7 @@ public class Bookmark implements Serializable {
     /**
      * Getter for the field <code>bookmarkList</code>.
      *
-
+     * @return the parent bookmark list this item belongs to
      */
     public BookmarkList getBookmarkList() {
         return bookmarkList;
@@ -381,7 +381,7 @@ public class Bookmark implements Serializable {
     /**
      * Getter for the field <code>pi</code>.
      *
-
+     * @return the persistent identifier of the bookmarked record
      */
     // pi is required to identify the record; mark as required with minLength:1 so empty strings are rejected
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, minLength = 1)
@@ -401,7 +401,7 @@ public class Bookmark implements Serializable {
     /**
      * Getter for the field <code>logId</code>.
      *
-
+     * @return the METS logical structure ID identifying a specific section within the record
      */
     public String getLogId() {
         return logId;
@@ -419,7 +419,7 @@ public class Bookmark implements Serializable {
     /**
      * Getter for the field <code>urn</code>.
      *
-
+     * @return the URN identifying the bookmarked resource
      */
     public String getUrn() {
         return urn;
@@ -437,7 +437,7 @@ public class Bookmark implements Serializable {
     /**
      * Getter for the field <code>name</code>.
      *
-
+     * @return the display name for this bookmark entry
      */
     public String getName() {
         return name;
@@ -455,7 +455,7 @@ public class Bookmark implements Serializable {
     /**
      * Getter for the field <code>description</code>.
      *
-
+     * @return an optional description or note for this bookmark entry
      */
     public String getDescription() {
         return description;
@@ -473,7 +473,7 @@ public class Bookmark implements Serializable {
     /**
      * Getter for the field <code>dateAdded</code>.
      *
-
+     * @return the timestamp when this bookmark was added
      */
     // dateAdded is set server-side; mark as read-only so clients do not send it in request bodies
     // (LocalDateTime cannot deserialize ISO 8601 strings with timezone suffix like "2000-01-01T00:00:00Z")
@@ -494,7 +494,7 @@ public class Bookmark implements Serializable {
     /**
      * Getter for the field <code>order</code>.
      *
-
+     * @return the sort position of this bookmark within its list
      */
     public Integer getOrder() {
         return order;

@@ -164,7 +164,7 @@ public class Translation {
     /**
      * Getter for the field <code>id</code>.
      *
-
+     * @return the database identifier of this translation entry
      */
     public Long getId() {
         return id;
@@ -182,7 +182,7 @@ public class Translation {
     /**
      * Getter for the field <code>tag</code>.
      *
-
+     * @return the message key or category tag identifying this translation
      */
     public String getTag() {
         return tag;
@@ -200,7 +200,7 @@ public class Translation {
     /**
      * Getter for the field <code>language</code>.
      *
-
+     * @return the ISO 639-1 language code for this translation
      */
     public String getLanguage() {
         return language;
@@ -218,7 +218,7 @@ public class Translation {
     /**
      * Getter for the field <code>translationValue</code>.
      *
-
+     * @return the translated text value
      */
     public String getTranslationValue() {
         return translationValue;
@@ -241,6 +241,8 @@ public class Translation {
 
     /**
      * Hash code is build from hashCode of language.
+     *
+     * @return the hash code value for this object
      */
     @Override
     public int hashCode() {
@@ -254,6 +256,7 @@ public class Translation {
      * Two Translations are equal if they are of the same class and both tag and language match.
      *
      * @param obj the object to compare to this translation
+     * @return true if the given object is equal to this instance, false otherwise
      */
     @Override
     public boolean equals(Object obj) {

@@ -85,8 +85,8 @@ public class CMSSidebarElementCustom extends CMSSidebarElement {
 
     /**
      * Gets the {@link CustomSidebarWidget} providing the data.
-     * 
-
+     *
+     * @return the {@link CustomSidebarWidget} backing this sidebar element
      */
     public CustomSidebarWidget getWidget() {
         return widget;
@@ -102,8 +102,8 @@ public class CMSSidebarElementCustom extends CMSSidebarElement {
 
     /**
      * Gets the title of the underlying widget.
-     * 
-
+     *
+     * @return the title of the underlying {@link CustomSidebarWidget} as a {@link TranslatedText}
      */
     @Override
     public TranslatedText getTitle() {

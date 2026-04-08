@@ -101,7 +101,7 @@ public class BibliothecaAuthenticationResponse {
     /**
      * isExpired.
      *
-
+     * @return true if the authentication session has expired, false otherwise
      */
     public boolean isExpired() {
         return expired;

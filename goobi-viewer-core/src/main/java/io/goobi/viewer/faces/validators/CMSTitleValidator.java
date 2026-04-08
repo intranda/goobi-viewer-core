@@ -52,7 +52,7 @@ public class CMSTitleValidator implements Validator<String> {
      * validate.
      *
      * @param s CMS page title string to check for non-blank content
-     * @return a boolean.
+     * @return true if the given string is not blank and thus valid as a CMS page title, false otherwise
      */
     protected static boolean validate(String s) {
         return StringUtils.isNotBlank(s);

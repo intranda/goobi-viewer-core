@@ -210,7 +210,7 @@ public class Question implements Serializable {
     /**
      * Getter for the field <code>id</code>.
      *
-
+     * @return the database primary key of this question
      */
     @JsonIgnore
     public Long getId() {
@@ -229,7 +229,7 @@ public class Question implements Serializable {
     /**
      * Getter for the field <code>owner</code>.
      *
-
+     * @return the campaign this question belongs to
      */
     public Campaign getOwner() {
         return owner;
@@ -252,7 +252,7 @@ public class Question implements Serializable {
     /**
      * Getter for the field <code>questionType</code>.
      *
-
+     * @return the type of annotation this question requests from contributors
      */
     public QuestionType getQuestionType() {
         return questionType;
@@ -270,7 +270,7 @@ public class Question implements Serializable {
     /**
      * Getter for the field <code>targetSelector</code>.
      *
-
+     * @return the selector defining which part of the record this question targets
      */
     public TargetSelector getTargetSelector() {
         return targetSelector;
@@ -288,7 +288,7 @@ public class Question implements Serializable {
     /**
      * Getter for the field <code>targetFrequency</code>.
      *
-
+     * @return the number of times this question should be answered per target
      */
     public int getTargetFrequency() {
         return targetFrequency;
@@ -415,7 +415,7 @@ public class Question implements Serializable {
     }
 
     /**
-
+     * @return a map of all available metadata fields to a boolean indicating whether each field is selected for this question
      * @throws IOException
      * @throws SolrServerException
      */

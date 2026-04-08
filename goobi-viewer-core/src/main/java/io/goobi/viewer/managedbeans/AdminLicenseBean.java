@@ -529,7 +529,7 @@ public class AdminLicenseBean implements Serializable {
     /**
      * Getter for the field <code>lazyModelTickets</code>.
      *
-
+     * @return the {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider} used for paginated access ticket listing in the admin interface
      */
     public TableDataProvider<AccessTicket> getLazyModelTickets() {
         return lazyModelTickets;
@@ -727,7 +727,7 @@ public class AdminLicenseBean implements Serializable {
     /**
      * Getter for the field <code>currentRole</code>.
      *
-
+     * @return the {@link io.goobi.viewer.model.security.Role} currently being edited in the license admin interface, or null if none selected
      */
     public Role getCurrentRole() {
         return currentRole;
@@ -745,7 +745,7 @@ public class AdminLicenseBean implements Serializable {
     /**
      * Getter for the field <code>currentLicenseType</code>.
      *
-
+     * @return the {@link io.goobi.viewer.model.security.LicenseType} currently being edited in the admin interface, or null if none selected
      */
     public LicenseType getCurrentLicenseType() {
         return currentLicenseType;
@@ -793,7 +793,7 @@ public class AdminLicenseBean implements Serializable {
     /**
      * Getter for the field <code>currentLicense</code>.
      *
-
+     * @return the {@link io.goobi.viewer.model.security.License} currently being edited in the admin interface, or null if none selected
      */
     public License getCurrentLicense() {
         return currentLicense;

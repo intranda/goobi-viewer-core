@@ -138,7 +138,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * isWork.
      *
-
+     * @return true if this element represents a top-level work record, false otherwise
      */
     public boolean isWork() {
         return work;
@@ -156,7 +156,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * isAnchor.
      *
-
+     * @return true if this element represents a multi-volume anchor record, false otherwise
      */
     public boolean isAnchor() {
         return anchor;
@@ -174,7 +174,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * isVolume.
      *
-
+     * @return true if this element represents a volume within a multi-volume work, false otherwise
      */
     public boolean isVolume() {
         return volume;
@@ -202,7 +202,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Getter for the field <code>numVolumes</code>.
      *
-
+     * @return the number of volumes contained in this anchor record
      */
     public long getNumVolumes() {
         return numVolumes;
@@ -211,7 +211,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * isGroup.
      *
-     * @return a boolean.
+     * @return true if this struct element stub represents a group record (DocType GROUP), false otherwise
      */
     public boolean isGroup() {
         return DocType.GROUP.equals(docType);
@@ -220,7 +220,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Getter for the field <code>pi</code>.
      *
-
+     * @return the persistent identifier of the record
      */
     public String getPi() {
         return pi;
@@ -247,7 +247,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Getter for the field <code>logid</code>.
      *
-
+     * @return the logical structure identifier from the source document
      */
     public String getLogid() {
         return logid;
@@ -265,7 +265,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Getter for the field <code>docStructType</code>.
      *
-
+     * @return the document structure type (e.g. Monograph, Chapter)
      */
     public String getDocStructType() {
         return docStructType;
@@ -293,7 +293,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Getter for the field <code>imageNumber</code>.
      *
-
+     * @return the representative image order number for this element
      */
     public int getImageNumber() {
         return imageNumber;
@@ -311,7 +311,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Getter for the field <code>volumeNo</code>.
      *
-
+     * @return the volume number string within a multi-volume work
      */
     public String getVolumeNo() {
         return volumeNo;
@@ -329,7 +329,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Getter for the field <code>volumeNoSort</code>.
      *
-
+     * @return the sortable volume number string for ordering volumes
      */
     public String getVolumeNoSort() {
         return volumeNoSort;
@@ -409,7 +409,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * isLidoRecord.
      *
-     * @return a boolean.
+     * @return true if this record was imported from a LIDO source document, false otherwise
      */
     public boolean isLidoRecord() {
         return SolrConstants.SOURCEDOCFORMAT_LIDO.equals(sourceDocFormat);
@@ -471,7 +471,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Getter for the field <code>sourceDocFormat</code>.
      *
-
+     * @return the format of the source document (e.g. METS, LIDO)
      */
     public String getSourceDocFormat() {
         return sourceDocFormat;
@@ -490,7 +490,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Getter for the field <code>label</code>.
      *
-
+     * @return the display label (title) of this structural element
      */
     public String getLabel() {
         return getLabel(null);
@@ -529,7 +529,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Getter for the field <code>dataRepository</code>.
      *
-
+     * @return the data repository name where this record's files are stored
      */
     public String getDataRepository() {
         return dataRepository;
@@ -547,7 +547,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Getter for the field <code>metadataFields</code>.
      *
-
+     * @return map of Solr field names to their indexed values for this element
      */
     public Map<String, List<String>> getMetadataFields() {
         return metadataFields;

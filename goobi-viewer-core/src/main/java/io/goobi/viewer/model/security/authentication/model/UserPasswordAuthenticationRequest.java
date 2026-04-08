@@ -52,7 +52,7 @@ public class UserPasswordAuthenticationRequest {
     /**
      * Getter for the field <code>username</code>.
      *
-
+     * @return the login name of the user
      */
     public String getUsername() {
         return username;
@@ -61,7 +61,7 @@ public class UserPasswordAuthenticationRequest {
     /**
      * Getter for the field <code>password</code>.
      *
-
+     * @return the password of the user
      */
     public String getPassword() {
         return password;

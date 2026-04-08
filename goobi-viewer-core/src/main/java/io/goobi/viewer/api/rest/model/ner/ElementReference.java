@@ -134,7 +134,7 @@ public class ElementReference {
     /**
      * Getter for the field <code>page</code>.
      *
-
+     * @return the 1-based page order number of the referenced element
      */
     public int getPage() {
         return page;

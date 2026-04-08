@@ -35,7 +35,7 @@ public enum PageValidityStatus {
     /**
      * isValid.
      *
-     * @return a boolean.
+     * @return true if this status represents a valid page (i.e. equals {@link #VALID}), false otherwise
      */
     public boolean isValid() {
         return this.equals(VALID);

@@ -167,7 +167,7 @@ public class SearchQueryGroup implements Serializable {
     /**
      * Getter for the field <code>queryItems</code>.
      *
-
+     * @return the list of individual search query items within this group
      */
     public List<SearchQueryItem> getQueryItems() {
         return queryItems;
@@ -199,7 +199,7 @@ public class SearchQueryGroup implements Serializable {
      * @param item a {@link io.goobi.viewer.model.search.SearchQueryItem} object.
      * @should remove item correctly
      * @should not remove last remaining item
-     * @return a boolean.
+     * @return true if the item was removed successfully, false if it could not be removed (e.g. it is the last remaining item)
      */
     public boolean removeQueryItem(SearchQueryItem item) {
         if (queryItems.size() > 1) {
@@ -212,7 +212,7 @@ public class SearchQueryGroup implements Serializable {
     /**
      * Getter for the field <code>operator</code>.
      *
-
+     * @return the logical operator (AND/OR) used to combine items within this query group
      */
     public SearchQueryGroupOperator getOperator() {
         return operator;

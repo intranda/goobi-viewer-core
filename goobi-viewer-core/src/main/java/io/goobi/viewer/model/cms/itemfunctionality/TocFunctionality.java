@@ -160,7 +160,7 @@ public class TocFunctionality implements Functionality {
     /**
      * Getter for the field <code>pi</code>.
      *
-
+     * @return the persistent identifier of the record whose table of contents is displayed, or an empty string if none is set
      */
     public String getPi() {
         return pi == null ? "" : pi;

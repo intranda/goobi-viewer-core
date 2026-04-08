@@ -418,7 +418,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      *
      * @param user user to check membership for
      * @param group group whose member list is inspected
-     * @return a boolean.
+     * @return true if the given user is a member of the given group, false otherwise
      */
     public boolean isInGroup(User user, UserGroup group) {
         try {

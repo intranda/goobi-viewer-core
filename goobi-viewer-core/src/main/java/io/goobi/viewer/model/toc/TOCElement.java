@@ -193,7 +193,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * Checks whether the current user has permissions to download a PDFs for this element.
      *
-     * @return a boolean.
+     * @return true if the current user has PDF download permission for this TOC element, false otherwise
      */
     public boolean isAccessPermissionPdf() {
         return accessPermissionPdf;
@@ -260,7 +260,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * Getter for the field <code>label</code>.
      *
-
+     * @return the label value for the current locale, or the default value if no locale is available
      */
     public String getLabel() {
         Locale locale = BeanUtils.getLocale();
@@ -275,7 +275,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
      * Getter for the field <code>label</code>.
      *
      * @param locale locale used to select the label value
-
+     * @return the label value for the given locale, or the default value if none is set for that locale
      */
     public String getLabel(Locale locale) {
         return label.getValue(locale).orElse(label.getValue().orElse(""));
@@ -285,7 +285,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
      * Getter for the field <code>label</code>.
      *
      * @param locale BCP 47 language tag for label selection
-
+     * @return the label value for the given language tag, or the default value if none is set for that language
      */
     public String getLabel(String locale) {
         return label.getValue(locale).orElse(label.getValue().orElse(""));
@@ -294,7 +294,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * Getter for the field <code>metadata</code>.
      *
-
+     * @return the metadata map containing additional field values for this TOC element
      */
     public Map<String, String> getMetadata() {
         return metadata;
@@ -313,7 +313,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * Getter for the field <code>pageNo</code>.
      *
-
+     * @return the page number associated with this TOC element
      */
     public String getPageNo() {
         return pageNo;
@@ -322,7 +322,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * Getter for the field <code>iddoc</code>.
      *
-
+     * @return the internal Solr document identifier for this TOC element
      */
     public String getIddoc() {
         return iddoc;
@@ -331,7 +331,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * Getter for the field <code>pageNoLabel</code>.
      *
-
+     * @return the human-readable page number label for this TOC element
      */
     public String getPageNoLabel() {
         return pageNoLabel;
@@ -340,7 +340,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * Getter for the field <code>topStructPi</code>.
      *
-
+     * @return the persistent identifier of the top-level structure this element belongs to
      */
     public String getTopStructPi() {
         return topStructPi;
@@ -349,7 +349,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * Gibt die logID aus der Mets Datei zurück.
      *
-
+     * @return the logical identifier from the METS file for this TOC element
      */
     public String getLogId() {
         return this.logId;
@@ -412,7 +412,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * getFullscreenUrl.
      *
-
+     * @return the URL for displaying this TOC element in fullscreen view
      */
     public String getFullscreenUrl() {
         return getUrl(PageType.viewFullscreen.name());
@@ -421,7 +421,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * isVisible.
      *
-     * @return a boolean.
+     * @return true if this TOC element is currently visible, false otherwise
      */
     public boolean isVisible() {
         return visible;
@@ -475,7 +475,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * isExpanded.
      *
-     * @return a boolean.
+     * @return true if this TOC element is currently shown expanded, false otherwise
      */
     public boolean isExpanded() {
         return expanded;
@@ -493,7 +493,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * isHasChild.
      *
-     * @return a boolean.
+     * @return true if this TOC element has at least one child element, false otherwise
      */
     public boolean isHasChild() {
         return hasChild;
@@ -511,7 +511,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * Getter for the field <code>groupIds</code>.
      *
-
+     * @return the list of group identifier strings associated with this TOC element
      */
     public List<String> getGroupIds() {
         return groupIds;
@@ -529,7 +529,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * Getter for the field <code>recordMimeType</code>.
      *
-
+     * @return the MIME type of the record associated with this TOC element
      */
     public String getRecordMimeType() {
         return recordMimeType;

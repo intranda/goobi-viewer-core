@@ -49,7 +49,7 @@ public class Point3D {
     /**
      * Getter for the field <code>x</code>.
      *
-
+     * @return the X coordinate value
      */
     public double getX() {
         return x;
@@ -67,7 +67,7 @@ public class Point3D {
     /**
      * Getter for the field <code>y</code>.
      *
-
+     * @return the Y coordinate value
      */
     public double getY() {
         return y;
@@ -85,7 +85,7 @@ public class Point3D {
     /**
      * Getter for the field <code>z</code>.
      *
-
+     * @return the Z coordinate value
      */
     public double getZ() {
         return z;

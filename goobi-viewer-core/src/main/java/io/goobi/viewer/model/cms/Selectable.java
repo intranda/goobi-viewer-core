@@ -50,7 +50,7 @@ public class Selectable<T> implements Comparable<Selectable<T>>, Serializable {
     /**
      * Getter for the field <code>value</code>.
      *
-
+     * @return the wrapped item held by this selectable
      */
     public T getValue() {
         return value;
@@ -59,7 +59,7 @@ public class Selectable<T> implements Comparable<Selectable<T>>, Serializable {
     /**
      * isSelected.
      *
-
+     * @return true if this item is currently selected; false otherwise
      */
     public boolean isSelected() {
         return selected;

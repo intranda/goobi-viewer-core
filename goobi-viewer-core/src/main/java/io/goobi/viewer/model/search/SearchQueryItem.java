@@ -264,7 +264,7 @@ public class SearchQueryItem implements Serializable {
      * @param line query item line to remove from this item.
      * @should remove line correctly
      * @should not remove last remaining line
-     * @return a boolean.
+     * @return true if the line was removed successfully, false if it could not be removed (e.g. it is the last remaining line)
      */
     public boolean removeLine(SearchQueryItemLine line) {
         if (lines.size() > 1) {
@@ -347,7 +347,7 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-
+     * @return the display label for this search query item, or the field name if no label is set
      * @should return field if label empty
      */
     public String getLabel() {
@@ -370,7 +370,7 @@ public class SearchQueryItem implements Serializable {
     /**
      * Getter for the field <code>field</code>.
      *
-
+     * @return the Solr field name to search in for this query item
      */
     public String getField() {
         return field;
@@ -412,7 +412,7 @@ public class SearchQueryItem implements Serializable {
     /**
      * Backwards compatibility getter.
      *
-
+     * @return the search value of the first query line, or null if no lines exist
      */
     public String getValue() {
         if (!lines.isEmpty()) {
@@ -459,8 +459,8 @@ public class SearchQueryItem implements Serializable {
 
     /**
      * Backwards compatibility method.
-     * 
-
+     *
+     * @return the upper bound value of the first query line for range searches, or null if no lines exist
      */
     public String getValue2() {
         return !lines.isEmpty() ? lines.get(0).getValue2() : null;
@@ -480,7 +480,7 @@ public class SearchQueryItem implements Serializable {
     /**
      * isDisplaySelectItems.
      *
-     * @return a boolean.
+     * @return true if the field should display a select list instead of a free-text input, false otherwise
      */
     public boolean isDisplaySelectItems() {
         return displaySelectItems;

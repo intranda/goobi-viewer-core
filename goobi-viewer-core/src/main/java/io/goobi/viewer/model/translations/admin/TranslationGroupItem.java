@@ -159,7 +159,7 @@ public abstract class TranslationGroupItem {
     }
 
     /**
-
+     * @return the list of message entries for this translation group item, loading them if not yet initialized
      * @throws IndexUnreachableException
      * @throws PresentationException
      */

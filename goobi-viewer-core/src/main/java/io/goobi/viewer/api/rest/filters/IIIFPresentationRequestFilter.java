@@ -86,7 +86,7 @@ public class IIIFPresentationRequestFilter implements ContainerRequestFilter {
      * @param imageName image filename or page order number to resolve
      * @param request incoming HTTP request to update with resolved filename
      * @param response HTTP response used to perform the redirect
-     * @return a boolean.
+     * @return true if a redirect to the canonical URL was performed, false if no redirect was necessary
      * @throws java.io.IOException if any.
      */
     public static boolean forwardToCanonicalUrl(String pi, String imageName, HttpServletRequest request, HttpServletResponse response)

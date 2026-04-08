@@ -96,7 +96,7 @@ public class XServiceAuthenticationResponse {
     /**
      * Getter for the field <code>errorMsg</code>.
      *
-
+     * @return the error message returned by X-Service, or null if no error occurred
      */
     public String getErrorMsg() {
         return errorMsg;
@@ -114,7 +114,7 @@ public class XServiceAuthenticationResponse {
     /**
      * Getter for the field <code>id</code>.
      *
-
+     * @return the user identifier returned by X-Service
      */
     public String getId() {
         return id;
@@ -123,7 +123,7 @@ public class XServiceAuthenticationResponse {
     /**
      * isExpired.
      *
-
+     * @return true if the X-Service session has expired, false otherwise
      */
     public boolean isExpired() {
         return expired;
@@ -132,7 +132,7 @@ public class XServiceAuthenticationResponse {
     /**
      * Getter for the field <code>request</code>.
      *
-
+     * @return the original authentication request details
      */
     public Request getRequest() {
         return request;

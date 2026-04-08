@@ -199,7 +199,7 @@ public class MetadataParameter implements Serializable {
     /**
      * Getter for the field <code>source</code>.
      *
-
+     * @return the Solr field name from which this parameter's value is read
      */
     public String getSource() {
         return source;
@@ -231,7 +231,7 @@ public class MetadataParameter implements Serializable {
     /**
      * Getter for the field <code>type</code>.
      *
-
+     * @return the parameter type controlling how the value is retrieved and rendered
      */
     public MetadataParameterType getType() {
         return type;
@@ -251,7 +251,7 @@ public class MetadataParameter implements Serializable {
     /**
      * Getter for the field <code>key</code>.
      *
-
+     * @return the Solr field name used as the primary key for value lookup
      */
     public String getKey() {
         return key;
@@ -283,7 +283,7 @@ public class MetadataParameter implements Serializable {
     /**
      * Getter for the field <code>masterValueFragment</code>.
      *
-
+     * @return the message key referencing a fragment of the master value template for this parameter
      */
     public String getMasterValueFragment() {
         return masterValueFragment;
@@ -301,7 +301,7 @@ public class MetadataParameter implements Serializable {
     /**
      * Getter for the field <code>defaultValue</code>.
      *
-
+     * @return the fallback value used when no value is found in the index
      */
     public String getDefaultValue() {
         return defaultValue;
@@ -319,7 +319,7 @@ public class MetadataParameter implements Serializable {
     /**
      * Getter for the field <code>prefix</code>.
      *
-
+     * @return the string prepended to the rendered value in the output
      */
     public String getPrefix() {
         return prefix;
@@ -337,7 +337,7 @@ public class MetadataParameter implements Serializable {
     /**
      * Getter for the field <code>suffix</code>.
      *
-
+     * @return the string appended to the rendered value in the output
      */
     public String getSuffix() {
         return suffix;
@@ -406,7 +406,7 @@ public class MetadataParameter implements Serializable {
     /**
      * isAddUrl.
      *
-
+     * @return true if a hyperlink URL should be generated and attached to this parameter's rendered value, false otherwise
      */
     public boolean isAddUrl() {
         return addUrl;
@@ -424,7 +424,7 @@ public class MetadataParameter implements Serializable {
     /**
      * isTopstructValueFallback.
      *
-
+     * @return true if the top-level structure element's value should be used as a fallback when no value is found, false otherwise
      */
     public boolean isTopstructValueFallback() {
         return topstructValueFallback;
@@ -456,7 +456,7 @@ public class MetadataParameter implements Serializable {
     /**
      * Getter for the field <code>replaceRules</code>.
      *
-
+     * @return the list of find-and-replace rules applied to the value during rendering
      */
     public List<MetadataReplaceRule> getReplaceRules() {
         return replaceRules;

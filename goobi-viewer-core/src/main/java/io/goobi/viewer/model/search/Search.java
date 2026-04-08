@@ -864,7 +864,7 @@ public class Search implements Serializable {
     /**
      * Getter for the field <code>id</code>.
      *
-
+     * @return the database primary key for this saved search
      */
     public Long getId() {
         return id;
@@ -882,7 +882,7 @@ public class Search implements Serializable {
     /**
      * Getter for the field <code>owner</code>.
      *
-
+     * @return the user who owns this saved search
      */
     public User getOwner() {
         return owner;
@@ -900,7 +900,7 @@ public class Search implements Serializable {
     /**
      * Getter for the field <code>name</code>.
      *
-
+     * @return the user-defined display name for this saved search
      */
     public String getName() {
         return name;
@@ -918,7 +918,7 @@ public class Search implements Serializable {
     /**
      * Getter for the field <code>userInput</code>.
      *
-
+     * @return the raw search string entered by the user
      */
     public String getUserInput() {
         return userInput;
@@ -936,7 +936,7 @@ public class Search implements Serializable {
     /**
      * Getter for the field <code>searchType</code>.
      *
-
+     * @return the numeric type constant identifying the search mode (e.g. simple, advanced)
      */
     public int getSearchType() {
         return searchType;
@@ -954,7 +954,7 @@ public class Search implements Serializable {
     /**
      * Getter for the field <code>searchFilter</code>.
      *
-
+     * @return the active search filter expression limiting the search scope
      */
     public String getSearchFilter() {
         return searchFilter;
@@ -972,7 +972,7 @@ public class Search implements Serializable {
     /**
      * Getter for the field <code>query</code>.
      *
-
+     * @return the Solr query string used for this search
      */
     public String getQuery() {
         return query;
@@ -990,7 +990,7 @@ public class Search implements Serializable {
     /**
      * Getter for the field <code>expandQuery</code>.
      *
-
+     * @return the Solr query used to expand child documents into the result set
      */
     public String getExpandQuery() {
         return expandQuery;
@@ -1018,7 +1018,7 @@ public class Search implements Serializable {
     /**
      * Getter for the field <code>page</code>.
      *
-
+     * @return the current result page number (1-based)
      */
     public int getPage() {
         return page;
@@ -1036,7 +1036,7 @@ public class Search implements Serializable {
     /**
      * Getter for the field <code>facetString</code>.
      *
-
+     * @return the serialized string representation of active facet filters
      */
     public String getFacetString() {
         return facetString;
@@ -1054,7 +1054,7 @@ public class Search implements Serializable {
     /**
      * Getter for the field <code>sortString</code>.
      *
-
+     * @return the serialized sort order string (prefix "!" for descending)
      */
     public String getSortString() {
         return sortString;
@@ -1126,7 +1126,7 @@ public class Search implements Serializable {
     /**
      * Getter for the field <code>sortFields</code>.
      *
-
+     * @return the list of sort fields and their directions applied to this search
      */
     public List<StringPair> getSortFields() {
         return sortFields;
@@ -1135,7 +1135,7 @@ public class Search implements Serializable {
     /**
      * Getter for the field <code>dateUpdated</code>.
      *
-
+     * @return the timestamp of the last update check for new hits in this saved search
      */
     public LocalDateTime getDateUpdated() {
         return dateUpdated;
@@ -1153,7 +1153,7 @@ public class Search implements Serializable {
     /**
      * Getter for the field <code>lastHitsCount</code>.
      *
-
+     * @return the number of hits recorded during the last notification check
      */
     public long getLastHitsCount() {
         return lastHitsCount;
@@ -1171,7 +1171,7 @@ public class Search implements Serializable {
     /**
      * isNewHitsNotification.
      *
-
+     * @return true if email notification for new hits is enabled for this saved search, false otherwise
      */
     public boolean isNewHitsNotification() {
         return newHitsNotification;
@@ -1209,7 +1209,7 @@ public class Search implements Serializable {
     /**
      * isSaved.
      *
-
+     * @return true if this search has been saved by the user, false otherwise
      */
     public boolean isSaved() {
         return saved;
@@ -1227,7 +1227,7 @@ public class Search implements Serializable {
     /**
      * Getter for the field <code>hitsCount</code>.
      *
-
+     * @return the total number of search hits across all result groups
      */
     public long getHitsCount() {
         long ret = 0;
@@ -1254,7 +1254,7 @@ public class Search implements Serializable {
     /**
      * Getter for the field <code>hits</code>.
      *
-
+     * @return the list of search hits for the first result group, or an empty list if no result groups exist
      */
     public List<SearchHit> getHits() {
         if (!resultGroups.isEmpty()) {

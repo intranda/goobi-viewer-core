@@ -159,7 +159,7 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Getter for the field <code>id</code>.
      *
-
+     * @return the database primary key of this record statistic entry
      */
     public Long getId() {
         return id;
@@ -177,7 +177,7 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Getter for the field <code>dateCreated</code>.
      *
-
+     * @return the date and time when this record statistic entry was created
      */
     public LocalDateTime getDateCreated() {
         return dateCreated;
@@ -195,7 +195,7 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Getter for the field <code>dateUpdated</code>.
      *
-
+     * @return the date and time when this record statistic entry was last updated
      */
     public LocalDateTime getDateUpdated() {
         return dateUpdated;
@@ -213,7 +213,7 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Getter for the field <code>owner</code>.
      *
-
+     * @return the campaign this record statistic belongs to
      */
     public Campaign getOwner() {
         return owner;
@@ -231,7 +231,7 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Getter for the field <code>pi</code>.
      *
-
+     * @return the persistent identifier of the record this statistic tracks
      */
     public String getPi() {
         return pi;
@@ -259,7 +259,7 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Getter for the field <code>status</code>.
      *
-
+     * @return the crowdsourcing processing status for this record within the campaign
      */
     public CrowdsourcingStatus getStatus() {
         return status;
@@ -277,7 +277,7 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Getter for the field <code>annotators</code>.
      *
-
+     * @return the list of users who have contributed annotations for this record
      */
     public List<User> getAnnotators() {
         return annotators;
@@ -295,7 +295,7 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Getter for the field <code>reviewers</code>.
      *
-
+     * @return the list of users who have reviewed annotations for this record
      */
     public List<User> getReviewers() {
         return reviewers;

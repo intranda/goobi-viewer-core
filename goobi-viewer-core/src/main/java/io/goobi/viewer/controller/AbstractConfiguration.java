@@ -234,7 +234,7 @@ public abstract class AbstractConfiguration {
      *
      * @param inPath XML configuration path to look up
      * @param inDefault fallback value if path is not configured
-     * @return a boolean.
+     * @return the boolean value at the given path, or inDefault if the path is not configured
      */
     protected boolean getLocalBoolean(String inPath, boolean inDefault) {
         try {

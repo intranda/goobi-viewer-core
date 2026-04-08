@@ -237,7 +237,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Getter for the field <code>id</code>.
      *
-
+     * @return the unique identifier of this CMS page template
      */
     public String getId() {
         return id;
@@ -255,7 +255,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Getter for the field <code>name</code>.
      *
-
+     * @return the display name of this CMS page template
      */
     public String getName() {
         return name;
@@ -273,7 +273,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Getter for the field <code>version</code>.
      *
-
+     * @return the version string of this CMS page template
      */
     public String getVersion() {
         return version;
@@ -291,7 +291,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Getter for the field <code>description</code>.
      *
-
+     * @return the human-readable description of this CMS page template
      */
     public String getDescription() {
         return description;
@@ -309,7 +309,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Getter for the field <code>htmlFileName</code>.
      *
-
+     * @return the name of the HTML file used to render pages of this template
      */
     public String getHtmlFileName() {
         //	return "template_base.xhtml";
@@ -328,7 +328,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Getter for the field <code>templateFileName</code>.
      *
-
+     * @return the file name of the template descriptor (e.g. XML file)
      */
     public String getTemplateFileName() {
         return templateFileName;
@@ -346,7 +346,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Getter for the field <code>iconFileName</code>.
      *
-
+     * @return the file name of the icon image representing this template
      */
     public String getIconFileName() {
         return iconFileName;
@@ -364,7 +364,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Getter for the field <code>contentItems</code>.
      *
-
+     * @return the list of content item templates defined for this page template
      */
     public List<CMSContentItemTemplate> getContentItems() {
         return contentItems;
@@ -404,7 +404,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * isDisplaySortingField.
      *
-     * @return a boolean.
+     * @return true if the sorting field should be displayed in the template UI, false otherwise
      */
     public boolean isDisplaySortingField() {
         return displaySortingField;
@@ -422,7 +422,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * isThemeTemplate.
      *
-
+     * @return true if this template originates from the theme, false otherwise
      */
     public boolean isThemeTemplate() {
         return themeTemplate;
@@ -449,7 +449,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * isAppliesToExpandedUrl.
      *
-
+     * @return true if this template applies to expanded record URLs, false otherwise
      */
     public boolean isAppliesToExpandedUrl() {
         return appliesToExpandedUrl;
@@ -470,7 +470,7 @@ public class CMSPageTemplate implements Serializable {
      *
      * @param text string value to parse, expected "true" or "false" (case-insensitive)
      * @param defaultValue value to return when text is neither "true" nor "false"
-     * @return a boolean.
+     * @return true if text equals "true" (case-insensitive), false if it equals "false", or defaultValue if it matches neither
      */
     public static boolean parseBoolean(String text, boolean defaultValue) {
         if ("FALSE".equalsIgnoreCase(text)) {
@@ -486,7 +486,7 @@ public class CMSPageTemplate implements Serializable {
      * parseBoolean.
      *
      * @param text string value to parse, defaults to false if unrecognized
-     * @return a boolean.
+     * @return true if text equals "true" (case-insensitive), false otherwise
      */
     public static boolean parseBoolean(String text) {
         return parseBoolean(text, false);

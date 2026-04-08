@@ -582,7 +582,7 @@ public class CalendarBean implements Serializable {
     /**
      * Getter for the field <code>dayRow</code>.
      *
-
+     * @return the calendar row containing the day items for the currently selected week row
      */
     public CalendarRow getDayRow() {
         return dayRow;
@@ -794,7 +794,7 @@ public class CalendarBean implements Serializable {
     /**
      * Getter for the field <code>selectYear</code>.
      *
-
+     * @return the four-digit year string currently selected for the calendar view
      */
     public String getSelectYear() {
         return selectYear;
@@ -1044,7 +1044,7 @@ public class CalendarBean implements Serializable {
     /**
      * Getter for the field <code>monthList</code>.
      *
-
+     * @return the list of calendar month items for the currently selected year
      */
     public List<CalendarItemMonth> getMonthList() {
         return monthList;
@@ -1053,7 +1053,7 @@ public class CalendarBean implements Serializable {
     /**
      * Getter for the field <code>yearEnd</code>.
      *
-
+     * @return the last year (inclusive) of the date range displayed in the calendar
      */
     public int getYearEnd() {
         return yearEnd;
@@ -1062,7 +1062,7 @@ public class CalendarBean implements Serializable {
     /**
      * Getter for the field <code>yearStart</code>.
      *
-
+     * @return the first year (inclusive) of the date range displayed in the calendar
      */
     public int getYearStart() {
         return yearStart;
@@ -1103,7 +1103,7 @@ public class CalendarBean implements Serializable {
     /**
      * Getter for the field <code>collection</code>.
      *
-
+     * @return the Solr collection filter value restricting the calendar view, or null for all collections
      */
     public String getCollection() {
         return collection;

@@ -98,7 +98,7 @@ public class CMSCategory implements Comparable<CMSCategory>, Serializable {
     /**
      * Getter for the field <code>id</code>.
      *
-
+     * @return the database primary key of this category
      */
     public Long getId() {
         return id;
@@ -116,7 +116,7 @@ public class CMSCategory implements Comparable<CMSCategory>, Serializable {
     /**
      * Getter for the field <code>name</code>.
      *
-
+     * @return the unique name identifier of this CMS category
      */
     public String getName() {
         return name;
@@ -134,7 +134,7 @@ public class CMSCategory implements Comparable<CMSCategory>, Serializable {
     /**
      * Getter for the field <code>description</code>.
      *
-
+     * @return the optional human-readable description of this CMS category
      */
     public String getDescription() {
         return description;

@@ -97,7 +97,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     /**
      * Getter for the field <code>timeoutMillis</code>.
      *
-
+     * @return the timeout in milliseconds used for HTTP authentication requests
      */
     public long getTimeoutMillis() {
         return timeoutMillis;
@@ -112,7 +112,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     /**
      * Getter for the field <code>label</code>.
      *
-
+     * @return the display label for this provider, falling back to the name if no label is set
      */
     public String getLabel() {
         return (this.label == null || this.label.isEmpty()) ? this.name : this.label;
@@ -121,7 +121,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     /**
      * Getter for the field <code>url</code>.
      *
-
+     * @return the endpoint URL used for authentication requests
      */
     public String getUrl() {
         return url;
@@ -130,7 +130,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     /**
      * Getter for the field <code>image</code>.
      *
-
+     * @return the image URL or path representing this authentication provider
      */
     public String getImage() {
         return image;

@@ -137,7 +137,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     /**
      * isOpensInNewWindow.
      *
-     * @return a boolean.
+     * @return true if this collection element is configured to open its sub-collections in a new window and has sub-elements, false otherwise
      */
     public boolean isOpensInNewWindow() {
         return opensInNewWindow && isHasSubelements();
@@ -155,7 +155,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     /**
      * isRedirectsToWork.
      *
-     * @return a boolean.
+     * @return true if clicking this element should redirect directly to the single contained record, false otherwise
      */
     public boolean isRedirectsToWork() {
         return DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork() && !isOpensInNewWindow() && getNumberOfVolumes() == 1;
@@ -164,7 +164,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     /**
      * isOpensInSearch.
      *
-     * @return a boolean.
+     * @return true if clicking this element should open the collection in a search view (i.e. it does not open in a new window and does not redirect to a single work), false otherwise
      */
     public boolean isOpensInSearch() {
         return !isOpensInNewWindow() && !isRedirectsToWork();

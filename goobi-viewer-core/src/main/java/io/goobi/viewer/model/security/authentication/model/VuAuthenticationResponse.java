@@ -45,7 +45,7 @@ public class VuAuthenticationResponse {
     /**
      * Getter for the field <code>user</code>.
      *
-
+     * @return the authenticated user data returned by the VU service
      */
     public User getUser() {
         return user;
@@ -63,7 +63,7 @@ public class VuAuthenticationResponse {
     /**
      * Getter for the field <code>expired</code>.
      *
-
+     * @return the expiry information for the user account
      */
     public Expired getExpired() {
         return expired;
@@ -81,7 +81,7 @@ public class VuAuthenticationResponse {
     /**
      * Getter for the field <code>blocks</code>.
      *
-
+     * @return the blocking information for the user account
      */
     public Blocks getBlocks() {
         return blocks;
@@ -99,7 +99,7 @@ public class VuAuthenticationResponse {
     /**
      * Getter for the field <code>request</code>.
      *
-
+     * @return the original authentication request details
      */
     public Request getRequest() {
         return request;

@@ -747,7 +747,7 @@ public class AdminBean implements Serializable {
     /**
      * Getter for the field <code>currentUser</code>.
      *
-
+     * @return the {@link io.goobi.viewer.model.security.user.User} currently being edited in the admin interface, or null if none selected
      */
     public User getCurrentUser() {
         return currentUser;
@@ -829,7 +829,7 @@ public class AdminBean implements Serializable {
     /**
      * Getter for the field <code>currentRole</code>.
      *
-
+     * @return the {@link io.goobi.viewer.model.security.Role} currently being edited in the admin interface, or null if none selected
      */
     public Role getCurrentRole() {
         return currentRole;
@@ -856,7 +856,7 @@ public class AdminBean implements Serializable {
     /**
      * Getter for the field <code>currentUserRole</code>.
      *
-
+     * @return the {@link io.goobi.viewer.model.security.user.UserRole} assignment currently being edited, or null if none selected
      */
     public UserRole getCurrentUserRole() {
         return currentUserRole;
@@ -874,7 +874,7 @@ public class AdminBean implements Serializable {
     /**
      * Getter for the field <code>currentIpRange</code>.
      *
-
+     * @return the {@link io.goobi.viewer.model.security.user.IpRange} currently being edited in the admin interface, or null if none selected
      */
     public IpRange getCurrentIpRange() {
         return currentIpRange;
@@ -917,7 +917,7 @@ public class AdminBean implements Serializable {
     /**
      * Getter for the field <code>lazyModelUsers</code>.
      *
-
+     * @return the {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider} used for paginated user listing in the admin interface
      */
     public TableDataProvider<User> getLazyModelUsers() {
         return lazyModelUsers;
@@ -935,7 +935,7 @@ public class AdminBean implements Serializable {
     /**
      * Getter for the field <code>currentPassword</code>.
      *
-
+     * @return the current password entered for verification, or null if not set
      */
     public String getCurrentPassword() {
         return currentPassword;
@@ -953,7 +953,7 @@ public class AdminBean implements Serializable {
     /**
      * Getter for the field <code>passwordOne</code>.
      *
-
+     * @return the new password entered in the first password field, or null if not set
      */
     public String getPasswordOne() {
         return passwordOne;
@@ -971,7 +971,7 @@ public class AdminBean implements Serializable {
     /**
      * Getter for the field <code>passwordTwo</code>.
      *
-
+     * @return the new password entered in the confirmation password field, or null if not set
      */
     public String getPasswordTwo() {
         return passwordTwo;
@@ -989,7 +989,7 @@ public class AdminBean implements Serializable {
     /**
      * Getter for the field <code>emailConfirmation</code>.
      *
-
+     * @return the email address entered for confirmation during account deletion, or null if not set
      */
     public String getEmailConfirmation() {
         return emailConfirmation;
@@ -1007,7 +1007,7 @@ public class AdminBean implements Serializable {
     /**
      * isDeleteUserContributions.
      *
-
+     * @return true if all user contributions (comments, bookmarks) should be deleted when deleting the user account; false otherwise
      */
     public boolean isDeleteUserContributions() {
         return deleteUserContributions;
@@ -1282,7 +1282,7 @@ public class AdminBean implements Serializable {
     /**
      * Getter for the field <code>currentTranslationGroup</code>.
      *
-
+     * @return the {@link io.goobi.viewer.model.translations.admin.TranslationGroup} currently being edited, or null if none selected or session is locked
      */
     public TranslationGroup getCurrentTranslationGroup() {
         synchronized (TRANSLATION_LOCK) {
@@ -1454,7 +1454,7 @@ public class AdminBean implements Serializable {
     /**
      * Getter for the field <code>translationGroupsEditorSession</code>.
      *
-
+     * @return the session identifier that holds the translation groups editor lock, or null if not locked
      */
     public static String getTranslationGroupsEditorSession() {
         return translationGroupsEditorSession;
@@ -1507,7 +1507,7 @@ public class AdminBean implements Serializable {
     /**
      * Getter for the field <code>uploadedAvatarFile</code>.
      *
-
+     * @return the uploaded file part containing the new avatar image, or null if none uploaded
      */
     public Part getUploadedAvatarFile() {
         return uploadedAvatarFile;

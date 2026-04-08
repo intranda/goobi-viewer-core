@@ -224,7 +224,7 @@ public enum PageType {
     /**
      * isHandledWithCms.
      *
-     * @return a boolean.
+     * @return true if this page type is handled via the CMS system, false otherwise
      */
     public boolean isHandledWithCms() {
         return PageTypeHandling.cms.equals(this.handling);
@@ -233,7 +233,7 @@ public enum PageType {
     /**
      * isCmsPage.
      *
-     * @return a boolean.
+     * @return true if this page type represents a CMS-managed document view page, false otherwise
      */
     public boolean isCmsPage() {
         try {
@@ -261,7 +261,7 @@ public enum PageType {
     /**
      * isDocumentPage.
      *
-     * @return a boolean.
+     * @return true if this page type represents a document view page, false otherwise
      */
     public boolean isDocumentPage() {
         try {

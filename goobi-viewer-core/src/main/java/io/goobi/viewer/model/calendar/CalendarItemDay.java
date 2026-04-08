@@ -50,7 +50,7 @@ public class CalendarItemDay extends AbstractCalendarItem implements Serializabl
     /**
      * Getter for the field <code>query</code>.
      *
-
+     * @return the Solr query string used to retrieve hits for this calendar day
      */
     public String getQuery() {
         return query;
@@ -68,7 +68,7 @@ public class CalendarItemDay extends AbstractCalendarItem implements Serializabl
     /**
      * Getter for the field <code>singleResultUrl</code>.
      *
-
+     * @return the URL to navigate to when exactly one hit exists for this calendar day
      */
     public String getSingleResultUrl() {
         return singleResultUrl;
@@ -86,7 +86,7 @@ public class CalendarItemDay extends AbstractCalendarItem implements Serializabl
     /**
      * Getter for the field <code>dayOfWeek</code>.
      *
-
+     * @return the localised name of the day of the week (e.g. "Monday")
      */
     public String getDayOfWeek() {
         return dayOfWeek;

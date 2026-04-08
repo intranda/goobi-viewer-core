@@ -68,7 +68,7 @@ public class HtmlTagValidator implements Validator<String> {
      * Returns false if the input string is not blank and does not contain any tags other than the allowed.
      *
      * @param input HTML string to check for disallowed tags
-     * @return a boolean.
+     * @return true if the input contains only allowed HTML tags (or is blank), false if disallowed tags are present
      */
     public boolean validate(String input) {
         if (StringUtils.isNotBlank(input)) {

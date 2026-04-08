@@ -152,7 +152,7 @@ public class AnnotationBean implements Serializable {
     /**
      * Getter for the field <code>lazyModelAnnotations</code>.
      *
-
+     * @return the {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider} used for paginated annotation listing in the admin interface
      */
     public TableDataProvider<CrowdsourcingAnnotation> getLazyModelAnnotations() {
         return lazyModelAnnotations;

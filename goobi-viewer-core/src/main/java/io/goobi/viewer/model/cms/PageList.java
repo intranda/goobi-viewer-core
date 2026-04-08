@@ -111,7 +111,7 @@ public class PageList implements Iterable<String> {
     /**
      * Getter for the field <code>pages</code>.
      *
-
+     * @return the list of CMS page IDs or page type names managed by this page list
      */
     public List<String> getPages() {
         return pages;
@@ -250,7 +250,7 @@ public class PageList implements Iterable<String> {
     /**
      * isEmpty.
      *
-     * @return a boolean.
+     * @return true if this page list contains no pages, false otherwise
      */
     public boolean isEmpty() {
         return pages == null || pages.isEmpty();

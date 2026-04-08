@@ -152,7 +152,7 @@ public class SitelinkBean implements Serializable {
     /**
      * Getter for the field <code>value</code>.
      *
-
+     * @return the field value used to filter or look up sitelinks
      */
     public String getValue() {
         return value;
@@ -170,7 +170,7 @@ public class SitelinkBean implements Serializable {
     /**
      * Getter for the field <code>hits</code>.
      *
-
+     * @return list of sitelink result pairs (label and URL)
      */
     public List<StringPair> getHits() {
         return hits;

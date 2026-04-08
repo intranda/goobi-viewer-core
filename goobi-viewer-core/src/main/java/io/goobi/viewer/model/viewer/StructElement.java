@@ -328,7 +328,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * isHasParentOrChildren.
      *
-     * @return a boolean.
+     * @return true if this struct element has a parent element or at least one child element in the index, false otherwise
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -339,7 +339,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * isHasParent.
      *
-     * @return a boolean.
+     * @return true if this struct element has a parent element (i.e. IDDOC_PARENT is set in the Solr document), false otherwise
      */
     public boolean isHasParent() {
         return getMetadataValue(SolrConstants.IDDOC_PARENT) != null;
@@ -407,7 +407,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * Checks whether the Solr document represented by this StructElement has child elements in the index.
      *
-     * @return a boolean.
+     * @return true if at least one Solr document references this element as its parent, false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
@@ -465,7 +465,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * isGroupMember.
      *
-     * @return a boolean.
+     * @return true if this struct element belongs to at least one group record, false otherwise
      */
     public boolean isGroupMember() {
         return !groupMemberships.isEmpty();
@@ -511,7 +511,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * isExists.
      *
-
+     * @return true if this struct element exists in the Solr index, false otherwise
      */
     public boolean isExists() {
         return exists;
@@ -520,7 +520,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * isDeleted.
      *
-     * @return a boolean.
+     * @return true if this struct element has been marked as deleted (i.e. DATEDELETED is set in the Solr document), false otherwise
      */
     public boolean isDeleted() {
         return getMetadataValue(SolrConstants.DATEDELETED) != null;
@@ -620,7 +620,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      *
      * @should return true if current record is volume
      * @should return false if current record is not volume
-     * @return a boolean.
+     * @return true if this struct element is a volume (a work that has a parent anchor record), false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public boolean isAnchorChild() throws IndexUnreachableException {
@@ -648,7 +648,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * isFulltextAvailable.
      *
-
+     * @return true if fulltext content is available for this document, false otherwise
      */
     public boolean isFulltextAvailable() {
         return fulltextAvailable;
@@ -666,7 +666,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * Returns true if the record has any ALTO documents indexed in its pages; false otherwise.
      *
-
+     * @return true if at least one page has an ALTO file indexed, false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
@@ -683,7 +683,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * Returns true if the record has any NE_* tags indexed in its pages; false otherwise.
      *
-
+     * @return true if at least one page has named entity tags indexed, false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
@@ -793,7 +793,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * Getter for the field <code>ancestors</code>.
      *
-
+     * @return map of ancestor IDDOC values to their display labels
      */
     public Map<String, String> getAncestors() {
         return ancestors;
@@ -802,7 +802,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * Getter for the field <code>groupMemberships</code>.
      *
-
+     * @return map of group identifiers to their display labels for this element
      */
     public Map<String, String> getGroupMemberships() {
         return groupMemberships;

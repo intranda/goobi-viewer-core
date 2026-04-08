@@ -214,7 +214,7 @@ public abstract class PersistentAnnotation {
     /**
      * Getter for the field <code>id</code>.
      *
-
+     * @return the database primary key of this annotation
      */
     public Long getId() {
         return id;
@@ -232,7 +232,7 @@ public abstract class PersistentAnnotation {
     /**
      * Getter for the field <code>dateCreated</code>.
      *
-
+     * @return the timestamp when this annotation was created
      */
     public LocalDateTime getDateCreated() {
         return dateCreated;
@@ -250,7 +250,7 @@ public abstract class PersistentAnnotation {
     /**
      * Getter for the field <code>dateModified</code>.
      *
-
+     * @return the timestamp when this annotation was last modified
      */
     public LocalDateTime getDateModified() {
         return dateModified;
@@ -268,7 +268,7 @@ public abstract class PersistentAnnotation {
     /**
      * getCreator.
      *
-
+     * @return the user who created this annotation, or null if no creator is recorded
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public User getCreator() throws DAOException {
@@ -301,7 +301,7 @@ public abstract class PersistentAnnotation {
     /**
      * getReviewer.
      *
-
+     * @return the user assigned to review this annotation, or null if no reviewer is set
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public User getReviewer() throws DAOException {
@@ -325,7 +325,7 @@ public abstract class PersistentAnnotation {
     /**
      * getGenerator.
      *
-
+     * @return the crowdsourcing question that generated this annotation, or null if none
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public Question getGenerator() throws DAOException {
@@ -347,7 +347,7 @@ public abstract class PersistentAnnotation {
     /**
      * Getter for the field <code>creatorId</code>.
      *
-
+     * @return the database ID of the user who created this annotation
      */
     public Long getCreatorId() {
         return creatorId;
@@ -365,7 +365,7 @@ public abstract class PersistentAnnotation {
     /**
      * Getter for the field <code>reviewerId</code>.
      *
-
+     * @return the database ID of the user assigned to review this annotation
      */
     public Long getReviewerId() {
         return reviewerId;
@@ -383,7 +383,7 @@ public abstract class PersistentAnnotation {
     /**
      * Getter for the field <code>generatorId</code>.
      *
-
+     * @return the database ID of the crowdsourcing question that generated this annotation
      */
     public Long getGeneratorId() {
         return generatorId;
@@ -401,7 +401,7 @@ public abstract class PersistentAnnotation {
     /**
      * Getter for the field <code>body</code>.
      *
-
+     * @return the annotation body content (typically a JSON-LD or plain-text value)
      */
     public String getBody() {
         return body;
@@ -419,7 +419,7 @@ public abstract class PersistentAnnotation {
     /**
      * Getter for the field <code>motivation</code>.
      *
-
+     * @return the Web Annotation motivation URI (e.g. "commenting", "tagging")
      */
     public String getMotivation() {
         return motivation;
@@ -437,7 +437,7 @@ public abstract class PersistentAnnotation {
     /**
      * Getter for the field <code>target</code>.
      *
-
+     * @return the Web Annotation target URI identifying the resource this annotation targets
      */
     public String getTarget() {
         return target;
@@ -446,7 +446,7 @@ public abstract class PersistentAnnotation {
     /**
      * Getter for the field <code>targetPI</code>.
      *
-
+     * @return the persistent identifier of the record this annotation targets
      */
     public String getTargetPI() {
         return targetPI;
@@ -455,7 +455,7 @@ public abstract class PersistentAnnotation {
     /**
      * Getter for the field <code>targetPageOrder</code>.
      *
-
+     * @return the 1-based page order number within the record this annotation targets
      */
     public Integer getTargetPageOrder() {
         return targetPageOrder;

@@ -54,7 +54,7 @@ public class CategorizableTranslatedSelectable<T> extends TranslatedSelectable<T
     /**
      * Getter for the field <code>categories</code>.
      *
-
+     * @return the list of selectable CMS categories associated with this item
      */
     public List<Selectable<CMSCategory>> getCategories() {
         return categories;

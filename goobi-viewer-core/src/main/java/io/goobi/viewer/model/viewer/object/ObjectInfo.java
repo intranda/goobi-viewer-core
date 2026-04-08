@@ -67,7 +67,7 @@ public class ObjectInfo {
     /**
      * Getter for the field <code>format</code>.
      *
-
+     * @return the 3D object format type
      */
     public ObjectFormat getFormat() {
         return format;
@@ -85,7 +85,7 @@ public class ObjectInfo {
     /**
      * Getter for the field <code>uri</code>.
      *
-
+     * @return the URI of the primary 3D object resource
      */
     public URI getUri() {
         return uri;
@@ -103,7 +103,7 @@ public class ObjectInfo {
     /**
      * Getter for the field <code>center</code>.
      *
-
+     * @return the 3D center point of the object for viewer positioning
      */
     public Point3D getCenter() {
         return center;
@@ -121,7 +121,7 @@ public class ObjectInfo {
     /**
      * Getter for the field <code>rotation</code>.
      *
-
+     * @return the initial rotation angles of the 3D object in the viewer
      */
     public Point3D getRotation() {
         return rotation;

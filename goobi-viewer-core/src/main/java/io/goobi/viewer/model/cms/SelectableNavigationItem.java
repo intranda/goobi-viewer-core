@@ -83,7 +83,7 @@ public class SelectableNavigationItem extends CMSNavigationItem {
     /**
      * isSelected.
      *
-
+     * @return true if this navigation item is currently selected for inclusion in the menu; false otherwise
      */
     public boolean isSelected() {
         return selected;

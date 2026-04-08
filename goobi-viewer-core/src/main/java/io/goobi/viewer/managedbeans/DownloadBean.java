@@ -214,7 +214,7 @@ public class DownloadBean implements Serializable {
     /**
      * Getter for the field <code>downloadIdentifier</code>.
      *
-
+     * @return the identifier used to locate and serve the requested download resource
      */
     public String getDownloadIdentifier() {
         return downloadIdentifier;

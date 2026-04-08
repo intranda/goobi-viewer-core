@@ -140,7 +140,7 @@ public class Language implements Comparable<Language>, Serializable {
     /**
      * Getter for the field <code>englishName</code>.
      *
-
+     * @return the English name of this language
      */
     public String getEnglishName() {
         return englishName;
@@ -158,7 +158,7 @@ public class Language implements Comparable<Language>, Serializable {
     /**
      * Getter for the field <code>frenchName</code>.
      *
-
+     * @return the French name of this language
      */
     public String getFrenchName() {
         return frenchName;
@@ -176,7 +176,7 @@ public class Language implements Comparable<Language>, Serializable {
     /**
      * Getter for the field <code>germanName</code>.
      *
-
+     * @return the German name of this language
      */
     public String getGermanName() {
         return germanName;

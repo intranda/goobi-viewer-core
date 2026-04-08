@@ -53,7 +53,7 @@ public class TranskribusSession implements Serializable {
     /**
      * Getter for the field <code>userId</code>.
      *
-
+     * @return the Transkribus user identifier
      */
     public String getUserId() {
         return userId;
@@ -62,7 +62,7 @@ public class TranskribusSession implements Serializable {
     /**
      * Getter for the field <code>userName</code>.
      *
-
+     * @return the Transkribus user name
      */
     public String getUserName() {
         return userName;
@@ -71,7 +71,7 @@ public class TranskribusSession implements Serializable {
     /**
      * Getter for the field <code>sessionId</code>.
      *
-
+     * @return the Transkribus session identifier
      */
     public String getSessionId() {
         return sessionId;

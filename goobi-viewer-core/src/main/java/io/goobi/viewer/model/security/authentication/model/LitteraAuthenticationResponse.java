@@ -49,7 +49,7 @@ public class LitteraAuthenticationResponse {
     /**
      * isAuthenticationSuccessful.
      *
-
+     * @return true if the authentication attempt succeeded, false otherwise
      */
     public boolean isAuthenticationSuccessful() {
         return authenticationSuccessful;

@@ -117,7 +117,7 @@ public class IpRange extends AbstractLicensee implements Serializable {
      * matchIp.
      *
      * @param inIp client IP address to test against this range
-     * @return a boolean.
+     * @return true if the given IP address falls within the subnet mask of this IP range, false otherwise
      * @should match IPv6 localhost to IPv4 mask
      * @should match edge addresses
      */
@@ -155,7 +155,7 @@ public class IpRange extends AbstractLicensee implements Serializable {
      * @param requiredAccessConditions set of access condition values that must all be satisfied
      * @param privilegeName privilege name to check against each access condition
      * @param pi persistent identifier of the record being accessed
-     * @return a boolean.
+     * @return true if this IP range satisfies all given access conditions for the specified privilege, false otherwise
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -184,7 +184,7 @@ public class IpRange extends AbstractLicensee implements Serializable {
     /**
      * Getter for the field <code>id</code>.
      *
-
+     * @return the database identifier of this IP range
      */
     public Long getId() {
         return id;
@@ -217,7 +217,7 @@ public class IpRange extends AbstractLicensee implements Serializable {
     /**
      * Getter for the field <code>subnetMask</code>.
      *
-
+     * @return the CIDR subnet mask defining the IP range
      */
     public String getSubnetMask() {
         return subnetMask;
@@ -235,7 +235,7 @@ public class IpRange extends AbstractLicensee implements Serializable {
     /**
      * Getter for the field <code>description</code>.
      *
-
+     * @return a human-readable description of this IP range
      */
     public String getDescription() {
         return description;

@@ -752,7 +752,7 @@ public class UserBean implements Serializable {
     /**
      * Getter for the field <code>user</code>.
      *
-
+     * @return the currently authenticated user, or null if no user is logged in
      */
     public User getUser() {
         return user;
@@ -770,7 +770,7 @@ public class UserBean implements Serializable {
     /**
      * Getter for the field <code>nickName</code>.
      *
-
+     * @return the nickname entered during registration or profile editing
      */
     public String getNickName() {
         return nickName;
@@ -788,7 +788,7 @@ public class UserBean implements Serializable {
     /**
      * Getter for the field <code>email</code>.
      *
-
+     * @return the email address entered for login or registration
      */
     public String getEmail() {
         return email;
@@ -806,7 +806,7 @@ public class UserBean implements Serializable {
     /**
      * Getter for the field <code>password</code>.
      *
-
+     * @return the plain-text password entered by the user for login or registration
      */
     public String getPassword() {
         return password;
@@ -824,7 +824,7 @@ public class UserBean implements Serializable {
     /**
      * isLoggedIn.
      *
-     * @return a boolean.
+     * @return true if a user is currently logged in and their account is active and not suspended, false otherwise
      */
     public boolean isLoggedIn() {
         return user != null && user.isActive() && !user.isSuspended();
@@ -833,7 +833,7 @@ public class UserBean implements Serializable {
     /**
      * isAdmin.
      *
-     * @return a boolean.
+     * @return true if the currently logged-in user is a superuser (administrator), false otherwise
      */
     public boolean isAdmin() {
         return user != null && user.isSuperuser();
@@ -842,7 +842,7 @@ public class UserBean implements Serializable {
     /**
      * isUserRegistrationEnabled.
      *
-     * @return a boolean.
+     * @return true if self-registration for new users is enabled in the configuration, false otherwise
      */
     public boolean isUserRegistrationEnabled() {
         return DataManager.getInstance().getConfiguration().isUserRegistrationEnabled();
@@ -851,7 +851,7 @@ public class UserBean implements Serializable {
     /**
      * isShowOpenId.
      *
-     * @return a boolean.
+     * @return true if OpenID Connect authentication options should be shown in the UI, false otherwise
      */
     public boolean isShowOpenId() {
         return DataManager.getInstance().getConfiguration().isShowOpenIdConnect();
@@ -990,7 +990,7 @@ public class UserBean implements Serializable {
     /**
      * Getter for the field <code>lastName</code>.
      *
-
+     * @return the last name of the user
      */
     public String getLastName() {
         return lastName;
@@ -1008,7 +1008,7 @@ public class UserBean implements Serializable {
     /**
      * Getter for the field <code>redirectUrl</code>.
      *
-
+     * @return the URL to redirect to after a successful login, or null if the default redirect applies
      */
     public String getRedirectUrl() {
         return redirectUrl;
@@ -1045,7 +1045,7 @@ public class UserBean implements Serializable {
     /**
      * Getter for the field <code>activationKey</code>.
      *
-
+     * @return the account activation key sent to the user by email
      */
     public String getActivationKey() {
         return activationKey;
@@ -1063,7 +1063,7 @@ public class UserBean implements Serializable {
     /**
      * Getter for the field <code>transkribusUserName</code>.
      *
-
+     * @return the Transkribus account username for the linked integration
      */
     public String getTranskribusUserName() {
         return transkribusUserName;
@@ -1081,7 +1081,7 @@ public class UserBean implements Serializable {
     /**
      * Getter for the field <code>transkribusPassword</code>.
      *
-
+     * @return the Transkribus account password for the linked integration
      */
     public String getTranskribusPassword() {
         return transkribusPassword;
@@ -1100,7 +1100,7 @@ public class UserBean implements Serializable {
      * Checks whether the logged in user has access to the admin backend via being an admin or having CMS/campaign/comments access. Result is
      * persisted for the duration of the session.
      *
-
+     * @return true if the current user has access to the admin backend, false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @throws io.goobi.viewer.exceptions.PresentationException
@@ -1131,7 +1131,7 @@ public class UserBean implements Serializable {
      * userEquals.
      *
      * @param id database ID to compare against the current user
-     * @return a boolean.
+     * @return true if the given database ID matches the ID of the currently logged-in user, false otherwise
      */
     public boolean userEquals(long id) {
         return getUser().getId().equals(id);
@@ -1141,7 +1141,7 @@ public class UserBean implements Serializable {
      * hasProvidersOfType.
      *
      * @param type provider type string to match (e.g. "local", "openId")
-     * @return a boolean.
+     * @return true if at least one configured authentication provider matches the given type, false otherwise
      */
     public boolean hasProvidersOfType(String type) {
         if (type != null) {
@@ -1175,7 +1175,7 @@ public class UserBean implements Serializable {
     /**
      * isAllowPasswordChange.
      *
-     * @return a boolean.
+     * @return true if the currently used authentication provider allows the user to change their password, false otherwise
      */
     public boolean isAllowPasswordChange() {
         return loggedInProvider != null && loggedInProvider.allowsPasswordChange();
@@ -1184,7 +1184,7 @@ public class UserBean implements Serializable {
     /**
      * isAllowNickNameChange.
      *
-     * @return a boolean.
+     * @return true if the currently used authentication provider allows the user to change their nickname, false otherwise
      */
     public boolean isAllowNickNameChange() {
         return loggedInProvider != null && loggedInProvider.allowsNicknameChange();
@@ -1194,7 +1194,7 @@ public class UserBean implements Serializable {
     /**
      * isAllowEmailChange.
      *
-     * @return a boolean.
+     * @return true if the currently used authentication provider allows the user to change their email address, false otherwise
      */
     public boolean isAllowEmailChange() {
         return loggedInProvider != null && loggedInProvider.allowsEmailChange();

@@ -60,7 +60,7 @@ public class Description {
     /**
      * Getter for the field <code>image</code>.
      *
-
+     * @return the URL of the thumbnail image for this RSS item description
      */
     public String getImage() {
         return image;
@@ -78,7 +78,7 @@ public class Description {
     /**
      * Getter for the field <code>text</code>.
      *
-
+     * @return the HTML or plain-text body of this RSS item description
      */
     public String getText() {
         return text;

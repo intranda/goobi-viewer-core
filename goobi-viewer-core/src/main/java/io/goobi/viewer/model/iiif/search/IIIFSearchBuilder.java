@@ -110,7 +110,7 @@ public class IIIFSearchBuilder {
     /**
      * Getter for the field <code>query</code>.
      *
-
+     * @return the search query string
      */
     public String getQuery() {
         return query;
@@ -119,7 +119,7 @@ public class IIIFSearchBuilder {
     /**
      * Getter for the field <code>pi</code>.
      *
-
+     * @return the persistent identifier of the record to search within
      */
     public String getPi() {
         return pi;
@@ -141,7 +141,7 @@ public class IIIFSearchBuilder {
     /**
      * Getter for the field <code>motivation</code>.
      *
-
+     * @return the list of IIIF motivation values used to filter search results
      */
     public List<String> getMotivation() {
         return motivation;
@@ -168,7 +168,7 @@ public class IIIFSearchBuilder {
     /**
      * Getter for the field <code>user</code>.
      *
-
+     * @return the user filter value; currently recorded but not applied to search results
      */
     public String getUser() {
         return user;
@@ -188,7 +188,7 @@ public class IIIFSearchBuilder {
     /**
      * Getter for the field <code>date</code>.
      *
-
+     * @return the date filter value; currently recorded but not applied to search results
      */
     public String getDate() {
         return date;
@@ -197,7 +197,7 @@ public class IIIFSearchBuilder {
     /**
      * Getter for the field <code>min</code>.
      *
-
+     * @return the minimum relevance threshold filter value; currently recorded but not applied to search results
      */
     public String getMin() {
         return min;
@@ -230,7 +230,7 @@ public class IIIFSearchBuilder {
     /**
      * Getter for the field <code>page</code>.
      *
-
+     * @return the 1-based result page number
      */
     public int getPage() {
         return page;
@@ -239,7 +239,7 @@ public class IIIFSearchBuilder {
     /**
      * Getter for the field <code>hitsPerPage</code>.
      *
-
+     * @return the maximum number of hits returned per result page
      */
     public int getHitsPerPage() {
         return hitsPerPage;

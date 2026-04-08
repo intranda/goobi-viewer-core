@@ -78,7 +78,7 @@ public class CMSCollectionTranslation extends Translation implements Serializabl
     /**
      * Getter for the field <code>owner</code>.
      *
-
+     * @return the CMS collection this translation belongs to
      */
     public CMSCollection getOwner() {
         return owner;

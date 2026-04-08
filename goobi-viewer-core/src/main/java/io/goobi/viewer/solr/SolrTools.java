@@ -614,7 +614,7 @@ public final class SolrTools {
      * isQuerySyntaxError.
      *
      * @param e exception thrown by Solr to inspect
-     * @return a boolean.
+     * @return true if the exception indicates a Solr query syntax or validation error (HTTP 400), false otherwise
      */
     public static boolean isQuerySyntaxError(Exception e) {
         // Check for known Solr query/parameter validation error messages.

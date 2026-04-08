@@ -757,7 +757,7 @@ public class CollectionView implements Serializable {
     /**
      * isShowAllHierarchyLevels.
      *
-
+     * @return true if all hierarchy levels are shown expanded, false otherwise
      */
     public boolean isShowAllHierarchyLevels() {
         return showAllHierarchyLevels;
@@ -988,7 +988,7 @@ public class CollectionView implements Serializable {
     /**
      * Getter for the field <code>field</code>.
      *
-
+     * @return the Solr field name that provides the collection hierarchy for this view
      */
     public String getField() {
         return field;

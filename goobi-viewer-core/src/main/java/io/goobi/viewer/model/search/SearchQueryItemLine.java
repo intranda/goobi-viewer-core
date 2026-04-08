@@ -47,7 +47,7 @@ public class SearchQueryItemLine implements Serializable {
     /**
      * Getter for the field <code>operator</code>.
      *
-
+     * @return the logical operator (AND/OR/NOT/PHRASE) used for this query line
      */
     public SearchItemOperator getOperator() {
         return operator;

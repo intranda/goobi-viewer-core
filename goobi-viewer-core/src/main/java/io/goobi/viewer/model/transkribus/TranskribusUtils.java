@@ -297,7 +297,7 @@ public final class TranskribusUtils {
      * @param recipientUserId Transkribus user ID receiving editor privileges
      * @param sendMail whether to send a notification email to the recipient
      * @should grant privs correctly
-     * @return a boolean.
+     * @return true if the collection privileges were granted successfully, false otherwise
      * @throws java.io.IOException if any.
      */
     protected static boolean grantCollectionPrivsToViewer(String baseUrl, String sessionId, String collectionId, String recipientUserId,

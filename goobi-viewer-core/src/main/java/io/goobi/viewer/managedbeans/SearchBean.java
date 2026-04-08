@@ -1377,7 +1377,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Getter for the field <code>searchSortingOption</code>.
      *
-
+     * @return the currently active sort option applied to search results
      */
     public SearchSortingOption getSearchSortingOption() {
         return searchSortingOption;
@@ -1718,7 +1718,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Getter for the field <code>searchTerms</code>.
      *
-
+     * @return map of Solr field names to the set of search terms entered for each field
      */
     public Map<String, Set<String>> getSearchTerms() {
         return searchTerms;
@@ -1727,7 +1727,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Getter for the field <code>currentHitIndex</code>.
      *
-
+     * @return the zero-based index of the currently displayed search hit
      */
     public int getCurrentHitIndex() {
         return currentHitIndex;
@@ -1785,7 +1785,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Getter for the field <code>hitIndexOperand</code>.
      *
-
+     * @return the operand used to calculate the next or previous hit index when navigating between hits
      */
     public int getHitIndexOperand() {
         return hitIndexOperand;
@@ -1964,7 +1964,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * isSortingEnabled.
      *
-     * @return a boolean.
+     * @return true if search result sorting is enabled in the configuration, false otherwise
      */
     public boolean isSortingEnabled() {
         return DataManager.getInstance().getConfiguration().isSortingEnabled();
@@ -1973,7 +1973,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Getter for the field <code>advancedSearchQueryGroup</code>.
      *
-
+     * @return the root query group containing all advanced search field conditions
      */
     public SearchQueryGroup getAdvancedSearchQueryGroup() {
         return advancedSearchQueryGroup;
@@ -2175,7 +2175,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Getter for the field <code>currentSearch</code>.
      *
-
+     * @return the Search object representing the active search query and its results
      */
     public Search getCurrentSearch() {
         return currentSearch;
@@ -2194,7 +2194,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * isFuzzySearchEnabled.
      *
-
+     * @return true if fuzzy matching is enabled for search queries, false otherwise
      */
     public boolean isFuzzySearchEnabled() {
         return fuzzySearchEnabled;
@@ -2285,7 +2285,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * isSearchSavingEnabled.
      *
-     * @return a boolean.
+     * @return true if saving searches is enabled in the configuration, false otherwise
      */
     public boolean isSearchSavingEnabled() {
         return DataManager.getInstance().getConfiguration().isSearchSavingEnabled();
@@ -2548,7 +2548,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Getter for the field <code>hitsPerPage</code>.
      *
-
+     * @return the number of search results displayed per page
      */
     public int getHitsPerPage() {
         return hitsPerPage;
@@ -2579,7 +2579,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * isHitsPerPageSetterCalled.
      *
-
+     * @return true if the hits-per-page setter has been explicitly invoked during the current request, false otherwise
      */
     public boolean isHitsPerPageSetterCalled() {
         return hitsPerPageSetterCalled;
@@ -2598,7 +2598,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Getter for the field <code>advancedSearchQueryInfo</code>.
      *
-
+     * @return the HTML-escaped human-readable description of the current advanced search query
      * @should html escape string
      */
     public String getAdvancedSearchQueryInfo() {

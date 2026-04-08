@@ -123,7 +123,7 @@ public class SessionStoreBookmarkManager {
      *
      * @param item bookmark to remove from the session list
      * @param session HTTP session holding the bookmark list
-     * @return a boolean.
+     * @return true if the item was successfully removed from the session bookmark list, false if no session list exists or the item was not found
      * @throws java.lang.NullPointerException if the session is NULL
      */
     public boolean removeFromBookself(Bookmark item, HttpSession session) {
@@ -149,7 +149,7 @@ public class SessionStoreBookmarkManager {
      *
      * @param item bookmark to look up in the session list
      * @param session HTTP session holding the bookmark list
-     * @return a boolean.
+     * @return true if the session bookmark list exists and contains the given item, false otherwise
      */
     public boolean isInBookmarkList(Bookmark item, HttpSession session) {
         Optional<BookmarkList> o = getBookmarkList(session);
