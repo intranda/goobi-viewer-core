@@ -1846,7 +1846,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Returns the next BrowseElement in the hit list relative to the given index.
      *
-     * @return Next BrowseElement in the list; same BrowseElement if this is the last index in the list.
+     * @return Next BrowseElement in the list; same BrowseElement if this is the last index in the list; null if search is not initialized
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1879,7 +1879,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Returns the previous BrowseElement in the hit list relative to the given index.
      *
-     * @return Previous BrowseElement in the list; same BrowseElement if this is the first index in the list.
+     * @return Previous BrowseElement in the list; same BrowseElement if this is the first index in the list; null if search is not initialized
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -2250,9 +2250,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * getRssUrl.
+     * Returns the URL to the RSS feed for the current search.
      *
-     * @return URL to the RSS feed for the current search
+     * @return RSS feed URL, or null if no search string is set
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getRssUrl() throws ViewerConfigurationException {
@@ -2305,7 +2305,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * executeSavedSearchAction.
      *
      * @param search previously saved search object to re-execute
-     * @return the empty navigation outcome string after restoring and executing the saved search
+     * @return the navigation outcome string after restoring and executing the saved search, or null if the redirect URL cannot be built
      */
     public String executeSavedSearchAction(Search search) {
         logger.trace("executeSavedSearchAction");

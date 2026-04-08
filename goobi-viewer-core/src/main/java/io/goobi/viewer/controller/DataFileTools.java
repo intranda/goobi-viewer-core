@@ -380,7 +380,7 @@ public final class DataFileTools {
      *
      * @param pi persistent identifier of the record
      * @param relativeFilePath ALTO/text file path relative to the data folder
-     * @return the absolute path to the text file within the resolved data repository
+     * @return the absolute path to the text file within the resolved data repository, or null if relativeFilePath is blank
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -463,7 +463,7 @@ public final class DataFileTools {
     /**
      *
      * @param altoFilePath the path to the ALTO file
-     * @return StringPair(ALTO,charset)
+     * @return StringPair(ALTO,charset), or null if altoFilePath is null
      * @throws ContentNotFoundException
      * @throws IndexUnreachableException
      * @throws PresentationException

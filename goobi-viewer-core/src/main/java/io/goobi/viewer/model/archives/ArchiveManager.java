@@ -392,6 +392,12 @@ public class ArchiveManager implements Serializable {
         return Collections.emptyList();
     }
 
+    /**
+     * Returns the loaded archive with the given resource ID.
+     *
+     * @param resourceId the resource identifier of the archive to look up
+     * @return the matching {@link ArchiveResource}, or null if not found or resourceId is blank
+     */
     public ArchiveResource getArchive(String resourceId) {
         logger.trace("getArchive: {}", resourceId);
         if (StringUtils.isNotBlank(resourceId)) {

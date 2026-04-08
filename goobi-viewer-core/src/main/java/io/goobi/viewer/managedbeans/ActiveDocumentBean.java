@@ -273,9 +273,15 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * TODO This can cause NPEs if called while update() is running.
+     * Resets the bean state when a record is unloaded: discards the current {@link ViewManager},
+     * clears navigation state (logid, action, prev/next hit, docstruct URL caches), and notifies
+     * all registered modules.
      *
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * <p><b>Warning:</b> Although this method is fully {@code synchronized(this)}, calling it
+     * while {@code update()} is running on another thread may still cause NPEs, because
+     * {@code update()} holds the lock only in discrete blocks and not for its entire duration.
+     *
+     * @throws IndexUnreachableException if a module's cleanup requires Solr and Solr is unavailable
      * @should reset lastReceivedIdentifier
      */
     public void reset() throws IndexUnreachableException {

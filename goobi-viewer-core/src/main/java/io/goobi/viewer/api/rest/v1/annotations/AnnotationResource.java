@@ -119,8 +119,9 @@ public class AnnotationResource {
     }
 
     /**
+     * Returns the complete W3C Web Annotation collection covering all annotations stored in the database.
      *
-     * @return AnnotationCollection
+     * @return the global annotation collection
      * @throws DAOException
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -135,9 +136,10 @@ public class AnnotationResource {
     }
 
     /**
+     * Returns a single page of the global W3C Web Annotation collection.
      *
      * @param page 1-based page number within the annotation collection
-     * @return &lt;a&gt;
+     * @return the requested annotation page
      * @throws DAOException
      * @throws ContentLibException
      * @throws IndexUnreachableException
@@ -244,9 +246,10 @@ public class AnnotationResource {
     }
 
     /**
+     * Returns a single W3C Web Annotation by its database identifier.
      *
      * @param id database identifier of the annotation
-     * @return {@link IAnnotation}
+     * @return the matching annotation, never null (throws 404 if not found)
      * @throws DAOException
      * @throws ContentLibException
      * @throws IndexUnreachableException
@@ -267,9 +270,10 @@ public class AnnotationResource {
     }
 
     /**
+     * Returns a comment annotation by its database identifier.
      *
      * @param id database identifier of the comment annotation
-     * @return {@link IAnnotation}
+     * @return the matching comment annotation, never null (throws 404 if not found)
      * @throws DAOException
      * @throws ContentLibException
      * @throws IndexUnreachableException
@@ -290,9 +294,10 @@ public class AnnotationResource {
     }
 
     /**
+     * Persists a new W3C Web Annotation targeting a manifest, canvas, or canvas region.
      *
      * @param anno incoming annotation to persist
-     * @return {@link IAnnotation}
+     * @return 201 Created with the saved annotation, or 404 if the target is not found or the type is unsupported
      * @throws DAOException
      * @throws NotImplementedException
      */
@@ -328,9 +333,10 @@ public class AnnotationResource {
     }
 
     /**
+     * Deletes an annotation by its database identifier. Only the annotation creator or a superuser may delete.
      *
      * @param id database identifier of the annotation to delete
-     * @return {@link IAnnotation}
+     * @return the deleted annotation
      * @throws DAOException
      * @throws ContentLibException
      * @throws ViewerConfigurationException
@@ -374,9 +380,10 @@ public class AnnotationResource {
     }
 
     /**
+     * Converts an incoming W3C Web Annotation to a persistable {@link CrowdsourcingAnnotation}.
      *
      * @param anno incoming annotation to convert
-     * @return {@link CrowdsourcingAnnotation}
+     * @return the converted annotation ready for persistence, or null if the target type is unsupported
      */
     public CrowdsourcingAnnotation createPersistentAnnotation(IAnnotation anno) {
         CrowdsourcingAnnotation pAnno = null;

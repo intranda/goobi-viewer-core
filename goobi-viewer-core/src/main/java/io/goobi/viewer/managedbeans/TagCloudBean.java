@@ -62,7 +62,7 @@ public class TagCloudBean implements Serializable {
     }
 
     /**
-     * getTagsAutor.
+     * Returns up to 50 publication-year tags from the {@code YEARPUBLISH} Solr field, shuffled.
      *
      * @return a list of tags derived from the YEARPUBLISH field for use in a tag cloud
      */
@@ -76,7 +76,7 @@ public class TagCloudBean implements Serializable {
     }
 
     /**
-     * getTags.
+     * Returns up to 50 tags from the {@code DEFAULT} Solr field, shuffled.
      *
      * @return a list of tags derived from the DEFAULT field for use in a tag cloud
      */
@@ -90,16 +90,16 @@ public class TagCloudBean implements Serializable {
     }
 
     /**
-     * getTagsSize.
+     * Returns the number of tags in the DEFAULT field tag list.
      *
-     * @return a int.
+     * @return number of DEFAULT field tags
      */
     public int getTagsSize() {
         return getTags().size();
     }
 
     /**
-     * getTagsTitles.
+     * Returns up to 100 title tags from the {@code TITLE} Solr field, shuffled.
      *
      * @return a list of tags derived from the TITLE field for use in a tag cloud
      */
@@ -113,7 +113,7 @@ public class TagCloudBean implements Serializable {
     }
 
     /**
-     * getTagsPlaces.
+     * Returns up to 100 publication-place tags from the {@code PLACEPUBLISH} Solr field, shuffled.
      *
      * @return a list of tags derived from the PLACEPUBLISH field for use in a tag cloud
      */
@@ -127,7 +127,7 @@ public class TagCloudBean implements Serializable {
     }
 
     /**
-     * getTagsYears.
+     * Returns up to 100 publication-year tags from the {@code YEARPUBLISH} Solr field, shuffled.
      *
      * @return a list of tags derived from the YEARPUBLISH field for use in a year tag cloud
      */
@@ -141,7 +141,7 @@ public class TagCloudBean implements Serializable {
     }
 
     /**
-     * getTagsPersons.
+     * Returns up to 100 person-name tags from the {@code PERSON_ONEFIELD} Solr field, shuffled.
      *
      * @return a list of tags derived from the PERSON_ONEFIELD field for use in a persons tag cloud
      */

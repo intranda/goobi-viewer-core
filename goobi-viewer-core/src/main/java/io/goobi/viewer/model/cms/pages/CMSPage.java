@@ -990,7 +990,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         this.searchable = searchable;
     }
 
-    
+    /**
+     * Returns the access condition configured for this CMS page.
+     *
+     * @return the access condition property value, or null if no access condition is configured
+     */
     public String getAccessCondition() {
         for (CMSProperty property : properties) {
             if (CMSProperty.KEY_ACCESS_CONDITION.equals(property.getKey())) {

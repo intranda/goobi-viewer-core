@@ -1109,6 +1109,12 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         }
     }
 
+    /**
+     * Creates a StructElement from a Solr document.
+     *
+     * @param solrDoc the Solr document to wrap
+     * @return the corresponding StructElement, or null if the document cannot be loaded
+     */
     public static StructElement create(SolrDocument solrDoc) {
         try {
             return new StructElement(solrDoc);
