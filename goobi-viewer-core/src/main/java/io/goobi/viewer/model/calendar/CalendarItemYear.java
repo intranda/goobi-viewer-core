@@ -47,7 +47,7 @@ public class CalendarItemYear extends AbstractCalendarItem implements Serializab
     /**
      * Getter for the field <code>monthsOfYear</code>.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of monthly calendar items for this year
      */
     public List<CalendarItemMonth> getMonthsOfYear() {
         return monthsOfYear;

@@ -195,7 +195,7 @@ public class BrowseBean implements Serializable {
      * getList.
      *
      * @param field Solr field name identifying the collection
-     * @return a {@link java.util.List} object.
+     * @return a list of BrowseDcElement objects for all collections in the given Solr field, expanded to unlimited depth
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public List<BrowseDcElement> getList(String field) throws IndexUnreachableException {
@@ -207,7 +207,7 @@ public class BrowseBean implements Serializable {
      *
      * @param field Solr field name identifying the collection
      * @param depth maximum hierarchy depth to expand; -1 for unlimited
-     * @return a {@link java.util.List} object.
+     * @return a list of BrowseDcElement objects for all visible collections in the given Solr field up to the specified depth
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws IllegalRequestException
      */
@@ -248,7 +248,7 @@ public class BrowseBean implements Serializable {
     /**
      * Getter for the field <code>collectionToExpand</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the name of the collection currently marked for expansion in the view
      */
     public String getCollectionToExpand() {
         synchronized (this) {
@@ -337,7 +337,7 @@ public class BrowseBean implements Serializable {
     /**
      * searchTerms.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the navigation outcome after executing the term browse search
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws RedirectException
@@ -628,7 +628,7 @@ public class BrowseBean implements Serializable {
     /**
      * getPrevTermUrl.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the relative URL to the previous page of the current term browse listing
      */
     public String getPrevTermUrl() {
         int page = 1;
@@ -647,7 +647,7 @@ public class BrowseBean implements Serializable {
     /**
      * getNextTermUrl.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the relative URL to the next page of the current term browse listing
      */
     public String getNextTermUrl() {
         int page = getLastPage();
@@ -839,7 +839,7 @@ public class BrowseBean implements Serializable {
     /**
      * Getter for the field <code>targetCollection</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the name of the target collection whose first record should be opened
      */
     public String getTargetCollection() {
         return targetCollection;
@@ -857,7 +857,7 @@ public class BrowseBean implements Serializable {
     /**
      * openWorkInTargetCollection.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the navigation URL to the first record in the target collection, or null if none found
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws ViewerConfigurationException
@@ -905,7 +905,7 @@ public class BrowseBean implements Serializable {
     /**
      * getDcCollection.
      *
-     * @return a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object.
+     * @return the CollectionView for the DC (Dublin Core) collection field
      */
     public CollectionView getDcCollection() {
         return getCollection(SolrConstants.DC);
@@ -915,7 +915,7 @@ public class BrowseBean implements Serializable {
      * getCollection.
      *
      * @param field Solr field name identifying the collection
-     * @return a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object.
+     * @return the CollectionView for the given Solr field, or null if not initialized
      */
     public CollectionView getCollection(String field) {
         return collections.get(field);

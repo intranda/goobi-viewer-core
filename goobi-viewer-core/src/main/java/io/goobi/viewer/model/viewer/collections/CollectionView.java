@@ -328,7 +328,7 @@ public class CollectionView implements Serializable {
     /**
      * getVisibleDcElements.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of hierarchical collection elements currently visible in this collection view
      */
     public List<HierarchicalBrowseDcElement> getVisibleDcElements() {
         // logger.trace("getVisibleDcElements"); //NOSONAR Debug
@@ -431,7 +431,7 @@ public class CollectionView implements Serializable {
      * toggleChildren.
      *
      * @param element collection element whose children to toggle
-     * @return a {@link java.lang.String} object.
+     * @return null (sub-elements are shown or hidden as a side effect)
      */
     public String toggleChildren(HierarchicalBrowseDcElement element) {
         logger.trace("toggleChildren: {}", element.getName());
@@ -663,7 +663,7 @@ public class CollectionView implements Serializable {
     /**
      * getCompleteList.
      *
-     * @return a {@link java.util.List} object.
+     * @return the complete unfiltered list of all hierarchical collection elements
      */
     public List<HierarchicalBrowseDcElement> getCompleteList() {
         return completeCollectionList;
@@ -672,7 +672,7 @@ public class CollectionView implements Serializable {
     /**
      * Getter for the field <code>baseElementName</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the name of the base collection element used as the root of this view
      */
     public String getBaseElementName() {
         return baseElementName;
@@ -767,7 +767,7 @@ public class CollectionView implements Serializable {
      * getCollectionUrl.
      *
      * @param collection collection name to look up in the complete list
-     * @return a {@link java.lang.String} object.
+     * @return the viewer URL for the given collection name, or an empty string if not found
      */
     public String getCollectionUrl(String collection) {
         return getCompleteList().stream()
@@ -781,7 +781,7 @@ public class CollectionView implements Serializable {
      * loadCollection.
      *
      * @param element a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
-     * @return a {@link java.lang.String} object.
+     * @return the relative URL for navigating to the given collection element
      */
     public String loadCollection(HierarchicalBrowseDcElement element) {
         logger.trace("Set current collection to {}", element);
@@ -794,7 +794,7 @@ public class CollectionView implements Serializable {
      * getCollectionUrl.
      *
      * @param collection a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
-     * @return a {@link java.lang.String} object.
+     * @return the viewer URL for the given collection element using the default search URL and field
      * @throws URISyntaxException
      */
     public String getCollectionUrl(HierarchicalBrowseDcElement collection) {
@@ -813,7 +813,7 @@ public class CollectionView implements Serializable {
      * @param baseSearchUrl base URL of the search page
      * @param openInSearch if true, return a search url if no cms page is associated with the collection. In case of single record in collection, the
      *            record may be opened directly
-     * @return a {@link java.lang.String} object.
+     * @return the viewer URL for the given collection element, directing to a CMS page, search, or single record as applicable
      * @throws URISyntaxException
      * @should return identifier resolver url if single record and pi known
      * @should escape critical url chars in collection name

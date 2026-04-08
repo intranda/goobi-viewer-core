@@ -206,7 +206,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     /**
      * getChildrenAndVisibleDescendants.
      *
-     * @return a {@link java.util.Collection} object.
+     * @return the collection of direct children and all currently visible descendant elements
      */
     public List<HierarchicalBrowseDcElement> getChildrenAndVisibleDescendants() {
         List<HierarchicalBrowseDcElement> list = new ArrayList<>();

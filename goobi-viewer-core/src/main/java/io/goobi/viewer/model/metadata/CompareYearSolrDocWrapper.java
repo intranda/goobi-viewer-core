@@ -94,7 +94,7 @@ public class CompareYearSolrDocWrapper implements Comparable<CompareYearSolrDocW
     /**
      * Getter for the field <code>solrDocument</code>.
      *
-     * @return a {@link org.apache.solr.common.SolrDocument} object.
+     * @return the Solr document wrapped by this comparator
      */
     public SolrDocument getSolrDocument() {
         return solrDocument;

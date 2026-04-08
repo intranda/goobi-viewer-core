@@ -39,21 +39,21 @@ public interface IModule extends IndexAugmenter {
     /**
      * getId.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the unique identifier of this module
      */
     public String getId();
 
     /**
      * getName.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the display name of this module
      */
     public String getName();
 
     /**
      * getVersion.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the version string of this module
      */
     public String getVersion();
 
@@ -72,21 +72,21 @@ public interface IModule extends IndexAugmenter {
     /**
      * Module configuration object.
      *
-     * @return a {@link io.goobi.viewer.controller.AbstractConfiguration} object.
+     * @return the configuration object for this module
      */
     public AbstractConfiguration getConfiguration();
 
     /**
      * URLs for the CMS menu.
      *
-     * @return a {@link java.util.Map} object.
+     * @return a map of display labels to URLs for this module's CMS menu contributions
      */
     public Map<String, String> getCmsMenuContributions();
 
     /**
      * URLs to sidebar widgets.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of sidebar widget URLs contributed by this module
      */
     public List<String> getSidebarContributions();
 
@@ -100,14 +100,14 @@ public interface IModule extends IndexAugmenter {
     /**
      * URLs to widgets containing admin menu links.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of admin widget URLs contributed by this module
      */
     public List<String> getAdminContributions();
 
     /**
      * URLs to widgets containing navigation menu links.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of login navigation widget URLs contributed by this module
      */
     public List<String> getLoginNavigationContributions();
 
@@ -115,7 +115,7 @@ public interface IModule extends IndexAugmenter {
      * Generic widget URLs than can be used from virtually anywhere. The URLs are configured in the config file.
      *
      * @param type widget type identifier from configuration
-     * @return a {@link java.util.List} object.
+     * @return a list of widget URLs of the given type contributed by this module
      */
     public List<String> getWidgets(String type);
 

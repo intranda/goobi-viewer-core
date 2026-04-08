@@ -89,7 +89,7 @@ public final class FileTools {
      * @param filePath absolute or relative path to the file
      * @should read text file correctly
      * @should throw FileNotFoundException if file not found
-     * @return a {@link java.lang.String} object.
+     * @return the complete file content as a string
      * @throws java.io.IOException if any.
      */
     public static String getStringFromFilePath(String filePath) throws IOException {
@@ -103,7 +103,7 @@ public final class FileTools {
      * @param encoding The character encoding to use. If null, a standard utf-8 encoding will be used
      * @should read text file correctly
      * @should throw FileNotFoundException if file not found
-     * @return a {@link java.lang.String} object.
+     * @return the complete file content as a trimmed string
      * @throws java.io.IOException if any.
      */
     public static String getStringFromFile(File file, String encoding) throws IOException {
@@ -116,7 +116,7 @@ public final class FileTools {
      * @param file text file to read
      * @param encoding The character encoding to use. If null, a standard utf-8 encoding will be used
      * @param convertToEncoding Optional target encoding for conversion
-     * @return a {@link java.lang.String} object.
+     * @return the complete file content as a trimmed string, optionally re-encoded
      * @throws java.io.IOException if any.
      */
     public static String getStringFromFile(File file, final String encoding, String convertToEncoding) throws IOException {
@@ -186,7 +186,7 @@ public final class FileTools {
      *
      * @param bytes raw byte array to read as text
      * @param encoding character encoding to apply when reading bytes
-     * @return a {@link java.lang.String} object.
+     * @return the string decoded from the given byte array using the specified encoding
      */
     public static String getStringFromByteArray(byte[] bytes, final String encoding) {
         String result = "";
@@ -210,7 +210,7 @@ public final class FileTools {
      * @param append Whether to append the text to an existing file (true), or to overwrite it (false)
      * @should write file correctly
      * @should append to file correctly
-     * @return a {@link java.io.File} object.
+     * @return the written file
      * @throws java.io.IOException if any.
      */
     public static File getFileFromString(String string, String filePath, final String encoding, boolean append) throws IOException {

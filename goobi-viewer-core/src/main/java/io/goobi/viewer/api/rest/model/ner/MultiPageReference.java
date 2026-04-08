@@ -76,7 +76,7 @@ public class MultiPageReference implements TagGroup {
     /**
      * Getter for the field <code>firstPage</code>.
      *
-     * @return a {@link java.lang.Integer} object.
+     * @return the page order number of the first page in this range
      */
     @JsonProperty("firstPage")
     public Integer getFirstPage() {
@@ -86,7 +86,7 @@ public class MultiPageReference implements TagGroup {
     /**
      * Getter for the field <code>lastPage</code>.
      *
-     * @return a {@link java.lang.Integer} object.
+     * @return the page order number of the last page in this range
      */
     @JsonProperty("lastPage")
     public Integer getLastPage() {

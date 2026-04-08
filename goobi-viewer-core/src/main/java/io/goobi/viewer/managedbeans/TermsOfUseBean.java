@@ -72,7 +72,7 @@ public class TermsOfUseBean implements Serializable {
     /**
      * getTitle.
      *
-     * @return a {@link java.lang.String} object
+     * @return the title of the terms of use page in the current or default locale
      */
     public String getTitle() {
         return this.termsOfUse.map(t -> t.getTitleIfExists(BeanUtils.getLocale().getLanguage())
@@ -84,7 +84,7 @@ public class TermsOfUseBean implements Serializable {
     /**
      * getDescription.
      *
-     * @return a {@link java.lang.String} object
+     * @return the description of the terms of use page in the current or default locale
      */
     public String getDescription() {
         return this.termsOfUse.map(t -> t.getDescriptionIfExists(BeanUtils.getLocale().getLanguage())

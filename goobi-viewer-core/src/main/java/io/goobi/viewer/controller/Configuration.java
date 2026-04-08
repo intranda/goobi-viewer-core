@@ -225,7 +225,7 @@ public class Configuration extends AbstractConfiguration {
      * loadStopwords.
      *
      * @param stopwordsFilePath path to the stopwords file to read
-     * @return a {@link java.util.Set} object.
+     * @return the set of stopwords loaded from the file
      * @throws java.io.IOException if any.
      * @should load all stopwords
      * @should remove parts starting with pipe
@@ -263,7 +263,7 @@ public class Configuration extends AbstractConfiguration {
      * Returns the stopwords loading during initialization.
      *
      * @should return all stopwords
-     * @return a {@link java.util.Set} object.
+     * @return the set of stopwords loaded during initialization
      */
     public Set<String> getStopwords() {
         return stopwords;
@@ -293,7 +293,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getLocalRessourceBundleFile.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the absolute path to the local German message properties file
      */
     public String getLocalRessourceBundleFile() {
         return getConfigLocalPath() + "messages_de.properties";
@@ -362,7 +362,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getDfgViewerUrl.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the configured DFG Viewer base URL
      * @should return correct value
      */
     public String getDfgViewerUrl() {
@@ -543,7 +543,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct template configuration
      * @should return default template configuration if requested not found
      * @should return default template if template is null
-     * @return a {@link java.util.List} object.
+     * @return a list of configured Metadata definitions for search hit elements of the given template
      */
     public List<Metadata> getSearchHitMetadataForTemplate(String template) {
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("metadata.searchHitMetadataList.template");
@@ -562,7 +562,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct template configuration
      * @should return default template configuration if requested not found
      * @should return default template if template is null
-     * @return a {@link java.util.List} object.
+     * @return a list of configured Metadata definitions for page elements of the given template
      */
     public List<Metadata> getPageMetadataForTemplate(String template) {
         return getMetadataConfigurationForTemplate(METADATA_LIST_TYPE_PAGE, template, true, true);
@@ -573,7 +573,7 @@ public class Configuration extends AbstractConfiguration {
      *
      * @param template template name to look up
      * @should return default template configuration if requested not found
-     * @return a {@link java.util.List} object.
+     * @return a list of configured Metadata definitions for highlighted record references of the given template
      */
     public List<Metadata> getHighlightMetadataForTemplate(String template) {
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("metadata.highlightMetadataList.template");
@@ -898,7 +898,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct template configuration
      * @should return default template configuration if template not found
      * @param template template name to look up
-     * @return a {@link java.util.List} object.
+     * @return a list of Metadata definitions used for generating TOC entry labels for the given template
      */
     public List<Metadata> getTocLabelConfiguration(String template) {
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("toc.labelConfig.template");
@@ -1386,7 +1386,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Returns the list of index fields to be used for term browsing.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of configured index fields to be used for term browsing in the browsing menu
      * @should return all configured elements
      */
     public List<BrowsingMenuFieldConfig> getBrowsingMenuFields() {
@@ -1434,7 +1434,7 @@ public class Configuration extends AbstractConfiguration {
      * getDocstrctWhitelistFilterQuery.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured Solr filter query restricting indexed document structure types
      */
     public String getDocstrctWhitelistFilterQuery() {
         return getLocalString("search.docstrctWhitelistFilterQuery", SearchHelper.DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY);
@@ -1445,7 +1445,7 @@ public class Configuration extends AbstractConfiguration {
      *
      * @param field collection Solr field name to look up
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured hierarchy splitting character for the given collection field
      */
     public String getCollectionSplittingChar(String field) {
         HierarchicalConfiguration<ImmutableNode> subConfig = getCollectionConfiguration(field);
@@ -1514,7 +1514,7 @@ public class Configuration extends AbstractConfiguration {
      * getCollectionSorting.
      *
      * @param field collection Solr field name to look up
-     * @return a {@link java.util.List} object.
+     * @return a list of DcSortingList objects defining the configured collection sort order for the given field
      * @should return all configured elements
      */
     public List<DcSortingList> getCollectionSorting(String field) {
@@ -1539,7 +1539,7 @@ public class Configuration extends AbstractConfiguration {
      * Returns collection names to be omitted from search results, listings etc.
      *
      * @param field collection Solr field name to look up
-     * @return a {@link java.util.List} object.
+     * @return a list of collection names to be omitted from search results and listings for the given field
      * @should return all configured elements
      */
     public List<String> getCollectionBlacklist(String field) {
@@ -1554,7 +1554,7 @@ public class Configuration extends AbstractConfiguration {
      * Returns the index field by which records in the collection with the given name are to be sorted in a listing.
      *
      * @param field collection Solr field name to look up
-     * @return a {@link java.lang.String} object.
+     * @return a map of collection name patterns to their configured default sort fields for the given collection field
      * @should return correct field for collection
      * @should give priority to exact matches
      * @should return hyphen if collection not found
@@ -1614,7 +1614,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getCollectionHierarchyField.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the first configured collection Solr field for which hierarchy breadcrumbs are enabled, or null if none
      * @should return first field where hierarchy enabled
      */
     public String getCollectionHierarchyField() {
@@ -1648,7 +1648,7 @@ public class Configuration extends AbstractConfiguration {
      * getSolrUrl.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured Solr base URL without a trailing slash
      */
     public String getSolrUrl() {
         String value = getLocalString("urls.solr", "http://localhost:8089/solr");
@@ -1662,7 +1662,7 @@ public class Configuration extends AbstractConfiguration {
      * getDownloadUrl.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured download base URL with a trailing slash
      * @deprecated because download uri is now built from request in {@link DownloadBean}
      */
     @Deprecated(since = "25.11")
@@ -1735,7 +1735,7 @@ public class Configuration extends AbstractConfiguration {
      * getSourceFileUrl.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured URL for accessing source (METS/LIDO) metadata files
      */
     public String getSourceFileUrl() {
         return getLocalString("urls.metadata.sourcefile");
@@ -1745,7 +1745,7 @@ public class Configuration extends AbstractConfiguration {
      * getMarcUrl.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured URL for accessing MARC metadata records
      */
     public String getMarcUrl() {
         return getLocalString("urls.metadata.marc");
@@ -1755,7 +1755,7 @@ public class Configuration extends AbstractConfiguration {
      * getDcUrl.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured URL for accessing Dublin Core metadata records
      */
     public String getDcUrl() {
         return getLocalString("urls.metadata.dc");
@@ -1765,7 +1765,7 @@ public class Configuration extends AbstractConfiguration {
      * getEseUrl.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured URL for accessing ESE metadata records
      */
     public String getEseUrl() {
         return getLocalString("urls.metadata.ese");
@@ -1914,7 +1914,7 @@ public class Configuration extends AbstractConfiguration {
      * @param template advanced search template name to look up
      * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
      * @param language language code used to filter language-specific fields
-     * @return a {@link java.util.List} object.
+     * @return a list of configured advanced search field configurations for the given template and language
      * @should return all values
      * @should return skip fields that don't match given language
      */
@@ -2334,7 +2334,7 @@ public class Configuration extends AbstractConfiguration {
      * getStaticQuerySuffix.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured static Solr query suffix appended to all search queries
      */
     public String getStaticQuerySuffix() {
         return getLocalString("search.staticQuerySuffix");
@@ -2344,7 +2344,7 @@ public class Configuration extends AbstractConfiguration {
      * getPreviousVersionIdentifierField.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured Solr field name holding the previous version identifier
      */
     public String getPreviousVersionIdentifierField() {
         return getLocalString("search.versioning.previousVersionIdentifierField");
@@ -2354,7 +2354,7 @@ public class Configuration extends AbstractConfiguration {
      * getNextVersionIdentifierField.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured Solr field name holding the next version identifier
      */
     public String getNextVersionIdentifierField() {
         return getLocalString("search.versioning.nextVersionIdentifierField");
@@ -2364,7 +2364,7 @@ public class Configuration extends AbstractConfiguration {
      * getVersionLabelField.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured Solr field name holding the version label
      */
     public String getVersionLabelField() {
         return getLocalString("search.versioning.versionLabelField");
@@ -2374,7 +2374,7 @@ public class Configuration extends AbstractConfiguration {
      * getIndexedMetsFolder.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for indexed METS files
      */
     public String getIndexedMetsFolder() {
         return getLocalString("indexedMetsFolder", "indexed_mets");
@@ -2384,7 +2384,7 @@ public class Configuration extends AbstractConfiguration {
      * getIndexedLidoFolder.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for indexed LIDO files
      */
     public String getIndexedLidoFolder() {
         return getLocalString("indexedLidoFolder", "indexed_lido");
@@ -2394,7 +2394,7 @@ public class Configuration extends AbstractConfiguration {
      * getIndexedEadFolder.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for indexed EAD files
      */
     public String getIndexedEadFolder() {
         return getLocalString("indexedEadFolder", "indexed_ead");
@@ -2404,7 +2404,7 @@ public class Configuration extends AbstractConfiguration {
      * getIndexedDenkxwebFolder.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for indexed DenkXweb files
      */
     public String getIndexedDenkxwebFolder() {
         return getLocalString("indexedDenkxwebFolder", "indexed_denkxweb");
@@ -2414,7 +2414,7 @@ public class Configuration extends AbstractConfiguration {
      * getIndexedDublinCoreFolder.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for indexed Dublin Core files
      */
     public String getIndexedDublinCoreFolder() {
         return getLocalString("indexedDublinCoreFolder", "indexed_dublincore");
@@ -2424,7 +2424,7 @@ public class Configuration extends AbstractConfiguration {
      * getPageSelectionFormat.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured format string for page selection display
      */
     public String getPageSelectionFormat() {
         return getLocalString("viewer.pageSelectionFormat", "{pageno}:{pagenolabel}");
@@ -2434,7 +2434,7 @@ public class Configuration extends AbstractConfiguration {
      * getMediaFolder.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured path to the media folder
      */
     public String getMediaFolder() {
         return getLocalString("mediaFolder");
@@ -2444,7 +2444,7 @@ public class Configuration extends AbstractConfiguration {
      * getPdfFolder.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for generated PDF files
      */
     public String getPdfFolder() {
         return getLocalString("pdfFolder", "pdf");
@@ -2453,7 +2453,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getVocabulariesFolder.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for vocabulary files
      */
     public String getVocabulariesFolder() {
         return getLocalString("vocabularies", "vocabularies");
@@ -2463,7 +2463,7 @@ public class Configuration extends AbstractConfiguration {
      * getOrigContentFolder.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for original source content files
      */
     public String getOrigContentFolder() {
         return getLocalString("origContentFolder", "source");
@@ -2473,7 +2473,7 @@ public class Configuration extends AbstractConfiguration {
      * getCmsMediaFolder.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for CMS media files
      */
     public String getCmsMediaFolder() {
         return getLocalString("cmsMediaFolder", "cms_media");
@@ -2483,7 +2483,7 @@ public class Configuration extends AbstractConfiguration {
      * getCmsTextFolder.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for CMS text content files
      */
     public String getCmsTextFolder() {
         return getLocalString("cmsTextFolder");
@@ -2493,7 +2493,7 @@ public class Configuration extends AbstractConfiguration {
      * getAltoFolder.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for ALTO OCR files
      */
     public String getAltoFolder() {
         return getLocalString("altoFolder", "alto");
@@ -2503,7 +2503,7 @@ public class Configuration extends AbstractConfiguration {
      * getAltoCrowdsourcingFolder.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for crowdsourced ALTO OCR files
      */
     public String getAltoCrowdsourcingFolder() {
         return getLocalString("altoCrowdsourcingFolder", "alto_crowd");
@@ -2513,7 +2513,7 @@ public class Configuration extends AbstractConfiguration {
      * getAbbyyFolder.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for ABBYY recognition result files
      */
     public String getAbbyyFolder() {
         return getLocalString("abbyyFolder", "abbyy");
@@ -2523,7 +2523,7 @@ public class Configuration extends AbstractConfiguration {
      * getFulltextFolder.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for plain full-text files
      */
     public String getFulltextFolder() {
         return getLocalString("fulltextFolder", "fulltext");
@@ -2533,7 +2533,7 @@ public class Configuration extends AbstractConfiguration {
      * getFulltextCrowdsourcingFolder.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for crowdsourced plain full-text files
      */
     public String getFulltextCrowdsourcingFolder() {
         return getLocalString("fulltextCrowdsourcingFolder", "fulltext_crowd");
@@ -2543,7 +2543,7 @@ public class Configuration extends AbstractConfiguration {
      * getTeiFolder.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for TEI document files
      */
     public String getTeiFolder() {
         return getLocalString("teiFolder", "tei");
@@ -2553,7 +2553,7 @@ public class Configuration extends AbstractConfiguration {
      * getCmdiFolder.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for CMDI metadata files
      */
     public String getCmdiFolder() {
         return getLocalString("cmdiFolder", "cmdi");
@@ -2563,7 +2563,7 @@ public class Configuration extends AbstractConfiguration {
      * getAnnotationFolder.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for annotation files
      */
     public String getAnnotationFolder() {
         return getLocalString("annotationFolder");
@@ -2573,7 +2573,7 @@ public class Configuration extends AbstractConfiguration {
      * getHotfolder.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured path to the Goobi indexer hotfolder
      */
     public String getHotfolder() {
         return getLocalString("hotfolder");
@@ -2583,7 +2583,7 @@ public class Configuration extends AbstractConfiguration {
      * getTempFolder.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the path to the temporary viewer working directory within the system temp directory
      */
     public String getTempFolder() {
         return Paths.get(System.getProperty("java.io.tmpdir"), "viewer").toString();
@@ -2666,7 +2666,7 @@ public class Configuration extends AbstractConfiguration {
      *
      * @should return all properly configured elements
      * @should load user group names correctly
-     * @return a {@link java.util.List} object.
+     * @return a list of all configured authentication providers
      */
     public List<IAuthenticationProvider> getAuthenticationProviders() {
         XMLConfiguration myConfigToUse = getConfig();
@@ -2769,7 +2769,7 @@ public class Configuration extends AbstractConfiguration {
      * getSmtpServer.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured SMTP server hostname or IP address
      */
     public String getSmtpServer() {
         return getLocalString("user.smtpServer");
@@ -2779,7 +2779,7 @@ public class Configuration extends AbstractConfiguration {
      * getSmtpUser.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured SMTP authentication username
      */
     public String getSmtpUser() {
         return getLocalString("user.smtpUser");
@@ -2789,7 +2789,7 @@ public class Configuration extends AbstractConfiguration {
      * getSmtpPassword.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured SMTP authentication password
      */
     public String getSmtpPassword() {
         return getLocalString("user.smtpPassword");
@@ -2799,7 +2799,7 @@ public class Configuration extends AbstractConfiguration {
      * getSmtpSenderAddress.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured SMTP sender email address
      */
     public String getSmtpSenderAddress() {
         return getLocalString("user.smtpSenderAddress");
@@ -2809,7 +2809,7 @@ public class Configuration extends AbstractConfiguration {
      * getSmtpSenderName.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured SMTP sender display name
      */
     public String getSmtpSenderName() {
         return getLocalString("user.smtpSenderName");
@@ -2819,7 +2819,7 @@ public class Configuration extends AbstractConfiguration {
      * getSmtpSecurity.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured SMTP connection security mode (e.g. none, ssl, tls)
      */
     public String getSmtpSecurity() {
         return getLocalString("user.smtpSecurity", "none");
@@ -2898,7 +2898,7 @@ public class Configuration extends AbstractConfiguration {
      * getTheme.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured main theme name
      */
     public String getTheme() {
         return getSubthemeMainTheme();
@@ -2907,7 +2907,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getThemeRootPath.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the configured root path for theme resources
      */
     public String getThemeRootPath() {
         return getLocalString("viewer.theme.rootPath");
@@ -2917,7 +2917,7 @@ public class Configuration extends AbstractConfiguration {
      * getName.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured viewer application name
      */
     public String getName() {
         return getLocalString("viewer.name", "Goobi viewer");
@@ -2927,7 +2927,7 @@ public class Configuration extends AbstractConfiguration {
      * getDescription.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured viewer application description
      */
     public String getDescription() {
         return getLocalString("viewer.description", "Goobi viewer");
@@ -3279,7 +3279,7 @@ public class Configuration extends AbstractConfiguration {
      * Returns a list containing all simple facet fields.
      *
      * @should return correct order
-     * @return a {@link java.util.List} object.
+     * @return a list of all configured facet field names
      */
     public List<String> getAllFacetFields() {
         return getLocalList("search.facets.field");
@@ -3304,7 +3304,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getBooleanFacetFields.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of configured boolean-type facet field names
      * @should return all values
      */
     public List<String> getBooleanFacetFields() {
@@ -3322,7 +3322,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getHierarchicalFacetFields.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of configured hierarchical-type facet field names
      * @should return all values
      */
     public List<String> getHierarchicalFacetFields() {
@@ -3400,7 +3400,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getGeoFacetFields.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of configured geo-type facet field names
      * @should return all values
      */
     public List<String> getGeoFacetFields() {
@@ -3467,7 +3467,7 @@ public class Configuration extends AbstractConfiguration {
      * getSortOrder.
      *
      * @param facetField facet field name to look up
-     * @return a {@link java.lang.String} object.
+     * @return the configured sort order for the given facet field (e.g. "default", "asc", "desc")
      */
     public String getSortOrder(String facetField) {
         return getPropertyForFacetField(facetField, "[@sortOrder]", "default");
@@ -3641,7 +3641,7 @@ public class Configuration extends AbstractConfiguration {
      * getDefaultSortField.
      *
      * @param language language code for selecting language-specific sort fields
-     * @return a {@link java.lang.String} object.
+     * @return the configured default sort field for the given language, or the relevance sort constant if not configured
      * @should return correct value
      * @should return correct language value
      */
@@ -3668,7 +3668,7 @@ public class Configuration extends AbstractConfiguration {
      * getSortFields.
      *
      * @should return return all configured elements
-     * @return a {@link java.util.List} object.
+     * @return a list of configured sort field names for search results
      */
     public List<String> getSortFields() {
         return getLocalList(XML_PATH_SEARCH_SORTING_FIELD);
@@ -3723,7 +3723,7 @@ public class Configuration extends AbstractConfiguration {
      * getStaticSortFields.
      *
      * @should return return all configured elements
-     * @return a {@link java.util.List} object.
+     * @return a list of configured static sort field names that are always applied to search results
      */
     public List<String> getStaticSortFields() {
         return getLocalList("search.sorting.static.field");
@@ -3764,7 +3764,7 @@ public class Configuration extends AbstractConfiguration {
      * getUrnResolverUrl.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured URN resolver base URL
      */
     public String getUrnResolverUrl() {
         return getLocalString("urls.urnResolver",
@@ -3908,7 +3908,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value for epub
      * @should return empty string if type unknown
      * @param type download type (pdf, epub, or resource)
-     * @return a {@link java.lang.String} object.
+     * @return the configured download folder path for the given type, or an empty string for unknown types
      */
     public String getDownloadFolder(String type) {
         switch (type.toLowerCase()) {
@@ -3994,7 +3994,7 @@ public class Configuration extends AbstractConfiguration {
      * getRssTitle.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured RSS feed title
      */
     public String getRssTitle() {
         return getLocalString("rss.title", "viewer-rss");
@@ -4004,7 +4004,7 @@ public class Configuration extends AbstractConfiguration {
      * getRssDescription.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured RSS feed description
      */
     public String getRssDescription() {
         return getLocalString("rss.description", "latest imports");
@@ -4014,7 +4014,7 @@ public class Configuration extends AbstractConfiguration {
      * getRssCopyrightText.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured RSS feed copyright text
      */
     public String getRssCopyrightText() {
         return getLocalString("rss.copyright");
@@ -4044,7 +4044,7 @@ public class Configuration extends AbstractConfiguration {
      * getAnchorThumbnailMode.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured thumbnail display mode for anchor records
      */
     public String getAnchorThumbnailMode() {
         return getLocalString("viewer.anchorThumbnailMode", StringConstants.ANCHOR_THUMBNAIL_MODE_GENERIC);
@@ -4159,7 +4159,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getImageViewZoomScales.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of configured zoom scale values for the default image view
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public List<String> getImageViewZoomScales() throws ViewerConfigurationException {
@@ -4170,7 +4170,7 @@ public class Configuration extends AbstractConfiguration {
      * getImageViewZoomScales.
      *
      * @param view page type name used to construct the ViewAttributes
-     * @return a {@link java.util.List} object.
+     * @return a list of configured zoom scale values for the given view
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public List<String> getImageViewZoomScales(String view) throws ViewerConfigurationException {
@@ -4181,7 +4181,7 @@ public class Configuration extends AbstractConfiguration {
      * getImageViewZoomScales.
      *
      * @param viewAttributes view context attributes selecting the zoom config
-     * @return a {@link java.util.List} object.
+     * @return a list of configured zoom scale values for the given view context
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public List<String> getImageViewZoomScales(ViewAttributes viewAttributes) throws ViewerConfigurationException {
@@ -4210,7 +4210,7 @@ public class Configuration extends AbstractConfiguration {
      * getTileSizes.
      *
      * @param viewAttributes view context attributes selecting the zoom config
-     * @return a {@link java.util.Map} object.
+     * @return a map of tile sizes (resolution) to lists of scale factors for the given view context
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public Map<Integer, List<Integer>> getTileSizes(ViewAttributes viewAttributes) throws ViewerConfigurationException {
@@ -4242,7 +4242,7 @@ public class Configuration extends AbstractConfiguration {
      * getZoomImageViewConfig.
      *
      * @param viewAttributes view context attributes selecting the matching zoom config block
-     * @return a {@link org.apache.commons.configuration2.SubnodeConfiguration} object.
+     * @return the zoom image view configuration block matching the given view context
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public BaseHierarchicalConfiguration getZoomImageViewConfig(ViewAttributes viewAttributes) throws ViewerConfigurationException {
@@ -4324,7 +4324,7 @@ public class Configuration extends AbstractConfiguration {
      * Returns the preference order of data to be used as an image footer text.
      *
      * @should return all configured elements in the correct order
-     * @return a {@link java.util.List} object.
+     * @return a list of data source names defining the preference order for image footer text
      */
     public List<String> getWatermarkTextConfiguration() {
         return getLocalList("viewer.watermarkTextConfiguration.text");
@@ -4333,7 +4333,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getWatermarkFormat.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the configured image format for watermarked images (e.g. "jpg")
      */
     public String getWatermarkFormat() {
         return getLocalString("viewer.watermarkFormat", "jpg");
@@ -4343,7 +4343,7 @@ public class Configuration extends AbstractConfiguration {
      * getStopwordsFilePath.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured path to the stopwords file
      */
     public String getStopwordsFilePath() {
         return getLocalString("stopwordsFile");
@@ -4355,7 +4355,7 @@ public class Configuration extends AbstractConfiguration {
      * @param type page type whose configured URL name is returned
      * @should return the correct value for the given type
      * @should return null for non configured type
-     * @return a {@link java.lang.String} object.
+     * @return the locally configured URL name for the given page type, or null if not configured
      */
     public String getPageType(PageType type) {
         return getLocalString("viewer.pageTypes." + type.name());
@@ -4367,7 +4367,7 @@ public class Configuration extends AbstractConfiguration {
      * @param publicationType publication type name to look up
      * @should return correct value
      * @should return null if docstruct not found
-     * @return a {@link java.lang.String} object.
+     * @return the configured target page type name for the given publication type, or null if not configured
      */
     public String getRecordTargetPageType(String publicationType) {
         return getLocalString("viewer.recordTargetPageTypes." + publicationType);
@@ -4400,7 +4400,7 @@ public class Configuration extends AbstractConfiguration {
      * getFeedbackEmailAddresses.
      *
      * @should return correct values
-     * @return a {@link java.lang.String} object.
+     * @return the list of configured feedback email recipients
      */
     public List<EmailRecipient> getFeedbackEmailRecipients() {
         List<EmailRecipient> ret = new ArrayList<>();
@@ -4484,7 +4484,7 @@ public class Configuration extends AbstractConfiguration {
      * getViewerHome.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured viewer home directory path
      */
     public String getViewerHome() {
         return getLocalString("viewerHome");
@@ -4503,7 +4503,7 @@ public class Configuration extends AbstractConfiguration {
      * getWatermarkIdField.
      *
      * @should return correct value
-     * @return a {@link java.util.List} object.
+     * @return a list of Solr field names used to select the watermark image for a record
      */
     public List<String> getWatermarkIdField() {
         return getLocalList("viewer.watermarkIdField", Collections.singletonList(SolrConstants.DC));
@@ -4549,7 +4549,7 @@ public class Configuration extends AbstractConfiguration {
      * getSubthemeMainTheme.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured main theme name used as the base theme for subthemes
      */
     public String getSubthemeMainTheme() {
         String theme = getLocalString("viewer.theme[@mainTheme]");
@@ -4563,7 +4563,7 @@ public class Configuration extends AbstractConfiguration {
      * getSubthemeDiscriminatorField.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured Solr field name used to discriminate between subthemes
      */
     public String getSubthemeDiscriminatorField() {
         return getLocalString("viewer.theme[@discriminatorField]", "");
@@ -4585,7 +4585,7 @@ public class Configuration extends AbstractConfiguration {
      * getTocVolumeSortFieldsForTemplate.
      *
      * @param template template name to look up
-     * @return a {@link java.util.List} object.
+     * @return a list of sort field name/order pairs configured for TOC volume sorting for the given template
      * @should return correct template configuration
      * @should return default template configuration if template not found
      * @should return default template configuration if template is null
@@ -4637,7 +4637,7 @@ public class Configuration extends AbstractConfiguration {
      *
      * @should return correct value
      * @param template template name to look up
-     * @return a {@link java.lang.String} object.
+     * @return the configured grouping Solr field for the given anchor TOC sort configuration
      */
     public String getTocVolumeGroupFieldForTemplate(String template) {
         HierarchicalConfiguration<ImmutableNode> usingTemplate = null;
@@ -4727,7 +4727,7 @@ public class Configuration extends AbstractConfiguration {
      * getStartYearForTimeline.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured start year for the timeline view
      */
     public String getStartYearForTimeline() {
         return this.getLocalString("search.timeline.startyear", "1750");
@@ -4737,7 +4737,7 @@ public class Configuration extends AbstractConfiguration {
      * getEndYearForTimeline.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured end year for the timeline view
      */
     public String getEndYearForTimeline() {
         return this.getLocalString("search.timeline.endyear", "2014");
@@ -4747,7 +4747,7 @@ public class Configuration extends AbstractConfiguration {
      * getTimelineHits.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured maximum number of timeline hits to display
      */
     public String getTimelineHits() {
         return this.getLocalString("search.timeline.hits", "108");
@@ -4767,7 +4767,7 @@ public class Configuration extends AbstractConfiguration {
      * getPiwikBaseURL.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured Piwik/Matomo tracking base URL
      */
     public String getPiwikBaseURL() {
         return this.getLocalString("piwik.baseURL", "");
@@ -4777,7 +4777,7 @@ public class Configuration extends AbstractConfiguration {
      * getPiwikSiteID.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured Piwik/Matomo site ID
      */
     public String getPiwikSiteID() {
         return this.getLocalString("piwik.siteID", "1");
@@ -4797,7 +4797,7 @@ public class Configuration extends AbstractConfiguration {
      * getRecordGroupIdentifierFields.
      *
      * @should return all configured values
-     * @return a {@link java.util.List} object.
+     * @return a list of configured Solr field names used to identify record groups
      */
     public List<String> getRecordGroupIdentifierFields() {
         return getLocalList("toc.recordGroupIdentifierFields.field");
@@ -4807,7 +4807,7 @@ public class Configuration extends AbstractConfiguration {
      * getAncestorIdentifierFields.
      *
      * @should return all configured values
-     * @return a {@link java.util.List} object.
+     * @return a list of configured Solr field names used to identify ancestor records
      */
     public List<String> getAncestorIdentifierFields() {
         return getLocalList("toc.ancestorIdentifierFields.field");
@@ -4850,7 +4850,7 @@ public class Configuration extends AbstractConfiguration {
      * getSearchFilters.
      *
      * @should return all configured elements
-     * @return a {@link java.util.List} object.
+     * @return a list of configured search filter definitions
      */
     public List<SearchFilter> getSearchFilters() {
         List<HierarchicalConfiguration<ImmutableNode>> elements = getLocalConfigurationsAt("search.filters.filter");
@@ -4922,7 +4922,7 @@ public class Configuration extends AbstractConfiguration {
      * getDbPersistenceUnit.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured JPA persistence unit name, or null if not configured
      */
     public String getDbPersistenceUnit() {
         return getLocalString("dbPersistenceUnit", null);
@@ -4973,7 +4973,7 @@ public class Configuration extends AbstractConfiguration {
      * getTranskribusUserName.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured Transkribus login username
      */
     public String getTranskribusUserName() {
         return getLocalString("transkribus.userName");
@@ -4983,7 +4983,7 @@ public class Configuration extends AbstractConfiguration {
      * getTranskribusPassword.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured Transkribus login password
      */
     public String getTranskribusPassword() {
         return getLocalString("transkribus.password");
@@ -4993,7 +4993,7 @@ public class Configuration extends AbstractConfiguration {
      * getTranskribusDefaultCollection.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured default Transkribus collection name
      */
     public String getTranskribusDefaultCollection() {
         return getLocalString("transkribus.defaultCollection");
@@ -5003,7 +5003,7 @@ public class Configuration extends AbstractConfiguration {
      * getTranskribusRestApiUrl.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured Transkribus REST API base URL
      */
     public String getTranskribusRestApiUrl() {
         return getLocalString("transkribus.restApiUrl", TranskribusUtils.TRANSRIBUS_REST_URL);
@@ -5013,7 +5013,7 @@ public class Configuration extends AbstractConfiguration {
      * getTranskribusAllowedDocumentTypes.
      *
      * @should return all configured elements
-     * @return a {@link java.util.List} object.
+     * @return a list of configured document type names (docstructs) allowed for Transkribus integration
      */
     public List<String> getTranskribusAllowedDocumentTypes() {
         return getLocalList("transkribus.allowedDocumentTypes.docstruct");
@@ -5042,7 +5042,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getPageBrowseSteps.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of configured page step sizes for page-by-page browsing navigation
      */
     public List<Integer> getPageBrowseSteps() {
         List<String> defaultList = Collections.singletonList("1");
@@ -5086,7 +5086,7 @@ public class Configuration extends AbstractConfiguration {
      * getReCaptchaSiteKey.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured reCAPTCHA site key for the frontend widget
      */
     public String getReCaptchaSiteKey() {
         return getLocalString("reCaptcha.provider[@siteKey]");
@@ -5126,7 +5126,7 @@ public class Configuration extends AbstractConfiguration {
      * getSearchExcelExportFields.
      *
      * @should return all values
-     * @return a {@link java.util.List} object.
+     * @return a list of configured export field definitions for the Excel search export
      */
     public List<ExportFieldConfiguration> getSearchExcelExportFields() {
         return getExportConfigurations("search.export.excel.field");
@@ -5205,7 +5205,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getRestrictedImageUrls.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of URL patterns for external image content that requires access restriction
      */
     public List<String> getRestrictedImageUrls() {
         return getLocalList("viewer.externalContent.restrictedUrls.url", new ArrayList<>());
@@ -5226,7 +5226,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getIIIFMetadataFields.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of configured Solr field names to be included as metadata in IIIF manifests
      */
     public List<String> getIIIFMetadataFields() {
         return getLocalList("webapi.iiif.metadataFields.field", new ArrayList<>());
@@ -5280,7 +5280,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getIIIFLogo.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the list of configured IIIF logo URLs
      */
     public List<String> getIIIFLogo() {
         return getLocalList("webapi.iiif.logo", new ArrayList<>());
@@ -5289,7 +5289,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getIIIFNavDateField.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the configured Solr field name used as the IIIF navigation date field, or null if not configured
      */
     public String getIIIFNavDateField() {
         return getLocalString("webapi.iiif.navDateField", null);
@@ -5298,7 +5298,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getIIIFAttribution.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the list of configured IIIF attribution strings
      */
     public List<String> getIIIFAttribution() {
         return getLocalList("webapi.iiif.attribution", new ArrayList<>());
@@ -5307,7 +5307,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getIIIFDescriptionFields.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of configured Solr field names used as description in IIIF manifests
      */
     public List<String> getIIIFDescriptionFields() {
         return getLocalList("webapi.iiif.descriptionFields.field", new ArrayList<>());
@@ -5471,7 +5471,7 @@ public class Configuration extends AbstractConfiguration {
      * getSitelinksField.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured Solr field name used as the sitelinks field
      */
     public String getSitelinksField() {
         return getLocalString("sitelinks.sitelinksField");
@@ -5490,7 +5490,7 @@ public class Configuration extends AbstractConfiguration {
      * getSitelinksFilterQuery.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured Solr filter query for sitelinks
      */
     public String getSitelinksFilterQuery() {
         return getLocalString("sitelinks.sitelinksFilterQuery");
@@ -5499,7 +5499,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getConfiguredCollections.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of configured collection Solr field names
      */
     public List<String> getConfiguredCollections() {
         return getLocalList("collections.collection[@field]", new ArrayList<>());
@@ -5510,7 +5510,7 @@ public class Configuration extends AbstractConfiguration {
      * getWebApiToken.
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured web API authorization token
      */
     public String getWebApiToken() {
         return getLocalString("webapi.authorization.token", "");
@@ -5580,7 +5580,7 @@ public class Configuration extends AbstractConfiguration {
      * Gets the value configured in webapi.cors. Default is "*"
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured CORS header value for API responses
      */
     public String getCORSHeaderValue() {
         return getLocalString("webapi.cors", "*");

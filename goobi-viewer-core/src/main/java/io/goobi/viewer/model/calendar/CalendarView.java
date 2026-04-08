@@ -113,7 +113,7 @@ public class CalendarView implements Serializable {
     /**
      * getVolumeYears.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of year strings for volumes of this anchor that have calendar day data
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @should only return volume years that have YEARMONTHDAY field

@@ -48,7 +48,7 @@ public class Feedback implements Serializable {
      * getEmailSubject.
      *
      * @param key message key to resolve as email subject
-     * @return a {@link java.lang.String} object.
+     * @return the translated email subject text for the given message key
      */
     public String getEmailSubject(String key) {
         return ViewerResourceBundle.getTranslation(key, null);
@@ -58,7 +58,7 @@ public class Feedback implements Serializable {
      * getEmailBody.
      *
      * @param key message key to resolve as email body template
-     * @return a {@link java.lang.String} object.
+     * @return the translated and placeholder-substituted email body text for the given message key
      */
     public String getEmailBody(String key) {
         String body = ViewerResourceBundle.getTranslation(key, null);

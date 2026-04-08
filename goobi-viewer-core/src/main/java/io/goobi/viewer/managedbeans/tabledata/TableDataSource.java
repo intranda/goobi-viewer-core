@@ -41,7 +41,7 @@ public interface TableDataSource<T> {
      * @param sortField field name to sort by; null for default order.
      * @param sortOrder ascending or descending sort direction.
      * @param filters map of field names to filter values.
-     * @return a {@link java.util.List} object.
+     * @return a list of entries for the requested page, sorted and filtered according to the given parameters
      * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
      */
     public List<T> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters)

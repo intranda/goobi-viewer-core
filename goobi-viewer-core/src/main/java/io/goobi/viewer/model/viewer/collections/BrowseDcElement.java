@@ -193,7 +193,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     /**
      * Returns the message key for the collection description.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the collection description from CMS info, or a message key derived from the collection name
      */
     public String getDescription() {
         if (getInfo() != null) {
@@ -218,7 +218,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     /**
      * Returns the message key for the collection representative image url.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the representative image URI from CMS info, or a message key derived from the collection name
      */
     public String getRepresentant() {
         if (getInfo() != null && getInfo().getIconURI() != null) {
@@ -304,7 +304,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     /**
      * getParentName.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the name of the parent collection, or an empty string if this is a root-level collection
      */
     public String getParentName() {
         if (getLevel() > 0) {
@@ -482,7 +482,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     /**
      * getIcon.
      *
-     * @return a {@link java.net.URI} object.
+     * @return the icon URI for this collection element, or null if no icon is set
      */
     public URI getIcon() {
         if (getInfo() != null) {

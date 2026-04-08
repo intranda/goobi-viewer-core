@@ -117,7 +117,7 @@ public final class DataManager {
     /**
      * Getter for the field <code>instance</code>.
      *
-     * @return a {@link io.goobi.viewer.controller.DataManager} object.
+     * @return the singleton DataManager instance
      */
     public static DataManager getInstance() {
         DataManager dm = instance;
@@ -166,7 +166,7 @@ public final class DataManager {
      * getModule.
      *
      * @param id unique identifier of the module to look up
-     * @return a {@link io.goobi.viewer.modules.IModule} object.
+     * @return the registered IModule with the given ID
      * @throws io.goobi.viewer.exceptions.ModuleMissingException if any.
      */
     public IModule getModule(String id) throws ModuleMissingException {
@@ -358,7 +358,7 @@ public final class DataManager {
     /**
      * Getter for the field <code>bookmarkManager</code>.
      *
-     * @return a {@link io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager} object.
+     * @return the session-scoped bookmark manager, creating one if not yet initialized
      */
     public SessionStoreBookmarkManager getBookmarkManager() {
         if (this.bookmarkManager == null) {
@@ -392,7 +392,7 @@ public final class DataManager {
     /**
      * Getter for the field <code>authResponseListener</code>.
      *
-     * @return a {@link io.goobi.viewer.model.security.authentication.AuthResponseListener} object.
+     * @return the authentication response listener, creating one if not yet initialized
      */
     public AuthResponseListener<HttpAuthenticationProvider> getAuthResponseListener() {
         if (authResponseListener == null) {

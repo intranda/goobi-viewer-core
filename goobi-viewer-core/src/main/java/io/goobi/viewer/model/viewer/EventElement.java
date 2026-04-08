@@ -201,7 +201,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     /**
      * Getter for the field <code>displayDate</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the formatted date range string for display, combining start and end date if available
      */
     public String getDisplayDate() {
         if (StringUtils.isNotEmpty(displayDate)) {
@@ -221,7 +221,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     /**
      * getLabel.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the event type label for this event element
      * @should include type
      * @should not include date
      */

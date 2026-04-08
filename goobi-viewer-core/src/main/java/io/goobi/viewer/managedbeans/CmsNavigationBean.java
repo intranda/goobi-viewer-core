@@ -84,7 +84,7 @@ public class CmsNavigationBean implements Serializable {
     /**
      * Getter for the field <code>menuItemList</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the serialized menu item order string representing the current navigation menu structure
      */
     public String getMenuItemList() {
         return menuItemList;
@@ -182,7 +182,7 @@ public class CmsNavigationBean implements Serializable {
     /**
      * getNavigationItem.
      *
-     * @return a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
+     * @return the currently selected navigation item, creating a new one if none exists
      */
     public CMSNavigationItem getNavigationItem() {
         if (selectedNavigationItem == null) {
@@ -194,7 +194,7 @@ public class CmsNavigationBean implements Serializable {
     /**
      * getAvailableMenuItems.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of available navigation items that can be added to the CMS navigation menu
      */
     public List<SelectableNavigationItem> getAvailableMenuItems() {
         return getItemManager().getAvailableItems();
@@ -224,7 +224,7 @@ public class CmsNavigationBean implements Serializable {
     /**
      * Getter for the field <code>itemManager</code>.
      *
-     * @return a {@link io.goobi.viewer.model.cms.CMSNavigationManager} object.
+     * @return the CMSNavigationManager responsible for managing navigation items
      */
     public CMSNavigationManager getItemManager() {
         return itemManager;

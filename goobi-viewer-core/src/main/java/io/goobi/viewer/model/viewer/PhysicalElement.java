@@ -224,7 +224,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      * @param filePath full path or URL to extract the filename from
      * @should cut off everything but the file name for normal file paths
      * @should leave external urls intact
-     * @return a {@link java.lang.String} object.
+     * @return the filename extracted from the given path, or the original URL if it is an external URL
      */
     protected static String determineFileName(String filePath) {
         String ret = filePath;
@@ -328,7 +328,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * getSandboxedUrl.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the sandboxed HTML URL for this page, or the file path if no sandboxed URL is available
      */
     public String getSandboxedUrl() {
         logger.trace(fileNames);
@@ -341,7 +341,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * getWatermarkText.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the watermark text for this page, resolved from configuration and Solr metadata
      */
     public String getWatermarkText() {
         if (watermarkTextConfiguration == null || watermarkTextConfiguration.isEmpty()) {
@@ -409,7 +409,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      *
      * @param width desired thumbnail width in pixels
      * @param height desired thumbnail height in pixels
-     * @return a {@link java.lang.String} object.
+     * @return the thumbnail URL for this page scaled to the given dimensions
      */
     public String getThumbnailUrl(int width, int height) {
         ThumbnailHandler thumbHandler = BeanUtils.getImageDeliveryBean().getThumbs();
@@ -517,7 +517,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * getId.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the physical ID (physId) of this page element
      */
     public String getId() {
         logger.debug("getPhysId");
@@ -598,7 +598,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Getter for the field <code>orderLabel</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the human-readable page order label (e.g. "1", "I", "A") for this page
      */
     public String getOrderLabel() {
         return orderLabel;
@@ -635,7 +635,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      * For images, this returns the full mime-type as image/X, with X being the format which should be used for image display. This is png for
      * png-images and jpeg for all other types.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the MIME type to use for image display ("image/png" for PNG images, "image/jpeg" for all other types)
      */
     public String getDisplayMimeType() {
         String fullMimetype = getFullMimeType(getMimeType(), fileName);
@@ -650,7 +650,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      *
      * @param mimeType partial or full MIME type string
      * @param fileName file name used to determine image format
-     * @return a {@link java.lang.String} object.
+     * @return the fully qualified MIME type string, e.g. "image/jpeg" or "image/png"
      * @should return mimeType if already full mime type
      * @should return mimeType if not image
      * @should return png image mime type from file name
@@ -1045,7 +1045,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      * getWordCoords.
      *
      * @param searchTerms terms whose word coordinates to retrieve
-     * @return a {@link java.util.List} object.
+     * @return a list of word coordinate strings for the given search terms
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public List<String> getWordCoords(Set<String> searchTerms) throws ViewerConfigurationException {
@@ -1058,7 +1058,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      * @param searchTerms terms whose word coordinates to retrieve
      * @param proximitySearchDistance Maximum word distance for proximity search
      * @param rotation image rotation in degrees
-     * @return a {@link java.util.List} object.
+     * @return a list of word coordinate strings for the matched search terms
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @should load XML document if none yet set
      */
@@ -1162,7 +1162,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      * Returns the fileName alone, if {@link io.goobi.viewer.model.viewer.PhysicalElement#getFilepath()} is a local file, or the entire filePath
      * otherwise.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the file name of this page, or the full path if it is an external URL
      */
     public String getFileName() {
         if (StringUtils.isEmpty(fileName)) {
@@ -1174,7 +1174,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * getFileNameBase.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the file name without extension for this page
      */
     public String getFileNameBase() {
         return FilenameUtils.getBaseName(fileName);
@@ -1183,7 +1183,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * getFileNameExtension.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the file extension of this page's filename (without leading dot)
      */
     public String getFileNameExtension() {
         return FilenameUtils.getExtension(fileName);
@@ -1193,7 +1193,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      * getFileNameForFormat.
      *
      * @param format media format key to look up (e.g. "ogg", "mp4")
-     * @return a {@link java.lang.String} object.
+     * @return the file name for the given media format, or the primary file name if no format-specific file is available
      */
     public String getFileNameForFormat(String format) {
         if (fileNames.get(format) != null) {
@@ -1206,7 +1206,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * getImageToPdfUrl.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the PDF download URL for this page image
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getImageToPdfUrl() throws IndexUnreachableException {
@@ -1217,7 +1217,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      * Returns a "RESTful" URL for a media (audio or video) file in the given format.
      *
      * @param format media format key (e.g. "ogg", "mp4", "mp3")
-     * @return a {@link java.lang.String} object.
+     * @return the streaming URL for the media file in the requested format
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getMediaUrl(String format) throws IndexUnreachableException {
@@ -1339,7 +1339,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * getImageUrl.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the thumbnail URL for this page at maximum scale
      */
     public String getImageUrl() {
         return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(this, Scale.MAX);
@@ -1349,7 +1349,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      * getImageUrl.
      *
      * @param size desired image width in pixels
-     * @return a {@link java.lang.String} object.
+     * @return the thumbnail URL for this page scaled to the given width
      */
     public String getImageUrl(int size) {
         Scale scale = new Scale.ScaleToWidth(size);
@@ -1404,7 +1404,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * getPageLinkLabel.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the view type name for this page's primary media type (e.g. "viewImage", "viewVideo", "viewAudio")
      */
     public String getPageLinkLabel() {
         MimeType type = getMediaType();
@@ -1687,7 +1687,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * getComments.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of crowdsourcing comment annotations for this page, sorted by creation date
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<CrowdsourcingAnnotation> getComments() throws DAOException {
@@ -1794,7 +1794,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * getFileSizeAsString.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the file size of this page formatted as a human-readable string
      */
     public String getFileSizeAsString() {
         return FileSizeCalculator.formatSize(this.fileSize);
@@ -1803,7 +1803,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * getImageType.
      *
-     * @return a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
+     * @return the ImageType determined from this element's file name extension
      */
     public ImageType getImageType() {
         ImageType imageType = new ImageType(false);
@@ -1816,7 +1816,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      * extension is returned If the extension is null, {@link io.goobi.viewer.model.viewer.PhysicalElement#getFileName()} is returned.
      *
      * @param extension replacement extension, without leading dot; null returns original filename
-     * @return a {@link java.lang.String} object.
+     * @return the file name with the given extension substituted, or the original file name if extension is null
      */
     public String getFileName(String extension) {
         if (extension == null) {

@@ -82,7 +82,7 @@ public class StructureBuilder extends AbstractBuilder {
      * @param elements All elements to include in the list
      * @param useMembers if true, child canvases are listed as members instead of sub-ranges
      * @param pi persistent identifier of the record
-     * @return a {@link java.util.List} object.
+     * @return a list of IIIF v2 ranges representing the structural hierarchy of the record
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -245,7 +245,7 @@ public class StructureBuilder extends AbstractBuilder {
      * getDescendents.
      *
      * @param range parent range whose entire sub-tree is collected
-     * @return a {@link java.util.List} object.
+     * @return a list of all descendant IIIF v2 ranges in the sub-tree of the given range
      */
     public List<Range2> getDescendents(Range2 range) {
         List<Range2> children = new ArrayList<>();

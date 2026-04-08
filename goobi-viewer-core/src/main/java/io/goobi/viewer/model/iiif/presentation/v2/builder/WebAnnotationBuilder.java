@@ -153,7 +153,7 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
      *
      * @param doc Solr document of type UGC containing the annotation data
      * @param urlOnlyTarget if true, use URI-only annotation targets
-     * @return a {@link de.intranda.api.annotation.wa.WebAnnotation} object.
+     * @return the WebAnnotation created from the given UGC Solr document
      */
     public WebAnnotation createUGCWebAnnotation(SolrDocument doc, boolean urlOnlyTarget) {
         String pi = Optional.ofNullable(doc.getFieldValue(SolrConstants.PI_TOPSTRUCT)).map(SolrTools::getAsString).orElse("");
@@ -166,7 +166,7 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
      * @param pi persistent identifier of the annotated record
      * @param doc Solr document of type UGC containing the annotation data
      * @param urlOnlyTarget if true, use URI-only annotation targets
-     * @return a {@link de.intranda.api.annotation.wa.WebAnnotation} object.
+     * @return the WebAnnotation created from the given UGC Solr document for the specified record
      */
     public WebAnnotation createUGCWebAnnotation(String pi, SolrDocument doc, boolean urlOnlyTarget) {
         String id = Optional.ofNullable(doc.getFieldValue(SolrConstants.MD_ANNOTATION_ID))

@@ -63,7 +63,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
     /**
      * Returns all BookmarkList owned by the current user.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all bookmark lists owned by the current user
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -80,7 +80,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      * Returns the bookmark list with the given id, provided it is owned by the user or it is public or shared to him.
      *
      * @param id database ID of the bookmark list to retrieve
-     * @return a {@link io.goobi.viewer.model.bookmark.BookmarkList} object.
+     * @return the BookmarkList with the given ID if accessible by the current user
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -113,7 +113,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      * @param pi persistent identifier of the record to bookmark
      * @param logId structural element LOGID, or "-" for none
      * @param pageString page order number as string, or null
-     * @return a {@link io.goobi.viewer.api.rest.model.SuccessMessage} object.
+     * @return a SuccessMessage indicating whether the bookmark was successfully added
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -146,7 +146,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      *
      * @param id database ID of the target bookmark list
      * @param pi persistent identifier of the record to bookmark
-     * @return a {@link io.goobi.viewer.api.rest.model.SuccessMessage} object.
+     * @return a SuccessMessage indicating whether the bookmark was successfully added
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -165,7 +165,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      * @param pi persistent identifier of the record to remove
      * @param logId structural element LOGID, or "-" for none
      * @param pageString page order number as string, or null
-     * @return a {@link io.goobi.viewer.api.rest.model.SuccessMessage} object.
+     * @return a SuccessMessage indicating whether the bookmark was successfully removed
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -198,7 +198,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      *
      * @param id database ID of the target bookmark list
      * @param pi persistent identifier of the record to remove
-     * @return a {@link io.goobi.viewer.api.rest.model.SuccessMessage} object.
+     * @return a SuccessMessage indicating whether the bookmark was successfully removed
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -213,7 +213,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      * Adds a new BookmarkList with the given name to the current users bookmark lists.
      *
      * @param name desired name for the new bookmark list
-     * @return a {@link io.goobi.viewer.api.rest.model.SuccessMessage} object.
+     * @return a SuccessMessage indicating whether the new bookmark list was successfully created
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -236,7 +236,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
     /**
      * Adds a new BookmarkList with the given name to the current users bookmark lists.
      *
-     * @return a {@link io.goobi.viewer.api.rest.model.SuccessMessage} object.
+     * @return a SuccessMessage indicating whether the new bookmark list was successfully created
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -251,7 +251,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      * Adds the current session bookmark list to the current user bookmark lists under a newly generated name.
      *
      * @param session the current HTTP session containing the session bookmark list
-     * @return a {@link io.goobi.viewer.api.rest.model.SuccessMessage} object.
+     * @return a SuccessMessage indicating whether the session bookmark list was successfully persisted to the user account
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -266,7 +266,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      *
      * @param name desired name for the persisted bookmark list
      * @param session the current HTTP session containing the session bookmark list
-     * @return a {@link io.goobi.viewer.api.rest.model.SuccessMessage} object.
+     * @return a SuccessMessage indicating whether the session bookmark list was successfully persisted under the given name
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -310,7 +310,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      *
      * @param id database ID of the bookmark list to serialize
      * @param urls API URL manager used to construct absolute resource URLs
-     * @return a {@link java.lang.String} object.
+     * @return the bookmark list serialized as a Mirador-compatible JSON string
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -337,7 +337,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      * @param pi persistent identifier of the record to search for
      * @param logId structural element LOGID, or "-" for none
      * @param pageString page order number as string, or null
-     * @return a {@link java.util.List} object.
+     * @return a list of bookmark lists belonging to the current user that contain the specified item
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -363,7 +363,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      * object with the property "success:false" is returned.
      *
      * @param pi persistent identifier of the record to search for
-     * @return a {@link java.util.List} object.
+     * @return a list of bookmark lists belonging to the current user that contain the record with the given PI
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -377,7 +377,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      * bookmark list exists, 0 is returned.
      *
      * @param id database ID of the bookmark list to count items in
-     * @return a {@link java.lang.Long} object.
+     * @return the number of bookmarks in the user's bookmark list with the given ID
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
@@ -434,7 +434,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      *
      * @param id database ID of the bookmark list to convert
      * @param urls API URL manager used to construct absolute resource URLs
-     * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
+     * @return the IIIF Presentation v2 Collection representing the user's bookmark list with the given ID
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
      */

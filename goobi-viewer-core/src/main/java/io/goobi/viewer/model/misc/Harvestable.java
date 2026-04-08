@@ -31,14 +31,14 @@ public interface Harvestable {
     /**
      * getPi.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the persistent identifier (PI) of this harvestable record
      */
     public String getPi();
 
     /**
      * getDateUpdated.
      *
-     * @return a {@link java.time.LocalDateTime} object.
+     * @return the date and time when this record was last updated
      */
     public LocalDateTime getDateUpdated();
 }

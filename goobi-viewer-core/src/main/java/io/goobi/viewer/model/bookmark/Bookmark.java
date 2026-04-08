@@ -277,7 +277,7 @@ public class Bookmark implements Serializable {
     /**
      * Returns the URL to the representative image thumbnail for the record represented by this item.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the thumbnail URL for the representative image of this bookmarked record at default dimensions
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -294,7 +294,7 @@ public class Bookmark implements Serializable {
      *
      * @param width desired thumbnail width in pixels
      * @param height desired thumbnail height in pixels
-     * @return a {@link java.lang.String} object.
+     * @return the thumbnail URL for the representative image of this bookmarked record scaled to the given dimensions
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -313,7 +313,7 @@ public class Bookmark implements Serializable {
     /**
      * Retrieves the documents title from the Solr index using the stored pi and - if nonempty - the logId.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the title of the bookmarked document as retrieved from the Solr index
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */

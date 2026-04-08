@@ -313,7 +313,7 @@ public class MetadataElement implements Serializable {
     /**
      * Returns a sorted list of all metadata types contained in metadataList.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of distinct metadata types present in the metadata list
      */
     public List<MetadataType> getMetadataTypes() {
         if (metadataTypes == null) {
@@ -338,7 +338,7 @@ public class MetadataElement implements Serializable {
      * Returns the first instance of a Metadata object whose label matches the given field name.
      *
      * @param name Solr field name to look up
-     * @return a {@link io.goobi.viewer.model.metadata.Metadata} object.
+     * @return the first Metadata object whose label matches the given field name, or null if not found
      */
     public Metadata getMetadata(String name) {
         return getMetadata(name, null);
@@ -352,7 +352,7 @@ public class MetadataElement implements Serializable {
      * @param language Optional language
      * @should return correct language metadata field
      * @should fall back to non language field if language field not found
-     * @return a {@link io.goobi.viewer.model.metadata.Metadata} object.
+     * @return the first Metadata object matching the field name and optional language, or null if not found
      */
     public Metadata getMetadata(String name, String language) {
         if (StringUtils.isEmpty(name) || metadataList.isEmpty()) {
@@ -545,7 +545,7 @@ public class MetadataElement implements Serializable {
     /**
      * Getter for the field <code>label</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the display label for this metadata element, or null if not set
      */
     public String getLabel() {
         if (StringUtils.isNotEmpty(label)) {
@@ -575,7 +575,7 @@ public class MetadataElement implements Serializable {
     /**
      * Getter for the field <code>url</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the URL associated with this metadata element
      */
     public String getUrl() {
         return url;
@@ -685,7 +685,7 @@ public class MetadataElement implements Serializable {
      * getFirstMetadataValueIfExists.
      *
      * @param name Solr field name to look up
-     * @return a {@link java.util.Optional} object.
+     * @return an Optional containing the first non-blank metadata value for the field, or empty if not found
      */
     public Optional<String> getFirstMetadataValueIfExists(String name) {
         String value = getFirstMetadataValue(name);
@@ -701,7 +701,7 @@ public class MetadataElement implements Serializable {
      * @param prefix string prepended to the metadata value
      * @param name Solr field name to look up
      * @param suffix string appended to the metadata value
-     * @return a {@link java.lang.String} object.
+     * @return the first metadata value for the given Solr field, wrapped with the given prefix and suffix
      */
     public String getFirstMetadataValue(String prefix, String name, String suffix) {
         String value = getFirstMetadataValue(name);

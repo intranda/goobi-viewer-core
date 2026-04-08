@@ -115,7 +115,7 @@ public class DFGViewerImage extends HttpServlet implements Serializable {
      * parseScale.
      *
      * @param widthString numeric width or scale method name
-     * @return a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object
+     * @return the Scale instance parsed from the given width or method name
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotImplementedException if any.
      */

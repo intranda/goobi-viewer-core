@@ -91,7 +91,7 @@ public class CMSPageTemplate implements Serializable {
      * Loads a page template from the given template file and returns the template object.
      *
      * @param file path to the XML template file to load
-     * @return a {@link io.goobi.viewer.model.cms.legacy.CMSPageTemplate} object.
+     * @return the loaded CMSPageTemplate, or null if the file could not be read or parsed
      * @throws java.lang.IllegalArgumentException if file is null
      * @should load template correctly
      * @should throw IllegalArgumentException if file is null
@@ -374,7 +374,7 @@ public class CMSPageTemplate implements Serializable {
      * getContentItem.
      *
      * @param itemId identifier of the content item to retrieve
-     * @return a {@link io.goobi.viewer.model.cms.legacy.CMSContentItemTemplate} object.
+     * @return the content item template with the given ID, or null if not found
      */
     public CMSContentItemTemplate getContentItem(String itemId) {
         for (CMSContentItemTemplate item : contentItems) {

@@ -189,7 +189,7 @@ public class AdminBean implements Serializable {
     /**
      * Returns all users in the DB. Needed for getting a list of users (e.g for adding user group members).
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all registered users sorted by display name
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<User> getAllUsers() throws DAOException {
@@ -203,7 +203,7 @@ public class AdminBean implements Serializable {
      *
      * @param usersToExclude set of users to omit from the result
      * @should return all users except given
-     * @return a {@link java.util.List} object.
+     * @return a list of all registered users excluding the specified users
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<User> getAllUsersExcept(Set<User> usersToExclude) throws DAOException {
@@ -221,7 +221,7 @@ public class AdminBean implements Serializable {
      * @param user user to save
      * @param forceCheckCurrentPassword If true, even if an admin is changing their own password
      * @param returnPage navigation outcome returned on success
-     * @return a {@link java.lang.String} object
+     * @return the navigation outcome for the return page on success, or empty string on failure
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String saveUserAction(User user, boolean forceCheckCurrentPassword, String returnPage) throws DAOException {
@@ -236,7 +236,7 @@ public class AdminBean implements Serializable {
      *
      * @param user user whose fields are restored from backup
      * @param returnPage navigation outcome to return after reset
-     * @return a {@link java.lang.String} object
+     * @return the navigation outcome for the return page
      */
     public String resetUserAction(User user, String returnPage) {
         user.backupFields();
@@ -248,7 +248,7 @@ public class AdminBean implements Serializable {
      *
      * @param user User to save
      * @param forceCheckCurrentPassword If true, even if an admin is changing their own password
-     * @return a {@link java.lang.String} object.
+     * @return true if the user was saved successfully, false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean saveUser(User user, boolean forceCheckCurrentPassword) throws DAOException {
@@ -401,7 +401,7 @@ public class AdminBean implements Serializable {
     /**
      * Returns all user groups in the DB. Needed for getting a list of users (e.g for adding user group members).
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all user groups in the database
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<UserGroup> getAllUserGroups() throws DAOException {
@@ -470,7 +470,7 @@ public class AdminBean implements Serializable {
     /**
      * Returns a list of all existing roles. Required for admin tab components.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all role definitions in the database
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<Role> getAllRoles() throws DAOException {
@@ -788,7 +788,7 @@ public class AdminBean implements Serializable {
     /**
      * Getter for the field <code>currentUserGroup</code>.
      *
-     * @return a {@link io.goobi.viewer.model.security.user.UserGroup} object.
+     * @return the user group currently selected for editing
      */
     public UserGroup getCurrentUserGroup() {
         return this.currentUserGroup;
@@ -926,7 +926,7 @@ public class AdminBean implements Serializable {
     /**
      * getPageUsers.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of users for the current page in the paginated user list
      */
     public List<User> getPageUsers() {
         return lazyModelUsers.getPaginatorList();
@@ -1062,7 +1062,7 @@ public class AdminBean implements Serializable {
      * @param pi persistent identifier of the record to update
      * @param dataRepository data repository path containing the METS file
      * @param fileIdRoot file ID prefix of the image to mark as representative
-     * @return a {@link java.lang.String} object.
+     * @return an empty string after setting the representative image in the METS file
      */
     public String setRepresantativeImageAction(String pi, String dataRepository, String fileIdRoot) {
         setRepresantativeImageStatic(pi, dataRepository, fileIdRoot);
@@ -1143,7 +1143,7 @@ public class AdminBean implements Serializable {
      * toggleSuspendUserAction.
      *
      * @param user user whose suspended status to toggle
-     * @return a {@link java.lang.String} object.
+     * @return an empty string after toggling the user's suspended status
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String toggleSuspendUserAction(User user) throws DAOException {

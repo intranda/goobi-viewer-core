@@ -139,7 +139,7 @@ public class PageList implements Iterable<String> {
      * getPage.
      *
      * @param index zero-based position in the page list.
-     * @return a {@link java.lang.String} object.
+     * @return the page URL at the given index, or an empty string if the index is out of range
      */
     public String getPage(int index) {
         if (pages.size() > index) {
@@ -165,7 +165,7 @@ public class PageList implements Iterable<String> {
      * getSearch.
      *
      * @param pageIndex zero-based position of the desired page in the list.
-     * @return a {@link io.goobi.viewer.model.search.SearchInterface} object.
+     * @return the SearchInterface for the given page, or null if not available
      * @throws java.lang.NumberFormatException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -233,7 +233,7 @@ public class PageList implements Iterable<String> {
      * getPage.
      *
      * @param idString numeric CMS page ID as string.
-     * @return a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
+     * @return the CMS page with the given ID
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public CMSPage getPage(String idString) throws DAOException {

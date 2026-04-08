@@ -37,7 +37,7 @@ public class TestObject {
     /**
      * getRequest.
      *
-     * @return a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @return the injected HTTP servlet request
      */
     public HttpServletRequest getRequest() {
         return servletRequest;

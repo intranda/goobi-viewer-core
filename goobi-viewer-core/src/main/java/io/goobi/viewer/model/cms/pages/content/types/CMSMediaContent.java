@@ -212,7 +212,7 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder, Compa
     /**
      * getMediaName.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the name of the associated media item in the current language, or an empty string if no media is set
      */
     public String getMediaName() {
         CMSMediaItemMetadata metadata = getMediaMetadata();
@@ -222,7 +222,7 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder, Compa
     /**
      * getMediaDescription.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the description of the associated media item in the current language, or an empty string if no media is set
      */
     public String getMediaDescription() {
         CMSMediaItemMetadata metadata = getMediaMetadata();

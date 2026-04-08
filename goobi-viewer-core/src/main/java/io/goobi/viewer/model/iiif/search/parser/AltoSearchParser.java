@@ -48,7 +48,7 @@ public class AltoSearchParser extends AbstractSearchParser {
      *
      * @param words candidate words to match against
      * @param regex regular expression to test each word's content
-     * @return a {@link java.util.List} object.
+     * @return a list of matched word groups, where each group is a consecutive sequence of matching ALTO words
      */
     public List<List<Word>> findWordMatches(List<Word> words, String regex) {
         ListIterator<Word> iterator = words.listIterator();
@@ -77,7 +77,7 @@ public class AltoSearchParser extends AbstractSearchParser {
      *
      * @param lines ALTO lines to search through
      * @param regex regular expression applied to concatenated line text
-     * @return a {@link java.util.Map} object.
+     * @return a map of character-index ranges to the ALTO lines containing the match
      */
     public Map<Range<Integer>, List<Line>> findLineMatches(List<Line> lines, String regex) {
         String text = getText(lines);
@@ -98,7 +98,7 @@ public class AltoSearchParser extends AbstractSearchParser {
      * getText.
      *
      * @param lines ALTO lines whose content to concatenate
-     * @return a {@link java.lang.String} object.
+     * @return the concatenated text content of the given ALTO lines, joined by spaces
      */
     public String getText(List<Line> lines) {
         return lines.stream().map(Line::getContent).collect(Collectors.joining(" "));
@@ -108,7 +108,7 @@ public class AltoSearchParser extends AbstractSearchParser {
      * getLines.
      *
      * @param doc ALTO document to extract lines from
-     * @return a {@link java.util.List} object.
+     * @return a list of all ALTO text lines contained in the given document
      */
     public List<Line> getLines(AltoDocument doc) {
         return doc.getAllPagesAsList().stream().flatMap(p -> p.getAllLinesAsList().stream()).toList();
@@ -118,7 +118,7 @@ public class AltoSearchParser extends AbstractSearchParser {
      * getWords.
      *
      * @param doc ALTO document to extract words from
-     * @return a {@link java.util.List} object.
+     * @return a list of all ALTO word elements contained in the given document
      */
     public List<Word> getWords(AltoDocument doc) {
         return doc.getAllPagesAsList()
@@ -133,7 +133,7 @@ public class AltoSearchParser extends AbstractSearchParser {
      * @param allLines all ALTO lines with their content
      * @param indexStart start character index of the match
      * @param indexEnd end character index of the match
-     * @return a {@link java.util.List} object.
+     * @return a list of ALTO lines whose character range overlaps with the given match positions
      */
     public List<Line> getContainingLines(List<Line> allLines, int indexStart, int indexEnd) {
         List<Line> containingLines = new ArrayList<>();
@@ -191,7 +191,7 @@ public class AltoSearchParser extends AbstractSearchParser {
      *
      * @param w word whose preceding siblings to collect
      * @param maxLength maximum character count of returned text
-     * @return a {@link java.lang.String} object.
+     * @return the text content of sibling words preceding the given word, up to maxLength characters
      */
     public String getPrecedingText(Word w, int maxLength) {
 
@@ -214,7 +214,7 @@ public class AltoSearchParser extends AbstractSearchParser {
      *
      * @param w word whose following siblings to collect
      * @param maxLength maximum character count of returned text
-     * @return a {@link java.lang.String} object.
+     * @return the text content of sibling words following the given word, up to maxLength characters
      */
     public String getSucceedingText(Word w, int maxLength) {
 

@@ -249,7 +249,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
      * Returns a Solr query that would retrieve the Solr documents representing the items listed on this bookshelf.
      *
      * @should return correct query
-     * @return a {@link java.lang.String} object.
+     * @return the Solr query string matching all records in this bookmark list
      */
     public String generateSolrQueryForItems() {
         StringBuilder sb = new StringBuilder();
@@ -572,7 +572,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * getOwnerName.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the display name of the owner of this bookmark list, or null if no owner is set
      */
     // Computed field — read-only in OpenAPI schema so clients do not send it in request bodies
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
@@ -588,7 +588,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
      *
      * @param applicationRoot a {@link java.lang.String} object.
      * @param restApiUrl base URL of the REST API for manifest links
-     * @return a {@link java.lang.String} object.
+     * @return the Mirador viewer JSON configuration object for this bookmark list
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -664,7 +664,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
      * getFilterQuery.
      *
      * @should construct query correctly
-     * @return a {@link java.lang.String} object.
+     * @return the Solr filter query string matching all PI values in this bookmark list
      */
     // Computed field — read-only in OpenAPI schema so clients do not send it in request bodies
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
@@ -685,7 +685,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * getIIIFCollectionURI.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the IIIF Collection URI for this shared bookmark list, or null if the list has no share key
      */
     // Computed field — read-only in OpenAPI schema so clients do not send it in request bodies
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)

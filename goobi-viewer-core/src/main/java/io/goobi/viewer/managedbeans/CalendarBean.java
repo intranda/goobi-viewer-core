@@ -486,7 +486,7 @@ public class CalendarBean implements Serializable {
     /**
      * Getter for the field <code>monthRow</code>.
      *
-     * @return a {@link io.goobi.viewer.model.calendar.CalendarRow} object.
+     * @return the calendar row containing the month items
      */
     public CalendarRow getMonthRow() {
         return monthRow;
@@ -504,7 +504,7 @@ public class CalendarBean implements Serializable {
     /**
      * Getter for the field <code>currentMonth</code>.
      *
-     * @return a {@link io.goobi.viewer.model.calendar.CalendarItemMonth} object.
+     * @return the currently selected calendar month item
      */
     public CalendarItemMonth getCurrentMonth() {
         return currentMonth;
@@ -533,7 +533,7 @@ public class CalendarBean implements Serializable {
     /**
      * Getter for the field <code>currentDay</code>.
      *
-     * @return a {@link io.goobi.viewer.model.calendar.CalendarItemDay} object.
+     * @return the currently selected calendar day item
      */
     public CalendarItemDay getCurrentDay() {
         return currentDay;
@@ -555,7 +555,7 @@ public class CalendarBean implements Serializable {
     /**
      * getCurrentDate.
      *
-     * @return a {@link java.time.LocalDateTime} object.
+     * @return the current date/time with the selected year, month, and day applied
      */
     public LocalDateTime getCurrentDate() {
         LocalDateTime ldt = LocalDateTime.now();
@@ -601,7 +601,7 @@ public class CalendarBean implements Serializable {
      * Generates the search string for the time line based search tab. The search string will be handed over to the search bean to execute
      * the search.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the navigation outcome after executing the timeline search
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -683,7 +683,7 @@ public class CalendarBean implements Serializable {
      *
      * <p>The method searches for the facet of the field 'CENTURY'. If the count of a facet is greater than 0, the century is active.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of CalendarItemCentury objects for each century that has at least one indexed record
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -808,7 +808,7 @@ public class CalendarBean implements Serializable {
      * @param selectYear four-digit year string to populate data for
      * @param collection Solr collection filter value, or null for all
      * @param filterQuery additional Solr filter query to restrict results
-     * @return a {@link java.util.List} object.
+     * @return a list of CalendarItemMonth objects with day-level hit data populated for the given year
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -1114,7 +1114,7 @@ public class CalendarBean implements Serializable {
      *
      * @param month a {@link io.goobi.viewer.model.calendar.CalendarItemMonth} object.
      * @param day a {@link io.goobi.viewer.model.calendar.CalendarItemDay} object.
-     * @return a {@link java.lang.String} object.
+     * @return the navigation outcome after executing the calendar search for the given month and day
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1131,7 +1131,7 @@ public class CalendarBean implements Serializable {
      * Generates the search string for the calendar search tab. The search string will be handed over to the search bean to execute the
      * search.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the navigation outcome after executing the calendar search
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1230,7 +1230,7 @@ public class CalendarBean implements Serializable {
     /**
      * getActualYear.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the currently selected year string, or null if no year has been selected
      */
     public String getActualYear() {
         String year = "";
@@ -1246,7 +1246,7 @@ public class CalendarBean implements Serializable {
     /**
      * Generates the search string for incomplete data. The search string will be handed over to the search bean to execute the search.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the navigation outcome after executing the search for records with incomplete calendar data
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.

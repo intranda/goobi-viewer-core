@@ -154,8 +154,8 @@ public class HighlightsBean implements Serializable {
 
     /**
      * Get a {@link TableDataProvider} to all saved {@link Highlight highlights}.
-     * 
-     * @return a {@link TableDataProvider}
+     *
+     * @return the TableDataProvider for all saved highlights
      */
     public TableDataProvider<Highlight> getAllObjectsProvider() {
         return allObjectsProvider;
@@ -164,8 +164,8 @@ public class HighlightsBean implements Serializable {
     /**
      * Get a {@link TableDataProvider} to all current {@link Highlight highlights}. That is all highlights which are valid for the current date and
      * set to active
-     * 
-     * @return a {@link TableDataProvider}
+     *
+     * @return the TableDataProvider for all currently active highlights
      */
     public TableDataProvider<Highlight> getCurrentObjectsProvider() {
         return currentObjectsProvider;
@@ -217,8 +217,8 @@ public class HighlightsBean implements Serializable {
 
     /**
      * Get the currently selected {@link Highlight}.
-     * 
-     * @return a {@link Highlight}
+     *
+     * @return the currently selected highlight, or null if none is selected
      */
     public Highlight getSelectedObject() {
         return selectedObject;
@@ -328,8 +328,8 @@ public class HighlightsBean implements Serializable {
 
     /**
      * Get the currently displayed highlight. This highlight is randomly chosen from all highlights valid for the current day which are set to enabled
-     * 
-     * @return a {@link Highlight}
+     *
+     * @return a randomly selected currently active highlight, or null if none are active
      * @throws DAOException
      */
     public Highlight getCurrentHighlight() throws DAOException {
@@ -391,8 +391,8 @@ public class HighlightsBean implements Serializable {
 
     /**
      * Get the current {@link EditStatus}.
-     * 
-     * @return a {@link EditStatus}
+     *
+     * @return the current edit status of the highlight editor
      */
     public EditStatus getEditStatus() {
         return editStatus;

@@ -57,7 +57,7 @@ public class SolrSearchParser extends AbstractSearchParser {
      *
      * @param pi persistent identifier of the record
      * @param pageNo physical page order number to look up
-     * @return a {@link java.awt.Dimension} object.
+     * @return the width and height of the page image in pixels, or null if not found
      */
     public Dimension getPageSize(String pi, Integer pageNo) {
         if (!pageSizes.containsKey(pageNo)) {

@@ -222,7 +222,7 @@ public class CrowdsourcingBean implements Serializable {
      * Filter the loaded campaigns by {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility}.
      *
      * @param visibility visibility level to filter by, or null to clear the filter
-     * @return a {@link java.lang.String} object.
+     * @return an empty string after applying the visibility filter to the campaign list
      */
     public String filterCampaignsAction(CampaignVisibility visibility) {
         lazyModelCampaigns.resetFilters();
@@ -247,7 +247,7 @@ public class CrowdsourcingBean implements Serializable {
      * Sets a new {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} as the {@link #selectedCampaign} and returns a pretty url to the view
      * for creating a new campaign.
      *
-     * @return a {@link java.lang.String} object.
+     * @return an empty string after initializing a new empty campaign for creation
      */
     public String createNewCampaignAction() {
         selectedCampaign = new Campaign(ViewerResourceBundle.getDefaultLocale());
@@ -259,7 +259,7 @@ public class CrowdsourcingBean implements Serializable {
      * view for editing this campaign.
      *
      * @param campaign campaign to open for editing
-     * @return a {@link java.lang.String} object.
+     * @return the pretty URL name for the campaign edit view
      */
     public String editCampaignAction(Campaign campaign) {
         selectedCampaign = campaign;
@@ -270,7 +270,7 @@ public class CrowdsourcingBean implements Serializable {
      * Deletes the given {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} from the database and the loaded list of campaigns.
      *
      * @param campaign campaign to delete from the database
-     * @return a {@link java.lang.String} object.
+     * @return an empty string after deleting the campaign from the database
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String deleteCampaignAction(Campaign campaign) throws DAOException {
@@ -285,7 +285,7 @@ public class CrowdsourcingBean implements Serializable {
     /**
      * Adds a new {@link io.goobi.viewer.model.crowdsourcing.questions.Question} to the selected campaign.
      *
-     * @return a {@link java.lang.String} object.
+     * @return an empty string after adding the new question to the selected campaign
      */
     public String addNewQuestionAction() {
         if (selectedCampaign != null) {
@@ -299,7 +299,7 @@ public class CrowdsourcingBean implements Serializable {
      * Removes the given {@link io.goobi.viewer.model.crowdsourcing.questions.Question} from the selected campaign.
      *
      * @param question question to remove from the selected campaign
-     * @return a {@link java.lang.String} object.
+     * @return an empty string after removing the question from the selected campaign
      */
     public String removeQuestionAction(Question question) {
         if (selectedCampaign != null && question != null) {
@@ -312,7 +312,7 @@ public class CrowdsourcingBean implements Serializable {
     /**
      * Resets dateStart + dateEnd to null.
      *
-     * @return a {@link java.lang.String} object.
+     * @return an empty string after clearing the campaign start and end dates
      */
     public String resetDurationAction() {
         if (selectedCampaign != null) {
@@ -948,7 +948,7 @@ public class CrowdsourcingBean implements Serializable {
     /**
      * getPossibleReviewModes.
      *
-     * @return a {@link java.util.Set} object
+     * @return the set of all available review mode values
      */
     public Set<ReviewMode> getPossibleReviewModes() {
         return EnumSet.allOf(ReviewMode.class);

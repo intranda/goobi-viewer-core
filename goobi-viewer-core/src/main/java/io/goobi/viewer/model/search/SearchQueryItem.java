@@ -126,7 +126,7 @@ public class SearchQueryItem implements Serializable {
     /**
      * getAvailableOperators.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of search item operators available for this query item (AND, OR, NOT)
      */
     public List<SearchItemOperator> getAvailableOperators() {
         return Arrays.asList(SearchItemOperator.AND, SearchItemOperator.OR, SearchItemOperator.NOT);
@@ -136,7 +136,7 @@ public class SearchQueryItem implements Serializable {
      * getSelectItems.
      *
      * @param language locale language code for label translation.
-     * @return a {@link java.util.List} object.
+     * @return a list of label-value pairs for the select dropdown of this query item's field
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -563,7 +563,7 @@ public class SearchQueryItem implements Serializable {
      * @param searchTerms set collecting all search terms encountered during query building.
      * @param aggregateHits if true, SUPER fields are included for aggregated hit results.
      * @param allowFuzzySearch If true, search terms will be augmented by fuzzy search tokens
-     * @return a {@link java.lang.String} object.
+     * @return the Solr query string generated from this advanced search query item
      * @should generate query correctly
      * @should escape reserved characters
      * @should always use OR operator if searching in all fields

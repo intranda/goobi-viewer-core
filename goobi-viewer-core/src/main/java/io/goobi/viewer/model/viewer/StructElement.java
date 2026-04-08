@@ -434,7 +434,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @should return self if topstruct
      * @should return self if anchor
      * @should return self if group
-     * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @return the top-level StructElement for this record, or null if it cannot be resolved
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -583,7 +583,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      *
      * @param locale locale used for translated metadata values
      * @param forSearchHit If true, only search hit metadata will be populated in the event; if false main and sidebar metadata
-     * @return a {@link java.util.List} object.
+     * @return a list of event elements linked to this struct element
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public List<EventElement> generateEventElements(Locale locale, boolean forSearchHit) throws IndexUnreachableException {
@@ -630,7 +630,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * getCollection.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the first collection (DC field) this struct element belongs to
      */
     public String getCollection() {
         return this.getMetadataValue(SolrConstants.DC);
@@ -639,7 +639,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * getCollections.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of collection names (DC field values) this struct element belongs to
      */
     public List<String> getCollections() {
         return this.getMetadataValues(SolrConstants.DC);
@@ -769,7 +769,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * Returns a stub representation of this object that only contains simple members to conserve memory.
      *
-     * @return a {@link io.goobi.viewer.model.viewer.StructElementStub} object.
+     * @return the lightweight StructElementStub representation of this element
      * @should create stub correctly
      */
     public StructElementStub createStub() {
@@ -811,7 +811,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * getMultiLanguageDisplayLabel.
      *
-     * @return a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
+     * @return the multilingual display label derived from the TITLE or LABEL metadata fields
      */
     public IMetadataValue getMultiLanguageDisplayLabel() {
         IMetadataValue label = getMultiLanguageMetadataValue(SolrConstants.TITLE);
@@ -828,7 +828,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * Returns the group field name of a group document.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the GROUPTYPE metadata value identifying the group field of this document
      */
     public String getGroupIdField() {
         return getMetadataValue(SolrConstants.GROUPTYPE);
@@ -841,7 +841,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @should return null if StructElement not anchor
      * @should throw IllegalArgumentException if field is null
      * @param field Solr field name to retrieve the value of
-     * @return a {@link java.lang.String} object.
+     * @return the value of the given Solr field from the first child volume of this anchor element
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -889,7 +889,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @should return null if StructElement not anchor
      * @should throw IllegalArgumentException if field is null
      * @param fields Solr field names to include in the child document query
-     * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @return the first child volume StructElement for an anchor, or null if none is found
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -942,7 +942,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * getFirstPageFieldValue.
      *
      * @param field Solr field name to retrieve the value of
-     * @return a {@link java.lang.String} object.
+     * @return the value of the given Solr field from the first physical page of this record
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */

@@ -68,7 +68,7 @@ public abstract class AbstractCalendarItem implements ICalendarItem {
     /**
      * Returns a two-digit string representation of this item's value.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the value of this calendar item formatted as a zero-padded two-digit string
      */
     public String getFormattedValue() {
         return (dfTwoDigitInteger.format(value));

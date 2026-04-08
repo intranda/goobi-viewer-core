@@ -964,7 +964,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * Generates HTML fragment for this search hit for notification mails.
      *
      * @param count sequential position of this hit in the notification list
-     * @return a {@link java.lang.String} object.
+     * @return the HTML table row fragment for this search hit in a notification email
      * @should generate fragment correctly
      */
     public String generateNotificationFragment(int count) {

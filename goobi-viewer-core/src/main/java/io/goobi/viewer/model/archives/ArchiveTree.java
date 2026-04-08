@@ -141,7 +141,7 @@ public class ArchiveTree implements Serializable {
      * getViewForGroup.
      *
      * @param group entry map group key to retrieve the flat view for
-     * @return a {@link java.util.List} object.
+     * @return a list of archive entries for the given group, or null if none found
      */
     public List<ArchiveEntry> getViewForGroup(String group) {
         if (entryMap != null) {
@@ -157,7 +157,7 @@ public class ArchiveTree implements Serializable {
      *
      * @param group entry map group key to build the tree view for
      * @should call buildTree and set maxTocDepth correctly
-     * @return a {@link java.util.List} object.
+     * @return a list of archive entries for the given group with tree nesting applied
      */
     public List<ArchiveEntry> getTreeViewForGroup(String group) {
         logger.trace("getTreeViewForGroup: {}", group);
@@ -170,7 +170,7 @@ public class ArchiveTree implements Serializable {
     /**
      * getFlatView.
      *
-     * @return a {@link java.util.List} object.
+     * @return a flat list of all archive entries in the default group
      */
     public List<ArchiveEntry> getFlatView() {
         logger.trace("getFlatView"); //NOSONAR Debug
@@ -180,7 +180,7 @@ public class ArchiveTree implements Serializable {
     /**
      * getTreeView.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of archive entries for the default group with tree nesting applied
      */
     public List<ArchiveEntry> getTreeView() {
         logger.trace("getTreeView");
@@ -392,7 +392,7 @@ public class ArchiveTree implements Serializable {
     /**
      * getTocElements.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all archive entries in the default group
      */
     public List<ArchiveEntry> getTocElements() {
         if (entryMap != null) {

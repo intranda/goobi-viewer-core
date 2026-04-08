@@ -108,7 +108,7 @@ public class Translation {
      * @param tag category label to match against translation entries
      * @param lang ISO language code of the desired translation
      * @param translations list of translations to search in
-     * @return a {@link java.lang.String} object.
+     * @return the translation value for the given language and tag, or null if not found
      */
     public static String getTranslation(List<? extends Translation> translations, String lang, String tag) {
         return getTranslation(translations, lang, tag, false);
@@ -121,7 +121,7 @@ public class Translation {
      * @param lang ISO language code of the desired translation
      * @param useFallback if no translation for lang exists, use the application default language
      * @param translations list of translations to search in
-     * @return a {@link java.lang.String} object.
+     * @return the translation value for the given language and tag, falling back to default language if requested and necessary
      */
     public static String getTranslation(List<? extends Translation> translations, String lang, String tag, boolean useFallback) {
         if (tag == null || lang == null) {

@@ -65,7 +65,7 @@ public class TranslationResource {
      * getTranslations.
      *
      * @param inKeys comma-separated list of message keys to translate
-     * @return a {@link io.goobi.viewer.api.rest.v1.localization.TranslationResource.TranslationList} object.
+     * @return a TranslationList containing translations for the requested message keys in all configured languages
      * @throws IllegalRequestException
      */
     @GET

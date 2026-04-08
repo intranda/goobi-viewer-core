@@ -183,7 +183,7 @@ public class RecordResource {
     /**
      * getRISAsText.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the RIS citation for the record as plain text
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
@@ -599,7 +599,7 @@ public class RecordResource {
      * @param date date filter (not supported; passed to 'ignored' property)
      * @param user user filter (not supported; passed to 'ignored' property)
      * @param page result page number; defaults to 1 if absent
-     * @return a {@link de.intranda.api.iiif.search.AutoSuggestResult} object.
+     * @return the IIIF AutoSuggest result containing auto-completion candidates for the given query
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */

@@ -153,7 +153,7 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
     /**
      * getTileGridUrl.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the URL for the IIIF tile grid view of the selected CMS media images
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException if any.
      */
     public String getTileGridUrl() throws IllegalRequestException {

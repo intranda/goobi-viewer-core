@@ -112,7 +112,7 @@ public class FeedbackBean implements Serializable {
      * submitFeedbackAction.
      *
      * @param setCurrentUrl if true, uses the current URL as feedback URL; otherwise uses the referrer
-     * @return a {@link java.lang.String} object.
+     * @return an empty string after attempting to submit the feedback form
      */
     public String submitFeedbackAction(boolean setCurrentUrl) {
         // Check whether the security question has been answered correct, if configured

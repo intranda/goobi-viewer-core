@@ -37,7 +37,7 @@ public interface CMSMediaMultiHolder extends CMSMediaHolder {
      * getMediaItem.
      *
      * @param index Index of the media item
-     * @return a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
+     * @return the CMS media item at the given index, or null if none is set
      */
     public CMSMediaItem getMediaItem(int index);
 
@@ -45,7 +45,7 @@ public interface CMSMediaMultiHolder extends CMSMediaHolder {
      * A regular expression determining which filenames are shown in the media list and may be uploaded.
      *
      * @param index Index of the media item
-     * @return a {@link java.lang.String} object.
+     * @return the regex pattern used to filter acceptable media filenames for the item at the given index
      */
     public String getMediaFilter(int index);
 
@@ -69,7 +69,7 @@ public interface CMSMediaMultiHolder extends CMSMediaHolder {
      * getMediaItemWrapper.
      *
      * @param index Index of the media item
-     * @return a {@link io.goobi.viewer.model.cms.CategorizableTranslatedSelectable} object.
+     * @return the CMS media item at the given index wrapped with category and selection state information
      */
     public CategorizableTranslatedSelectable<CMSMediaItem> getMediaItemWrapper(int index);
 }

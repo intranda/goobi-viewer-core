@@ -291,7 +291,7 @@ public class IIIFPresentation2ResourceBuilder {
     /**
      * Getter for the field <code>manifestBuilder</code>.
      *
-     * @return a {@link io.goobi.viewer.model.iiif.presentation.v2.builder.ManifestBuilder} object.
+     * @return the ManifestBuilder used to construct IIIF manifests
      */
     public ManifestBuilder getManifestBuilder() {
         if (this.manifestBuilder == null) {
@@ -303,7 +303,7 @@ public class IIIFPresentation2ResourceBuilder {
     /**
      * Getter for the field <code>sequenceBuilder</code>.
      *
-     * @return a {@link io.goobi.viewer.model.iiif.presentation.v2.builder.SequenceBuilder} object.
+     * @return the SequenceBuilder used to construct IIIF sequences of canvases
      */
     public SequenceBuilder getSequenceBuilder() {
         if (this.sequenceBuilder == null) {
@@ -315,7 +315,7 @@ public class IIIFPresentation2ResourceBuilder {
     /**
      * Getter for the field <code>layerBuilder</code>.
      *
-     * @return a {@link io.goobi.viewer.model.iiif.presentation.v2.builder.LayerBuilder} object.
+     * @return the LayerBuilder used to construct IIIF annotation layers
      */
     public LayerBuilder getLayerBuilder() {
         if (this.layerBuilder == null) {
@@ -331,7 +331,7 @@ public class IIIFPresentation2ResourceBuilder {
      *
      * @param collectionField Solr field name that holds the collection values
      * @param ignore list of collection names to exclude from the result
-     * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
+     * @return the IIIF Presentation v2 Collection containing all top-level collections for the given Solr field
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws java.net.URISyntaxException if any.
@@ -351,7 +351,7 @@ public class IIIFPresentation2ResourceBuilder {
      * @param collectionField Solr field name that holds the collection values
      * @param ignore list of collection names to exclude from the result
      * @param groupingField Solr field used to group collections within the response
-     * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
+     * @return the IIIF Presentation v2 Collection containing all top-level collections grouped by the given Solr field
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws java.net.URISyntaxException if any.
@@ -377,7 +377,7 @@ public class IIIFPresentation2ResourceBuilder {
      * @param collectionField Solr field name that holds the collection values
      * @param topElement name of the root collection to use as the response root
      * @param ignore list of collection names to exclude from the result
-     * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
+     * @return the IIIF Presentation v2 Collection rooted at the given top-level collection element
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -478,7 +478,7 @@ public class IIIFPresentation2ResourceBuilder {
      * @param topElement name of the root collection to use as the response root
      * @param facetField Solr field used for grouping/faceting within the collection
      * @param ignore list of collection names to exclude from the result
-     * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
+     * @return the IIIF Presentation v2 Collection rooted at the given top-level element, with sub-collections grouped by the facet field
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.

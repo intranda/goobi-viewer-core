@@ -47,7 +47,7 @@ public class ContentAssistResourceBuilder {
      *
      * @param solrField Solr facet field to query for collection values
      * @param inputString partial input to filter suggestions, or "-" for all
-     * @return a {@link java.util.List} object.
+     * @return a list of collection name strings matching the given input, filtered to exclude already configured CMS collections
      * @throws IllegalRequestException if the solrField doesn't exist in the index
      * @throws IndexUnreachableException If an error occurred communicating with the SOLR index
      */

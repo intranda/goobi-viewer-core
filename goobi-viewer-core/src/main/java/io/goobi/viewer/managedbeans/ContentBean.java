@@ -219,7 +219,7 @@ public class ContentBean implements Serializable {
      * getCurrentUGCCoords.
      *
      * @param page physical page whose UGC coordinates are retrieved
-     * @return a {@link java.util.List} object.
+     * @return a list of coordinate string lists, one entry per user-generated content area on the given page
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws DAOException

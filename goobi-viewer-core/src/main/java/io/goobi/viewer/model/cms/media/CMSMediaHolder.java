@@ -42,14 +42,14 @@ public interface CMSMediaHolder {
     /**
      * getMediaItem.
      *
-     * @return a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
+     * @return the associated CMS media item, or null if none is set
      */
     public CMSMediaItem getMediaItem();
 
     /**
      * A regular expression determining which filenames are shown in the media list and may be uploaded.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the regex pattern used to filter acceptable media filenames for this holder
      */
     public String getMediaFilter();
 
@@ -70,7 +70,7 @@ public interface CMSMediaHolder {
     /**
      * getMediaItemWrapper.
      *
-     * @return a {@link io.goobi.viewer.model.cms.CategorizableTranslatedSelectable} object.
+     * @return the CMS media item wrapped with category and selection state information
      */
     public CategorizableTranslatedSelectable<CMSMediaItem> getMediaItemWrapper();
 }

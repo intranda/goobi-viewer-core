@@ -81,7 +81,7 @@ public class DcSortingList {
     /**
      * Getter for the field <code>sortAfter</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the collection name after which this sorting list should be positioned
      */
     public String getSortAfter() {
         return sortAfter;
@@ -90,7 +90,7 @@ public class DcSortingList {
     /**
      * Getter for the field <code>collections</code>.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of collection names managed by this sorting list
      */
     public List<String> getCollections() {
         return collections;

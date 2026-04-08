@@ -145,7 +145,7 @@ public class MetadataValue implements Serializable {
      * @should not add empty suffix
      * @should add separator between values if no prefix used
      * @should use master value fragment correctly
-     * @return a {@link java.lang.String} object.
+     * @return the formatted combined metadata value for the given parameter index
      */
     public String getComboValueShort(int index) {
         if (paramValues.size() <= index || paramValues.get(index) == null || paramValues.get(index).isEmpty()) {
@@ -291,7 +291,7 @@ public class MetadataValue implements Serializable {
     /**
      * getNormDataUrlKeys.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of norm data URL keys stored in this metadata value
      */
     public List<String> getNormDataUrlKeys() {
         if (!normDataUrls.isEmpty()) {
@@ -369,7 +369,7 @@ public class MetadataValue implements Serializable {
      * getParamValue.
      *
      * @param paramLabel label key identifying the parameter
-     * @return a {@link java.lang.String} object.
+     * @return the first value for the parameter identified by the given label, or an empty string if not found
      */
     public String getParamValue(String paramLabel) {
         List<String> values = getParamValues(paramLabel);

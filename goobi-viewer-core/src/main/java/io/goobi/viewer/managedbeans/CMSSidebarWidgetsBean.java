@@ -87,7 +87,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
     /**
      * getAllWidgets.
      *
-     * @return a {@link java.util.List} object
+     * @return the list of all sidebar widget display elements (default, automatic, and custom)
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<WidgetDisplayElement> getAllWidgets() throws DAOException {
@@ -98,7 +98,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
      * getAllWidgets.
      *
      * @param queryAdditionalInformation if true, queries embedding pages for each widget
-     * @return a {@link java.util.List} object
+     * @return the list of all sidebar widget display elements, optionally with embedding page information
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<WidgetDisplayElement> getAllWidgets(boolean queryAdditionalInformation) throws DAOException {
@@ -181,7 +181,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
      *
      * @param elements ordered list of sidebar elements to render
      * @param page CMS page owning the sidebar elements
-     * @return a {@link jakarta.faces.component.html.HtmlPanelGroup} object
+     * @return the HtmlPanelGroup containing the rendered sidebar widget components
      */
     public HtmlPanelGroup getSidebarGroup(List<CMSSidebarElement> elements, CMSPage page) {
         if (elements != null && !elements.isEmpty()) {
@@ -197,7 +197,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
     /**
      * Getter for the field <code>sidebarGroup</code>.
      *
-     * @return a {@link jakarta.faces.component.html.HtmlPanelGroup} object
+     * @return the HtmlPanelGroup for the current CMS page's sidebar, or an empty group if no page is active
      */
     public HtmlPanelGroup getSidebarGroup() {
         return Optional.ofNullable(cmsBean).map(CmsBean::getCurrentPage).map(page -> {

@@ -78,7 +78,7 @@ public class TocWriter {
     /**
      * Getter for the field <code>author</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the author of the document represented in this TOC entry
      */
     public String getAuthor() {
         return author;
@@ -87,7 +87,7 @@ public class TocWriter {
     /**
      * Getter for the field <code>title</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the title of the document represented in this TOC entry
      */
     public String getTitle() {
         return title;

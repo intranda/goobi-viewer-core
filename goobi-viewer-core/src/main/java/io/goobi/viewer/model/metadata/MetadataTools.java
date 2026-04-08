@@ -319,7 +319,7 @@ public final class MetadataTools {
      * generateRIS.
      *
      * @param se structural element to generate RIS output for.
-     * @return a {@link java.lang.String} object.
+     * @return the RIS-formatted bibliographic reference string for the given structure element, or null if se is null
      */
     public static String generateRIS(StructElement se) {
         if (se == null) {
@@ -527,7 +527,7 @@ public final class MetadataTools {
      * @param value Metadata value to modify
      * @param replaceRules List of <code>MetadataReplaceRule</code> objects
      * @param pi Record identifier to whose context the value belongs; used for checking conditions
-     * @return a {@link java.lang.String} object.
+     * @return the metadata value after all applicable replace rules have been applied
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @should apply rules correctly

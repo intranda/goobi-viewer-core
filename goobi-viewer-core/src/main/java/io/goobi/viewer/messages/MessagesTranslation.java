@@ -52,7 +52,7 @@ public class MessagesTranslation extends Translation {
      * getTranslations.
      *
      * @param key message key to look up across all configured locales
-     * @return a {@link java.util.Collection} object.
+     * @return the collection of translations for the given message key across all configured locales
      */
     public static Collection<Translation> getTranslations(String key) {
         Collection<Translation> translations = new ArrayList<>();

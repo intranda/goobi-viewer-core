@@ -79,7 +79,7 @@ public class MediaResource {
      *
      * @param format audio MIME subtype (e.g. mp3, ogg)
      * @param filename name of the audio resource file
-     * @return a {@link java.lang.String} object.
+     * @return the streamed audio content as a string response
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
@@ -104,7 +104,7 @@ public class MediaResource {
      *
      * @param format video MIME subtype (e.g. mp4, webm)
      * @param filename name of the video resource file
-     * @return a {@link java.lang.String} object.
+     * @return the streamed video content as a string response
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.

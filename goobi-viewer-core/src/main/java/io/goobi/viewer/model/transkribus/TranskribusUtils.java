@@ -75,7 +75,7 @@ public final class TranskribusUtils {
      * @param userSession authenticated session of the requesting user
      * @param pi persistent identifier of the record to ingest
      * @param metsResolverUrlRoot Root of the METS resolver URL (without the identifier).
-     * @return a {@link io.goobi.viewer.model.transkribus.TranskribusJob} object.
+     * @return the TranskribusJob created for the ingest request, or null if the feature is disabled
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.HTTPException if any.
      * @throws org.jdom2.JDOMException if any.
@@ -154,7 +154,7 @@ public final class TranskribusUtils {
      * @param baseUrl base URL of the Transkribus REST API
      * @param userName Transkribus account user name
      * @param password Transkribus account password
-     * @return a {@link io.goobi.viewer.model.transkribus.TranskribusSession} object.
+     * @return the authenticated TranskribusSession, or null if login failed
      * @throws java.io.IOException if any.
      * @throws org.jdom2.JDOMException if any.
      */
@@ -223,7 +223,7 @@ public final class TranskribusUtils {
      * @param sessionId active session ID for authentication
      * @param collectionName name of the collection to look up
      * @should retrieve correct id
-     * @return a {@link java.lang.String} object.
+     * @return the numeric collection ID as string, or null if not found
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.HTTPException if any.
      */
@@ -266,7 +266,7 @@ public final class TranskribusUtils {
      * @param sessionId active session ID for authentication
      * @should create collection and return numeric id
      * @param collectionName name to assign to the new collection
-     * @return a {@link java.lang.String} object.
+     * @return the numeric ID of the newly created Transkribus collection as string
      * @throws java.io.IOException if any.
      */
     protected static String createCollection(String baseUrl, String sessionId, String collectionName) throws IOException {
@@ -337,7 +337,7 @@ public final class TranskribusUtils {
      * @param userCollectionId ID of the user's personal Transkribus collection
      * @param viewerCollectionId ID of the viewer instance's Transkribus collection
      * @should ingest record correctly
-     * @return a {@link io.goobi.viewer.model.transkribus.TranskribusJob} object.
+     * @return the TranskribusJob representing the ingest operation, or null if the request failed
      * @throws java.io.IOException if any. o
      */
     protected static TranskribusJob ingestRecordToCollections(String baseUrl, TranskribusSession session, String pi, String metsUrl,
@@ -385,7 +385,7 @@ public final class TranskribusUtils {
      * @param sessionId active session ID for authentication
      * @param jobId Transkribus job ID whose status is queried
      * @should return correct status
-     * @return a {@link io.goobi.viewer.model.job.JobStatus} object.
+     * @return the current status of the Transkribus job, or null if the status could not be determined
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.HTTPException if any.
      */

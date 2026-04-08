@@ -225,7 +225,7 @@ public class JPADAO implements IDAO {
     /**
      * Getter for the field <code>factory</code>.
      *
-     * @return a {@link jakarta.persistence.EntityManagerFactory} object.
+     * @return the JPA EntityManagerFactory used by this DAO
      */
     @Override
     public EntityManagerFactory getFactory() {
@@ -4603,7 +4603,7 @@ public class JPADAO implements IDAO {
      * @param allowedTemplates template IDs the user may view; null means no restriction
      * @param allowedSubthemes subtheme discriminator values the user may view; null means no restriction
      * @param allowedCategoryIds category IDs the user may view; null means no restriction
-     * @return a {@link java.lang.String} object.
+     * @return the JPQL WHERE clause fragment restricting CMS page visibility, possibly empty
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
      */
     public static String createCMSPageFilter(Map<String, Object> params, String pageParameter, List<Long> allowedTemplates,

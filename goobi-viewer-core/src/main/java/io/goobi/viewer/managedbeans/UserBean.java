@@ -149,7 +149,7 @@ public class UserBean implements Serializable {
     /**
      * getSessionTimeout.
      *
-     * @return a {@link java.lang.String} object
+     * @return the remaining session timeout formatted as an ISO time string
      */
     public String getSessionTimeout() {
         long lastActityTimestamp = BeanUtils.getSession().getLastAccessedTime();
@@ -167,7 +167,7 @@ public class UserBean implements Serializable {
     /**
      * Creates and persists a new local User.
      *
-     * @return a {@link java.lang.String} object.
+     * @return an empty string after attempting to register the new user account
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String createNewUserAccount() throws DAOException {
@@ -257,7 +257,7 @@ public class UserBean implements Serializable {
     /**
      * activateUserAccountAction.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the navigation outcome after attempting to activate the user account via email and key
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String activateUserAccountAction() throws DAOException {
@@ -304,7 +304,7 @@ public class UserBean implements Serializable {
      * login.
      *
      * @param provider authentication provider to use for the login attempt
-     * @return a {@link java.lang.String} object.
+     * @return the navigation outcome or redirect URL after the login attempt
      * @throws java.lang.IllegalStateException if any.
      * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException if any.
      * @throws java.lang.InterruptedException if any.
@@ -482,7 +482,7 @@ public class UserBean implements Serializable {
     /**
      * Logout action method.
      *
-     * @return a {@link java.lang.String} object.
+     * @return an empty string after logging out the current user and invalidating the session
      * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException if any.
      * @throws IOException
      */
@@ -569,7 +569,7 @@ public class UserBean implements Serializable {
     /**
      * Returns a list of all existing users (minus the superusers and the current user).
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all non-superuser users excluding the currently logged-in user
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<User> getAllUsers() throws DAOException {
@@ -636,7 +636,7 @@ public class UserBean implements Serializable {
     /**
      * Sends a password reset link to the current e-mail address.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the navigation outcome after attempting to send the password reset email
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String sendPasswordResetLinkAction() throws DAOException {
@@ -689,7 +689,7 @@ public class UserBean implements Serializable {
     /**
      * Generates a new user password if the key is correct.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the navigation outcome after attempting to reset the password via the activation key
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String resetPasswordAction() throws DAOException {
@@ -726,7 +726,7 @@ public class UserBean implements Serializable {
     /**
      * transkribusLoginAction.
      *
-     * @return a {@link java.lang.String} object.
+     * @return an empty string after attempting to authenticate with Transkribus
      */
     public String transkribusLoginAction() {
         if (transkribusUserName == null || transkribusPassword == null) {
@@ -864,7 +864,7 @@ public class UserBean implements Serializable {
     /**
      * Getter for the field <code>authenticationProviders</code>.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all configured authentication providers
      */
     public synchronized List<IAuthenticationProvider> getAuthenticationProviders() {
         return DataManager.getInstance().getConfiguration().getAuthenticationProviders();
@@ -873,7 +873,7 @@ public class UserBean implements Serializable {
     /**
      * getLocalAuthenticationProvider.
      *
-     * @return a {@link io.goobi.viewer.model.security.authentication.IAuthenticationProvider} object.
+     * @return the first configured local authentication provider, or null if none is configured
      */
     public IAuthenticationProvider getLocalAuthenticationProvider() {
         return getProvidersOfType("local").stream().findFirst().orElse(null);
@@ -882,7 +882,7 @@ public class UserBean implements Serializable {
     /**
      * getXserviceAuthenticationProvider.
      *
-     * @return a {@link io.goobi.viewer.model.security.authentication.IAuthenticationProvider} object.
+     * @return the first configured userPassword-type authentication provider, or null if none is configured
      */
     public IAuthenticationProvider getXserviceAuthenticationProvider() {
         return getProvidersOfType("userPassword").stream().findFirst().orElse(null);
@@ -912,7 +912,7 @@ public class UserBean implements Serializable {
     /**
      * Getter for the field <code>authenticationProvider</code>.
      *
-     * @return a {@link io.goobi.viewer.model.security.authentication.IAuthenticationProvider} object.
+     * @return the currently active authentication provider
      */
     public IAuthenticationProvider getAuthenticationProvider() {
         return authenticationProvider;
@@ -933,7 +933,7 @@ public class UserBean implements Serializable {
     /**
      * getAuthenticationProviderName.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the name of the currently selected authentication provider, or an empty string if none is selected
      */
     public String getAuthenticationProviderName() {
         if (this.authenticationProvider != null) {
@@ -946,7 +946,7 @@ public class UserBean implements Serializable {
     /**
      * Getter for the field <code>passwordOne</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the first password entry for new account creation or password change
      */
     public String getPasswordOne() {
         return this.passwordOne;
@@ -964,7 +964,7 @@ public class UserBean implements Serializable {
     /**
      * Getter for the field <code>passwordTwo</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the confirmation password entry for new account creation or password change
      */
     public String getPasswordTwo() {
         return this.passwordTwo;
@@ -1154,7 +1154,7 @@ public class UserBean implements Serializable {
      * getProvidersOfType.
      *
      * @param type provider type string to filter by (e.g. "local", "openId")
-     * @return a {@link java.util.List} object.
+     * @return a list of authentication providers of the given type
      */
     public List<IAuthenticationProvider> getProvidersOfType(String type) {
         if (type != null) {

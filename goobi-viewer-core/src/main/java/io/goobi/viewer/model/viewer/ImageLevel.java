@@ -76,7 +76,7 @@ public class ImageLevel implements Comparable<ImageLevel> {
     /**
      * Getter for the field <code>url</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the URL for this image resolution level
      */
     public String getUrl() {
         return url;
@@ -85,7 +85,7 @@ public class ImageLevel implements Comparable<ImageLevel> {
     /**
      * Getter for the field <code>size</code>.
      *
-     * @return a {@link java.awt.Dimension} object.
+     * @return the width and height of the image, accounting for 90-degree rotations
      */
     public Dimension getSize() {
         if (rotation % 180 == 0) {

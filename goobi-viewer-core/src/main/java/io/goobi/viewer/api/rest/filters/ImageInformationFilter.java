@@ -201,7 +201,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
      * getStructElement.
      *
      * @param pi persistent identifier of the record to look up
-     * @return a {@link java.util.Optional} object.
+     * @return an Optional containing the StructElement for the given PI, or empty if not found in the index
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */

@@ -298,7 +298,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Returns the name best suited for displaying (depending on which values are available).
      *
-     * @return a {@link java.lang.String} object.
+     * @return the display name of this user (nickname, email, or a default label depending on available values)
      */
     public String getDisplayName() {
         if (StringUtils.isNotBlank(nickName)) {
@@ -319,7 +319,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Returns a list of UserGroups of which this user is the owner.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of user groups owned by this user
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<UserGroup> getUserGroupOwnerships() throws DAOException {
@@ -329,7 +329,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * getUserGroupMemberships.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of user role entries representing this user's group memberships
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<UserRole> getUserGroupMemberships() throws DAOException {
@@ -339,7 +339,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Returns a list of UserGroups of which this user is a member.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of user groups in which this user holds a membership
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<UserGroup> getUserGroupsWithMembership() throws DAOException {
@@ -372,7 +372,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Returns a list of all groups with this user's involvement (either as owner or member).
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all user groups this user is associated with as owner or member
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<UserGroup> getAllUserGroups() {
@@ -721,7 +721,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
      * getAllowedTemplates.
      *
      * @param allTemplates full list of available CMS page templates
-     * @return a {@link java.util.List} object.
+     * @return a list of CMS page templates this user is permitted to use
      */
     public List<CMSPageTemplate> getAllowedTemplates(List<CMSPageTemplate> allTemplates) {
         if (allTemplates == null || allTemplates.isEmpty()) {
@@ -816,7 +816,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
      * getAllowedCategories.
      *
      * @param allCategories full list of available CMS categories
-     * @return a {@link java.util.List} object.
+     * @return a list of CMS categories this user is permitted to assign
      */
     public List<CMSCategory> getAllowedCategories(List<CMSCategory> allCategories) {
         if (allCategories == null || allCategories.isEmpty()) {
@@ -1389,7 +1389,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
      * Gets the {@link io.goobi.viewer.model.security.user.User#id} of a user from a URI.
      *
      * @param idAsURI URI containing the user ID in its path
-     * @return a {@link java.lang.Long} object.
+     * @return the numeric user ID extracted from the URI, or null if not found
      * @should extract id correctly
      */
     public static Long getId(URI idAsURI) {
@@ -1408,7 +1408,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * getIdAsURI.
      *
-     * @return a {@link java.net.URI} object.
+     * @return the REST API URI for this user, constructed from the user ID
      */
     public URI getIdAsURI() {
         return URI.create(URI_ID_TEMPLATE.replace("{id}", this.getId().toString()));

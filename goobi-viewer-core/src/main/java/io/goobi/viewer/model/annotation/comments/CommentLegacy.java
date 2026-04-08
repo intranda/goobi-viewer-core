@@ -192,7 +192,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
      * getDisplayDate.
      *
      * @param date date and time to format for display
-     * @return a {@link java.lang.String} object.
+     * @return the given date and time formatted as a German date-time string
      */
     public String getDisplayDate(LocalDateTime date) {
         return DateTools.format(date, DateTools.FORMATTERDEDATETIME, false);
@@ -309,7 +309,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * getDisplayText.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the comment text with any JavaScript stripped out
      */
     public String getDisplayText() {
         return StringTools.stripJS(text);

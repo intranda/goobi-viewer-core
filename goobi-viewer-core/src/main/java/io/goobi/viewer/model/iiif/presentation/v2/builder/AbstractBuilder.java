@@ -207,7 +207,7 @@ public abstract class AbstractBuilder {
      * getLocale.
      *
      * @param language BCP 47 language tag string
-     * @return a {@link java.util.Locale} object.
+     * @return the Locale for the given language tag, defaulting to English if not resolvable
      */
     protected Locale getLocale(String language) {
         Locale locale = Locale.forLanguageTag(language);
@@ -271,7 +271,7 @@ public abstract class AbstractBuilder {
      * {@link io.goobi.viewer.solr.SolrConstants#TITLE} or {@link io.goobi.viewer.solr.SolrConstants#DOCSTRCT}.
      *
      * @param solrDocument Solr document to extract label information from
-     * @return a {@link java.util.Optional} object.
+     * @return an Optional containing the label derived from LABEL, TITLE, or DOCSTRCT fields, or empty if none are present
      */
     public Optional<IMetadataValue> getLabelIfExists(SolrDocument solrDocument) {
 
@@ -493,7 +493,7 @@ public abstract class AbstractBuilder {
     /**
      * getEventFields.
      *
-     * @return a {@link java.util.Map} object.
+     * @return a map of event type names to their associated Solr field names, as configured for IIIF
      */
     protected Map<String, List<String>> getEventFields() {
         List<String> eventStrings = this.config.getIIIFEventFields();
@@ -519,7 +519,7 @@ public abstract class AbstractBuilder {
      * getDocument.
      *
      * @param pi persistent identifier of the record to load
-     * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @return the StructElement for the given PI, or null if the document was not found
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -539,7 +539,7 @@ public abstract class AbstractBuilder {
     /**
      * getSolrFieldList.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of Solr field names required for IIIF presentation data retrieval
      */
     public List<String> getSolrFieldList() {
         Set<String> fields = new HashSet<>(this.config.getIIIFMetadataFields());
@@ -577,7 +577,7 @@ public abstract class AbstractBuilder {
      * getDescription.
      *
      * @param ele structure element to extract description fields from
-     * @return a {@link java.util.Optional} object.
+     * @return an Optional containing the description metadata value, or empty if no configured field has a value
      */
     protected Optional<IMetadataValue> getDescription(StructElement ele) {
         List<String> fields = this.config.getIIIFDescriptionFields();
@@ -597,7 +597,7 @@ public abstract class AbstractBuilder {
      * getDescription.
      *
      * @param ele structure element to extract label fields from
-     * @return a {@link java.util.Optional} object.
+     * @return an Optional containing the label metadata value, or empty if no configured field has a value
      */
     protected Optional<IMetadataValue> getLabel(StructElement ele) {
         List<String> fields = this.config.getIIIFLabelFields();
@@ -618,7 +618,7 @@ public abstract class AbstractBuilder {
      *
      * @param collectionField Solr field used to group the collection
      * @param baseCollectionName top-level collection name, or blank for root collection
-     * @return a {@link java.net.URI} object.
+     * @return the URI identifying the IIIF collection resource
      */
     public URI getCollectionURI(String collectionField, final String baseCollectionName) {
         String urlString;
@@ -636,7 +636,7 @@ public abstract class AbstractBuilder {
      * getManifestURI.
      *
      * @param pi persistent identifier of the record
-     * @return a {@link java.net.URI} object.
+     * @return the manifest URI for the given record, using an external URL if configured
      */
     public URI getManifestURI(String pi) {
         // A null or blank PI causes the {pi} URL placeholder to remain unsubstituted, which
@@ -683,7 +683,7 @@ public abstract class AbstractBuilder {
      *
      * @param pi Persistent identifier of a record
      * @param pageNo 1-based page order within the record
-     * @return a {@link java.net.URI} object.
+     * @return the manifest URI for the specified page of the given record
      */
     public URI getPageManifestURI(String pi, int pageNo) {
         String urlString = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_MANIFEST).params(pi, pageNo).build();
@@ -695,7 +695,7 @@ public abstract class AbstractBuilder {
      *
      * @param pi persistent identifier of the record
      * @param mode build mode appended as a query parameter
-     * @return a {@link java.net.URI} object.
+     * @return the manifest URI for the given record with the build mode as a query parameter
      */
     public URI getManifestURI(String pi, BuildMode mode) {
         String urlString = this.urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(pi).query("mode", mode.name()).build();
@@ -707,7 +707,7 @@ public abstract class AbstractBuilder {
      *
      * @param pi persistent identifier of the record
      * @param logId logical structure element ID for the range
-     * @return a {@link java.net.URI} object.
+     * @return the range URI for the given record and logical structure element
      */
     public URI getRangeURI(String pi, String logId) {
         String urlString = this.urls.path(RECORDS_SECTIONS, RECORDS_SECTIONS_RANGE).params(pi, logId).build();
@@ -719,7 +719,7 @@ public abstract class AbstractBuilder {
      *
      * @param pi persistent identifier of the record
      * @param label sequence label; defaults to "basic" if blank
-     * @return a {@link java.net.URI} object.
+     * @return the sequence URI for the given record and label
      */
     public URI getSequenceURI(String pi, final String label) {
         String urlString = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_SEQUENCE).params(pi, StringUtils.isBlank(label) ? "basic" : label).build();
@@ -731,7 +731,7 @@ public abstract class AbstractBuilder {
      *
      * @param pi persistent identifier of the record
      * @param pageNo 1-based physical page order number
-     * @return a {@link java.net.URI} object.
+     * @return the canvas URI for the given page of the record
      */
     public URI getCanvasURI(String pi, int pageNo) {
         String urlString = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).params(pi, pageNo).build();
@@ -743,7 +743,7 @@ public abstract class AbstractBuilder {
      * If the URI doesn't match a canvas URI, null is returned
      *
      * @param uri canvas URI to extract the page order from
-     * @return a {@link java.lang.Integer} object.
+     * @return the 1-based page order number extracted from the canvas URI, or null if the URI does not match
      */
     public Integer getPageOrderFromCanvasURI(URI uri) {
         String regex = "/pages/(\\d+)/canvas";
@@ -778,7 +778,7 @@ public abstract class AbstractBuilder {
      * @param pageNo 1-based physical page order number
      * @param type annotation type determining the URL path
      * @param openAnnotation if true, appends a format=oa query parameter for Open Annotation format
-     * @return a {@link java.net.URI} object.
+     * @return the annotation list URI for the given record page and annotation type
      */
     public URI getAnnotationListURI(String pi, int pageNo, AnnotationType type, boolean openAnnotation) {
         ApiPath url;
@@ -808,7 +808,7 @@ public abstract class AbstractBuilder {
      *
      * @param pi persistent identifier of the record
      * @param type annotation type appended as a query parameter
-     * @return a {@link java.net.URI} object.
+     * @return the annotation list URI for the given record and annotation type
      */
     public URI getAnnotationListURI(String pi, AnnotationType type) {
         String urlString = this.urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi).query("type", type.name()).build();
@@ -820,7 +820,7 @@ public abstract class AbstractBuilder {
      * getCommentAnnotationURI.
      *
      * @param id database ID of the comment annotation
-     * @return a {@link java.net.URI} object.
+     * @return the URI identifying the comment annotation with the given ID
      */
     public URI getCommentAnnotationURI(long id) {
         String urlString = this.urls.path(ANNOTATIONS, ANNOTATIONS_COMMENT).params(id).build();
@@ -833,7 +833,7 @@ public abstract class AbstractBuilder {
      *
      * @param pi persistent identifier of the record
      * @param type annotation type identifying the layer
-     * @return a {@link java.net.URI} object.
+     * @return the layer URI for the given record and annotation type
      */
     public URI getLayerURI(String pi, AnnotationType type) {
         String urlString = this.urls.path(RECORDS_RECORD, RECORDS_LAYER).params(pi, type.name()).build();
@@ -845,7 +845,7 @@ public abstract class AbstractBuilder {
      *
      * @param pi persistent identifier of the record
      * @param order 1-based physical page order number
-     * @return a {@link java.net.URI} object.
+     * @return the image annotation URI for the given page of the record
      */
     public URI getImageAnnotationURI(String pi, int order) {
         String urlString = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).params(pi, order).build() + "image/1/";
@@ -859,7 +859,7 @@ public abstract class AbstractBuilder {
      * @param order 1-based physical page order number
      * @param type annotation type used as a path segment
      * @param annoNum 1-based annotation index within the page
-     * @return a {@link java.net.URI} object.
+     * @return the URI identifying the specific annotation on the given page
      * @throws java.net.URISyntaxException if any.
      */
     public URI getAnnotationURI(String pi, int order, AnnotationType type, int annoNum) throws URISyntaxException {
@@ -871,7 +871,7 @@ public abstract class AbstractBuilder {
      * getAnnotationURI.
      *
      * @param id annotation ID used as a path parameter
-     * @return a {@link java.net.URI} object.
+     * @return the URI identifying the annotation with the given ID
      */
     public URI getAnnotationURI(String id) {
         String urlString = this.urls.path(ANNOTATIONS, ANNOTATIONS_ANNOTATION).params(id).build();
@@ -904,7 +904,7 @@ public abstract class AbstractBuilder {
      * @param pi persistent identifier of the record to search within
      * @param query search term appended as the q parameter
      * @param motivation list of motivation strings to filter results
-     * @return a {@link java.net.URI} object.
+     * @return the search URI for the given record with the query and motivation parameters
      */
     public URI getSearchURI(String pi, String query, List<String> motivation) {
         String uri = getSearchServiceURI(pi).toString();
@@ -921,7 +921,7 @@ public abstract class AbstractBuilder {
      * @param pi persistent identifier of the record to autocomplete within
      * @param query partial search term for autocomplete suggestions
      * @param motivation list of motivation strings to filter suggestions
-     * @return a {@link java.net.URI} object.
+     * @return the autocomplete URI for the given record with the query and motivation parameters
      */
     public URI getAutoSuggestURI(String pi, String query, List<String> motivation) {
         String uri = getAutoCompleteServiceURI(pi).toString();

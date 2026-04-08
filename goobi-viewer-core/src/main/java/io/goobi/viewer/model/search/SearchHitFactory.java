@@ -109,7 +109,7 @@ public class SearchHitFactory {
      * @param ownerDoc a {@link org.apache.solr.common.SolrDocument} object.
      * @param fulltext Optional fulltext (page docs only).
      * @param overrideType a {@link io.goobi.viewer.model.search.HitType} object.
-     * @return a {@link io.goobi.viewer.model.search.SearchHit} object.
+     * @return the SearchHit built from the given Solr document, with metadata and fulltext fragments
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws DAOException

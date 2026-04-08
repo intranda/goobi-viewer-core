@@ -172,7 +172,7 @@ public class UserGroupBean implements Serializable {
      * @should not return group member names
      * @should not modify global user group list
      * @should return empty list if no remaining user group names
-     * @return a {@link java.util.List} object.
+     * @return a list of select items representing users not yet members of the current user group
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<SelectItem> getRemainingUsers() throws DAOException {
@@ -204,7 +204,7 @@ public class UserGroupBean implements Serializable {
     /**
      * Returns a list of all existing roles (minus superuser).
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all roles in the database excluding the superuser role
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<Role> getAllRoles() throws DAOException {
@@ -328,7 +328,7 @@ public class UserGroupBean implements Serializable {
     /**
      * Used for the 'add member' selectbox.
      *
-     * @return a {@link java.lang.Long} object.
+     * @return always -1L, used as a sentinel value for the member selection UI
      */
     public Long getCurrentId() {
         return -1L;

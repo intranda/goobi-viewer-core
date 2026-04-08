@@ -400,7 +400,7 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * getAllCollectionFields.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all configured collection Solr field names
      */
     public List<String> getAllCollectionFields() {
         return DataManager.getInstance().getConfiguration().getConfiguredCollections();
@@ -470,7 +470,7 @@ public class CmsCollectionsBean implements Serializable {
      * editCollection.
      *
      * @param collection collection to set as current and prepare for editing
-     * @return a {@link java.lang.String} object.
+     * @return the pretty URL name for the collection edit view
      */
     public String editCollection(CMSCollection collection) {
         setCurrentCollection(collection);
@@ -483,7 +483,7 @@ public class CmsCollectionsBean implements Serializable {
      * getCurrentLabel.
      *
      * @param language ISO language code to retrieve the label for
-     * @return a {@link io.goobi.viewer.model.cms.collections.CMSCollectionTranslation} object.
+     * @return the label translation of the current collection for the given language
      */
     public CMSCollectionTranslation getCurrentLabel(String language) {
         return getCurrentCollection().getLabelAsTranslation(language);
@@ -493,7 +493,7 @@ public class CmsCollectionsBean implements Serializable {
      * getCurrentDescription.
      *
      * @param language ISO language code to retrieve the description for
-     * @return a {@link io.goobi.viewer.model.cms.collections.CMSCollectionTranslation} object.
+     * @return the description translation of the current collection for the given language
      */
     public CMSCollectionTranslation getCurrentDescription(String language) {
         return getCurrentCollection().getDescriptionAsTranslation(language);
@@ -502,7 +502,7 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * saveCurrentCollection.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the pretty URL name for the collections overview after saving the current collection
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String saveCurrentCollection() throws DAOException {
@@ -537,7 +537,7 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * resetCurrentCollection.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the pretty URL name for the collections overview after discarding changes to the current collection
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String resetCurrentCollection() throws DAOException {

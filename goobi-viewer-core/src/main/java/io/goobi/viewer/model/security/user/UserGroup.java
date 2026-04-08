@@ -330,7 +330,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     /**
      * getMemberships.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of user role entries representing the members of this group
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<UserRole> getMemberships() throws DAOException {
@@ -349,7 +349,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     /**
      * getMembers.
      *
-     * @return a {@link java.util.Set} object.
+     * @return the set of all users that are members of this group
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @should return all members
      */

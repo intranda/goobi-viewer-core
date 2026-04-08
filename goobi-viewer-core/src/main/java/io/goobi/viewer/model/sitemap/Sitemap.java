@@ -348,7 +348,7 @@ public class Sitemap {
      * @param docListSitemap list of sitemap XML documents to compress and write
      * @should write index file correctly
      * @should write gzip files correctly
-     * @return a {@link java.util.List} object.
+     * @return a list of written sitemap files (index file plus compressed sitemap files)
      * @throws java.io.IOException if any.
      */
     protected List<File> writeFiles(String outputDirPath, Document docIndex, List<Document> docListSitemap) throws IOException {

@@ -318,7 +318,7 @@ public class FacetItem implements Serializable, IFacetItem {
      * @param sort if true, sort items by value before returning
      * @param reverseOrder if true, reverse the sort order
      * @param hierarchical true if facet field is hierarchical
-     * @return a {@link java.util.List} object.
+     * @return a list of facet items generated from the given values map, optionally sorted
      * @should sort items correctly
      */
     public static List<IFacetItem> generateFacetItems(String field, Map<String, Long> values, boolean sort, boolean reverseOrder,
@@ -385,7 +385,7 @@ public class FacetItem implements Serializable, IFacetItem {
      * @should construct hierarchical link correctly
      * @should construct range link correctly
      * @should construct polygon link correctly
-     * @return a {@link java.lang.String} object.
+     * @return the Solr filter query string for this facet item, with field and value properly escaped
      */
     @Override
     public String getQueryEscapedLink() {
@@ -465,7 +465,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Link after slash/backslash replacements for partner collection, static drill-down components and topic browsing (HU Berlin).
      *
-     * @return a {@link java.lang.String} object.
+     * @return the facet link with critical URL characters escaped
      */
     @Override
     public String getEscapedLink() {
@@ -475,7 +475,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * URL escaped link for using in search drill-downs.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the URL-encoded facet link for use in drill-down search URLs
      */
     @Override
     public String getUrlEscapedLink() {

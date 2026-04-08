@@ -90,7 +90,7 @@ public abstract class AbstractBookmarkResourceBuilder {
      * getPageOrder.
      *
      * @param pageString numeric page order as a string; null or non-numeric returns null
-     * @return a {@link java.lang.Integer} object.
+     * @return the page order number parsed from the string, or null if the string is blank or not a valid integer
      */
     public Integer getPageOrder(String pageString) {
         Integer order = null;
@@ -117,7 +117,7 @@ public abstract class AbstractBookmarkResourceBuilder {
     /**
      * Returns all public bookmark lists.
      *
-     * @return a {@link java.util.List} object.
+     * @return all publicly visible bookmark lists stored in the database
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -131,7 +131,7 @@ public abstract class AbstractBookmarkResourceBuilder {
      *
      * @param sharedKey the share key identifying the bookmark list
      * @param urls URL manager used to build the collection URL
-     * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
+     * @return the IIIF Presentation v2 Collection representing the publicly shared bookmark list identified by the given key
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
      */

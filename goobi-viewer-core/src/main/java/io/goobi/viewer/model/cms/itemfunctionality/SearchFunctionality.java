@@ -225,7 +225,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /**
      * The part of the search url before the page number.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the URL prefix for the CMS search page, including base URL, context, and query string
      * @should construct url prefix correctly
      */
     public String getUrlPrefix() {
@@ -239,7 +239,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /**
      * getUrlSuffix.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the URL suffix for the CMS search page, including sort string and facet string
      */
     public String getUrlSuffix() {
         return getUrlSuffix(getSortString());
@@ -249,7 +249,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      * The part of the search url after the page number.
      *
      * @param solrSortFields Solr sort field string to embed in the URL
-     * @return a {@link java.lang.String} object.
+     * @return the URL suffix for the CMS search page using the given sort fields
      */
     public String getUrlSuffix(String solrSortFields) {
         StringBuilder sb = new StringBuilder();
@@ -349,7 +349,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /**
      * getQueryString.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the exact search string from the underlying SearchBean
      */
     public String getQueryString() {
         return getSearchBean().getExactSearchString();
@@ -408,7 +408,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /**
      * getNewSearchUrl.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the search URL with the sort field reset to default (no sorting)
      */
     public String getNewSearchUrl() {
         return getSortUrl("-", false);
@@ -428,7 +428,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      *
      * @param sortString Solr sort field name to include in the URL
      * @param descending if true, prefix the sort field with '!' for descending order
-     * @return a {@link java.lang.String} object.
+     * @return the search URL for the current page with the given sort order applied
      */
     public String getSortUrl(final String sortString, final boolean descending) {
         return getUrlPrefix() + getPageNo() + "/" + getUrlSuffix((descending ? "!" : "") + sortString);
@@ -438,7 +438,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      * getFacettedUrl.
      *
      * @param facetString active facet filter string to embed in the URL
-     * @return a {@link java.lang.String} object.
+     * @return the search URL with the given facet filter string applied
      */
     public String getFacettedUrl(String facetString) {
         Path path = Paths.get(getBaseUrl());
@@ -454,7 +454,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      * removeFacet.
      *
      * @param facet facet value string to remove from the active facet string
-     * @return a {@link java.lang.String} object.
+     * @return the updated facet string with the given facet removed, or "-" if it becomes empty
      */
     public String removeFacet(String facet) {
         final String currentFacetString = getSearchBean().getFacets().getActiveFacetString();
@@ -474,7 +474,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /**
      * getCurrentPagePath.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the current viewer page path including application name and prettified page path, or an empty string if not available
      */
     public String getCurrentPagePath() {
         Optional<ViewerPath> viewerPath = ViewHistory.getCurrentView(BeanUtils.getRequest());

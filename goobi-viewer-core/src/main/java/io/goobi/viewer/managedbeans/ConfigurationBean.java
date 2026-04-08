@@ -81,7 +81,7 @@ public class ConfigurationBean implements Serializable {
     /**
      * getModules.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all registered viewer modules
      */
     public List<IModule> getModules() {
         return DataManager.getInstance().getModules();
@@ -90,7 +90,7 @@ public class ConfigurationBean implements Serializable {
     /**
      * getName.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the configured application name
      */
     public String getName() {
         return DataManager.getInstance().getConfiguration().getName();
@@ -156,7 +156,7 @@ public class ConfigurationBean implements Serializable {
      *
      * @param pageType name of the page type to look up settings for
      * @param mimeType MIME type of the image being displayed
-     * @return a {@link java.util.List} object.
+     * @return a list of configured zoom scale values for the given page type and MIME type
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public List<String> getImageSizes(String pageType, String mimeType) throws ViewerConfigurationException {
@@ -170,7 +170,7 @@ public class ConfigurationBean implements Serializable {
      *
      * @param pageType name of the page type to look up settings for
      * @param mimeType MIME type of the image being displayed
-     * @return a {@link java.util.Map} object.
+     * @return a map of tile sizes (resolution) to lists of scale factors for the given page type and MIME type
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public Map<Integer, List<Integer>> getTileSizes(String pageType, String mimeType) throws ViewerConfigurationException {
@@ -336,7 +336,7 @@ public class ConfigurationBean implements Serializable {
     /**
      * getRssTitle.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the configured RSS feed title
      */
     public String getRssTitle() {
         return DataManager.getInstance().getConfiguration().getRssTitle();
@@ -637,7 +637,7 @@ public class ConfigurationBean implements Serializable {
     /**
      * getPiwikBaseURL.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the configured Piwik/Matomo base URL for tracking
      */
     public String getPiwikBaseURL() {
         return DataManager.getInstance().getConfiguration().getPiwikBaseURL();
@@ -646,7 +646,7 @@ public class ConfigurationBean implements Serializable {
     /**
      * getPiwikSiteID.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the configured Piwik/Matomo site ID for tracking
      */
     public String getPiwikSiteID() {
         return DataManager.getInstance().getConfiguration().getPiwikSiteID();
@@ -655,7 +655,7 @@ public class ConfigurationBean implements Serializable {
     /**
      * getAnchorThumbnailMode.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the configured anchor thumbnail display mode
      */
     public String getAnchorThumbnailMode() {
         return DataManager.getInstance().getConfiguration().getAnchorThumbnailMode();
@@ -664,7 +664,7 @@ public class ConfigurationBean implements Serializable {
     /**
      * getSortFields.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of configured sort field names filtered for the current user locale
      */
     public List<String> getSortFields() {
         return DataManager.getInstance()
@@ -777,7 +777,7 @@ public class ConfigurationBean implements Serializable {
     /**
      * getReCaptchaSiteKey.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the configured reCAPTCHA site key for client-side widget initialization
      */
     public String getReCaptchaSiteKey() {
         return DataManager.getInstance().getConfiguration().getReCaptchaSiteKey();
@@ -894,7 +894,7 @@ public class ConfigurationBean implements Serializable {
     /**
      * getIiifApiUrl.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the configured IIIF API base URL
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getIiifApiUrl() throws ViewerConfigurationException {
@@ -913,7 +913,7 @@ public class ConfigurationBean implements Serializable {
      *
      * @param language ISO 639 language code to translate
      * @param locale target locale code for the output language name
-     * @return a {@link java.lang.String} object.
+     * @return the localized display name of the given language in the target locale
      */
     public String getTranslation(String language, String locale) {
         Language lang = DataManager.getInstance().getLanguageHelper().getLanguage(language);
@@ -1049,7 +1049,7 @@ public class ConfigurationBean implements Serializable {
     /**
      * getTwitterName.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the configured Twitter/X user name for social sharing links
      */
     public String getTwitterName() {
         return DataManager.getInstance().getConfiguration().getTwitterUserName();

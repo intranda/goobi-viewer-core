@@ -78,7 +78,7 @@ public class SessionStoreBookmarkManager {
      * Creates a new BookmarkList and store it in the session store in the attribute "bookmarkList".
      *
      * @param session HTTP session to store the new bookmark list in
-     * @return a {@link io.goobi.viewer.model.bookmark.BookmarkList} object.
+     * @return the newly created BookmarkList stored in the session
      * @throws java.lang.IllegalArgumentException if a bookmark list already exists
      * @throws java.lang.IllegalStateException if the bookmark list could not be stored in the session
      * @throws java.lang.NullPointerException if the session is NULL
@@ -98,7 +98,7 @@ public class SessionStoreBookmarkManager {
      * Gets the bookmark list stored in the session. If no bookmark list exists, a new one is created, stored and returned
      *
      * @param session HTTP session to retrieve or create the bookmark list in
-     * @return a {@link io.goobi.viewer.model.bookmark.BookmarkList} object.
+     * @return the BookmarkList from the session, creating a new one if none exists
      * @throws java.lang.NullPointerException if the session is NULL
      */
     public synchronized BookmarkList getOrCreateBookmarkList(HttpSession session) {
@@ -191,7 +191,7 @@ public class SessionStoreBookmarkManager {
      * given list.
      *
      * @param bookmarkLists existing bookmark lists used to determine the next available number
-     * @return a {@link java.lang.String} object.
+     * @return the next available bookmark list name in the format "List {n}"
      */
     public static String generateNewBookmarkListName(List<BookmarkList> bookmarkLists) {
         String nameTemplate = "List {num}";
@@ -228,7 +228,7 @@ public class SessionStoreBookmarkManager {
      * @param itemText per-bookmark text template with placeholders {0} (URL) and {1} (title)
      * @param emptyListText text inserted when the bookmark list is empty
      * @param bookmarkList bookmark list whose items are rendered into the text
-     * @return a {@link java.lang.String} object.
+     * @return the email body text with bookmark item links substituted into the template
      */
     public static String generateBookmarkListInfo(String text, String itemText, String emptyListText, BookmarkList bookmarkList) {
         StringBuilder itemList = new StringBuilder();

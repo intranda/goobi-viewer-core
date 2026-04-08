@@ -101,7 +101,7 @@ public class WatermarkHandler implements Serializable {
      * @param page optional physical page element for watermark text resolution
      * @param doc optional top-level struct element for watermark ID resolution
      * @param pageType The pageType of the currentView. Taken into consideration for footer height, if not null
-     * @return a {@link java.util.Optional} object.
+     * @return an Optional containing the watermark URL, or empty if the footer height is zero
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -123,7 +123,7 @@ public class WatermarkHandler implements Serializable {
      * @param viewAttributes a {@link ViewAttributes} object
      * @param watermarkId optional footer image variant identifier to embed in the URL
      * @param watermarkText optional text string to overlay on the watermark image
-     * @return a {@link java.util.Optional} object.
+     * @return an Optional containing the constructed watermark URL, or empty if the footer height is zero
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -172,7 +172,7 @@ public class WatermarkHandler implements Serializable {
      * Optionally returns the watermark text for the given page. If the text is empty or none is configures, an empty optional is returned
      *
      * @param page physical page element used to resolve URN, PURL, or Solr-based watermark text
-     * @return a {@link java.util.Optional} object.
+     * @return an Optional containing the resolved watermark text, or empty if no text is configured or resolved
      */
     public Optional<String> getWatermarkTextIfExists(PhysicalElement page) {
         if (!watermarkTextConfiguration.isEmpty()) {
@@ -229,7 +229,7 @@ public class WatermarkHandler implements Serializable {
      * Optionally returns the watermark text for the given pi. If the text is empty or none is configures, an empty optional is returned
      *
      * @param doc struct element used to resolve URN, PURL, or Solr-based watermark text
-     * @return a {@link java.util.Optional} object.
+     * @return an Optional containing the resolved watermark text for the struct element, or empty if none is found
      */
     public Optional<String> getWatermarkTextIfExists(StructElement doc) {
         if (documentWatermarkTextMap.containsKey(doc.getPi())) {
@@ -301,7 +301,7 @@ public class WatermarkHandler implements Serializable {
      * Returns the watermark id for the given {@link io.goobi.viewer.model.viewer.StructElement}.
      *
      * @param topDocument top-level struct element whose metadata fields supply the footer ID
-     * @return a {@link java.util.Optional} object.
+     * @return an Optional containing the resolved footer ID, or empty if none is found in the configured fields
      */
     public Optional<String> getFooterIdIfExists(StructElement topDocument) {
         String footerId = null;

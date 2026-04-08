@@ -144,7 +144,7 @@ public class GeoLocation {
     /**
      * getAsJson.
      *
-     * @return a {@link org.json.JSONObject} object.
+     * @return the geographic coordinates and optional info and link as a JSON object
      */
     public JSONObject getAsJson() {
         Map<String, Object> map = new HashMap<>();

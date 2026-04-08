@@ -113,7 +113,7 @@ public class SearchFacets implements Serializable {
      * Generates a list containing filter queries for the selected regular and hierarchical facets.
      *
      * @param includeRangeFacets if true, range facet fields are included in the output
-     * @return a {@link java.util.List} object.
+     * @return a list of Solr filter query strings for the currently active facets
      */
     public List<String> generateFacetFilterQueries(boolean includeRangeFacets) {
         List<String> ret = new ArrayList<>(2);
@@ -240,7 +240,7 @@ public class SearchFacets implements Serializable {
      * Returns a list of FacetItem objects in <code>activeFacets</code> where the field name matches the given field name.
      *
      * @param field Solr facet field name to match against active facets
-     * @return a {@link java.util.List} object.
+     * @return a list of active facet items that belong to the given Solr field
      * @should return correct items
      */
     public List<IFacetItem> getActiveFacetsForField(String field) {
@@ -332,7 +332,7 @@ public class SearchFacets implements Serializable {
      * Returns a collapsed sublist of the available facet elements for the given field.
      *
      * @param field Solr facet field name whose items to retrieve
-     * @return a {@link java.util.List} object.
+     * @return a list of available facet items for the given field, trimmed to the configured display limit unless expanded
      * @should return full DC facet list if expanded
      * @should return full DC facet list if list size less than default
      * @should return reduced DC facet list if list size larger than default
@@ -601,7 +601,7 @@ public class SearchFacets implements Serializable {
      *
      * @param field Solr facet field name whose item to update
      * @param hierarchical if true, the facet item is marked as hierarchical
-     * @return a {@link java.lang.String} object.
+     * @return the JSF navigation outcome after updating the facet (e.g. "pretty:search6")
      */
     public String updateFacetItem(String field, boolean hierarchical) {
         updateFacetItem(field, tempValue, activeFacets, hierarchical);
@@ -661,7 +661,7 @@ public class SearchFacets implements Serializable {
      *
      * @param facetString SSV-encoded string of active facet field:value pairs
      * @param facetFields list of hierarchical facet field names to extract values for
-     * @return a {@link java.util.List} object.
+     * @return a list of hierarchical facet values extracted from the facet string for the given fields
      */
     public static List<String> getHierarchicalFacets(String facetString, List<String> facetFields) {
         List<String> facets = Arrays.asList(StringUtils.split(facetString, ";;"));
@@ -687,7 +687,7 @@ public class SearchFacets implements Serializable {
      * splitHierarchicalFacet.
      *
      * @param facet hierarchical facet value string to split into path segments
-     * @return a {@link java.util.List} object.
+     * @return a list of hierarchical path segment strings from the root level down to the given facet value
      */
     public static List<String> splitHierarchicalFacet(final String facet) {
         List<String> facets = new ArrayList<>();
@@ -874,7 +874,7 @@ public class SearchFacets implements Serializable {
     /**
      * Returns a URL encoded value returned by generateFacetPrefix() for regular facets. Returns an empty string instead a hyphen if empty.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the URL-encoded active facet string prefix for non-hierarchical facets
      */
     public String getActiveFacetStringPrefix() {
         return getActiveFacetStringPrefix(null, true);
@@ -946,7 +946,7 @@ public class SearchFacets implements Serializable {
      * @should remove facet containing reserved chars
      * @should sanitize triple semicolons to double after removal
      * @param ret navigation outcome string to return after removal
-     * @return a {@link java.lang.String} object.
+     * @return the navigation outcome string after removing the facet
      */
     public String removeFacetAction(final String facetQuery, final String ret) {
         logger.trace("removeFacetAction: {}", facetQuery);
@@ -1042,7 +1042,7 @@ public class SearchFacets implements Serializable {
     /**
      * Returns configured facet fields of regular and hierarchical type only.
      *
-     * @return a {@link java.util.Map} object.
+     * @return a map of facet field name to facet items for all regular and hierarchical facet fields
      * @should return all facet items in correct order
      */
     public Map<String, List<IFacetItem>> getAllAvailableFacets() {
@@ -1180,7 +1180,7 @@ public class SearchFacets implements Serializable {
      * getFacetValue.
      *
      * @param field Solr facet field name whose active value to retrieve
-     * @return a {@link java.lang.String} object.
+     * @return the active facet value for the given field, or an empty string if no active facet exists for that field
      */
     public String getFacetValue(String field) {
         return getActiveFacets().stream().filter(facet -> facet.getField().equals(field)).map(SearchFacets::getFacetName).findFirst().orElse("");
@@ -1190,7 +1190,7 @@ public class SearchFacets implements Serializable {
      * getFacetDescription.
      *
      * @param field Solr facet field name whose active description to retrieve
-     * @return a {@link java.lang.String} object.
+     * @return the CMS collection description for the active facet of the given field, or an empty string if not found
      */
     public String getFacetDescription(String field) {
         return getActiveFacets().stream()
@@ -1203,7 +1203,7 @@ public class SearchFacets implements Serializable {
     /**
      * getFirstHierarchicalFacetValue.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the value of the first active hierarchical facet, or an empty string if none exist
      */
     public String getFirstHierarchicalFacetValue() {
         return getActiveFacets().stream().filter(IFacetItem::isHierarchial).map(SearchFacets::getFacetName).findFirst().orElse("");
@@ -1213,7 +1213,7 @@ public class SearchFacets implements Serializable {
      * getFirstHierarchicalFacetDescription.
      *
      * @param field Solr facet field name (unused; description taken from first hierarchical active facet)
-     * @return a {@link java.lang.String} object.
+     * @return the CMS collection description for the first active hierarchical facet, or an empty string if none exist
      */
     public String getFirstHierarchicalFacetDescription(String field) {
         return getActiveFacets().stream().filter(IFacetItem::isHierarchial).map(SearchFacets::getFacetDescription).findFirst().orElse("");

@@ -73,7 +73,7 @@ public class GeoLocationInfo {
     /**
      * getAsJson.
      *
-     * @return a {@link org.json.JSONObject} object.
+     * @return the center location and all geo-location points as a JSON object
      */
     public JSONObject getAsJson() {
         Map<String, Object> map = new HashMap<>();

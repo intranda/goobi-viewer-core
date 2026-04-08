@@ -211,7 +211,7 @@ public class CMSTemplateManager implements Serializable {
      * toURI.
      *
      * @param url URL to convert to a filesystem path
-     * @return a {@link java.nio.file.Path} object.
+     * @return the filesystem path corresponding to the given URL, or null if conversion fails
      */
     public static Path toURI(URL url) {
         try {
@@ -227,7 +227,7 @@ public class CMSTemplateManager implements Serializable {
      * @param filesystemPath base filesystem path used when servlet context is absent
      * @param servletContext servlet context for resolving web resource paths
      * @param templateFolderUrl relative URL path of the template folder
-     * @return a {@link java.util.Optional} object.
+     * @return an Optional containing the URL to the core CMS template folder, or empty if not found
      * @throws java.net.MalformedURLException if any.
      * @throws java.io.UnsupportedEncodingException if any.
      * @throws java.net.URISyntaxException if any.
@@ -366,7 +366,7 @@ public class CMSTemplateManager implements Serializable {
     /**
      * Getter for the field <code>templates</code>.
      *
-     * @return a {@link java.util.Collection} object.
+     * @return the collection of all loaded legacy CMS template components
      */
     public Collection<CMSComponent> getLegacyComponents() {
         return legacyTemplateComponents.values();
@@ -380,7 +380,7 @@ public class CMSTemplateManager implements Serializable {
      * getTemplate.
      *
      * @param templateId unique identifier of the legacy template
-     * @return a {@link io.goobi.viewer.model.cms.pages.CMSPageTemplate} object.
+     * @return the legacy CMS component matching the given template ID, or null if not found
      */
     public CMSComponent getLegacyComponent(String templateId) {
         return legacyTemplateComponents.get(templateId);
@@ -407,7 +407,7 @@ public class CMSTemplateManager implements Serializable {
     /**
      * getCoreViewFolderPath.
      *
-     * @return a {@link java.util.Optional} object.
+     * @return an Optional containing the path to the core CMS template views folder, or empty if no core folder is configured
      */
     public Optional<Path> getCoreViewFolderPath() {
         return getCoreFolderPath().map(path -> path.resolve(TEMPLATE_VIEWS_PATH));
@@ -416,7 +416,7 @@ public class CMSTemplateManager implements Serializable {
     /**
      * getThemeViewFolderPath.
      *
-     * @return a {@link java.util.Optional} object.
+     * @return an Optional containing the path to the theme CMS template views folder, or empty if no theme folder is configured
      */
     public Optional<Path> getThemeViewFolderPath() {
         return getThemeFolderPath().map(path -> path.resolve(TEMPLATE_VIEWS_PATH));
@@ -425,7 +425,7 @@ public class CMSTemplateManager implements Serializable {
     /**
      * getCoreIconFolderPath.
      *
-     * @return a {@link java.util.Optional} object.
+     * @return an Optional containing the path to the core CMS template icons folder, or empty if no core folder is configured
      */
     public Optional<Path> getCoreIconFolderPath() {
         return getCoreFolderPath().map(path -> path.resolve(TEMPLATE_ICONS_PATH));
@@ -434,7 +434,7 @@ public class CMSTemplateManager implements Serializable {
     /**
      * getThemeIconFolderPath.
      *
-     * @return a {@link java.util.Optional} object.
+     * @return an Optional containing the path to the theme CMS template icons folder, or empty if no theme folder is configured
      */
     public Optional<Path> getThemeIconFolderPath() {
         return getThemeFolderPath().map(path -> path.resolve(TEMPLATE_ICONS_PATH));

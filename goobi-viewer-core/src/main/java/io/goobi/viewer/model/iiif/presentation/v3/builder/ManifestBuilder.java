@@ -268,7 +268,7 @@ public class ManifestBuilder extends AbstractBuilder {
      *
      * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param pageNo optional 1-based page number to pre-select in the manifest viewer
-     * @return a {@link de.intranda.api.iiif.presentation.IPresentationModelElement} object.
+     * @return the generated IIIF v3 Manifest or Collection for the given structure element
      * @throws PresentationException
      */
     private AbstractPresentationModelElement3 generateManifest(StructElement ele, Optional<Integer> pageNo) throws PresentationException {

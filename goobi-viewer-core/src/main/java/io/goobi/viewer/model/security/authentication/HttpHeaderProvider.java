@@ -134,7 +134,7 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
      * @param ssoId User identifier
      * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
-     * @return a {@link java.util.concurrent.Future} object.
+     * @return a Future resolving to true if login succeeded, false otherwise
      */
     public Future<Boolean> completeLogin(String ssoId, HttpServletRequest request, HttpServletResponse response) {
         logger.trace("completeLogin: {}", ssoId);

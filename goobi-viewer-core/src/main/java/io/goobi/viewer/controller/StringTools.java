@@ -144,7 +144,7 @@ public final class StringTools {
      * decodeUrl.
      *
      * @param string URL-encoded string to decode
-     * @return a {@link java.lang.String} object.
+     * @return the URL-decoded version of the input string, or the original if decoding fails
      */
     public static String decodeUrl(final String string) {
         if (string == null) {
@@ -219,7 +219,7 @@ public final class StringTools {
      * Escapes special HTML characters in the given string.
      *
      * @param str input string to escape
-     * @return a {@link java.lang.String} object.
+     * @return the input string with HTML special characters replaced by their entity equivalents
      * @should escape all characters correctly
      */
     public static String escapeHtmlChars(String str) {
@@ -230,7 +230,7 @@ public final class StringTools {
      * Escapes &lt;&gt; in the given string.
      *
      * @param str input string whose angle brackets should be escaped
-     * @return a {@link java.lang.String} object.
+     * @return the input string with &lt; and &gt; replaced by their HTML entity equivalents
      */
     public static String escapeHtmlLtGt(String str) {
         return replaceCharacters(str, new String[] { "<", ">" }, new String[] { "&lt;", "&gt;" });
@@ -381,7 +381,7 @@ public final class StringTools {
      * escapeQuotes.
      *
      * @param s string whose single and double quotes should be escaped
-     * @return a {@link java.lang.String} object.
+     * @return the input string with single and double quotes preceded by a backslash
      */
     public static String escapeQuotes(final String s) {
         String ret = s;
@@ -465,7 +465,7 @@ public final class StringTools {
      *
      * @param value URL string to escape
      * @param escapePercentCharacters true to also replace percent characters
-     * @return a {@link java.lang.String} object.
+     * @return the input string with critical URL characters replaced by their encoded placeholder equivalents
      * @should replace characters correctly
      */
     public static String escapeCriticalUrlChracters(final String value, boolean escapePercentCharacters) {
@@ -490,7 +490,7 @@ public final class StringTools {
      *
      * @param value escaped URL string to unescape
      * @should replace characters correctly
-     * @return a {@link java.lang.String} object.
+     * @return the input string with encoded placeholder sequences restored to their original URL characters
      */
     public static String unescapeCriticalUrlChracters(String value) {
         if (value == null) {
@@ -639,7 +639,7 @@ public final class StringTools {
      *
      * @param s input string to search within
      * @param pattern regex pattern with one capture group
-     * @return a {@link java.lang.String} object.
+     * @return the content of the first capture group of the first match, or an empty string if no match is found
      */
     public static String getMatch(String s, String pattern) {
         if (StringUtils.isBlank(s)) {
@@ -657,7 +657,7 @@ public final class StringTools {
      * intern.
      *
      * @param string string to intern into the JVM string pool
-     * @return a {@link java.lang.String} object.
+     * @return the canonical interned representation of the given string, or null if the input is null
      */
     public static String intern(String string) {
         if (string == null) {

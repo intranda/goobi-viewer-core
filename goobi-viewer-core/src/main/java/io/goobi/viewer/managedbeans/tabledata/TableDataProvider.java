@@ -81,7 +81,7 @@ public class TableDataProvider<T> implements Serializable {
      * @param defaultSortOrder sort direction applied with the default sort field
      * @param search DAO function used to fetch and count records
      * @param <T> a T class
-     * @return a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider} object
+     * @return a new TableDataProvider backed by the given DAO search function
      */
     public static <T> TableDataProvider<T> initDataProvider(int itemsPerPage, String defaultSortField, SortOrder defaultSortOrder,
             DAOSearchFunction<T> search) {
@@ -153,7 +153,7 @@ public class TableDataProvider<T> implements Serializable {
     /**
      * getPaginatorList.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of entries for the current page according to the current sort order and active filters
      * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
      */
     public List<T> getPaginatorList() throws TableDataSourceException {
@@ -163,7 +163,7 @@ public class TableDataProvider<T> implements Serializable {
     /**
      * loadList.
      *
-     * @return a {@link java.util.Optional} object.
+     * @return an Optional containing the current page's data list, or empty if the source returns null
      */
     protected Optional<List<T>> loadList() {
         String filterString = getFilterString(filters);
@@ -190,7 +190,7 @@ public class TableDataProvider<T> implements Serializable {
     /**
      * getFiltersAsMap.
      *
-     * @return a {@link java.util.Map} object.
+     * @return a map of column names to filter values derived from the active filters
      */
     public Map<String, String> getFiltersAsMap() {
         return getAsMap(getFilters());
@@ -238,7 +238,7 @@ public class TableDataProvider<T> implements Serializable {
     /**
      * cmdMoveFirst.
      *
-     * @return a {@link java.lang.String} object.
+     * @return an empty string after navigating to the first page of the data table
      * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
      */
     public String cmdMoveFirst() throws TableDataSourceException {
@@ -253,7 +253,7 @@ public class TableDataProvider<T> implements Serializable {
     /**
      * cmdMovePrevious.
      *
-     * @return a {@link java.lang.String} object.
+     * @return an empty string after navigating to the previous page of the data table
      * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
      */
     public String cmdMovePrevious() throws TableDataSourceException {
@@ -268,7 +268,7 @@ public class TableDataProvider<T> implements Serializable {
     /**
      * cmdMoveNext.
      *
-     * @return a {@link java.lang.String} object.
+     * @return an empty string after navigating to the next page of the data table
      * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
      */
     public String cmdMoveNext() throws TableDataSourceException {
@@ -283,7 +283,7 @@ public class TableDataProvider<T> implements Serializable {
     /**
      * cmdMoveLast.
      *
-     * @return a {@link java.lang.String} object.
+     * @return an empty string after navigating to the last page of the data table
      * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
      */
     public String cmdMoveLast() throws TableDataSourceException {
@@ -370,7 +370,7 @@ public class TableDataProvider<T> implements Serializable {
     /**
      * getPageNumberCurrent.
      *
-     * @return a {@link java.lang.Long} object.
+     * @return the 1-based current page number
      */
     public Long getPageNumberCurrent() {
         int totalPages = getLastPageNumber();
@@ -383,7 +383,7 @@ public class TableDataProvider<T> implements Serializable {
     /**
      * getPageNumberLast.
      *
-     * @return a {@link java.lang.Long} object.
+     * @return the 1-based last page number
      */
     public Long getPageNumberLast() {
         return Long.valueOf((long) getLastPageNumber() + 1);
@@ -401,7 +401,7 @@ public class TableDataProvider<T> implements Serializable {
     /**
      * Getter for the field <code>sortField</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the name of the field currently used for sorting the data table
      */
     public String getSortField() {
         return sortField;
@@ -422,7 +422,7 @@ public class TableDataProvider<T> implements Serializable {
     /**
      * Getter for the field <code>sortOrder</code>.
      *
-     * @return a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder} object.
+     * @return the current sort direction
      */
     public SortOrder getSortOrder() {
         return sortOrder;
@@ -460,7 +460,7 @@ public class TableDataProvider<T> implements Serializable {
     /**
      * Getter for the field <code>filters</code>.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of active filter criteria applied to the data source
      */
     public List<TableDataFilter> getFilters() {
         return filters;
@@ -516,7 +516,7 @@ public class TableDataProvider<T> implements Serializable {
      * <p>getFilter.
      *
      * @param columns one or more column names the filter applies to
-     * @return a {@link io.goobi.viewer.managedbeans.tabledata.TableDataFilter} object
+     * @return the existing filter for the given columns, or a newly created one if none exists
      */
     public TableDataFilter getFilter(String... columns) {
         return getFilterIfPresent(columns).orElseGet(() -> addFilter(columns));
@@ -542,7 +542,7 @@ public class TableDataProvider<T> implements Serializable {
      * <p>getFilterIfPresent.
      *
      * @param columns one or more column names to match against existing filters
-     * @return a {@link java.util.Optional} object
+     * @return an Optional containing the matching filter, or empty if none is found
      */
     public Optional<TableDataFilter> getFilterIfPresent(String... columns) {
         for (TableDataFilter filter : this.getFilters()) {

@@ -494,7 +494,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
      *
      * @param totalCount total number of matching records
      * @param objects harvestable items to serialize
-     * @return a {@link org.json.JSONArray} object.
+     * @return a JSON array with the total count as first element followed by one object per harvestable item
      */
     protected static JSONArray convertToJSON(long totalCount, List<? extends Harvestable> objects) {
         JSONArray jsonArray = new JSONArray();

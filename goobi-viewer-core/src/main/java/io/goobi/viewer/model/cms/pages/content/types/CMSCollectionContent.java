@@ -204,7 +204,7 @@ public class CMSCollectionContent extends CMSContent {
     /**
      * getIgnoreCollectionsAsList.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of collection names to be excluded from the collection display
      */
     public List<String> getIgnoreCollectionsAsList() {
         if (StringUtils.isNotBlank(ignoreCollections)) {

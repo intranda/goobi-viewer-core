@@ -74,7 +74,7 @@ public class ConvertAbbyyToAlto {
      * convert.
      *
      * @param input ABBYY XML file to convert
-     * @return a {@link org.jdom2.Element} object.
+     * @return the root ALTO XML element produced from the ABBYY input file
      * @throws org.jdom2.JDOMException if any.
      * @throws java.io.IOException if any.
      */
@@ -97,7 +97,7 @@ public class ConvertAbbyyToAlto {
      * convert.
      *
      * @param abbyyDoc parsed ABBYY XML document to convert
-     * @return a {@link org.jdom2.Element} object.
+     * @return the root ALTO XML element produced from the ABBYY document
      */
     public Element convert(Document abbyyDoc) {
         abbyy = abbyyDoc.getRootElement();
@@ -611,7 +611,7 @@ public class ConvertAbbyyToAlto {
     /**
      * Getter for the field <code>inputfilename</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the name of the ABBYY input file
      */
     public String getInputfilename() {
         return inputfilename;
@@ -629,7 +629,7 @@ public class ConvertAbbyyToAlto {
     /**
      * Getter for the field <code>creationtime</code>.
      *
-     * @return a {@link java.time.LocalDateTime} object.
+     * @return the document creation timestamp embedded in the ALTO header
      */
     public LocalDateTime getCreationtime() {
         return creationtime;

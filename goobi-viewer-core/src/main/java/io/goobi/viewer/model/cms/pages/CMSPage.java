@@ -651,7 +651,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * getTitle.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the CMS page title in the default language
      */
     public String getTitle() {
         return this.title.getTextOrDefault();
@@ -661,7 +661,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      * getTitle.
      *
      * @param locale locale of the desired title translation
-     * @return a {@link java.lang.String} object.
+     * @return the CMS page title in the given locale
      */
     public String getTitle(Locale locale) {
         return this.title.getText(locale);
@@ -674,7 +674,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * getMenuTitle.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the CMS page menu title in the default language
      */
     public String getMenuTitle() {
         return this.menuTitle.getTextOrDefault();
@@ -684,7 +684,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      * getMenuTitle.
      *
      * @param locale locale of the desired menu title translation
-     * @return a {@link java.lang.String} object.
+     * @return the CMS page menu title in the given locale
      */
     public String getMenuTitle(Locale locale) {
         return this.menuTitle.getText(locale);
@@ -693,7 +693,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * getMenuTitleOrTitle.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the CMS page menu title in the default language, falling back to the title if the menu title is empty
      */
     public String getMenuTitleOrTitle() {
         if (this.menuTitle.isEmpty()) {
@@ -706,7 +706,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      * getMenuTitleOrTitle.
      *
      * @param locale locale of the desired translation
-     * @return a {@link java.lang.String} object.
+     * @return the CMS page menu title in the given locale, falling back to the title if not available
      */
     public String getMenuTitleOrTitle(Locale locale) {
         return this.menuTitle.getValue(locale).orElse(this.title.getText(locale));
@@ -719,7 +719,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Getter for the field <code>pageSorting</code>.
      *
-     * @return a {@link java.lang.Long} object.
+     * @return the numeric sort position used for page ordering, or null if not set
      */
     public Long getPageSorting() {
         return pageSorting;
@@ -831,7 +831,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * getRelativeUrlPath.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the relative URL path for this CMS page, using static or persistent URL if available
      */
     public String getRelativeUrlPath() {
         return getRelativeUrlPath(true);
@@ -841,7 +841,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      * getRelativeUrlPath.
      *
      * @param pretty if true, use static or persistent URL when available
-     * @return a {@link java.lang.String} object.
+     * @return the relative URL path for this CMS page, optionally using the pretty URL
      */
     public String getRelativeUrlPath(boolean pretty) {
 
@@ -1099,7 +1099,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      *
      * @param outputFolderPath destination directory for exported text fragments
      * @param namingScheme filename pattern used when writing exported files
-     * @return a {@link java.util.List} object.
+     * @return a list of exported text fragment files written to the output folder
      * @throws java.io.IOException if any.
      */
     public List<File> exportTexts(String outputFolderPath, String namingScheme) throws IOException {

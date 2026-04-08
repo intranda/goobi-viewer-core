@@ -215,7 +215,7 @@ public class IIIFUrlHandler {
      * @param rotation rotation angle for the image
      * @param quality color type/quality for the image
      * @param format output image file format
-     * @return a {@link java.lang.String} object.
+     * @return the complete IIIF image request URL
      */
     public String getIIIFImageUrl(final String baseUrl, RegionRequest region, Scale size, Rotation rotation, Colortype quality,
             ImageFileFormat format) {
@@ -240,7 +240,7 @@ public class IIIFUrlHandler {
      * @param rotation replacement rotation parameter
      * @param quality replacement color type/quality parameter
      * @param format replacement output image file format
-     * @return a {@link java.lang.String} object.
+     * @return the IIIF image URL with the specified parameters replaced
      */
     public String getModifiedIIIFFUrl(String url, RegionRequest region, Scale size, Rotation rotation, Colortype quality, ImageFileFormat format) {
         return IIIFUrlResolver.getModifiedIIIFFUrl(url, region == null ? null : region.toString(), size == null ? null : size.toString(),

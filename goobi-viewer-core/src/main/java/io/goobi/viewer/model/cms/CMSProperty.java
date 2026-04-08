@@ -177,7 +177,7 @@ public class CMSProperty implements Serializable {
     /**
      * getLongValue.
      *
-     * @return a {@link java.lang.Long} object.
+     * @return the value of this property parsed as a Long, or null if the value is blank or not a valid number
      */
     public Long getLongValue() {
         try {
@@ -190,7 +190,7 @@ public class CMSProperty implements Serializable {
     /**
      * getDoubleValue.
      *
-     * @return a {@link java.lang.Double} object.
+     * @return the value of this property parsed as a Double, or null if the value is blank or not a valid number
      */
     public Double getDoubleValue() {
         try {

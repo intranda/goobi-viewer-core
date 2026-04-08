@@ -267,7 +267,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
      *
      * @param conditions condition string to search in
      * @param pattern regex pattern with a capture group to apply
-     * @return a {@link java.lang.String} object.
+     * @return the first captured group from the regex match, or an empty string if no match is found
      */
     public String getMatch(String conditions, String pattern) {
         if (StringUtils.isBlank(conditions)) {

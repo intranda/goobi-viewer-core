@@ -252,7 +252,7 @@ public class DataRetriever {
     /**
      * getEventFields.
      *
-     * @return a {@link java.util.Map} object.
+     * @return a map of event type names to their associated Solr field names, as configured for IIIF
      */
     protected Map<String, List<String>> getEventFields() {
         List<String> eventStrings = DataManager.getInstance().getConfiguration().getIIIFEventFields();
@@ -278,7 +278,7 @@ public class DataRetriever {
      * getDocument.
      *
      * @param pi persistent identifier of the record to retrieve
-     * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @return the StructElement for the given PI, or null if the document was not found
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -300,7 +300,7 @@ public class DataRetriever {
     /**
      * getSolrFieldList.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of Solr field names required for IIIF presentation data retrieval
      */
     public List<String> getSolrFieldList() {
         Set<String> fields = new HashSet<>(DataManager.getInstance().getConfiguration().getIIIFMetadataFields());

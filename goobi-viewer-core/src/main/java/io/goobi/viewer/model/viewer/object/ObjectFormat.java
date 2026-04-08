@@ -39,7 +39,7 @@ public enum ObjectFormat {
      * getByFileExtension.
      *
      * @param filename file name whose extension is examined
-     * @return a {@link io.goobi.viewer.model.viewer.object.ObjectFormat} object.
+     * @return the ObjectFormat matching the file extension, or null if unrecognized
      */
     public static ObjectFormat getByFileExtension(String filename) {
         switch (FilenameUtils.getExtension(filename.toLowerCase())) {

@@ -165,7 +165,7 @@ public abstract class AbstractPageLoader implements IPageLoader {
      * @param locale locale used to resolve message key placeholders
      * @should replace numpages correctly
      * @should replace message keys correctly
-     * @return a {@link java.lang.String} object.
+     * @return the label format string with static placeholders resolved
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     protected String buildPageLabelTemplate(String format, Locale locale) throws IndexUnreachableException {
@@ -187,7 +187,7 @@ public abstract class AbstractPageLoader implements IPageLoader {
      *
      * @param topElement top-level struct element of the record
      * @param page page order number to load
-     * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @return the PhysicalElement at the given page order, or null if the record has no pages
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */

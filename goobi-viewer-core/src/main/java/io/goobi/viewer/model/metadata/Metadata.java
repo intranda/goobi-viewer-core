@@ -303,7 +303,7 @@ public class Metadata implements MetadataListElement, Serializable {
     /**
      * Getter for the field <code>masterValue</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the master value format string, or a generated placeholder string if not set
      * @should return placeholders for every parameter for group metadata if masterValue empty
      * @should return single placeholder for non group metadata if masterValue empty
      */
@@ -1239,7 +1239,7 @@ public class Metadata implements MetadataListElement, Serializable {
      * Converts aggregated person/corporation metadata to just the displayable name.
      *
      * @param aggregatedMetadata semicolon-delimited person metadata string to parse
-     * @return a {@link java.lang.String} object.
+     * @return the displayable person name extracted from the aggregated metadata string
      */
     public static String getPersonDisplayName(String aggregatedMetadata) {
         if (aggregatedMetadata.contains(";")) {

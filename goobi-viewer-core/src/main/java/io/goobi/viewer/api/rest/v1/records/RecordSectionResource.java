@@ -127,7 +127,7 @@ public class RecordSectionResource {
     /**
      * getRISAsText.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the RIS citation for the section as plain text
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.

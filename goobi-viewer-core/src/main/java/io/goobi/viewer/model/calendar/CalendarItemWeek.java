@@ -47,7 +47,7 @@ public class CalendarItemWeek extends AbstractCalendarItem implements Serializab
     /**
      * Getter for the field <code>daysOfWeek</code>.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of daily calendar items for this week
      */
     public List<CalendarItemDay> getDaysOfWeek() {
         return daysOfWeek;

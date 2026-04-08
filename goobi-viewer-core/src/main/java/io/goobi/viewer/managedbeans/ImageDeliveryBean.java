@@ -413,7 +413,7 @@ public class ImageDeliveryBean implements Serializable {
     /**
      * getObjects3D.
      *
-     * @return a {@link io.goobi.viewer.controller.imaging.Object3DHandler} object.
+     * @return the handler for 3D object delivery
      */
     public Object3DHandler getObjects3D() {
         return objects3d;

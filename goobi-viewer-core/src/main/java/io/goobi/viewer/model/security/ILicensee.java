@@ -36,7 +36,7 @@ public interface ILicensee {
     /**
      * getName.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the name of this licensee
      */
     public String getName();
 
@@ -49,7 +49,7 @@ public interface ILicensee {
     /**
      * getLicenses.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of licenses assigned to this licensee
      */
     public List<License> getLicenses();
 

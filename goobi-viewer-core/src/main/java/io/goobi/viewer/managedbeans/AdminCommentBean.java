@@ -179,7 +179,7 @@ public class AdminCommentBean implements Serializable {
     /**
      * <p>Getter for the field <code>userBean</code>.
      *
-     * @return a {@link io.goobi.viewer.managedbeans.UserBean} object
+     * @return the injected UserBean
      */
     public UserBean getUserBean() {
         return userBean;
@@ -371,7 +371,7 @@ public class AdminCommentBean implements Serializable {
     /**
      * getPageComments.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of comments for the current page in the paginated comment list
      */
     public List<Comment> getPageComments() {
         return lazyModelComments.getPaginatorList();

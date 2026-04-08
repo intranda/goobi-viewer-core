@@ -99,7 +99,7 @@ public final class JsonTools {
      * @param expanded map of expanded child documents keyed by PI
      * @param request HTTP request used for access permission checks
      * @param languageToTranslate BCP 47 language tag for translating field names and values
-     * @return a {@link org.json.JSONArray} object.
+     * @return a JSON array of record objects built from the Solr result list
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -258,7 +258,7 @@ public final class JsonTools {
      *
      * @param result Solr result list to group by import date
      * @param request HTTP request used for access permission checks
-     * @return a {@link org.json.JSONArray} object.
+     * @return a JSON array of record objects grouped by import date
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -323,7 +323,7 @@ public final class JsonTools {
      * @param doc Solr document containing record metadata
      * @param rootUrl base URL used to construct the record page URL
      * @param thumbs handler for generating thumbnail URLs
-     * @return a {@link org.json.JSONObject} object.
+     * @return a JSON object containing metadata for the given Solr document
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @should add all metadata
      */
@@ -338,7 +338,7 @@ public final class JsonTools {
      * @param rootUrl base URL used to construct the record page URL
      * @param language language code for title field selection
      * @param thumbs handler for generating thumbnail URLs
-     * @return a {@link org.json.JSONObject} object.
+     * @return a JSON object containing metadata for the given Solr document
      * @should add all metadata
      */
     public static JSONObject getRecordJsonObject(SolrDocument doc, String rootUrl, String language, ThumbnailHandler thumbs) {

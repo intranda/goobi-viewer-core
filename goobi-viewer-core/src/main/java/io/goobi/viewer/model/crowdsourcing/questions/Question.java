@@ -359,7 +359,7 @@ public class Question implements Serializable {
      * Get the {@link #id} of a question from an URI identifier.
      *
      * @param idAsURI URI identifier containing the question ID
-     * @return a {@link java.lang.Long} object.
+     * @return the numeric question ID extracted from the URI, or null if not found
      * @should extract id correctly
      */
     public static Long getQuestionId(URI idAsURI) {
@@ -376,7 +376,7 @@ public class Question implements Serializable {
      * Get the {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign#id} of the owning campaign from an URI identifier of a question.
      *
      * @param idAsURI URI identifier containing the campaign ID segment
-     * @return a {@link java.lang.Long} object.
+     * @return the numeric campaign ID extracted from the URI, or null if not found
      * @should extract id correctly
      */
     public static Long getCampaignId(URI idAsURI) {

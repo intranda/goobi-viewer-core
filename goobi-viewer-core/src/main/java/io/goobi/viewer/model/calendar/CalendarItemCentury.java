@@ -53,7 +53,7 @@ public class CalendarItemCentury extends AbstractCalendarItem implements Seriali
     /**
      * Getter for the field <code>years</code>.
      *
-     * @return a {@link java.util.List} object.
+     * @return a sorted list of yearly calendar items within this century
      */
     public List<CalendarItemYear> getYears() {
         return years.values().stream().sorted().toList();

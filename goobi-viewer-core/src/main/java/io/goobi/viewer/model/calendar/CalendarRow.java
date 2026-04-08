@@ -39,7 +39,7 @@ public class CalendarRow implements Serializable {
     /**
      * Getter for the field <code>itemList</code>.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of calendar items contained in this row
      */
     public List<ICalendarItem> getItemList() {
         return itemList;

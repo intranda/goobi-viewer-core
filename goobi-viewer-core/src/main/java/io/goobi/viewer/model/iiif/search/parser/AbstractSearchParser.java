@@ -42,7 +42,7 @@ public abstract class AbstractSearchParser {
      * @param text full text to extract context from
      * @param hitStartIndex character index where the hit begins
      * @param maxLength maximum number of characters to return
-     * @return a {@link java.lang.String} object.
+     * @return the text excerpt preceding the hit position, up to maxLength characters
      */
     public static String getPrecedingText(String text, int hitStartIndex, int maxLength) {
         String before = "";
@@ -66,7 +66,7 @@ public abstract class AbstractSearchParser {
      * @param text full text to extract context from
      * @param hitEndIndex character index immediately after the hit ends
      * @param maxLength maximum number of characters to return
-     * @return a {@link java.lang.String} object.
+     * @return the text excerpt following the hit position, up to maxLength characters
      */
     public static String getSucceedingText(String text, int hitEndIndex, int maxLength) {
         int index = hitEndIndex;

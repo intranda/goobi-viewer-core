@@ -37,21 +37,21 @@ public interface BrowseElementInfo {
     /**
      * getDescription.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the description of this browse element in the default language
      */
     public String getDescription();
 
     /**
      *
      * @param language language code for the requested description
-     * @return a {@link java.lang.String} object.
+     * @return the description of this browse element in the given language
      */
     public String getDescription(String language);
 
     /**
      * getName.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the name of this browse element
      */
     public String getName();
 
@@ -59,21 +59,21 @@ public interface BrowseElementInfo {
      * getLinkURI.
      *
      * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @return a {@link java.net.URI} object.
+     * @return the link URI for this browse element, resolved relative to the given request context
      */
     public URI getLinkURI(HttpServletRequest request);
 
     /**
      * getLinkURI.
      *
-     * @return a {@link java.net.URI} object.
+     * @return the link URI for this browse element
      */
     public URI getLinkURI();
 
     /**
      * getIconURI.
      *
-     * @return a {@link java.net.URI} object.
+     * @return the icon URI for this browse element, or null if no icon is set
      */
     public URI getIconURI();
 
@@ -82,7 +82,7 @@ public interface BrowseElementInfo {
      *
      * @param width a int.
      * @param height a int.
-     * @return a {@link java.net.URI} object.
+     * @return the icon URI scaled to the given width and height, or null if no icon is set
      */
     public URI getIconURI(int width, int height);
 
@@ -90,7 +90,7 @@ public interface BrowseElementInfo {
      * getIconURI.
      *
      * @param size a int.
-     * @return a {@link java.net.URI} object.
+     * @return the icon URI scaled to the given square size, or null if no icon is set
      */
     public URI getIconURI(int size);
 
@@ -106,7 +106,7 @@ public interface BrowseElementInfo {
     /**
      * getTranslationsForName.
      *
-     * @return a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
+     * @return the multilingual name translations for this browse element
      */
     public IMetadataValue getTranslationsForName();
 

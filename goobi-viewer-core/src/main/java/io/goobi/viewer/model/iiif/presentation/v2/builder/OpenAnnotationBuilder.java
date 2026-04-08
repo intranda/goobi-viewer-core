@@ -152,7 +152,7 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
      *
      * @param doc Solr document of type UGC containing the annotation data
      * @param urlOnlyTarget if true, use URI-only annotation targets
-     * @return a {@link de.intranda.api.annotation.oa.OpenAnnotation} object.
+     * @return the OpenAnnotation created from the given UGC Solr document
      */
     public OpenAnnotation createUGCOpenAnnotation(SolrDocument doc, boolean urlOnlyTarget) {
         String pi = Optional.ofNullable(doc.getFieldValue(SolrConstants.PI_TOPSTRUCT)).map(SolrTools::getAsString).orElse("");
@@ -166,7 +166,7 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
      * @param pi persistent identifier of the annotated record
      * @param doc Solr document of type UGC containing the annotation data
      * @param urlOnlyTarget if true, use URI-only annotation targets
-     * @return a {@link de.intranda.api.annotation.oa.OpenAnnotation} object.
+     * @return the OpenAnnotation created from the given UGC Solr document for the specified record
      */
     public OpenAnnotation createUGCOpenAnnotation(String pi, SolrDocument doc, boolean urlOnlyTarget) {
         String id = Optional.ofNullable(doc.getFieldValue(SolrConstants.MD_ANNOTATION_ID))

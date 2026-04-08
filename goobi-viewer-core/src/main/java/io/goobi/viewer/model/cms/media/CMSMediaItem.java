@@ -453,7 +453,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /**
      * getLinkURI.
      *
-     * @return a {@link java.net.URI} object.
+     * @return the link URI for this media item, resolved using the current HTTP request
      */
     @Override
     public URI getLinkURI() {
@@ -603,7 +603,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /**
      * getImageURI.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the file URI to the CMS media image file
      */
     public String getImageURI() {
         // Path.get() adds a "C:" to Unix paths. This must be prevented when using an external API in a Windows dev environment.
@@ -636,7 +636,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /**
      * getTranslationsForDescription.
      *
-     * @return a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
+     * @return the multilingual metadata value containing description translations for all configured languages
      */
     public IMetadataValue getTranslationsForDescription() {
         Map<String, String> names = getMetadata().stream()
@@ -648,7 +648,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /**
      * getTranslationsForAlternativeText.
      *
-     * @return a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
+     * @return the multilingual metadata value containing alternative text translations for all configured languages
      */
     public IMetadataValue getTranslationsForAlternativeText() {
         Map<String, String> names = getMetadata().stream()
@@ -670,7 +670,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /**
      * getFinishedLocales.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of locales for which this media item has a non-blank name translation
      */
     public List<Locale> getFinishedLocales() {
         return this.getMetadata()
@@ -719,7 +719,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /**
      * getFilePath.
      *
-     * @return a {@link java.nio.file.Path} object.
+     * @return the filesystem path to the CMS media file
      */
     public Path getFilePath() {
         Path folder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),

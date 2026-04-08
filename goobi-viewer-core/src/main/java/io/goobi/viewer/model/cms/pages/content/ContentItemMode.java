@@ -39,7 +39,7 @@ public enum ContentItemMode {
      * get.
      *
      * @param name mode name as defined in the template XML
-     * @return a {@link io.goobi.viewer.model.cms.pages.content.ContentItemMode} object.
+     * @return the ContentItemMode matching the given name, or {@link #simple} if blank or unrecognized
      */
     public static ContentItemMode get(String name) {
         if (StringUtils.isBlank(name)) {

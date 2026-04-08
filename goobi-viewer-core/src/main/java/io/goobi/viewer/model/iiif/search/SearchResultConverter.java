@@ -133,7 +133,7 @@ public class SearchResultConverter {
     /**
      * Getter for the field <code>pi</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the persistent identifier (PI) of the record being searched
      */
     public String getPi() {
         return pi;
@@ -151,7 +151,7 @@ public class SearchResultConverter {
     /**
      * Getter for the field <code>pageNo</code>.
      *
-     * @return a {@link java.lang.Integer} object.
+     * @return the physical page order number of generated search resources, or null if not set
      */
     public Integer getPageNo() {
         return pageNo;
@@ -160,7 +160,7 @@ public class SearchResultConverter {
     /**
      * Getter for the field <code>presentationBuilder</code>.
      *
-     * @return a {@link io.goobi.viewer.model.iiif.presentation.v2.builder.AbstractBuilder} object.
+     * @return the IIIF presentation v2 builder used to generate annotation URIs
      */
     public AbstractBuilder getPresentationBuilder() {
         return presentationBuilder;

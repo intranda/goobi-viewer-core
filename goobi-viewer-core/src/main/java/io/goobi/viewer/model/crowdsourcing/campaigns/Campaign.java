@@ -725,7 +725,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
      * the language will not be in sync with the selected locale!
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the campaign title in the currently selected editing locale
      */
     public String getTitle() {
         return Translation.getTranslation(translations, selectedLocale.getLanguage(), "title");
@@ -746,7 +746,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
      * since the language will not be in sync with the selected locale!
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the campaign menu title in the currently selected editing locale
      */
     public String getMenuTitle() {
         return Translation.getTranslation(translations, selectedLocale.getLanguage(), "menu_title");
@@ -755,7 +755,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * getMenuTitleOrElseTitle.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the campaign menu title in the currently selected locale, falling back to the title if no menu title is set
      */
     public String getMenuTitleOrElseTitle() {
         String title = getMenuTitle();
@@ -770,7 +770,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
      *
      * @param lang BCP 47 language tag for the requested translation
      * @param useFallback whether to fall back to the default language translation
-     * @return a {@link java.lang.String} object.
+     * @return the menu title in the given language, falling back to the title if not available
      */
     public String getMenuTitleOrElseTitle(String lang, boolean useFallback) {
         String title = getMenuTitle(lang, useFallback);
@@ -815,7 +815,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
      * getTitle.
      *
      * @param lang BCP 47 language tag for the requested translation
-     * @return a {@link java.lang.String} object.
+     * @return the campaign title in the given language, without fallback
      */
     public String getTitle(String lang) {
         return getTitle(lang, false);
@@ -836,7 +836,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
      * getDescription.
      *
      * @param lang BCP 47 language tag for the requested translation
-     * @return a {@link java.lang.String} object.
+     * @return the campaign description in the given language, without fallback
      */
     public String getDescription(String lang) {
         return getDescription(lang, false);
@@ -847,7 +847,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
      *
      * @param lang BCP 47 language tag for the requested translation
      * @param useFallback whether to fall back to the default language translation
-     * @return a {@link java.lang.String} object.
+     * @return the campaign description in the given language, optionally falling back to the default language
      */
     public String getDescription(String lang, boolean useFallback) {
         return Translation.getTranslation(translations, lang, "description", useFallback);
@@ -857,7 +857,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
      * getMenuTitle.
      *
      * @param lang BCP 47 language tag for the requested translation
-     * @return a {@link java.lang.String} object.
+     * @return the campaign menu title in the given language, without fallback
      */
     public String getMenuTitle(String lang) {
         return getMenuTitle(lang, false);
@@ -868,7 +868,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
      *
      * @param lang BCP 47 language tag for the requested translation
      * @param useFallback whether to fall back to the default language translation
-     * @return a {@link java.lang.String} object.
+     * @return the campaign menu title in the given language, optionally falling back to the default language
      */
     public String getMenuTitle(String lang, boolean useFallback) {
         return Translation.getTranslation(translations, lang, "menu_title", useFallback);
@@ -896,7 +896,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
      * Getter for the field <code>id</code>.
      *
      * @param idAsURI campaign REST API URI containing the numeric ID
-     * @return a {@link java.lang.Long} object.
+     * @return the numeric campaign ID extracted from the URI, or null if not found
      */
     public static Long getId(URI idAsURI) {
 
@@ -912,7 +912,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * getIdAsURI.
      *
-     * @return a {@link java.net.URI} object.
+     * @return the REST API URI for this campaign, constructed from the campaign ID
      */
     @JsonProperty("url")
     public URI getIdAsURI() {
@@ -1244,7 +1244,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
      * @param status desired record status to filter candidates by
      * @param piToIgnore persistent identifier of the record to exclude
      * @param user the user requesting the target; used to filter eligible records
-     * @return a {@link java.lang.String} object.
+     * @return the persistent identifier of a randomly selected eligible target record, or an empty string if none is available
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -1267,7 +1267,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
      * @param status desired record status to filter candidates by
      * @param currentPi persistent identifier of the currently viewed record
      * @param user the user requesting the target; used to filter eligible records
-     * @return a {@link java.lang.String} object.
+     * @return the persistent identifier of the next eligible target record after the current one, or an empty string if none is available
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */

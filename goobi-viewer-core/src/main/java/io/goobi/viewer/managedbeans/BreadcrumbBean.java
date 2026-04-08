@@ -480,7 +480,7 @@ public class BreadcrumbBean implements Serializable {
     /**
      * Returns the bottom breadcrumb. Used to return to the previous page from the errorGeneral page.
      *
-     * @return a {@link io.goobi.viewer.model.viewer.LabeledLink} object.
+     * @return the last (deepest) breadcrumb link, or null if the breadcrumb list is empty
      */
     public LabeledLink getLastBreadcrumb() {
         //        List<LabeledLink> breadcrumbs = Collections.synchronizedList(this.breadcrumbs);
@@ -496,7 +496,7 @@ public class BreadcrumbBean implements Serializable {
     /**
      * getBrowseUrl.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the absolute URL to the browse page
      */
     private static String getBrowseUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse.getName();
@@ -513,7 +513,7 @@ public class BreadcrumbBean implements Serializable {
     /**
      * getApplicationUrl.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the absolute base URL of the viewer application ending with a slash
      */
     private static String getApplicationUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/";

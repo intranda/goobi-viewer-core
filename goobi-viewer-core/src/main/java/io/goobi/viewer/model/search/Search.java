@@ -847,7 +847,7 @@ public class Search implements Serializable {
     /**
      * Constructs a search URL using the query parameters contained in this object.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the viewer search URL with query, page, sort, and facet parameters encoded
      * @throws java.io.UnsupportedEncodingException if any.
      */
     public String getUrl() throws UnsupportedEncodingException {

@@ -219,7 +219,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * Getter for the field <code>id</code>.
      *
-     * @return a {@link java.lang.Long} object.
+     * @return the database primary key of this navigation item, or null if not persisted
      */
     public Long getId() {
         return id;
@@ -237,7 +237,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * Getter for the field <code>itemLabel</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the display label for this navigation item, using the CMS page menu title if linked
      */
     public String getItemLabel() {
         if (cmsPage != null) {
@@ -297,7 +297,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * Getter for the field <code>childItems</code>.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of direct child navigation items of this item
      */
     public synchronized List<CMSNavigationItem> getChildItems() {
         return new ArrayList<>(childItems);
@@ -356,7 +356,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * Getter for the field <code>cmsPage</code>.
      *
-     * @return a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
+     * @return the CMS page this navigation item links to, or null if none is set
      */
     public CMSPage getCmsPage() {
         return cmsPage;
@@ -374,7 +374,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * getNavigationUrl.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the fully qualified navigation URL for this item, including the servlet context path if needed
      */
     public String getNavigationUrl() {
         String url = (isAbsolute(getPageUrl()) || isOnSameRessource(getPageUrl()) ? "" : BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/")
@@ -411,7 +411,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * Getter for the field <code>pageUrl</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the relative URL path for this navigation item, using the linked CMS page URL if available
      */
     public String getPageUrl() {
         if (cmsPage != null) {
@@ -602,7 +602,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * Getter for the field <code>displayRule</code>.
      *
-     * @return a {@link io.goobi.viewer.model.cms.CMSNavigationItem.DisplayRule} object.
+     * @return the display rule controlling when this navigation item is shown; defaults to {@link DisplayRule#ALWAYS}
      */
     public DisplayRule getDisplayRule() {
         if (this.displayRule == null) {
@@ -697,7 +697,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * getMeWithDescendants.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list containing this item followed by all of its descendant navigation items
      */
     public List<CMSNavigationItem> getMeWithDescendants() {
         List<CMSNavigationItem> items = new ArrayList<>();

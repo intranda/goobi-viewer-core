@@ -31,7 +31,7 @@ public enum PageOrientation {
     /**
      * opposite.
      *
-     * @return a {@link io.goobi.viewer.model.viewer.PageOrientation} object.
+     * @return the opposite page orientation (LEFT becomes RIGHT and vice versa)
      */
     public PageOrientation opposite() {
         return this.equals(LEFT) ? RIGHT : LEFT;

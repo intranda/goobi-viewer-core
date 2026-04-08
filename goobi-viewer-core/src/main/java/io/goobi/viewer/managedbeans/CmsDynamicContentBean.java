@@ -55,7 +55,7 @@ public class CmsDynamicContentBean implements Serializable {
     /**
      * getTopBarContent.
      *
-     * @return a {@link jakarta.faces.component.html.HtmlPanelGroup} object
+     * @return the HtmlPanelGroup containing the dynamically loaded top bar content for the current CMS page
      */
     public HtmlPanelGroup getTopBarContent() {
         this.cmsPage = Optional.ofNullable(BeanUtils.getCmsBean()).map(CmsBean::getCurrentPage).orElse(null);

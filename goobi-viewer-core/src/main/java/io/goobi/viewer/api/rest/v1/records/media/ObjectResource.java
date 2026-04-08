@@ -131,7 +131,7 @@ public class ObjectResource {
      *
      * @param request incoming HTTP request providing the request URL
      * @param response outgoing HTTP response (unused, injected by JAX-RS)
-     * @return a {@link io.goobi.viewer.model.viewer.object.ObjectInfo} object.
+     * @return the ObjectInfo describing the 3D object and its associated resource URIs
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -247,7 +247,7 @@ public class ObjectResource {
      *
      * @param request incoming HTTP request (unused, injected by JAX-RS)
      * @param response outgoing HTTP response for setting content headers
-     * @return a {@link jakarta.ws.rs.core.StreamingOutput} object.
+     * @return a StreamingOutput that writes the 3D object file content to the response
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -299,7 +299,7 @@ public class ObjectResource {
      * @param pi persistent identifier of the record
      * @param subfolder first-level subfolder under the media directory
      * @param auxfilename filename of the auxiliary resource to serve
-     * @return a {@link jakarta.ws.rs.core.StreamingOutput} object.
+     * @return a StreamingOutput that writes the auxiliary resource file content (one subfolder level) to the response
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -334,7 +334,7 @@ public class ObjectResource {
      * @param pi persistent identifier of the record
      * @param subfolder first-level subfolder under the media directory
      * @param auxfilename filename of the auxiliary resource to serve
-     * @return a {@link jakarta.ws.rs.core.StreamingOutput} object.
+     * @return a StreamingOutput that writes the auxiliary resource file content (alternate path, one subfolder level) to the response
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -363,7 +363,7 @@ public class ObjectResource {
      * @param subfolder1 first-level subfolder under the media directory
      * @param subfolder2 second-level subfolder under subfolder1
      * @param auxfilename filename of the auxiliary resource to serve
-     * @return a {@link jakarta.ws.rs.core.StreamingOutput} object.
+     * @return a StreamingOutput that writes the auxiliary resource file content (two subfolder levels) to the response
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -400,7 +400,7 @@ public class ObjectResource {
      * @param subfolder1 first-level subfolder under the media directory
      * @param subfolder2 second-level subfolder under subfolder1
      * @param auxfilename filename of the auxiliary resource to serve
-     * @return a {@link jakarta.ws.rs.core.StreamingOutput} object.
+     * @return a StreamingOutput that writes the auxiliary resource file content (alternate path, two subfolder levels) to the response
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.

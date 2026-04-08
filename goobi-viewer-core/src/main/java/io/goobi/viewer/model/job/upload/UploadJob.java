@@ -296,7 +296,7 @@ public class UploadJob implements Serializable {
      * getJobStatus.
      *
      * @param processId Process ID to check
-     * @return a {@link java.lang.String} object.
+     * @return the status response for the given Goobi workflow process ID
      */
     ProcessStatusResponse getJobStatus(int processId) {
         StringBuilder url = new StringBuilder()

@@ -1007,7 +1007,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * getFinalSolrQuery.
      *
-     * @return a {@link java.lang.String} object
+     * @return the final Solr query string generated from the current or an empty search
      */
     public String getFinalSolrQuery() {
         if (this.currentSearch != null) {
@@ -1020,7 +1020,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * getFilterQueries.
      *
-     * @return a {@link java.util.List} object
+     * @return a list of active Solr filter query strings from the current search and active facets
      */
     public List<String> getFilterQueries() {
         List<String> queries = new ArrayList<>();
@@ -1187,7 +1187,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Wrapper method for Pretty URL mappings (so that the values is never empty).
      *
-     * @return a {@link java.lang.String} object.
+     * @return the current search query string sanitized for use in a Pretty URL, or "-" if blank
      */
     public String getSearchStringForUrl() {
         if (StringUtils.isEmpty(searchString)) {
@@ -1994,7 +1994,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @param field The index field for which to get drop-down values.
      * @param language Translation language for the values.
      * @param hierarchical If true, the menu items will be listed in their corresponding hierarchy (e.g. DC)
-     * @return a {@link java.util.List} object.
+     * @return a list of label/value pairs for use in advanced search drop-down menus for the given field
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -2095,7 +2095,7 @@ public class SearchBean implements SearchInterface, Serializable {
      *
      * <p>This method shouldn't throw exceptions, otherwise it can cause an IllegalStateException.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of label/value pairs for all available collection names in the current user's language
      */
     public List<StringPair> getAllCollections() {
         try {
@@ -2119,7 +2119,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * Returns drop-down items for all collection names. The displayed values are translated into the given language.
      *
      * @param language BCP 47 language tag for translating collection labels
-     * @return a {@link java.util.List} object.
+     * @return a list of label/value pairs for all available collection names translated into the given language
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -2213,7 +2213,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * saveSearchAction.
      *
      * @should add all values correctly
-     * @return a {@link java.lang.String} object.
+     * @return the empty navigation outcome string after persisting the current search
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String saveSearchAction() throws DAOException {
@@ -2295,7 +2295,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * executeSavedSearchAction.
      *
      * @param search previously saved search object to re-execute
-     * @return a {@link java.lang.String} object.
+     * @return the empty navigation outcome string after restoring and executing the saved search
      */
     public String executeSavedSearchAction(Search search) {
         logger.trace("executeSavedSearchAction");
@@ -2318,7 +2318,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * exportSearchAsRisAction.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the empty navigation outcome string after writing the RIS export to the HTTP response
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String exportSearchAsRisAction() throws IndexUnreachableException {
@@ -2412,7 +2412,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * exportSearchAsExcelAction.
      *
-     * @return a {@link java.lang.String} object.
+     * @return an empty string after initiating the Excel export response
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String exportSearchAsExcelAction() throws IndexUnreachableException {
@@ -2614,7 +2614,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * isDownloadReady.
      *
-     * @return a {@link java.util.concurrent.Future} object.
+     * @return a Future resolving to true when the export download is ready
      */
     public Future<Boolean> isDownloadReady() {
         try {
@@ -2643,7 +2643,7 @@ public class SearchBean implements SearchInterface, Serializable {
      *
      * @should return correct url
      * @should return null if navigationHelper is null
-     * @return a {@link java.lang.String} object.
+     * @return the URL for the search page matching the currently active search type
      */
     public String getSearchUrl() {
         if (navigationHelper == null) {
@@ -2675,7 +2675,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * getStructElement.
      *
      * @param pi persistent identifier of the record
-     * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @return the top-level StructElement for the record with the given PI
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
@@ -2783,7 +2783,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @param subQuery optional Solr sub-query to filter the facet base set
      * @param resultLimit maximum number of facet values to return
      * @param reverseOrder true to sort facet values in reverse order
-     * @return a {@link java.util.List} object.
+     * @return a list of facet items for the given field over all indexed documents, optionally filtered by the sub-query
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -3013,7 +3013,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * getHitsLocations.
      *
-     * @return a {@link java.util.List} object
+     * @return a list of GeoJSON strings for each search hit that has geographic coordinates
      */
     public List<String> getHitsLocations() {
         if (this.currentSearch != null) {
@@ -3039,7 +3039,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * getHitsMap.
      *
-     * @return a {@link io.goobi.viewer.model.maps.GeoMap} object
+     * @return a GeoMap populated with the geo-location hits from the current search result
      */
     public GeoMap getHitsMap() {
         GeoMap map = new GeoMap();

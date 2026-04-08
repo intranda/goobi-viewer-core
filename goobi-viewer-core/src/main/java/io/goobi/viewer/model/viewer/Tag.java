@@ -67,7 +67,7 @@ public class Tag implements Comparable<Tag>, Serializable {
     /**
      ********************************* Getter and Setter **************************************.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the CSS class name assigned to this tag
      */
     public String getCss() {
         return css;
@@ -121,7 +121,7 @@ public class Tag implements Comparable<Tag>, Serializable {
     /**
      * getEscapedName.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the URL-encoded tag name
      */
     public String getEscapedName() {
         try {

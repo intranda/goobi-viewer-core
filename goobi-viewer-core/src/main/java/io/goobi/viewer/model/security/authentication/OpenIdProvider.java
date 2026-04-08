@@ -201,7 +201,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
      * @param jwt decoded JWT token received from the OAuth callback
      * @param request incoming HTTP request from the OAuth redirect
      * @param response HTTP response for the OAuth callback
-     * @return a {@link java.util.concurrent.Future} object.
+     * @return a Future resolving to true if login succeeded, false otherwise
      */
     public Future<Boolean> completeLogin(DecodedJWT jwt, HttpServletRequest request, HttpServletResponse response) {
         try {

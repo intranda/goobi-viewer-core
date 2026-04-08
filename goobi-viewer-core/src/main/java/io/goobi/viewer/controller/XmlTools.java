@@ -91,7 +91,7 @@ public final class XmlTools {
      * @param filePath absolute path to the XML file to read
      * @should build document from string correctly
      * @should throw FileNotFoundException if file not found
-     * @return a {@link org.jdom2.Document} object.
+     * @return the parsed XML document
      * @throws java.io.FileNotFoundException if any.
      * @throws java.io.IOException if any.
      * @throws org.jdom2.JDOMException if any.
@@ -107,7 +107,7 @@ public final class XmlTools {
      *
      * @param url URL pointing to the XML resource to read
      * @should build document from url correctly
-     * @return a {@link org.jdom2.Document} object.
+     * @return the parsed XML document
      * @throws java.io.FileNotFoundException if any.
      * @throws java.io.IOException if any.
      * @throws org.jdom2.JDOMException if any.
@@ -123,7 +123,7 @@ public final class XmlTools {
      *
      * @param path path to the XML file to read
      * @should build document from path correctly
-     * @return a {@link org.jdom2.Document} object.
+     * @return the parsed XML document
      * @throws java.io.FileNotFoundException if any.
      * @throws java.io.IOException if any.
      * @throws org.jdom2.JDOMException if any.
@@ -139,7 +139,7 @@ public final class XmlTools {
      *
      * @param doc the JDOM2 document to serialize
      * @param filePath absolute path of the output file to write
-     * @return a {@link java.io.File} object.
+     * @return the written file
      * @throws java.io.FileNotFoundException if any.
      * @throws java.io.IOException if any.
      * @should write file correctly
@@ -155,7 +155,7 @@ public final class XmlTools {
      * @param string the XML content as a string
      * @should build document correctly
      * @param encoding character encoding to use when converting the string to bytes
-     * @return a {@link org.jdom2.Document} object.
+     * @return the parsed XML document
      * @throws org.jdom2.JDOMException if any.
      * @throws java.io.IOException if any.
      */
@@ -178,7 +178,7 @@ public final class XmlTools {
      * @param encoding character encoding to apply to the XML output
      * @should return XML string correctly for documents
      * @should return XML string correctly for elements
-     * @return a {@link java.lang.String} object.
+     * @return the XML serialization of the given document or element as a string
      */
     public static String getStringFromElement(Object element, final String encoding) {
         if (element == null) {
@@ -241,7 +241,7 @@ public final class XmlTools {
      * @param parent If not null, the expression is evaluated relative to this element.
      * @param filter Return type filter.
      * @param namespaces namespace bindings required by the XPath expression
-     * @return a {@link java.util.List} object.
+     * @return a list of XPath evaluation results matching the given filter type
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static List<Object> evaluate(String expr, Object parent, Filter filter, List<Namespace> namespaces) {
@@ -299,7 +299,7 @@ public final class XmlTools {
      *
      * @param xml the XML content as a string to inspect
      * @param encoding character encoding used to parse the XML string
-     * @return a {@link java.lang.String} object.
+     * @return the detected source document format (e.g. "METS", "LIDO"), or null if the format cannot be determined
      * @throws org.jdom2.JDOMException if any.
      * @throws java.io.IOException if any.
      */
@@ -319,7 +319,7 @@ public final class XmlTools {
      * @should detect abbyy files correctly
      * @should detect tei files correctly
      * @param doc the parsed JDOM2 document to inspect
-     * @return a {@link java.lang.String} object.
+     * @return the detected source document format (e.g. "METS", "LIDO"), or null if the format cannot be determined
      */
     public static String determineFileFormat(Document doc) {
         if (doc == null || doc.getRootElement() == null) {

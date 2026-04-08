@@ -60,7 +60,7 @@ public interface IPageLoader extends Serializable {
      * getPage.
      *
      * @param pageOrder physical page order number (1-based)
-     * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @return the PhysicalElement at the given page order, or null if not found
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -70,7 +70,7 @@ public interface IPageLoader extends Serializable {
      * getPageForFileName.
      *
      * @param fileName base file name of the page to look up
-     * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @return the PhysicalElement with the given file name, or null if not found
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -81,7 +81,7 @@ public interface IPageLoader extends Serializable {
      * getOwnerIddocForPage.
      *
      * @param pageOrder physical page order number to look up
-     * @return a {@link java.lang.Long} object.
+     * @return the IDDOC of the owning struct element for the given page order
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */

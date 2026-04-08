@@ -105,7 +105,7 @@ public class CollectionBuilder extends AbstractBuilder {
      * @param splittingChar character separating hierarchy levels in collection names
      * @param facetField A SOLR field which values are requested for all records within the collection and stored within the collection for later use
      * @param ignoreCollections collection names to exclude from the result
-     * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
+     * @return the generated IIIF Collection for the given Solr collection field and top element
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -219,7 +219,7 @@ public class CollectionBuilder extends AbstractBuilder {
      *
      * @param collectionField Solr field name identifying the collection
      * @param topElement name of the top-level collection element to filter by; null for all
-     * @return a {@link java.lang.String} object.
+     * @return the Solr query string for retrieving records in the given collection hierarchy
      */
     public String createCollectionQuery(String collectionField, final String topElement) {
         String query;
@@ -238,7 +238,7 @@ public class CollectionBuilder extends AbstractBuilder {
      * @param baseElement the collection element to build the IIIF collection for; null for top-level
      * @param collectionView the collection view providing metadata and child elements
      * @param uri the identifier URI for the resulting IIIF collection
-     * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
+     * @return the IIIF Collection built from the given collection view and base element
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -366,7 +366,7 @@ public class CollectionBuilder extends AbstractBuilder {
      * @param collectionField Solr field name identifying the collection
      * @param groupingField Solr field used for grouping or faceting within the collection
      * @param splittingChar character separating hierarchy levels in collection names
-     * @return a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object.
+     * @return the CollectionView for the given field, retrieved from session cache or freshly created
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws IllegalRequestException
      */
@@ -404,7 +404,7 @@ public class CollectionBuilder extends AbstractBuilder {
      * getFacetField.
      *
      * @param collectionField Solr field name to derive the facet field from
-     * @return a {@link java.lang.String} object.
+     * @return the corresponding Solr facet field name for the given collection field (e.g. MD_ prefix replaced with FACET_)
      */
     public String getFacetField(String collectionField) {
 

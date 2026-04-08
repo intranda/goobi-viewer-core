@@ -210,7 +210,7 @@ public class MetadataBean {
      * getTopMetadataElement.
      *
      * @param index Metadata view index
-     * @return a {@link io.goobi.viewer.model.metadata.MetadataElement} object.
+     * @return the top MetadataElement at the given view index, or null if none is available
      */
     public MetadataElement getTopMetadataElement(int index) {
         List<MetadataElement> metadataElementList = getMetadataElementList(index);
@@ -226,7 +226,7 @@ public class MetadataBean {
      * just the first (anchor) metadata element
      * 
      * @param index Metadata view index to retrieve
-     * @return a {@link MetadataElement} object
+     * @return the main MetadataElement (first non-anchor) for the given view index, or null if none is available
      */
     public MetadataElement getMainMetadataElement(int index) {
         List<MetadataElement> metadataElementList = getMetadataElementList(index);
@@ -244,7 +244,7 @@ public class MetadataBean {
      * times per page
      *
      * @param metadataViewIndex Metadata view index
-     * @return a {@link io.goobi.viewer.model.metadata.MetadataElement} object.
+     * @return the bottom MetadataElement with sidebar metadata for the given view index, or null if none is available
      */
     public MetadataElement getBottomMetadataElement(int metadataViewIndex) {
         List<MetadataElement> metadataElementList = getMetadataElementList(metadataViewIndex);

@@ -135,7 +135,7 @@ public class LanguageHelper {
      * Gets the language data for the given iso-code 639-1 or 639-2B.
      *
      * @param inIsoCode ISO 639-1 or 639-2/B language code to look up
-     * @return a {@link io.goobi.viewer.model.translations.language.Language} object.
+     * @return the Language data for the given ISO code, or null if not found
      */
     public Language getLanguage(final String inIsoCode) {
         if (inIsoCode == null) {

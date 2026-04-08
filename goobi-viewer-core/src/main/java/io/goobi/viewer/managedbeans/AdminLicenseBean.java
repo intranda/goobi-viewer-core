@@ -251,7 +251,7 @@ public class AdminLicenseBean implements Serializable {
     /**
      * Returns all existing non-core license types minus <code>currentLicenseType</code>. Used for overriding license type selection.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all non-core license types excluding the currently selected one
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<LicenseType> getOtherLicenseTypes() throws DAOException {
@@ -274,7 +274,7 @@ public class AdminLicenseBean implements Serializable {
     /**
      * saveLicenseTypeAction.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the navigation outcome after saving the current license type to the database
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String saveCurrentLicenseTypeAction() throws DAOException {
@@ -508,7 +508,7 @@ public class AdminLicenseBean implements Serializable {
      * deleteLicenseAction.
      *
      * @param license a {@link io.goobi.viewer.model.security.License} object.
-     * @return a {@link java.lang.String} object.
+     * @return the navigation outcome after deleting the given license from the database
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String deleteLicenseAction(License license) throws DAOException {
@@ -538,7 +538,7 @@ public class AdminLicenseBean implements Serializable {
     /**
      * getPageTickets.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of access tickets for the current page in the paginated ticket list
      */
     public List<AccessTicket> getPageTickets() {
         return lazyModelTickets.getPaginatorList();

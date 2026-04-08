@@ -63,7 +63,7 @@ public class DocumentReference {
     /**
      * Getter for the field <code>pi</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the persistent identifier (PI) of the top-level structure element
      */
     public String getPi() {
         return pi;
@@ -102,7 +102,7 @@ public class DocumentReference {
     /**
      * Getter for the field <code>pageRanges</code>.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of tag groups, one per page range in this document reference
      */
     @JsonProperty("pages")
     public List<TagGroup> getPageRanges() {
@@ -113,7 +113,7 @@ public class DocumentReference {
      * getPageRange.
      *
      * @param startPage page order number to look up in ranges
-     * @return a {@link io.goobi.viewer.api.rest.model.ner.TagGroup} object.
+     * @return the TagGroup whose range contains the given start page, or null if none found
      */
     public TagGroup getPageRange(int startPage) {
         try {

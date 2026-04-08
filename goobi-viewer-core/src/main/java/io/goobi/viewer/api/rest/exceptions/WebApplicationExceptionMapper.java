@@ -116,7 +116,7 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
     /**
      * getRequestHeaders.
      *
-     * @return a {@link java.lang.String} object.
+     * @return all HTTP request headers as a semicolon-separated key-value string
      */
     public String getRequestHeaders() {
         return Collections.list(request.getHeaderNames())

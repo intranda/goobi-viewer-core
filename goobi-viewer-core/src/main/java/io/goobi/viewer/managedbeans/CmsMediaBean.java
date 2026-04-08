@@ -216,7 +216,7 @@ public class CmsMediaBean implements Serializable {
     /**
      * createMediaItem.
      *
-     * @return a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
+     * @return a new CMSMediaItem initialized with metadata entries for all configured locales
      */
     public CMSMediaItem createMediaItem() {
         CMSMediaItem item = new CMSMediaItem();
@@ -283,7 +283,7 @@ public class CmsMediaBean implements Serializable {
     /**
      * getAllMedia.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all CMS media items accessible to the current user
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<CMSMediaItem> getAllMedia() throws DAOException {
@@ -307,7 +307,7 @@ public class CmsMediaBean implements Serializable {
     /**
      * Getter for the field <code>dataProvider</code>.
      *
-     * @return a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider} object.
+     * @return the TableDataProvider for the CMS media item list
      */
     public TableDataProvider<CategorizableTranslatedSelectable<CMSMediaItem>> getDataProvider() {
         return this.dataProvider;
@@ -316,7 +316,7 @@ public class CmsMediaBean implements Serializable {
     /**
      * getMediaItems.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of categorizable translated selectable CMS media items for the current page in the paginated media list
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<CategorizableTranslatedSelectable<CMSMediaItem>> getMediaItems() throws DAOException {
@@ -387,7 +387,7 @@ public class CmsMediaBean implements Serializable {
      * getMediaUrl.
      *
      * @param item media item for which to build the URL
-     * @return a {@link java.lang.String} object.
+     * @return the URL to the given CMS media item at its natural size
      * @throws java.lang.NumberFormatException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -401,7 +401,7 @@ public class CmsMediaBean implements Serializable {
      * @param item media item for which to build the URL
      * @param width requested image width in pixels, or null/blank for auto
      * @param height requested image height in pixels, or null/blank for auto
-     * @return a {@link java.lang.String} object.
+     * @return the URL to the given CMS media item scaled to the specified dimensions
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public static String getMediaUrl(CMSMediaItem item, String width, String height) {
@@ -458,7 +458,7 @@ public class CmsMediaBean implements Serializable {
      * getMediaFileAsString.
      *
      * @param item media item whose file content is retrieved via REST
-     * @return a {@link java.lang.String} object.
+     * @return the text content of the given CMS media item fetched via REST API, or empty string on failure
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public static String getMediaFileAsString(CMSMediaItem item) {
@@ -481,7 +481,7 @@ public class CmsMediaBean implements Serializable {
      * getMediaPreviewUrl.
      *
      * @param item media item for which to build a preview thumbnail URL
-     * @return a {@link java.lang.String} object.
+     * @return the URL to a 160px-high preview thumbnail of the given CMS media item
      * @throws java.lang.NumberFormatException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -596,7 +596,7 @@ public class CmsMediaBean implements Serializable {
      * getFileName.
      *
      * @param filePart multipart upload part from which the filename is extracted
-     * @return a {@link java.lang.String} object.
+     * @return the filename extracted from the content-disposition header of the upload part, or null if not found
      */
     public static String getFileName(Part filePart) {
         if (filePart != null) {
@@ -631,7 +631,7 @@ public class CmsMediaBean implements Serializable {
     /**
      * getAllMediaCategories.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all CMS categories available for media items
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<CMSCategory> getAllMediaCategories() throws DAOException {

@@ -241,7 +241,7 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
      * @should load page correctly via page number
      * @should load page correctly via file name
      * @should return null if page not found
-     * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @return the loaded PhysicalElement matching the given page number or file name, or null if not found
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.

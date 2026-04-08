@@ -528,7 +528,7 @@ public class ArchiveBean implements Serializable {
     /**
      * Exports the currently loaded archive for re-indexing.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the empty navigation outcome string after triggering re-indexing
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.RecordNotFoundException if any.

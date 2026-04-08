@@ -91,7 +91,7 @@ public class RelatedPIValidator extends PIValidator {
      * @should return false if pi empty, blank or null
      * @should return false if user is null
      * @should return true if user is superuser
-     * @return a {@link java.lang.String} object.
+     * @return null if the PI is valid, or a message key string describing the validation failure
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */

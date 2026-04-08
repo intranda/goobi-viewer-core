@@ -92,7 +92,7 @@ public class ImageHandler {
      *
      * @param page physical page providing the image filename and PI
      * @param pageType viewer page type used to select the appropriate URL pattern
-     * @return a {@link java.lang.String} object.
+     * @return the IIIF image info URL for the given page and page type
      */
     public String getImageUrl(PhysicalElement page, PageType pageType) {
         if (page == null) {
@@ -157,7 +157,7 @@ public class ImageHandler {
      * either also be a IIIF image information or the image itself
      *
      * @param page physical page providing the image filename and PI
-     * @return a {@link java.lang.String} object.
+     * @return the IIIF image info URL for the given page using the default viewImage page type
      */
     public String getImageUrl(PhysicalElement page) {
         return getImageUrl(page, PageType.viewImage);
@@ -271,7 +271,7 @@ public class ImageHandler {
      * getImageInformation.
      *
      * @param url IIIF image or info.json URL to retrieve image information from
-     * @return a {@link de.intranda.api.iiif.image.ImageInformation} object.
+     * @return the IIIF ImageInformation for the resolved image URL
      * @throws java.net.URISyntaxException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException if any.
      */

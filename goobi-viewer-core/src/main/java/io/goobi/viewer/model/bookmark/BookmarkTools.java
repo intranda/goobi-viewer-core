@@ -51,7 +51,7 @@ public final class BookmarkTools {
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @should return shared bookmark lists
-     * @return a {@link java.util.List} object.
+     * @return a list of bookmark lists that have been shared with the given user via their group memberships
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public static List<BookmarkList> getBookmarkListsSharedWithUser(User user) throws DAOException {

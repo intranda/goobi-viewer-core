@@ -64,7 +64,7 @@ public class TableDataFilter implements Serializable {
     /**
      * Getter for the field <code>column</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the list of column names this filter applies to
      */
     public List<String> getColumns() {
         return columns;
@@ -73,7 +73,7 @@ public class TableDataFilter implements Serializable {
     /**
      * <p>getName.
      *
-     * @return a {@link java.lang.String} object
+     * @return the concatenated column names of this filter
      */
     public String getName() {
         return this.columns.stream().collect(Collectors.joining());
@@ -82,7 +82,7 @@ public class TableDataFilter implements Serializable {
     /**
      * Getter for the field <code>value</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the current filter value string used to match rows in the configured columns
      */
     public String getValue() {
         return value;

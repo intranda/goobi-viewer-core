@@ -211,7 +211,7 @@ public enum PageType {
     /**
      * Getter for the field <code>handling</code>.
      *
-     * @return a {@link io.goobi.viewer.model.viewer.PageType.PageTypeHandling} object.
+     * @return the handling mode determining whether this page type is handled by CMS or the core viewer
      */
     public PageTypeHandling getHandling() {
         return this.handling;
@@ -290,7 +290,7 @@ public enum PageType {
     /**
      * getTypesHandledByCms.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of page types that are handled by the CMS system
      */
     public static List<PageType> getTypesHandledByCms() {
         Set<PageType> all = EnumSet.allOf(PageType.class);
@@ -307,7 +307,7 @@ public enum PageType {
      * getByName.
      *
      * @param name page type name to look up
-     * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
+     * @return the PageType matching the given name, or {@link #other} if not found
      * @should return correct type for raw names
      * @should return correct type for mapped names
      * @should return correct type for enum names
@@ -340,7 +340,7 @@ public enum PageType {
     /**
      * getRawName.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the raw (internal) name of this page type as defined in configuration
      */
     public String getRawName() {
         return path;
@@ -373,7 +373,7 @@ public enum PageType {
      * getPageTypeForDocStructType.
      *
      * @param docStructType logical document structure type name
-     * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
+     * @return the configured PageType for the given docstruct type, or null if none is configured
      */
     public static PageType getPageTypeForDocStructType(String docStructType) {
         // First choice: Use preferred target page type for this publication type, if configured
@@ -413,7 +413,7 @@ public enum PageType {
      * @should return toc page type for anchors
      * @should return image page type correctly
      * @should return medatata page type if nothing else matches
-     * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
+     * @return the most appropriate PageType for the given record characteristics
      */
     public static PageType determinePageType(String docStructType, String mimeType, Boolean anchorOrGroup, boolean hasImages,
             boolean pageResolverUrl) {

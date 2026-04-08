@@ -342,7 +342,7 @@ public class CMSCategoryUpdate implements IModelUpdate {
      * createCategories.
      *
      * @param entityMap map of entity types to their category-name-to-ID mappings
-     * @return a {@link java.util.List} object.
+     * @return a list of new CMSCategory instances derived from the unique category names found across all entity types
      */
     protected List<CMSCategory> createCategories(Map<String, Map<String, List<Long>>> entityMap) {
         return entityMap.values()

@@ -566,7 +566,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * getTitle.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the CMS page template title in the default language
      */
     public String getTitle() {
         return this.title.getTextOrDefault();
@@ -576,7 +576,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
      * getTitle.
      *
      * @param locale locale to retrieve the title translation for.
-     * @return a {@link java.lang.String} object.
+     * @return the CMS page template title in the given locale
      */
     public String getTitle(Locale locale) {
         return this.title.getText(locale);

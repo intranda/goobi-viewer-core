@@ -97,7 +97,7 @@ public class CMSStaticPage implements Serializable {
     /**
      * Getter for the field <code>cmsPage</code>.
      *
-     * @return a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
+     * @return the associated CMS page, or null if none is set
      */
     public CMSPage getCmsPage() {
         return getCmsPageOptional().orElse(null);

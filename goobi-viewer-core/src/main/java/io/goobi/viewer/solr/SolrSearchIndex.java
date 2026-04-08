@@ -192,7 +192,7 @@ public class SolrSearchIndex implements java.io.Closeable {
     /**
      * getNewHttp2SolrClient.
      *
-     * @return a {@link org.apache.solr.client.solrj.impl.HttpSolrServer} object.
+     * @return a new Http2SolrClient configured with the Solr URL from the viewer configuration
      */
     static Http2SolrClient getNewHttp2SolrClient() {
         return getNewHttp2SolrClient(DataManager.getInstance().getConfiguration().getSolrUrl());
@@ -227,7 +227,7 @@ public class SolrSearchIndex implements java.io.Closeable {
      * testQuery.
      *
      * @param query Solr query string to execute as a test
-     * @return a {@link org.apache.solr.client.solrj.response.QueryResponse} object.
+     * @return the QueryResponse from the test query
      * @throws org.apache.solr.client.solrj.SolrServerException if any.
      * @throws IOException
      */
@@ -401,7 +401,7 @@ public class SolrSearchIndex implements java.io.Closeable {
      * @param rows maximum number of documents to return
      * @param sortFields Optional field/order pairs for sorting
      * @param fieldList If not null, only the fields in the list will be returned.
-     * @return a {@link org.apache.solr.common.SolrDocumentList} object.
+     * @return the list of matching Solr documents
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -479,7 +479,7 @@ public class SolrSearchIndex implements java.io.Closeable {
      * @param query Solr query string to execute
      * @param fieldList list of Solr field names to include in returned documents
      * @should return SolrDocumentList containing all hits, or null if no hits are found
-     * @return a {@link org.apache.solr.common.SolrDocumentList} object.
+     * @return the list of matching Solr documents, or null if no documents are found
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -498,7 +498,7 @@ public class SolrSearchIndex implements java.io.Closeable {
      *
      * @param iddoc internal Solr document identifier to look up
      * @should return correct doc
-     * @return a {@link org.apache.solr.common.SolrDocument} object.
+     * @return the Solr document matching the given IDDOC, or null if not found
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
@@ -520,7 +520,7 @@ public class SolrSearchIndex implements java.io.Closeable {
      *
      * @should return correct doc
      * @param pi persistent identifier of the record to look up
-     * @return a {@link org.apache.solr.common.SolrDocument} object.
+     * @return the Solr document matching the given PI, or null if not found
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
@@ -559,7 +559,7 @@ public class SolrSearchIndex implements java.io.Closeable {
      *
      * @param fieldName Solr field name whose terms to aggregate into tags
      * @param querySuffix additional query suffix appended to filter the tag cloud results
-     * @return a {@link java.util.List} object.
+     * @return a list of Tag objects generated from the terms of the given Solr field, optionally filtered by the query suffix
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public List<Tag> generateFilteredTagCloud(String fieldName, String querySuffix) throws IndexUnreachableException {
@@ -670,7 +670,7 @@ public class SolrSearchIndex implements java.io.Closeable {
      *
      * @should retrieve correct identifier
      * @param iddoc internal Solr document identifier to resolve
-     * @return a {@link java.lang.String} object.
+     * @return the record identifier (PI) for the given IDDOC, or null if not found
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -885,7 +885,7 @@ public class SolrSearchIndex implements java.io.Closeable {
      * @param facetFields list of Solr facet field names to compute facets for
      * @param facetMinCount minimum count a facet value must have to be included
      * @param getFieldStatistics if true, field statistics are generated for every facet field
-     * @return a {@link org.apache.solr.client.solrj.response.QueryResponse} object.
+     * @return the QueryResponse containing facets (and optional field statistics) without document results
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @should generate facets correctly
@@ -907,7 +907,7 @@ public class SolrSearchIndex implements java.io.Closeable {
      * @param facetMinCount minimum count a facet value must have to be included
      * @param params additional Solr query parameters
      * @param getFieldStatistics if true, field statistics are generated for every facet field
-     * @return a {@link org.apache.solr.client.solrj.response.QueryResponse} object.
+     * @return the QueryResponse containing facets (and optional field statistics) without document results
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -928,7 +928,7 @@ public class SolrSearchIndex implements java.io.Closeable {
      * @param facetPrefix prefix that facet values must start with; ignored if null or blank
      * @param params additional Solr query parameters
      * @param getFieldStatistics if true, field statistics are generated for every facet field
-     * @return a {@link org.apache.solr.client.solrj.response.QueryResponse} object.
+     * @return the QueryResponse containing facets (and optional field statistics) without document results
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @should generate facets correctly
@@ -998,7 +998,7 @@ public class SolrSearchIndex implements java.io.Closeable {
     /**
      * getAllFieldNames.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all field names defined in the Solr schema
      * @throws DAOException
      * @throws org.apache.solr.client.solrj.SolrServerException if any.
      * @throws java.io.IOException if any.
@@ -1407,7 +1407,7 @@ public class SolrSearchIndex implements java.io.Closeable {
      *
      * @param pi persistent identifier of the record to load the page from
      * @param order page order number (1-based) to retrieve
-     * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @return the PhysicalElement at the given order position within the record, or null if not found
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1427,7 +1427,7 @@ public class SolrSearchIndex implements java.io.Closeable {
      *
      * @param struct struct element representing the record to load the page from
      * @param order page order number (1-based) to retrieve
-     * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @return the PhysicalElement at the given order position within the struct element
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.

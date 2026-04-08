@@ -157,7 +157,7 @@ public class SearchQueryGroup implements Serializable {
     /**
      * getAvailableOperators.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all available search query group operators
      * @should return all enum values
      */
     public List<SearchQueryGroupOperator> getAvailableOperators() {

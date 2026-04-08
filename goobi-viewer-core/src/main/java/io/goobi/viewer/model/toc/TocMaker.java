@@ -101,7 +101,7 @@ public final class TocMaker {
      *
      * @should return both static and configured fields
      * @param template docstruct type name used to look up the label configuration
-     * @return a {@link java.util.List} object.
+     * @return a list of Solr field names to fetch for TOC generation
      */
     protected static List<String> getSolrFieldsToFetch(String template) {
         logger.trace("getSolrFieldsToFetch: {}", template);
@@ -147,7 +147,7 @@ public final class TocMaker {
      * @should paginate anchor TOC correctly
      * @should throw IllegalArgumentException if structElement is null
      * @should throw IllegalArgumentException if toc is null
-     * @return a {@link java.util.LinkedHashMap} object.
+     * @return a linked map of view names to their TOC element lists, preserving insertion order
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -803,7 +803,7 @@ public final class TocMaker {
      *
      * @param doc Solr document to read the field value from
      * @param footerIdField name of the Solr field to read
-     * @return a {@link java.lang.String} object.
+     * @return the first string value of the given Solr field, or null if the field is absent or empty
      */
     @SuppressWarnings("rawtypes")
     public static String getFirstFieldValue(SolrDocument doc, String footerIdField) {
@@ -933,7 +933,7 @@ public final class TocMaker {
      * @param doc Solr document to read language-specific values from
      * @param field Index field
      * @param altField Fallback index field
-     * @return a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
+     * @return the multilingual metadata value built from the given Solr document fields
      */
     public static IMetadataValue createMultiLanguageValue(SolrDocument doc, String field, String altField) {
         IMetadataValue value;

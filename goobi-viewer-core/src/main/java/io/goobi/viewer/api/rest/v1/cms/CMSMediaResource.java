@@ -147,7 +147,7 @@ public class CMSMediaResource {
      * @param maxItems maximum number of items to return
      * @param prioritySlots number of high-priority items guaranteed in result
      * @param random if true, return items in random order
-     * @return a {@link io.goobi.viewer.model.cms.media.MediaList} object.
+     * @return a MediaList containing the CMS media items matching the given category tags
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @GET
@@ -196,7 +196,7 @@ public class CMSMediaResource {
      * @param maxItems maximum number of items to return
      * @param prioritySlots number of high-priority items guaranteed in result
      * @param random if true, return items in random order
-     * @return a {@link io.goobi.viewer.model.cms.media.MediaList} object.
+     * @return a MediaList containing all CMS media items optionally filtered by the given tags
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @GET
@@ -415,7 +415,7 @@ public class CMSMediaResource {
      * Return the media item for the given filename. If no matching media item exists, return a not-found status code
      *
      * @param filename name of the CMS media file to look up
-     * @return a {@link jakarta.ws.rs.core.Response} object.
+     * @return an HTTP response containing the CMS media item metadata as JSON, or a 404 response if no item was found for the given filename
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @Hidden
@@ -634,7 +634,7 @@ public class CMSMediaResource {
      * createMediaItem.
      *
      * @param filePath path to the uploaded media file
-     * @return a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
+     * @return a new CMSMediaItem initialized with the filename and empty metadata for all configured locales
      */
     public CMSMediaItem createMediaItem(Path filePath) {
         CMSMediaItem item = new CMSMediaItem();

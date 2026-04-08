@@ -79,7 +79,7 @@ public class TocFunctionality implements Functionality {
      *
      * @param width a int.
      * @param height a int.
-     * @return a {@link java.lang.String} object.
+     * @return the banner image URL for the current TOC record, scaled to the given dimensions
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -102,7 +102,7 @@ public class TocFunctionality implements Functionality {
     /**
      * Getter for the field <code>toc</code>.
      *
-     * @return a {@link io.goobi.viewer.model.toc.TOC} object.
+     * @return the TOC for the current record, creating it if necessary
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -118,7 +118,7 @@ public class TocFunctionality implements Functionality {
     /**
      * Getter for the field <code>docStruct</code>.
      *
-     * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @return the top-level StructElement for the current record, creating it if necessary
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */

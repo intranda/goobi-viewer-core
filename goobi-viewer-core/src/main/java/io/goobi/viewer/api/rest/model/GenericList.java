@@ -54,7 +54,7 @@ public class GenericList<T> {
     /**
      * Getter for the field <code>list</code>.
      *
-     * @return a {@link java.util.List} object.
+     * @return the wrapped list of elements
      */
     @JsonValue
     public List<T> getList() {

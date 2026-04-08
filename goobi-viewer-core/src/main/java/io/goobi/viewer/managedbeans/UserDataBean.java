@@ -150,7 +150,7 @@ public class UserDataBean implements Serializable {
      *
      * @param user owner of the saved searches to retrieve
      * @param numEntries maximum number of results; null means no limit
-     * @return a {@link java.util.List} object.
+     * @return a list of saved searches for the given user, sorted by last update date descending
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @should return searches for correct user
      * @should return null if no user logged in
@@ -215,7 +215,7 @@ public class UserDataBean implements Serializable {
     /**
      * <p>Getter for the field <code>lazyModelComments</code>.
      *
-     * @return a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider} object
+     * @return the TableDataProvider for the user's comment history
      */
     public TableDataProvider<PersistentAnnotation> getLazyModelComments() {
         return lazyModelComments;
@@ -273,7 +273,7 @@ public class UserDataBean implements Serializable {
      * <p>getNumRecordsWithComments.
      *
      * @param user owner whose commented records are counted
-     * @return a {@link java.lang.Long} object
+     * @return the number of distinct records with comments for the given user
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public Long getNumRecordsWithComments(User user) throws DAOException {
@@ -338,7 +338,7 @@ public class UserDataBean implements Serializable {
      *
      * @param user owner whose bookmark lists are retrieved
      * @param numEntries maximum number of lists to return
-     * @return a {@link java.util.List} object
+     * @return a list of bookmark lists owned by the given user, sorted and limited to the specified count
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<BookmarkList> getBookmarkListsForUser(User user, int numEntries) throws DAOException {
@@ -356,7 +356,7 @@ public class UserDataBean implements Serializable {
      *
      * @param user user whose recent activity is retrieved
      * @param numEntries maximum number of activity entries to return
-     * @return a {@link java.util.List} object
+     * @return a list of recent user activity entries (searches, bookmarks, comments) for the given user
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<UserActivity> getLatestActivity(User user, int numEntries) throws DAOException {

@@ -683,7 +683,7 @@ public final class SearchHelper {
      * @should return correct hit for non-aggregated search
      * @should return correct hit for aggregated search
      * @param filterQueries Solr filter query strings
-     * @return a {@link io.goobi.viewer.model.search.BrowseElement} object.
+     * @return the BrowseElement for the search result at the given index, or null if no results are found
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.

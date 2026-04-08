@@ -62,7 +62,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
     /**
      * Returns the session stored bookmark list, creating a new empty one if needed.
      *
-     * @return a {@link io.goobi.viewer.model.bookmark.BookmarkList} object.
+     * @return a singleton list containing the session-stored bookmark list
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -77,7 +77,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
      *
      * @param id ignored; session has only one bookmark list
      * @param urls URL manager used to build application and API URLs
-     * @return a {@link java.lang.String} object.
+     * @return the Mirador-compatible JSON representation of the session bookmark list, or an empty string if no list exists
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -99,7 +99,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
      *
      * @param id ignored; session has only one bookmark list
      * @param pi persistent identifier of the record to bookmark
-     * @return a {@link io.goobi.viewer.api.rest.model.SuccessMessage} object.
+     * @return a SuccessMessage indicating whether the bookmark was successfully added to the session list
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -115,7 +115,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
      * @param pi persistent identifier of the record to bookmark
      * @param logId structural element log ID, or "-" to indicate none
      * @param pageString page order number as string, may be null
-     * @return a {@link io.goobi.viewer.api.rest.model.SuccessMessage} object.
+     * @return a SuccessMessage indicating whether the bookmark was successfully added to the session list
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -182,7 +182,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
      * Deletes the entry bookmark list from the session store. Always returns an object with the property "success: true", unless an error occurs in
      * which case an error status code and an error object is returned
      *
-     * @return a {@link io.goobi.viewer.api.rest.model.SuccessMessage} object.
+     * @return a SuccessMessage with success set to true if the session bookmark list was deleted successfully
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
      */
     public SuccessMessage deleteSessionBookmarkList() throws RestApiException {
@@ -194,7 +194,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
      * Returns "true" if the object with the given IP is in the session store bookmark list, "false" otherwise.
      *
      * @param pi persistent identifier of the record to look up
-     * @return a {@link java.lang.Boolean} object.
+     * @return true if the record with the given PI is in the session bookmark list, false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -209,7 +209,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
      * @param pi persistent identifier of the record to look up
      * @param logId structural element log ID, or "-" to indicate none
      * @param pageString page order number as string, may be null
-     * @return a {@link java.lang.Boolean} object.
+     * @return true if the specified item is in the session bookmark list, false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -233,7 +233,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
      * Counts the items contained in the session store bookmark list and returns the number as plain integer. If no session store bookmark
      * list exists, 0 is returned
      *
-     * @return a {@link java.lang.Integer} object.
+     * @return the number of items in the session bookmark list, or 0 if no list exists
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
      */
     public Integer countSessionBookmarks() throws RestApiException {
@@ -244,7 +244,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
      * Returns the bookmark list with the given id, provided it is owned by the user or it is public or shared to him.
      *
      * @param id database ID of the requested bookmark list
-     * @return a {@link io.goobi.viewer.model.bookmark.BookmarkList} object.
+     * @return the publicly accessible BookmarkList with the given database ID
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.

@@ -140,7 +140,7 @@ public class SitelinkBean implements Serializable {
     /**
      * resetAction.
      *
-     * @return a {@link java.lang.String} object.
+     * @return an empty string after resetting the current sitelink value and hits
      */
     public String resetAction() {
         value = null;

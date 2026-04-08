@@ -113,7 +113,7 @@ public class ManifestBuilder extends AbstractBuilder {
      *
      * @param ele top-level structure element of the record
      * @param pagesToInclude list of physical page orders to include; empty means all pages
-     * @return a {@link de.intranda.api.iiif.presentation.IPresentationModelElement} object.
+     * @return the generated IIIF Manifest or Collection for the given structure element
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -661,7 +661,7 @@ public class ManifestBuilder extends AbstractBuilder {
      * Setter for the field <code>buildMode</code>.
      *
      * @param buildMode the build mode controlling which parts of the manifest are generated
-     * @return a {@link io.goobi.viewer.model.iiif.presentation.v2.builder.ManifestBuilder} object.
+     * @return this ManifestBuilder instance for method chaining
      */
     public ManifestBuilder setBuildMode(BuildMode buildMode) {
         this.buildMode = buildMode;

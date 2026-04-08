@@ -206,7 +206,7 @@ public final class NetTools {
      *
      * @param url URL to call
      * @param timeout Custom timeout
-     * @return a {@link java.lang.String} object.
+     * @return the HTTP response body as a string
      * @throws org.apache.http.client.ClientProtocolException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.HTTPException if any.
@@ -242,7 +242,7 @@ public final class NetTools {
      * @param contentType MIME type for the request body
      * @param stringBody Optional entity content.
      * @param file optional file to upload as multipart body
-     * @return a {@link java.lang.String} object.
+     * @return the HTTP response body as a string
      * @throws org.apache.http.client.ClientProtocolException if any.
      * @throws java.io.IOException if any.
      */
@@ -259,7 +259,7 @@ public final class NetTools {
      * @param params form parameters sent in the request body
      * @param cookies cookies to include with the request
      * @param stringBody Optional entity content.
-     * @return a {@link java.lang.String} object.
+     * @return the HTTP response body as a string
      * @throws org.apache.http.client.ClientProtocolException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.HTTPException if return code is not 200
@@ -280,7 +280,7 @@ public final class NetTools {
      * @param contentType Optional mime type.
      * @param stringBody Optional entity content.
      * @param file Optional file entity content.
-     * @return a {@link java.lang.String} object.
+     * @return the HTTP response body as a string
      * @throws org.apache.http.client.ClientProtocolException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.HTTPException if return code is not 200
@@ -571,7 +571,7 @@ public final class NetTools {
      * returned.
      *
      * @param request incoming HTTP servlet request to inspect
-     * @return a {@link java.lang.String} object.
+     * @return the resolved remote IP address of the client
      */
     public static String getIpAddress(HttpServletRequest request) {
         String address = ADDRESS_LOCALHOST_IPV4;
@@ -600,7 +600,7 @@ public final class NetTools {
      * parseMultipleIpAddresses. If the given string contains more than one address, return the first one, otherwise the entire string
      *
      * @param address IP address
-     * @return a {@link java.lang.String} object.
+     * @return the first IP address from a comma-separated list, or the entire string if it contains only one address
      * @should filter multiple addresses correctly
      */
     protected static String parseMultipleIpAddresses(final String address) {

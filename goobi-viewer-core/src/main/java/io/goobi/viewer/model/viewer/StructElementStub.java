@@ -118,7 +118,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * getDisplayLabel.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the best available display label (LABEL, TITLE, or docstruct type) for this element
      */
     public String getDisplayLabel() {
         String localLabel = getMetadataValue(SolrConstants.LABEL);
@@ -347,7 +347,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * getUrl.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the viewer URL for this struct element using the appropriate page type
      */
     public String getUrl() {
         PageType pageType = PageType.determinePageType(docStructType, null, anchor || isGroup(), isHasImages(), false);
@@ -363,7 +363,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Returns a URL to this element (but for the metadata view).
      *
-     * @return a {@link java.lang.String} object.
+     * @return the viewer URL for this struct element in the metadata view
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public String getMetadataUrl() throws PresentationException {
@@ -374,7 +374,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      * getUrl.
      *
      * @param pageTypeName name of the target page type
-     * @return a {@link java.lang.String} object.
+     * @return the viewer URL for this struct element pointing to the named page type
      */
     public String getUrl(String pageTypeName) {
         PageType pageType = PageType.getByName(pageTypeName);
@@ -388,7 +388,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      * getUrl.
      *
      * @param pageType target viewer page type
-     * @return a {@link java.lang.String} object.
+     * @return the viewer URL for this struct element pointing to the given page type
      */
     public String getUrl(final PageType pageType) {
         PageType usePageType = pageType;
@@ -453,7 +453,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Getter for the field <code>partnerId</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the partner identifier associated with this struct element
      */
     public String getPartnerId() {
         return partnerId;
@@ -568,7 +568,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      *
      * @param fieldName Solr field name
      * @param language ISO 639-1 language code
-     * @return a {@link java.lang.String} object.
+     * @return the first metadata value for the language-specific Solr field, falling back to the generic field
      */
     public String getMetadataValueForLanguage(String fieldName, String language) {
         if (StringUtils.isNotEmpty(language)) {
@@ -585,7 +585,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      * Returns the first metadata value for the given field name.
      *
      * @param fieldName Solr field name.
-     * @return a {@link java.lang.String} object.
+     * @return the first metadata value for the given Solr field name, or null if not found
      */
     public String getMetadataValue(String fieldName) {
         List<String> values = getMetadataValues(fieldName);
@@ -602,7 +602,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      * Returns all metadata values for the given field name.
      *
      * @param fieldName Solr field name to look up
-     * @return a {@link java.util.List} object.
+     * @return a list of all metadata values stored under the given Solr field name
      */
     public List<String> getMetadataValues(String fieldName) {
         List<String> values = metadataFields.get(fieldName);
@@ -620,7 +620,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      *
      * @param currentUrl URL of the current page, appended as rft.id
      * @param topStruct StructElementStub representing the top structure element.
-     * @return a {@link java.lang.String} object.
+     * @return the COinS context object string for embedding bibliographic metadata in a &lt;span&gt; element
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @should generate string element correctly
      * @should return unknown format if topstruct null
@@ -695,7 +695,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      * getMultiLanguageMetadataValue.
      *
      * @param fieldName Solr field name to retrieve values for
-     * @return a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
+     * @return the multilingual metadata value aggregated from all language variants of the given field
      */
     public IMetadataValue getMultiLanguageMetadataValue(String fieldName) {
         List<String> fieldNames = this.getMetadataFields()
@@ -728,7 +728,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      * @param solrField Solr source field name to read
      * @param targetField KEV key name in the output string
      * @param prefix string to prepend before the key-value pair
-     * @return a {@link java.lang.String} object.
+     * @return a KEV (Key-Encoded Value) formatted string for the given Solr field, or an empty string if the field has no value
      */
     public static String getKEVForField(StructElementStub se, String solrField, String targetField, String prefix) {
         if (se == null) {

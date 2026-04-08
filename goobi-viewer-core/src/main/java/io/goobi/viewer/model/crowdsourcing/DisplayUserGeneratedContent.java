@@ -169,7 +169,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Getter for the field <code>id</code>.
      *
-     * @return a {@link java.lang.Long} object.
+     * @return the database primary key of this user-generated content entry, or null if not persisted
      */
     public Long getId() {
         return id;
@@ -259,7 +259,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Returns the <code>label</code>, if set, otherwise <code>pi</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the display label for this user-generated content item, falling back to the PI if no label is set
      */
     public String getDisplayLabel() {
         return StringUtils.isNotEmpty(label) ? label : pi;
@@ -308,7 +308,7 @@ public class DisplayUserGeneratedContent {
     /**
      * getDateUpdatedAsString.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the last-updated date formatted as a German date string, or null if not set
      */
     public String getDateUpdatedAsString() {
         if (dateUpdated != null) {
@@ -320,7 +320,7 @@ public class DisplayUserGeneratedContent {
     /**
      * getTimeUpdatedAsString.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the last-updated time formatted as an ISO 8601 time string, or null if not set
      */
     public String getTimeUpdatedAsString() {
         if (dateUpdated != null) {
@@ -417,7 +417,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Getter for the field <code>displayCoordinates</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the coordinate string used for UI rendering of this content's region
      */
     public String getDisplayCoordinates() {
         return displayCoordinates;
@@ -435,7 +435,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Alias for {@link #getPage()}.
      *
-     * @return a {@link java.lang.Integer} object.
+     * @return the physical page order number on which this content is displayed, or null if not set
      */
     public Integer getDisplayPage() {
         return getPage();
@@ -462,7 +462,7 @@ public class DisplayUserGeneratedContent {
     /**
      * getTypeAsString.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the name of the content type as a string
      */
     public String getTypeAsString() {
         return getType().getName();

@@ -101,7 +101,7 @@ public class DownloadBean implements Serializable {
     /**
      * openDownloadAction.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the message ID of the located download job
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws PresentationException
      */
@@ -144,7 +144,7 @@ public class DownloadBean implements Serializable {
     /**
      * Getter for the field <code>message</code>.
      *
-     * @return a {@link io.goobi.viewer.controller.mq.ViewerMessage} object
+     * @return the ViewerMessage associated with the current download job
      */
     public ViewerMessage getMessage() {
         return message;

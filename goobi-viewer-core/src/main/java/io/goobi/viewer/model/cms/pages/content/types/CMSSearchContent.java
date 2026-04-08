@@ -197,7 +197,7 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
      * Uses SearchBean to execute a search.
      *
      * @param item a {@link io.goobi.viewer.model.cms.CMSContentItem} object.
-     * @return a {@link java.lang.String} object.
+     * @return empty string (navigation outcome; search is executed as a side effect)
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.

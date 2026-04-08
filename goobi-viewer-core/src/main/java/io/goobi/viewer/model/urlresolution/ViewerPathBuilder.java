@@ -67,7 +67,7 @@ public final class ViewerPathBuilder {
      * pretty-mapping Any occurrences of "index.(x)html" are removed from the url to get the actual pretty url
      *
      * @param httpRequest The request from which the path is generated
-     * @return a {@link java.util.Optional} object.
+     * @return an Optional containing the ViewerPath for the request URL, or empty if not resolvable
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public static Optional<ViewerPath> createPath(HttpServletRequest httpRequest) throws DAOException {
@@ -90,7 +90,7 @@ public final class ViewerPathBuilder {
      *
      * @param request incoming HTTP request providing server URL and context
      * @param baseUrl absolute URL to resolve into a ViewerPath
-     * @return a {@link java.util.Optional} object.
+     * @return an Optional containing the ViewerPath for the given URL, or empty if not resolvable
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @should remove server url or name correctly
      */
@@ -193,7 +193,7 @@ public final class ViewerPathBuilder {
      * Gets the best matching CMSPage which alternative url ('persistent url') matches the beginning of the given path.
      *
      * @param servicePath requested service path to match against CMS page URLs
-     * @return a {@link java.util.Optional} object.
+     * @return an Optional containing the best-matching CMSPage, or empty if none matches
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public static Optional<CMSPage> getCmsPage(URI servicePath) throws DAOException {
@@ -219,7 +219,7 @@ public final class ViewerPathBuilder {
      * getCampaign.
      *
      * @param servicePath requested service path to match against campaign permalinks
-     * @return a {@link java.util.Optional} object.
+     * @return an Optional containing the best-matching Campaign, or empty if none matches
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public static Optional<Campaign> getCampaign(URI servicePath) throws DAOException {
@@ -242,7 +242,7 @@ public final class ViewerPathBuilder {
      * Gets the {@link io.goobi.viewer.model.viewer.PageType} that the given path refers to, if any.
      *
      * @param servicePath requested service path to match against known page types
-     * @return a {@link java.util.Optional} object.
+     * @return an Optional containing the best-matching PageType, or empty if the path matches no known page type
      */
     public static Optional<PageType> getPageType(final URI servicePath) {
         // logger.trace("getPageType: {}", servicePath); //NOSONAR Debug
@@ -335,7 +335,7 @@ public final class ViewerPathBuilder {
      * @param slave URI whose string form is appended to the base URI
      * @param fragment optional URL fragment to append (without '#')
      * @param query optional query string to append (without '?')
-     * @return a {@link java.net.URI} object.
+     * @return the resolved URI combining master and slave with optional fragment and query
      */
     public static URI resolve(URI master, URI slave, String fragment, String query) {
         return resolve(master, slave.toString(), fragment, query);
@@ -358,7 +358,7 @@ public final class ViewerPathBuilder {
      * @param slave path string to append to the base URI
      * @param fragment optional URL fragment to append (without '#')
      * @param query optional query string to append (without '?')
-     * @return a {@link java.net.URI} object.
+     * @return the resolved URI combining master and slave path with optional fragment and query
      */
     public static URI resolve(URI master, final String slave, String fragment, String query) {
         String base = master.toString();

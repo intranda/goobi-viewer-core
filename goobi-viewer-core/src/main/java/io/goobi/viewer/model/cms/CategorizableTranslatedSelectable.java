@@ -72,7 +72,7 @@ public class CategorizableTranslatedSelectable<T> extends TranslatedSelectable<T
     /**
      * getSelectedCategories.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of CMS categories that are currently selected
      */
     public List<CMSCategory> getSelectedCategories() {
         return categories.stream().filter(Selectable::isSelected).map(Selectable::getValue).collect(Collectors.toList());

@@ -122,7 +122,7 @@ public class SequenceBuilder extends AbstractBuilder {
      * @param manifestId URI string identifying the manifest this sequence belongs to
      * @param pagesToInclude list of physical page orders to include; empty means all pages
      * @param request the current HTTP servlet request, used for crowdsourcing annotation lookup
-     * @return a {@link java.util.Map} object.
+     * @return a map of annotation type to lists of annotation lists collected while building the sequence
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -282,7 +282,7 @@ public class SequenceBuilder extends AbstractBuilder {
      *
      * @param doc structure element that provides the record context for the loader
      * @param order physical page order number to retrieve
-     * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @return the PhysicalElement at the given page order, or null if not found
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws PresentationException
@@ -297,7 +297,7 @@ public class SequenceBuilder extends AbstractBuilder {
      *
      * @param pi Record identifier
      * @param page physical page to generate the canvas from
-     * @return a {@link de.intranda.api.iiif.presentation.v2.Canvas2} object.
+     * @return the IIIF Canvas for the given page, or null if pi or page is null
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -425,7 +425,7 @@ public class SequenceBuilder extends AbstractBuilder {
      * @param page physical page whose full-text, audio, and video resources are added
      * @param canvas IIIF canvas to attach annotation lists to
      * @param populate if true, annotation bodies are fully resolved; otherwise only list stubs are created
-     * @return a {@link java.util.Map} object.
+     * @return a map of annotation type to annotation list for all content types found on the given page
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -594,7 +594,7 @@ public class SequenceBuilder extends AbstractBuilder {
      * Setter for the field <code>buildMode</code>.
      *
      * @param buildMode controls whether full IIIF or thumbnail-only canvases are built
-     * @return a {@link io.goobi.viewer.model.iiif.presentation.v2.builder.SequenceBuilder} object.
+     * @return this SequenceBuilder instance for method chaining
      */
     public SequenceBuilder setBuildMode(BuildMode buildMode) {
         this.buildMode = buildMode;
@@ -614,7 +614,7 @@ public class SequenceBuilder extends AbstractBuilder {
      * Setter for the field <code>preferredView</code>.
      *
      * @param preferredView page type used when constructing viewer links for canvas renderings
-     * @return a {@link io.goobi.viewer.model.iiif.presentation.v2.builder.SequenceBuilder} object.
+     * @return this SequenceBuilder instance for method chaining
      */
     public SequenceBuilder setPreferedView(PageType preferredView) {
         this.preferedView = preferredView;

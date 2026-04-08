@@ -171,7 +171,7 @@ public class MessageQueueBean implements Serializable {
     /**
      * getQueueContent.
      *
-     * @return a {@link java.util.Map} object
+     * @return a map of queue names to their current message counts
      */
     public Map<String, Integer> getQueueContent() {
         Map<String, Integer> fastQueueContent = new TreeMap<>();
@@ -294,7 +294,7 @@ public class MessageQueueBean implements Serializable {
     /**
      * Getter for the field <code>messageType</code>.
      *
-     * @return a {@link java.lang.String} object
+     * @return the message type currently used as filter
      */
     public String getMessageType() {
         return messageType;
@@ -372,7 +372,7 @@ public class MessageQueueBean implements Serializable {
     /**
      * Getter for the field <code>lazyModelViewerHistory</code>.
      *
-     * @return a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider} object
+     * @return the TableDataProvider for the viewer message history
      */
     public TableDataProvider<ViewerMessage> getLazyModelViewerHistory() {
         return lazyModelViewerHistory;
@@ -403,7 +403,7 @@ public class MessageQueueBean implements Serializable {
     /**
      * getListeners.
      *
-     * @return a {@link java.util.List} object
+     * @return a list of active message queue listeners registered with the message broker
      */
     public List<DefaultQueueListener> getListeners() {
         return Optional.ofNullable(this.messageBroker).map(broker -> broker.getListeners()).orElse(Collections.emptyList());

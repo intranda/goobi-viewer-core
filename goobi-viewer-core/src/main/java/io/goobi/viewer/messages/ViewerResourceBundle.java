@@ -192,7 +192,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     /**
      * Getter for the field <code>defaultLocale</code>.
      *
-     * @return a {@link java.util.Locale} object.
+     * @return the default application locale, falling back to English if not configured
      */
     public static Locale getDefaultLocale() {
         if (defaultLocale == null) {
@@ -307,7 +307,7 @@ public class ViewerResourceBundle extends ResourceBundle {
      *
      * @param key message key to translate
      * @param locale desired locale for the translation
-     * @return a {@link java.lang.String} object.
+     * @return the translated message for the given key and locale, or the key itself if no translation is found
      */
     public static String getTranslation(final String key, Locale locale) {
         return getTranslation(key, locale, true, true);
@@ -320,7 +320,7 @@ public class ViewerResourceBundle extends ResourceBundle {
      * @param locale desired locale for the translation
      * @param removeRemainingPlaceholders If true, any placeholders in the value not replaced by params are removed
      * @param params One or more parameter values to replace the placeholders
-     * @return a {@link java.lang.String} object.
+     * @return the translated message for the given key with parameters substituted
      */
     public static String getTranslationWithParameters(final String key, final Locale locale, boolean removeRemainingPlaceholders,
             final String... params) {
@@ -587,7 +587,7 @@ public class ViewerResourceBundle extends ResourceBundle {
      *
      * @param locale locale of the resource bundle to search
      * @param keyPrefix prefix that returned keys must start with
-     * @return a {@link java.util.List} object.
+     * @return a list of message key strings from the given locale's resource bundle that start with the given prefix
      */
     public static List<String> getMessagesValues(Locale locale, String keyPrefix) {
         ResourceBundle rb = loadLocalResourceBundle(locale);
@@ -646,7 +646,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     /**
      * Getter for the field <code>allLocales</code>.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all locales supported by the JSF application
      * @should return English if no other locales found
      */
     public static List<Locale> getAllLocales() {

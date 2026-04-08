@@ -484,7 +484,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
      * createMultiLanguageLabel.
      *
      * @param structElement structure element to generate the label from
-     * @return a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
+     * @return the multilingual label derived from the structure element's metadata fields
      */
     public IMetadataValue createMultiLanguageLabel(StructElement structElement) {
         MultiLanguageMetadataValue value = new MultiLanguageMetadataValue();
@@ -732,7 +732,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
      * Getter for the field <code>label</code>.
      *
      * @param locale locale used to select the translated label
-     * @return a {@link java.lang.String} object.
+     * @return the display label for this search result in the given locale
      */
     public String getLabel(Locale locale) {
         return label.getValue(locale).orElse("");
@@ -741,7 +741,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * getLabelAsMetadataValue.
      *
-     * @return a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
+     * @return the multilingual label of this browse element
      */
     public IMetadataValue getLabelAsMetadataValue() {
         return label;
@@ -798,7 +798,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
      *
      * @param width desired thumbnail width in pixels
      * @param height desired thumbnail height in pixels
-     * @return a {@link java.lang.String} object.
+     * @return the thumbnail URL for this search result scaled to the given dimensions
      */
     public String getThumbnailUrl(String width, String height) {
         synchronized (this) {
@@ -1205,7 +1205,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>metadataList</code>.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of metadata entries configured for the search hit display
      */
     public List<Metadata> getMetadataList() {
         return metadataListMap.get(Configuration.METADATA_LIST_TYPE_SEARCH_HIT);
@@ -1252,7 +1252,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
      * getMetadataListForLocale.
      *
      * @param locale locale used to filter language-specific metadata
-     * @return a {@link java.util.List} object.
+     * @return a list of metadata entries for the search hit display filtered to the given locale
      */
     public List<Metadata> getMetadataListForLocale(Locale locale) {
         return getMetadataListForLocale(locale, Configuration.METADATA_LIST_TYPE_SEARCH_HIT);
@@ -1271,7 +1271,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * getMetadataListForCurrentLocale.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of metadata entries for the search hit display filtered to the current request locale
      */
     public List<Metadata> getMetadataListForCurrentLocale() {
         return getMetadataListForLocale(BeanUtils.getLocale());
@@ -1311,7 +1311,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
      * Getter for the field <code>metadataList</code>.
      *
      * @param metadataLabel label key to filter metadata entries by
-     * @return a {@link java.util.List} object.
+     * @return a list of metadata entries from the search hit list whose label matches the given key
      */
     public List<Metadata> getMetadataList(String metadataLabel) {
         List<Metadata> list = new ArrayList<>();
@@ -1354,7 +1354,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Returns the ContextObject value for a COinS element using the docstruct hierarchy for this search hit.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the COinS context object string for embedding bibliographic metadata in a &lt;span&gt; element
      */
     public String getContextObject() {
         if (contextObject == null && !structElements.isEmpty()) {
@@ -1411,7 +1411,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * determinePageType.
      *
-     * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
+     * @return the PageType appropriate for this browse element based on its document structure and MIME type
      */
     public PageType determinePageType() {
         return PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages || hasMedia, false);

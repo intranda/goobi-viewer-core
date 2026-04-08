@@ -417,7 +417,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Getter for the field <code>selectedPage</code>.
      *
-     * @return a {@link io.goobi.viewer.model.cms.pages.CMSPage} object
+     * @return the CMS page currently selected for editing
      */
     public CMSPage getSelectedPage() {
         return selectedPage;
@@ -428,7 +428,7 @@ public class CmsPageEditBean implements Serializable {
      *
      * @param title The title to be used for the current locale, optional
      * @param relatedPI The PI of a related work, optional
-     * @return a {@link java.lang.String} object.
+     * @return the absolute URL to the new CMS page creation view with optional title and PI query parameters
      */
     public String createAndOpenNewPage(String title, String relatedPI) {
 
@@ -453,7 +453,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Getter for the field <code>sidebarWidgets</code>.
      *
-     * @return a {@link java.util.Map} object
+     * @return a map of sidebar widget display elements to their selection state
      */
     public Map<WidgetDisplayElement, Boolean> getSidebarWidgets() {
         return sidebarWidgets;
@@ -471,7 +471,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * getSelectedWidgets.
      *
-     * @return a {@link java.util.List} object
+     * @return a list of sidebar widget display elements that are currently selected for the CMS page
      */
     public List<WidgetDisplayElement> getSelectedWidgets() {
         return this.sidebarWidgets.entrySet().stream().filter(Entry::getValue).map(Map.Entry::getKey).collect(Collectors.toList());
@@ -487,7 +487,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * getAndResetSelectedWidgets.
      *
-     * @return a {@link java.util.List} object
+     * @return a list of the currently selected sidebar widgets, after which all selections are cleared
      */
     public List<WidgetDisplayElement> getAndResetSelectedWidgets() {
         List<WidgetDisplayElement> selected = getSelectedWidgets();
@@ -498,7 +498,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Getter for the field <code>selectedComponent</code>.
      *
-     * @return a {@link java.lang.String} object
+     * @return the template filename of the selected component to add
      */
     public String getSelectedComponent() {
         return selectedComponent;
@@ -517,7 +517,7 @@ public class CmsPageEditBean implements Serializable {
      * getAvailableComponents.
      *
      * @param page CMS page used to filter out incompatible paged components
-     * @return a {@link java.util.List} object
+     * @return a list of select items representing CMS components available for the given page, grouped by type
      */
     public List<SelectItem> getAvailableComponents(CMSPage page) {
         Stream<CMSComponent> stream = templateManager.getContentManager().getComponents().stream();
@@ -625,7 +625,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Getter for the field <code>pageEditState</code>.
      *
-     * @return a {@link io.goobi.viewer.model.cms.pages.CMSPageEditState} object
+     * @return the current state of the CMS page edit UI
      */
     public CMSPageEditState getPageEditState() {
         return pageEditState;
@@ -737,7 +737,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Getter for the field <code>templateName</code>.
      *
-     * @return a {@link java.lang.String} object
+     * @return the template name, falling back to the selected page title if blank
      */
     public String getTemplateName() {
         if (StringUtils.isBlank(this.templateName)) {

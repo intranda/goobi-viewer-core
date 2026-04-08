@@ -122,7 +122,7 @@ public class ThumbnailHandler {
      * getThumbnailPath.
      *
      * @param filename file name to resolve against the static images path
-     * @return a {@link java.net.URI} object.
+     * @return the URI of the resolved static image path
      */
     public URI getThumbnailPath(String filename) {
         if (StringUtils.isBlank(filename)) {
@@ -143,7 +143,7 @@ public class ThumbnailHandler {
      * Returns a link to a small image representing the given page. The size depends on viewer configuration.
      *
      * @param page physical page element to render as thumbnail
-     * @return a {@link java.lang.String} object.
+     * @return the thumbnail image URL for the given page at the configured default size
      */
     public String getThumbnailUrl(PhysicalElement page) {
         return getThumbnailUrl(page, DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
@@ -332,7 +332,7 @@ public class ThumbnailHandler {
      *
      * @param pi persistent identifier of the parent work
      * @param order physical page order number within the work
-     * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @return the PhysicalElement at the given order position within the record, or null if not found
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -355,7 +355,7 @@ public class ThumbnailHandler {
      * @param page physical page element to render as thumbnail
      * @param width maximum thumbnail width in pixels
      * @param height maximum thumbnail height in pixels
-     * @return a {@link java.lang.String} object.
+     * @return the thumbnail image URL for the given page scaled to fit within the given bounds
      */
     public String getThumbnailUrl(PhysicalElement page, int width, int height) {
         return getThumbnailUrl(page, getScale(width, height));
@@ -369,7 +369,7 @@ public class ThumbnailHandler {
      * @param width maximum image width in pixels
      * @param height maximum image height in pixels
      * @param format the file extension of the desiref format. Possible values are 'jpg', 'tif' and 'png'
-     * @return a {@link java.lang.String} object.
+     * @return the image URL for the given page scaled to fit within the given bounds in the specified format
      */
     public String getImageUrl(PhysicalElement page, int width, int height, String format) {
         return getImageUrl(page, getScale(width, height), getImageFileFormat(page, format));
@@ -394,7 +394,7 @@ public class ThumbnailHandler {
      *
      * @param page physical page element to render as thumbnail
      * @param scale scaling parameters defining the output size
-     * @return a {@link java.lang.String} object.
+     * @return the thumbnail image URL for the given page at the given scale
      */
     public String getThumbnailUrl(PhysicalElement page, Scale scale) {
         ImageFileFormat format = ImageFileFormat.getImageFileFormatFromMimeType(page.getMimeType());
@@ -410,7 +410,7 @@ public class ThumbnailHandler {
      * @param page physical page element to render
      * @param scale scaling parameters defining the output size
      * @param format the file extension of the desired format. Possible values are 'jpg', 'tif' and 'png'
-     * @return a {@link java.lang.String} object.
+     * @return the image URL for the given page at the given scale in the given format
      */
     public String getImageUrl(PhysicalElement page, Scale scale, ImageFileFormat format) {
 
@@ -435,7 +435,7 @@ public class ThumbnailHandler {
      * the actual image as is possible to fit into a square - the delivered square is always centered within the full image.
      *
      * @param page physical page element to render as square thumbnail
-     * @return a {@link java.lang.String} object.
+     * @return the square thumbnail image URL for the given page at the configured default size
      */
     public String getSquareThumbnailUrl(PhysicalElement page) {
         return getSquareThumbnailUrl(page, DataManager.getInstance().getConfiguration().getThumbnailsWidth());
@@ -447,7 +447,7 @@ public class ThumbnailHandler {
      *
      * @param page physical page element to render as square thumbnail
      * @param size width and height of the square image in pixels
-     * @return a {@link java.lang.String} object.
+     * @return the square thumbnail image URL for the given page at the given size
      */
     public String getSquareThumbnailUrl(PhysicalElement page, int size) {
         String path = getImagePath(page);
@@ -469,7 +469,7 @@ public class ThumbnailHandler {
      * Returns a link to a small image representing the given document. The size depends on viewer configuration.
      *
      * @param doc struct element representing the document to thumbnail
-     * @return a {@link java.lang.String} object.
+     * @return the thumbnail image URL for the given document at the configured default size
      */
     public String getThumbnailUrl(StructElement doc) {
         return getThumbnailUrl(doc, DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
@@ -482,7 +482,7 @@ public class ThumbnailHandler {
      *
      * @param doc struct element representing the document to thumbnail
      * @param pi persistent identifier used in the generated URL
-     * @return a {@link java.lang.String} object.
+     * @return the thumbnail image URL for the given document at the configured default size
      */
     public String getThumbnailUrl(StructElement doc, String pi) {
         return getThumbnailUrl(doc, pi, DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
@@ -494,7 +494,7 @@ public class ThumbnailHandler {
      * Returns a link to a small image representing the given document. The size depends on viewer configuration.
      *
      * @param doc Solr document representing the record to thumbnail
-     * @return a {@link java.lang.String} object.
+     * @return the thumbnail image URL for the given Solr document at the configured default size
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getThumbnailUrl(SolrDocument doc) throws ViewerConfigurationException {
@@ -507,7 +507,7 @@ public class ThumbnailHandler {
      * side to provide a square image.
      *
      * @param doc Solr document representing the record to thumbnail
-     * @return a {@link java.lang.String} object.
+     * @return the square thumbnail image URL for the given Solr document at the configured default size
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getSquareThumbnailUrl(SolrDocument doc) throws ViewerConfigurationException {
@@ -536,7 +536,7 @@ public class ThumbnailHandler {
      * @param doc Solr document representing the record to thumbnail
      * @param width maximum thumbnail width in pixels
      * @param height maximum thumbnail height in pixels
-     * @return a {@link java.lang.String} object.
+     * @return the thumbnail image URL for the given Solr document scaled to fit within the given bounds
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getThumbnailUrl(SolrDocument doc, int width, int height) throws ViewerConfigurationException {
@@ -549,7 +549,7 @@ public class ThumbnailHandler {
      *
      * @param doc Solr document representing the record to thumbnail
      * @param size width and height of the square image in pixels
-     * @return a {@link java.lang.String} object.
+     * @return the square thumbnail image URL for the given Solr document at the given size
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getSquareThumbnailUrl(SolrDocument doc, int size) throws ViewerConfigurationException {
@@ -564,7 +564,7 @@ public class ThumbnailHandler {
      * @param se Needs to have the fields {@link io.goobi.viewer.solr.SolrConstants#MIMETYPE} and {@link io.goobi.viewer.solr.SolrConstants#THUMBNAIL}
      * @param width maximum thumbnail width in pixels
      * @param height maximum thumbnail height in pixels
-     * @return a {@link java.lang.String} object.
+     * @return the thumbnail image URL for the given struct element scaled to fit within the given bounds
      */
     public String getThumbnailUrl(StructElement se, int width, int height) {
         return getThumbnailUrl(se, se.getPi(), width, height);
@@ -577,7 +577,7 @@ public class ThumbnailHandler {
      * @param pi persistent identifier used in the generated URL
      * @param width maximum thumbnail width in pixels
      * @param height maximum thumbnail height in pixels
-     * @return a {@link java.lang.String} object.
+     * @return the thumbnail image URL for the given struct element at the given PI and scaled to fit within the given bounds
      */
     public String getThumbnailUrl(StructElement doc, String pi, int width, int height) {
         if (doc == null) {
@@ -635,7 +635,7 @@ public class ThumbnailHandler {
      * @param page physical page element to render at full size
      * @param scale scaling parameters applied to the full image
      * @param formatString file extension for the desired format. May also be 'master' to indicate that the format of the original file should be used
-     * @return a {@link java.lang.String} object.
+     * @return the full image URL for the given page at the given scale and format
      */
     public String getFullImageUrl(PhysicalElement page, Scale scale, String formatString) {
 
@@ -666,7 +666,7 @@ public class ThumbnailHandler {
      * of the actual image as is possible to fit into a square - the delivered square is always centered within the full image.
      *
      * @param se struct element representing the document to thumbnail
-     * @return a {@link java.lang.String} object.
+     * @return the square thumbnail image URL for the given struct element at the configured default size
      */
     public String getSquareThumbnailUrl(StructElement se) {
         return getSquareThumbnailUrl(se, DataManager.getInstance().getConfiguration().getThumbnailsWidth());
@@ -678,7 +678,7 @@ public class ThumbnailHandler {
      *
      * @param se Needs to have the fields {@link io.goobi.viewer.solr.SolrConstants#MIMETYPE} and {@link io.goobi.viewer.solr.SolrConstants#THUMBNAIL}
      * @param size width and height of the square image in pixels
-     * @return a {@link java.lang.String} object.
+     * @return the square thumbnail image URL for the given struct element at the given size
      */
     public String getSquareThumbnailUrl(StructElement se, int size) {
         String thumbnailUrl = getImagePath(se);
@@ -1007,7 +1007,7 @@ public class ThumbnailHandler {
      * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem}, fit into a box of the default width and height.
      *
      * @param item optional CMS media item to render as thumbnail
-     * @return a {@link java.lang.String} object.
+     * @return the thumbnail image URL for the given CMS media item at the configured default size
      */
     public String getThumbnailUrl(Optional<CMSMediaItem> item) {
         return getThumbnailUrl(item, DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
@@ -1018,7 +1018,7 @@ public class ThumbnailHandler {
      * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem}, fit into a box of the default width and height.
      *
      * @param item CMS media item to render as thumbnail
-     * @return a {@link java.lang.String} object.
+     * @return the thumbnail image URL for the given CMS media item at the configured default size
      */
     public String getThumbnailUrl(CMSMediaItem item) {
         return getThumbnailUrl(Optional.ofNullable(item), DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
@@ -1031,7 +1031,7 @@ public class ThumbnailHandler {
      * @param optional optional CMS media item to render as thumbnail
      * @param width maximum thumbnail width in pixels
      * @param height maximum thumbnail height in pixels
-     * @return a {@link java.lang.String} object.
+     * @return the thumbnail image URL for the given CMS media item scaled to fit within the given bounds
      */
     public String getThumbnailUrl(Optional<CMSMediaItem> optional, int width, int height) {
         return optional.map(item -> {
@@ -1181,7 +1181,7 @@ public class ThumbnailHandler {
      * @param media CMS media item to render as thumbnail
      * @param width maximum thumbnail width in pixels
      * @param height maximum thumbnail height in pixels
-     * @return a {@link java.lang.String} object.
+     * @return the thumbnail image URL for the given CMS media item scaled to fit within the given bounds
      */
     public String getThumbnailUrl(CMSMediaItem media, int width, int height) {
         return getThumbnailUrl(Optional.ofNullable(media), width, height);
@@ -1193,7 +1193,7 @@ public class ThumbnailHandler {
      *
      * @param optional optional CMS media item to render as square thumbnail
      * @param size width and height of the square image in pixels
-     * @return a {@link java.lang.String} object.
+     * @return the square thumbnail image URL for the given CMS media item at the given size
      */
     public String getSquareThumbnailUrl(Optional<CMSMediaItem> optional, int size) {
         return optional.map(item -> {
@@ -1214,7 +1214,7 @@ public class ThumbnailHandler {
      *
      * @param media CMS media item to render as square thumbnail
      * @param size width and height of the square image in pixels
-     * @return a {@link java.lang.String} object.
+     * @return the square thumbnail image URL for the given CMS media item at the given size
      */
     public String getSquareThumbnailUrl(CMSMediaItem media, int size) {
         return getSquareThumbnailUrl(Optional.ofNullable(media), size);
@@ -1225,7 +1225,7 @@ public class ThumbnailHandler {
      * and contains as much of the actual image as is possible to fit into a square - the delivered square is always centered within the full image.n
      *
      * @param item optional CMS media item to render as square thumbnail
-     * @return a {@link java.lang.String} object.
+     * @return the square thumbnail image URL for the given CMS media item at the configured default size
      */
     public String getSquareThumbnailUrl(Optional<CMSMediaItem> item) {
         return getSquareThumbnailUrl(item, DataManager.getInstance().getConfiguration().getThumbnailsWidth());
@@ -1236,7 +1236,7 @@ public class ThumbnailHandler {
      * and contains as much of the actual image as is possible to fit into a square - the delivered square is always centered within the full image.
      *
      * @param item CMS media item to render as square thumbnail
-     * @return a {@link java.lang.String} object.
+     * @return the square thumbnail image URL for the given CMS media item at the configured default size
      */
     public String getSquareThumbnailUrl(CMSMediaItem item) {
         return getSquareThumbnailUrl(Optional.ofNullable(item));

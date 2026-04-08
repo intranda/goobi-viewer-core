@@ -96,7 +96,7 @@ public class StatisticsBean implements Serializable {
      *
      * @param days total number of days covered by the trend
      * @param dataPoints number of data points to plot
-     * @return a {@link java.util.List} object.
+     * @return a list of "timestamp;count" strings representing the record import trend over the given period
      */
     public List<String> getImportedRecordsTrend(final int days, final int dataPoints) {
         logger.debug("getImportedRecordsTrend start");
@@ -170,7 +170,7 @@ public class StatisticsBean implements Serializable {
     /**
      * Returns a list of size two arrays which each contain the name and total number of imported works of a type of work (DocStructType).
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of "name;count" strings for each top-level document structure type ordered by number of records
      * @should return list of docstruct types
      */
     public List<String> getTopStructTypesByNumber() {
@@ -217,7 +217,7 @@ public class StatisticsBean implements Serializable {
     /**
      * Returns the total number of imported pages.
      *
-     * @return a {@link java.lang.Long} object.
+     * @return the total number of imported page documents in the Solr index
      * @should return a non zero number
      */
     public Long getImportedPages() {
@@ -246,7 +246,7 @@ public class StatisticsBean implements Serializable {
     /**
      * Returns the total number of pages with OCR data.
      *
-     * @return a {@link java.lang.Long} object.
+     * @return the total number of page documents with full-text in the Solr index
      * @should return a non zero number
      */
     public Long getImportedFullTexts() {
@@ -368,7 +368,7 @@ public class StatisticsBean implements Serializable {
     /**
      * getLastUsageStatisticsCheck.
      *
-     * @return a {@link java.time.LocalDate} object
+     * @return the date of the most recent usage statistics entry in the Solr index
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public LocalDate getLastUsageStatisticsCheck() throws IndexUnreachableException {

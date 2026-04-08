@@ -119,7 +119,7 @@ public final class DateTools {
      * @should parse single date correctly
      * @should parse multiple dates correctly
      * @should parse dates in parentheses correctly
-     * @return a {@link java.util.List} object.
+     * @return a list of LocalDateTime objects parsed from the given date string
      */
     public static List<LocalDateTime> parseMultipleDatesFromString(String dateString) {
         // logger.debug("Parsing date string : {}", dateString);
@@ -218,7 +218,7 @@ public final class DateTools {
      * @param dateString date/time string to parse in any supported format
      * @param fromUTC if true, interprets the parsed date as UTC
      * @param zoneOffset Optional UTC hour offset to apply when converting from UTC; null uses system default
-     * @return a {@link java.time.LocalDateTime} object.
+     * @return the parsed LocalDateTime, or null if the string cannot be parsed
      * @should parse iso date as UTC correctly
      */
     public static LocalDateTime parseDateTimeFromString(String dateString, boolean fromUTC, Integer zoneOffset) {
@@ -314,7 +314,7 @@ public final class DateTools {
      * parseDateFromString.
      *
      * @param dateString date string to parse using default (non-UTC) mode
-     * @return a {@link java.util.Date} object.
+     * @return the parsed date as LocalDateTime, or null if the string cannot be parsed
      */
     public static LocalDateTime parseDateFromString(String dateString) {
         return parseDateTimeFromString(dateString, false);
@@ -388,7 +388,7 @@ public final class DateTools {
      * @param language ISO 639-1 (two-character) language code.
      * @should format date correctly for the given language
      * @should use English format for unknown languages
-     * @return a {@link java.lang.String} object.
+     * @return the date/time formatted as a locale-specific string based on the given language code
      */
     public static String getLocalDate(LocalDateTime date, String language) {
         if (language == null) {
@@ -407,7 +407,7 @@ public final class DateTools {
      *
      * @param ldt date/time value to format
      * @param locale locale determining the output date format
-     * @return a {@link java.lang.String} object.
+     * @return the date/time formatted as a locale-specific string, or null if ldt is null
      */
     public static String formatDate(LocalDateTime ldt, Locale locale) {
         if (ldt == null) {

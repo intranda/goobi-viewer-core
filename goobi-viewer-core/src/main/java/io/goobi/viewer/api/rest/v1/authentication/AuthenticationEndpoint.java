@@ -112,7 +112,7 @@ public class AuthenticationEndpoint {
      *
      * @param email user email address for authentication
      * @param password user password for authentication
-     * @return a {@link jakarta.ws.rs.core.Response} object.
+     * @return the HTTP response containing the authentication token on success, or a 403/500 status on failure
      */
     @POST
     @Produces(MediaType.APPLICATION_JSON)

@@ -185,7 +185,7 @@ public abstract class DownloadJob {
     /**
      * getTimeToLive.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the configured download PDF time-to-live formatted as "Dd H:MM:SS"
      */
     public String getTimeToLive() {
         Duration d = DataManager.getInstance().getConfiguration().getDownloadPdfTimeToLive();

@@ -212,7 +212,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * Getter for the field <code>thumbnailUrl</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the thumbnail URL for this TOC element
      */
     public String getThumbnailUrl() {
         return thumbnailUrl;
@@ -223,7 +223,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
      *
      * @param width desired thumbnail width in pixels
      * @param height desired thumbnail height in pixels
-     * @return a {@link java.lang.String} object.
+     * @return the thumbnail URL for this TOC element scaled to the given dimensions
      */
     public String getThumbnailUrl(int width, int height) {
 
@@ -304,7 +304,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
      * getMetadataValue.
      *
      * @param key metadata field name to look up
-     * @return a {@link java.lang.String} object.
+     * @return the metadata value for the given field name, or null if not present
      */
     public String getMetadataValue(String key) {
         return metadata.get(key);
@@ -367,7 +367,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * getUrl.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the URL for this TOC element
      */
     public String getUrl() {
         return urlPrefix + urlSuffix;
@@ -379,7 +379,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
      * @param viewType name of the requested page view type
      * @should construct full screen url correctly
      * @should construct reading mode url correctly
-     * @return a {@link java.lang.String} object.
+     * @return the URL for this TOC element pointing to the given view type
      */
     public String getUrl(String viewType) {
         if (anchorOrGroup) {

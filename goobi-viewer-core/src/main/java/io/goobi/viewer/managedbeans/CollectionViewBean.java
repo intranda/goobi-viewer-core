@@ -101,7 +101,7 @@ public class CollectionViewBean implements Serializable {
      *
      * @param content collection content item providing base configuration
      * @param topVisibleElement collection name to use as the top visible element
-     * @return a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object
+     * @return the CollectionView for the given content, creating and caching it if not yet initialized
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException if any.
@@ -136,7 +136,7 @@ public class CollectionViewBean implements Serializable {
      * getCollectionId.
      *
      * @param content collection content item to derive the ID from
-     * @return a {@link java.lang.String} object
+     * @return a unique string ID derived from the owning page or template and the content item ID
      */
     public static String getCollectionId(CMSCollectionContent content) {
         String componentId = content.getOwningComponent() == null ? "component" : "component" + content.getOwningComponent().getId();
@@ -153,7 +153,7 @@ public class CollectionViewBean implements Serializable {
      * getCollectionIfStored.
      *
      * @param content collection content item identifying the desired collection
-     * @return a {@link java.util.Optional} object
+     * @return an Optional containing the cached CollectionView, or empty if not yet initialized
      */
     public Optional<CollectionView> getCollectionIfStored(CMSCollectionContent content) {
         String myId = getCollectionId(content);
@@ -182,7 +182,7 @@ public class CollectionViewBean implements Serializable {
      *
      * @param content collection content item providing Solr field and filter configuration
      * @param topVisibleElement collection name to display at the root level
-     * @return a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object.
+     * @return the newly created and populated CollectionView for the given content configuration
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException
@@ -244,7 +244,7 @@ public class CollectionViewBean implements Serializable {
      *
      * @param content collection content item providing Solr field and filter configuration
      * @param includeSubcollections if true, nested subcollections are included in the list
-     * @return a {@link java.util.List} object.
+     * @return a list of select items representing collection names that can be excluded from the given collection content
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public List<SelectItem> getPossibleIgnoreCollectionList(CMSCollectionContent content, boolean includeSubcollections)
@@ -280,7 +280,7 @@ public class CollectionViewBean implements Serializable {
      * Queries Solr for a list of all values of the set collectionField which my serve as a collection.
      *
      * @param content collection content item providing Solr field and filter configuration
-     * @return a {@link java.util.List} object.
+     * @return a list of select items representing all possible base collection names for the given collection content
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public List<SelectItem> getPossibleBaseCollectionList(CMSCollectionContent content) throws IndexUnreachableException {
@@ -353,7 +353,7 @@ public class CollectionViewBean implements Serializable {
      * getLoadedCollectionsForPage.
      *
      * @param page CMS page whose loaded collections to retrieve
-     * @return a {@link java.util.List} object
+     * @return a list of CollectionView instances already loaded for the given CMS page
      */
     public List<CollectionView> getLoadedCollectionsForPage(CMSPage page) {
         String idRegex = page.getId() + "_" + "\\w";
@@ -368,7 +368,7 @@ public class CollectionViewBean implements Serializable {
      * {@link #getCollection(CMSCollectionContent)}.
      *
      * @param field The solr field the collection is based on
-     * @return a {@link java.util.List} object.
+     * @return a list of already-loaded CollectionView instances for the given Solr field
      */
     public List<CollectionView> getCollections(String field) {
         return collections.values().stream().filter(collection -> field.equals(collection.getField())).collect(Collectors.toList());

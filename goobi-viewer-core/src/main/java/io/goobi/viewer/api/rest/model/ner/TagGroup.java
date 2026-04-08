@@ -52,7 +52,7 @@ public interface TagGroup extends Comparable<TagGroup> {
     /**
      * getTags.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of NER tag counts contained in this group
      */
     public List<TagCount> getTags();
 }

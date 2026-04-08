@@ -252,7 +252,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     /**
      * getPossibleMapTypes.
      *
-     * @return a {@link java.util.Collection} object
+     * @return the collection of all available geo map type values
      */
     public Collection<GeoMapType> getPossibleMapTypes() {
         return EnumSet.allOf(GeoMapType.class);
@@ -261,7 +261,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     /**
      * getPossibleMarkers.
      *
-     * @return a {@link java.util.Collection} object
+     * @return the collection of all configured geo map marker definitions
      */
     public Collection<GeoMapMarker> getPossibleMarkers() {
         return DataManager.getInstance().getConfiguration().getGeoMapMarkers();
@@ -291,7 +291,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
      * getEmbeddingCmsPages.
      *
      * @param map GeoMap to find embedding CMS pages for
-     * @return a {@link java.util.List} object
+     * @return a list of CMS pages that embed the given GeoMap
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<CMSPage> getEmbeddingCmsPages(GeoMap map) throws DAOException {
@@ -323,7 +323,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     /**
      * getHeatmapUrl.
      *
-     * @return a {@link java.lang.String} object
+     * @return the URL to the spatial heatmap REST endpoint
      */
     public String getHeatmapUrl() {
         return DataManager.getInstance()
@@ -336,7 +336,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     /**
      * getFeatureUrl.
      *
-     * @return a {@link java.lang.String} object
+     * @return the URL to the spatial search REST endpoint
      */
     public String getFeatureUrl() {
         return DataManager.getInstance()
@@ -410,7 +410,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     /**
      * Getter for the field <code>activeFeatureSet</code>.
      *
-     * @return a {@link io.goobi.viewer.model.maps.FeatureSet} object
+     * @return the currently active feature set, or null if none is selected
      */
     public FeatureSet getActiveFeatureSet() {
         return activeFeatureSet;
@@ -428,7 +428,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     /**
      * getActiveFeatureSetAsString.
      *
-     * @return a {@link java.lang.String} object
+     * @return the GeoJSON string representation of the active feature set, or an empty string if none is active
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public String getActiveFeatureSetAsString() throws PresentationException {
@@ -479,7 +479,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
      * getFromCache.
      *
      * @param geomap GeoMap to look up or store in cache
-     * @return a {@link io.goobi.viewer.model.maps.GeoMap} object
+     * @return the cached GeoMap if recently cached; otherwise the given GeoMap itself
      */
     public GeoMap getFromCache(GeoMap geomap) {
         if (geomap != null && geomap.getId() != null) {

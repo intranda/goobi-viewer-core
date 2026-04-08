@@ -96,7 +96,7 @@ public class TOC implements Serializable {
     /**
      * getGroupNames.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of TOC group names available in this table of contents
      */
     public List<String> getGroupNames() {
         if (tocElementMap != null) {
@@ -110,7 +110,7 @@ public class TOC implements Serializable {
      * getViewForGroup.
      *
      * @param group TOC group name to retrieve elements for
-     * @return a {@link java.util.List} object.
+     * @return a list of TOC elements belonging to the given group, or null if none found
      */
     public List<TOCElement> getViewForGroup(String group) {
         if (tocElementMap != null) {
@@ -125,7 +125,7 @@ public class TOC implements Serializable {
      *
      * @param group TOC group name to build the tree for
      * @should call buildTree and set maxTocDepth correctly
-     * @return a {@link java.util.List} object.
+     * @return a list of TOC elements for the given group with tree nesting applied
      */
     public List<TOCElement> getTreeViewForGroup(String group) {
         if (!treeBuilt) {
@@ -145,7 +145,7 @@ public class TOC implements Serializable {
     /**
      * getFlatView.
      *
-     * @return a {@link java.util.List} object.
+     * @return a flat list of all TOC elements in the default group
      */
     public List<TOCElement> getFlatView() {
         // logger.trace("getFlatView"); //NOSONAR Debug
@@ -155,7 +155,7 @@ public class TOC implements Serializable {
     /**
      * getTreeView.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of TOC elements for the default group with tree nesting applied
      */
     public List<TOCElement> getTreeView() {
         return getTreeViewForGroup(StringConstants.DEFAULT_NAME);
@@ -326,7 +326,7 @@ public class TOC implements Serializable {
     /**
      * Recalculates the visibility of TOC elements after a +/- button has been pressed.
      *
-     * @return a {@link io.goobi.viewer.model.toc.TOCElement} object.
+     * @return the TOCElement that was expanded or collapsed after processing the pending visibility change, or null if none was pending
      */
     public TOCElement getActiveElement() {
         TOCElement activeTocElement = null;
@@ -459,7 +459,7 @@ public class TOC implements Serializable {
     /**
      * getTocElements.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all TOC elements in the default group
      */
     public List<TOCElement> getTocElements() {
         if (tocElementMap != null) {
@@ -638,7 +638,7 @@ public class TOC implements Serializable {
      *
      * @param pi persistent identifier of the record
      * @should return correct label
-     * @return a {@link java.lang.String} object.
+     * @return the label of the matching TOC element, or null if none found
      */
     public String getLabel(String pi) {
         return getLabel(pi, MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
@@ -650,7 +650,7 @@ public class TOC implements Serializable {
      * @param pi persistent identifier of the record
      * @should return correct label
      * @param language ISO 639-1 language code for the desired label
-     * @return a {@link java.lang.String} object.
+     * @return the language-specific label of the matching TOC element, or null if none found
      */
     public String getLabel(String pi, String language) {
         if (StringUtils.isEmpty(pi)) {
@@ -675,7 +675,7 @@ public class TOC implements Serializable {
      * @param pi persistent identifier of the record
      * @should return correct label
      * @param locale locale for the desired label language
-     * @return a {@link java.lang.String} object.
+     * @return the locale-specific label of the matching TOC element, or null if none found
      */
     public String getLabel(String pi, Locale locale) {
         return getLabel(pi, locale.getLanguage());

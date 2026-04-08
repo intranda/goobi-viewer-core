@@ -160,7 +160,7 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
      *
      * @param random if true, pages are returned in random order
      * @param templateManager template manager used to initialise CMS components of loaded pages
-     * @return a {@link java.util.List} object.
+     * @return a list of published CMS pages nested within this page list content item
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<CMSPage> getNestedPages(Boolean random, CMSTemplateManager templateManager) throws DAOException {
@@ -176,7 +176,7 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
      * @param random if true, pages are returned in random order
      * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
      * @param templateManager template manager used to initialise CMS components of loaded pages
-     * @return a {@link java.util.List} object.
+     * @return a list of published CMS pages filtered to those matching the given category
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<CMSPage> getNestedPagesByCategory(boolean random, CMSCategory category, CMSTemplateManager templateManager)
@@ -257,7 +257,7 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
      *
      * @param random if true, page ordering within each category is random
      * @param templateManager template manager used to initialise CMS components of loaded pages
-     * @return a {@link java.util.List} object.
+     * @return a list of CMS categories sorted by the earliest page-sorting value of their nested pages
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<CMSCategory> getSortedCategories(boolean random, CMSTemplateManager templateManager) throws DAOException {
@@ -288,7 +288,7 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
      * @param random if true, page ordering within each category is random
      * @param paged unused — kept for historic signature compatibility
      * @param templateManager template manager used to initialise CMS components of loaded pages
-     * @return a {@link java.util.List} object.
+     * @return a list of CMS categories sorted by the earliest page-sorting value of their nested pages
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @deprecated use {@link #getSortedCategories(boolean, CMSTemplateManager)} instead
      */

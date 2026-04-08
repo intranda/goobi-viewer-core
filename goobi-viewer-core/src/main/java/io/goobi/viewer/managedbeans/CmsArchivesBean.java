@@ -156,7 +156,7 @@ public class CmsArchivesBean implements Serializable {
     /**
      * getPageArchiveWrappers.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of archive resource wrappers for the current page in the paginated archive configurations list
      */
     public List<ArchiveResourceWrapper> getPageArchiveWrappers() {
         return lazyModelArchiveConfigurations.getPaginatorList();

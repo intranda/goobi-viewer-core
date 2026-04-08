@@ -70,7 +70,7 @@ public class OpenSearchResource {
     /**
      * getXml.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the OpenSearch description document as an XML string
      */
     @GET
     @Produces({ MediaType.TEXT_XML })

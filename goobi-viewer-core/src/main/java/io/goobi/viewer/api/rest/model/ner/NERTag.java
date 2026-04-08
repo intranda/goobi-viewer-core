@@ -100,7 +100,7 @@ public class NERTag {
     /**
      * Getter for the field <code>id</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the identifier of this NER tag
      */
     public String getId() {
         return id;
@@ -109,7 +109,7 @@ public class NERTag {
     /**
      * Getter for the field <code>value</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the text value of this NER tag
      */
     public String getValue() {
         return value;
@@ -118,7 +118,7 @@ public class NERTag {
     /**
      * Getter for the field <code>type</code>.
      *
-     * @return a {@link io.goobi.viewer.api.rest.model.ner.NERTag.Type} object.
+     * @return the NER tag type (e.g. person, location, organization)
      */
     public Type getType() {
         return type;
@@ -127,7 +127,7 @@ public class NERTag {
     /**
      * Getter for the field <code>element</code>.
      *
-     * @return a {@link io.goobi.viewer.api.rest.model.ner.ElementReference} object.
+     * @return the element reference indicating where this tag appears on the page
      */
     public ElementReference getElement() {
         return element;

@@ -76,7 +76,7 @@ public class AltoAnnotationBuilder {
      * @param target the IIIF canvas resource used as annotation target
      * @param granularity level of text elements to generate annotations for
      * @param urlOnlyTarget if true, use URI-only specific resources as annotation targets
-     * @return a {@link java.util.List} object.
+     * @return a list of IIIF annotations generated from the ALTO text elements of the given granularity
      */
     public List<AbstractAnnotation> createAnnotations(Page alto, String pi, Integer pageNo, IResource target, Granularity granularity,
             boolean urlOnlyTarget) {
@@ -112,7 +112,7 @@ public class AltoAnnotationBuilder {
      * @param pageNo physical page number within the work
      * @param target the IIIF canvas resource used as annotation target
      * @param urlOnlyTarget if true, use URI-only specific resources as annotation targets
-     * @return a {@link java.util.List} object.
+     * @return a list of IIIF annotations generated from the given ALTO geometric elements
      */
     public List<AbstractAnnotation> createAnnotations(List<GeometricData> elements, String pi, Integer pageNo, IResource target,
             boolean urlOnlyTarget) {
@@ -127,7 +127,7 @@ public class AltoAnnotationBuilder {
      * @param pageNo physical page number within the work
      * @param canvas IIIF canvas resource to annotate
      * @param urlOnlyTarget if true, use URI-only specific resources as annotation targets
-     * @return a {@link de.intranda.api.annotation.IAnnotation} object.
+     * @return the annotation created from the given ALTO element, targeting the specified canvas
      */
     public AbstractAnnotation createAnnotation(GeometricData element, String pi, Integer pageNo, IResource canvas, boolean urlOnlyTarget) {
         String id = Optional.ofNullable(element.getId()).orElse(buildId(element));

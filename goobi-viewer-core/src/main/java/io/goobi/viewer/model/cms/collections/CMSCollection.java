@@ -280,7 +280,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      * getLabelAsTranslation.
      *
      * @param language ISO language code to filter label translations by
-     * @return a {@link io.goobi.viewer.model.cms.collections.CMSCollectionTranslation} object.
+     * @return the label translation for the given language, or null if none exists
      */
     public CMSCollectionTranslation getLabelAsTranslation(String language) {
         return getLabels().stream().filter(translation -> language.equalsIgnoreCase(translation.getLanguage())).findFirst().orElse(null);
@@ -290,7 +290,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      * getDescriptionAsTranslation.
      *
      * @param language ISO language code to filter description translations by
-     * @return a {@link io.goobi.viewer.model.cms.collections.CMSCollectionTranslation} object.
+     * @return the description translation for the given language, or null if none exists
      */
     public CMSCollectionTranslation getDescriptionAsTranslation(String language) {
         return getDescriptions().stream().filter(translation -> language.equalsIgnoreCase(translation.getLanguage())).findFirst().orElse(null);
@@ -589,7 +589,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /**
      * getRepresentativeWork.
      *
-     * @return a {@link java.util.Optional} object.
+     * @return an Optional containing the representative StructElement, or empty if none is configured or found
      */
     public Optional<StructElement> getRepresentativeWork() {
         if (hasRepresentativeWork()) {

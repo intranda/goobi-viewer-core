@@ -141,7 +141,7 @@ public class LoginResult {
      * isRedirected.
      *
      * @param timeout maximum wait time in milliseconds for the redirect signal
-     * @return a {@link java.util.concurrent.Future} object.
+     * @return a Future resolving to true once a redirect has been signaled
      */
     public Future<Boolean> isRedirected(long timeout) {
         return CompletableFuture.supplyAsync(() -> {

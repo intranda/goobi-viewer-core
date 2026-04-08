@@ -139,7 +139,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     /**
      * getImageUrl.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the absolute URL to the authentication provider's image
      */
     public String getImageUrl() {
         try {
@@ -190,7 +190,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
      *
      * @param url target endpoint URI for the POST request
      * @param requestEntity JSON body to send in the POST request
-     * @return a {@link java.lang.String} object.
+     * @return the HTTP response body as string
      * @throws jakarta.ws.rs.WebApplicationException if any.
      */
     protected String post(URI url, String requestEntity) throws WebApplicationException {
@@ -220,7 +220,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
      * get.
      *
      * @param url target endpoint URI for the GET request
-     * @return a {@link java.lang.String} object.
+     * @return the HTTP response body as string
      * @throws jakarta.ws.rs.WebApplicationException if any.
      */
     protected String get(URI url) throws WebApplicationException {

@@ -103,7 +103,7 @@ public final class RSSFeed {
      * @param rootPath base URL of the viewer instance
      * @param query Solr query string to select feed entries
      * @param maxItems maximum number of feed items to return
-     * @return a {@link com.rometools.rome.feed.synd.SyndFeed} object.
+     * @return the generated RSS 2.0 SyndFeed containing the matching entries
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -139,7 +139,7 @@ public final class RSSFeed {
      * @param maxItems maximum number of feed items to return
      * @param sortField Solr field name used for sorting
      * @param sortDescending true to sort descending; false for ascending
-     * @return a {@link com.rometools.rome.feed.synd.SyndFeed} object.
+     * @return the generated RSS 2.0 SyndFeed containing the matching entries with the given language and sort order
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -441,7 +441,7 @@ public final class RSSFeed {
      * @param rootPath base URL of the viewer instance
      * @param query Solr query string to select feed entries
      * @param rssFeedItems maximum number of feed items to return
-     * @return a {@link io.goobi.viewer.model.rss.Channel} object.
+     * @return the generated RSS Channel containing the matching entries
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -462,7 +462,7 @@ public final class RSSFeed {
      * @param language BCP-47 language tag for feed language and translations
      * @param sortField Solr field name used for sorting
      * @param sortDescending true to sort descending; false for ascending
-     * @return a {@link io.goobi.viewer.model.rss.Channel} object.
+     * @return the generated RSS Channel containing the matching entries with the given language and sort order
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.

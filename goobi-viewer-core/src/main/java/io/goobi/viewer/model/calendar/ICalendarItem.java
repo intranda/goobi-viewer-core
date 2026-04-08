@@ -29,7 +29,7 @@ public interface ICalendarItem extends Comparable<ICalendarItem> {
     /**
      * getName.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the display name of this calendar item
      */
     public String getName();
 

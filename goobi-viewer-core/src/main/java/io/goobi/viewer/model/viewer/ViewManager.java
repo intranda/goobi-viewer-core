@@ -325,7 +325,7 @@ public class ViewManager implements Serializable {
     /**
      * createCalendarView.
      *
-     * @return a {@link io.goobi.viewer.model.calendar.CalendarView} object.
+     * @return the CalendarView initialized for the current record
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
@@ -352,7 +352,7 @@ public class ViewManager implements Serializable {
     /**
      * getRepresentativeImageInfo.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the IIIF image info URL for the representative page of this record
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -401,7 +401,7 @@ public class ViewManager implements Serializable {
      * getCurrentImageInfo.
      *
      * @param pageType page type used to determine image configuration
-     * @return a {@link java.lang.String} object.
+     * @return the IIIF image info URL for the current page
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -501,7 +501,7 @@ public class ViewManager implements Serializable {
     /**
      * getCurrentImageInfoFullscreen.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the IIIF image info URL for the current page in fullscreen view
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -516,7 +516,7 @@ public class ViewManager implements Serializable {
     /**
      * getCurrentImageInfoCrowd.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the IIIF image info URL for the current page in crowdsourcing (OCR edit) view
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -531,7 +531,7 @@ public class ViewManager implements Serializable {
     /**
      * getWatermarkUrl.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the watermark footer URL for the current page in the default view
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -544,7 +544,7 @@ public class ViewManager implements Serializable {
      * getWatermarkUrl.
      *
      * @param pageType page type name for footer configuration lookup
-     * @return a {@link java.lang.String} object.
+     * @return the watermark footer URL for the current page in the given page type view
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -560,7 +560,7 @@ public class ViewManager implements Serializable {
     /**
      * getCurrentImageUrl.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the IIIF image URL for the current page at the configured zoom scale
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -572,7 +572,7 @@ public class ViewManager implements Serializable {
     /**
      * getCurrentObjectUrl.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the 3D object URL for the current page's first file
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -606,7 +606,7 @@ public class ViewManager implements Serializable {
      * getCurrentImageUrl.
      *
      * @param size maximum image dimension in pixels
-     * @return a {@link java.lang.String} object.
+     * @return the IIIF image URL for the current page scaled to the given size
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -619,7 +619,7 @@ public class ViewManager implements Serializable {
      *
      * @param scale scale transformation to apply to the master image
      * @param page physical page whose master image URL is returned
-     * @return a {@link java.lang.String} object.
+     * @return the URL to the master image of the given page, optionally appending watermark parameters
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -665,7 +665,7 @@ public class ViewManager implements Serializable {
      *
      * @param scale scale transformation to apply to the thumbnail
      * @param page physical page whose thumbnail URL is returned
-     * @return a {@link java.lang.String} object.
+     * @return the thumbnail URL of the given page for download, optionally appending watermark parameters
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -751,7 +751,7 @@ public class ViewManager implements Serializable {
      *
      * @param option download option specifying format and box size
      * @param page physical page to generate the download URL for
-     * @return a {@link java.lang.String} object.
+     * @return the download URL for the given page in the requested format and size
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws ViewerConfigurationException
@@ -894,7 +894,7 @@ public class ViewManager implements Serializable {
     /**
      * getCurrentSearchResultCoords.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of word coordinate groups (each group is a list of coordinate tokens) for the current page's search result highlights
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -1003,7 +1003,7 @@ public class ViewManager implements Serializable {
     /**
      * getRepresentativeImageUrl.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the URL to the representative image of this record at its native dimensions
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1034,7 +1034,7 @@ public class ViewManager implements Serializable {
      *
      * @param imageSize original image dimensions
      * @param scaledWidth target width in pixels
-     * @return a {@link java.awt.Dimension} object.
+     * @return the image dimensions scaled proportionally to the given width
      */
     public static Dimension scaleToWidth(Dimension imageSize, int scaledWidth) {
         double scale = scaledWidth / imageSize.getWidth();
@@ -1047,7 +1047,7 @@ public class ViewManager implements Serializable {
      *
      * @param imageSize original image dimensions
      * @param scaledHeight target height in pixels
-     * @return a {@link java.awt.Dimension} object.
+     * @return the image dimensions scaled proportionally to the given height
      */
     public static Dimension scaleToHeight(Dimension imageSize, int scaledHeight) {
         double scale = scaledHeight / imageSize.getHeight();
@@ -1075,7 +1075,7 @@ public class ViewManager implements Serializable {
      * rotateLeft.
      *
      * @should rotate correctly
-     * @return a {@link java.lang.String} object.
+     * @return null (JSF navigation outcome; rotation is applied as a side effect)
      */
     public String rotateLeft() {
         rotate -= 90;
@@ -1094,7 +1094,7 @@ public class ViewManager implements Serializable {
      * rotateRight.
      *
      * @should rotate correctly
-     * @return a {@link java.lang.String} object.
+     * @return null (JSF navigation outcome; rotation is applied as a side effect)
      */
     public String rotateRight() {
         rotate += 90;
@@ -1110,7 +1110,7 @@ public class ViewManager implements Serializable {
      * resetImage.
      *
      * @should reset rotation
-     * @return a {@link java.lang.String} object.
+     * @return null (JSF navigation outcome; rotation is reset to 0 as a side effect)
      */
     public String resetImage() {
         this.rotate = 0;
@@ -1193,7 +1193,7 @@ public class ViewManager implements Serializable {
     /**
      * Returns all pages in their correct order. Used for e-publications.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all physical pages of the current record in correct order
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1214,7 +1214,7 @@ public class ViewManager implements Serializable {
     /**
      * getCurrentPage.
      *
-     * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @return the PhysicalElement at the current image order, or null if not found
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1262,7 +1262,7 @@ public class ViewManager implements Serializable {
     /**
      * Getter for the field <code>representativePage</code>.
      *
-     * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @return the representative PhysicalElement for this record, falling back to the first page if not set
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1286,7 +1286,7 @@ public class ViewManager implements Serializable {
     /**
      * getFirstPage.
      *
-     * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @return the PhysicalElement at the first page order of this record
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1415,7 +1415,7 @@ public class ViewManager implements Serializable {
     /**
      * Returns the ORDERLABEL value for the current page.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the ORDERLABEL of the current page, trimmed, or null if no current page is set
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1594,7 +1594,7 @@ public class ViewManager implements Serializable {
      *
      * Returns the PhysicalElements for the current thumbnail page using the configured number of thumbnails per page.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of physical pages for the current thumbnail page
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1747,7 +1747,7 @@ public class ViewManager implements Serializable {
     /**
      * getImagesSizeThumbnail.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the total number of thumbnail pages as a string
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getImagesSizeThumbnail() throws IndexUnreachableException {
@@ -2112,7 +2112,7 @@ public class ViewManager implements Serializable {
     /**
      * Returns the pdf download link for the current page.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the PDF download URL for the current page
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -2128,7 +2128,7 @@ public class ViewManager implements Serializable {
     /**
      * Returns the pdf download link for the current struct element.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the PDF download URL for the current struct element
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -2142,9 +2142,9 @@ public class ViewManager implements Serializable {
 
     /**
      * Returns the pdf download link for the current struct element, allowing to add a number of query parameters to it.
-     * 
+     *
      * @param queryParams additional URL query parameters to append
-     * @return a {@link java.lang.String} object.
+     * @return the PDF download URL for the current struct element with extra query parameters appended
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -2162,7 +2162,7 @@ public class ViewManager implements Serializable {
      * Returns the pdf download link for a pdf of all pages from this.firstPdfPage to this.lastPdfPage (inclusively).
      *
      * @should construct url correctly
-     * @return a {@link java.lang.String} object.
+     * @return the PDF download URL for the selected page range
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -2476,7 +2476,7 @@ public class ViewManager implements Serializable {
     /**
      * getOaiMarcUrl.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the OAI-PMH MARC export URL for the current record
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getOaiMarcUrl() throws IndexUnreachableException {
@@ -2486,7 +2486,7 @@ public class ViewManager implements Serializable {
     /**
      * getOaiDcUrl.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the OAI-PMH Dublin Core export URL for the current record
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getOaiDcUrl() throws IndexUnreachableException {
@@ -2496,7 +2496,7 @@ public class ViewManager implements Serializable {
     /**
      * getOaiEseUrl.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the OAI-PMH ESE export URL for the current record
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getOaiEseUrl() throws IndexUnreachableException {
@@ -2506,7 +2506,7 @@ public class ViewManager implements Serializable {
     /**
      * Getter for the field <code>opacUrl</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the OPAC URL for the current record, or null if not available
      */
     public String getOpacUrl() {
         if (currentStructElement != null && opacUrl == null) {
@@ -2528,7 +2528,7 @@ public class ViewManager implements Serializable {
     /**
      * Returns the main title of the current volume's anchor, if available.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the title of the anchor (multi-volume work) this volume belongs to, or null if not applicable
      */
     public String getAnchorTitle() {
         if (anchorStructElement != null) {
@@ -2906,7 +2906,7 @@ public class ViewManager implements Serializable {
     /**
      * Returns a list of original content file download links (name+url) for the current document.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of labeled download links for the original content files of this work
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -2973,7 +2973,7 @@ public class ViewManager implements Serializable {
     /**
      * Getter for the field <code>topStructElement</code>.
      *
-     * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @return the top-level StructElement for the current record, or null if it cannot be loaded
      */
     public StructElement getTopStructElement() {
         try {
@@ -3038,7 +3038,7 @@ public class ViewManager implements Serializable {
     /**
      * getCurrentDocumentHierarchy.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of struct element stubs from the top-level ancestor down to the currently displayed struct element
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public List<StructElementStub> getCurrentDocumentHierarchy() throws IndexUnreachableException {
@@ -3133,7 +3133,7 @@ public class ViewManager implements Serializable {
      * Getter for the field <code>versionHistory</code>.
      *
      * @should create create history correctly
-     * @return a {@link java.util.List} object.
+     * @return a list of version identifier strings representing the version history of this record
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -3225,7 +3225,7 @@ public class ViewManager implements Serializable {
     /**
      * Returns the ContextObject value for a COinS element (generated using metadata from <code>currentDocument</code>).
      *
-     * @return a {@link java.lang.String} object.
+     * @return the COinS context object string for embedding bibliographic metadata in a &lt;span&gt; element
      */
     public String getContextObject() {
         if (currentStructElement != null && contextObject == null) {
@@ -3247,7 +3247,7 @@ public class ViewManager implements Serializable {
      * addToTranskribusAction.
      *
      * @param login If true, the user will first be logged into their Transkribus account in the UserBean.
-     * @return a {@link java.lang.String} object.
+     * @return empty string on success, or empty string on error (messages are set on failure)
      */
     public String addToTranskribusAction(boolean login) {
         logger.trace("addToTranskribusAction");
@@ -3547,7 +3547,7 @@ public class ViewManager implements Serializable {
     /**
      * getTopDocumentTitle.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the display title for the top-level structure element of this record
      */
     public String getTopDocumentTitle() {
         return getDocumentTitle(this.topStructElement);
@@ -3557,7 +3557,7 @@ public class ViewManager implements Serializable {
      * getDocumentTitle.
      *
      * @param document structure element whose title to generate
-     * @return a {@link java.lang.String} object.
+     * @return the display title for the given structure element
      */
     public String getDocumentTitle(StructElement document) {
         if (document == null) {
@@ -3704,7 +3704,7 @@ public class ViewManager implements Serializable {
     /**
      * getCiteLinkPage.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the persistent citation URL for the current page
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @should return correct url

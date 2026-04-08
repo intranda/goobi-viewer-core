@@ -206,7 +206,7 @@ public class AdminConfigEditorBean implements Serializable {
     /**
      * getFileRecordsModel.
      *
-     * @return a {@link jakarta.faces.model.DataModel} object
+     * @return the data model wrapping the current list of config file records
      */
     public DataModel<FileRecord> getFileRecordsModel() {
         return filesListing.getFileRecordsModel();
@@ -242,7 +242,7 @@ public class AdminConfigEditorBean implements Serializable {
     /**
      * Getter for the field <code>fileContent</code>.
      *
-     * @return a {@link java.lang.String} object
+     * @return the text content of the currently open configuration file
      */
     public String getFileContent() {
         return fileContent;
@@ -260,7 +260,7 @@ public class AdminConfigEditorBean implements Serializable {
     /**
      * Getter for the field <code>backupRecords</code>.
      *
-     * @return a {@link java.util.List} object
+     * @return a list of backup file records for configuration files
      */
     public List<BackupRecord> getBackupRecords() {
         return backupRecords;
@@ -269,7 +269,7 @@ public class AdminConfigEditorBean implements Serializable {
     /**
      * Getter for the field <code>backupRecordsModel</code>.
      *
-     * @return a {@link jakarta.faces.model.DataModel} object
+     * @return the data model wrapping the list of backup file records
      */
     public DataModel<BackupRecord> getBackupRecordsModel() {
         return backupRecordsModel;
@@ -305,7 +305,7 @@ public class AdminConfigEditorBean implements Serializable {
     /**
      * getCurrentConfigFileType.
      *
-     * @return a {@link java.lang.String} object
+     * @return the file type of the currently open config file, or an empty string if none is selected
      */
     public String getCurrentConfigFileType() {
         if (currentFileRecord != null) {
@@ -429,7 +429,7 @@ public class AdminConfigEditorBean implements Serializable {
      * editFile.
      *
      * @param writable true to open the file for editing; false for read-only view
-     * @return a {@link java.lang.String} object
+     * @return the navigation outcome redirecting to the config editor file view
      */
     public String editFile(boolean writable) {
         selectFileAndShowBackups(writable);
@@ -809,7 +809,7 @@ public class AdminConfigEditorBean implements Serializable {
     /**
      * getCurrentFilePath.
      *
-     * @return a {@link java.nio.file.Path} object
+     * @return the file system path of the currently open config file, or null if none is selected
      */
     public Path getCurrentFilePath() {
         return Optional.ofNullable(currentFileRecord).map(FileRecord::getFile).orElse(null);

@@ -89,7 +89,7 @@ public class DisclaimerEditBean implements Serializable {
     /**
      * <p>Getter for the field <code>disclaimerForEdit</code>.
      *
-     * @return a {@link io.goobi.viewer.model.administration.legal.Disclaimer} object
+     * @return the Disclaimer currently loaded for editing
      */
     public Disclaimer getDisclaimerForEdit() {
         return disclaimerForEdit;

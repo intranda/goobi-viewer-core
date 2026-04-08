@@ -79,7 +79,7 @@ public class LayerBuilder extends AbstractBuilder {
      * @param motivation OA motivation string for each annotation
      * @param fileGetter function resolving PI and repository to file paths
      * @param linkGetter function resolving PI and language to resource URI
-     * @return a {@link de.intranda.api.iiif.presentation.v2.Layer} object.
+     * @return the IIIF Layer containing annotation lists for all available language files
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws java.io.IOException if any.
@@ -113,7 +113,7 @@ public class LayerBuilder extends AbstractBuilder {
      * @param dcType Dublin Core type label for the content
      * @param annoType annotation type used to set the label
      * @param motivation OA motivation string; defaults to painting if null
-     * @return a {@link de.intranda.api.annotation.oa.OpenAnnotation} object.
+     * @return the OpenAnnotation linking the given content resource with the specified motivation
      */
     public OpenAnnotation createAnnotation(URI annotationId, URI linkURI, Format format, DcType dcType, AnnotationType annoType, String motivation) {
         LinkingContent link = new LinkingContent(linkURI);
@@ -142,7 +142,7 @@ public class LayerBuilder extends AbstractBuilder {
      * @param annotations annotations to add as resources
      * @param id URI identifying the annotation list
      * @param type annotation type used to set the list label
-     * @return a {@link de.intranda.api.iiif.presentation.v2.AnnotationList} object.
+     * @return the AnnotationList containing all given annotations with the type-derived label
      */
     public AnnotationList createAnnotationList(List<IAnnotation> annotations, URI id, AnnotationType type) {
         AnnotationList annoList = new AnnotationList(id);
@@ -159,7 +159,7 @@ public class LayerBuilder extends AbstractBuilder {
      * @param pi persistent identifier of the record
      * @param annoLists map of annotation lists grouped by type
      * @param annoType annotation type selecting which list to include
-     * @return a {@link de.intranda.api.iiif.presentation.v2.Layer} object.
+     * @return the IIIF Layer for the given annotation type, containing the matching annotation lists
      * @throws java.net.URISyntaxException if any.
      */
     public Layer generateLayer(String pi, Map<AnnotationType, List<AnnotationList>> annoLists, AnnotationType annoType) throws URISyntaxException {
@@ -175,7 +175,7 @@ public class LayerBuilder extends AbstractBuilder {
      *
      * @param pi persistent identifier used to build annotation list URIs
      * @param annoLists per-type lists of annotation lists to merge
-     * @return a {@link java.util.Map} object.
+     * @return a map of annotation type to merged annotation list containing all resources from the per-type lists
      * @throws java.net.URISyntaxException if any.
      */
     public Map<AnnotationType, AnnotationList> mergeAnnotationLists(String pi, Map<AnnotationType, List<AnnotationList>> annoLists)
@@ -198,7 +198,7 @@ public class LayerBuilder extends AbstractBuilder {
      * getLanguage.
      *
      * @param filename filename containing a language code before the extension
-     * @return a {@link java.util.Optional} object.
+     * @return an Optional containing the language code extracted from the filename, or empty if none is found
      */
     private static Optional<String> getLanguage(String filename) {
         String regex = "([a-z]{1,3})\\.[a-z]+";

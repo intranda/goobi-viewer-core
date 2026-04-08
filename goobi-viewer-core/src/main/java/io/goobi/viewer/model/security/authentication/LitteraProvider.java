@@ -102,7 +102,7 @@ public class LitteraProvider extends HttpAuthenticationProvider {
      * @param url base URI of the Littera authentication endpoint
      * @param username login name submitted by the user
      * @param password password submitted by the user
-     * @return a {@link io.goobi.viewer.model.security.authentication.model.LitteraAuthenticationResponse} object.
+     * @return the deserialized authentication response from the Littera service
      * @throws java.io.IOException if any.
      */
     protected LitteraAuthenticationResponse get(final URI url, String username, String password) throws IOException {

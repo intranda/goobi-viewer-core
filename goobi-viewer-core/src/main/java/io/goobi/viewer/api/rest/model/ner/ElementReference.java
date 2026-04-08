@@ -69,7 +69,7 @@ public class ElementReference {
     /**
      * Getter for the field <code>id</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the identifier of this element reference
      */
     public String getId() {
         return id;
@@ -78,7 +78,7 @@ public class ElementReference {
     /**
      * Getter for the field <code>coordinates</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the bounding box coordinates of this element as a string
      */
     public String getCoordinates() {
         return getAsString(coordinates);
@@ -87,7 +87,7 @@ public class ElementReference {
     /**
      * getCoordinatesAsRect.
      *
-     * @return a {@link java.awt.Rectangle} object.
+     * @return the bounding box of the element on the page as a Rectangle
      */
     @JsonIgnore
     public Rectangle getCoordinatesAsRect() {
@@ -106,7 +106,7 @@ public class ElementReference {
     /**
      * Getter for the field <code>content</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the text content of this NER element
      */
     public String getContent() {
         return content;

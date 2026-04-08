@@ -96,7 +96,7 @@ public final class ALTOTools {
      * @param alto ALTO XML document as a string
      * @param charset character encoding of the ALTO document
      * @param mergeLineBreakWords merge words split across line breaks into one
-     * @return a {@link java.lang.String} object.
+     * @return the plain text extracted from the ALTO XML document, or null on error
      * @should extract fulltext correctly
      */
     public static String getFulltext(String alto, String charset, boolean mergeLineBreakWords) {
@@ -115,7 +115,7 @@ public final class ALTOTools {
      * @param alto ALTO XML document as a string
      * @param inCharset character encoding of the ALTO document
      * @param type NER tag type to filter by; null returns all types
-     * @return a {@link java.util.List} object.
+     * @return a list of NER TagCount objects extracted from the given ALTO document
      */
     public static List<TagCount> getNERTags(String alto, final String inCharset, NERTag.Type type) {
         String charset = inCharset;
@@ -198,7 +198,7 @@ public final class ALTOTools {
      * @param alto ALTO XML document as a string
      * @param charset character encoding of the ALTO document
      * @param mergeLineBreakWords merge words split across line breaks into one
-     * @return a {@link java.lang.String} object.
+     * @return the plain text extracted from the ALTO XML document
      * @throws java.io.IOException if any.
      * @throws javax.xml.stream.XMLStreamException if any.
      * @throws JDOMException
@@ -236,7 +236,7 @@ public final class ALTOTools {
      * @param altoString ALTO XML document as a string
      * @param charset character encoding of the ALTO document
      * @param searchTerms set of terms whose coordinates to locate
-     * @return a {@link java.util.List} object.
+     * @return a list of coordinate strings for words matching any of the given search terms in the ALTO document
      */
     public static List<String> getWordCoords(String altoString, String charset, Set<String> searchTerms) {
         return getWordCoords(altoString, charset, searchTerms, 0);
@@ -248,7 +248,7 @@ public final class ALTOTools {
      * @param inCoords comma-separated coordinate string to rotate
      * @param rotation rotation angle in degrees (0, 90, 180, 270)
      * @param pageSize dimensions of the page image
-     * @return a {@link java.lang.String} object.
+     * @return the rotated bounding box as a comma-separated coordinate string
      */
     public static String getRotatedCoordinates(final String inCoords, int rotation, Dimension pageSize) {
         String coords = inCoords;
@@ -270,7 +270,7 @@ public final class ALTOTools {
      * @param charset character encoding of the ALTO document
      * @param searchTerms Set of search terms
      * @param rotation Image rotation in degrees
-     * @return a {@link java.util.List} object.
+     * @return a list of coordinate strings for words matching any of the given search terms, rotated to match the image orientation
      * @should match hyphenated words
      * @should match phrases
      * @should match diacritics via base letter
@@ -305,7 +305,7 @@ public final class ALTOTools {
      * @param rect rectangle to rotate around the image center
      * @param rotation rotation angle in degrees (90, 180, 270)
      * @param imageSize dimensions of the image for computing the rotation
-     * @return a {@link java.awt.Rectangle} object.
+     * @return the rotated bounding rectangle
      */
     protected static Rectangle rotate(Rectangle rect, int rotation, Dimension imageSize) {
 
@@ -419,7 +419,7 @@ public final class ALTOTools {
      * getALTOCoords.
      *
      * @param element ALTO geometric element whose bounding box to extract
-     * @return a {@link java.lang.String} object.
+     * @return the bounding box of the given element as a comma-separated coordinate string (x, y, width, height)
      */
     public static String getALTOCoords(GeometricData element) {
         if (element == null) {
