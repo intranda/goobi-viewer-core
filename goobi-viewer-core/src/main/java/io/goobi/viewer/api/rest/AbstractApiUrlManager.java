@@ -320,6 +320,9 @@ public abstract class AbstractApiUrlManager {
         }
     }
 
+    /**
+     * Enumerates the supported REST API versions exposed by the Goobi viewer.
+     */
     public enum Version {
         v1,
         v2;

@@ -38,6 +38,9 @@ import io.goobi.viewer.model.viewer.ViewManager;
  */
 public class CitationLink {
 
+    /**
+     * Defines whether a {@link CitationLink} points to an internal viewer URL or an external URL built from a Solr field value.
+     */
     public enum CitationLinkType {
         URL,
         INTERNAL;
@@ -63,6 +66,9 @@ public class CitationLink {
 
     }
 
+    /**
+     * Defines the structural level of a digitized object to which a {@link CitationLink} refers.
+     */
     public enum CitationLinkLevel {
         RECORD,
         DOCSTRUCT,
@@ -88,6 +94,9 @@ public class CitationLink {
         }
     }
 
+    /**
+     * Defines the user-facing action triggered when a {@link CitationLink} is activated.
+     */
     public enum CitationLinkAction {
         CLIPBOARD,
         OPEN,

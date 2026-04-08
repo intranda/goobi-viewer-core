@@ -32,6 +32,10 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
  */
 public class LinkingProperty {
 
+    /**
+     * Enumerates the supported linked resource formats for IIIF Presentation API v3, each carrying a resource type label, MIME format, and optional
+     * profile URI.
+     */
     public enum LinkingTarget {
         PLAINTEXT("Text", Format.TEXT_PLAIN, null),
         ALTO("Dataset", Format.TEXT_XML, "https://www.loc.gov/alto/"),

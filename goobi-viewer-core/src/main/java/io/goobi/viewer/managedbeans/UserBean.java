@@ -902,7 +902,7 @@ public class UserBean implements Serializable {
     /**
      * showAuthenticationProviderSelection.
      *
-     * @return a boolean
+     * @return true if more than one local or username/password authentication provider is configured, false otherwise
      */
     public boolean showAuthenticationProviderSelection() {
         return getAuthenticationProviders().stream()
@@ -1215,7 +1215,7 @@ public class UserBean implements Serializable {
     /**
      * isRequireLoginCaptcha.
      *
-     * @return a boolean
+     * @return true if a CAPTCHA is required for the login form, false otherwise
      */
     public boolean isRequireLoginCaptcha() {
         // TODO
@@ -1277,6 +1277,9 @@ public class UserBean implements Serializable {
         }
     }
 
+    /**
+     * Represents a {@link TimerTask} that periodically updates the session timeout counter to keep the user's session information current.
+     */
     public class SessionTimeoutMonitorTask extends TimerTask {
         @Override
         public void run() {

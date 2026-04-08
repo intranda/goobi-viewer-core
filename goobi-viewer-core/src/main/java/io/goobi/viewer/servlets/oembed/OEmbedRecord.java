@@ -93,7 +93,7 @@ public class OEmbedRecord {
     /**
      * <p>isRichResponse.
      *
-     * @return a boolean
+     * @return true if this record has a URI set and thus constitutes a rich oEmbed response, false otherwise
      */
     public boolean isRichResponse() {
         return this.uri != null;

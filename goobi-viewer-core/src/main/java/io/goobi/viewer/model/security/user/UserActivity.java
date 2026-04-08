@@ -32,6 +32,12 @@ import io.goobi.viewer.model.bookmark.Bookmark;
 import io.goobi.viewer.model.search.Search;
 
 /**
+ * Represents a single recorded activity of a user, such as creating a comment, bookmark, search, or annotation.
+ *
+ * <p>Each instance captures the activity type, a human-readable label, the timestamp, and whether it is an update
+ * to an existing item. Factory methods are provided for constructing instances from domain objects such as
+ * {@link io.goobi.viewer.model.annotation.comments.Comment} or {@link io.goobi.viewer.model.search.Search}.
+ *
  * @author Florian Alpers
  */
 public class UserActivity {

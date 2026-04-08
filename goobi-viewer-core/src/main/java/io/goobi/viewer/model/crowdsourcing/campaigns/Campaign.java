@@ -133,6 +133,9 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
         }
     }
 
+    /**
+     * Enumerates the review workflows available for a crowdsourcing campaign, controlling whether annotations require a second pass by another user.
+     */
     public enum ReviewMode {
         REQUIRE_REVIEW("label__require_review"),
         NO_REVIEW("label__no_review"),
@@ -1199,7 +1202,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Return true if the campaign is ready for use. For this, the title in the default language must exists and there must be at least one question
      *
-     * @return a boolean
+     * @return true if the campaign is fully configured and ready to accept contributions, false otherwise
      */
     @JsonIgnore
     public boolean isReady() {

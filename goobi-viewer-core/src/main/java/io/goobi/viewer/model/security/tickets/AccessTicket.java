@@ -42,13 +42,20 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
- * Describes license types for record access conditions and also system user roles (not to be confused with the class Role, however), also
- * known as core license types.
+ * Represents a time-limited access ticket that grants a user access to a restricted record or download,
+ * persisted in the {@code access_tickets} database table.
+ *
+ * <p>Tickets are issued in response to access requests and are protected by a BCrypt-hashed password.
+ * A ticket transitions from a pending request (no password hash) to an active grant once a password is set,
+ * and expires after a configurable validity period.
  */
 @Entity
 @Table(name = "access_tickets")
 public class AccessTicket {
 
+    /**
+     * Classifies the resource scope an {@link AccessTicket} controls access to.
+     */
     public enum AccessTicketType {
         DOWNLOAD,
         RECORD;

@@ -39,6 +39,10 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 public class NERTag {
 
+    /**
+     * Enumerates the recognized categories of named entities, such as persons, locations, corporations, events, and miscellaneous types.
+     * Each constant carries one or more label strings used to match raw NER output from the indexer.
+     */
     public enum Type {
         PERSON("person"),
         LOCATION("location", "place"),

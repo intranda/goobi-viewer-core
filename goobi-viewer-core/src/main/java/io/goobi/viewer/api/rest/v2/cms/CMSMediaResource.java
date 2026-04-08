@@ -624,6 +624,9 @@ public class CMSMediaResource {
         return Optional.of(user);
     }
 
+    /**
+     * Holds an ordered list of {@link MediaItem} wrappers built from {@link CMSMediaItem} entities, suitable for serialization as a REST response.
+     */
     public class MediaList {
 
         private final List<MediaItem> mediaItems;

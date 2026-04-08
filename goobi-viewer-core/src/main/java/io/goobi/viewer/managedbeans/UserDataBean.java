@@ -225,7 +225,7 @@ public class UserDataBean implements Serializable {
      * <p>getNumBookmarkLists.
      *
      * @param user owner whose bookmark lists are counted
-     * @return a long
+     * @return the total number of bookmark lists owned by the given user
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public long getNumBookmarkLists(User user) throws DAOException {
@@ -236,7 +236,7 @@ public class UserDataBean implements Serializable {
      * <p>getNumSearches.
      *
      * @param user owner whose saved searches are counted
-     * @return a long
+     * @return the total number of saved searches belonging to the given user
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public long getNumSearches(User user) throws DAOException {
@@ -260,7 +260,7 @@ public class UserDataBean implements Serializable {
      * <p>getNumAnnotations.
      *
      * @param user creator whose crowdsourcing annotations are counted
-     * @return a long
+     * @return the total number of crowdsourcing annotations created by the given user
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public long getNumAnnotations(User user) throws DAOException {
@@ -283,7 +283,7 @@ public class UserDataBean implements Serializable {
     /**
      * <p>getAnnotationCount.
      *
-     * @return a long
+     * @return the total number of annotations created by the currently logged-in user, or 0 if no user is logged in
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public long getAnnotationCount() throws DAOException {
@@ -296,7 +296,7 @@ public class UserDataBean implements Serializable {
     /**
      * <p>Getter for the field <code>commentCount</code>.
      *
-     * @return a long
+     * @return the total number of comments created by the currently logged-in user
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public long getCommentCount() throws DAOException {

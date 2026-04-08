@@ -104,8 +104,8 @@ public class CMSRSSContent extends CMSContent {
 
     /**
      * Alias for {@link #getItemsPerView()}. Used in legacy cms-templates
-     * 
-     * @return an int
+     *
+     * @return the number of RSS feed items displayed per page
      */
     public int getElementsPerPage() {
         return getItemsPerView();

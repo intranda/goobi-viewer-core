@@ -425,7 +425,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /**
      *
      * @param other the other CMSCollection to compare content with
-     * @return a boolean
+     * @return true if the content of this collection matches the given collection, false otherwise
      */
     public boolean contentEquals(CMSCollection other) {
         return Objects.equals(this.mediaItem, other.mediaItem)

@@ -41,7 +41,7 @@ import jakarta.servlet.http.HttpSession;
 /**
  * Offers methods to store information about the current and previous html-view (page) in the session store.
  *
- * <p>The fullscreen view is explicitly excluded from the recorded views, since it acts only as a magnification of the image view, not as a seperate
+ * <p>The fullscreen view is explicitly excluded from the recorded views, since it acts only as a magnification of the image view, not as a separate
  * page
  *
  * @author Florian Alpers

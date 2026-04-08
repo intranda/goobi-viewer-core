@@ -706,6 +706,9 @@ public class FacetItem implements Serializable, IFacetItem {
         return field + ":" + value + " - " + value2;
     }
 
+    /**
+     * Enumerates the structural types of a facet field, determining how its values are queried, displayed, and filtered in the search UI.
+     */
     public enum FacetType {
         STANDARD,
         BOOLEAN,

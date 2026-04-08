@@ -312,7 +312,7 @@ public class MessageQueueBean implements Serializable {
     /**
      * isMessageBrokerStart.
      *
-     * @return a boolean
+     * @return true if the message broker has been started, false otherwise
      */
     public boolean isMessageBrokerStart() {
         return messageBrokerStart;
@@ -321,7 +321,7 @@ public class MessageQueueBean implements Serializable {
     /**
      * isPaused.
      *
-     * @return a boolean
+     * @return true if message queue processing is currently paused, false otherwise
      */
     public boolean isPaused() {
         return paused;

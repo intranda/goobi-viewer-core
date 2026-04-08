@@ -341,6 +341,9 @@ public class DownloadTaskEndpoint {
         }
     }
 
+    /**
+     * Enumerates the client-initiated actions that can be sent over the WebSocket connection to control or query a download task.
+     */
     public enum Action {
         STARTDOWNLOAD,
         CANCELDOWNLOAD,
@@ -354,6 +357,9 @@ public class DownloadTaskEndpoint {
         }
     }
 
+    /**
+     * Enumerates the runtime states of a download task as communicated to WebSocket clients.
+     */
     public enum Status {
         DORMANT,
         WAITING,

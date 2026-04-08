@@ -34,6 +34,9 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
  */
 public class MessageEntry implements Comparable<MessageEntry> {
 
+    /**
+     * Represents the completeness of translations for a {@link MessageEntry} across all configured locales.
+     */
     public enum TranslationStatus {
         NONE,
         PARTIAL,

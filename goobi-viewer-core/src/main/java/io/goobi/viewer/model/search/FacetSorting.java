@@ -135,8 +135,8 @@ public final class FacetSorting {
 
         /**
          * Get the underlying map.
-         * 
-         * @return a map
+         *
+         * @return the underlying map backing this sorted facet structure
          */
         public Map<K, V> getMap() {
             return map;

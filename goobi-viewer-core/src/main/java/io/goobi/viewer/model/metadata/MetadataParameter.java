@@ -53,6 +53,10 @@ public class MetadataParameter implements Serializable {
      */
     private static final String XML_PATH_ATTRIBUTE_URL = "[@url]";
 
+    /**
+     * Enumerates the display and processing types for a metadata parameter, such as plain fields,
+     * translated fields, date fields, identifier fields, norm data fields, and others.
+     */
     public enum MetadataParameterType {
 
         FIELD("field"),

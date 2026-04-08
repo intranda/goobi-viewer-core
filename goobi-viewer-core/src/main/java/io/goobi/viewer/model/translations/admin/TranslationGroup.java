@@ -41,10 +41,17 @@ import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
- * Translation group configuration item.
+ * Groups a set of translatable message keys of the same category for display and editing in the admin backend.
+ *
+ * <p>Each group has a {@link TranslationGroupType} that determines how its entries are loaded (e.g. from Solr
+ * field names, Solr field values, or message property files), along with a name, description, and a list of
+ * {@link TranslationGroupItem} patterns that define which keys belong to the group.
  */
 public final class TranslationGroup {
 
+    /**
+     * Defines the source from which message keys and their translations are loaded for a {@link TranslationGroup}.
+     */
     public enum TranslationGroupType {
         SOLR_FIELD_NAMES,
         SOLR_FIELD_VALUES,
@@ -54,7 +61,7 @@ public final class TranslationGroup {
         /**
          *
          * @param name name of the enum constant to look up
-         * @return {@link TranslationGroupType} matching given name; null if none foudn
+         * @return {@link TranslationGroupType} matching given name; null if none found
          */
         public static TranslationGroupType getByName(String name) {
             if (name == null) {

@@ -1096,9 +1096,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Return the layout type for TOCs of anchor records. Dafaults to 'list'
-     * 
-     * @return a string
+     * Return the layout type for TOCs of anchor records. Defaults to 'list'
+     *
+     * @return the configured TOC anchor layout type; defaults to {@code "list"}
      */
     public String getTocAnchorLayout() {
         return getLocalString("toc.tocAnchorLayout", "list");
@@ -3023,7 +3023,7 @@ public class Configuration extends AbstractConfiguration {
      * @param widgetName Widget name
      * @param valuePath Path to the wanted value
      * @param defaultValue value to return if none configured
-     * @return a boolean
+     * @return the configured boolean value for the given sidebar widget attribute path, or {@code defaultValue} if the widget is not found
      */
     private boolean getSidebarWidgetBooleanValue(String widgetName, String valuePath, boolean defaultValue) {
         HierarchicalConfiguration<ImmutableNode> widget = getSidebarWidgetConfiguration(widgetName);
@@ -3039,7 +3039,7 @@ public class Configuration extends AbstractConfiguration {
      * @param widgetName Widget name
      * @param valuePath Path to the wanted value
      * @param defaultValue value to return if none configured
-     * @return an int
+     * @return the configured integer value for the given sidebar widget attribute path, or {@code defaultValue} if the widget is not found
      */
     private int getSidebarWidgetIntValue(String widgetName, String valuePath, int defaultValue) {
         HierarchicalConfiguration<ImmutableNode> widget = getSidebarWidgetConfiguration(widgetName);
@@ -5917,8 +5917,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return a boolean
+     *
+     * @return true if user-generated content annotations should be displayed below the image, false otherwise
      */
     public boolean isDisplayUserGeneratedContentBelowImage() {
         return getLocalBoolean("webGuiDisplay.displayUserGeneratedContentBelowImage", false);

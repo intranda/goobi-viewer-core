@@ -631,7 +631,7 @@ public class IIIFSearchBuilder {
      *
      * @param fieldName the Solr field name to test
      * @param configuredFields list of configured field names, may contain wildcards
-     * @return a boolean
+     * @return true if the field name matches any entry in the configured fields list (exactly or via wildcard pattern), false otherwise
      */
     private static boolean fieldNameMatches(String fieldName, List<String> configuredFields) {
         for (String configuredField : configuredFields) {

@@ -187,6 +187,9 @@ public class AltoAnnotationBuilder {
         return URI.create(path.build());
     }
 
+    /**
+     * Enumerates the ALTO document hierarchy levels at which annotations can be generated, from a full page down to individual words.
+     */
     public enum Granularity {
         PAGE,
         PAGEAREA,

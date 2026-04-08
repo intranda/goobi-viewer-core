@@ -165,7 +165,7 @@ public class CollectionViewBean implements Serializable {
      * removeCollection.
      *
      * @param content collection content item identifying the collection to remove
-     * @return a boolean
+     * @return true if the collection was present and has been removed, false if it was not found
      */
     public boolean removeCollection(CMSCollectionContent content) {
         String myId = getCollectionId(content);

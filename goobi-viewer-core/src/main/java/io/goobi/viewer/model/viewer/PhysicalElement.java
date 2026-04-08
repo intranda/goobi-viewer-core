@@ -96,6 +96,10 @@ import jakarta.servlet.http.HttpServletRequest;
  */
 public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeniedThumbnailOutput, Serializable {
 
+    /**
+     * Enumerates the coordinate annotation formats that may be present on a physical page, used to determine how word-level highlight coordinates
+     * are read and applied.
+     */
     public enum CoordsFormat {
         UNCHECKED,
         NONE,

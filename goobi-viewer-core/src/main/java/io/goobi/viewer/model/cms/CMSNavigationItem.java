@@ -388,7 +388,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
 
     /**
      * @param url URL to check
-     * @return a boolean
+     * @return true if the URL refers to an anchor on the same page (i.e. starts with {@code #}), false otherwise
      */
     private static boolean isOnSameRessource(String url) {
         return url.startsWith("#");
@@ -687,6 +687,9 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
         return openInNewWindow;
     }
 
+    /**
+     * Enumerates the visibility rules that determine for which users a navigation item is rendered.
+     */
     public enum DisplayRule {
         ALWAYS,
         NOT_LOGGED_IN,

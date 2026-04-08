@@ -50,6 +50,9 @@ public class LicenseTypePlaceholderInfo extends Translation implements CMSMediaH
 
     private static final long serialVersionUID = -6171783524157218760L;
 
+    /**
+     * Specifies how the placeholder image for a {@link LicenseType} is sourced.
+     */
     public enum LicenseTypeImageMode {
         DEFAULT,
         UPLOADED_IMAGE;

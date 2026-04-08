@@ -34,6 +34,9 @@ import io.goobi.viewer.model.viewer.StructElement;
  */
 public class MetadataView {
 
+    /**
+     * Enumerates the possible display locations for a metadata view, either in the main object view or in the sidebar.
+     */
     public enum MetadataViewLocation {
         OBJECTVIEW,
         SIDEBAR;

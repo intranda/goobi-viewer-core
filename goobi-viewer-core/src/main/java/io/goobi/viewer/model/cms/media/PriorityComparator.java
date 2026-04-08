@@ -72,7 +72,7 @@ public class PriorityComparator implements Comparator<CMSMediaItem> {
     /**
      * 
      * @param a the CMS media item to look up
-     * @return an int
+     * @return a stable random integer priority value assigned to the given media item
      */
     private int valueFor(CMSMediaItem a) {
         synchronized (map) {

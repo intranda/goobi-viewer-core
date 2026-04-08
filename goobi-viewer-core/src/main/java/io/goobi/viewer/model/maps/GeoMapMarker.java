@@ -27,6 +27,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
+ * Represents a configurable map marker used in geo maps, holding visual properties such as icon,
+ * colors, shape, and marker type (default, ExtraMarkers, or DivIcon) for rendering on a Leaflet map.
+ *
  * @author Florian Alpers
  */
 public class GeoMapMarker {
@@ -48,6 +51,10 @@ public class GeoMapMarker {
     private MarkerType type = MarkerType.EXTRA_MARKERS;
     private String className = "";
 
+    /**
+     * Enumerates the supported Leaflet marker rendering strategies: default Leaflet markers,
+     * ExtraMarkers plugin markers, and DivIcon-based markers.
+     */
     public enum MarkerType {
         DEFAULT("default"),
         EXTRA_MARKERS("ExtraMarkers"),

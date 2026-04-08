@@ -348,7 +348,7 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
      *
      * @param key attribute name to look up
      * @param defaultValue value returned when attribute is absent
-     * @return a boolean
+     * @return the boolean attribute value for the given key, or {@code defaultValue} if no such attribute is set
      */
     public boolean getBooleanAttributeValue(String key, boolean defaultValue) {
         return Optional.ofNullable(this.attributes).map(map -> map.get(key)).map(CMSComponentAttribute::getBooleanValue).orElse(defaultValue);
@@ -471,7 +471,7 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     /**
      *
      * @param user the user whose access rights to check; may be null
-     * @return a boolean
+     * @return true if the component is published, or if the given user is a CMS admin, false otherwise
      */
     public boolean hasAccess(User user) {
         if (isPublished()) {

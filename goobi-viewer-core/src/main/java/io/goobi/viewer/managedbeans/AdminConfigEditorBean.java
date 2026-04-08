@@ -154,7 +154,7 @@ public class AdminConfigEditorBean implements Serializable {
     /**
      * isRenderBackend.
      *
-     * @return a boolean
+     * @return true if the admin backend is rendered for the current user, false otherwise
      */
     public boolean isRenderBackend() {
         return DataManager.getInstance().getConfiguration().isConfigEditorEnabled();
@@ -278,7 +278,7 @@ public class AdminConfigEditorBean implements Serializable {
     /**
      * isEditable.
      *
-     * @return a boolean
+     * @return true if the currently open config file is in write mode, false if it is read-only
      */
     public boolean isEditable() {
         return editable;
@@ -296,7 +296,7 @@ public class AdminConfigEditorBean implements Serializable {
     /**
      * isBackupsAvailable.
      *
-     * @return a boolean
+     * @return true if at least one backup record exists for the current config file, false otherwise
      */
     public boolean isBackupsAvailable() {
         return !backupRecords.isEmpty();
@@ -332,7 +332,7 @@ public class AdminConfigEditorBean implements Serializable {
     /**
      * isNightMode.
      *
-     * @return a boolean
+     * @return true if the editor is in night mode, false otherwise
      */
     public boolean isNightMode() {
         return nightMode;

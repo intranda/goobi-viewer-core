@@ -29,7 +29,7 @@ import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
 /**
  * Extends cms_record_notes table by row 'note_type' which discriminates between the implementing classes. Existing notes are set to note_type =
- * 'SINGLE' Also adds default values to columns which only exist for one implementing class and sets columntype if neccessary
+ * 'SINGLE' Also adds default values to columns which only exist for one implementing class and sets columntype if necessary
  *
  * @author Florian Alpers
  */

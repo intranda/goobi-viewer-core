@@ -28,7 +28,7 @@ import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
 import io.goobi.viewer.model.viewer.ViewManager;
 
 /**
- * Contains a list of {@link CitationLink}s along with a viewManager state wich tracks current page number and logId The method
+ * Contains a list of {@link CitationLink}s along with a viewManager state which tracks current page number and logId The method
  * {@link #isCurrent(ViewManager)} checks whether this list reflects to same state as the given {@link ViewManager} regarding the
  * {@link CitationLinkLevel level} of the included citation links.
  */

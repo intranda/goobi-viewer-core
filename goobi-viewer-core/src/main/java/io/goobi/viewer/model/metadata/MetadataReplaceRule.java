@@ -30,6 +30,9 @@ public class MetadataReplaceRule implements Serializable {
 
     private static final long serialVersionUID = 8010945394600637854L;
 
+    /**
+     * Enumerates the matching strategies for a replace rule: character-level, string-level, or regular expression.
+     */
     public enum MetadataReplaceRuleType {
         CHAR,
         STRING,

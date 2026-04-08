@@ -153,7 +153,7 @@ public class CommentMailNotificator implements ChangeNotificator {
     /**
      * 
      * @param annotation annotation whose creator is to be looked up
-     * @return Creator display name; 'unknown' if none foudn
+     * @return Creator display name; 'unknown' if none found
      */
     private static String getCreator(PersistentAnnotation annotation) {
         try {

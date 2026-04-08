@@ -334,7 +334,7 @@ public abstract class AbstractBuilder {
      *
      * @param field Solr field name to test for inclusion
      * @param displayFields list of configured display field patterns to match against
-     * @return a boolean
+     * @return true if the given field name matches any entry in the display fields list, false otherwise
      */
     protected boolean contained(String field, List<String> displayFields) {
         return displayFields.stream().anyMatch(displayField -> matches(field, displayField));
@@ -344,7 +344,7 @@ public abstract class AbstractBuilder {
      *
      * @param field Solr field name to test
      * @param template display field pattern, may start or end with wildcard
-     * @return a boolean
+     * @return true if the field name (stripped of language suffixes) matches the template pattern, false otherwise
      */
     private static boolean matches(String field, String template) {
 

@@ -737,6 +737,9 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
         return categories.stream().map(cat -> new Selectable<>(cat, this.getCategories().contains(cat))).collect(Collectors.toList());
     }
 
+    /**
+     * Enumerates the display priority levels for a CMS media item, distinguishing items that should be highlighted from those with default treatment.
+     */
     public enum Priority {
         IMPORTANT,
         DEFAULT;

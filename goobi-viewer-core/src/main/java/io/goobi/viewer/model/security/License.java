@@ -75,6 +75,9 @@ import jakarta.persistence.Transient;
 @Table(name = "licenses")
 public class License extends AbstractPrivilegeHolder implements Serializable {
 
+    /**
+     * Classifies the kind of principal (user, user group, IP range, or client application) that holds a {@link License}.
+     */
     public enum AccessType {
         USER("admin__users"),
         USER_GROUP("admin__groups"),

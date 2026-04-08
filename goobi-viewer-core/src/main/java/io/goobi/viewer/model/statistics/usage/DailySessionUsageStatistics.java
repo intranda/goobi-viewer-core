@@ -135,7 +135,7 @@ public class DailySessionUsageStatistics {
     /**
      * @param type request type to count
      * @param pi persistent identifier of the record to filter by
-     * @return a long
+     * @return the total number of requests of the given type for the given record PI across all sessions on this day
      */
     public long getTotalRequestCount(RequestType type, String pi) {
         return this.sessions.stream().mapToLong(s -> s.getRecordRequestCount(type, pi)).sum();
@@ -144,7 +144,7 @@ public class DailySessionUsageStatistics {
     /**
      *
      * @param type request type to count
-     * @return a long
+     * @return the total number of requests of the given type across all sessions and records on this day
      */
     public long getTotalRequestCount(RequestType type) {
         return getTotalRequestCount(type, Collections.emptyList());
@@ -154,7 +154,7 @@ public class DailySessionUsageStatistics {
      *
      * @param type request type to count
      * @param identifiersToInclude only count requests for these record identifiers
-     * @return a long
+     * @return the total number of requests of the given type for the given record identifiers across all sessions on this day
      */
     public long getTotalRequestCount(RequestType type, List<String> identifiersToInclude) {
         return this.sessions.stream().mapToLong(s -> s.getTotalRequestCount(type, identifiersToInclude)).sum();
@@ -163,7 +163,7 @@ public class DailySessionUsageStatistics {
     /**
      *
      * @param type request type to count
-     * @return a long
+     * @return the number of unique records requested with the given type across all sessions on this day
      */
     public long getUniqueRequestCount(RequestType type) {
         return this.sessions.stream().mapToLong(s -> s.getRequestedRecordsCount(type)).sum();
@@ -173,7 +173,7 @@ public class DailySessionUsageStatistics {
      *
      * @param type request type to count
      * @param pi persistent identifier of the record to filter by
-     * @return a long
+     * @return the number of sessions on this day that issued at least one request of the given type for the given record PI
      */
     public long getUniqueRequestCount(RequestType type, String pi) {
         return this.sessions.stream().mapToLong(s -> s.getRecordRequestCount(type, pi) > 0 ? 1L : 0L).sum();
@@ -182,7 +182,7 @@ public class DailySessionUsageStatistics {
     /**
      * @param type request type to count
      * @param includedIdentifiers only count sessions that requested any of these identifiers
-     * @return a long
+     * @return the number of sessions on this day that issued at least one request of the given type for any of the given record identifiers
      */
     public long getUniqueRequestCount(RequestType type, List<String> includedIdentifiers) {
         return this.sessions.stream().mapToLong(s -> s.getTotalRequestCount(type, includedIdentifiers) > 0 ? 1L : 0L).sum();

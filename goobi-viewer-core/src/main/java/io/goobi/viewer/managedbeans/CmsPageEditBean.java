@@ -644,7 +644,7 @@ public class CmsPageEditBean implements Serializable {
      * deleteComponent.
      *
      * @param component CMS component to remove from the selected page
-     * @return a boolean
+     * @return true if the component was successfully removed from the page, false otherwise
      */
     public boolean deleteComponent(CMSComponent component) {
         return this.selectedPage.removeComponent(component);
@@ -719,7 +719,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * isSaveAsTemplate.
      *
-     * @return a boolean
+     * @return true if the current page should be saved as a template, false otherwise
      */
     public boolean isSaveAsTemplate() {
         return saveAsTemplate;
@@ -749,7 +749,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * isTemplateLockComponents.
      *
-     * @return a boolean
+     * @return true if components are locked when the page template is applied, false otherwise
      */
     public boolean isTemplateLockComponents() {
         return templateLockComponents;

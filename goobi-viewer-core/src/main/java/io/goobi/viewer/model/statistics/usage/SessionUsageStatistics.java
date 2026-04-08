@@ -176,7 +176,7 @@ public class SessionUsageStatistics {
      * 
      * @param type the type of the request
      * @param identifiersToInclude record identifiers for which the number of requests should be counted
-     * @return a long
+     * @return the total number of requests of the given type for the given record identifiers in this session
      */
     public long getTotalRequestCount(RequestType type, List<String> identifiersToInclude) {
         Collection<String> requestValues = getRequestedCounts(identifiersToInclude);

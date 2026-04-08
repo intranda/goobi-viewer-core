@@ -210,6 +210,10 @@ public class CMSSlider implements Serializable {
         }
     }
 
+    /**
+     * Enumerates the data source types from which a {@link CMSSlider} can retrieve its content, such as Solr-queried records, collections, CMS pages,
+     * or media items.
+     */
     public enum SourceType {
         RECORDS("label__records"), //has solrQuery
         COLLECTIONS("cms_collections"), //has collections

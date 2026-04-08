@@ -1010,7 +1010,7 @@ public interface IDAO {
      * countCommentsForWork.
      *
      * @param pi persistent identifier of the record
-     * @return a long
+     * @return the total number of comments for the record with the given persistent identifier
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     long countCommentsForWork(String pi) throws DAOException;

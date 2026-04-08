@@ -44,6 +44,9 @@ public class SearchQueryGroup implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(SearchQueryGroup.class);
 
+    /**
+     * Enumerates the logical operators used to combine multiple {@link SearchQueryItem}s within a group.
+     */
     public enum SearchQueryGroupOperator {
         AND,
         OR;

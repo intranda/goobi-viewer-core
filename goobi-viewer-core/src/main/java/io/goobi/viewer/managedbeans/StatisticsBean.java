@@ -394,7 +394,7 @@ public class StatisticsBean implements Serializable {
     /**
      * isUsageStatisticsActive.
      *
-     * @return a boolean
+     * @return true if usage statistics collection is currently active, false otherwise
      */
     public boolean isUsageStatisticsActive() {
         return DataManager.getInstance().getConfiguration().isStatisticsEnabled();

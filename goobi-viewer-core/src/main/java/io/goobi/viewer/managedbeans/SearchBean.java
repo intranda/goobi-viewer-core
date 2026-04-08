@@ -3014,7 +3014,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * hasGeoLocationHits.
      *
-     * @return a boolean
+     * @return true if the current search results contain records with geo-location data, false otherwise
      */
     public boolean hasGeoLocationHits() {
         return this.currentSearch != null && !this.currentSearch.isHasGeoLocationHits();

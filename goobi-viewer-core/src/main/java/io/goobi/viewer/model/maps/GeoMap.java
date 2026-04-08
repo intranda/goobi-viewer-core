@@ -81,6 +81,10 @@ public class GeoMap implements Serializable {
     private static final String METADATA_TAG_TITLE = "Title";
     private static final String METADATA_TAG_DESCRIPTION = "Description";
 
+    /**
+     * Enumerates the strategies used to populate a {@link GeoMap} with geographic features: either by evaluating a Solr query or by using manually
+     * entered feature sets.
+     */
     public enum GeoMapType {
         SOLR_QUERY,
         MANUAL

@@ -59,6 +59,9 @@ public class SearchQueryItem implements Serializable {
 
     private static final long serialVersionUID = -367323410132252816L;
 
+    /**
+     * Enumerates the logical operators (AND, OR, NOT) available for combining values within a single search query item.
+     */
     public enum SearchItemOperator {
         AND,
         OR,
@@ -213,7 +216,7 @@ public class SearchQueryItem implements Serializable {
     /**
      * 
      * @param lineIndex zero-based index of the line to check
-     * @return a boolean
+     * @return true if multiple items are allowed and the given line is the last one, false otherwise
      */
     public boolean isDisplayAddNewItemButton(int lineIndex) {
         return isAllowMultipleItems() && isLastLine(lineIndex);
@@ -309,7 +312,7 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * @return a boolean
+     * @return true if multiple search values are allowed for this query item, false otherwise
      */
     public boolean isAllowMultipleItems() {
         return DataManager.getInstance().getConfiguration().isAdvancedSearchFieldAllowMultipleItems(field, template, false);

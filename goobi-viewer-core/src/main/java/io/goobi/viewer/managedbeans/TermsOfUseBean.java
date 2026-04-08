@@ -63,7 +63,7 @@ public class TermsOfUseBean implements Serializable {
     /**
      * isTermsOfUseActive.
      *
-     * @return a boolean
+     * @return true if acceptance of the terms of use is required, false otherwise
      */
     public boolean isTermsOfUseActive() {
         return termsOfUse.map(TermsOfUse::isActive).orElse(false);

@@ -65,6 +65,9 @@ import io.goobi.viewer.solr.SolrTools;
  */
 public class DisplayUserGeneratedContent {
 
+    /**
+     * Enumerates the semantic content types for user-generated annotations, such as person, address, comment, geolocation, or normdata.
+     */
     public enum ContentType {
 
         PERSON,

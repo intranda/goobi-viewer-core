@@ -30,6 +30,9 @@ public class CopyrightIndicatorStatus implements Serializable {
 
     private static final long serialVersionUID = -9046091644794397616L;
 
+    /**
+     * Enumerates the three possible access levels for a copyright indicator: fully open, partially restricted, or fully locked.
+     */
     public enum Status {
         OPEN,
         PARTIAL,

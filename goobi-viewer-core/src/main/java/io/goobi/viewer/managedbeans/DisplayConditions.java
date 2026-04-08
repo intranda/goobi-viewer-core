@@ -63,7 +63,7 @@ import jakarta.servlet.http.HttpSession;
  * <li>{@link #matchRecord(String)}</li>
  * <li>{@link #matchPage(String)}</li>
  * </ul>
- * The methods check against properties of the record and of the current page respectively. Both that a pseudo-json string as an agument that is
+ * The methods check against properties of the record and of the current page respectively. Both take a pseudo-json string as an argument that is
  * explained in more detail in the documentation of both methods.
  */
 @Named

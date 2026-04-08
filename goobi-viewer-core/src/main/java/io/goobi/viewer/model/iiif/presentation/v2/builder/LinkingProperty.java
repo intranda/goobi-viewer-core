@@ -33,6 +33,9 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
  */
 public class LinkingProperty {
 
+    /**
+     * Enumerates the IIIF Presentation API v2 linking property types that associate a manifest or canvas with an external resource.
+     */
     public enum LinkingType {
         RENDERING,
         SEE_ALSO,
@@ -40,6 +43,10 @@ public class LinkingProperty {
         SERVICE;
     }
 
+    /**
+     * Enumerates the supported linked resource formats for IIIF Presentation API v2, pairing each target with its MIME type and Dublin Core resource
+     * type.
+     */
     public enum LinkingTarget {
         PLAINTEXT(Format.TEXT_PLAIN, DcType.TEXT),
         ALTO(Format.TEXT_XML, DcType.TEXT),

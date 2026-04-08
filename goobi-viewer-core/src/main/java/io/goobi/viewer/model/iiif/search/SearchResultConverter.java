@@ -350,7 +350,7 @@ public class SearchResultConverter {
     /**
      * Get all matches to the given regex in the fieldsToSearch of the given doc as {@link SearchTerm SearchTerms}.
      *
-     * @param regex A regex matching all text wich should be returned as a searchTerm
+     * @param regex A regex matching all text which should be returned as a searchTerm
      * @param doc The document within to search
      * @param fieldsToSearch The fields to search for the regex
      * @param searchMotivation The motivation to be set for the search url of the searchTerms
@@ -368,7 +368,7 @@ public class SearchResultConverter {
     /**
      * Get all matches to the given regex in the given value as {@link SearchTerm SearchTerms}.
      *
-     * @param regex A regex matching all text wich should be returned as a searchTerm
+     * @param regex A regex matching all text which should be returned as a searchTerm
      * @param value The text to be searched with the regex
      * @param searchMotivation The motivation to be set for the search url of the searchTerms
      * @return A list of search terms

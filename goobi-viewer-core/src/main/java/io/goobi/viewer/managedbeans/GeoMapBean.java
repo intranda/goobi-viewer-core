@@ -270,7 +270,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     /**
      * hasCurrentFeature.
      *
-     * @return a boolean
+     * @return true if a current GeoJSON feature is selected in the editor, false otherwise
      */
     public boolean hasCurrentFeature() {
         return false;
@@ -280,7 +280,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
      * isInUse.
      *
      * @param map GeoMap to check for usage in CMS pages
-     * @return a boolean
+     * @return true if the given map is referenced by at least one CMS page, false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isInUse(GeoMap map) throws DAOException {
@@ -301,7 +301,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     /**
      * isHasMaps.
      *
-     * @return a boolean
+     * @return true if at least one geo map is stored in the database, false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isHasMaps() throws DAOException {
@@ -469,7 +469,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
      * isActiveFeatureSet.
      *
      * @param featureSet feature set to check against the active one
-     * @return a boolean
+     * @return true if the given feature set is the currently active feature set, false otherwise
      */
     public boolean isActiveFeatureSet(FeatureSet featureSet) {
         return this.activeFeatureSet != null && this.activeFeatureSet.equals(featureSet);

@@ -60,6 +60,9 @@ public class Task {
 
     private static final AtomicLong ID_COUNTER = new AtomicLong(0);
 
+    /**
+     * Enumerates the access levels that control which callers are permitted to read or monitor a {@link Task}.
+     */
     public enum Accessibility {
         /**
          * Anyone may access this task.
@@ -79,6 +82,9 @@ public class Task {
         TOKEN;
     }
 
+    /**
+     * Enumerates the lifecycle states of a {@link Task}, from initial creation through active processing to a terminal completed or error state.
+     */
     public enum TaskStatus {
         CREATED,
         STARTED,
