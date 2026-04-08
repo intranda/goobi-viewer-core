@@ -54,7 +54,7 @@ import io.goobi.viewer.solr.SolrTools;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class NERBuilder {
 

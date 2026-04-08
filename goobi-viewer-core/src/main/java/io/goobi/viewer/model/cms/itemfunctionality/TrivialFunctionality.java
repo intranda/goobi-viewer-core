@@ -22,7 +22,7 @@
 package io.goobi.viewer.model.cms.itemfunctionality;
 
 /**
- * TrivialFunctionality class.
+ * No-op CMS item functionality used as a placeholder for items that require no special behaviour.
  *
  * @author Florian Alpers
  */

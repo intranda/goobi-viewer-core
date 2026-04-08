@@ -30,7 +30,7 @@ import io.goobi.viewer.controller.StringTools;
  * Class for extracting the actual search term from a fuzzy search. For creating a fuzzy search term see
  * {@link SearchHelper#addFuzzySearchToken(String, String, String)}
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class FuzzySearchTerm {
 

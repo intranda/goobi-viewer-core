@@ -43,7 +43,7 @@ import io.goobi.viewer.solr.SolrConstants;
 import jakarta.mail.MessagingException;
 
 /**
- * SearchHitsNotificationResource class.
+ * Sends email notifications to users when new search hits appear for their saved searches.
  */
 public class SearchHitsNotifier {
 

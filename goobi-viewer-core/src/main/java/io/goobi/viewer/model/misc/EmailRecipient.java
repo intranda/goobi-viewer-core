@@ -43,28 +43,28 @@ public class EmailRecipient {
     }
 
     /**
-     * @return the label
+
      */
     public String getLabel() {
         return label;
     }
 
     /**
-     * @return the emailAddress
+
      */
     public String getEmailAddress() {
         return emailAddress;
     }
 
     /**
-     * @return the defaultRecipient
+
      */
     public boolean isDefaultRecipient() {
         return defaultRecipient;
     }
 
     /**
-     * @return the id
+
      */
     public String getId() {
         return id;

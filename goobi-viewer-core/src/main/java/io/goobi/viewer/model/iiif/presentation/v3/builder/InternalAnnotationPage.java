@@ -26,7 +26,7 @@ import de.intranda.api.annotation.wa.collection.AnnotationPage;
 /**
  * An {@link AnnotationPage} without '@context' attribute, to use for annotation pages embedded within other documents.
  * 
- * @author florian
+ * @author Florian Alpers
  */
 public class InternalAnnotationPage extends AnnotationPage {
 

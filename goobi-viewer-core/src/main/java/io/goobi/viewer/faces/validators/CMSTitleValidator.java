@@ -33,14 +33,11 @@ import org.apache.commons.lang3.StringUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
- * CMSTitleValidator class.
+ * JSF validator that checks CMS page titles for uniqueness and validity constraints.
  */
 @FacesValidator("cmsTitleValidator")
 public class CMSTitleValidator implements Validator<String> {
 
-    /* (non-Javadoc)
-     * @see jakarta.faces.validator.Validator#validate(jakarta.faces.context.FacesContext, jakarta.faces.component.UIComponent, java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {

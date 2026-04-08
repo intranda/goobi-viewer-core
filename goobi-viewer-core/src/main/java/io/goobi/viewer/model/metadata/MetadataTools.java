@@ -54,7 +54,7 @@ import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
- * MetadataTools class.
+ * Utility class providing helpers for processing, formatting, and normalising metadata values.
  */
 public final class MetadataTools {
 

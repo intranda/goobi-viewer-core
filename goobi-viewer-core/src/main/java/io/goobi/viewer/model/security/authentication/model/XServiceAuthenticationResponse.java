@@ -96,7 +96,7 @@ public class XServiceAuthenticationResponse {
     /**
      * Getter for the field <code>errorMsg</code>.
      *
-     * @return the errorMsg
+
      */
     public String getErrorMsg() {
         return errorMsg;
@@ -114,7 +114,7 @@ public class XServiceAuthenticationResponse {
     /**
      * Getter for the field <code>id</code>.
      *
-     * @return the id
+
      */
     public String getId() {
         return id;
@@ -123,7 +123,7 @@ public class XServiceAuthenticationResponse {
     /**
      * isExpired.
      *
-     * @return the expired
+
      */
     public boolean isExpired() {
         return expired;
@@ -132,7 +132,7 @@ public class XServiceAuthenticationResponse {
     /**
      * Getter for the field <code>request</code>.
      *
-     * @return the request
+
      */
     public Request getRequest() {
         return request;

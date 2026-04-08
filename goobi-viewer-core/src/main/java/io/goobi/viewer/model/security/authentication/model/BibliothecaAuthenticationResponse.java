@@ -79,7 +79,7 @@ public class BibliothecaAuthenticationResponse {
     }
 
     /**
-     * @return the userid
+
      */
     public String getUserid() {
         return userid;
@@ -93,7 +93,7 @@ public class BibliothecaAuthenticationResponse {
     }
 
     /**
-     * @return the fsk
+
      */
     public String getFsk() {
         return fsk;
@@ -109,7 +109,7 @@ public class BibliothecaAuthenticationResponse {
     /**
      * isExpired.
      *
-     * @return the expired
+
      */
     public boolean isExpired() {
         return expired;

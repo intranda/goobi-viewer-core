@@ -747,7 +747,7 @@ public class AdminBean implements Serializable {
     /**
      * Getter for the field <code>currentUser</code>.
      *
-     * @return the currentUser
+
      */
     public User getCurrentUser() {
         return currentUser;
@@ -829,7 +829,7 @@ public class AdminBean implements Serializable {
     /**
      * Getter for the field <code>currentRole</code>.
      *
-     * @return the currentRole
+
      */
     public Role getCurrentRole() {
         return currentRole;
@@ -847,7 +847,7 @@ public class AdminBean implements Serializable {
     /**
      * Getter for unit tests.
      * 
-     * @return the dirtyUserRoles
+
      */
     Map<UserRole, String> getDirtyUserRoles() {
         return dirtyUserRoles;
@@ -856,7 +856,7 @@ public class AdminBean implements Serializable {
     /**
      * Getter for the field <code>currentUserRole</code>.
      *
-     * @return the currentUserRole
+
      */
     public UserRole getCurrentUserRole() {
         return currentUserRole;
@@ -874,7 +874,7 @@ public class AdminBean implements Serializable {
     /**
      * Getter for the field <code>currentIpRange</code>.
      *
-     * @return the currentIpRange
+
      */
     public IpRange getCurrentIpRange() {
         return currentIpRange;
@@ -917,7 +917,7 @@ public class AdminBean implements Serializable {
     /**
      * Getter for the field <code>lazyModelUsers</code>.
      *
-     * @return the lazyModelUsers
+
      */
     public TableDataProvider<User> getLazyModelUsers() {
         return lazyModelUsers;
@@ -935,7 +935,7 @@ public class AdminBean implements Serializable {
     /**
      * Getter for the field <code>currentPassword</code>.
      *
-     * @return the currentPassword
+
      */
     public String getCurrentPassword() {
         return currentPassword;
@@ -953,7 +953,7 @@ public class AdminBean implements Serializable {
     /**
      * Getter for the field <code>passwordOne</code>.
      *
-     * @return the passwordOne
+
      */
     public String getPasswordOne() {
         return passwordOne;
@@ -971,7 +971,7 @@ public class AdminBean implements Serializable {
     /**
      * Getter for the field <code>passwordTwo</code>.
      *
-     * @return the passwordTwo
+
      */
     public String getPasswordTwo() {
         return passwordTwo;
@@ -989,7 +989,7 @@ public class AdminBean implements Serializable {
     /**
      * Getter for the field <code>emailConfirmation</code>.
      *
-     * @return the emailConfirmation
+
      */
     public String getEmailConfirmation() {
         return emailConfirmation;
@@ -1007,7 +1007,7 @@ public class AdminBean implements Serializable {
     /**
      * isDeleteUserContributions.
      *
-     * @return the deleteUserContributions
+
      */
     public boolean isDeleteUserContributions() {
         return deleteUserContributions;
@@ -1282,7 +1282,7 @@ public class AdminBean implements Serializable {
     /**
      * Getter for the field <code>currentTranslationGroup</code>.
      *
-     * @return the currentTranslationGroup
+
      */
     public TranslationGroup getCurrentTranslationGroup() {
         synchronized (TRANSLATION_LOCK) {
@@ -1454,7 +1454,7 @@ public class AdminBean implements Serializable {
     /**
      * Getter for the field <code>translationGroupsEditorSession</code>.
      *
-     * @return the translationGroupsEditorSession
+
      */
     public static String getTranslationGroupsEditorSession() {
         return translationGroupsEditorSession;
@@ -1507,14 +1507,14 @@ public class AdminBean implements Serializable {
     /**
      * Getter for the field <code>uploadedAvatarFile</code>.
      *
-     * @return the uploadedAvatarFile
+
      */
     public Part getUploadedAvatarFile() {
         return uploadedAvatarFile;
     }
 
     /**
-     * @return the maintenanceMode
+
      */
     public MaintenanceMode getMaintenanceMode() {
         if (this.maintenanceMode == null) {

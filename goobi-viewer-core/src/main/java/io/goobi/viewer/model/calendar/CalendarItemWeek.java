@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * CalendarItemWeek class.
+ * Calendar browsing item representing a single week.
  */
 public class CalendarItemWeek extends AbstractCalendarItem implements Serializable {
     private static final long serialVersionUID = -6938153715941936763L;

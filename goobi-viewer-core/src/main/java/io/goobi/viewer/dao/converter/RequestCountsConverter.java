@@ -20,7 +20,7 @@ import jakarta.persistence.AttributeConverter;
 import io.goobi.viewer.model.statistics.usage.SessionRequestCounts;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class RequestCountsConverter implements AttributeConverter<SessionRequestCounts, String> {
 

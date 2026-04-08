@@ -99,7 +99,9 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
- * @author florian
+ * REST resource managing W3C Web Annotations for records and canvas elements, supporting creation, retrieval, and deletion.
+ *
+ * @author Florian Alpers
  */
 @jakarta.ws.rs.Path(ANNOTATIONS)
 @ViewerRestServiceBinding

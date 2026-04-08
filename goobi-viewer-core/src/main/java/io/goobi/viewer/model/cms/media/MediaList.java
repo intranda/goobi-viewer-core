@@ -38,7 +38,7 @@ public class MediaList {
     }
 
     /**
-     * @return the mediaItems
+
      */
     public List<MediaItem> getMediaItems() {
         return mediaItems;

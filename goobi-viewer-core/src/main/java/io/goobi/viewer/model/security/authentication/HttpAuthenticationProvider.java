@@ -48,7 +48,7 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
- * Abstract HttpAuthenticationProvider class.
+ * Authentication provider that delegates credential validation to an external HTTP endpoint.
  *
  * @author Florian Alpers
  */
@@ -97,7 +97,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     /**
      * Getter for the field <code>timeoutMillis</code>.
      *
-     * @return the timeoutMillis
+
      */
     public long getTimeoutMillis() {
         return timeoutMillis;
@@ -112,7 +112,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     /**
      * Getter for the field <code>label</code>.
      *
-     * @return the label
+
      */
     public String getLabel() {
         return (this.label == null || this.label.isEmpty()) ? this.name : this.label;
@@ -121,7 +121,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     /**
      * Getter for the field <code>url</code>.
      *
-     * @return the url
+
      */
     public String getUrl() {
         return url;
@@ -130,7 +130,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     /**
      * Getter for the field <code>image</code>.
      *
-     * @return the image
+
      */
     public String getImage() {
         return image;
@@ -175,7 +175,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     }
 
     /**
-     * @return the redirectUrl
+
      */
     public String getRedirectUrl() {
         return redirectUrl;

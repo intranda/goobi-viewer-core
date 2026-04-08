@@ -22,7 +22,7 @@
 package io.goobi.viewer.model.cms.pages;
 
 /**
- * PageValidityStatus class.
+ * Enum representing the validation status of a CMS page, indicating whether the page is valid or which constraint is violated.
  *
  * @author Florian Alpers
  */

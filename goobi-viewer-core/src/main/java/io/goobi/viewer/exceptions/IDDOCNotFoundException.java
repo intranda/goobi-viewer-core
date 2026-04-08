@@ -24,7 +24,7 @@ package io.goobi.viewer.exceptions;
 import java.io.Serializable;
 
 /**
- * RecordNotFoundException class.
+ * Thrown when a requested IDDOC (internal Solr document identifier) cannot be found in the index.
  */
 public class IDDOCNotFoundException extends Exception implements Serializable {
 

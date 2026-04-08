@@ -61,14 +61,14 @@ public class CopyrightIndicatorStatus implements Serializable {
     }
 
     /**
-     * @return the status
+
      */
     public Status getStatus() {
         return status;
     }
 
     /**
-     * @return the description
+
      */
     public String getDescription() {
         return description;

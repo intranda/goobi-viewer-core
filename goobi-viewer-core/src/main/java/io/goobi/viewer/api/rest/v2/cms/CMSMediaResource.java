@@ -111,7 +111,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
- * CMSMediaResource class.
+ * REST resource for accessing CMS media files in the v2 API with category and type filtering.
  *
  * @author Florian Alpers
  */
@@ -633,7 +633,7 @@ public class CMSMediaResource {
         }
 
         /**
-         * @return the mediaItems
+
          */
         public List<MediaItem> getMediaItems() {
             return mediaItems;

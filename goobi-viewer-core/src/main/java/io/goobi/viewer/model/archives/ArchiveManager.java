@@ -58,7 +58,7 @@ import io.goobi.viewer.solr.SolrTools;
 /**
  * Loads and holds archive tree models. This class should have an application wide scope
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class ArchiveManager implements Serializable {
 
@@ -93,8 +93,7 @@ public class ArchiveManager implements Serializable {
         ERROR_NOT_REACHABLE;
     }
 
-    /**
-     */
+    
     public ArchiveManager() {
         ArchiveParser parser = null;
         try {
@@ -620,7 +619,7 @@ public class ArchiveManager implements Serializable {
     }
 
     /**
-     * @return the eadParser
+
      */
     public ArchiveParser getEadParser() {
         return eadParser;

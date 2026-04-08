@@ -89,7 +89,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
- * ManifestBuilder class.
+ * Builds IIIF Presentation API v2 Manifest resources from Solr index data and content files.
  *
  * @author Florian Alpers
  */
@@ -651,7 +651,7 @@ public class ManifestBuilder extends AbstractBuilder {
     /**
      * Getter for the field <code>buildMode</code>.
      *
-     * @return the buildMode
+
      */
     public BuildMode getBuildMode() {
         return buildMode;

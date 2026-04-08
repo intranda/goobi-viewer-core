@@ -52,7 +52,7 @@ import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.ManifestBuilder;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public abstract class AbstractBookmarkResourceBuilder {
 

@@ -35,8 +35,7 @@ import io.goobi.viewer.controller.DataManager;
  */
 public class DownloadOption {
 
-    /**
-     */
+    
     public static final String TIMES_SYMBOL = "\u00D7";
     /**
      * Dimension symbolizing the maximal image size.
@@ -51,8 +50,7 @@ public class DownloadOption {
     private String format;
     private Dimension boxSize = NONE;
 
-    /**
-     */
+    
     public DownloadOption() {
     }
 
@@ -101,7 +99,7 @@ public class DownloadOption {
     }
 
     /**
-     * @return the label
+
      */
     public String getLabel() {
         return label;
@@ -117,7 +115,7 @@ public class DownloadOption {
     }
 
     /**
-     * @return the format
+
      */
     public String getFormat() {
         return format;
@@ -133,7 +131,7 @@ public class DownloadOption {
     }
 
     /**
-     * @return the boxSizeInPixel
+
      */
     public Dimension getBoxSizeInPixel() {
         return boxSize;

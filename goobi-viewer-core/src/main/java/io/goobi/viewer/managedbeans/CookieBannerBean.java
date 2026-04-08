@@ -48,9 +48,8 @@ import io.goobi.viewer.model.administration.legal.CookieBanner;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 
 /**
- * This this the java backend class for enabling and configuring the cookie banner feature. This bean is view scoped, i.e. created fresh for each new
- * page loaded
- **/
+ * JSF backing bean for enabling and configuring the cookie banner feature. This bean is view-scoped, i.e. created fresh for each new page loaded.
+ */
 @Named
 @ViewScoped
 public class CookieBannerBean implements Serializable {

@@ -22,7 +22,7 @@
 package io.goobi.viewer.servlets.oembed;
 
 /**
- * Abstract OEmbedResponse class.
+ * Base class for oEmbed response objects, containing the common fields defined by the oEmbed specification.
  */
 public abstract class OEmbedResponse {
 
@@ -48,7 +48,7 @@ public abstract class OEmbedResponse {
     /**
      * Getter for the field <code>version</code>.
      *
-     * @return the version
+
      */
     public String getVersion() {
         return version;
@@ -66,7 +66,7 @@ public abstract class OEmbedResponse {
     /**
      * Getter for the field <code>type</code>.
      *
-     * @return the type
+
      */
     public String getType() {
         return type;
@@ -84,7 +84,7 @@ public abstract class OEmbedResponse {
     /**
      * Getter for the field <code>width</code>.
      *
-     * @return the width
+
      */
     public Integer getWidth() {
         return width;
@@ -102,7 +102,7 @@ public abstract class OEmbedResponse {
     /**
      * Getter for the field <code>height</code>.
      *
-     * @return the height
+
      */
     public Integer getHeight() {
         return height;
@@ -120,7 +120,7 @@ public abstract class OEmbedResponse {
     /**
      * Getter for the field <code>title</code>.
      *
-     * @return the title
+
      */
     public String getTitle() {
         return title;
@@ -138,7 +138,7 @@ public abstract class OEmbedResponse {
     /**
      * Getter for the field <code>authorName</code>.
      *
-     * @return the authorName
+
      */
     public String getAuthorName() {
         return authorName;
@@ -156,7 +156,7 @@ public abstract class OEmbedResponse {
     /**
      * Getter for the field <code>authorUrl</code>.
      *
-     * @return the authorUrl
+
      */
     public String getAuthorUrl() {
         return authorUrl;
@@ -174,7 +174,7 @@ public abstract class OEmbedResponse {
     /**
      * Getter for the field <code>providerName</code>.
      *
-     * @return the providerName
+
      */
     public String getProviderName() {
         return providerName;
@@ -192,7 +192,7 @@ public abstract class OEmbedResponse {
     /**
      * Getter for the field <code>providerUrl</code>.
      *
-     * @return the providerUrl
+
      */
     public String getProviderUrl() {
         return providerUrl;
@@ -210,7 +210,7 @@ public abstract class OEmbedResponse {
     /**
      * Getter for the field <code>cacheAge</code>.
      *
-     * @return the cacheAge
+
      */
     public Integer getCacheAge() {
         return cacheAge;
@@ -228,7 +228,7 @@ public abstract class OEmbedResponse {
     /**
      * Getter for the field <code>thumbnailUrl</code>.
      *
-     * @return the thumbnailUrl
+
      */
     public String getThumbnailUrl() {
         return thumbnailUrl;
@@ -246,7 +246,7 @@ public abstract class OEmbedResponse {
     /**
      * Getter for the field <code>thumbnailWidth</code>.
      *
-     * @return the thumbnailWidth
+
      */
     public Integer getThumbnailWidth() {
         return thumbnailWidth;
@@ -264,7 +264,7 @@ public abstract class OEmbedResponse {
     /**
      * Getter for the field <code>thumbnailHeight</code>.
      *
-     * @return the thumbnailHeight
+
      */
     public Integer getThumbnailHeight() {
         return thumbnailHeight;

@@ -62,7 +62,7 @@ import io.goobi.viewer.model.viewer.ViewManager;
 import jakarta.mail.MessagingException;
 
 /**
- * BookmarkBean class.
+ * JSF backing bean for bookmark list management, handling user bookmarks and public sharing.
  */
 @Named
 @SessionScoped
@@ -486,7 +486,7 @@ public class BookmarkBean implements Serializable {
     /**
      * Getter for the field <code>currentBookmarkList</code>.
      *
-     * @return the currentBookmarkList
+
      */
     public BookmarkList getCurrentBookmarkList() {
         return currentBookmarkList;
@@ -604,7 +604,7 @@ public class BookmarkBean implements Serializable {
     /**
      * Getter for the field <code>currentBookmark</code>.
      *
-     * @return the currentBookmark
+
      */
     public Bookmark getCurrentBookmark() {
         return currentBookmark;
@@ -622,7 +622,7 @@ public class BookmarkBean implements Serializable {
     /**
      * Getter for the field <code>currentUserGroup</code>.
      *
-     * @return the currentUserGroup
+
      */
     public UserGroup getCurrentUserGroup() {
         return currentUserGroup;
@@ -649,7 +649,7 @@ public class BookmarkBean implements Serializable {
     /**
      * Getter for the field <code>sessionBookmarkListEmail</code>.
      *
-     * @return the sessionBookmarkListEmail
+
      */
     public String getSessionBookmarkListEmail() {
         return sessionBookmarkListEmail;
@@ -795,7 +795,7 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * @return the newBookmarkName
+
      */
     public String getNewBookmarkListName() {
         return newBookmarkListName;

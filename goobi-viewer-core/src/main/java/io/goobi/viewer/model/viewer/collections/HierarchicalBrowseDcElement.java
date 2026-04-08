@@ -33,7 +33,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.PresentationException;
 
 /**
- * HierarchicalBrowseDcElement class.
+ * Represents a node in the collection browse hierarchy with child elements, hit counts, and display metadata.
  */
 public class HierarchicalBrowseDcElement extends BrowseDcElement {
 
@@ -128,9 +128,6 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
 
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.viewer.BrowseDcElement#isHasSubelements()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean isHasSubelements() {
@@ -192,9 +189,6 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
         return list;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.viewer.BrowseDcElement#toString()
-     */
     /** {@inheritDoc} */
     @Override
     public String toString() {
@@ -222,9 +216,6 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
         return list;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.viewer.BrowseDcElement#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -237,9 +228,6 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.viewer.BrowseDcElement#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {

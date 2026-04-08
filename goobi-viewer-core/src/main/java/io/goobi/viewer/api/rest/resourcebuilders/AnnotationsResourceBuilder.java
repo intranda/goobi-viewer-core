@@ -60,7 +60,7 @@ import io.goobi.viewer.solr.SolrConstants;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class AnnotationsResourceBuilder {
 

@@ -136,9 +136,6 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
         this.mediaFilter = mediaFilter == null ? "" : mediaFilter;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.CMSContentItem#isPreview()
-     */
 
     public boolean isPreview() {
         return this.preview;
@@ -160,9 +157,6 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
         this.mandatory = mandatory;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.CMSContentItem#isMandatory()
-     */
 
     public boolean isMandatory() {
         return this.mandatory;
@@ -176,29 +170,23 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     }
 
     /**
-     * @return the order
+
      */
     public int getOrder() {
         return order;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.CMSContentItem#setItemLabel(java.lang.String)
-     */
     public void setItemLabel(String itemLabel) {
         this.itemLabel = itemLabel;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.CMSContentItem#getItemLabel()
-     */
 
     public String getItemLabel() {
         return this.itemLabel;
     }
 
     /**
-     * @return the ignoreCollectionHierarchy
+
      */
     public boolean isIgnoreCollectionHierarchy() {
         return ignoreCollectionHierarchy;
@@ -212,7 +200,7 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     }
 
     /**
-     * @return the hitListOptions
+
      */
     public boolean isHitListOptions() {
         return hitListOptions;
@@ -233,7 +221,7 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     }
 
     /**
-     * @return the randomizeItems
+
      */
     public boolean isRandomizeItems() {
         return this.randomizeItems;

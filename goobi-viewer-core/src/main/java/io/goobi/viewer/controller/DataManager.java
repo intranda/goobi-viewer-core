@@ -58,7 +58,7 @@ import jakarta.faces.context.FacesContext;
 import jakarta.servlet.ServletContext;
 
 /**
- * DataManager class.
+ * Application-scoped singleton that acts as the central access point for the DAO, configuration, and other core services.
  */
 public final class DataManager {
 
@@ -142,7 +142,7 @@ public final class DataManager {
     /**
      * Getter for the field <code>modules</code>.
      *
-     * @return the modules
+
      */
     public List<IModule> getModules() {
         return modules;
@@ -151,7 +151,7 @@ public final class DataManager {
     /**
      * getUrlBuilder.
      *
-     * @return the urlBuilder
+
      */
     public IURLBuilder getUrlBuilder() {
         return getModules().stream()
@@ -242,7 +242,7 @@ public final class DataManager {
     /**
      * Getter for the field <code>sessionMap</code>.
      *
-     * @return the sessionMap
+
      */
     public Map<String, Map<String, String>> getSessionMap() {
         return sessionMap;
@@ -251,7 +251,7 @@ public final class DataManager {
     /**
      * Getter for the field <code>configuration</code>.
      *
-     * @return the configuration
+
      */
     public Configuration getConfiguration() {
         if (configuration == null) {
@@ -266,7 +266,7 @@ public final class DataManager {
     /**
      * Getter for the field <code>languageHelper</code>.
      *
-     * @return the languageHelper
+
      */
     public LanguageHelper getLanguageHelper() {
         if (languageHelper == null) {
@@ -281,7 +281,7 @@ public final class DataManager {
     /**
      * Getter for the field <code>searchIndex</code>.
      *
-     * @return the searchIndex
+
      */
     public SolrSearchIndex getSearchIndex() {
         if (searchIndex == null) {
@@ -311,7 +311,7 @@ public final class DataManager {
     /**
      * Getter for the field <code>dao</code>.
      *
-     * @return the dao
+
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public IDAO getDao() throws DAOException {
@@ -407,7 +407,7 @@ public final class DataManager {
     /**
      * Getter for the field <code>recordCampaignMap</code>.
      *
-     * @return the recordCampaignMap
+
      */
     public Map<String, List<Campaign>> getRecordCampaignMap() {
         return recordCampaignMap;
@@ -423,7 +423,7 @@ public final class DataManager {
     }
 
     /**
-     * @return the indexerVersion
+
      */
     public String getIndexerVersion() {
         return indexerVersion;
@@ -437,7 +437,7 @@ public final class DataManager {
     }
 
     /**
-     * @return the connectorVersion
+
      */
     public String getConnectorVersion() {
         return connectorVersion;
@@ -451,7 +451,7 @@ public final class DataManager {
     }
 
     /**
-     * @return the hotfolderFileCount
+
      */
     public int getHotfolderFileCount() {
         return hotfolderFileCount;
@@ -465,7 +465,7 @@ public final class DataManager {
     }
 
     /**
-     * @return the restApiManager
+
      */
     public RestApiManager getRestApiManager() {
         if (this.restApiManager == null) {
@@ -482,21 +482,20 @@ public final class DataManager {
     }
 
     /**
-     * @return the recordLockManager
+
      */
     public RecordLockManager getRecordLockManager() {
         return recordLockManager;
     }
 
     /**
-     * @return the timing
+
      */
     public TimeAnalysis getTiming() {
         return timing;
     }
 
-    /**
-     */
+    
     public void resetTiming() {
         this.timing = new TimeAnalysis();
 
@@ -524,7 +523,7 @@ public final class DataManager {
     }
 
     /**
-     * @return the restApiJobManager
+
      */
     public TaskManager getRestApiJobManager() {
         return restApiJobManager;
@@ -550,7 +549,7 @@ public final class DataManager {
 
     /**
      * 
-     * @return the securityManager
+
      */
     public SecurityManager getSecurityManager() {
         if (securityManager == null) {
@@ -581,7 +580,7 @@ public final class DataManager {
     }
 
     /**
-     * @return the bearerTokenManager
+
      */
     public BearerTokenManager getBearerTokenManager() {
         if (bearerTokenManager == null) {

@@ -30,7 +30,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * Channel class.
+ * Represents an RSS channel with its metadata and collection of feed items.
  *
  * @author Florian Alpers
  */
@@ -50,7 +50,7 @@ public class Channel {
     /**
      * Getter for the field <code>title</code>.
      *
-     * @return the title
+
      */
     public String getTitle() {
         return title;
@@ -68,7 +68,7 @@ public class Channel {
     /**
      * Getter for the field <code>link</code>.
      *
-     * @return the link
+
      */
     public String getLink() {
         return link;
@@ -86,7 +86,7 @@ public class Channel {
     /**
      * Getter for the field <code>description</code>.
      *
-     * @return the description
+
      */
     public String getDescription() {
         return description;
@@ -104,7 +104,7 @@ public class Channel {
     /**
      * Getter for the field <code>language</code>.
      *
-     * @return the language
+
      */
     public String getLanguage() {
         return language;
@@ -122,7 +122,7 @@ public class Channel {
     /**
      * Getter for the field <code>copyright</code>.
      *
-     * @return the copyright
+
      */
     public String getCopyright() {
         return copyright;
@@ -140,7 +140,7 @@ public class Channel {
     /**
      * Getter for the field <code>pubDate</code>.
      *
-     * @return the pubDate
+
      */
     public Date getPubDate() {
         return pubDate;
@@ -158,7 +158,7 @@ public class Channel {
     /**
      * Getter for the field <code>items</code>.
      *
-     * @return the items
+
      */
     public List<RssItem> getItems() {
         return items;

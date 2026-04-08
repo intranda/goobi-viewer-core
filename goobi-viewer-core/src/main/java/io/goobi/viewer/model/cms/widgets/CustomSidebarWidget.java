@@ -56,7 +56,7 @@ import jakarta.persistence.Transient;
  *
  * <p>Each inheriting class must implement a cloning constructor, i.e. a constructor taking an argument of the same class and copying all its data
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "custom_sidebar_widgets")
@@ -146,7 +146,7 @@ public class CustomSidebarWidget implements IPolyglott, Serializable {
     }
 
     /**
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -160,7 +160,7 @@ public class CustomSidebarWidget implements IPolyglott, Serializable {
     }
 
     /**
-     * @return the title
+
      */
     public TranslatedText getTitle() {
         return title;
@@ -171,7 +171,7 @@ public class CustomSidebarWidget implements IPolyglott, Serializable {
     }
 
     /**
-     * @return the description
+
      */
     public TranslatedText getDescription() {
         return description;

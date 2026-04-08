@@ -53,7 +53,7 @@ import io.goobi.viewer.model.viewer.PageType;
 import jakarta.ws.rs.core.UriBuilder;
 
 /**
- * CollectionView class.
+ * Manages the hierarchical collection browsing state, including tree structure, sorting, and Solr queries.
  */
 public class CollectionView implements Serializable {
 
@@ -599,9 +599,6 @@ public class CollectionView implements Serializable {
         Map<String, CollectionResult> getData() throws IndexUnreachableException;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     /** {@inheritDoc} */
     @Override
     public String toString() {
@@ -760,7 +757,7 @@ public class CollectionView implements Serializable {
     /**
      * isShowAllHierarchyLevels.
      *
-     * @return the showAllHierarchyLevels
+
      */
     public boolean isShowAllHierarchyLevels() {
         return showAllHierarchyLevels;
@@ -991,14 +988,14 @@ public class CollectionView implements Serializable {
     /**
      * Getter for the field <code>field</code>.
      *
-     * @return the field
+
      */
     public String getField() {
         return field;
     }
 
     /**
-     * @return the searchUrl
+
      */
     public String getSearchUrl() {
         return searchUrl;
@@ -1012,7 +1009,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * @return the ignoreHierarchy
+
      */
     public boolean isIgnoreHierarchy() {
         return ignoreHierarchy;
@@ -1047,14 +1044,14 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * @return the splittingChar
+
      */
     public String getSplittingChar() {
         return splittingChar;
     }
 
     /**
-     * @return the displayNumberOfVolumesLevel
+
      */
     public int getDisplayNumberOfVolumesLevel() {
         return displayNumberOfVolumesLevel;

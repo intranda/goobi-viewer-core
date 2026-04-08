@@ -156,7 +156,7 @@ public class MetadataBean {
      * Getter for the field <code>metadataElementList</code>.
      *
      * @param index Metadata view index to retrieve
-     * @return the metadataElementList
+
      */
     public List<MetadataElement> getMetadataElementList(int index) {
         return getMetadataElementList(index, false);
@@ -308,7 +308,7 @@ public class MetadataBean {
     /**
      * Getter for the field <code>events</code>.
      *
-     * @return the events
+
      */
     public List<EventElement> getEvents() {
         return events;
@@ -355,7 +355,7 @@ public class MetadataBean {
     }
 
     /**
-     * @return the metadataViewUrl
+
      */
     public String getMetadataViewUrl() {
         return metadataViewUrl;
@@ -411,7 +411,7 @@ public class MetadataBean {
     }
 
     /**
-     * @return the activeMetadataView
+
      */
     public MetadataView getActiveMetadataView() {
         return activeMetadataView;
@@ -566,7 +566,7 @@ public class MetadataBean {
     /**
      * Getter for unit tests.
      * 
-     * @return the metadataElementMap
+
      */
     Map<Integer, List<MetadataElement>> getMetadataElementMap() {
         return metadataElementMap;

@@ -41,7 +41,7 @@ import io.goobi.viewer.model.log.LogMessage;
  * An item containing a campaign and a source to be annotated. Used to set up a frontend annotation view in javascript as well as process status
  * changes created by that view
  *
- * @author florian
+ * @author Florian Alpers
  */
 @JsonInclude(Include.NON_NULL)
 public class CampaignItem {
@@ -60,7 +60,7 @@ public class CampaignItem {
     /**
      * URI to a iiif manifest or other collection of iiif canvases. All generated annotations target either the source itself or one of its canvases
      *
-     * @return the source
+
      */
     public URI getSource() {
         return source;
@@ -78,7 +78,7 @@ public class CampaignItem {
     /**
      * The {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} to create the annotations.
      *
-     * @return the campaign
+
      */
     public Campaign getCampaign() {
         return campaign;
@@ -106,7 +106,7 @@ public class CampaignItem {
     /**
      * The {@link CrowdsourcingStatus status} of the resource within the {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign}.
      *
-     * @return the recordStatus
+
      */
     public CrowdsourcingStatus getRecordStatus() {
         return recordStatus;
@@ -145,7 +145,7 @@ public class CampaignItem {
      * URI for a user who edited the status of this item in the crowdsourcing frontend. The actual {@link io.goobi.viewer.model.security.user.User}-Id
      * may be determined by calling {@link io.goobi.viewer.model.security.user.User#getId(URI)}
      *
-     * @return the creatorURI
+
      */
     public URI getCreatorURI() {
         return creatorURI;
@@ -168,14 +168,14 @@ public class CampaignItem {
     }
 
     /**
-     * @return the log
+
      */
     public List<LogMessage> getLog() {
         return log;
     }
 
     /**
-     * @return the metadata
+
      */
     public Map<String, List<String>> getMetadata() {
         return Collections.unmodifiableMap(this.metadata);
@@ -189,7 +189,7 @@ public class CampaignItem {
     }
 
     /**
-     * @return the pageStatisticMode
+
      */
     public boolean isPageStatisticMode() {
         return pageStatisticMode;
@@ -203,7 +203,7 @@ public class CampaignItem {
     }
 
     /**
-     * @return the pageStatusMap
+
      */
     public Map<Integer, String> getPageStatusMap() {
         return pageStatusMap;
@@ -217,7 +217,7 @@ public class CampaignItem {
     }
 
     /**
-     * @return the recordIdentifier
+
      */
     public String getRecordIdentifier() {
         return recordIdentifier;

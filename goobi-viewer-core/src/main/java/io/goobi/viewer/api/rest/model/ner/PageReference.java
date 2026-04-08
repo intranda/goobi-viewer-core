@@ -89,9 +89,6 @@ public class PageReference implements TagGroup {
         return this.getPageOrder().compareTo(o.getPageOrder());
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -102,9 +99,6 @@ public class PageReference implements TagGroup {
         return 0;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {

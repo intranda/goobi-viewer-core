@@ -39,7 +39,7 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
- * PdfHandler class.
+ * Handles PDF generation and delivery requests, coordinating with the ContentServer PDF service.
  *
  * @author Florian Alpers
  */
@@ -218,7 +218,7 @@ public class PdfHandler {
     }
 
     /**
-     * @return the watermarkHandler
+
      */
     public WatermarkHandler getWatermarkHandler() {
         return watermarkHandler;

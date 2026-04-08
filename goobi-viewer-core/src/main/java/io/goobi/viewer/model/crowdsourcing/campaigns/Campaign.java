@@ -99,7 +99,7 @@ import jakarta.persistence.Transient;
  * A Campaign is a template to create annotations of specific types for a limited set of target resources and optionally by limited user group within
  * a limited time frame. The types of annotations created are determined by the {@link Question Questions} contained in this Campaign
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "cs_campaigns")
@@ -886,7 +886,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Getter for the field <code>id</code>.
      *
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -931,7 +931,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Getter for the field <code>dateCreated</code>.
      *
-     * @return the dateCreated
+
      */
     public LocalDateTime getDateCreated() {
         return dateCreated;
@@ -949,7 +949,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Getter for the field <code>dateUpdated</code>.
      *
-     * @return the dateUpdated
+
      */
     public LocalDateTime getDateUpdated() {
         return dateUpdated;
@@ -967,7 +967,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Getter for the field <code>visibility</code>.
      *
-     * @return the visibility
+
      */
     public CampaignVisibility getVisibility() {
         return visibility;
@@ -1009,7 +1009,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Getter for the field <code>dateStart</code>.
      *
-     * @return the dateStart
+
      */
     public LocalDateTime getDateStart() {
         return dateStart;
@@ -1051,7 +1051,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Getter for the field <code>dateEnd</code>.
      *
-     * @return the dateEnd
+
      */
     public LocalDateTime getDateEnd() {
         return dateEnd;
@@ -1069,7 +1069,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Getter for the field <code>solrQuery</code>.
      *
-     * @return the solrQuery
+
      */
     public String getSolrQuery() {
         return solrQuery;
@@ -1089,7 +1089,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Getter for the field <code>permalink</code>.
      *
-     * @return the permalink
+
      */
     public String getPermalink() {
         return permalink;
@@ -1107,7 +1107,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Getter for the field <code>breadcrumbParentCmsPageId</code>.
      *
-     * @return the breadcrumbParentCmsPageId
+
      */
     public String getBreadcrumbParentCmsPageId() {
         return breadcrumbParentCmsPageId;
@@ -1125,7 +1125,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Getter for the field <code>translations</code>.
      *
-     * @return the translations
+
      */
     public List<CampaignTranslation> getTranslations() {
         return translations;
@@ -1143,7 +1143,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Getter for the field <code>questions</code>.
      *
-     * @return the questions
+
      */
     public List<Question> getQuestions() {
         return questions;
@@ -1161,7 +1161,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Getter for the field <code>statistics</code>.
      *
-     * @return the statistics
+
      */
     public Map<String, CampaignRecordStatistic> getStatistics() {
         return statistics;
@@ -1179,7 +1179,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Getter for the field <code>selectedLocale</code>.
      *
-     * @return the selectedLocale
+
      */
     @Override
     public Locale getSelectedLocale() {
@@ -1231,9 +1231,6 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
 
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.IPolyglott#isEmpty(java.util.Locale)
-     */
     @Override
     public boolean isEmpty(Locale locale) {
         return StringUtils.isBlank(getDescription(locale.getLanguage()))
@@ -1292,7 +1289,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * @return the solrQueryResults
+
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
@@ -1528,27 +1525,18 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
         statistics.put(pi, statistic);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.CMSMediaHolder#setMediaItem(io.goobi.viewer.model.cms.CMSMediaItem)
-     */
     /** {@inheritDoc} */
     @Override
     public void setMediaItem(CMSMediaItem item) {
         this.mediaItem = item;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.CMSMediaHolder#getMediaItem()
-     */
     /** {@inheritDoc} */
     @Override
     public CMSMediaItem getMediaItem() {
         return this.mediaItem;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.CMSMediaHolder#getMediaFilter()
-     */
     /** {@inheritDoc} */
     @Override
     @JsonIgnore
@@ -1562,9 +1550,6 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
         return CmsMediaBean.getImageTypes();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.CMSMediaHolder#hasMediaItem()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean hasMediaItem() {
@@ -1579,14 +1564,14 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * @return the showLog
+
      */
     public boolean isShowLog() {
         return showLog;
     }
 
     /**
-     * @return the limitToGroup
+
      */
     public boolean isLimitToGroup() {
         return limitToGroup;
@@ -1600,7 +1585,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * @return the reviewMode
+
      */
     public ReviewMode getReviewMode() {
         return reviewMode;
@@ -1614,7 +1599,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * @return the statisticMode
+
      */
     public StatisticMode getStatisticMode() {
         return statisticMode != null ? statisticMode : StatisticMode.RECORD;
@@ -1628,7 +1613,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * @return the userGroup
+
      */
     public UserGroup getUserGroup() {
         return userGroup;
@@ -1642,7 +1627,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * @return the reviewerUserGroup
+
      */
     public UserGroup getReviewerUserGroup() {
         return reviewerUserGroup;
@@ -1656,7 +1641,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * @return the timePeriodEnabled
+
      */
     public boolean isTimePeriodEnabled() {
         return timePeriodEnabled;
@@ -1685,7 +1670,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * @return the logMessages
+
      */
     public List<CampaignLogMessage> getLogMessages() {
         return logMessages;
@@ -1712,9 +1697,6 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
 
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.CMSMediaHolder#getMediaItemWrapper()
-     */
     /** {@inheritDoc} */
     @Override
     @JsonIgnore
@@ -1727,9 +1709,6 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return getTitle();

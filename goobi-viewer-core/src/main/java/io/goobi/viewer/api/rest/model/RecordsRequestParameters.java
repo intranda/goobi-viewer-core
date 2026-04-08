@@ -74,7 +74,7 @@ public class RecordsRequestParameters {
     private List<String> facetFields = new ArrayList<>();
 
     /**
-     * @return the query
+
      */
     public String getQuery() {
         return query;
@@ -88,7 +88,7 @@ public class RecordsRequestParameters {
     }
 
     /**
-     * @return the resultFields
+
      */
     public List<String> getResultFields() {
         return resultFields;
@@ -102,7 +102,7 @@ public class RecordsRequestParameters {
     }
 
     /**
-     * @return the sortFields
+
      */
     public List<String> getSortFields() {
         return sortFields;
@@ -116,7 +116,7 @@ public class RecordsRequestParameters {
     }
 
     /**
-     * @return the sortOrder
+
      */
     public String getSortOrder() {
         return sortOrder;
@@ -130,7 +130,7 @@ public class RecordsRequestParameters {
     }
 
     /**
-     * @return the jsonFormat
+
      */
     public String getJsonFormat() {
         return jsonFormat;
@@ -144,7 +144,7 @@ public class RecordsRequestParameters {
     }
 
     /**
-     * @return the count
+
      */
     public int getCount() {
         return count;
@@ -158,7 +158,7 @@ public class RecordsRequestParameters {
     }
 
     /**
-     * @return the offset
+
      */
     public int getOffset() {
         return offset;
@@ -172,7 +172,7 @@ public class RecordsRequestParameters {
     }
 
     /**
-     * @return the randomize
+
      */
     public boolean isRandomize() {
         return randomize;
@@ -186,7 +186,7 @@ public class RecordsRequestParameters {
     }
 
     /**
-     * @return the language
+
      */
     public String getLanguage() {
         return language;
@@ -200,7 +200,7 @@ public class RecordsRequestParameters {
     }
 
     /**
-     * @return the includeChildHits
+
      */
     public boolean isIncludeChildHits() {
         return includeChildHits;
@@ -214,7 +214,7 @@ public class RecordsRequestParameters {
     }
 
     /**
-     * @return the boostTopLevelDocstructs
+
      */
     public boolean isBoostTopLevelDocstructs() {
         return boostTopLevelDocstructs;
@@ -228,7 +228,7 @@ public class RecordsRequestParameters {
     }
 
     /**
-     * @return the facetFields
+
      */
     public List<String> getFacetFields() {
         return facetFields;

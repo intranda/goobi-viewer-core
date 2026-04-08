@@ -43,7 +43,7 @@ import io.goobi.viewer.model.translations.Translation;
  *
  * Used to edit terms of use in admin backend. Creates a local copy of the global terms of use object and overwrites the global object on save
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Named("termsOfUseEditBean")
 @ViewScoped
@@ -152,9 +152,6 @@ public class TermsOfUseEditBean implements Serializable, IPolyglott {
         return isComplete(locale);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.IPolyglott#isEmpty(java.util.Locale)
-     */
     @Override
     public boolean isEmpty(Locale locale) {
         Translation title = termsOfUse.getTitle(locale.getLanguage());

@@ -26,7 +26,7 @@ public interface IResponseMessage {
     /**
      * Getter for the field <code>message</code>.
      *
-     * @return the message
+
      */
     public String getMessage();
 }

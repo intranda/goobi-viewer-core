@@ -67,7 +67,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.WebApplicationException;
 
 /**
- * DownloadBean class.
+ * JSF backing bean for managing file download requests from the viewer, tracking download status and links.
  */
 @Named
 @ViewScoped
@@ -214,7 +214,7 @@ public class DownloadBean implements Serializable {
     /**
      * Getter for the field <code>downloadIdentifier</code>.
      *
-     * @return the downloadIdentifier
+
      */
     public String getDownloadIdentifier() {
         return downloadIdentifier;

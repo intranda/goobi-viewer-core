@@ -139,7 +139,7 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
     }
 
     /**
-     * @return the resultGroupName
+
      */
     public String getResultGroupName() {
         return resultGroupName;
@@ -203,7 +203,7 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
     }
 
     /**
-     * @return the metadataListType
+
      */
     public String getMetadataListType() {
         return metadataListType;

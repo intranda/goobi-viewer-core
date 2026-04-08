@@ -112,7 +112,9 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.StreamingOutput;
 
 /**
- * @author florian
+ * REST resource providing search, field information, and statistical queries against the Solr index.
+ *
+ * @author Florian Alpers
  */
 @Path(INDEX)
 @CORSBinding

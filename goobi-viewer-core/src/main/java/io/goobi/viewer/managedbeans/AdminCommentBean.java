@@ -53,7 +53,7 @@ import io.goobi.viewer.model.annotation.comments.CommentManager;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * <p>AdminCommentBean class.
+ * JSF backing bean for admin comment management, providing CRUD operations for user comments in the admin interface.
  */
 @Named
 @SessionScoped
@@ -362,7 +362,7 @@ public class AdminCommentBean implements Serializable {
     /**
      * Getter for the field <code>lazyModelComments</code>.
      *
-     * @return the lazyModelComments
+
      */
     public TableDataProvider<Comment> getLazyModelComments() {
         return lazyModelComments;
@@ -380,7 +380,7 @@ public class AdminCommentBean implements Serializable {
     /**
      * <p>Getter for the field <code>currentCommentGroup</code>.
      *
-     * @return the currentCommentGroup
+
      */
     public CommentGroup getCurrentCommentGroup() {
         return currentCommentGroup;
@@ -434,7 +434,7 @@ public class AdminCommentBean implements Serializable {
     /**
      * Getter for the field <code>selectedComment</code>.
      *
-     * @return the selectedComment
+
      */
     public Comment getSelectedComment() {
         return currentComment;

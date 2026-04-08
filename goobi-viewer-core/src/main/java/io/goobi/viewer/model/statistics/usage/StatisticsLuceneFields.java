@@ -28,7 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * Contains field names of STATISTICS_USAGE SOLR documents.
  * 
- * @author florian
+ * @author Florian Alpers
  */
 public final class StatisticsLuceneFields {
 

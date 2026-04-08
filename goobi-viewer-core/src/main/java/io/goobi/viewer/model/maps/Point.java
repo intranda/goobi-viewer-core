@@ -24,7 +24,7 @@ package io.goobi.viewer.model.maps;
 import org.json.JSONObject;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class Point implements IArea {
 
@@ -47,9 +47,6 @@ public class Point implements IArea {
         return new double[][] { { lng, lat } };
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.maps.IArea#getGeoJson()
-     */
     @Override
     public String getGeoJson() {
         double[] coords = getVertices()[0];
@@ -59,25 +56,16 @@ public class Point implements IArea {
         return geometry.toString();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.maps.IArea#getDiameter()
-     */
     @Override
     public double getDiameter() {
         return 0;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         return Double.hashCode(lat * lng);
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (obj != null && obj.getClass().equals(this.getClass())) {
@@ -88,14 +76,14 @@ public class Point implements IArea {
     }
 
     /**
-     * @return the lng
+
      */
     public double getLng() {
         return lng;
     }
 
     /**
-     * @return the lat
+
      */
     public double getLat() {
         return lat;

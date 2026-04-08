@@ -29,7 +29,7 @@ public class PropertyResponse {
     private String value;
 
     /**
-     * @return the title
+
      */
     public String getTitle() {
         return title;
@@ -45,7 +45,7 @@ public class PropertyResponse {
     }
 
     /**
-     * @return the value
+
      */
     public String getValue() {
         return value;

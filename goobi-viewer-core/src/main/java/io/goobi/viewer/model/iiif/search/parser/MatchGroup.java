@@ -40,21 +40,21 @@ public class MatchGroup {
     }
 
     /**
-     * @return the start
+
      */
     public int getStart() {
         return start;
     }
 
     /**
-     * @return the end
+
      */
     public int getEnd() {
         return end;
     }
 
     /**
-     * @return the text
+
      */
     public String getText() {
         return text;

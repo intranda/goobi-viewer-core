@@ -38,7 +38,7 @@ import org.json.JSONObject;
 import io.goobi.viewer.controller.DateTools;
 
 /**
- * Version class.
+ * Provides version information about the currently running Goobi viewer core.
  */
 public final class Version {
     /** Constant <code>APPLICATION_NAME</code>. */

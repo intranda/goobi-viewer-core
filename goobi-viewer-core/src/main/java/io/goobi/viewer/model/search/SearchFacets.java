@@ -978,7 +978,7 @@ public class SearchFacets implements Serializable {
     /**
      * Getter for unit tests.
      * 
-     * @return the minValues
+
      */
     Map<String, String> getMinValues() {
         return minValues;
@@ -987,7 +987,7 @@ public class SearchFacets implements Serializable {
     /**
      * Getter for unit tests.
      * 
-     * @return the maxValues
+
      */
     Map<String, String> getMaxValues() {
         return maxValues;
@@ -1109,7 +1109,7 @@ public class SearchFacets implements Serializable {
     /**
      * Getter for the field <code>availableFacets</code>.
      *
-     * @return the availableFacets
+
      */
     public Map<String, List<IFacetItem>> getAvailableFacets() {
         return availableFacets;
@@ -1118,7 +1118,7 @@ public class SearchFacets implements Serializable {
     /**
      * Getter for the field <code>activeFacets</code>.
      *
-     * @return the activeFacets
+
      */
     public synchronized List<IFacetItem> getActiveFacets() {
         return activeFacets;
@@ -1140,7 +1140,7 @@ public class SearchFacets implements Serializable {
     /**
      * Getter for the field <code>tempValue</code>.
      *
-     * @return the tempValue
+
      */
     public String getTempValue() {
         return tempValue;
@@ -1242,14 +1242,14 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * @return the labelMap
+
      */
     public Map<String, String> getLabelMap() {
         return labelMap;
     }
 
     /**
-     * @return the geoFacetting
+
      */
     public GeoFacetItem getGeoFacetting() {
         synchronized (lock) {

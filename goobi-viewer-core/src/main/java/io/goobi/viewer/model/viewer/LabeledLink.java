@@ -30,7 +30,7 @@ import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
- * LabeledLink class.
+ * Associates a display label with a target URL for use in navigation and breadcrumb components.
  */
 public class LabeledLink implements Serializable {
 
@@ -75,9 +75,6 @@ public class LabeledLink implements Serializable {
         this.weight = weight;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -87,9 +84,6 @@ public class LabeledLink implements Serializable {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -121,7 +115,7 @@ public class LabeledLink implements Serializable {
     /**
      * Getter for the field <code>name</code>.
      *
-     * @return the name
+
      */
     public String getName() {
         return name.getValue(BeanUtils.getLocale()).orElse("");
@@ -148,7 +142,7 @@ public class LabeledLink implements Serializable {
     /**
      * Getter for the field <code>url</code>.
      *
-     * @return the url
+
      */
     public String getUrl() {
         return url;
@@ -166,7 +160,7 @@ public class LabeledLink implements Serializable {
     /**
      * Getter for the field <code>weight</code>.
      *
-     * @return the weight
+
      */
     public int getWeight() {
         return weight;

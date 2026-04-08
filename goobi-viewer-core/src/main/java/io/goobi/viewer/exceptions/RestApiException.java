@@ -24,7 +24,7 @@ package io.goobi.viewer.exceptions;
 import jakarta.ws.rs.core.Response.Status;
 
 /**
- * RestApiException class.
+ * Thrown when an error occurs during REST API request processing, carrying an associated HTTP status code.
  *
  * @author Florian Alpers
  */
@@ -91,7 +91,7 @@ public class RestApiException extends Exception {
     /**
      * Getter for the field <code>statusCode</code>.
      *
-     * @return the statusCode
+
      */
     public int getStatusCode() {
         return statusCode;

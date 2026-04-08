@@ -57,7 +57,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 /**
- * CMSSidebarWidgetsBean class.
+ * JSF backing bean that manages sidebar widget configuration for CMS pages.
  */
 @Named("cmsSidebarWidgetsBean")
 @RequestScoped

@@ -123,7 +123,7 @@ import io.goobi.viewer.solr.SolrConstants;
 import jakarta.faces.model.SelectItem;
 
 /**
- * Configuration class.
+ * Central configuration holder that reads and provides access to all viewer configuration settings from the config XML file.
  */
 public class Configuration extends AbstractConfiguration {
 

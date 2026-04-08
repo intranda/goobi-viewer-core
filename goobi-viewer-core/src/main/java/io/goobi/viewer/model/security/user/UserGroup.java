@@ -48,7 +48,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
- * UserGroup class.
+ * Represents a group of users that can be assigned licences and roles collectively.
  */
 @Entity
 @Table(name = "user_groups")
@@ -80,11 +80,6 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     @Transient
     private List<UserRole> memberships = null;
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -97,11 +92,6 @@ public class UserGroup extends AbstractLicensee implements Serializable {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -202,7 +192,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     /**
      * Getter for the field <code>id</code>.
      *
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -235,7 +225,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     /**
      * Getter for the field <code>description</code>.
      *
-     * @return the description
+
      */
     public String getDescription() {
         return description;
@@ -258,7 +248,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     /**
      * Getter for the field <code>owner</code>.
      *
-     * @return the owner
+
      */
     public User getOwner() {
         return owner;
@@ -276,7 +266,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     /**
      * isActive.
      *
-     * @return the active
+
      */
     public boolean isActive() {
         return active;

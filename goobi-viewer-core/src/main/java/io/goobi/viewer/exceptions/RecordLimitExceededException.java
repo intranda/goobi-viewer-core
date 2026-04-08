@@ -24,7 +24,7 @@ package io.goobi.viewer.exceptions;
 import java.io.Serializable;
 
 /**
- * RecordNotFoundException class.
+ * Thrown when the configured maximum number of records in a result set or export has been exceeded.
  */
 public class RecordLimitExceededException extends Exception implements Serializable {
 

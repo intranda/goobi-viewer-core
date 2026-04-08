@@ -40,7 +40,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "annotations_comments")

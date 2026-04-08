@@ -37,7 +37,7 @@ import io.goobi.viewer.model.viewer.PageType;
 import jakarta.mail.MessagingException;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class CommentMailNotificator implements ChangeNotificator {
 
@@ -55,7 +55,7 @@ public class CommentMailNotificator implements ChangeNotificator {
     }
 
     /**
-     * @return the bcc
+
      */
     public List<String> getBcc() {
         return bcc;

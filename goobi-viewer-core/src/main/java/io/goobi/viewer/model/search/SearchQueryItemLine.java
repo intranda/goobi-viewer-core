@@ -47,7 +47,7 @@ public class SearchQueryItemLine implements Serializable {
     /**
      * Getter for the field <code>operator</code>.
      *
-     * @return the operator
+
      */
     public SearchItemOperator getOperator() {
         return operator;
@@ -117,7 +117,7 @@ public class SearchQueryItemLine implements Serializable {
     }
 
     /**
-     * @return the value2
+
      */
     public String getValue2() {
         if (values.size() < 2) {
@@ -140,7 +140,7 @@ public class SearchQueryItemLine implements Serializable {
     }
 
     /**
-     * @return the values
+
      */
     public List<String> getValues() {
         return values;

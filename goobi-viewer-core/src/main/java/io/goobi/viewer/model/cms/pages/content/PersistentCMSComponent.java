@@ -144,7 +144,7 @@ public class PersistentCMSComponent implements IPolyglott, Serializable, Compara
     }
 
     /**
-     * @return the publicationState
+
      */
     public ContentItemPublicationState getPublicationState() {
         return publicationState;
@@ -158,7 +158,7 @@ public class PersistentCMSComponent implements IPolyglott, Serializable, Compara
     }
 
     /**
-     * @return the order
+
      */
     public Integer getOrder() {
         return order;
@@ -172,7 +172,7 @@ public class PersistentCMSComponent implements IPolyglott, Serializable, Compara
     }
 
     /**
-     * @return the contentItems
+
      */
     public List<CMSContent> getContentItems() {
         return contentItems;

@@ -29,7 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * A class holding values by which a {@link StatisticsSummary} instance should be filtered.
  * 
- * @author florian
+ * @author Florian Alpers
  */
 public final class StatisticsSummaryFilter {
 
@@ -68,21 +68,21 @@ public final class StatisticsSummaryFilter {
     }
 
     /**
-     * @return the startDate
+
      */
     public LocalDate getStartDate() {
         return startDate;
     }
 
     /**
-     * @return the endDate
+
      */
     public LocalDate getEndDate() {
         return endDate;
     }
 
     /**
-     * @return the filterQuery
+
      */
     public String getFilterQuery() {
         return filterQuery;

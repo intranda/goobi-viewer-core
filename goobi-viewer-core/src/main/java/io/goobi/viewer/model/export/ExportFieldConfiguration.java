@@ -31,14 +31,14 @@ public class ExportFieldConfiguration {
     }
 
     /**
-     * @return the field
+
      */
     public String getField() {
         return field;
     }
 
     /**
-     * @return the label
+
      * @should return field if label null
      */
     public String getLabel() {

@@ -41,7 +41,7 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
  * Both urls are updated if the configuration changes. Also, if the configured url contains '/rest' that part is rewritten to '/api/v1' if the
  * rewritten url points to a goobi viewer v1 rest api.
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class RestApiManager {
 

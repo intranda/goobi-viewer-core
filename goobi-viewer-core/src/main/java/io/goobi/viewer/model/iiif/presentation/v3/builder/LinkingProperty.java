@@ -28,7 +28,7 @@ import de.intranda.api.iiif.presentation.v3.LabeledResource;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class LinkingProperty {
 
@@ -75,14 +75,14 @@ public class LinkingProperty {
     }
 
     /**
-     * @return the target
+
      */
     public LinkingTarget getTarget() {
         return target;
     }
 
     /**
-     * @return the label
+
      */
     public IMetadataValue getLabel() {
         return label;

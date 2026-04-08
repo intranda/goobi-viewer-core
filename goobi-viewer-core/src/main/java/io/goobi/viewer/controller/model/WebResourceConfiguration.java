@@ -34,7 +34,7 @@ import io.goobi.viewer.model.variables.VariableReplacer;
 /**
  * Bundles configuration for a web resource containing a URI and a label.
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class WebResourceConfiguration {
 
@@ -78,14 +78,14 @@ public class WebResourceConfiguration {
     }
 
     /**
-     * @return the uri
+
      */
     public URI getUri() {
         return uri;
     }
 
     /**
-     * @return the label
+
      */
     public String getLabel() {
         return label;

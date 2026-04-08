@@ -50,10 +50,10 @@ import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.ext.Provider;
 
 /**
- * Request filter for image requests. Does two things:
+ * JAX-RS request filter for IIIF Image API requests. Does two things:
  * <ol>
- * <li>Forwards requests to a page number to the actual file</li>
- * <li>Sets parameters for image delivery in request</li>
+ * <li>Forwards requests referencing a page order number to the request with the resolved filename</li>
+ * <li>Sets image delivery parameters in the request context</li>
  * </ol>
  */
 @Provider

@@ -453,9 +453,6 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
         return createCollection(list, url);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.api.rest.resourcebuilders.AbstractBookmarkResourceBuilder#updateBookmarkList(io.goobi.viewer.model.bookmark.BookmarkList)
-     */
     @Override
     public void updateBookmarkList(BookmarkList bookmarkList) throws IllegalRequestException, DAOException {
         if (bookmarkList.getOwner() != null && bookmarkList.getOwner().getId() != null && bookmarkList.getOwner().getId().equals(this.user.getId())) {

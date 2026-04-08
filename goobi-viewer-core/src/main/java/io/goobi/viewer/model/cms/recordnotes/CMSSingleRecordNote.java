@@ -36,7 +36,7 @@ import jakarta.persistence.Entity;
 /**
  * Class holding a formatted text related to a single PI which may be edited in the admin/cms-backend and displayed in a (sidebar) widget.
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Entity
 @DiscriminatorValue("SINGLE")
@@ -82,44 +82,32 @@ public class CMSSingleRecordNote extends CMSRecordNote {
     }
 
     /**
-     * @return the recordPi
+
      */
     public String getRecordPi() {
         return recordPi;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.IRecordNote#setRecordPi(java.lang.String)
-     */
     public void setRecordPi(String recordPi) {
         this.recordPi = recordPi;
     }
 
     /**
-     * @return the recordTitle
+
      */
     public TranslatedText getRecordTitle() {
         return recordTitle;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.IRecordNote#setRecordTitle(io.goobi.viewer.model.translations.TranslatedText)
-     */
     public void setRecordTitle(TranslatedText recordTitle) {
         this.recordTitle = recordTitle;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.CMSRecordNote#isSingleRecordNote()
-     */
     @Override
     public boolean isSingleRecordNote() {
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.CMSRecordNote#isMultiRecordNote()
-     */
     @Override
     public boolean isMultiRecordNote() {
         return false;

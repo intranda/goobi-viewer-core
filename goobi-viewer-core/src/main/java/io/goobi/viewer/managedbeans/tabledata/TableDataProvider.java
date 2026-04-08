@@ -40,7 +40,7 @@ import io.goobi.viewer.controller.DAOSearchFunction;
 import io.goobi.viewer.exceptions.DAOException;
 
 /**
- * TableDataProvider class.
+ * Generic data provider for paginated, filterable, and sortable admin data tables.
  *
  * @param <T>
  */

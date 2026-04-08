@@ -54,7 +54,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 
 /**
- * LayerBuilder class.
+ * Builds IIIF Presentation API v2 Layer resources aggregating annotation lists across canvases.
  *
  * @author Florian Alpers
  */

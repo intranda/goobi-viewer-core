@@ -116,9 +116,6 @@ public class CampaignRecordStatistic implements Serializable {
     @Column(name = "total_pages", nullable = true)
     private Integer totalPages = null;
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -129,9 +126,6 @@ public class CampaignRecordStatistic implements Serializable {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -165,7 +159,7 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Getter for the field <code>id</code>.
      *
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -183,7 +177,7 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Getter for the field <code>dateCreated</code>.
      *
-     * @return the dateCreated
+
      */
     public LocalDateTime getDateCreated() {
         return dateCreated;
@@ -201,7 +195,7 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Getter for the field <code>dateUpdated</code>.
      *
-     * @return the dateUpdated
+
      */
     public LocalDateTime getDateUpdated() {
         return dateUpdated;
@@ -219,7 +213,7 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Getter for the field <code>owner</code>.
      *
-     * @return the owner
+
      */
     public Campaign getOwner() {
         return owner;
@@ -237,7 +231,7 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Getter for the field <code>pi</code>.
      *
-     * @return the pi
+
      */
     public String getPi() {
         return pi;
@@ -253,7 +247,7 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
-     * @return the pageStatistics
+
      */
     public Map<String, CampaignRecordPageStatistic> getPageStatistics() {
         return pageStatistics;
@@ -269,7 +263,7 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Getter for the field <code>status</code>.
      *
-     * @return the status
+
      */
     public CrowdsourcingStatus getStatus() {
         return status;
@@ -287,7 +281,7 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Getter for the field <code>annotators</code>.
      *
-     * @return the annotators
+
      */
     public List<User> getAnnotators() {
         return annotators;
@@ -305,7 +299,7 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * Getter for the field <code>reviewers</code>.
      *
-     * @return the reviewers
+
      */
     public List<User> getReviewers() {
         return reviewers;
@@ -361,7 +355,7 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
-     * @return the totalPages
+
      */
     public Integer getTotalPages() {
         if (totalPages == null) {

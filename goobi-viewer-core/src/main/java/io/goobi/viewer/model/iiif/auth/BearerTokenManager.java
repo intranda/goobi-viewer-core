@@ -71,14 +71,14 @@ public class BearerTokenManager {
     }
 
     /**
-     * @return the tokenMap
+
      */
     public Map<String, AuthAccessToken2> getTokenMap() {
         return tokenMap;
     }
 
     /**
-     * @return the tokenSessionMap
+
      */
     public Map<String, HttpSession> getTokenSessionMap() {
         return tokenSessionMap;

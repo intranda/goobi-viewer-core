@@ -70,35 +70,35 @@ public class CMSComponentAttribute implements Serializable {
     }
 
     /**
-     * @return the value
+
      */
     public String getValue() {
         return value;
     }
 
     /**
-     * @return the name
+
      */
     public String getName() {
         return name;
     }
 
     /**
-     * @return the label
+
      */
     public String getLabel() {
         return label;
     }
 
     /**
-     * @return the type
+
      */
     public String getType() {
         return type;
     }
 
     /**
-     * @return the options
+
      */
     public List<Option> getOptions() {
         return options;

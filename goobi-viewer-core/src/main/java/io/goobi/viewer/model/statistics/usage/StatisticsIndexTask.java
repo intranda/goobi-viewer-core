@@ -50,7 +50,7 @@ import io.goobi.viewer.solr.SolrSearchIndex;
  * the indexing progress and deletes the {@link DailySessionUsageStatistics} for each day once a STATISTICS_USAGE document exists in the index for
  * that day. Should run in its own thread
  * 
- * @author florian
+ * @author Florian Alpers
  */
 public class StatisticsIndexTask {
 

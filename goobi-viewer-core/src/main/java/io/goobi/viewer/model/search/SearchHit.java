@@ -181,9 +181,6 @@ public class SearchHit implements Comparable<SearchHit> {
         }
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public int compareTo(SearchHit other) {
@@ -656,7 +653,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Getter for the field <code>type</code>.
      *
-     * @return the type
+
      */
     public HitType getType() {
         return type;
@@ -665,7 +662,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Getter for the field <code>translatedType</code>.
      *
-     * @return the translatedType
+
      */
     public String getTranslatedType() {
         return type != null ? SEARCH_HIT_TYPE_PREFIX + type.name() : "";
@@ -706,14 +703,14 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Getter for the field <code>browseElement</code>.
      *
-     * @return the browseElement
+
      */
     public BrowseElement getBrowseElement() {
         return browseElement;
     }
 
     /**
-     * @return the hitNumber
+
      */
     public long getHitNumber() {
         return hitNumber;
@@ -729,7 +726,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Getter for the field <code>childDocs</code>.
      *
-     * @return the childDocs
+
      */
     public List<SolrDocument> getChildDocs() {
         return childDocs;
@@ -738,7 +735,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Getter for the field <code>hitsPopulated</code>.
      *
-     * @return the hitsPopulated
+
      */
     public int getHitsPopulated() {
         return hitsPopulated;
@@ -774,7 +771,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Getter for the field <code>ugcDocIddocs</code>.
      *
-     * @return the ugcDocIddocs
+
      */
     public Set<String> getUgcDocIddocs() {
         return ugcDocIddocs;
@@ -783,7 +780,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Getter for the field <code>children</code>.
      *
-     * @return the children
+
      */
     public List<SearchHit> getChildren() {
         return children;
@@ -792,7 +789,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Getter for the field <code>hitTypeCounts</code>.
      *
-     * @return the hitTypeCounts
+
      */
     public Map<HitType, Integer> getHitTypeCounts() {
         return hitTypeCounts;
@@ -919,7 +916,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Getter for the field <code>foundMetadata</code>.
      *
-     * @return the foundMetadata
+
      */
     public List<StringPair> getFoundMetadata() {
         return Collections.unmodifiableList(foundMetadata);
@@ -932,14 +929,14 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Getter for the field <code>url</code>.
      *
-     * @return the url
+
      */
     public String getUrl() {
         return url;
     }
 
     /**
-     * @return the altUrl
+
      */
     public String getAltUrl() {
         return altUrl;
@@ -953,7 +950,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * @return the altLabel
+
      */
     public String getAltLabel() {
         return altLabel;
@@ -969,7 +966,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Getter for the field <code>exportMetadata</code>.
      *
-     * @return the exportMetadata
+
      */
     public Map<String, String> getExportMetadata() {
         return exportMetadata;
@@ -1009,9 +1006,6 @@ public class SearchHit implements Comparable<SearchHit> {
         return value;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return getBrowseElement().getLabelShort();
@@ -1070,7 +1064,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Getter for unit tests.
      * 
-     * @return the authorityDataIdentifier
+
      */
     String getAuthorityDataIdentifier() {
         return authorityDataIdentifier;

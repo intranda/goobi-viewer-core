@@ -40,7 +40,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class RangeBuilder extends AbstractBuilder {
 

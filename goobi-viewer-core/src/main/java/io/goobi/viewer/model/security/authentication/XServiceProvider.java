@@ -40,7 +40,7 @@ import io.goobi.viewer.model.security.authentication.model.XServiceAuthenticatio
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * XServiceProvider class.
+ * Authentication provider that authenticates users via the X-Service API.
  */
 public class XServiceProvider extends VuFindProvider {
 
@@ -59,9 +59,6 @@ public class XServiceProvider extends VuFindProvider {
         super(name, label, url, image, timeoutMillis);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#login(java.lang.String, java.lang.String)
-     */
     /** {@inheritDoc} */
     @Override
     public CompletableFuture<LoginResult> login(String borID, String password) throws AuthenticationProviderException {
@@ -85,18 +82,12 @@ public class XServiceProvider extends VuFindProvider {
         return CompletableFuture.completedFuture(result);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#logout()
-     */
     /** {@inheritDoc} */
     @Override
     public void logout() throws AuthenticationProviderException {
         //noop
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsPasswordChange()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean allowsPasswordChange() {

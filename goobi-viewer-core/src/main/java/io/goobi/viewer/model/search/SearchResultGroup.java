@@ -120,28 +120,28 @@ public class SearchResultGroup implements Serializable {
     }
 
     /**
-     * @return the name
+
      */
     public String getName() {
         return name;
     }
 
     /**
-     * @return the query
+
      */
     public String getQuery() {
         return query;
     }
 
     /**
-     * @return the previewHitCount
+
      */
     public int getPreviewHitCount() {
         return previewHitCount;
     }
 
     /**
-     * @return the hitsCount
+
      */
     public long getHitsCount() {
         return hitsCount;
@@ -155,7 +155,7 @@ public class SearchResultGroup implements Serializable {
     }
 
     /**
-     * @return the hitLocationList
+
      */
     public List<Location> getHitLocationList() {
         return hitLocationList;
@@ -169,7 +169,7 @@ public class SearchResultGroup implements Serializable {
     }
 
     /**
-     * @return the hasGeoLocationHits
+
      */
     public boolean isHasGeoLocationHits() {
         return hasGeoLocationHits;
@@ -183,7 +183,7 @@ public class SearchResultGroup implements Serializable {
     }
 
     /**
-     * @return the hits
+
      */
     public List<SearchHit> getHits() {
         return hits;

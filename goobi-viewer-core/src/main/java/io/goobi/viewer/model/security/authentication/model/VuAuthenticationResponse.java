@@ -30,7 +30,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
- * VuAuthenticationResponse class.
+ * Response DTO for the VuFind authentication service, carrying user data on successful login.
  *
  * @author Florian Alpers
  */
@@ -45,7 +45,7 @@ public class VuAuthenticationResponse {
     /**
      * Getter for the field <code>user</code>.
      *
-     * @return the user
+
      */
     public User getUser() {
         return user;
@@ -63,7 +63,7 @@ public class VuAuthenticationResponse {
     /**
      * Getter for the field <code>expired</code>.
      *
-     * @return the expired
+
      */
     public Expired getExpired() {
         return expired;
@@ -81,7 +81,7 @@ public class VuAuthenticationResponse {
     /**
      * Getter for the field <code>blocks</code>.
      *
-     * @return the blocks
+
      */
     public Blocks getBlocks() {
         return blocks;
@@ -99,7 +99,7 @@ public class VuAuthenticationResponse {
     /**
      * Getter for the field <code>request</code>.
      *
-     * @return the request
+
      */
     public Request getRequest() {
         return request;
@@ -149,9 +149,6 @@ public class VuAuthenticationResponse {
             return group;
         }
 
-        /* (non-Javadoc)
-         * @see java.lang.Object#toString()
-         */
         @Override
         public String toString() {
             return "valid: " + getIsValid() + ", exists: " + getExists() + ", group: " + getGroup();
@@ -296,9 +293,6 @@ public class VuAuthenticationResponse {
         }
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     /** {@inheritDoc} */
     @Override
     public String toString() {

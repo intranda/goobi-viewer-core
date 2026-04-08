@@ -29,7 +29,7 @@ public class MetadataWrapper {
     private StringPair valuePair;
 
     /**
-     * @return the metadata
+
      */
     public Metadata getMetadata() {
         return metadata;
@@ -45,7 +45,7 @@ public class MetadataWrapper {
     }
 
     /**
-     * @return the valuePair
+
      */
     public StringPair getValuePair() {
         return valuePair;

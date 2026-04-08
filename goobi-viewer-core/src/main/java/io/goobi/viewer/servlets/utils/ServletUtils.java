@@ -26,7 +26,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * ServletUtils class.
+ * Utility class providing helper methods for servlet request processing and response handling.
  */
 public final class ServletUtils {
 

@@ -34,14 +34,11 @@ import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 @Converter
 public class ThemeLinkConverter implements AttributeConverter<List<ThemeLink>, String> {
 
-    /* (non-Javadoc)
-     * @see jakarta.persistence.AttributeConverter#convertToDatabaseColumn(java.lang.Object)
-     */
     @Override
     public String convertToDatabaseColumn(List<ThemeLink> attribute) {
         JSONObject json = new JSONObject();
@@ -51,9 +48,6 @@ public class ThemeLinkConverter implements AttributeConverter<List<ThemeLink>, S
         return json.toString();
     }
 
-    /* (non-Javadoc)
-     * @see jakarta.persistence.AttributeConverter#convertToEntityAttribute(java.lang.Object)
-     */
     @Override
     public List<ThemeLink> convertToEntityAttribute(String dbData) {
         JSONObject json = new JSONObject(dbData);

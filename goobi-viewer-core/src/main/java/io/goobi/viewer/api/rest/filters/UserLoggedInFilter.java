@@ -35,7 +35,7 @@ import jakarta.ws.rs.ext.Provider;
 /**
  * Only allow requests from a session with a logged in Goobi viewer user.
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Provider
 @UserLoggedInBinding
@@ -44,9 +44,6 @@ public class UserLoggedInFilter implements ContainerRequestFilter {
     @Context
     private HttpServletRequest servletRequest;
 
-    /* (non-Javadoc)
-     * @see jakarta.ws.rs.container.ContainerRequestFilter#filter(jakarta.ws.rs.container.ContainerRequestContext)
-     */
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
         if (!isUserLoggedIn(servletRequest)) {

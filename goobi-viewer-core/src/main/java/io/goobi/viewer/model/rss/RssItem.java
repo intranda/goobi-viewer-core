@@ -69,7 +69,7 @@ public class RssItem implements Comparable<RssItem>, IAccessDeniedThumbnailOutpu
     /**
      * Getter for the field <code>title</code>.
      *
-     * @return the title
+
      */
     public String getTitle() {
         return title;
@@ -87,7 +87,7 @@ public class RssItem implements Comparable<RssItem>, IAccessDeniedThumbnailOutpu
     /**
      * Getter for the field <code>link</code>.
      *
-     * @return the link
+
      */
     public String getLink() {
         return link;
@@ -105,7 +105,7 @@ public class RssItem implements Comparable<RssItem>, IAccessDeniedThumbnailOutpu
     /**
      * Getter for the field <code>description</code>.
      *
-     * @return the description
+
      */
     public Description getDescription() {
         return description;
@@ -123,7 +123,7 @@ public class RssItem implements Comparable<RssItem>, IAccessDeniedThumbnailOutpu
     /**
      * Getter for the field <code>pubDate</code>.
      *
-     * @return the pubDate
+
      */
     public Date getPubDate() {
         return pubDate;
@@ -141,7 +141,7 @@ public class RssItem implements Comparable<RssItem>, IAccessDeniedThumbnailOutpu
     /**
      * Getter for the field <code>creator</code>.
      *
-     * @return the creator
+
      */
     public String getCreator() {
         return creator;
@@ -168,7 +168,7 @@ public class RssItem implements Comparable<RssItem>, IAccessDeniedThumbnailOutpu
     /**
      * Getter for the field <code>docType</code>.
      *
-     * @return the docType
+
      */
     public String getDocType() {
         return docType;

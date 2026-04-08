@@ -185,7 +185,7 @@ public class ViewerPath implements Serializable {
     }
 
     /**
-     * @return the queryString
+
      */
     public String getQueryString() {
         return queryString;
@@ -348,7 +348,7 @@ public class ViewerPath implements Serializable {
     /**
      * Getter for the field <code>campaign</code>.
      *
-     * @return the campaign
+
      */
     public Campaign getCampaign() {
         return campaign;

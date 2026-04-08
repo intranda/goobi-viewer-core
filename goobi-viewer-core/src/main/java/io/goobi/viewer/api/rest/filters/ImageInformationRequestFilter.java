@@ -46,7 +46,8 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
 
 /**
- * Forwards requests to IIIF image resources referencing a image number (Solr-field "ORDER") to a requests with the appropriate filename.
+ * JAX-RS request filter for IIIF Image Information API requests. Forwards requests referencing a page order number (Solr field {@code ORDER}) to the
+ * request with the appropriate filename resolved from the index.
  */
 @Provider
 @ContentServerImageInfoBinding

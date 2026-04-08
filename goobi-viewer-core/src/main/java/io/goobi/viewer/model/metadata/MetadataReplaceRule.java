@@ -24,7 +24,7 @@ package io.goobi.viewer.model.metadata;
 import java.io.Serializable;
 
 /**
- * MetadataReplaceRule class.
+ * Defines a search-and-replace rule applied to metadata values before display.
  */
 public class MetadataReplaceRule implements Serializable {
 
@@ -66,28 +66,28 @@ public class MetadataReplaceRule implements Serializable {
     }
 
     /**
-     * @return the type
+
      */
     public MetadataReplaceRuleType getType() {
         return type;
     }
 
     /**
-     * @return the key
+
      */
     public Object getKey() {
         return key;
     }
 
     /**
-     * @return the replacement
+
      */
     public String getReplacement() {
         return replacement;
     }
 
     /**
-     * @return the conditions
+
      */
     public String getConditions() {
         return conditions;

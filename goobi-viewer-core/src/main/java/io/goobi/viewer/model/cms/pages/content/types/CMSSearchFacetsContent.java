@@ -63,7 +63,7 @@ public class CMSSearchFacetsContent extends CMSContent {
     }
 
     /**
-     * @return the facetField
+
      */
     public String getFacetField() {
         return facetField;

@@ -55,7 +55,7 @@ import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
 import jakarta.faces.context.FacesContext;
 
 /**
- * SearchFunctionality class.
+ * CMS item functionality that embeds a search interface with its own query and facet state.
  *
  * @author Florian Alpers
  */
@@ -71,8 +71,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      * The current page of the search result list
      */
 
-    /**
-     */
+    
     private final String baseUrl;
     private final String pageFacetString;
 
@@ -281,7 +280,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /**
      * getSearchBean.
      *
-     * @return the searchBean
+
      */
     public SearchBean getSearchBean() {
         return searchBean;
@@ -299,7 +298,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /**
      * getHitsPerPage.
      *
-     * @return the hitsPerPage
+
      */
     public int getHitsPerPage() {
         return getSearchBean().getHitsPerPage();
@@ -332,7 +331,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /**
      * getFacetString.
      *
-     * @return the facetString
+
      */
     public String getFacetString() {
         return getSearchBean().getFacets().getActiveFacetString();
@@ -374,7 +373,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /**
      * Getter for the field <code>baseUrl</code>.
      *
-     * @return the baseUrl
+
      */
     public String getBaseUrl() {
         return baseUrl;
@@ -400,7 +399,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /**
      * Getter for the field <code>pageFacetString</code>.
      *
-     * @return the pageFacetString
+
      */
     public String getPageFacetString() {
         return pageFacetString;
@@ -491,9 +490,6 @@ public class SearchFunctionality implements Functionality, SearchInterface {
         return "";
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.SearchInterface#isSearchInDcFlag()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean isSearchInDcFlag() {
@@ -505,72 +501,48 @@ public class SearchFunctionality implements Functionality, SearchInterface {
         return getSearchBean().isSearchInFacetFieldFlag(fieldName);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.SearchInterface#getFacets()
-     */
     /** {@inheritDoc} */
     @Override
     public SearchFacets getFacets() {
         return getSearchBean().getFacets();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.SearchInterface#autocomplete(java.lang.String)
-     */
     /** {@inheritDoc} */
     @Override
     public List<String> autocomplete(String suggestion) throws IndexUnreachableException {
         return getSearchBean().autocomplete(suggestion);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.SearchInterface#getSearchString()
-     */
     /** {@inheritDoc} */
     @Override
     public String getSearchString() {
         return getSearchBean().getSearchString();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.SearchInterface#getSearchFilters()
-     */
     /** {@inheritDoc} */
     @Override
     public List<SearchFilter> getSearchFilters() {
         return getSearchBean().getSearchFilters();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.SearchInterface#getCurrentSearchFilterString()
-     */
     /** {@inheritDoc} */
     @Override
     public String getCurrentSearchFilterString() {
         return getSearchBean().getCurrentSearchFilterString();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.SearchInterface#setCurrentSearchFilterString(java.lang.String)
-     */
     /** {@inheritDoc} */
     @Override
     public void setCurrentSearchFilterString(String filter) {
         getSearchBean().setCurrentSearchFilterString(filter);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.SearchInterface#getActiveSearchType()
-     */
     /** {@inheritDoc} */
     @Override
     public int getActiveSearchType() {
         return getSearchBean().getActiveSearchType();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.SearchInterface#setActiveSearchType(int)
-     */
     /** {@inheritDoc} */
     @Override
     public void setActiveSearchType(int type) {
@@ -578,36 +550,24 @@ public class SearchFunctionality implements Functionality, SearchInterface {
 
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.SearchInterface#setSearchString(java.lang.String)
-     */
     /** {@inheritDoc} */
     @Override
     public void setSearchString(String searchString) {
         getSearchBean().setSearchString(searchString);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.SearchInterface#isSearchPerformed()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean isSearchPerformed() {
         return getSearchBean().isSearchPerformed();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.SearchInterface#getHitsCount()
-     */
     /** {@inheritDoc} */
     @Override
     public long getHitsCount() {
         return getSearchBean().getHitsCount();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.SearchInterface#getCurrentSearchUrlRoot()
-     */
     /** {@inheritDoc} */
     @Override
     public String getCurrentSearchUrlRoot() {
@@ -618,35 +578,23 @@ public class SearchFunctionality implements Functionality, SearchInterface {
         return getBaseUrl();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.SearchInterface#getLastPage()
-     */
     /** {@inheritDoc} */
     @Override
     public int getLastPage() {
         return getSearchBean().getLastPage();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.SearchInterface#isExplicitSearchPerformed()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean isExplicitSearchPerformed() {
         return StringUtils.isNotBlank(getExactSearchString().replace("-", ""));
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.SearchInterface#hasGeoLocationHits()
-     */
     @Override
     public boolean hasGeoLocationHits() {
         return getSearchBean().hasGeoLocationHits();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.SearchInterface#getHitsMap()
-     */
     @Override
     public GeoMap getHitsMap() {
         return getSearchBean().getHitsMap();

@@ -37,7 +37,7 @@ import io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement;
 import io.goobi.viewer.model.viewer.collections.SimpleBrowseElementInfo;
 
 /**
- * CompoundLabeledLink class.
+ * A labeled link composed of a primary and a secondary link component.
  *
  * @author Florian Alpers
  */

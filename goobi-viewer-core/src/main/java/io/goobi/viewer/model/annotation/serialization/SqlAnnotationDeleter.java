@@ -31,7 +31,7 @@ import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class SqlAnnotationDeleter implements AnnotationDeleter {
 

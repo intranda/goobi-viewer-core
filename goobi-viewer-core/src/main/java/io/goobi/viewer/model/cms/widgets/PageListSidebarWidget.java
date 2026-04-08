@@ -37,7 +37,7 @@ import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
 /**
  * A subtype of {@link CustomSidebarWidget} to display a list of links to CMS pages.
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Entity
 @DiscriminatorValue("PageListSidebarWidget")

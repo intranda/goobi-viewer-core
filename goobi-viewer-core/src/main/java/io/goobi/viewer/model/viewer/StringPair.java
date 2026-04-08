@@ -25,7 +25,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 
 /**
- * StringPair class.
+ * Immutable pair of two string values, used for key-value mappings throughout the viewer.
  */
 public class StringPair implements Comparable<StringPair>, Serializable {
 
@@ -48,9 +48,6 @@ public class StringPair implements Comparable<StringPair>, Serializable {
         this.two = two;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -61,9 +58,6 @@ public class StringPair implements Comparable<StringPair>, Serializable {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -107,7 +101,7 @@ public class StringPair implements Comparable<StringPair>, Serializable {
     /**
      * Getter for the field <code>one</code>.
      *
-     * @return the one
+
      */
     public String getOne() {
         return one;
@@ -125,7 +119,7 @@ public class StringPair implements Comparable<StringPair>, Serializable {
     /**
      * Getter for the field <code>two</code>.
      *
-     * @return the two
+
      */
     public String getTwo() {
         return two;
@@ -150,9 +144,6 @@ public class StringPair implements Comparable<StringPair>, Serializable {
 
         private static final long serialVersionUID = -5579914817514299754L;
 
-        /* (non-Javadoc)
-         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-         */
         @Override
         public int compare(StringPair o1, StringPair o2) {
             return o1.getOne().compareTo(o2.getOne());
@@ -163,9 +154,6 @@ public class StringPair implements Comparable<StringPair>, Serializable {
 
         private static final long serialVersionUID = 3377396736263291749L;
 
-        /* (non-Javadoc)
-         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-         */
         @Override
         public int compare(StringPair o1, StringPair o2) {
             return o1.getTwo().compareTo(o2.getTwo());

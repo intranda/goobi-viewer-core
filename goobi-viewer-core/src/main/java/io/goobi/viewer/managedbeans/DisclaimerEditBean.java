@@ -37,9 +37,9 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.administration.legal.Disclaimer;
 
 /**
- * Bean for editing the disclaimer. ViewScoped, so all settings are discarded when loading a new view.
+ * JSF backing bean for configuring and editing disclaimer texts in the admin interface.
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Named
 @ViewScoped

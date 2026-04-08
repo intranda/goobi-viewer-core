@@ -25,7 +25,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.viewer.MimeType;
 
 /**
- * RichOEmbedResponse class.
+ * oEmbed response for rich-media resources, carrying an HTML embed snippet.
  */
 public class RichOEmbedResponse extends OEmbedResponse {
 
@@ -112,7 +112,7 @@ public class RichOEmbedResponse extends OEmbedResponse {
     /**
      * Getter for the field <code>html</code>.
      *
-     * @return the html
+
      */
     public String getHtml() {
         return html;

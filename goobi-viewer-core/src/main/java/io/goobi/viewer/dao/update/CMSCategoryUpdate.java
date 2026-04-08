@@ -49,7 +49,7 @@ import io.goobi.viewer.model.cms.pages.content.CMSContent;
  * Converts all Tags and Classifications from previous viewer-cms versions to the {@link io.goobi.viewer.model.cms.CMSCategory} system. This includes
  * updating references in CMSPages CMSContentItems and CMSMediaItems to keep the existing structure intact
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class CMSCategoryUpdate implements IModelUpdate {
 

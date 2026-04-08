@@ -40,7 +40,7 @@ import io.goobi.viewer.model.translations.TranslatedText;
 /**
  * Class to persist settings for the disclaimer modal. Only one instance of this class should be persisted in the database
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "disclaimer")
@@ -110,7 +110,7 @@ public class Disclaimer {
     /**
      * Database id.
      * 
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -128,7 +128,7 @@ public class Disclaimer {
     /**
      * The text to show in the disclaimer.
      * 
-     * @return the text
+
      */
     public TranslatedText getText() {
         return text;

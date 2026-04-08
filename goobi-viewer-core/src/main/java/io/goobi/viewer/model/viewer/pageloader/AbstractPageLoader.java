@@ -53,7 +53,7 @@ import io.goobi.viewer.solr.SolrTools;
 import jakarta.faces.model.SelectItem;
 
 /**
- * Abstract AbstractPageLoader class.
+ * Abstract base class for page loaders that retrieve page metadata for a digitized record from the index.
  */
 public abstract class AbstractPageLoader implements IPageLoader {
 

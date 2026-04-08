@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * CalendarRow class.
+ * Represents a row of calendar items (e.g. a week row within a month view) for display in the calendar widget.
  */
 public class CalendarRow implements Serializable {
 

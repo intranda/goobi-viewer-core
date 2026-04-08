@@ -29,7 +29,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerRespons
 /**
  * Default implementation of {@link ContentServerResponseFilter} to apply this filter in /api/v1/ environment.
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Provider
 @ContentServerBinding

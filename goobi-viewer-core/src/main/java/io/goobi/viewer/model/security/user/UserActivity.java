@@ -32,7 +32,7 @@ import io.goobi.viewer.model.bookmark.Bookmark;
 import io.goobi.viewer.model.search.Search;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class UserActivity {
 
@@ -111,28 +111,28 @@ public class UserActivity {
     }
 
     /**
-     * @return the type
+
      */
     public ActivityType getType() {
         return type;
     }
 
     /**
-     * @return the label
+
      */
     public String getLabel() {
         return label;
     }
 
     /**
-     * @return the date
+
      */
     public LocalDateTime getDate() {
         return date;
     }
 
     /**
-     * @return the update
+
      */
     public boolean isUpdate() {
         return update;

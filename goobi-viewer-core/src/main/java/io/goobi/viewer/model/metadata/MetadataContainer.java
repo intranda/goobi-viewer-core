@@ -50,7 +50,7 @@ import io.goobi.viewer.solr.SolrTools;
  * name the values are taken from Each field name/key is mapped to a list of {@link IMetadataValue} objects which may contain a single string or
  * translations in several languages Used in {@link GeoCoordinateConverter} to add translatable metadata entites to geomap features.
  * 
- * @author florian
+ * @author Florian Alpers
  */
 public class MetadataContainer {
 

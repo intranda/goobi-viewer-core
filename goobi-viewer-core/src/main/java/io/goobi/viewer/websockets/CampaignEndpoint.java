@@ -73,9 +73,6 @@ public class CampaignEndpoint {
         private final String recordIdentifier;
         private final int pageNumber;
 
-        /* (non-Javadoc)
-         * @see java.lang.Object#hashCode()
-         */
         @Override
         public int hashCode() {
             final int prime = 31;

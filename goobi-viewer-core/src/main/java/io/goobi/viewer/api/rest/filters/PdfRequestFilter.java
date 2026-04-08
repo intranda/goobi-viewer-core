@@ -69,8 +69,8 @@ import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.ext.Provider;
 
 /**
- * Request filter for PDF download requests. Checks whether the request has privileges to access the pdf and whether the download quote for the pdf is
- * reached
+ * JAX-RS request filter for PDF download requests. Checks whether the request has the required privileges to access the PDF and whether the
+ * configured download quota for the record has been reached.
  */
 @Provider
 @ContentServerPdfBinding

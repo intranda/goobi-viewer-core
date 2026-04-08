@@ -26,7 +26,7 @@ import java.io.Serializable;
 /**
  * An entity holding an object which can be selected or unselected.
  *
- * @author florian
+ * @author Florian Alpers
  * @param <T>
  */
 public class Selectable<T> implements Comparable<Selectable<T>>, Serializable {
@@ -50,7 +50,7 @@ public class Selectable<T> implements Comparable<Selectable<T>>, Serializable {
     /**
      * Getter for the field <code>value</code>.
      *
-     * @return the value
+
      */
     public T getValue() {
         return value;
@@ -59,7 +59,7 @@ public class Selectable<T> implements Comparable<Selectable<T>>, Serializable {
     /**
      * isSelected.
      *
-     * @return the selected
+
      */
     public boolean isSelected() {
         return selected;
@@ -74,9 +74,6 @@ public class Selectable<T> implements Comparable<Selectable<T>>, Serializable {
         this.selected = selected;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
@@ -102,9 +99,6 @@ public class Selectable<T> implements Comparable<Selectable<T>>, Serializable {
         return this.value == null ? 0 : this.value.hashCode();
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     /** {@inheritDoc} */
     @Override
     public String toString() {

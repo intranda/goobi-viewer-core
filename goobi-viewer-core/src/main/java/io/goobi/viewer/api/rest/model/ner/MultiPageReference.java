@@ -106,9 +106,6 @@ public class MultiPageReference implements TagGroup {
         return this.getFirstPage().compareTo(o.getPageOrder());
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -119,9 +116,6 @@ public class MultiPageReference implements TagGroup {
         return 0;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -150,9 +144,6 @@ public class MultiPageReference implements TagGroup {
         return getLastPage() - getFirstPage() + 1;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.servlets.rest.ner.TagGroup#getPageOrder()
-     */
     /** {@inheritDoc} */
     @JsonIgnore
     @Override

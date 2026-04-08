@@ -22,7 +22,7 @@
 package io.goobi.viewer.managedbeans.tabledata;
 
 /**
- * TableDataSourceException class.
+ * Thrown when a table data source encounters an error while loading or filtering data.
  *
  * @author Florian Alpers
  */

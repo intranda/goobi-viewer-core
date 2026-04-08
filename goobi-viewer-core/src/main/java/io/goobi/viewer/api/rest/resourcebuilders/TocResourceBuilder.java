@@ -41,7 +41,7 @@ import io.goobi.viewer.model.toc.export.pdf.TocWriter;
 import io.goobi.viewer.model.viewer.ViewManager;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class TocResourceBuilder {
 

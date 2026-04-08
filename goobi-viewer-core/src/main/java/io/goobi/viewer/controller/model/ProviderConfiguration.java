@@ -36,7 +36,7 @@ import io.goobi.viewer.model.variables.VariableReplacer;
 /**
  * Bundles provider configurations for IIIF manifests into a single object.
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class ProviderConfiguration {
 
@@ -93,28 +93,28 @@ public class ProviderConfiguration {
     }
 
     /**
-     * @return the uri
+
      */
     public URI getUri() {
         return uri;
     }
 
     /**
-     * @return the label
+
      */
     public String getLabel() {
         return label;
     }
 
     /**
-     * @return the logos
+
      */
     public List<URI> getLogos() {
         return logos;
     }
 
     /**
-     * @return the homepages
+
      */
     public List<WebResourceConfiguration> getHomepages() {
         return homepages;

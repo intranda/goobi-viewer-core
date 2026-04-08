@@ -45,7 +45,7 @@ import jakarta.persistence.Table;
 import io.goobi.viewer.model.job.JobStatus;
 
 /**
- * TranskribusJob class.
+ * Represents a Transkribus HTR (handwritten text recognition) processing job with its status and associated record.
  */
 @Entity
 @Table(name = "transkribus_jobs")
@@ -111,7 +111,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Getter for the field <code>id</code>.
      *
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -129,7 +129,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Getter for the field <code>jobId</code>.
      *
-     * @return the jobId
+
      */
     public String getJobId() {
         return jobId;
@@ -147,7 +147,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Getter for the field <code>docId</code>.
      *
-     * @return the docId
+
      */
     public String getDocId() {
         return docId;
@@ -165,7 +165,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Getter for the field <code>pi</code>.
      *
-     * @return the pi
+
      */
     public String getPi() {
         return pi;
@@ -183,7 +183,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Getter for the field <code>ownerId</code>.
      *
-     * @return the ownerId
+
      */
     public String getOwnerId() {
         return ownerId;
@@ -201,7 +201,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Getter for the field <code>userCollectionId</code>.
      *
-     * @return the userCollectionId
+
      */
     public String getUserCollectionId() {
         return userCollectionId;
@@ -219,7 +219,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Getter for the field <code>viewerCollectionId</code>.
      *
-     * @return the viewerCollectionId
+
      */
     public String getViewerCollectionId() {
         return viewerCollectionId;
@@ -237,7 +237,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Getter for the field <code>message</code>.
      *
-     * @return the message
+
      */
     public String getMessage() {
         return message;
@@ -255,7 +255,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Getter for the field <code>dateCreated</code>.
      *
-     * @return the dateCreated
+
      */
     public LocalDateTime getDateCreated() {
         return dateCreated;
@@ -273,7 +273,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Getter for the field <code>status</code>.
      *
-     * @return the status
+
      */
     public JobStatus getStatus() {
         return status;
@@ -291,7 +291,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Getter for the field <code>description</code>.
      *
-     * @return the description
+
      */
     public String getDescription() {
         return description;
@@ -309,7 +309,7 @@ public class TranskribusJob implements Serializable {
     /**
      * Getter for the field <code>observers</code>.
      *
-     * @return the observers
+
      */
     public List<String> getObservers() {
         return observers;

@@ -69,7 +69,7 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
 /**
- * BookmarkList class.
+ * Represents a named list of bookmarks owned by a user, optionally shareable with others.
  */
 @Entity
 @Table(name = "bookshelves")
@@ -83,8 +83,7 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
 @Schema(type = "object")
 public class BookmarkList implements Serializable, Comparable<BookmarkList> {
 
-    /**
-     */
+    
     public static final String MIRADOR_LIB_PATH = "/resources/javascript/libs/mirador/";
 
     private static final long serialVersionUID = -3040539541804852903L;
@@ -129,11 +128,6 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     @JsonIgnore
     private List<UserGroup> groupShares = new ArrayList<>();
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -145,11 +139,6 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -364,7 +353,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Getter for the field <code>id</code>.
      *
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -382,7 +371,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Getter for the field <code>name</code>.
      *
-     * @return the name
+
      */
     public String getName() {
         return name;
@@ -404,7 +393,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Getter for the field <code>description</code>.
      *
-     * @return the description
+
      */
     public String getDescription() {
         return description;
@@ -431,7 +420,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Getter for the field <code>owner</code>.
      *
-     * @return the owner
+
      */
     public User getOwner() {
         return owner;
@@ -449,7 +438,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * isIsPublic.
      *
-     * @return the isPublic
+
      */
     public boolean isIsPublic() {
         return isPublic;
@@ -484,7 +473,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Getter for the field <code>shareKey</code>.
      *
-     * @return the shareKey
+
      */
     public String getShareKey() {
         return shareKey;
@@ -518,7 +507,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * @return the dateUpdated
+
      */
     public LocalDateTime getDateUpdated() {
         return dateUpdated;
@@ -545,7 +534,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Getter for the field <code>items</code>.
      *
-     * @return the items
+
      */
     public List<Bookmark> getItems() {
         return items;
@@ -563,7 +552,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /**
      * Getter for the field <code>groupShares</code>.
      *
-     * @return the groupShares
+
      */
     public List<UserGroup> getGroupShares() {
         if (groupShares == null) {

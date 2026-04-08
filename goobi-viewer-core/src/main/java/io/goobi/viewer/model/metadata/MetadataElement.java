@@ -44,7 +44,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
- * MetadataElement class.
+ * Represents a group of metadata fields belonging to a single structural element of a digitized record.
  */
 public class MetadataElement implements Serializable {
 
@@ -69,11 +69,6 @@ public class MetadataElement implements Serializable {
             this.type = type;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.lang.Object#hashCode()
-         */
         @Override
         public int hashCode() {
             final int prime = 31;
@@ -83,11 +78,6 @@ public class MetadataElement implements Serializable {
             return result;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.lang.Object#equals(java.lang.Object)
-         */
         @Override
         public boolean equals(Object obj) {
             if (this == obj) {
@@ -108,11 +98,6 @@ public class MetadataElement implements Serializable {
             return type == other.type;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.lang.Comparable#compareTo(java.lang.Object)
-         */
         @Override
         public int compareTo(MetadataType o) {
             if (o.getType() > type) {
@@ -145,7 +130,7 @@ public class MetadataElement implements Serializable {
         }
 
         /**
-         * @return the type
+
          */
         public int getType() {
             return type;
@@ -443,7 +428,7 @@ public class MetadataElement implements Serializable {
     /**
      * Getter for the field <code>metadataList</code>.
      *
-     * @return the oneMetadataList
+
      */
     public List<Metadata> getMetadataList() {
         return getMetadataList(false);
@@ -453,7 +438,7 @@ public class MetadataElement implements Serializable {
      * Getter for the field <code>metadataList</code>.
      *
      * @param beforeFold if true, only list metadata before index #{@link #metadataFoldIndex}
-     * @return the MetadataList
+
      */
     public List<Metadata> getMetadataList(boolean beforeFold) {
         List<Metadata> mdList = (beforeFold && isHasMetadataListFold()) ? metadataList.subList(0, this.metadataFoldIndex) : metadataList;
@@ -463,7 +448,7 @@ public class MetadataElement implements Serializable {
     /**
      * Alias for {@link #getMetadataList(boolean) getMetadataList(true)}.
      * 
-     * @return the MetadataList
+
      */
     public List<Metadata> getMetadataListBeforeFold() {
         return getMetadataList(true);
@@ -522,7 +507,7 @@ public class MetadataElement implements Serializable {
     /**
      * Getter for the field <code>sidebarMetadataList</code>.
      *
-     * @return the sidebarMetadataList
+
      */
     public List<Metadata> getSidebarMetadataList() {
         return Metadata.filterMetadata(this.sidebarMetadataList, selectedRecordLanguage, null);
@@ -585,7 +570,7 @@ public class MetadataElement implements Serializable {
     /**
      * Getter for the field <code>title</code>.
      *
-     * @return the title
+
      */
     public String getTitle() {
         return title;
@@ -621,7 +606,7 @@ public class MetadataElement implements Serializable {
     /**
      * Getter for the field <code>docType</code>.
      *
-     * @return the docType
+
      */
     public String getDocType() {
         return docType;
@@ -630,7 +615,7 @@ public class MetadataElement implements Serializable {
     /**
      * Getter for the field <code>docStructType</code>.
      *
-     * @return the docStructType
+
      */
     public String getDocStructType() {
         return docStructType;
@@ -644,7 +629,7 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * @return the groupType
+
      */
     public String getGroupType() {
         return groupType;
@@ -658,7 +643,7 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * @return the pi
+
      */
     public String getPi() {
         return pi;
@@ -683,7 +668,7 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * @return the hasImages
+
      */
     public boolean isHasImages() {
         return hasImages;

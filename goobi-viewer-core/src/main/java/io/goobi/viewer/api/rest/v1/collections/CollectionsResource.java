@@ -61,7 +61,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
- * @author florian
+ * REST resource for browsing collection hierarchies and retrieving collection metadata.
+ *
+ * @author Florian Alpers
  */
 @jakarta.ws.rs.Path(COLLECTIONS)
 @ViewerRestServiceBinding

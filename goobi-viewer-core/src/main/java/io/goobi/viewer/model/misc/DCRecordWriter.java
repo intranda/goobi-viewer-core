@@ -37,7 +37,7 @@ import org.jdom2.Namespace;
 import io.goobi.viewer.controller.XmlTools;
 
 /**
- * @author florian
+ * @author Florian Alpers
  *
  *         Creates a xml document representing a simple Dublin Core record. Each instance of this class creates a single record which can be filled
  *         with metadata and eventually written to the file system

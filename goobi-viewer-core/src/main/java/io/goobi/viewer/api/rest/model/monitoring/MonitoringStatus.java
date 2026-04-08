@@ -51,21 +51,21 @@ public class MonitoringStatus {
     }
 
     /**
-     * @return the monitoring
+
      */
     public Map<String, String> getMonitoring() {
         return monitoring;
     }
 
     /**
-     * @return the versions
+
      */
     public Map<String, Map<String, String>> getVersions() {
         return versions;
     }
 
     /**
-     * @return the theme
+
      */
     public String getTheme() {
         return theme;

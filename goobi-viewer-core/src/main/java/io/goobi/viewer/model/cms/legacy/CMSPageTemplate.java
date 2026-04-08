@@ -237,7 +237,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Getter for the field <code>id</code>.
      *
-     * @return the id
+
      */
     public String getId() {
         return id;
@@ -255,7 +255,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Getter for the field <code>name</code>.
      *
-     * @return the name
+
      */
     public String getName() {
         return name;
@@ -273,7 +273,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Getter for the field <code>version</code>.
      *
-     * @return the version
+
      */
     public String getVersion() {
         return version;
@@ -291,7 +291,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Getter for the field <code>description</code>.
      *
-     * @return the description
+
      */
     public String getDescription() {
         return description;
@@ -309,7 +309,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Getter for the field <code>htmlFileName</code>.
      *
-     * @return the htmlFileName
+
      */
     public String getHtmlFileName() {
         //	return "template_base.xhtml";
@@ -328,7 +328,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Getter for the field <code>templateFileName</code>.
      *
-     * @return the templateFileName
+
      */
     public String getTemplateFileName() {
         return templateFileName;
@@ -346,7 +346,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Getter for the field <code>iconFileName</code>.
      *
-     * @return the iconFileName
+
      */
     public String getIconFileName() {
         return iconFileName;
@@ -364,7 +364,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Getter for the field <code>contentItems</code>.
      *
-     * @return the contentItems
+
      */
     public List<CMSContentItemTemplate> getContentItems() {
         return contentItems;
@@ -422,7 +422,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * isThemeTemplate.
      *
-     * @return the themeTemplate
+
      */
     public boolean isThemeTemplate() {
         return themeTemplate;
@@ -449,7 +449,7 @@ public class CMSPageTemplate implements Serializable {
     /**
      * isAppliesToExpandedUrl.
      *
-     * @return the appliesToExpandedUrl
+
      */
     public boolean isAppliesToExpandedUrl() {
         return appliesToExpandedUrl;
@@ -463,7 +463,7 @@ public class CMSPageTemplate implements Serializable {
     }
 
     /**
-     * @return the mayHaveTopBarSlider
+
      */
     public boolean isMayHaveTopBarSlider() {
         return mayHaveTopBarSlider;

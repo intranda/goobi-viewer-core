@@ -129,7 +129,9 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 
 /**
- * @author florian
+ * REST resource providing record metadata, IIIF manifests, full-text, and various export formats for digitized records.
+ *
+ * @author Florian Alpers
  */
 @jakarta.ws.rs.Path(RECORDS_RECORD)
 @ViewerRestServiceBinding

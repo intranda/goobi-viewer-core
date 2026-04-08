@@ -186,28 +186,28 @@ public class CitationLink {
     }
 
     /**
-     * @return the type
+
      */
     public CitationLinkType getType() {
         return type;
     }
 
     /**
-     * @return the level
+
      */
     public CitationLinkLevel getLevel() {
         return level;
     }
 
     /**
-     * @return the label
+
      */
     public String getLabel() {
         return label;
     }
 
     /**
-     * @return the field
+
      */
     public String getField() {
         return field;
@@ -215,7 +215,7 @@ public class CitationLink {
 
     /**
      * 
-     * @return the value
+
      */
     public String getValue() {
         return this.value;
@@ -238,7 +238,7 @@ public class CitationLink {
     }
 
     /**
-     * @return the pattern
+
      */
     public String getPattern() {
         return pattern;
@@ -254,7 +254,7 @@ public class CitationLink {
     }
 
     /**
-     * @return the topstructValueFallback
+
      */
     public boolean isTopstructValueFallback() {
         return topstructValueFallback;

@@ -54,7 +54,7 @@ import io.goobi.viewer.solr.SolrTools;
 /**
  * Responsible for retrieving data from Index to build any IIIF resources.
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class DataRetriever {
 

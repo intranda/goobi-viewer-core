@@ -90,7 +90,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 @jakarta.ws.rs.Path(RECORDS_PAGES)
 @ViewerRestServiceBinding

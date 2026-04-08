@@ -53,7 +53,7 @@ import io.goobi.viewer.solr.SolrConstants;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * CollectionBuilder class.
+ * Builds IIIF Presentation API v3 Collection resources from Solr index data.
  *
  * @author Florian Alpers
  */

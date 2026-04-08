@@ -41,7 +41,7 @@ import jakarta.persistence.Table;
 /**
  * Class to persist sliders ("slideshows") created in CMS backend.
  * 
- * @author florian
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "cms_sliders")
@@ -113,7 +113,7 @@ public class CMSSlider implements Serializable {
     }
 
     /**
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -127,7 +127,7 @@ public class CMSSlider implements Serializable {
     }
 
     /**
-     * @return the name
+
      */
     public String getName() {
         return name;
@@ -141,7 +141,7 @@ public class CMSSlider implements Serializable {
     }
 
     /**
-     * @return the description
+
      */
     public String getDescription() {
         return description;
@@ -155,7 +155,7 @@ public class CMSSlider implements Serializable {
     }
 
     /**
-     * @return the solrQuery
+
      */
     public String getSolrQuery() {
         return solrQuery;
@@ -169,7 +169,7 @@ public class CMSSlider implements Serializable {
     }
 
     /**
-     * @return the categories
+
      */
     public List<String> getCategories() {
         return categories;
@@ -183,7 +183,7 @@ public class CMSSlider implements Serializable {
     }
 
     /**
-     * @return the collections
+
      */
     public List<String> getCollections() {
         return collections;
@@ -197,14 +197,14 @@ public class CMSSlider implements Serializable {
     }
 
     /**
-     * @return the serialversionuid
+
      */
     public static long getSerialversionuid() {
         return serialVersionUID;
     }
 
     /**
-     * @return the style
+
      */
     public String getStyle() {
         return style;
@@ -218,7 +218,7 @@ public class CMSSlider implements Serializable {
     }
 
     /**
-     * @return the sourceType
+
      */
     public SourceType getSourceType() {
         return sourceType;
@@ -260,7 +260,7 @@ public class CMSSlider implements Serializable {
     }
 
     /**
-     * @return the sortField
+
      */
     public String getSortField() {
         return sortField;
@@ -281,7 +281,7 @@ public class CMSSlider implements Serializable {
     }
 
     /**
-     * @return the maxEntries
+
      */
     public int getMaxEntries() {
         return maxEntries;

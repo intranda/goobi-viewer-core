@@ -28,7 +28,7 @@ import jakarta.faces.application.FacesMessage.Severity;
 import jakarta.faces.context.FacesContext;
 
 /**
- * Messages class.
+ * Utility class for looking up localised message strings from the viewer's resource bundles.
  */
 public final class Messages {
 

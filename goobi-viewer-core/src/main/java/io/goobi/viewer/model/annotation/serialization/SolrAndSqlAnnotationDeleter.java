@@ -29,7 +29,7 @@ import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class SolrAndSqlAnnotationDeleter implements AnnotationDeleter {
 
@@ -41,9 +41,6 @@ public class SolrAndSqlAnnotationDeleter implements AnnotationDeleter {
         sqlDeleter = new SqlAnnotationDeleter();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.annotation.serialization.AnnotationDeleter#delete(io.goobi.viewer.model.annotation.PersistentAnnotation)
-     */
     @Override
     public void delete(PersistentAnnotation annotation) throws IOException {
         sqlDeleter.delete(annotation);

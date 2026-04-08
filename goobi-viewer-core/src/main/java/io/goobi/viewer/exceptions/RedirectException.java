@@ -24,7 +24,7 @@ package io.goobi.viewer.exceptions;
 import java.io.Serializable;
 
 /**
- * RedirectException class.
+ * Thrown to signal that an HTTP redirect to a different URL is required.
  */
 public class RedirectException extends Exception implements Serializable {
 

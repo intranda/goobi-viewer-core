@@ -56,7 +56,9 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.StreamingOutput;
 
 /**
- * @author florian
+ * REST resource for serving PDF representations of entire digitized records with access control.
+ *
+ * @author Florian Alpers
  */
 @Path(ApiUrls.RECORDS_RECORD)
 @ContentServerBinding

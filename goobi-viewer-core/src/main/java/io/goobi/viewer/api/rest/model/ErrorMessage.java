@@ -82,7 +82,7 @@ public class ErrorMessage implements IResponseMessage {
     /**
      * Getter for the field <code>status</code>.
      *
-     * @return the status
+
      */
     public int getStatus() {
         return status;
@@ -91,7 +91,7 @@ public class ErrorMessage implements IResponseMessage {
     /**
      * Getter for the field <code>message</code>.
      *
-     * @return the message
+
      */
     @Override
     public String getMessage() {
@@ -101,7 +101,7 @@ public class ErrorMessage implements IResponseMessage {
     /**
      * Getter for the field <code>stackTrace</code>.
      *
-     * @return the stackTrace
+
      */
     public String getStackTrace() {
         return stackTrace;

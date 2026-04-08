@@ -34,7 +34,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.goobi.viewer.model.log.LogMessage;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "cs_campaign_log")
@@ -86,14 +86,14 @@ public class CampaignLogMessage extends LogMessage {
     }
 
     /**
-     * @return the campaign
+
      */
     public Campaign getCampaign() {
         return campaign;
     }
 
     /**
-     * @return the pi
+
      */
     public String getPi() {
         return pi;

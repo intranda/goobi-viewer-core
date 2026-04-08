@@ -59,7 +59,7 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserActivity;
 
 /**
- * <p>UserDataBean class.
+ * JSF backing bean providing user profile management and account settings for authenticated users.
  */
 @Named
 @ViewScoped
@@ -206,7 +206,7 @@ public class UserDataBean implements Serializable {
     /**
      * Getter for the field <code>lazyModelAnnotations</code>.
      *
-     * @return the lazyModelAnnotations
+
      */
     public TableDataProvider<PersistentAnnotation> getLazyModelAnnotations() {
         return lazyModelAnnotations;

@@ -52,9 +52,6 @@ public class PIValidator implements Validator<String> {
         '+'                                                         // Solr syntax: unary plus is a prefix operator
     };
 
-    /* (non-Javadoc)
-     * @see jakarta.faces.validator.Validator#validate(jakarta.faces.context.FacesContext, jakarta.faces.component.UIComponent, java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {

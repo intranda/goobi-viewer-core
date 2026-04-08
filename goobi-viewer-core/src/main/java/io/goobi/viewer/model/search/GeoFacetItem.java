@@ -38,7 +38,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.search.FacetItem.FacetType;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class GeoFacetItem implements IFacetItem {
 
@@ -140,7 +140,7 @@ public class GeoFacetItem implements IFacetItem {
     }
 
     /**
-     * @return the solrField
+
      */
     public String getSolrField() {
         return solrField;
@@ -163,25 +163,16 @@ public class GeoFacetItem implements IFacetItem {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getQueryEscapedLink()
-     */
     @Override
     public String getQueryEscapedLink() {
         return getEscapedFacetQuery();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getEscapedLink()
-     */
     @Override
     public String getEscapedLink() {
         return BeanUtils.escapeCriticalUrlChracters(getFacetQuery());
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getUrlEscapedLink()
-     */
     @Override
     public String getUrlEscapedLink() {
         String ret = getEscapedLink();
@@ -197,33 +188,21 @@ public class GeoFacetItem implements IFacetItem {
         return FacetType.GEO;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getField()
-     */
     @Override
     public String getField() {
         return getSolrField();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#setField(java.lang.String)
-     */
     @Override
     public void setField(String field) {
         this.solrField = field;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getFullValue()
-     */
     @Override
     public String getFullValue() {
         return getValue();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#setValue(java.lang.String)
-     */
     @Override
     public void setValue(String value) {
         String searchPredicate = GeoCoordinateFeature.getPredicate(value);
@@ -236,33 +215,21 @@ public class GeoFacetItem implements IFacetItem {
         return DataManager.getInstance().getConfiguration().getGeoFacetFieldPredicate(solrField);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getValue2()
-     */
     @Override
     public String getValue2() {
         return "";
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#setValue2(java.lang.String)
-     */
     @Override
     public void setValue2(String value2) {
         //NOOP
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getLink()
-     */
     @Override
     public String getLink() {
         return getFacetQuery();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#setLink(java.lang.String)
-     */
     @Override
     public void setLink(String link) {
         int separatorIndex = link.indexOf(":");
@@ -272,42 +239,27 @@ public class GeoFacetItem implements IFacetItem {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getLabel()
-     */
     @Override
     public String getLabel() {
         return "";
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#setLabel(java.lang.String)
-     */
     @Override
     public IFacetItem setLabel(String label) {
         //NOOP
         return this;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getTranslatedLabel()
-     */
     @Override
     public String getTranslatedLabel() {
         return getLabel();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#setTranslatedLabel(java.lang.String)
-     */
     @Override
     public void setTranslatedLabel(String translatedLabel) {
         //NOOP
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getCount()
-     */
     @Override
     public long getCount() {
         return 0;
@@ -323,18 +275,12 @@ public class GeoFacetItem implements IFacetItem {
         return this;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#setCount(long)
-     */
     @Override
     public IFacetItem setCount(long count) {
         //NOOP
         return this;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#isHierarchial()
-     */
     @Override
     public boolean isHierarchial() {
         return false;

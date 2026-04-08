@@ -46,7 +46,7 @@ import jakarta.persistence.GenerationType;
  * custom widgets explicitly created by users They are further distinguished by {@link #getContentType()} corresponding to the individual widget xhtml
  * component
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDisplayElement> {
 
@@ -115,7 +115,7 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     /**
      * The displayed title of the element.
      * 
-     * @return the title
+
      */
     public TranslatedText getTitle() {
         return title;
@@ -124,7 +124,7 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     /**
      * A description of the element.
      * 
-     * @return the description
+
      */
     public TranslatedText getDescription() {
         return description;
@@ -141,7 +141,7 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     /**
      * A list of CMS pages using this element. Only used to automatic and custom widgets
      * 
-     * @return the embeddingPages
+
      */
     public List<CMSPage> getEmbeddingPages() {
         return embeddingPages;
@@ -159,7 +159,7 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     /**
      * Describes the specific xhtml component used for this widget.
      * 
-     * @return the contentType
+
      */
     public WidgetContentType getContentType() {
         return contentType;
@@ -168,7 +168,7 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     /**
      * Identifier of the underlying data, if any.
      * 
-     * @return the id
+
      */
     public Long getId() {
         return id;

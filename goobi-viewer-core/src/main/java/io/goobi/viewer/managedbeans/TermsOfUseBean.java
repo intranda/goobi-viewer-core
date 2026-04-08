@@ -39,7 +39,7 @@ import io.goobi.viewer.model.administration.legal.TermsOfUse;
  *
  * Keeps the global termsOfUse object for the current session.
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Named("termsOfUseBean")
 @SessionScoped

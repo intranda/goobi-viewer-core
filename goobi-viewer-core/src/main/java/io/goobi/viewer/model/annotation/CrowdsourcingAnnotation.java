@@ -32,7 +32,7 @@ import jakarta.persistence.Table;
 /**
  * An Annotation class to store annotation in a database.
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "annotations_crowdsourcing")

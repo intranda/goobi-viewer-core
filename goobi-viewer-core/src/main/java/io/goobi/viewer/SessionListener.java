@@ -33,16 +33,13 @@ import io.goobi.viewer.managedbeans.AdminBean;
 import io.goobi.viewer.managedbeans.AdminConfigEditorBean;
 
 /**
- * SessionListener class.
+ * HTTP session listener that tracks active user sessions and performs cleanup on session expiry.
  */
 @WebListener
 public class SessionListener implements HttpSessionListener {
 
     private static final Logger logger = LogManager.getLogger(SessionListener.class);
 
-    /* (non-Javadoc)
-     * @see jakarta.servlet.http.HttpSessionListener#sessionCreated(jakarta.servlet.http.HttpSessionEvent)
-     */
     /** {@inheritDoc} */
     @Override
     public void sessionCreated(HttpSessionEvent event) {
@@ -51,9 +48,6 @@ public class SessionListener implements HttpSessionListener {
         //        }
     }
 
-    /* (non-Javadoc)
-     * @see jakarta.servlet.http.HttpSessionListener#sessionDestroyed(jakarta.servlet.http.HttpSessionEvent)
-     */
     /** {@inheritDoc} */
     @Override
     public void sessionDestroyed(HttpSessionEvent event) {

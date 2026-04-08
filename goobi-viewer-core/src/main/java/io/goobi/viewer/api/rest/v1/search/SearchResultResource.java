@@ -57,7 +57,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
- * SearchResultResource class.
+ * REST resource for exporting search results in OpenSearch and RIS bibliographic formats.
  */
 @Path(ApiUrls.SEARCH)
 @ViewerRestServiceBinding

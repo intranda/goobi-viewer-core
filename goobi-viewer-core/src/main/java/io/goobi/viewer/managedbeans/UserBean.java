@@ -752,7 +752,7 @@ public class UserBean implements Serializable {
     /**
      * Getter for the field <code>user</code>.
      *
-     * @return the user
+
      */
     public User getUser() {
         return user;
@@ -770,7 +770,7 @@ public class UserBean implements Serializable {
     /**
      * Getter for the field <code>nickName</code>.
      *
-     * @return the nickName
+
      */
     public String getNickName() {
         return nickName;
@@ -788,7 +788,7 @@ public class UserBean implements Serializable {
     /**
      * Getter for the field <code>email</code>.
      *
-     * @return the email
+
      */
     public String getEmail() {
         return email;
@@ -806,7 +806,7 @@ public class UserBean implements Serializable {
     /**
      * Getter for the field <code>password</code>.
      *
-     * @return the password
+
      */
     public String getPassword() {
         return password;
@@ -990,7 +990,7 @@ public class UserBean implements Serializable {
     /**
      * Getter for the field <code>lastName</code>.
      *
-     * @return the lastName
+
      */
     public String getLastName() {
         return lastName;
@@ -1008,7 +1008,7 @@ public class UserBean implements Serializable {
     /**
      * Getter for the field <code>redirectUrl</code>.
      *
-     * @return the redirectUrl
+
      */
     public String getRedirectUrl() {
         return redirectUrl;
@@ -1032,7 +1032,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * @return the origin
+
      */
     public String getOrigin() {
         return origin;
@@ -1049,7 +1049,7 @@ public class UserBean implements Serializable {
     /**
      * Getter for the field <code>activationKey</code>.
      *
-     * @return the activationKey
+
      */
     public String getActivationKey() {
         return activationKey;
@@ -1067,7 +1067,7 @@ public class UserBean implements Serializable {
     /**
      * Getter for the field <code>transkribusUserName</code>.
      *
-     * @return the transkribusUserName
+
      */
     public String getTranskribusUserName() {
         return transkribusUserName;
@@ -1085,7 +1085,7 @@ public class UserBean implements Serializable {
     /**
      * Getter for the field <code>transkribusPassword</code>.
      *
-     * @return the transkribusPassword
+
      */
     public String getTranskribusPassword() {
         return transkribusPassword;
@@ -1104,7 +1104,7 @@ public class UserBean implements Serializable {
      * Checks whether the logged in user has access to the admin backend via being an admin or having CMS/campaign/comments access. Result is
      * persisted for the duration of the session.
      *
-     * @return the hasAdminBackendAccess
+
      * @throws io.goobi.viewer.exceptions.DAOException
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @throws io.goobi.viewer.exceptions.PresentationException

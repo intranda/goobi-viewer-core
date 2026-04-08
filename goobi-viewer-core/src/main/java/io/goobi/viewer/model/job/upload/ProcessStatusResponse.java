@@ -54,7 +54,7 @@ public class ProcessStatusResponse {
     private List<PropertyResponse> properties = new ArrayList<>();
 
     /**
-     * @return the result
+
      */
     public String getResult() {
         return result;
@@ -68,7 +68,7 @@ public class ProcessStatusResponse {
     }
 
     /**
-     * @return the title
+
      */
     public String getTitle() {
         return title;
@@ -82,7 +82,7 @@ public class ProcessStatusResponse {
     }
 
     /**
-     * @return the id
+
      */
     public int getId() {
         return id;
@@ -96,7 +96,7 @@ public class ProcessStatusResponse {
     }
 
     /**
-     * @return the processCompleted
+
      */
     public boolean isProcessCompleted() {
         return processCompleted;
@@ -110,7 +110,7 @@ public class ProcessStatusResponse {
     }
 
     /**
-     * @return the creationDate
+
      */
     public Date getCreationDate() {
         return creationDate;
@@ -124,7 +124,7 @@ public class ProcessStatusResponse {
     }
 
     /**
-     * @return the step
+
      */
     public List<StepResponse> getStep() {
         return step;
@@ -138,7 +138,7 @@ public class ProcessStatusResponse {
     }
 
     /**
-     * @return the properties
+
      */
     public List<PropertyResponse> getProperties() {
         return properties;

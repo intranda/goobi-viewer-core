@@ -34,9 +34,6 @@ public class MiscUpdate implements IModelUpdate {
 
     private static final Logger logger = LogManager.getLogger(MiscUpdate.class);
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.update.IModelUpdate#update(io.goobi.viewer.dao.IDAO)
-     */
     @Override
     public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
 

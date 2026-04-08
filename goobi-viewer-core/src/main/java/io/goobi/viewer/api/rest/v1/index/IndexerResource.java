@@ -55,7 +55,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 
 /**
- * Resource for communicating with the indexer process.
+ * REST resource for triggering indexer operations and managing metadata re-indexing tasks.
  */
 @Hidden
 @Path(INDEXER)

@@ -50,7 +50,7 @@ public class StepResponse {
     private int order;
 
     /**
-     * @return the startDate
+
      */
     public Date getStartDate() {
         return startDate;
@@ -64,7 +64,7 @@ public class StepResponse {
     }
 
     /**
-     * @return the endDate
+
      */
     public Date getEndDate() {
         return endDate;
@@ -78,7 +78,7 @@ public class StepResponse {
     }
 
     /**
-     * @return the user
+
      */
     public String getUser() {
         return user;
@@ -92,7 +92,7 @@ public class StepResponse {
     }
 
     /**
-     * @return the status
+
      */
     public String getStatus() {
         return status;
@@ -106,7 +106,7 @@ public class StepResponse {
     }
 
     /**
-     * @return the id
+
      */
     public int getId() {
         return id;
@@ -120,7 +120,7 @@ public class StepResponse {
     }
 
     /**
-     * @return the title
+
      */
     public String getTitle() {
         return title;
@@ -134,7 +134,7 @@ public class StepResponse {
     }
 
     /**
-     * @return the order
+
      */
     public int getOrder() {
         return order;

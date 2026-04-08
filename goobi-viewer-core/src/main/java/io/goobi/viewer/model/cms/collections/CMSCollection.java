@@ -197,7 +197,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /**
      * Getter for the field <code>mediaItem</code>.
      *
-     * @return the mediaItem
+
      */
     public CMSMediaItem getMediaItem() {
         return mediaItem;
@@ -211,7 +211,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /**
      * Getter for the field <code>collectionUrl</code>.
      *
-     * @return the collectionUri
+
      */
     public String getCollectionUrl() {
         return collectionUrl;
@@ -524,7 +524,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /**
      * Getter for the field <code>id</code>.
      *
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -608,7 +608,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /**
      * Getter for the field <code>representativeWorkPI</code>.
      *
-     * @return the representativeWorkPI
+
      */
     public String getRepresentativeWorkPI() {
         return representativeWorkPI;
@@ -704,7 +704,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * @return the accessPermissionThumbnail
+
      */
     public AccessPermission getAccessPermissionThumbnail() {
         return accessPermissionThumbnail;

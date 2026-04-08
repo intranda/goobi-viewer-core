@@ -65,9 +65,6 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
         this.name = name;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#login()
-     */
     /** {@inheritDoc} */
     @Override
     public CompletableFuture<LoginResult> login(String email, String password) throws AuthenticationProviderException {
@@ -109,36 +106,24 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
         return CompletableFuture.completedFuture(new LoginResult(request, response, Optional.empty(), true));
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#logout()
-     */
     /** {@inheritDoc} */
     @Override
     public void logout() throws AuthenticationProviderException {
         //noop
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsPasswordChange()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean allowsPasswordChange() {
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#getProviderName()
-     */
     /** {@inheritDoc} */
     @Override
     public String getName() {
         return name;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#getType()
-     */
     /** {@inheritDoc} */
     @Override
     public String getType() {
@@ -154,36 +139,24 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
         this.bcrypt = bcrypt;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsNicknameChange()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean allowsNicknameChange() {
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsEmailChange()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean allowsEmailChange() {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#getAddUserToGroups()
-     */
     /** {@inheritDoc} */
     @Override
     public List<String> getAddUserToGroups() {
         return addUserToGroups;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#setAddUserToGroups(java.util.List)
-     */
     /** {@inheritDoc} */
     @Override
     public void setAddUserToGroups(List<String> addUserToGroups) {

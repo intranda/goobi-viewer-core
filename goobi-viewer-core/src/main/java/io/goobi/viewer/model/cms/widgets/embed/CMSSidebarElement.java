@@ -51,7 +51,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 /**
- * CMSSidebarElement class.
+ * Represents a sidebar widget embedded in a CMS page with its configuration and position.
  *
  * <p>Wrapper to link sidebar widgets to cms-pages. Has a subclass for each type of sidebar widget
  */
@@ -207,7 +207,7 @@ public class CMSSidebarElement implements Serializable {
     /**
      * The database id.
      * 
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -223,7 +223,7 @@ public class CMSSidebarElement implements Serializable {
     /**
      * The {@link CMSPage} containing the element.
      * 
-     * @return the ownerPage
+
      */
     public CMSPage getOwnerPage() {
         return ownerPage;
@@ -247,7 +247,7 @@ public class CMSSidebarElement implements Serializable {
     /**
      * The order in which the element is shown. Low numbers are displayed on top of the sidebar, high numbers at the bottom
      * 
-     * @return the order
+
      */
     public int getOrder() {
         return order;
@@ -263,7 +263,7 @@ public class CMSSidebarElement implements Serializable {
     /**
      * The {@link WidgetGenerationType} of the underlying widget.
      * 
-     * @return the generationType
+
      */
     public WidgetGenerationType getGenerationType() {
         return generationType;
@@ -279,7 +279,7 @@ public class CMSSidebarElement implements Serializable {
     /**
      * The {@link WidgetContentType} of the underlying widget.
      * 
-     * @return the contentType
+
      */
     public WidgetContentType getContentType() {
         return contentType;

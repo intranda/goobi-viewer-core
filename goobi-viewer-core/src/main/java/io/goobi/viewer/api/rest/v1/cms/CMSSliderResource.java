@@ -66,7 +66,9 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
- * @author florian
+ * REST resource providing slider configuration and media items for CMS carousel components.
+ *
+ * @author Florian Alpers
  */
 @Hidden
 @jakarta.ws.rs.Path("/cms/slider/{sliderId}")

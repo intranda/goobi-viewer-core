@@ -31,7 +31,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.security.user.UserGroup;
 
 /**
- * UserConverter class.
+ * JSF converter that maps between a {@link io.goobi.viewer.model.security.user.UserGroup} object and its string identifier.
  */
 @FacesConverter("userGroupConverter")
 public class UserGroupConverter implements Converter<UserGroup> {

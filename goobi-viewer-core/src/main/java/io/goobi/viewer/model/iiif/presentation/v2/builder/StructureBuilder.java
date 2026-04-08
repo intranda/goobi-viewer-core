@@ -54,7 +54,7 @@ import io.goobi.viewer.model.viewer.StructElementStub;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
- * StructureBuilder class.
+ * Builds the Range (structure) resources within a IIIF Presentation API v2 Manifest from the record's logical structure.
  *
  * @author Florian Alpers
  */

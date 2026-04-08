@@ -22,7 +22,7 @@
 package io.goobi.viewer.model.iiif.presentation.v2.builder;
 
 /**
- * BuildMode class.
+ * Enum controlling the level of detail included when building IIIF Presentation v2 resources.
  *
  * @author Florian Alpers
  */

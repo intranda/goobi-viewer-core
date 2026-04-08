@@ -138,7 +138,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * isWork.
      *
-     * @return the work
+
      */
     public boolean isWork() {
         return work;
@@ -156,7 +156,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * isAnchor.
      *
-     * @return the anchor
+
      */
     public boolean isAnchor() {
         return anchor;
@@ -174,7 +174,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * isVolume.
      *
-     * @return the volume
+
      */
     public boolean isVolume() {
         return volume;
@@ -190,7 +190,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * @return the cmsPage
+
      */
     public boolean isCmsPage() {
         return cmsPage;
@@ -206,7 +206,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Getter for the field <code>numVolumes</code>.
      *
-     * @return the numVolumes
+
      */
     public long getNumVolumes() {
         return numVolumes;
@@ -224,7 +224,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Getter for the field <code>pi</code>.
      *
-     * @return the pi
+
      */
     public String getPi() {
         return pi;
@@ -251,7 +251,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Getter for the field <code>logid</code>.
      *
-     * @return the logid
+
      */
     public String getLogid() {
         return logid;
@@ -269,7 +269,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Getter for the field <code>docStructType</code>.
      *
-     * @return the docStructType
+
      */
     public String getDocStructType() {
         return docStructType;
@@ -285,7 +285,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * @return the docType
+
      */
     public DocType getDocType() {
         return docType;
@@ -301,7 +301,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Getter for the field <code>imageNumber</code>.
      *
-     * @return the imageNumber
+
      */
     public int getImageNumber() {
         return imageNumber;
@@ -319,7 +319,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Getter for the field <code>volumeNo</code>.
      *
-     * @return the volumeNo
+
      */
     public String getVolumeNo() {
         return volumeNo;
@@ -337,7 +337,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Getter for the field <code>volumeNoSort</code>.
      *
-     * @return the volumeNoSort
+
      */
     public String getVolumeNoSort() {
         return volumeNoSort;
@@ -479,7 +479,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Getter for the field <code>sourceDocFormat</code>.
      *
-     * @return the sourceDocFormat
+
      */
     public String getSourceDocFormat() {
         return sourceDocFormat;
@@ -498,7 +498,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Getter for the field <code>label</code>.
      *
-     * @return the label
+
      */
     public String getLabel() {
         return getLabel(null);
@@ -537,7 +537,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Getter for the field <code>dataRepository</code>.
      *
-     * @return the dataRepository
+
      */
     public String getDataRepository() {
         return dataRepository;
@@ -555,7 +555,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Getter for the field <code>metadataFields</code>.
      *
-     * @return the metadataFields
+
      */
     public Map<String, List<String>> getMetadataFields() {
         return metadataFields;

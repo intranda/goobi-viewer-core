@@ -48,7 +48,7 @@ import jakarta.inject.Named;
 /**
  * Used for application wide storage of objects accessible to other managed objects.
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Named("applicationBean")
 @Eager

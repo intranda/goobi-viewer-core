@@ -58,7 +58,7 @@ import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.misc.SelectionManager;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 @Named
 @ViewScoped
@@ -152,14 +152,14 @@ public class AnnotationBean implements Serializable {
     /**
      * Getter for the field <code>lazyModelAnnotations</code>.
      *
-     * @return the lazyModelAnnotations
+
      */
     public TableDataProvider<CrowdsourcingAnnotation> getLazyModelAnnotations() {
         return lazyModelAnnotations;
     }
 
     /**
-     * @return the ownerCampaignId
+
      */
     public String getOwnerCampaignId() {
         return ownerCampaignId;
@@ -173,7 +173,7 @@ public class AnnotationBean implements Serializable {
     }
 
     /**
-     * @return the targetRecordPI
+
      */
     public String getTargetRecordPI() {
         return targetRecordPI;
@@ -187,7 +187,7 @@ public class AnnotationBean implements Serializable {
     }
 
     /**
-     * @return the exportSelection
+
      */
     public SelectionManager<Long> getExportSelection() {
         return exportSelection;

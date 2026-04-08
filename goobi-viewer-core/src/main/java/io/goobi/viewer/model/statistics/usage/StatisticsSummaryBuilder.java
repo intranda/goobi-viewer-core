@@ -47,7 +47,7 @@ import jakarta.ws.rs.WebApplicationException;
 /**
  * Class collecting usage statistics data for a number of days to provide an overall summary for output.
  * 
- * @author florian
+ * @author Florian Alpers
  */
 public class StatisticsSummaryBuilder {
 

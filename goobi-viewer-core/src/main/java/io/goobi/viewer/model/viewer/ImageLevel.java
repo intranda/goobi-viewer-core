@@ -24,7 +24,7 @@ package io.goobi.viewer.model.viewer;
 import java.awt.Dimension;
 
 /**
- * ImageLevel class.
+ * Represents the zoom levels available for image display in the viewer.
  */
 public class ImageLevel implements Comparable<ImageLevel> {
 

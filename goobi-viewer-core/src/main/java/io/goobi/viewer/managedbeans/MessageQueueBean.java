@@ -75,7 +75,7 @@ import jakarta.jms.QueueSession;
 import jakarta.jms.Session;
 
 /**
- * MessageQueueBean class.
+ * JSF backing bean for monitoring and managing the viewer's internal message queue.
  */
 @Named
 @ApplicationScoped

@@ -92,7 +92,7 @@ import jakarta.servlet.http.HttpSessionBindingListener;
 import jakarta.servlet.http.Part;
 
 /**
- * User class.
+ * Represents a registered viewer user with authentication credentials, roles, and associated licences.
  */
 @Entity
 @Table(name = "viewer_users")
@@ -256,11 +256,6 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -270,11 +265,6 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -964,7 +954,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Getter for the field <code>id</code>.
      *
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -982,7 +972,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Getter for the field <code>passwordHash</code>.
      *
-     * @return the passwordHash
+
      */
     public String getPasswordHash() {
         return passwordHash;
@@ -1000,7 +990,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Getter for the field <code>activationKey</code>.
      *
-     * @return the activationKey
+
      */
     public String getActivationKey() {
         return activationKey;
@@ -1018,7 +1008,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Getter for the field <code>lastLogin</code>.
      *
-     * @return the lastLogin
+
      */
     public LocalDateTime getLastLogin() {
         return lastLogin;
@@ -1036,7 +1026,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * isActive.
      *
-     * @return the active
+
      */
     public boolean isActive() {
         return active;
@@ -1054,7 +1044,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * isSuspended.
      *
-     * @return the suspended
+
      */
     public boolean isSuspended() {
         return suspended;
@@ -1072,7 +1062,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Getter for the field <code>nickName</code>.
      *
-     * @return the nickName
+
      */
     public String getNickName() {
         return nickName;
@@ -1090,7 +1080,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Getter for the field <code>lastName</code>.
      *
-     * @return the lastName
+
      */
     public String getLastName() {
         return lastName;
@@ -1108,7 +1098,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Getter for the field <code>firstName</code>.
      *
-     * @return the firstName
+
      */
     public String getFirstName() {
         return firstName;
@@ -1126,7 +1116,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Getter for the field <code>openIdAccounts</code>.
      *
-     * @return the openIdAccounts
+
      */
     public List<String> getOpenIdAccounts() {
         return openIdAccounts;
@@ -1153,7 +1143,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Getter for the field <code>email</code>.
      *
-     * @return the email
+
      */
     public String getEmail() {
         return email;
@@ -1162,7 +1152,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Getter for the field <code>comments</code>.
      *
-     * @return the comments
+
      */
     public String getComments() {
         return comments;
@@ -1180,7 +1170,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Getter for the field <code>score</code>.
      *
-     * @return the score
+
      */
     public long getScore() {
         return score;
@@ -1234,7 +1224,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * @return the userProperties
+
      */
     public Map<String, String> getUserProperties() {
         return userProperties;
@@ -1250,7 +1240,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * isSuperuser.
      *
-     * @return the superuser
+
      */
     public boolean isSuperuser() {
         return superuser;
@@ -1294,7 +1284,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Getter for the field <code>copy</code>.
      *
-     * @return the copy
+
      */
     public User getCopy() {
         return copy;
@@ -1312,7 +1302,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Getter for the field <code>transkribusSession</code>.
      *
-     * @return the transkribusSession
+
      */
     public TranskribusSession getTranskribusSession() {
         return transkribusSession;
@@ -1346,13 +1336,6 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         return AccessType.USER;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * jakarta.servlet.http.HttpSessionBindingListener#valueBound(jakarta.servlet.http.
-     * HttpSessionBindingEvent)
-     */
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -1367,13 +1350,6 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         logger.debug("User added to context: {}", getId());
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * jakarta.servlet.http.HttpSessionBindingListener#valueUnbound(jakarta.servlet.http
-     * .HttpSessionBindingEvent)
-     */
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -1449,14 +1425,14 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * @return the agreedToTermsOfUse
+
      */
     public boolean isAgreedToTermsOfUse() {
         return agreedToTermsOfUse;
     }
 
     /**
-     * @return the avatarType
+
      */
     public UserAvatarOption getAvatarType() {
         return Optional.ofNullable(avatarType).orElse(UserAvatarOption.DEFAULT);
@@ -1523,7 +1499,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * @return the localAvatarUpdated
+
      */
     public Long getLocalAvatarUpdated() {
         return localAvatarUpdated;

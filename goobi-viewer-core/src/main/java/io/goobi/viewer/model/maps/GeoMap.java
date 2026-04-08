@@ -63,7 +63,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "cms_geomap")
@@ -157,14 +157,14 @@ public class GeoMap implements Serializable {
     }
 
     /**
-     * @return the id
+
      */
     public Long getId() {
         return id;
     }
 
     /**
-     * @return the creatorId
+
      */
     public Long getCreatorId() {
         return creatorId;
@@ -200,14 +200,14 @@ public class GeoMap implements Serializable {
     }
 
     /**
-     * @return the dateCreated
+
      */
     public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
     /**
-     * @return the dateUpdated
+
      */
     public LocalDateTime getDateUpdated() {
         return dateUpdated;
@@ -335,7 +335,7 @@ public class GeoMap implements Serializable {
     }
 
     /**
-     * @return the showPopover
+
      */
     public boolean isShowPopover() {
         return showPopover;

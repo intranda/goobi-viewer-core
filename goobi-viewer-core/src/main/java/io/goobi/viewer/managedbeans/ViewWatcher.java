@@ -34,7 +34,7 @@ import io.goobi.viewer.controller.Procedure;
 /**
  * View scoped bean to detect leaving a view and perform some action. The action may take no arguments and procudes not outcome
  * 
- * @author florian
+ * @author Florian Alpers
  */
 @Named
 @ViewScoped

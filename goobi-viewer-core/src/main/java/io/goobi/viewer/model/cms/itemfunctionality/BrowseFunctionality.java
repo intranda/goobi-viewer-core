@@ -30,7 +30,7 @@ import io.goobi.viewer.managedbeans.BrowseBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class BrowseFunctionality implements Functionality {
 
@@ -45,17 +45,11 @@ public class BrowseFunctionality implements Functionality {
         setBrowseField(field);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.itemfunctionality.Functionality#setPageNo(int)
-     */
     @Override
     public void setPageNo(int pageNo) {
         bean.setCurrentPage(pageNo);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.itemfunctionality.Functionality#getPageNo()
-     */
     @Override
     public int getPageNo() {
         return bean.getCurrentPage();
@@ -73,7 +67,7 @@ public class BrowseFunctionality implements Functionality {
     /**
      * Gets the SOLR field which to browse to create the list.
      *
-     * @return the browseField
+
      */
     public String getBrowseField() {
         return this.browseField;

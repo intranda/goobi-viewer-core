@@ -51,9 +51,9 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
- * TranslationResource class.
+ * REST resource for retrieving localized message strings used throughout the viewer interface.
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Path(ApiUrls.LOCALIZATION)
 @ViewerRestServiceBinding
@@ -107,7 +107,7 @@ public class TranslationResource {
         }
 
         /**
-         * @return the translations
+
          */
         @JsonValue
         @JsonSerialize(using = TranslationListSerializer.class)

@@ -23,7 +23,7 @@ import jakarta.ws.rs.NameBinding;
 /**
  * Binding for downloading files belonging to a record.
  *
- * @author florian
+ * @author Florian Alpers
  */
 @NameBinding
 @Retention(RetentionPolicy.RUNTIME)

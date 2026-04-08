@@ -52,7 +52,7 @@ public class PhysicalElementBuilder {
     }
 
     /**
-     * @return the pi
+
      */
     public String getPi() {
         return pi;
@@ -68,7 +68,7 @@ public class PhysicalElementBuilder {
     }
 
     /**
-     * @return the filePath
+
      */
     public String getFilePath() {
         return filePath;
@@ -84,7 +84,7 @@ public class PhysicalElementBuilder {
     }
 
     /**
-     * @return the order
+
      */
     public int getOrder() {
         return order;
@@ -100,7 +100,7 @@ public class PhysicalElementBuilder {
     }
 
     /**
-     * @return the orderLabel
+
      */
     public String getOrderLabel() {
         return orderLabel;
@@ -116,7 +116,7 @@ public class PhysicalElementBuilder {
     }
 
     /**
-     * @return the physId
+
      */
     public String getPhysId() {
         return physId;
@@ -132,7 +132,7 @@ public class PhysicalElementBuilder {
     }
 
     /**
-     * @return the urn
+
      */
     public String getUrn() {
         return urn;
@@ -148,7 +148,7 @@ public class PhysicalElementBuilder {
     }
 
     /**
-     * @return the purlPart
+
      */
     public String getPurlPart() {
         return purlPart;
@@ -164,7 +164,7 @@ public class PhysicalElementBuilder {
     }
 
     /**
-     * @return the mimeType
+
      */
     public String getMimeType() {
         return mimeType;
@@ -180,7 +180,7 @@ public class PhysicalElementBuilder {
     }
 
     /**
-     * @return the dataRepository
+
      */
     public String getDataRepository() {
         return dataRepository;

@@ -36,7 +36,7 @@ import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
 
 /**
- * PageType class.
+ * Enum of the viewer page types (e.g. viewImage, viewToc, search) used for URL mapping and navigation.
  */
 public enum PageType {
 

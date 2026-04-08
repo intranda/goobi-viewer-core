@@ -42,28 +42,28 @@ public class XMLError {
     }
 
     /**
-     * @return the line
+
      */
     public int getLine() {
         return line;
     }
 
     /**
-     * @return the column
+
      */
     public int getColumn() {
         return column;
     }
 
     /**
-     * @return the severity
+
      */
     public String getSeverity() {
         return severity;
     }
 
     /**
-     * @return the message
+
      */
     public String getMessage() {
         return message;

@@ -54,6 +54,9 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 
+/**
+ * REST resource providing application health checks and version information for monitoring systems.
+ */
 @Path(ApiUrls.MONITORING)
 public class MonitoringResource {
 

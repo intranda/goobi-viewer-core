@@ -80,11 +80,6 @@ public class UserRole implements Serializable {
         this.role = role;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -95,11 +90,6 @@ public class UserRole implements Serializable {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -133,7 +123,7 @@ public class UserRole implements Serializable {
     /**
      * Getter for the field <code>id</code>.
      *
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -151,7 +141,7 @@ public class UserRole implements Serializable {
     /**
      * Getter for the field <code>userGroup</code>.
      *
-     * @return the userGroup
+
      */
     public UserGroup getUserGroup() {
         return userGroup;
@@ -169,7 +159,7 @@ public class UserRole implements Serializable {
     /**
      * Getter for the field <code>user</code>.
      *
-     * @return the user
+
      */
     public User getUser() {
         return user;
@@ -187,7 +177,7 @@ public class UserRole implements Serializable {
     /**
      * Getter for the field <code>role</code>.
      *
-     * @return the role
+
      */
     public Role getRole() {
         return role;

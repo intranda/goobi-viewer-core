@@ -24,7 +24,7 @@ package io.goobi.viewer.exceptions;
 import java.io.Serializable;
 
 /**
- * IndexUnreachableException class.
+ * Thrown when the Solr search index cannot be reached or is unavailable.
  */
 public class IndexUnreachableException extends Exception implements Serializable {
 

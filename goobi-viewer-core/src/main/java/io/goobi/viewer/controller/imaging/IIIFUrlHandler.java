@@ -50,13 +50,12 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 
 /**
- * IIIFUrlHandler class.
+ * Utility class for constructing and parsing IIIF Image API and Presentation API URLs.
  *
  * @author Florian Alpers
  */
 public class IIIFUrlHandler {
-    /**
-     */
+    
     private static final Logger logger = LogManager.getLogger(IIIFUrlHandler.class);
 
     private final AbstractApiUrlManager urls;
@@ -250,7 +249,7 @@ public class IIIFUrlHandler {
     }
 
     /**
-     * @return the urls
+
      */
     public AbstractApiUrlManager getUrlManager() {
         return urls;

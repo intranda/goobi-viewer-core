@@ -28,7 +28,7 @@ import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.iiif.search.SearchHit;
 
 /**
- * AnnotationResultList class.
+ * Holds the result set of a IIIF Search API query, containing matched annotations grouped by canvas.
  */
 public class AnnotationResultList {
 
@@ -86,7 +86,7 @@ public class AnnotationResultList {
     }
 
     /**
-     * @return the numHits
+
      */
     public long getNumHits() {
         return numHits;
@@ -100,14 +100,14 @@ public class AnnotationResultList {
     }
 
     /**
-     * @return the annotations
+
      */
     public List<IAnnotation> getAnnotations() {
         return annotations;
     }
 
     /**
-     * @return the hits
+
      */
     public List<SearchHit> getHits() {
         return hits;

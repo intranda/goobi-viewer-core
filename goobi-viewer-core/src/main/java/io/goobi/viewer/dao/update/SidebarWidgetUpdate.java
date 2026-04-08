@@ -63,7 +63,7 @@ import io.goobi.viewer.model.translations.TranslatedText;
  * {@link CustomSidebarWidget}. The table cms_sidebar_elements is eventually dropped. The updae is only performed if the table cms_sidebar_elements
  * still exists in the database
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class SidebarWidgetUpdate implements IModelUpdate {
 

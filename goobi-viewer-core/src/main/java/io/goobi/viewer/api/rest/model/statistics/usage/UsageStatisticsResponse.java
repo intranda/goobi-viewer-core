@@ -47,14 +47,14 @@ public class UsageStatisticsResponse {
     }
 
     /**
-     * @return the summary
+
      */
     public StatisticsSummary getSummary() {
         return summary;
     }
 
     /**
-     * @return the values
+
      */
     public List<StatisticsSummary> getValues() {
         return values;

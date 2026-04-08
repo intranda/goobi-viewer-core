@@ -26,7 +26,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 /**
- * CompareYearSolrDocWrapper class.
+ * Wraps a Solr document to provide year-based comparison and sorting for calendar display.
  */
 public class CompareYearSolrDocWrapper implements Comparable<CompareYearSolrDocWrapper> {
 
@@ -65,11 +65,6 @@ public class CompareYearSolrDocWrapper implements Comparable<CompareYearSolrDocW
         return ret;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -79,11 +74,6 @@ public class CompareYearSolrDocWrapper implements Comparable<CompareYearSolrDocW
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {

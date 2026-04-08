@@ -63,7 +63,7 @@ import jakarta.inject.Singleton;
 import jakarta.servlet.ServletContext;
 
 /**
- * CMSTemplateManager class.
+ * Loads and provides access to available CMS page templates from the filesystem.
  */
 @Singleton
 @Startup
@@ -389,7 +389,7 @@ public class CMSTemplateManager implements Serializable {
     /**
      * Getter for the field <code>themeFolderPath</code>.
      *
-     * @return the themeFolderPath
+
      */
     public Optional<Path> getThemeFolderPath() {
         return themeFolderPath;
@@ -398,7 +398,7 @@ public class CMSTemplateManager implements Serializable {
     /**
      * Getter for the field <code>coreFolderPath</code>.
      *
-     * @return the coreFolderPath
+
      */
     public Optional<Path> getCoreFolderPath() {
         return coreFolderPath;

@@ -25,7 +25,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * CalendarItemYear class.
+ * Calendar browsing item representing a single year.
  */
 public class CalendarItemYear extends AbstractCalendarItem implements Serializable {
 

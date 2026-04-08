@@ -28,7 +28,7 @@ import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
  * All types of sidebar widgets which are generated automatically if certain conditions are met, usually if certain CMS content exists Currently
  * (22-01) only CMS-Geomaps provide automatic widgets.
  *
- * @author florian
+ * @author Florian Alpers
  */
 public enum AutomaticWidgetType implements WidgetContentType {
 

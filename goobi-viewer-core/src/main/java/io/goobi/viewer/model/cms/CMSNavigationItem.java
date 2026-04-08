@@ -59,7 +59,7 @@ import jakarta.persistence.Transient;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * CMSNavigationItem class.
+ * Represents a single item in the CMS navigation menu with label, target URL, and child items.
  */
 @Entity
 @Table(name = "cms_navigation_items")
@@ -258,7 +258,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * Getter for the field <code>order</code>.
      *
-     * @return the order
+
      */
     public Integer getOrder() {
         return order;
@@ -276,7 +276,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * Getter for the field <code>parentItem</code>.
      *
-     * @return the parentItem
+
      */
     public CMSNavigationItem getParentItem() {
         return parentItem;
@@ -535,7 +535,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * Getter for the field <code>sortingListId</code>.
      *
-     * @return the sortingListId
+
      */
     public Integer getSortingListId() {
         return sortingListId;
@@ -734,7 +734,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * @return the accessGranted
+
      */
     public boolean isAccessGranted() {
         return accessGranted;

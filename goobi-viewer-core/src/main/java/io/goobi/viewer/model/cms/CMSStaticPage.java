@@ -38,7 +38,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
- * CMSStaticPage class.
+ * Maps a CMS page to a static viewer page URL, allowing CMS content to replace built-in viewer pages.
  */
 @Entity
 @Table(name = "cms_static_pages")
@@ -85,7 +85,7 @@ public class CMSStaticPage implements Serializable {
     /**
      * getCmsPageOptional.
      *
-     * @return the cmsPage
+
      */
     public Optional<CMSPage> getCmsPageOptional() {
         if (!cmsPage.isPresent()) {
@@ -116,7 +116,7 @@ public class CMSStaticPage implements Serializable {
     /**
      * Getter for the field <code>id</code>.
      *
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -125,7 +125,7 @@ public class CMSStaticPage implements Serializable {
     /**
      * Getter for the field <code>pageName</code>.
      *
-     * @return the pageName
+
      */
     public String getPageName() {
         return pageName;
@@ -156,7 +156,7 @@ public class CMSStaticPage implements Serializable {
     /**
      * Getter for the field <code>cmsPageId</code>.
      *
-     * @return the cmsPageId
+
      */
     public Optional<Long> getCmsPageId() {
         return Optional.ofNullable(cmsPageId);
@@ -185,18 +185,12 @@ public class CMSStaticPage implements Serializable {
         });
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return getPageName().hashCode();
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {

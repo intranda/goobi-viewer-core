@@ -116,7 +116,7 @@ public class AccessPermission implements Serializable {
     }
 
     /**
-     * @return the granted
+
      */
     public boolean isGranted() {
         return granted;
@@ -132,7 +132,7 @@ public class AccessPermission implements Serializable {
     }
 
     /**
-     * @return the accessTicketRequired
+
      */
     public boolean isAccessTicketRequired() {
         return accessTicketRequired;
@@ -148,7 +148,7 @@ public class AccessPermission implements Serializable {
     }
 
     /**
-     * @return the downloadTicketRequired
+
      */
     public boolean isDownloadTicketRequired() {
         return downloadTicketRequired;
@@ -164,7 +164,7 @@ public class AccessPermission implements Serializable {
     }
 
     /**
-     * @return the redirect
+
      */
     public boolean isRedirect() {
         return redirect;
@@ -180,7 +180,7 @@ public class AccessPermission implements Serializable {
     }
 
     /**
-     * @return the redirectUrl
+
      */
     public String getRedirectUrl() {
         return redirectUrl;
@@ -196,7 +196,7 @@ public class AccessPermission implements Serializable {
     }
 
     /**
-     * @return the accessDeniedPlaceholderInfo
+
      */
     public Map<String, AccessDeniedInfoConfig> getAccessDeniedPlaceholderInfo() {
         return accessDeniedPlaceholderInfo;
@@ -212,7 +212,7 @@ public class AccessPermission implements Serializable {
     }
 
     /**
-     * @return the addionalCheckRequired
+
      */
     public ILicensee getAddionalCheckRequired() {
         return addionalCheckRequired;

@@ -105,7 +105,7 @@ public class CommentGroup implements Serializable {
     }
 
     /**
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -119,7 +119,7 @@ public class CommentGroup implements Serializable {
     }
 
     /**
-     * @return the title
+
      */
     public String getTitle() {
         return title;
@@ -133,7 +133,7 @@ public class CommentGroup implements Serializable {
     }
 
     /**
-     * @return the solrQuery
+
      */
     public String getSolrQuery() {
         return solrQuery;
@@ -147,7 +147,7 @@ public class CommentGroup implements Serializable {
     }
 
     /**
-     * @return the description
+
      */
     public String getDescription() {
         return description;
@@ -161,7 +161,7 @@ public class CommentGroup implements Serializable {
     }
 
     /**
-     * @return the userGroup
+
      */
     public UserGroup getUserGroup() {
         return userGroup;
@@ -176,7 +176,7 @@ public class CommentGroup implements Serializable {
     }
 
     /**
-     * @return the sendEmailNotifications
+
      */
     public boolean isSendEmailNotifications() {
         return sendEmailNotifications;
@@ -191,7 +191,7 @@ public class CommentGroup implements Serializable {
     }
 
     /**
-     * @return the membersMayEditComments
+
      */
     public boolean isMembersMayEditComments() {
         return membersMayEditComments;
@@ -206,7 +206,7 @@ public class CommentGroup implements Serializable {
     }
 
     /**
-     * @return the membersMayDeleteComments
+
      */
     public boolean isMembersMayDeleteComments() {
         return membersMayDeleteComments;
@@ -221,7 +221,7 @@ public class CommentGroup implements Serializable {
     }
 
     /**
-     * @return the coreType
+
      */
     public boolean isCoreType() {
         return coreType;
@@ -235,7 +235,7 @@ public class CommentGroup implements Serializable {
     }
 
     /**
-     * @return the enabled
+
      */
     public boolean isEnabled() {
         return enabled;
@@ -249,14 +249,14 @@ public class CommentGroup implements Serializable {
     }
 
     /**
-     * @return the identifiers
+
      */
     public Set<String> getIdentifiers() {
         return identifiers;
     }
 
     /**
-     * @return the identifiersQueried
+
      */
     public boolean isIdentifiersQueried() {
         return identifiersQueried;

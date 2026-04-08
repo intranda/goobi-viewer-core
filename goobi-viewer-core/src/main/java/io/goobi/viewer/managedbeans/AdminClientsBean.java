@@ -48,7 +48,7 @@ import jakarta.servlet.http.HttpServletRequest;
 /**
  * Backing bean for pages adminClientEdit.xhtml and adminClients.xhtml.
  * 
- * @author florian
+ * @author Florian Alpers
  */
 @Named
 @SessionScoped
@@ -93,7 +93,7 @@ public class AdminClientsBean implements Serializable {
     /**
      * Gets the model used for paginated listing configured clients.
      * 
-     * @return the configuredClientsModel
+
      */
     public TableDataProvider<ClientApplication> getConfiguredClientsModel() {
         return configuredClientsModel;
@@ -137,7 +137,7 @@ public class AdminClientsBean implements Serializable {
     /**
      * Gets the currently edited client.
      * 
-     * @return the selectedClient
+
      */
     public ClientApplication getSelectedClient() {
         return selectedClient;
@@ -338,7 +338,7 @@ public class AdminClientsBean implements Serializable {
     /**
      * Gets the internally created client representing all clients for access rights purposes.
      * 
-     * @return the allClients
+
      * @throws DAOException
      */
     public ClientApplication getAllClients() throws DAOException {

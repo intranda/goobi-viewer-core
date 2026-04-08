@@ -75,7 +75,9 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 
 /**
- * @author florian
+ * REST resource providing IIIF Presentation v3 manifests and annotations for digitized records.
+ *
+ * @author Florian Alpers
  */
 @jakarta.ws.rs.Path(RECORDS_RECORD)
 @ViewerRestServiceBinding

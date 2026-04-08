@@ -50,9 +50,6 @@ public class IIIFPresentationResponseFilter implements ContainerResponseFilter {
     public static final String CONTEXT_SEARCH = "http://iiif.io/api/search/1/context.json";
     public static final String CONTENT_TYPE_IIIF3 = "application/ld+json;profile=\"http://iiif.io/api/presentation/3/context.json\"";
 
-    /* (non-Javadoc)
-     * @see jakarta.ws.rs.container.ContainerResponseFilter#filter(jakarta.ws.rs.container.ContainerRequestContext, ContainerResponseContext)
-     */
     /** {@inheritDoc} */
     @Override
     public void filter(ContainerRequestContext request, ContainerResponseContext response) throws IOException {

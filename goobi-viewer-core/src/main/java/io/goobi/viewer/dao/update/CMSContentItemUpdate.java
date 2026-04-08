@@ -39,7 +39,7 @@ import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
  * Converts {@link CMSMediaItem cms_media_items.link_url} from the LONGBLOB datatype (URI in java) to TEXT (String in java). Extracts the link texts
  * from all entries and writes them into the table again as Text
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class CMSContentItemUpdate implements IModelUpdate {
 

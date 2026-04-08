@@ -47,14 +47,14 @@ public class UsageStatisticsInformation {
     }
 
     /**
-     * @return the startDate
+
      */
     public String getStartDate() {
         return startDate;
     }
 
     /**
-     * @return the endDate
+
      */
     public String getEndDate() {
         return endDate;
@@ -70,7 +70,7 @@ public class UsageStatisticsInformation {
     }
 
     /**
-     * @return the query
+
      */
     public String getQuery() {
         return query;

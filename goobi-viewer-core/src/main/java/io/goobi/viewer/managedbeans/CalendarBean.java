@@ -582,7 +582,7 @@ public class CalendarBean implements Serializable {
     /**
      * Getter for the field <code>dayRow</code>.
      *
-     * @return the dayRow
+
      */
     public CalendarRow getDayRow() {
         return dayRow;
@@ -794,7 +794,7 @@ public class CalendarBean implements Serializable {
     /**
      * Getter for the field <code>selectYear</code>.
      *
-     * @return the selectYear
+
      */
     public String getSelectYear() {
         return selectYear;
@@ -1044,7 +1044,7 @@ public class CalendarBean implements Serializable {
     /**
      * Getter for the field <code>monthList</code>.
      *
-     * @return the monthList
+
      */
     public List<CalendarItemMonth> getMonthList() {
         return monthList;
@@ -1053,7 +1053,7 @@ public class CalendarBean implements Serializable {
     /**
      * Getter for the field <code>yearEnd</code>.
      *
-     * @return the yearEnd
+
      */
     public int getYearEnd() {
         return yearEnd;
@@ -1062,7 +1062,7 @@ public class CalendarBean implements Serializable {
     /**
      * Getter for the field <code>yearStart</code>.
      *
-     * @return the yearStart
+
      */
     public int getYearStart() {
         return yearStart;
@@ -1103,7 +1103,7 @@ public class CalendarBean implements Serializable {
     /**
      * Getter for the field <code>collection</code>.
      *
-     * @return the collection
+
      */
     public String getCollection() {
         return collection;

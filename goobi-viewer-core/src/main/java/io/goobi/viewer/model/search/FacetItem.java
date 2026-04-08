@@ -48,7 +48,7 @@ import io.goobi.viewer.model.search.FacetSorting.SortingMap;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
- * FacetItem class.
+ * Represents a single facet value with its display label, hit count, and selection state.
  */
 public class FacetItem implements Serializable, IFacetItem {
 
@@ -128,9 +128,6 @@ public class FacetItem implements Serializable, IFacetItem {
         setLink(link.trim());
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#hashCode()
-     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -140,9 +137,6 @@ public class FacetItem implements Serializable, IFacetItem {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -494,7 +488,7 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * @return the type
+
      */
     @Override
     public FacetType getType() {
@@ -511,7 +505,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Getter for the field <code>field</code>.
      *
-     * @return the field
+
      */
     @Override
     public String getField() {
@@ -546,7 +540,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Getter for the field <code>value</code>.
      *
-     * @return the value
+
      */
     @Override
     public String getValue() {
@@ -566,7 +560,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Getter for the field <code>value2</code>.
      *
-     * @return the value2
+
      */
     @Override
     public String getValue2() {
@@ -586,7 +580,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Getter for the field <code>link</code>.
      *
-     * @return the link
+
      */
     @Override
     public String getLink() {
@@ -615,7 +609,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Getter for the field <code>label</code>.
      *
-     * @return the label
+
      */
     @Override
     public String getLabel() {
@@ -637,7 +631,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Getter for the field <code>translatedLabel</code>.
      *
-     * @return the translatedLabel
+
      */
     @Override
     public String getTranslatedLabel() {
@@ -661,7 +655,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Getter for the field <code>count</code>.
      *
-     * @return the count
+
      */
     @Override
     public long getCount() {
@@ -684,15 +678,13 @@ public class FacetItem implements Serializable, IFacetItem {
         this.count += amount;
     }
 
-    /**
-     */
+    
     @Override
     public boolean isGroup() {
         return group;
     }
 
-    /**
-     */
+    
     @Override
     public IFacetItem setGroup(boolean group) {
         this.group = group;
@@ -702,7 +694,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * isHierarchial.
      *
-     * @return the hierarchial
+
      */
     @Override
     public boolean isHierarchial() {
@@ -714,9 +706,6 @@ public class FacetItem implements Serializable, IFacetItem {
         return DataManager.getInstance().getConfiguration().getBooleanFacetFields().contains(field);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#toString()
-     */
     public String toString() {
         return field + ":" + value + " - " + value2;
     }

@@ -29,7 +29,7 @@ import jakarta.persistence.Table;
 import io.goobi.viewer.model.translations.Translation;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "terms_of_use_translations")
@@ -66,7 +66,7 @@ public class TermsOfUseTranslation extends Translation {
     /**
      * Getter for the field <code>owner</code>.
      *
-     * @return the owner
+
      */
     public TermsOfUse getOwner() {
         return owner;

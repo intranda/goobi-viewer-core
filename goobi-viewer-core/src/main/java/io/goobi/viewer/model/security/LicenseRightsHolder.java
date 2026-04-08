@@ -106,7 +106,7 @@ public class LicenseRightsHolder {
     }
 
     /**
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -120,14 +120,14 @@ public class LicenseRightsHolder {
     }
 
     /**
-     * @return the type
+
      */
     public AccessType getType() {
         return type;
     }
 
     /**
-     * @return the owner
+
      */
     public License getOwner() {
         return owner;
@@ -149,7 +149,7 @@ public class LicenseRightsHolder {
     }
 
     /**
-     * @return the user
+
      */
     public User getUser() {
         return user;
@@ -170,7 +170,7 @@ public class LicenseRightsHolder {
     }
 
     /**
-     * @return the userGroup
+
      */
     public UserGroup getUserGroup() {
         return userGroup;
@@ -191,7 +191,7 @@ public class LicenseRightsHolder {
     }
 
     /**
-     * @return the ipRange
+
      */
     public IpRange getIpRange() {
         return ipRange;
@@ -212,7 +212,7 @@ public class LicenseRightsHolder {
     }
 
     /**
-     * @return the client
+
      */
     public ClientApplication getClient() {
         return client;

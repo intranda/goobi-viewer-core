@@ -22,7 +22,7 @@
 package io.goobi.viewer.exceptions;
 
 /**
- * DownloadException class.
+ * Thrown when an error occurs during a file download operation.
  */
 public class DownloadException extends PresentationException {
 

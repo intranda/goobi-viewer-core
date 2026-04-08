@@ -575,21 +575,21 @@ public class SearchHitFactory {
     }
 
     /**
-     * @return the additionalMetadataIgnoreFields
+
      */
     public Set<String> getAdditionalMetadataIgnoreFields() {
         return additionalMetadataIgnoreFields;
     }
 
     /**
-     * @return the additionalMetadataTranslateFields
+
      */
     public Set<String> getAdditionalMetadataTranslateFields() {
         return additionalMetadataTranslateFields;
     }
 
     /**
-     * @return the additionalMetadataOneLineFields
+
      */
     public Set<String> getAdditionalMetadataOneLineFields() {
         return
@@ -598,14 +598,14 @@ public class SearchHitFactory {
     }
 
     /**
-     * @return the additionalMetadataSnippetFields
+
      */
     public Set<String> getAdditionalMetadataSnippetFields() {
         return additionalMetadataSnippetFields;
     }
 
     /**
-     * @return the additionalMetadataNoHighlightFields
+
      */
     public Set<String> getAdditionalMetadataNoHighlightFields() {
         return additionalMetadataNoHighlightFields;

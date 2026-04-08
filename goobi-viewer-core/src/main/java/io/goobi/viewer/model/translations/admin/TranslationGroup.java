@@ -123,9 +123,6 @@ public final class TranslationGroup {
         this.items = new ArrayList<>(numItems);
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -134,9 +131,6 @@ public final class TranslationGroup {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -185,35 +179,35 @@ public final class TranslationGroup {
     }
 
     /**
-     * @return the id
+
      */
     public int getId() {
         return id;
     }
 
     /**
-     * @return the type
+
      */
     public TranslationGroupType getType() {
         return type;
     }
 
     /**
-     * @return the name
+
      */
     public String getName() {
         return name;
     }
 
     /**
-     * @return the description
+
      */
     public String getDescription() {
         return description;
     }
 
     /**
-     * @return the keys
+
      */
     public List<TranslationGroupItem> getItems() {
         return items;
@@ -414,7 +408,7 @@ public final class TranslationGroup {
     }
 
     /**
-     * @return the selectedEntry
+
      */
     public MessageEntry getSelectedEntry() {
         if (selectedEntry == null && getFilteredEntries().size() > selectedEntryIndex) {
@@ -445,7 +439,7 @@ public final class TranslationGroup {
     }
 
     /**
-     * @return the selectedMessageEntryIndex
+
      */
     public int getSelectedEntryIndex() {
         return selectedEntryIndex;
@@ -459,7 +453,7 @@ public final class TranslationGroup {
     }
 
     /**
-     * @return the filterString
+
      */
     public String getFilterString() {
         return filterString;
@@ -473,7 +467,7 @@ public final class TranslationGroup {
     }
 
     /**
-     * @return the loadError
+
      */
     public boolean isLoadError() {
         if (loadError == null) {
@@ -490,7 +484,7 @@ public final class TranslationGroup {
     }
 
     /**
-     * @return the newEntryMode
+
      */
     public boolean isNewEntryMode() {
         return newEntryMode;

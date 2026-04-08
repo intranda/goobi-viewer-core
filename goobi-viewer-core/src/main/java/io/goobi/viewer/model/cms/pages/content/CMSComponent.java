@@ -156,7 +156,7 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
 
     /**
      * 
-     * @return the persistentComponent
+
      */
     public PersistentCMSComponent getPersistentComponent() {
         return persistentComponent;

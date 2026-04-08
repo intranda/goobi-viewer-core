@@ -71,7 +71,7 @@ import jakarta.ws.rs.core.Response;
  *
  * Provides listings of records in reduced iiif form.
  *
- * @author florian
+ * @author Florian Alpers
  */
 @jakarta.ws.rs.Path(RECORDS_LIST)
 @ViewerRestServiceBinding

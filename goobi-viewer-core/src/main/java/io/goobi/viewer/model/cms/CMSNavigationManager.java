@@ -41,7 +41,7 @@ import io.goobi.viewer.model.viewer.PageType;
 import jakarta.persistence.EntityNotFoundException;
 
 /**
- * CMSNavigationManager class.
+ * Manages loading, persisting, and reordering of CMS navigation menu items.
  */
 public class CMSNavigationManager implements Serializable {
 
@@ -128,8 +128,7 @@ public class CMSNavigationManager implements Serializable {
         }
     }
 
-    /**
-     */
+    
     private void addModuleItems() {
         DataManager.getInstance()
                 .getModules()
@@ -346,7 +345,7 @@ public class CMSNavigationManager implements Serializable {
     /**
      * Getter for the field <code>associatedTheme</code>.
      *
-     * @return the associatedTheme
+
      */
     public String getAssociatedTheme() {
         return associatedTheme;

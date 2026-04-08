@@ -43,7 +43,7 @@ import jakarta.persistence.Converter;
 /**
  * Objects using this converter should be cloned after reading from the database, otherwise changes to the text values may not be updated correctly.
  * 
- * @author florian
+ * @author Florian Alpers
  */
 @Converter
 public class TranslatedTextConverter implements AttributeConverter<TranslatedText, String> {
@@ -60,9 +60,6 @@ public class TranslatedTextConverter implements AttributeConverter<TranslatedTex
         this.configuredLocales = locales;
     }
 
-    /* (non-Javadoc)
-     * @see jakarta.persistence.AttributeConverter#convertToDatabaseColumn(java.lang.Object)
-     */
     @Override
     public String convertToDatabaseColumn(TranslatedText attribute) {
         if (attribute != null) {
@@ -83,9 +80,6 @@ public class TranslatedTextConverter implements AttributeConverter<TranslatedTex
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see jakarta.persistence.AttributeConverter#convertToEntityAttribute(java.lang.Object)
-     */
     @Override
     public TranslatedText convertToEntityAttribute(String dbData) {
         TranslatedText attribute = new TranslatedText(getConfiguredLocales());

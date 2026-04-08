@@ -82,8 +82,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 
 /**
- * Rest resources to create a frontend-view for a campaign to annotate or review a work, and to process the created annotations and/or changes to the
- * campaign status.
+ * REST resource for accessing crowdsourcing campaign items and submitting annotations.
  *
  * <p>The following api points are defined:
  * <ul>
@@ -94,7 +93,7 @@ import jakarta.ws.rs.core.MediaType;
  * GET a list of annotations for the given campaignId and pi, sorted by target, or PUT the annotations for this combination</li>
  * </ul>
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Hidden
 @Path("/crowdsourcing/campaigns/{campaignId}")
@@ -466,14 +465,14 @@ public class CampaignItemResource {
     /**
      * Used to create or read a list of WebAnnotations sorted by their target (a iiif manifest or canvas).
      *
-     * @author florian
+     * @author Florian Alpers
      */
     public static class AnnotationPage {
         private String id;
         private List<WebAnnotation> annotations;
 
         /**
-         * @return the id
+
          */
         public String getId() {
             return id;
@@ -487,7 +486,7 @@ public class CampaignItemResource {
         }
 
         /**
-         * @return the annotations
+
          */
         public List<WebAnnotation> getAnnotations() {
             return annotations;

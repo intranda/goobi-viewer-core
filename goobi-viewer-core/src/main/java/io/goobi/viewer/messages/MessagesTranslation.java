@@ -30,9 +30,9 @@ import org.apache.commons.lang3.StringUtils;
 import io.goobi.viewer.model.translations.Translation;
 
 /**
- * MessagesTranslation class.
+ * Represents a single translated message entry with its locale and value.
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class MessagesTranslation extends Translation {
 

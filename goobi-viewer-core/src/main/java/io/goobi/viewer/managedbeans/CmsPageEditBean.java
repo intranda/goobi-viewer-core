@@ -80,7 +80,7 @@ import jakarta.inject.Named;
 import jakarta.ws.rs.core.UriBuilder;
 
 /**
- * CmsPageEditBean class.
+ * JSF backing bean for creating and editing CMS pages including content and metadata.
  */
 @Named
 @ViewScoped
@@ -767,7 +767,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Getter for unit tests.
      * 
-     * @return the dao
+
      */
     IDAO getDao() {
         return dao;
@@ -812,7 +812,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Getter for unit tests.
      * 
-     * @return the collectionViewBean
+
      */
     CollectionViewBean getCollectionViewBean() {
         return collectionViewBean;

@@ -122,7 +122,7 @@ public class ElementReference {
     }
 
     /**
-     * @return the uri
+
      */
     public String getUri() {
         return uri;
@@ -138,7 +138,7 @@ public class ElementReference {
     /**
      * Getter for the field <code>page</code>.
      *
-     * @return the pageNo
+
      */
     public int getPage() {
         return page;

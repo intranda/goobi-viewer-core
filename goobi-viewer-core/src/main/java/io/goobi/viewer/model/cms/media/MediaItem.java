@@ -51,7 +51,7 @@ import io.goobi.viewer.model.cms.CMSCategory;
 /**
  * Simple representation of a cms-media-item.
  * 
- * @author florian
+ * @author Florian Alpers
  */
 @JsonInclude(Include.NON_NULL)
 public class MediaItem {
@@ -149,56 +149,56 @@ public class MediaItem {
     }
 
     /**
-     * @return the id
+
      */
     public Long getId() {
         return id;
     }
 
     /**
-     * @return the label
+
      */
     public IMetadataValue getLabel() {
         return label;
     }
 
     /**
-     * @return the description
+
      */
     public IMetadataValue getDescription() {
         return description;
     }
 
     /**
-     * @return the image
+
      */
     public IContent getImage() {
         return image;
     }
 
     /**
-     * @return the link
+
      */
     public String getLink() {
         return link;
     }
 
     /**
-     * @return the tags
+
      */
     public List<String> getTags() {
         return tags;
     }
 
     /**
-     * @return the important
+
      */
     public boolean isImportant() {
         return important;
     }
 
     /**
-     * @return the order
+
      */
     public Integer getOrder() {
         return order;

@@ -29,7 +29,7 @@ import de.intranda.api.iiif.presentation.enums.Format;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class LinkingProperty {
 
@@ -84,7 +84,7 @@ public class LinkingProperty {
     }
 
     /**
-     * @return the target
+
      */
     public LinkingTarget getTarget() {
         return target;

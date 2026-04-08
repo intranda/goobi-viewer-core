@@ -112,7 +112,7 @@ public class MetadataView {
     }
 
     /**
-     * @return the index
+
      */
     public int getIndex() {
         return index;
@@ -128,7 +128,7 @@ public class MetadataView {
     }
 
     /**
-     * @return the label
+
      */
     public String getLabel() {
         return label;
@@ -144,7 +144,7 @@ public class MetadataView {
     }
 
     /**
-     * @return the url
+
      */
     public String getUrl() {
         return url;
@@ -160,7 +160,7 @@ public class MetadataView {
     }
 
     /**
-     * @return the condition
+
      */
     public String getCondition() {
         return condition;
@@ -176,7 +176,7 @@ public class MetadataView {
     }
 
     /**
-     * @return the location
+
      */
     public MetadataViewLocation getLocation() {
         return location;

@@ -71,7 +71,7 @@ public class ManualFeatureSet extends FeatureSet {
     }
 
     /**
-     * @return the features
+
      */
     public List<String> getFeatures() {
         return features;

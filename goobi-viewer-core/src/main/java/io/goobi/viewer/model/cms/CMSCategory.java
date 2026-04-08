@@ -33,9 +33,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 /**
- * CMSCategory class.
+ * Represents a category tag that can be assigned to CMS pages and media items for grouping.
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "cms_categories")
@@ -98,7 +98,7 @@ public class CMSCategory implements Comparable<CMSCategory>, Serializable {
     /**
      * Getter for the field <code>id</code>.
      *
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -116,7 +116,7 @@ public class CMSCategory implements Comparable<CMSCategory>, Serializable {
     /**
      * Getter for the field <code>name</code>.
      *
-     * @return the name
+
      */
     public String getName() {
         return name;
@@ -134,7 +134,7 @@ public class CMSCategory implements Comparable<CMSCategory>, Serializable {
     /**
      * Getter for the field <code>description</code>.
      *
-     * @return the description
+
      */
     public String getDescription() {
         return description;
@@ -149,9 +149,6 @@ public class CMSCategory implements Comparable<CMSCategory>, Serializable {
         this.description = description;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -164,9 +161,6 @@ public class CMSCategory implements Comparable<CMSCategory>, Serializable {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -179,18 +173,12 @@ public class CMSCategory implements Comparable<CMSCategory>, Serializable {
         }
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     /** {@inheritDoc} */
     @Override
     public String toString() {
         return getName();
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public int compareTo(CMSCategory other) {

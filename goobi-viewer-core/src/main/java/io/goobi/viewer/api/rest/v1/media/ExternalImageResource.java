@@ -74,9 +74,9 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 
 /**
- * @author florian
+ * REST resource for accessing externally-hosted images referenced in digitized records.
  *
- *         Used to call ContentServer with external image resource URLs
+ * @author Florian Alpers
  */
 @Path(EXTERNAL_IMAGES)
 @ContentServerBinding

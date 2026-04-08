@@ -42,7 +42,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
- * UserEndpoint class.
+ * REST endpoint providing user profile information and preferences for authenticated users.
  */
 @Path(ApiUrls.USERS)
 public class UserEndpoint {

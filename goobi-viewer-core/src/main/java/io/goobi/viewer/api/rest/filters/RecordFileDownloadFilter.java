@@ -33,7 +33,9 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.statistics.usage.RequestType;
 
 /**
- * @author florian
+ * JAX-RS request filter that tracks record file downloads for usage statistics.
+ *
+ * @author Florian Alpers
  */
 @Provider
 @RecordFileDownloadBinding

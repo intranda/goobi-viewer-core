@@ -52,10 +52,10 @@ import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
- * Bean to check whether the disclaimer applies to a page/record as well as provide a configuration json object for the javascript This bean is
- * session scoped, so all stored settings are discarded outside a jsf session.
- * 
- * @author florian
+ * JSF backing bean that checks whether the disclaimer applies to a page/record and provides a configuration JSON object for the disclaimer
+ * JavaScript. This bean is session-scoped, so all stored settings are discarded when the JSF session ends.
+ *
+ * @author Florian Alpers
  */
 @Named
 @SessionScoped

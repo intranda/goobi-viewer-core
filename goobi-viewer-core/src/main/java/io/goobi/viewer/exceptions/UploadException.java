@@ -16,7 +16,7 @@
 package io.goobi.viewer.exceptions;
 
 /**
- * DownloadException class.
+ * Thrown when an error occurs during a file upload operation.
  */
 public class UploadException extends PresentationException {
 

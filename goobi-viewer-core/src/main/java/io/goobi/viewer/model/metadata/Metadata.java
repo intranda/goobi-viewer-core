@@ -294,7 +294,7 @@ public class Metadata implements MetadataListElement, Serializable {
     /**
      * Getter for the field <code>label</code>.
      *
-     * @return the label
+
      */
     public String getLabel() {
         return label;
@@ -327,7 +327,7 @@ public class Metadata implements MetadataListElement, Serializable {
     /**
      * Getter for the field <code>type</code>.
      *
-     * @return the type
+
      */
     public int getType() {
         return type;
@@ -355,7 +355,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-     * @return the sortField
+
      */
     public String getSortField() {
         return sortField;
@@ -373,7 +373,7 @@ public class Metadata implements MetadataListElement, Serializable {
     /**
      * Getter for the field <code>values</code>.
      *
-     * @return the values
+
      */
     public List<MetadataValue> getValues() {
         return values;
@@ -735,7 +735,7 @@ public class Metadata implements MetadataListElement, Serializable {
     /**
      * Getter for the field <code>params</code>.
      *
-     * @return the params
+
      */
     public List<MetadataParameter> getParams() {
         return params;
@@ -1280,7 +1280,7 @@ public class Metadata implements MetadataListElement, Serializable {
     /**
      * isGroup.
      *
-     * @return the group
+
      */
     public boolean isGroup() {
         return group;
@@ -1296,7 +1296,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-     * @return the singleString
+
      */
     public boolean isSingleString() {
         return singleString;
@@ -1312,7 +1312,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-     * @return the hideIfOnlyMetadataField
+
      */
     public boolean isHideIfOnlyMetadataField() {
         return hideIfOnlyMetadataField;
@@ -1328,7 +1328,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-     * @return the topstructOnly
+
      */
     public boolean isTopstructOnly() {
         return topstructOnly;
@@ -1344,7 +1344,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-     * @return the labelField
+
      */
     public String getLabelField() {
         return labelField;
@@ -1360,7 +1360,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-     * @return the separator
+
      */
     public String getSeparator() {
         return separator;
@@ -1376,7 +1376,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-     * @return the ownerDocstrctType
+
      */
     public String getOwnerDocstrctType() {
         return ownerDocstrctType;
@@ -1401,7 +1401,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-     * @return the accessGranted
+
      */
     public boolean isAccessGranted() {
         return accessGranted;
@@ -1415,7 +1415,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-     * @return the citationTemplate
+
      */
     public String getCitationTemplate() {
         return citationTemplate;
@@ -1431,7 +1431,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-     * @return the citationProcessorWrapper
+
      */
     public CitationProcessorWrapper getCitationProcessorWrapper() {
         return citationProcessorWrapper;
@@ -1445,7 +1445,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-     * @return the parentMetadata
+
      */
     public Metadata getParentMetadata() {
         return parentMetadata;
@@ -1467,14 +1467,14 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-     * @return the childMetadata
+
      */
     public List<Metadata> getChildMetadata() {
         return childMetadata;
     }
 
     /**
-     * @return the indentation
+
      */
     public int getIndentation() {
         return indentation;

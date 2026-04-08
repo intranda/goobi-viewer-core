@@ -31,7 +31,7 @@ import jakarta.persistence.Entity;
  * Wrapper element for default (static) sidebar widgets. These contain no data since they are entirely described by the xhtml component given by the
  * {@link WidgetContentType content type}
  * 
- * @author florian
+ * @author Florian Alpers
  */
 @Entity
 @DiscriminatorValue("DEFAULT")

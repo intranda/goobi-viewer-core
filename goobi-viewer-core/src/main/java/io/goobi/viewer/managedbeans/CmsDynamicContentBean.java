@@ -38,9 +38,9 @@ import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
 
 /**
- * CmsDynamicContentBean class.
+ * JSF backing bean that manages dynamic content components embedded in CMS pages.
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Named
 @ViewScoped

@@ -37,7 +37,7 @@ import jakarta.servlet.http.HttpSession;
 /**
  * Class to be called on requests to be recorded in usage statistics. Stores and updates usage statistics in database on each request
  * 
- * @author florian
+ * @author Florian Alpers
  */
 public class UsageStatisticsRecorder {
 

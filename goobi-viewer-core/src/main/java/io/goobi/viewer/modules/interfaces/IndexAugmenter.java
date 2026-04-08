@@ -26,7 +26,7 @@ import org.apache.solr.common.SolrDocument;
 import io.goobi.viewer.exceptions.IndexAugmenterException;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public interface IndexAugmenter {
 

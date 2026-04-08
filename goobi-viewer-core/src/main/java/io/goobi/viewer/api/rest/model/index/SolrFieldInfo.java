@@ -71,14 +71,14 @@ public class SolrFieldInfo {
     }
 
     /**
-     * @return the field
+
      */
     public String getField() {
         return field;
     }
 
     /**
-     * @return the sortField
+
      */
     public String getSortField() {
         return sortField;
@@ -92,7 +92,7 @@ public class SolrFieldInfo {
     }
 
     /**
-     * @return the facetField
+
      */
     public String getFacetField() {
         return facetField;
@@ -106,7 +106,7 @@ public class SolrFieldInfo {
     }
 
     /**
-     * @return the boolField
+
      */
     public String getBoolField() {
         return boolField;
@@ -120,7 +120,7 @@ public class SolrFieldInfo {
     }
 
     /**
-     * @return the indexed
+
      */
     public boolean isIndexed() {
         return indexed;
@@ -134,7 +134,7 @@ public class SolrFieldInfo {
     }
 
     /**
-     * @return the stored
+
      */
     public boolean isStored() {
         return stored;
@@ -148,7 +148,7 @@ public class SolrFieldInfo {
     }
 
     /**
-     * @return the translations
+
      */
     public Map<String, String> getTranslations() {
         if (translations == null) {

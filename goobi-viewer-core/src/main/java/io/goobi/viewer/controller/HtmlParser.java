@@ -34,7 +34,7 @@ import org.jsoup.nodes.Document;
 /**
  * Tools for parsing html.
  *
- * @author florian
+ * @author Florian Alpers
  */
 public final class HtmlParser {
 

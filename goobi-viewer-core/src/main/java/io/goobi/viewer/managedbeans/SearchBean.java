@@ -123,7 +123,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * SearchBean.
+ * JSF backing bean for the search interface, managing search queries, facets, sorting, and result pagination.
  */
 @Named
 @SessionScoped
@@ -256,7 +256,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Getter for unit tests.
      * 
-     * @return the advancedSearchSelectItems
+
      */
     Map<String, List<StringPair>> getAdvancedSearchSelectItems() {
         return advancedSearchSelectItems;
@@ -1319,7 +1319,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * For unit tests.
      * 
-     * @return the searchStringInternal
+
      */
     String getSearchStringInternal() {
         return searchStringInternal;
@@ -1377,7 +1377,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Getter for the field <code>searchSortingOption</code>.
      *
-     * @return the searchSortingOption
+
      */
     public SearchSortingOption getSearchSortingOption() {
         return searchSortingOption;
@@ -1503,7 +1503,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * @return the advancedSearchFieldTemplate
+
      */
     public String getAdvancedSearchFieldTemplate() {
         return advancedSearchFieldTemplate;
@@ -1720,7 +1720,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Getter for the field <code>searchTerms</code>.
      *
-     * @return the searchTerms
+
      */
     public Map<String, Set<String>> getSearchTerms() {
         return searchTerms;
@@ -1729,7 +1729,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Getter for the field <code>currentHitIndex</code>.
      *
-     * @return the currentHitIndex
+
      */
     public int getCurrentHitIndex() {
         return currentHitIndex;
@@ -1787,7 +1787,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Getter for the field <code>hitIndexOperand</code>.
      *
-     * @return the hitIndexOperand
+
      */
     public int getHitIndexOperand() {
         return hitIndexOperand;
@@ -1975,7 +1975,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Getter for the field <code>advancedSearchQueryGroup</code>.
      *
-     * @return the advancedQueryGroups
+
      */
     public SearchQueryGroup getAdvancedSearchQueryGroup() {
         return advancedSearchQueryGroup;
@@ -2177,7 +2177,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Getter for the field <code>currentSearch</code>.
      *
-     * @return the currentSearch
+
      */
     public Search getCurrentSearch() {
         return currentSearch;
@@ -2196,7 +2196,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * isFuzzySearchEnabled.
      *
-     * @return the fuzzySearchEnabled
+
      */
     public boolean isFuzzySearchEnabled() {
         return fuzzySearchEnabled;
@@ -2550,7 +2550,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Getter for the field <code>hitsPerPage</code>.
      *
-     * @return the hitsPerPage
+
      */
     public int getHitsPerPage() {
         return hitsPerPage;
@@ -2581,7 +2581,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * isHitsPerPageSetterCalled.
      *
-     * @return the hitsPerPageSetterCalled
+
      */
     public boolean isHitsPerPageSetterCalled() {
         return hitsPerPageSetterCalled;
@@ -2600,7 +2600,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Getter for the field <code>advancedSearchQueryInfo</code>.
      *
-     * @return the advancedSearchQueryInfo
+
      * @should html escape string
      */
     public String getAdvancedSearchQueryInfo() {
@@ -2826,18 +2826,12 @@ public class SearchBean implements SearchInterface, Serializable {
         return FacetItem.generateFacetItems(useField, result, true, reverseOrder, hierarchicalFields.contains(useField));
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.SearchInterface#isSearchPerformed()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean isSearchPerformed() {
         return currentSearch != null;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.SearchInterface#isExplicitSearchPerformed()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean isExplicitSearchPerformed() {

@@ -45,7 +45,9 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 
 /**
- * @author florian
+ * REST resource providing IIIF Presentation v3 collection endpoints for collection browsing.
+ *
+ * @author Florian Alpers
  */
 @jakarta.ws.rs.Path(COLLECTIONS)
 @ViewerRestServiceBinding

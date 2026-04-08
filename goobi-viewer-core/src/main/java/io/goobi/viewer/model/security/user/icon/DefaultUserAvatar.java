@@ -29,13 +29,10 @@ import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class DefaultUserAvatar implements UserAvatar {
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.user.icon.IconProvider#getIconUrl()
-     */
     @Override
     public String getIconUrl(int size, HttpServletRequest request) {
         if (request != null) {

@@ -28,9 +28,9 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
- * Interface for objects containing translations for a set of languages. Used to construct tab panels to switch between languages
+ * Interface for objects containing translations for a set of languages. Used to construct tab panels to switch between languages.
  *
- * @author florian
+ * @author Florian Alpers
  */
 public interface IPolyglott {
 

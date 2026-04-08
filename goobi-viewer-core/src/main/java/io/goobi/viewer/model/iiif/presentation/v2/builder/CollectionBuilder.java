@@ -62,7 +62,7 @@ import io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
- * CollectionBuilder class.
+ * Builds IIIF Presentation API v2 Collection resources from Solr index data.
  *
  * @author Florian Alpers
  */

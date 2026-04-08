@@ -40,7 +40,7 @@ import jakarta.persistence.Entity;
  * A subtype of {@link CustomSidebarWidget} to display a list of possible values of a given SOLR field and link to a search listing of items with a
  * specific value.
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Entity
 @DiscriminatorValue("FacetFieldSidebarWidget")
@@ -77,7 +77,7 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
     /**
      * Contains the SOLR field holding the values to list.
      * 
-     * @return the facetField
+
      */
     public String getFacetField() {
         return facetField;
@@ -96,7 +96,7 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
      * An additional SOLR query. If this is not empty, only values of the {@link #getFacetField()} are listed that are contained in documents meeting
      * this query. This is also true for the linked result lists
      * 
-     * @return the filterQuery
+
      */
     public String getFilterQuery() {
         return filterQuery;

@@ -36,7 +36,7 @@ public class SitemapRequestParameters extends TaskParameter {
     /**
      * Getter for the field <code>outputPath</code>.
      *
-     * @return the outputPath
+
      */
     public String getOutputPath() {
         return outputPath;

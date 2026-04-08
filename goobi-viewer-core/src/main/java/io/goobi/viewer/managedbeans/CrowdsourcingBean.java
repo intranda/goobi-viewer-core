@@ -81,7 +81,7 @@ import io.goobi.viewer.solr.SolrConstants;
 import jakarta.persistence.PersistenceException;
 
 /**
- * CrowdsourcingBean class.
+ * JSF backing bean for crowdsourcing campaign management, providing access to campaigns and annotation tasks.
  */
 @Named
 @SessionScoped
@@ -522,7 +522,7 @@ public class CrowdsourcingBean implements Serializable {
     /**
      * Getter for the field <code>lazyModelCampaigns</code>.
      *
-     * @return the lazyModelCampaigns
+
      */
     public TableDataProvider<Campaign> getLazyModelCampaigns() {
         return lazyModelCampaigns;
@@ -531,7 +531,7 @@ public class CrowdsourcingBean implements Serializable {
     /**
      * Getter for the field <code>selectedCampaign</code>.
      *
-     * @return the selectedCampaign
+
      */
     public Campaign getSelectedCampaign() {
         return selectedCampaign;
@@ -579,7 +579,7 @@ public class CrowdsourcingBean implements Serializable {
     /**
      * isEditMode.
      *
-     * @return the editMode
+
      */
     public boolean isEditMode() {
         return selectedCampaign != null && selectedCampaign.getId() != null;
@@ -736,7 +736,7 @@ public class CrowdsourcingBean implements Serializable {
     /**
      * Getter for the field <code>targetPage</code>.
      *
-     * @return the targetPage
+
      */
     public int getTargetPage() {
         return targetPage;
@@ -966,7 +966,7 @@ public class CrowdsourcingBean implements Serializable {
     /**
      * Getter for the field <code>targetStatus</code>.
      *
-     * @return the targetStatus
+
      */
     public CrowdsourcingStatus getTargetStatus() {
         return targetStatus;

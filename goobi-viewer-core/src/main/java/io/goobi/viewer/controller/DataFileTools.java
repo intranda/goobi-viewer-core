@@ -58,7 +58,7 @@ import io.goobi.viewer.solr.SolrTools;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * Utility class for retrieving data folders, data files and source files.
+ * Utility class for locating and accessing data files (ALTO, TEI, etc.) on the viewer file system.
  */
 public final class DataFileTools {
 

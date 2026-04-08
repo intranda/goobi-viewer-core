@@ -34,7 +34,7 @@ import jakarta.persistence.JoinColumn;
 /**
  * Wrapper element for custom (user created) sidebar widgets. Linked to an instance of {@link CustomSidebarWidget} providing the data to display
  * 
- * @author florian
+ * @author Florian Alpers
  */
 @Entity
 @DiscriminatorValue("CUSTOM")
@@ -86,7 +86,7 @@ public class CMSSidebarElementCustom extends CMSSidebarElement {
     /**
      * Gets the {@link CustomSidebarWidget} providing the data.
      * 
-     * @return the widget
+
      */
     public CustomSidebarWidget getWidget() {
         return widget;
@@ -103,7 +103,7 @@ public class CMSSidebarElementCustom extends CMSSidebarElement {
     /**
      * Gets the title of the underlying widget.
      * 
-     * @return the title
+
      */
     @Override
     public TranslatedText getTitle() {

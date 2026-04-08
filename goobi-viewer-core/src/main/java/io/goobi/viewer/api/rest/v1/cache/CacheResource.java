@@ -57,6 +57,9 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 
+/**
+ * REST resource providing cache management endpoints for content and image server caches.
+ */
 @Path(ApiUrls.CACHE)
 public class CacheResource {
 

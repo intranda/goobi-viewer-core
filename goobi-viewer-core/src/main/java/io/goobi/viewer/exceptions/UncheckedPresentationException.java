@@ -22,9 +22,9 @@
 package io.goobi.viewer.exceptions;
 
 /**
- * UncheckedPresentationException class.
+ * Unchecked wrapper for {@link io.goobi.viewer.exceptions.PresentationException}, suitable for use in lambdas and streams.
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class UncheckedPresentationException extends RuntimeException {
 

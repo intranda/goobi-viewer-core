@@ -24,7 +24,7 @@ package io.goobi.viewer.exceptions;
 import java.io.Serializable;
 
 /**
- * RecordNotFoundException class.
+ * Thrown when a requested record cannot be found in the Solr index.
  */
 public class RecordNotFoundException extends Exception implements Serializable {
 

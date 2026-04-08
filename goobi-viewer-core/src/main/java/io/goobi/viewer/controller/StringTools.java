@@ -65,7 +65,7 @@ import com.ibm.icu.text.CharsetMatch;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
- * StringTools class.
+ * Utility class providing string manipulation, conversion, and sanitisation helpers used throughout the viewer.
  */
 public final class StringTools {
 

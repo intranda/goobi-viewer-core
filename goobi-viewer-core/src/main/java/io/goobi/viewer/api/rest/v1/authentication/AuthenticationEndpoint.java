@@ -85,7 +85,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
- * AuthenticationEndpoint class.
+ * REST endpoint handling user authentication, login/logout flows, and OAuth-based API token management.
  */
 @Path(ApiUrls.AUTH)
 public class AuthenticationEndpoint {

@@ -294,9 +294,6 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
         return createCollection(list, url);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.api.rest.resourcebuilders.AbstractBookmarkResourceBuilder#addBookmarkList()
-     */
     @Override
     public SuccessMessage addBookmarkList() throws DAOException, IOException, RestApiException, IllegalRequestException {
         // Session users may only have one bookmark list; adding another is a conflict, not a bad request
@@ -309,26 +306,17 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
         throw new WebApplicationException("Cannot add additional session bookmark lists", Response.Status.CONFLICT);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.api.rest.resourcebuilders.AbstractBookmarkResourceBuilder#getBookmarkListById(java.lang.Long)
-     */
     @Override
     public BookmarkList getBookmarkListById(Long id) throws DAOException, IOException, RestApiException {
         return DataManager.getInstance().getBookmarkManager().getOrCreateBookmarkList(session);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.api.rest.resourcebuilders.AbstractBookmarkResourceBuilder#updateBookmarkList(io.goobi.viewer.model.bookmark.BookmarkList)
-     */
     @Override
     public void updateBookmarkList(BookmarkList list) throws IllegalRequestException {
         // Session bookmark lists cannot be updated; treat as conflict, not bad request
         throw new WebApplicationException("Cannot update session bookmark list", Response.Status.CONFLICT);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.api.rest.resourcebuilders.AbstractBookmarkResourceBuilder#deleteBookmarkList(java.lang.Long)
-     */
     @Override
     public SuccessMessage deleteBookmarkList(Long id) throws DAOException, IOException, RestApiException, IllegalRequestException {
         DataManager.getInstance().getBookmarkManager().deleteBookmarkList(session);
@@ -336,9 +324,6 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
         return new SuccessMessage(true);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.api.rest.resourcebuilders.AbstractBookmarkResourceBuilder#getAsCollection(java.lang.Long, AbstractApiUrlManager)
-     */
     @Override
     public Collection2 getAsCollection(Long id, AbstractApiUrlManager urls) throws DAOException, RestApiException, IOException {
         BookmarkList list = getBookmarkListById(id);

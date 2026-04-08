@@ -56,7 +56,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 @Named
 @ViewScoped
@@ -83,7 +83,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     private transient FacesContext facesContext;
 
     /**
-     * @return the note
+
      */
     public CMSRecordNote getNote() {
         return note;
@@ -138,7 +138,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     }
 
     /**
-     * @return the returnUrl
+
      */
     public String getReturnUrl() {
         return returnUrl;
@@ -288,33 +288,21 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.IPolyglott#isValid(java.util.Locale)
-     */
     @Override
     public boolean isValid(Locale locale) {
         return isComplete(locale);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.IPolyglott#isEmpty(java.util.Locale)
-     */
     @Override
     public boolean isEmpty(Locale locale) {
         return this.note.getNoteTitle().isEmpty(locale) && this.note.getNoteText().isEmpty(locale);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.IPolyglott#getSelectedLocale()
-     */
     @Override
     public Locale getSelectedLocale() {
         return this.selectedLocale;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.IPolyglott#setSelectedLocale(java.util.Locale)
-     */
     @Override
     public void setSelectedLocale(Locale locale) {
         this.selectedLocale = locale;
@@ -346,7 +334,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     }
 
     /**
-     * @return the currentNoteType
+
      */
     public String getCurrentNoteType() {
         return currentNoteType;

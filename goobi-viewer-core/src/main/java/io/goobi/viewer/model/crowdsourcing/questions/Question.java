@@ -72,7 +72,7 @@ import io.goobi.viewer.model.translations.TranslatedText;
  * An annotation generator to create a specific type of annotation for a specific question. One or more of these may be contained within a
  * {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign}
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "cs_questions")
@@ -210,7 +210,7 @@ public class Question implements Serializable {
     /**
      * Getter for the field <code>id</code>.
      *
-     * @return the id
+
      */
     @JsonIgnore
     public Long getId() {
@@ -229,7 +229,7 @@ public class Question implements Serializable {
     /**
      * Getter for the field <code>owner</code>.
      *
-     * @return the owner
+
      */
     public Campaign getOwner() {
         return owner;
@@ -245,7 +245,7 @@ public class Question implements Serializable {
     }
 
     /**
-     * @return the tempTranslations
+
      */
     public TranslatedText getText() {
         return text;
@@ -254,7 +254,7 @@ public class Question implements Serializable {
     /**
      * Getter for the field <code>questionType</code>.
      *
-     * @return the questionType
+
      */
     public QuestionType getQuestionType() {
         return questionType;
@@ -272,7 +272,7 @@ public class Question implements Serializable {
     /**
      * Getter for the field <code>targetSelector</code>.
      *
-     * @return the targetSelector
+
      */
     public TargetSelector getTargetSelector() {
         return targetSelector;
@@ -290,14 +290,14 @@ public class Question implements Serializable {
     /**
      * Getter for the field <code>targetFrequency</code>.
      *
-     * @return the targetFrequency
+
      */
     public int getTargetFrequency() {
         return targetFrequency;
     }
 
     /**
-     * @return the metadataFields
+
      */
     public List<String> getMetadataFields() {
         return metadataFields;
@@ -328,7 +328,7 @@ public class Question implements Serializable {
     }
 
     /**
-     * @return the metadataToAdd
+
      */
     public String getMetadataToAdd() {
         return "";
@@ -425,7 +425,7 @@ public class Question implements Serializable {
     }
 
     /**
-     * @return the metadataFieldSelection
+
      * @throws IOException
      * @throws SolrServerException
      */

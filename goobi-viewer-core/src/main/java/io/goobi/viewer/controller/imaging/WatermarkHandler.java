@@ -51,7 +51,7 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
- * WatermarkHandler class.
+ * Applies configured watermarks to images delivered through the image service.
  *
  * @author Florian Alpers
  */

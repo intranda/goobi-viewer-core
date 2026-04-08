@@ -186,7 +186,7 @@ public class FeedbackBean implements Serializable {
     /**
      * Getter for the field <code>feedback</code>.
      *
-     * @return the feedback
+
      */
     public Feedback getFeedback() {
         return feedback;
@@ -225,7 +225,7 @@ public class FeedbackBean implements Serializable {
     }
 
     /**
-     * @return the userBean
+
      */
     UserBean getUserBean() {
         return userBean;
@@ -239,7 +239,7 @@ public class FeedbackBean implements Serializable {
     }
 
     /**
-     * @return the navigationHelper
+
      */
     NavigationHelper getNavigationHelper() {
         return navigationHelper;
@@ -253,7 +253,7 @@ public class FeedbackBean implements Serializable {
     }
 
     /**
-     * @return the emailSender
+
      */
     EMailSender getEmailSender() {
         return emailSender;

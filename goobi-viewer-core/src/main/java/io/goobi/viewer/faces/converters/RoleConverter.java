@@ -31,7 +31,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.security.Role;
 
 /**
- * RoleConverter class.
+ * JSF converter that maps between a user role object and its string representation.
  */
 @FacesConverter("roleConverter")
 public class RoleConverter implements Converter {

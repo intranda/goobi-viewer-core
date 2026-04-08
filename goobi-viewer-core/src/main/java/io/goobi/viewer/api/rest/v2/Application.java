@@ -44,7 +44,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
 /**
- * ViewerApplication class.
+ * Jersey {@link org.glassfish.jersey.server.ResourceConfig} that bootstraps the JAX-RS v2 API, registering resources, providers, filters, and dependency bindings.
  */
 @ApplicationPath(ApiUrls.API)
 @ViewerRestServiceBinding

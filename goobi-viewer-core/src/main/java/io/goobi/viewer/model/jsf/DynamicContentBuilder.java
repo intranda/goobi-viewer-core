@@ -52,7 +52,7 @@ import jakarta.faces.view.facelets.FaceletContext;
 import jakarta.faces.view.facelets.FaceletException;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class DynamicContentBuilder {
 

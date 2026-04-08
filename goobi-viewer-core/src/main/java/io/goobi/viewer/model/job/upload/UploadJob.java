@@ -77,7 +77,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 /**
- * Abstract DownloadJob class.
+ * Represents an asynchronous file upload job with its status, progress, and associated record identifier.
  */
 @Entity
 @Table(name = "upload_jobs")
@@ -399,7 +399,7 @@ public class UploadJob implements Serializable {
     /**
      * Getter for the field <code>id</code>.
      *
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -415,7 +415,7 @@ public class UploadJob implements Serializable {
     }
 
     /**
-     * @return the dateCreated
+
      */
     public LocalDateTime getDateCreated() {
         return dateCreated;
@@ -429,7 +429,7 @@ public class UploadJob implements Serializable {
     }
 
     /**
-     * @return the creatorId
+
      */
     public Long getCreatorId() {
         return creatorId;
@@ -443,7 +443,7 @@ public class UploadJob implements Serializable {
     }
 
     /**
-     * @return the email
+
      */
     public String getEmail() {
         return email;
@@ -459,7 +459,7 @@ public class UploadJob implements Serializable {
     /**
      * Getter for the field <code>status</code>.
      *
-     * @return the status
+
      */
     public JobStatus getStatus() {
         if (status == null) {
@@ -480,7 +480,7 @@ public class UploadJob implements Serializable {
     /**
      * Getter for the field <code>message</code>.
      *
-     * @return the message
+
      */
     public String getMessage() {
         return message;
@@ -498,7 +498,7 @@ public class UploadJob implements Serializable {
     /**
      * Getter for the field <code>pi</code>.
      *
-     * @return the pi
+
      */
     public String getPi() {
         return pi;
@@ -514,7 +514,7 @@ public class UploadJob implements Serializable {
     }
 
     /**
-     * @return the processId
+
      */
     public Integer getProcessId() {
         return processId;
@@ -528,7 +528,7 @@ public class UploadJob implements Serializable {
     }
 
     /**
-     * @return the title
+
      */
     public String getTitle() {
         return title;
@@ -544,7 +544,7 @@ public class UploadJob implements Serializable {
     /**
      * Getter for the field <code>description</code>.
      *
-     * @return the description
+
      */
     public String getDescription() {
         return description;
@@ -560,7 +560,7 @@ public class UploadJob implements Serializable {
     }
 
     /**
-     * @return the templateName
+
      */
     String getTemplateName() {
         return templateName;
@@ -574,7 +574,7 @@ public class UploadJob implements Serializable {
     }
 
     /**
-     * @return the docstruct
+
      */
     String getDocstruct() {
         return docstruct;
@@ -588,7 +588,7 @@ public class UploadJob implements Serializable {
     }
 
     /**
-     * @return the consent
+
      */
     public boolean isConsent() {
         return consent;
@@ -602,7 +602,7 @@ public class UploadJob implements Serializable {
     }
 
     /**
-     * @return the files
+
      */
     public List<Part> getFiles() {
         return files;
@@ -615,9 +615,6 @@ public class UploadJob implements Serializable {
         this.files = files;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     /** {@inheritDoc} */
     @Override
     public String toString() {

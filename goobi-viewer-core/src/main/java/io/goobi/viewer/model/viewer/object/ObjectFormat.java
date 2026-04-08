@@ -24,7 +24,7 @@ package io.goobi.viewer.model.viewer.object;
 import org.apache.commons.io.FilenameUtils;
 
 /**
- * ObjectFormat class.
+ * Enum representing the supported 3D object file formats (e.g. OBJ, STL, X3D) for 3D viewer integration.
  *
  * @author Florian Alpers
  */

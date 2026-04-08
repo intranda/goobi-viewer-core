@@ -41,7 +41,7 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 @Path(RECORDS_FILES_FOOTER)
 @ContentServerBinding

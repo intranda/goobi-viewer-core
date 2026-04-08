@@ -31,7 +31,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * GeoLocationInfo class.
+ * Aggregates geographic location data for a record, including multiple coordinate points and their display properties.
  *
  * @author Florian Alpers
  */
@@ -93,7 +93,7 @@ public class GeoLocationInfo {
     /**
      * Getter for the field <code>centerLocation</code>.
      *
-     * @return the centerLocation
+
      */
     public GeoLocation getCenterLocation() {
         return centerLocation;
@@ -111,7 +111,7 @@ public class GeoLocationInfo {
     /**
      * Getter for the field <code>locationList</code>.
      *
-     * @return the locationList
+
      */
     public List<GeoLocation> getLocationList() {
         return locationList;

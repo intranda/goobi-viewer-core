@@ -74,7 +74,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.UriBuilder;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class CanvasBuilder extends AbstractBuilder {
 

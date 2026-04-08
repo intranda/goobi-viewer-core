@@ -44,7 +44,7 @@ import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.MediaType;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public abstract class AbstractApiUrlManager {
 
@@ -285,21 +285,21 @@ public abstract class AbstractApiUrlManager {
         }
 
         /**
-         * @return the name
+
          */
         public String getName() {
             return name;
         }
 
         /**
-         * @return the specification
+
          */
         public String getSpecification() {
             return specification;
         }
 
         /**
-         * @return the version
+
          */
         public String getVersion() {
             return version;

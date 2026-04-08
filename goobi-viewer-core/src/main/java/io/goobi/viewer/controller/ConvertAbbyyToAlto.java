@@ -43,7 +43,7 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 /**
- * ConvertAbbyyToAlto class.
+ * Utility class for converting ABBYY FineReader recognition output to ALTO XML format.
  */
 public class ConvertAbbyyToAlto {
 

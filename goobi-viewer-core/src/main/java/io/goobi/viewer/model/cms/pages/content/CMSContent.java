@@ -44,7 +44,7 @@ import jakarta.persistence.Table;
  * Interface for all classes containing a specific kind of content for a {@link CMSPage}. Each CMSContent on a CMSPage is wrapped in a
  * {@link CMSContentItem} which itself is contained in a {@link CMSComponent}.
  * 
- * @author florian
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "cms_content")
@@ -141,7 +141,7 @@ public abstract class CMSContent {
 
     /**
      * 
-     * @return the id
+
      */
     public Long getId() {
         return this.id;
@@ -169,7 +169,7 @@ public abstract class CMSContent {
 
     /**
      * 
-     * @return the required
+
      */
     public boolean isRequired() {
         return required;

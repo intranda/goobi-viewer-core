@@ -24,7 +24,7 @@ package io.goobi.viewer.exceptions;
 import java.io.Serializable;
 
 /**
- * ModuleMissingException class.
+ * Thrown when a required Goobi viewer module is not installed or not available at runtime.
  */
 public class ModuleMissingException extends Exception implements Serializable {
 

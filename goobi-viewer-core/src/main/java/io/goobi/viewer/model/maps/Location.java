@@ -40,7 +40,7 @@ import io.goobi.viewer.modules.interfaces.IURLBuilder;
 /**
  * A location on a map. Contains a long/lat points, a label and a link
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class Location implements Serializable {
 
@@ -100,21 +100,21 @@ public class Location implements Serializable {
     }
 
     /**
-     * @return the area
+
      */
     public IArea getArea() {
         return area;
     }
 
     /**
-     * @return the label
+
      */
     public String getLabel() {
         return label;
     }
 
     /**
-     * @return the uri
+
      */
     public URI getLink() {
         return uri;
@@ -133,9 +133,6 @@ public class Location implements Serializable {
         return feature.toString();
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (obj != null && obj.getClass().equals(this.getClass())) {
@@ -148,9 +145,6 @@ public class Location implements Serializable {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         return this.label == null ? 0 : this.label.hashCode();

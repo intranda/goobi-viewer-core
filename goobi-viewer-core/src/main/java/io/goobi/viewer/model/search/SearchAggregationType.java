@@ -16,7 +16,7 @@
 package io.goobi.viewer.model.search;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public enum SearchAggregationType {
 

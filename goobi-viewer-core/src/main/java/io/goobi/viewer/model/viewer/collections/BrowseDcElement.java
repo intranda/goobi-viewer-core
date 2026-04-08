@@ -168,7 +168,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     /**
      * Getter for the field <code>name</code>. If the <code>CMSCollection</code> translation is desired, use <code>getLabel()</code> instead.
      *
-     * @return the name
+
      */
     public String getName() {
         return name;
@@ -230,7 +230,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     /**
      * getLuceneName.
      *
-     * @return the name
+
      */
     public String getLuceneName() {
         return getName();
@@ -282,7 +282,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * @return the singleRecordUrl
+
      */
     public String getSingleRecordUrl() {
         return singleRecordUrl;
@@ -320,7 +320,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     /**
      * Getter for the field <code>sortField</code>.
      *
-     * @return the sortField
+
      */
     public String getSortField() {
         return sortField;
@@ -356,7 +356,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     /**
      * isShowDescription.
      *
-     * @return the showDescription
+
      */
     public boolean isShowDescription() {
         return showDescription;
@@ -448,7 +448,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     /**
      * Getter for the field <code>info</code>.
      *
-     * @return the info
+
      */
     public BrowseElementInfo getInfo() {
         return info;
@@ -458,9 +458,6 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
 
         private static final long serialVersionUID = -2594688666989841956L;
 
-        /* (non-Javadoc)
-         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-         */
         @Override
         public int compare(BrowseDcElement o1, BrowseDcElement o2) {
             return ViewerResourceBundle.getTranslation(o1.getName(), null).compareTo(ViewerResourceBundle.getTranslation(o2.getName(), null));
@@ -499,7 +496,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * @return the facetValues
+
      */
     public List<String> getFacetValues() {
         return facetValues;

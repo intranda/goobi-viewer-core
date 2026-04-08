@@ -42,7 +42,7 @@ import io.goobi.viewer.exceptions.DAOException;
 /**
  * Writes Indexing files for SOLR indexer.
  * 
- * @author florian
+ * @author Florian Alpers
  */
 public class StatisticsIndexer {
 

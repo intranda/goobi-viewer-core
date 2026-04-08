@@ -102,17 +102,11 @@ public class SearchQueryItem implements Serializable {
         this.lines.add(new SearchQueryItemLine());
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         return Objects.hash(field, template, lines);
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -338,28 +332,28 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * @return the selectType
+
      */
     public String getSelectType() {
         return DataManager.getInstance().getConfiguration().getAdvancedSearchFieldSelectType(field, template, false);
     }
 
     /**
-     * @return the replaceRegex
+
      */
     public String getReplaceRegex() {
         return DataManager.getInstance().getConfiguration().getAdvancedSearchFieldReplaceRegex(field, template, false);
     }
 
     /**
-     * @return the replaceWith
+
      */
     public String getReplaceWith() {
         return DataManager.getInstance().getConfiguration().getAdvancedSearchFieldReplaceWith(field, template, false);
     }
 
     /**
-     * @return the label
+
      * @should return field if label empty
      */
     public String getLabel() {
@@ -382,7 +376,7 @@ public class SearchQueryItem implements Serializable {
     /**
      * Getter for the field <code>field</code>.
      *
-     * @return the field
+
      */
     public String getField() {
         return field;
@@ -399,7 +393,7 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * @return the lines
+
      */
     public List<SearchQueryItemLine> getLines() {
         return lines;
@@ -426,7 +420,7 @@ public class SearchQueryItem implements Serializable {
     /**
      * Backwards compatibility getter.
      *
-     * @return the value
+
      */
     public String getValue() {
         if (!lines.isEmpty()) {
@@ -474,7 +468,7 @@ public class SearchQueryItem implements Serializable {
     /**
      * Backwards compatibility method.
      * 
-     * @return the value2
+
      */
     public String getValue2() {
         return !lines.isEmpty() ? lines.get(0).getValue2() : null;
@@ -881,7 +875,7 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * @return the preselectValue
+
      */
     public String getPreselectValue() {
         return preselectValue;

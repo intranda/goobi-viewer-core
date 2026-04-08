@@ -210,7 +210,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Getter for the field <code>id</code>.
      *
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -228,7 +228,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Getter for the field <code>name</code>.
      *
-     * @return the name
+
      */
     @Override
     public String getName() {
@@ -247,7 +247,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Getter for the field <code>description</code>.
      *
-     * @return the description
+
      */
     public String getDescription() {
         return description;
@@ -309,7 +309,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Checks whether only Solr documents of the UGC type have the access condition upon which this license type is based.
      *
-     * @return the ugcType
+
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -350,7 +350,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * isOpenAccess.
      *
-     * @return the openAccess
+
      */
     public boolean isOpenAccess() {
         return openAccess;
@@ -368,7 +368,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * isCore.
      *
-     * @return the core
+
      */
     public boolean isCore() {
         return core;
@@ -384,7 +384,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * @return the movingWall
+
      */
     public boolean isMovingWall() {
         return movingWall;
@@ -398,7 +398,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * @return the pdfDownloadQuota
+
      */
     public boolean isPdfDownloadQuota() {
         return pdfDownloadQuota;
@@ -412,7 +412,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * @return the concurrentViewsLimit
+
      */
     public boolean isConcurrentViewsLimit() {
         return concurrentViewsLimit;
@@ -426,7 +426,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * @return the redirect
+
      */
     public boolean isRedirect() {
         return redirect;
@@ -440,7 +440,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * @return the redirectUrl
+
      */
     public String getRedirectUrl() {
         return redirectUrl;
@@ -454,7 +454,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * @return the accessTicketRequired
+
      */
     public boolean isAccessTicketRequired() {
         return accessTicketRequired;
@@ -484,7 +484,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Getter for the field <code>privileges</code>.
      *
-     * @return the privileges
+
      */
     public Set<String> getPrivileges() {
         return privileges;
@@ -781,7 +781,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Getter for the field <code>overridingLicenseTypes</code>.
      *
-     * @return the overridsenLicenseTypes
+
      */
     public Set<LicenseType> getOverriddenLicenseTypes() {
         return overriddenLicenseTypes;
@@ -807,7 +807,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * @return the imagePlaceholders
+
      */
     public Set<LicenseTypePlaceholderInfo> getImagePlaceholders() {
         return imagePlaceholders;
@@ -879,7 +879,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Returns configurations as a map for further usage.
      * 
-     * @return the imagePlaceholders
+
      */
     public Map<String, AccessDeniedInfoConfig> getImagePlaceholdersAsMap() {
         Map<String, AccessDeniedInfoConfig> ret = HashMap.newHashMap(imagePlaceholders.size());
@@ -892,7 +892,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * @return the privilegesCopy
+
      */
     public Set<String> getPrivilegesCopy() {
         return privilegesCopy;
@@ -918,7 +918,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * @return the restrictionsExpired
+
      */
     public Map<String, Boolean> getRestrictionsExpired() {
         return restrictionsExpired;
@@ -941,7 +941,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * @return the recordCount
+
      */
     public Long getRecordCount() {
         return recordCount;
@@ -955,7 +955,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * @return the displayRecordSearchLink
+
      */
     public boolean isDisplayRecordSearchLink() {
         return displayRecordSearchLink;

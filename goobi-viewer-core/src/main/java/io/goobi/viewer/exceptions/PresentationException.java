@@ -24,7 +24,7 @@ package io.goobi.viewer.exceptions;
 import java.io.Serializable;
 
 /**
- * PresentationException class.
+ * Thrown when an error occurs while loading or presenting a digitized record.
  */
 public class PresentationException extends Exception implements Serializable {
 

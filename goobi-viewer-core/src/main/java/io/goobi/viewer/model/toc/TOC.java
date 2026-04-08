@@ -447,7 +447,7 @@ public class TOC implements Serializable {
     }
 
     /**
-     * @return the tocElementMap
+
      */
     Map<String, List<TOCElement>> getTocElementMap() {
         return tocElementMap;
@@ -498,7 +498,7 @@ public class TOC implements Serializable {
     /**
      * Getter for the field <code>tocVisible</code>.
      *
-     * @return the tocVisible
+
      */
     public int getTocVisible() {
         return tocVisible;
@@ -516,7 +516,7 @@ public class TOC implements Serializable {
     /**
      * Getter for the field <code>tocInvisible</code>.
      *
-     * @return the tocInvisible
+
      */
     public int getTocInvisible() {
         return tocInvisible;
@@ -534,7 +534,7 @@ public class TOC implements Serializable {
     /**
      * Getter for the field <code>maxTocDepth</code>.
      *
-     * @return the maxTocDepth
+
      */
     public int getMaxTocDepth() {
         // If this method is called before getTreeView, the depth will always be 0
@@ -558,7 +558,7 @@ public class TOC implements Serializable {
     /**
      * Getter for the field <code>totalTocSize</code>.
      *
-     * @return the totalTocSize
+
      */
     public int getTotalTocSize() {
         return totalTocSize;
@@ -576,7 +576,7 @@ public class TOC implements Serializable {
     /**
      * Getter for the field <code>currentPage</code>.
      *
-     * @return the currentPage
+
      */
     public int getCurrentPage() {
         return currentPage;

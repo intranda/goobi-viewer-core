@@ -43,7 +43,7 @@ import io.goobi.viewer.model.cms.CMSCategory;
 /**
  * Managed Bean for editing, deleting and creating {@link CMSCategory categories}.
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Named("cmsCategoriesBean")
 @SessionScoped
@@ -209,7 +209,7 @@ public class CmsCategoriesBean implements Serializable {
     /**
      * Getter for the field <code>categoryName</code>.
      *
-     * @return the categoryName
+
      */
     public String getCategoryName() {
         return categoryName;
@@ -227,7 +227,7 @@ public class CmsCategoriesBean implements Serializable {
     /**
      * Getter for the field <code>categoryDescription</code>.
      *
-     * @return the categoryDescription
+
      */
     public String getCategoryDescription() {
         return categoryDescription;
@@ -245,7 +245,7 @@ public class CmsCategoriesBean implements Serializable {
     /**
      * Getter for the field <code>selectedCategory</code>.
      *
-     * @return the selectedCategory
+
      */
     public CMSCategory getSelectedCategory() {
         return selectedCategory;

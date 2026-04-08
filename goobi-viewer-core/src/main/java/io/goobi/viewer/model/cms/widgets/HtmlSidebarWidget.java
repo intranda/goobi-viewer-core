@@ -39,7 +39,7 @@ import jakarta.persistence.Entity;
 /**
  * A subtype of {@link CustomSidebarWidget} to display a html text in different languages.
  * 
- * @author florian
+ * @author Florian Alpers
  */
 @Entity
 @DiscriminatorValue("HtmlSidebarWidget")

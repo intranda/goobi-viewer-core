@@ -73,7 +73,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 /**
- * AccessConditionUtils class.
+ * Utility class providing methods to evaluate access conditions and licence restrictions for records, images, and metadata.
  */
 public final class AccessConditionUtils {
 

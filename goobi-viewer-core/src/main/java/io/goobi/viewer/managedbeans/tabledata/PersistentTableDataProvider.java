@@ -26,10 +26,11 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * PersistentTableDataProvider class.
+ * Table data provider that persists filter and sorting state across requests for admin data tables.
+ *
+ * @param <T>
  *
  * @author Florian Alpers
- * @param <T>
  */
 public class PersistentTableDataProvider<T> extends TableDataProvider<T> {
 

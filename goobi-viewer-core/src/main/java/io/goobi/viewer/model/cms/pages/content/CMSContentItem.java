@@ -43,7 +43,7 @@ import jakarta.faces.context.FacesContext;
 /**
  * Wraps a {@link CMSContent} within a {@link CMSPage}.
  * 
- * @author florian
+ * @author Florian Alpers
  */
 public class CMSContentItem {
 

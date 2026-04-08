@@ -31,7 +31,7 @@ import org.apache.commons.lang3.StringUtils;
  * 'session'. This type determines if a consent is stored in the local or session storage of a browser. If it is stored in session storage, the time
  * to live of that scope is determined by the duration of the session.
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class ConsentScope implements Serializable {
 
@@ -82,7 +82,7 @@ public class ConsentScope implements Serializable {
     /**
      * Gets the storage mode, determining if the scope is limited to a http session or a span of time.
      * 
-     * @return the storageMode
+
      */
     public StorageMode getStorageMode() {
         return storageMode;
@@ -100,7 +100,7 @@ public class ConsentScope implements Serializable {
     /**
      * Get the number of days the consent is valid for.
      * 
-     * @return the daysToLive
+
      */
     public int getDaysToLive() {
         return daysToLive;
@@ -118,7 +118,7 @@ public class ConsentScope implements Serializable {
     /**
      * The scope within which the consent is valid.
      * 
-     * @author florian
+     * @author Florian Alpers
      */
     public enum StorageMode {
         /**

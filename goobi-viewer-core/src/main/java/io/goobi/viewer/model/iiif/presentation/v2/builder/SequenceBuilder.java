@@ -93,7 +93,7 @@ import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * SequenceBuilder class.
+ * Builds the Sequence and Canvas resources within a IIIF Presentation API v2 Manifest.
  *
  * @author Florian Alpers
  */
@@ -584,7 +584,7 @@ public class SequenceBuilder extends AbstractBuilder {
     /**
      * Getter for the field <code>buildMode</code>.
      *
-     * @return the buildMode
+
      */
     public BuildMode getBuildMode() {
         return buildMode;
@@ -604,7 +604,7 @@ public class SequenceBuilder extends AbstractBuilder {
     /**
      * Getter for the field <code>preferredView</code>.
      *
-     * @return the preferredView
+
      */
     public PageType getPreferedView() {
         return preferedView;

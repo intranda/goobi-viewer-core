@@ -45,7 +45,7 @@ import jakarta.persistence.Transient;
 /**
  * Class holding a formatted text related to a single PI which may be edited in the admin/cms-backend and displayed in a (sidebar) widget.
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "cms_record_notes")
@@ -110,9 +110,6 @@ public abstract class CMSRecordNote implements Serializable {
         this.styleClass = source.styleClass;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -121,9 +118,6 @@ public abstract class CMSRecordNote implements Serializable {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -146,44 +140,26 @@ public abstract class CMSRecordNote implements Serializable {
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.IRecordNote#getId()
-     */
     public Long getId() {
         return id;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.IRecordNote#setId(java.lang.Long)
-     */
     public void setId(Long id) {
         this.id = id;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.IRecordNote#getNoteTitle()
-     */
     public TranslatedText getNoteTitle() {
         return noteTitle;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.IRecordNote#getNoteText()
-     */
     public TranslatedText getNoteText() {
         return noteText;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.IRecordNote#isDisplayNote()
-     */
     public boolean isDisplayNote() {
         return displayNote;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.IRecordNote#setDisplayNote(boolean)
-     */
     public void setDisplayNote(boolean displayNote) {
         this.displayNote = displayNote;
     }
@@ -197,7 +173,7 @@ public abstract class CMSRecordNote implements Serializable {
     }
 
     /**
-     * @return the solrDoc
+
      */
     public SolrDocument getSolrDoc() {
         return solrDoc;

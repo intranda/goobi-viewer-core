@@ -57,7 +57,7 @@ import io.goobi.viewer.solr.SolrConstants;
 /**
  * Class to create comments from a text input for a given PI and page order and to save them using a given {@link AnnotationSaver}.
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class CommentManager implements AnnotationLister<Comment> {
 
@@ -221,26 +221,16 @@ public class CommentManager implements AnnotationLister<Comment> {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAllAnnotations()
-     */
     @Override
     public List<Comment> getAllAnnotations() {
         return lister.getAnnotations(0, Integer.MAX_VALUE, null, Arrays.asList(Motivation.COMMENTING), null, null, null, null, null, false);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getTotalAnnotationCount()
-     */
     @Override
     public long getTotalAnnotationCount() {
         return getAllAnnotations().size();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAnnotations(int, int, java.lang.String, java.util.List, 
-     * java.util.List, java.util.List, java.lang.String, java.lang.Integer, java.lang.String, boolean)
-     */
     @Override
     public List<Comment> getAnnotations(int firstIndex, int items, String textQuery, List<String> motivations, List<Long> generators,
             List<Long> creators, String targetPi, Integer targetPage, String sortField, boolean sortDescending) {
@@ -253,10 +243,6 @@ public class CommentManager implements AnnotationLister<Comment> {
                 sortDescending);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAnnotationCount(java.lang.String, java.util.List, java.util.List,
-     * java.util.List, java.lang.String, java.lang.Integer)
-     */
     @Override
     public long getAnnotationCount(String textQuery, List<String> motivations, List<Long> generators, List<Long> creators, String targetPi,
             Integer targetPage) {
@@ -289,9 +275,6 @@ public class CommentManager implements AnnotationLister<Comment> {
         return text;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAnnotation(java.lang.Long)
-     */
     @Override
     public Optional<Comment> getAnnotation(Long id) {
         return lister.getAnnotation(id);

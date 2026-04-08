@@ -31,7 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 
 /**
- * BrowseTerm class.
+ * Represents a single term in the alphabetical browsing index, with its display label and hit count.
  */
 public class BrowseTerm implements Serializable {
 
@@ -100,7 +100,7 @@ public class BrowseTerm implements Serializable {
     /**
      * Getter for the field <code>term</code>.
      *
-     * @return the term
+
      */
     public String getTerm() {
         return term;
@@ -109,14 +109,14 @@ public class BrowseTerm implements Serializable {
     /**
      * Getter for the field <code>sortTerm</code>.
      *
-     * @return the sortTerm
+
      */
     public String getSortTerm() {
         return sortTerm;
     }
 
     /**
-     * @return the translations
+
      */
     public IMetadataValue getTranslations() {
         return translations;
@@ -135,7 +135,7 @@ public class BrowseTerm implements Serializable {
     /**
      * Getter for the field <code>hitCount</code>.
      *
-     * @return the hitCount
+
      */
     public long getHitCount() {
         return hitCount;
@@ -153,7 +153,7 @@ public class BrowseTerm implements Serializable {
     /**
      * Getter for the field <code>piList</code>.
      *
-     * @return the piList
+
      */
     public Set<String> getPiList() {
         return piList;

@@ -42,7 +42,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "terms_of_use")
@@ -94,7 +94,7 @@ public class TermsOfUse {
     }
 
     /**
-     * @return the active
+
      */
     public boolean isActive() {
         return active;
@@ -184,7 +184,7 @@ public class TermsOfUse {
     /**
      * For testing.
      * 
-     * @return the translations
+
      */
     List<TermsOfUseTranslation> getTranslations() {
         return translations;

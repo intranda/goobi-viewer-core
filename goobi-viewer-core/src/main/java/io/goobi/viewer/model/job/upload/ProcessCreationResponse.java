@@ -35,7 +35,7 @@ public class ProcessCreationResponse {
     private int processId;
 
     /**
-     * @return the result
+
      */
     public String getResult() {
         return result;
@@ -49,7 +49,7 @@ public class ProcessCreationResponse {
     }
 
     /**
-     * @return the errorText
+
      */
     public String getErrorText() {
         return errorText;
@@ -63,7 +63,7 @@ public class ProcessCreationResponse {
     }
 
     /**
-     * @return the processName
+
      */
     public String getProcessName() {
         return processName;
@@ -77,7 +77,7 @@ public class ProcessCreationResponse {
     }
 
     /**
-     * @return the processId
+
      */
     public int getProcessId() {
         return processId;

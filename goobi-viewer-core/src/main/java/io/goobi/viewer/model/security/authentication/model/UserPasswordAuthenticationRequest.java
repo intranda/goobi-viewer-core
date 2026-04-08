@@ -22,7 +22,7 @@
 package io.goobi.viewer.model.security.authentication.model;
 
 /**
- * UserPasswordAuthenticationRequest class.
+ * Request DTO carrying a username and password for local authentication.
  *
  * @author Florian Alpers
  */
@@ -52,7 +52,7 @@ public class UserPasswordAuthenticationRequest {
     /**
      * Getter for the field <code>username</code>.
      *
-     * @return the username
+
      */
     public String getUsername() {
         return username;
@@ -61,7 +61,7 @@ public class UserPasswordAuthenticationRequest {
     /**
      * Getter for the field <code>password</code>.
      *
-     * @return the password
+
      */
     public String getPassword() {
         return password;
@@ -85,9 +85,6 @@ public class UserPasswordAuthenticationRequest {
         this.password = password;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     /** {@inheritDoc} */
     @Override
     public String toString() {

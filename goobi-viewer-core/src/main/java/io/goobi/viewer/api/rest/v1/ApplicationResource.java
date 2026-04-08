@@ -39,7 +39,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
- * @author florian
+ * REST endpoint that returns metadata about available API endpoints and their capabilities.
+ *
+ * @author Florian Alpers
  */
 @Hidden
 @Path("/")

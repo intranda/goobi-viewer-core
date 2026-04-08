@@ -57,7 +57,7 @@ import jakarta.inject.Named;
  *
  * Bean used for listing and retrieving {@link CMSRecordNote}s.
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Named
 @SessionScoped
@@ -98,7 +98,7 @@ public class CmsRecordNotesBean implements Serializable {
     }
 
     /**
-     * @return the dataProvider
+
      */
     public TableDataProvider<CMSRecordNote> getDataProvider() {
         return dataProvider;

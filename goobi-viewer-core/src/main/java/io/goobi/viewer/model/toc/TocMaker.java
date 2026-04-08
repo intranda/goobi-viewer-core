@@ -74,7 +74,7 @@ import jakarta.faces.context.FacesContext;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * TocMaker class.
+ * Builds the table-of-contents tree for a digitized record by querying the Solr index and structure map.
  */
 public final class TocMaker {
 

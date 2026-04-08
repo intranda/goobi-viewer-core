@@ -97,7 +97,7 @@ import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * This bean contains useful navigation parameters.
+ * JSF backing bean providing navigation state, URL building, and breadcrumb tracking for the viewer frontend.
  */
 @Named
 @SessionScoped
@@ -232,7 +232,7 @@ public class NavigationHelper implements Serializable {
     /**
      * isCmsPage.
      *
-     * @return the isCmsPage
+
      */
     public boolean isCmsPage() {
         return isCmsPage;
@@ -586,7 +586,7 @@ public class NavigationHelper implements Serializable {
     /**
      * getCurrentView.
      *
-     * @return the currentView
+
      * @should return value correctly
      */
     public String getCurrentView() {
@@ -1480,7 +1480,7 @@ public class NavigationHelper implements Serializable {
     /**
      * Getter for the field <code>statusMap</code>.
      *
-     * @return the statusMap
+
      */
     public Map<String, String> getStatusMap() {
         return statusMap;

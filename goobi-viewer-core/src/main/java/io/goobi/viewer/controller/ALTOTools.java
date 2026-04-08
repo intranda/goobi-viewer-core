@@ -58,7 +58,7 @@ import io.goobi.viewer.controller.model.alto.TextEnricher;
 import io.goobi.viewer.model.search.FuzzySearchTerm;
 
 /**
- * ALTOTools class.
+ * Utility class for parsing and processing ALTO (Analyzed Layout and Text Object) XML documents.
  */
 public final class ALTOTools {
 

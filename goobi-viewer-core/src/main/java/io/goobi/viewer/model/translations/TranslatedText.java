@@ -45,7 +45,7 @@ import io.goobi.viewer.controller.JsonTools;
  * which represent text that has not actual locale, whether it is text that has no translations or is an internal representation of the text. This
  * default language only exists if the text is initiated giving only a single text without locale or if it is explicitly added
  * 
- * @author florian
+ * @author Florian Alpers
  */
 @JsonSerialize(using = TranslatedTextSerializer.class)
 public class TranslatedText extends MultiLanguageMetadataValue implements IPolyglott, Serializable {

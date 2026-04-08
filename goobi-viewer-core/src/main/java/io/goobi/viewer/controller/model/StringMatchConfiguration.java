@@ -32,7 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * A matcher read from a configuration node which matches strings based on certain criteria.
  * 
- * @author florian
+ * @author Florian Alpers
  */
 public class StringMatchConfiguration implements Predicate<String> {
 

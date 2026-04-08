@@ -100,7 +100,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 @jakarta.ws.rs.Path(RECORDS_FILES)
 @ViewerRestServiceBinding

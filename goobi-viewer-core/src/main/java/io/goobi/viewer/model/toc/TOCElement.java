@@ -200,7 +200,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * @return the accessPermissionThumbnail
+
      */
     public AccessPermission getAccessPermissionThumbnail() {
         return accessPermissionThumbnail;
@@ -264,7 +264,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * Getter for the field <code>label</code>.
      *
-     * @return the label
+
      */
     public String getLabel() {
         Locale locale = BeanUtils.getLocale();
@@ -279,7 +279,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
      * Getter for the field <code>label</code>.
      *
      * @param locale locale used to select the label value
-     * @return the label
+
      */
     public String getLabel(Locale locale) {
         return label.getValue(locale).orElse(label.getValue().orElse(""));
@@ -289,7 +289,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
      * Getter for the field <code>label</code>.
      *
      * @param locale BCP 47 language tag for label selection
-     * @return the label
+
      */
     public String getLabel(String locale) {
         return label.getValue(locale).orElse(label.getValue().orElse(""));
@@ -298,7 +298,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * Getter for the field <code>metadata</code>.
      *
-     * @return the metadata
+
      */
     public Map<String, String> getMetadata() {
         return metadata;
@@ -317,7 +317,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * Getter for the field <code>pageNo</code>.
      *
-     * @return the pageNo
+
      */
     public String getPageNo() {
         return pageNo;
@@ -326,7 +326,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * Getter for the field <code>iddoc</code>.
      *
-     * @return the iddoc
+
      */
     public String getIddoc() {
         return iddoc;
@@ -335,7 +335,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * Getter for the field <code>pageNoLabel</code>.
      *
-     * @return the pageNoLabel
+
      */
     public String getPageNoLabel() {
         return pageNoLabel;
@@ -344,7 +344,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * Getter for the field <code>topStructPi</code>.
      *
-     * @return the topStructPi
+
      */
     public String getTopStructPi() {
         return topStructPi;
@@ -353,7 +353,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * Gibt die logID aus der Mets Datei zurück.
      *
-     * @return the logID
+
      */
     public String getLogId() {
         return this.logId;
@@ -416,7 +416,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * getFullscreenUrl.
      *
-     * @return the fullscreenUrl
+
      */
     public String getFullscreenUrl() {
         return getUrl(PageType.viewFullscreen.name());
@@ -515,7 +515,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * Getter for the field <code>groupIds</code>.
      *
-     * @return the groupIds
+
      */
     public List<String> getGroupIds() {
         return groupIds;
@@ -533,7 +533,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * Getter for the field <code>recordMimeType</code>.
      *
-     * @return the recordMimeType
+
      */
     public String getRecordMimeType() {
         return recordMimeType;

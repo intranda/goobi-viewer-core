@@ -106,8 +106,7 @@ import jakarta.servlet.http.HttpServletRequest;
 @SessionScoped
 public class CmsBean implements Serializable {
 
-    /**
-     */
+    
     public static final String CMSPAGES_FILTER = "title_menuTitle_categories-name";
 
     private static final long serialVersionUID = -2021732230593473827L;
@@ -1470,7 +1469,7 @@ public class CmsBean implements Serializable {
     /**
      * Getter for the field <code>currentWorkPi</code>.
      *
-     * @return the currentWorkPi
+
      */
     public String getCurrentWorkPi() {
         return currentWorkPi;

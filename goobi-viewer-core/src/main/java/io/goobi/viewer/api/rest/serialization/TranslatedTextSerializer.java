@@ -28,7 +28,7 @@ import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
  * Implementation of {@link WebAnnotationMetadataValueSerializer} which always writes the value as json-object, never as string. This was, language
  * info is always preserved
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class TranslatedTextSerializer extends WebAnnotationMetadataValueSerializer {
 

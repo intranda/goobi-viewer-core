@@ -50,7 +50,7 @@ import io.goobi.viewer.exceptions.NotImplementedException;
 import io.goobi.viewer.exceptions.PresentationException;
 
 /**
- * Catches general exceptions encountered during rest-api calls and creates an error response.
+ * JAX-RS exception mapper that catches general exceptions encountered during REST API calls and creates a JSON-formatted error response.
  *
  * @author Florian Alpers
  */

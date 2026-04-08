@@ -75,7 +75,7 @@ import io.goobi.viewer.solr.SolrTools;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * RSSFeed class.
+ * Builds and serialises an RSS feed from Solr search results for the viewer's RSS endpoint.
  */
 public final class RSSFeed {
     /**

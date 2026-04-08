@@ -66,7 +66,7 @@ import jakarta.servlet.http.HttpServletRequest;
  * Manages (possibly timeconsuming) {@link Task tasks} within the viewer which can be triggered and monitored via the {@link TasksResource}. The tasks
  * are not executed sequentially or queued in any way, except through the limit of the internal thread pool (5 parallel tasks)
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class TaskManager {
 

@@ -51,7 +51,7 @@ import jakarta.servlet.http.HttpServletRequest;
  * {@link TaskStatus#STARTED}. After processing ends the task is set to either {@link TaskStatus#COMPLETE} or {@link TaskStatus#ERROR} depending on
  * whether an error occurred which may be recorded in the {@link #exception} property.
  *
- * @author florian
+ * @author Florian Alpers
  */
 @JsonInclude(Include.NON_EMPTY)
 public class Task {
@@ -162,21 +162,21 @@ public class Task {
     }
 
     /**
-     * @return the id
+
      */
     public long getId() {
         return id;
     }
 
     /**
-     * @return the type
+
      */
     public TaskType getType() {
         return type;
     }
 
     /**
-     * @return the exception
+
      */
     public Optional<String> getException() {
         return exception;
@@ -190,7 +190,7 @@ public class Task {
     }
 
     /**
-     * @return the sessionId
+
      */
     public Optional<String> getSessionId() {
         return sessionId;
@@ -204,21 +204,21 @@ public class Task {
     }
 
     /**
-     * @return the timeCreated
+
      */
     public LocalDateTime getTimeCreated() {
         return timeCreated;
     }
 
     /**
-     * @return the work
+
      */
     public BiConsumer<HttpServletRequest, Task> getWork() {
         return work;
     }
 
     /**
-     * @return the params
+
      */
     public TaskParameter getParams() {
         return params;
@@ -232,7 +232,7 @@ public class Task {
     }
 
     /**
-     * @return the status
+
      */
     public TaskStatus getStatus() {
         return status;
@@ -242,9 +242,6 @@ public class Task {
         return exception.orElse(null);
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return "Task " + this.id + "; Type: " + this.type + "; Status: " + this.status;

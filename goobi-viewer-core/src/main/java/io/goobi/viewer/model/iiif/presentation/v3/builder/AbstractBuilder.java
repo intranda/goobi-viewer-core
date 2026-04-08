@@ -111,7 +111,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.UriBuilder;
 
 /**
- * Abstract AbstractBuilder class.
+ * Abstract base class for IIIF Presentation API v3 resource builders, providing shared URI construction and metadata helpers.
  *
  * @author Florian Alpers
  */

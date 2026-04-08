@@ -69,7 +69,7 @@ import jakarta.persistence.RollbackException;
 import jakarta.servlet.http.Part;
 
 /**
- * CmsMediaBean class.
+ * JSF backing bean for CMS media file management including upload, editing, and deletion.
  */
 @Named
 @SessionScoped
@@ -622,7 +622,7 @@ public class CmsMediaBean implements Serializable {
     /**
      * Getter for the field <code>selectedTag</code>.
      *
-     * @return the selectedTag
+
      */
     public String getSelectedTag() {
         return selectedTag;
@@ -686,7 +686,7 @@ public class CmsMediaBean implements Serializable {
     /**
      * Getter for the field <code>filter</code>.
      *
-     * @return the filter
+
      */
     public String getFilter() {
         return filter;
@@ -707,7 +707,7 @@ public class CmsMediaBean implements Serializable {
     /**
      * Getter for the field <code>filenameFilter</code>.
      *
-     * @return the filter
+
      */
     public String getFilenameFilter() {
         return filenameFilter;
@@ -750,7 +750,7 @@ public class CmsMediaBean implements Serializable {
     /**
      * Getter for the field <code>selectedMediaItem</code>.
      *
-     * @return the selectedMediaItem
+
      */
     public TranslatedSelectable<CMSMediaItem> getSelectedMediaItem() {
         return selectedMediaItem;
@@ -768,7 +768,7 @@ public class CmsMediaBean implements Serializable {
     /**
      * isAllSelected.
      *
-     * @return the allSelected
+
      */
     public boolean isAllSelected() {
         return allSelected;

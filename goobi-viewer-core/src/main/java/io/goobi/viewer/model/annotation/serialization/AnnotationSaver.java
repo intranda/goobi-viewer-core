@@ -28,7 +28,7 @@ import io.goobi.viewer.model.annotation.PersistentAnnotation;
 /**
  * Saves WebAnnotations to a persistence context.
  *
- * @author florian
+ * @author Florian Alpers
  */
 public interface AnnotationSaver {
 

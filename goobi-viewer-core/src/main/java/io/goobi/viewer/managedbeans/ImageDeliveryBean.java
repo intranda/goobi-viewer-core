@@ -343,7 +343,7 @@ public class ImageDeliveryBean implements Serializable {
     /**
      * Retrieves the #{@link io.goobi.viewer.controller.imaging.IIIFUrlHandler}, creates it if it doesn't exist yet.
      *
-     * @return the iiif
+
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public IIIFUrlHandler getIiif() throws ViewerConfigurationException {
@@ -356,7 +356,7 @@ public class ImageDeliveryBean implements Serializable {
     /**
      * Retrieves the #{@link io.goobi.viewer.controller.imaging.WatermarkHandler}, creates it if it doesn't exist yet.
      *
-     * @return the footer
+
      */
     public WatermarkHandler getFooter() {
         if (footer == null) {
@@ -368,7 +368,7 @@ public class ImageDeliveryBean implements Serializable {
     /**
      * Retrieves the #{@link io.goobi.viewer.controller.imaging.ImageHandler}, creates it if it doesn't exist yet.
      *
-     * @return the images
+
      */
     public ImageHandler getImages() {
         if (images == null) {
@@ -380,7 +380,7 @@ public class ImageDeliveryBean implements Serializable {
     /**
      * Retrieves the #{@link io.goobi.viewer.controller.imaging.PdfHandler}, creates it if it doesn't exist yet.
      *
-     * @return the pdf
+
      */
     public PdfHandler getPdf() {
         if (pdf == null) {
@@ -392,7 +392,7 @@ public class ImageDeliveryBean implements Serializable {
     /**
      * Retrieves the #{@link io.goobi.viewer.controller.imaging.ThumbnailHandler}, creates it if it doesn't exist yet.
      *
-     * @return the thumbs
+
      */
     public ThumbnailHandler getThumbs() {
         if (thumbs == null) {
@@ -404,7 +404,7 @@ public class ImageDeliveryBean implements Serializable {
     /**
      * Retrieves the #{@link io.goobi.viewer.controller.imaging.MediaHandler}, creates it if it doesn't exist yet.
      *
-     * @return the media
+
      */
     public MediaHandler getMedia() {
         return media;
@@ -432,7 +432,7 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
-     * @return the servletPath
+
      */
     private String getServletPath() {
         if (servletPath == null) {
@@ -550,7 +550,7 @@ public class ImageDeliveryBean implements Serializable {
     /**
      * Returns the url path to the static images folder of the viewer theme (or the viewer itself if no theme is found.
      *
-     * @return the staticImagesURI
+
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getStaticImagesURI() throws ViewerConfigurationException {
@@ -562,7 +562,7 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
-     * @return the cmsMediaPath
+
      * @throws ViewerConfigurationException
      */
     private String getCmsMediaPath() throws ViewerConfigurationException {

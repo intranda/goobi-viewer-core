@@ -165,7 +165,7 @@ public class ArchiveBean implements Serializable {
 
     /**
      *
-     * @return the archiveTree
+
      */
     public ArchiveTree getArchiveTree() {
         // logger.trace("getArchiveTree: {} from ArchiveBean {}", archiveTree != null ?
@@ -174,7 +174,7 @@ public class ArchiveBean implements Serializable {
     }
 
     /**
-     * @return the archiveConfig
+
      */
     public CMSArchiveConfig getArchiveConfig() {
         return archiveConfig;
@@ -300,7 +300,7 @@ public class ArchiveBean implements Serializable {
     }
 
     /**
-     * @return the searchString
+
      */
     public String getSearchString() {
         return searchString;
@@ -384,7 +384,7 @@ public class ArchiveBean implements Serializable {
     }
 
     /**
-     * @return the databaseState
+
      */
     public DatabaseState getDatabaseState() {
         logger.trace("getDatabaseState"); //NOSONAR Debug
@@ -405,7 +405,7 @@ public class ArchiveBean implements Serializable {
     }
 
     /**
-     * @return the currentResource
+
      */
     public String getCurrentResource() {
         return currentResource;

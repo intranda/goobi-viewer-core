@@ -266,7 +266,7 @@ public class ArchiveTree implements Serializable {
     }
 
     /**
-     * @return the selectedEntry
+
      */
     public ArchiveEntry getSelectedEntry() {
         // logger.trace("getSelectedEntry"); //NOSONAR Debug
@@ -307,7 +307,7 @@ public class ArchiveTree implements Serializable {
     }
 
     /**
-     * @return the trueRootElement
+
      */
     public ArchiveEntry getTrueRootElement() {
         return trueRootElement;
@@ -393,7 +393,7 @@ public class ArchiveTree implements Serializable {
     }
 
     /**
-     * @return the entryMap
+
      */
     Map<String, List<ArchiveEntry>> getEntryMap() {
         return entryMap;

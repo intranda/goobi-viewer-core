@@ -36,7 +36,7 @@ import io.goobi.viewer.solr.SolrSearchIndex;
  * Describes the locations in the viewer where a notification should be displayed. This can either be all pages or all record pages which may be
  * further restricted by a SOLR query condition
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class DisplayScope implements Serializable {
 
@@ -45,7 +45,7 @@ public class DisplayScope implements Serializable {
     /**
      * The type of viewer-pages that are in scope.
      *
-     * @author florian
+     * @author Florian Alpers
      */
     public enum PageScope {
         /**
@@ -92,7 +92,7 @@ public class DisplayScope implements Serializable {
     }
 
     /**
-     * @return the pageScope
+
      */
     public PageScope getPageScope() {
         return pageScope;
@@ -106,7 +106,7 @@ public class DisplayScope implements Serializable {
     }
 
     /**
-     * @return the filterQuery
+
      */
     public String getFilterQuery() {
         return filterQuery;

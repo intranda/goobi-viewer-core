@@ -60,7 +60,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
  * http://www.facebook.com/note.php?note_id=125229397708&comments&ref=mf
  */
 /**
- * MyExceptionHandler class.
+ * Custom JSF ExceptionHandler that intercepts unhandled exceptions and redirects to an appropriate error page.
  */
 public class MyExceptionHandler extends ExceptionHandlerWrapper {
 

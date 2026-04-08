@@ -44,7 +44,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 @MappedSuperclass
 public class LogMessage implements Serializable, Comparable<LogMessage> {
@@ -133,14 +133,14 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
     }
 
     /**
-     * @return the id
+
      */
     public Long getId() {
         return id;
     }
 
     /**
-     * @return the creatorId
+
      */
     @JsonIgnore
     public Long getCreatorId() {
@@ -148,7 +148,7 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
     }
 
     /**
-     * @return the dateCreated
+
      */
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     public LocalDateTime getDateCreated() {
@@ -156,14 +156,14 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
     }
 
     /**
-     * @return the message
+
      */
     public String getMessage() {
         return message;
     }
 
     /**
-     * @return the creator
+
      */
     public UserJsonFacade getCreator() {
         return creator;
@@ -194,17 +194,11 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
         }
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
     @Override
     public int compareTo(LogMessage o) {
         return this.dateCreated.compareTo(o.dateCreated);
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return this.message + " (" + (this.creator == null ? ("ID:" + this.creatorId) : this.creator.getName()) + " - " + this.dateCreated;

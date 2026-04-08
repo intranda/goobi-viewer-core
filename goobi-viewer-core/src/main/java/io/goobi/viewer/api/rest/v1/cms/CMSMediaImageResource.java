@@ -58,7 +58,9 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 /**
- * @author florian
+ * REST resource for serving CMS media images with optional resizing.
+ *
+ * @author Florian Alpers
  */
 @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_IMAGE)
 @CORSBinding

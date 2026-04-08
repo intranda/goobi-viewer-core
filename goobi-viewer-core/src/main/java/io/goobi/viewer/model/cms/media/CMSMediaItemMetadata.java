@@ -27,7 +27,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 /**
- * CMSMediaItemMetadata class.
+ * Stores locale-specific metadata (title, description, link) for a {@link io.goobi.viewer.model.cms.media.CMSMediaItem}.
  */
 @Embeddable
 public class CMSMediaItemMetadata implements Serializable {
@@ -100,7 +100,7 @@ public class CMSMediaItemMetadata implements Serializable {
     /**
      * Getter for the field <code>language</code>.
      *
-     * @return the language
+
      */
     public String getLanguage() {
         return language;
@@ -118,7 +118,7 @@ public class CMSMediaItemMetadata implements Serializable {
     /**
      * Getter for the field <code>name</code>.
      *
-     * @return the name
+
      */
     public String getName() {
         return name;
@@ -136,7 +136,7 @@ public class CMSMediaItemMetadata implements Serializable {
     /**
      * Getter for the field <code>description</code>.
      *
-     * @return the description
+
      */
     public String getDescription() {
         return description;
@@ -152,7 +152,7 @@ public class CMSMediaItemMetadata implements Serializable {
     }
 
     /**
-     * @return the alternativeText
+
      */
     public String getAlternativeText() {
         return alternativeText;

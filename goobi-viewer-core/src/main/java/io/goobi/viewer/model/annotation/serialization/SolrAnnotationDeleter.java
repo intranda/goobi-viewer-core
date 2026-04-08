@@ -31,7 +31,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class SolrAnnotationDeleter implements AnnotationDeleter {
 

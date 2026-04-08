@@ -102,21 +102,21 @@ public class MessageValue {
     }
 
     /**
-     * @return the language
+
      */
     public String getLanguage() {
         return language;
     }
 
     /**
-     * @return the globalValue
+
      */
     public String getGlobalValue() {
         return globalValue;
     }
 
     /**
-     * @return the value
+
      */
     public String getValue() {
         return value;
@@ -130,7 +130,7 @@ public class MessageValue {
     }
 
     /**
-     * @return the loadedValue
+
      */
     public String getLoadedValue() {
         return loadedValue;

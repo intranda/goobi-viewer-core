@@ -24,7 +24,7 @@ package io.goobi.viewer.controller;
 /**
  * Functional interface taking no arguments and having no return value.
  * 
- * @author florian
+ * @author Florian Alpers
  */
 @FunctionalInterface
 public interface Procedure {

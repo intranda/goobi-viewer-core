@@ -89,7 +89,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.UriBuilder;
 
 /**
- * ManifestBuilder class.
+ * Builds IIIF Presentation API v3 Manifest resources from Solr index data and content files.
  *
  * @author Florian Alpers
  */

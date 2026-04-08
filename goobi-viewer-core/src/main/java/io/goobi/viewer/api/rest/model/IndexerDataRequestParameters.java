@@ -44,7 +44,7 @@ public class IndexerDataRequestParameters {
     private List<String> recordIdentifiers;
 
     /**
-     * @return the application
+
      */
     public String getApplication() {
         return application;
@@ -58,7 +58,7 @@ public class IndexerDataRequestParameters {
     }
 
     /**
-     * @return the version
+
      */
     public String getVersion() {
         return version;
@@ -72,7 +72,7 @@ public class IndexerDataRequestParameters {
     }
 
     /**
-     * @return the buildDate
+
      */
     public String getBuildDate() {
         return buildDate;
@@ -86,7 +86,7 @@ public class IndexerDataRequestParameters {
     }
 
     /**
-     * @return the gitRevision
+
      */
     public String getGitRevision() {
         return gitRevision;
@@ -100,7 +100,7 @@ public class IndexerDataRequestParameters {
     }
 
     /**
-     * @return the hotfolderFileCount
+
      */
     public int getHotfolderFileCount() {
         return hotfolderFileCount;
@@ -114,7 +114,7 @@ public class IndexerDataRequestParameters {
     }
 
     /**
-     * @return the recordIdentifiers
+
      */
     public List<String> getRecordIdentifiers() {
         return recordIdentifiers;

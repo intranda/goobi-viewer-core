@@ -87,7 +87,7 @@ import io.goobi.viewer.solr.SolrTools;
 /**
  * Converts resources found in a search to IIIF Search objects.
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class SearchResultConverter {
 

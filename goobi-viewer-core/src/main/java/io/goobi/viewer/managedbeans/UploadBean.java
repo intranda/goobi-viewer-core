@@ -38,7 +38,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 /**
- * UploadBean class.
+ * JSF backing bean for handling file uploads in the viewer, including record and media uploads.
  */
 @Named
 @ViewScoped
@@ -111,7 +111,7 @@ public class UploadBean implements Serializable {
     /**
      * Getter for the field <code>lazyModelUploadJobs</code>.
      *
-     * @return the lazyModelUploadJobs
+
      */
     public TableDataProvider<UploadJob> getLazyModelUploadJobs() {
         return lazyModelUploadJobs;
@@ -120,7 +120,7 @@ public class UploadBean implements Serializable {
     /**
      * Getter for the field <code>currentUploadJob</code>.
      *
-     * @return the currentUploadJob
+
      */
     public UploadJob getCurrentUploadJob() {
         if (currentUploadJob == null) {

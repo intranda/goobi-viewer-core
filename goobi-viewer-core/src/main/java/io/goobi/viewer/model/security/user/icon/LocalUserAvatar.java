@@ -36,7 +36,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class LocalUserAvatar implements UserAvatar {
 
@@ -49,9 +49,6 @@ public class LocalUserAvatar implements UserAvatar {
 
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.user.icon.IconProvider#getIconUrl(int, jakarta.servlet.http.HttpServletRequest)
-     */
     @Override
     public String getIconUrl(int size, HttpServletRequest request) {
         return DataManager.getInstance()

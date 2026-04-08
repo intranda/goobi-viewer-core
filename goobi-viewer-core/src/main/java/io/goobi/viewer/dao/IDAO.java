@@ -2400,7 +2400,7 @@ public interface IDAO {
     /**
      * Get the EntityManagerFactory created when initializing the class. Can be used to explicitly create new EntityManagers.
      *
-     * @return the EntityManagerFactory
+
      */
     EntityManagerFactory getFactory();
 

@@ -55,7 +55,7 @@ import io.goobi.viewer.model.cms.Selectable;
 import io.goobi.viewer.model.cms.collections.CMSCollection;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 @Named
 @ViewScoped
@@ -73,8 +73,7 @@ public class CmsSliderEditBean implements Serializable {
 
     private String collectionField;
 
-    /**
-     */
+    
     public CmsSliderEditBean() {
         try {
             selectableCategories = BeanUtils.getCmsBean()
@@ -132,7 +131,7 @@ public class CmsSliderEditBean implements Serializable {
     }
 
     /**
-     * @return the selectedSlider
+
      */
     public CMSSlider getSelectedSlider() {
         return selectedSlider;
@@ -232,7 +231,7 @@ public class CmsSliderEditBean implements Serializable {
     }
 
     /**
-     * @return the selectableCategories
+
      */
     public List<Selectable<CMSCategory>> getSelectableCategories() {
         return selectableCategories;
@@ -261,7 +260,7 @@ public class CmsSliderEditBean implements Serializable {
     }
 
     /**
-     * @return the collectionField
+
      */
     public String getCollectionField() {
         return collectionField;

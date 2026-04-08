@@ -24,7 +24,7 @@ package io.goobi.viewer.exceptions;
 import java.io.Serializable;
 
 /**
- * DAOException class.
+ * Thrown when a database access operation fails.
  */
 public class DAOException extends Exception implements Serializable {
 

@@ -24,7 +24,7 @@ package io.goobi.viewer.model.cms.pages;
 /**
  * Describes whether a {@link CMSPage} is published or not.
  * 
- * @author florian
+ * @author Florian Alpers
  */
 public enum PublicationStatus {
     /**

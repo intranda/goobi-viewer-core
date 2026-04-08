@@ -24,7 +24,7 @@ package io.goobi.viewer.exceptions;
 import java.io.Serializable;
 
 /**
- * AccessDeniedException class.
+ * Thrown when a URL parameter contains an invalid or disallowed value.
  */
 public class IllegalUrlParameterException extends Exception implements Serializable {
 

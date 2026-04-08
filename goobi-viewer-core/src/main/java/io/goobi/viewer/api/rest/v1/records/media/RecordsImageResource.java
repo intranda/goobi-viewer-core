@@ -65,7 +65,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
- * @author florian
+ * REST resource providing IIIF Image API endpoints for accessing page images of digitized records.
+ *
+ * @author Florian Alpers
  */
 @Path(RECORDS_RECORD)
 public class RecordsImageResource {

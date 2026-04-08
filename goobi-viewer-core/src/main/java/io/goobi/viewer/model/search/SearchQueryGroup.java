@@ -167,7 +167,7 @@ public class SearchQueryGroup implements Serializable {
     /**
      * Getter for the field <code>queryItems</code>.
      *
-     * @return the queryItems
+
      */
     public List<SearchQueryItem> getQueryItems() {
         return queryItems;
@@ -212,7 +212,7 @@ public class SearchQueryGroup implements Serializable {
     /**
      * Getter for the field <code>operator</code>.
      *
-     * @return the operator
+
      */
     public SearchQueryGroupOperator getOperator() {
         return operator;

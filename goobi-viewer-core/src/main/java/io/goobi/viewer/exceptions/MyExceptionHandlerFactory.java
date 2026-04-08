@@ -25,7 +25,7 @@ import jakarta.faces.context.ExceptionHandler;
 import jakarta.faces.context.ExceptionHandlerFactory;
 
 /**
- * MyExceptionHandlerFactory class.
+ * JSF ExceptionHandlerFactory that creates custom exception handlers for the viewer's JSF lifecycle.
  */
 public class MyExceptionHandlerFactory extends ExceptionHandlerFactory {
 

@@ -76,7 +76,7 @@ import jakarta.faces.context.FacesContext;
 import jakarta.servlet.ServletContext;
 
 /**
- * ViewerResourceBundle class.
+ * Custom ResourceBundle implementation that loads and merges viewer message files from configurable locations.
  */
 public class ViewerResourceBundle extends ResourceBundle {
 

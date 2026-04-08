@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * ObjectInfo class.
+ * Aggregates metadata and resource URLs for a 3D object file to be displayed in the viewer.
  *
  * @author Florian Alpers
  */
@@ -67,7 +67,7 @@ public class ObjectInfo {
     /**
      * Getter for the field <code>format</code>.
      *
-     * @return the type
+
      */
     public ObjectFormat getFormat() {
         return format;
@@ -85,7 +85,7 @@ public class ObjectInfo {
     /**
      * Getter for the field <code>uri</code>.
      *
-     * @return the uri
+
      */
     public URI getUri() {
         return uri;
@@ -103,7 +103,7 @@ public class ObjectInfo {
     /**
      * Getter for the field <code>center</code>.
      *
-     * @return the center
+
      */
     public Point3D getCenter() {
         return center;
@@ -121,7 +121,7 @@ public class ObjectInfo {
     /**
      * Getter for the field <code>rotation</code>.
      *
-     * @return the rotation
+
      */
     public Point3D getRotation() {
         return rotation;

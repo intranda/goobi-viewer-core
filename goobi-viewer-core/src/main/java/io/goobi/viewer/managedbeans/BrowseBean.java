@@ -271,7 +271,7 @@ public class BrowseBean implements Serializable {
     /**
      * Getter for the field <code>topVisibleCollection</code>.
      *
-     * @return the topVisibleCollecion
+
      */
     public String getTopVisibleCollection() {
         if (topVisibleCollection == null && collectionToExpand != null) {
@@ -548,7 +548,7 @@ public class BrowseBean implements Serializable {
     /**
      * Getter for the field <code>browsingMenuField</code>.
      *
-     * @return the browsingMenuField
+
      */
     public String getBrowsingMenuField() {
         synchronized (this) {
@@ -601,7 +601,7 @@ public class BrowseBean implements Serializable {
     /**
      * Getter for the field <code>browseTermList</code>.
      *
-     * @return the browseTermList
+
      */
     public List<String> getBrowseTermList() {
         return browseTermList;
@@ -610,7 +610,7 @@ public class BrowseBean implements Serializable {
     /**
      * Getter for the field <code>browseTermListEscaped</code>.
      *
-     * @return the browseTermListEscaped
+
      */
     public List<String> getBrowseTermListEscaped() {
         return browseTermListEscaped;
@@ -619,7 +619,7 @@ public class BrowseBean implements Serializable {
     /**
      * Getter for the field <code>browseTermHitCountList</code>.
      *
-     * @return the browseTermHitCountList
+
      */
     public List<Long> getBrowseTermHitCountList() {
         return browseTermHitCountList;
@@ -666,7 +666,7 @@ public class BrowseBean implements Serializable {
     /**
      * Getter for the field <code>availableStringFilters</code>.
      *
-     * @return the availableStringFilters
+
      */
     public List<String> getAvailableStringFilters() {
         String field = getBrowsingMenuFieldForLanguage(navigationHelper != null ? navigationHelper.getLocaleString() : null);
@@ -683,7 +683,7 @@ public class BrowseBean implements Serializable {
     /**
      * Getter for unit tests.
      * 
-     * @return the availableStringFilters
+
      */
     Map<String, List<String>> getAvailableStringFiltersMap() {
         return availableStringFilters;
@@ -692,7 +692,7 @@ public class BrowseBean implements Serializable {
     /**
      * Getter for the field <code>currentStringFilter</code>.
      *
-     * @return the currentStringFilter
+
      */
     public String getCurrentStringFilter() {
         synchronized (this) {
@@ -725,7 +725,7 @@ public class BrowseBean implements Serializable {
     /**
      * Getter for the field <code>filterQuery</code>.
      *
-     * @return the filterQuery
+
      */
     public String getFilterQuery() {
         if (StringUtils.isEmpty(filterQuery)) {
@@ -746,7 +746,7 @@ public class BrowseBean implements Serializable {
     /**
      * Getter for the field <code>currentPage</code>.
      *
-     * @return the currentPage
+
      */
     public int getCurrentPage() {
         synchronized (this) {
@@ -967,7 +967,7 @@ public class BrowseBean implements Serializable {
     /**
      * Getter for the field <code>collectionField</code>.
      *
-     * @return the collectionField
+
      */
     public String getCollectionField() {
         return collectionField;

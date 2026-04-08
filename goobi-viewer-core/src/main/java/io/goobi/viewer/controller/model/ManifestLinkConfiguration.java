@@ -42,14 +42,14 @@ public class ManifestLinkConfiguration {
     }
 
     /**
-     * @return the label
+
      */
     public String getLabel() {
         return label;
     }
 
     /**
-     * @return the format
+
      */
     public String getFormat() {
         return format;

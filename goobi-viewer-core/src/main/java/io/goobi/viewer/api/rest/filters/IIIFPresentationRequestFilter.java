@@ -49,8 +49,8 @@ import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.ext.Provider;
 
 /**
- * Filter for all IIIF Presentation resources. Checks the {@link io.goobi.viewer.model.security.IPrivilegeHolder#PRIV_GENERATE_IIIF_MANIFEST}
- * privilege for the request.
+ * JAX-RS request filter for all IIIF Presentation resources. Checks the
+ * {@link io.goobi.viewer.model.security.IPrivilegeHolder#PRIV_GENERATE_IIIF_MANIFEST} privilege for the request.
  */
 @Provider
 @IIIFPresentationBinding

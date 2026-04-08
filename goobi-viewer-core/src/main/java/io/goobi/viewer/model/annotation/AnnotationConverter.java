@@ -65,7 +65,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.annotation.comments.Comment;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class AnnotationConverter {
 

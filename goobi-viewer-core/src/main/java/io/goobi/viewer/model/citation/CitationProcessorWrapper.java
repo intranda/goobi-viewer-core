@@ -41,7 +41,7 @@ public class CitationProcessorWrapper implements Serializable {
     /**
      * 
      * @param style CSL citation style name (e.g. "apa", "chicago-notes")
-     * @return the citationProcessor
+
      * @throws IOException
      * @should create citation processor correctly
      */
@@ -59,7 +59,7 @@ public class CitationProcessorWrapper implements Serializable {
     }
 
     /**
-     * @return the citationItemDataProvider
+
      */
     public CitationDataProvider getCitationItemDataProvider() {
         return citationItemDataProvider;

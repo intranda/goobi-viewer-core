@@ -50,7 +50,7 @@ import io.goobi.viewer.model.translations.language.Language;
 /**
  * Bean for uploading Dublin Core records.
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Named
 @ViewScoped
@@ -94,7 +94,7 @@ public class CreateRecordBean implements Serializable {
     }
 
     /**
-     * @return the tempImagesFolder
+
      */
     public Path getTempImagesFolder() {
         return tempImagesFolder;
@@ -109,7 +109,7 @@ public class CreateRecordBean implements Serializable {
     }
 
     /**
-     * @return the title
+
      */
     public String getTitle() {
         return title;
@@ -123,7 +123,7 @@ public class CreateRecordBean implements Serializable {
     }
 
     /**
-     * @return the description
+
      */
     public String getDescription() {
         return description;
@@ -137,7 +137,7 @@ public class CreateRecordBean implements Serializable {
     }
 
     /**
-     * @return the language
+
      */
     public String getLanguage() {
         return language;
@@ -151,7 +151,7 @@ public class CreateRecordBean implements Serializable {
     }
 
     /**
-     * @return the date
+
      */
     public String getDate() {
         return date;
@@ -165,7 +165,7 @@ public class CreateRecordBean implements Serializable {
     }
 
     /**
-     * @return the creator
+
      */
     public String getCreator() {
         return creator;
@@ -179,7 +179,7 @@ public class CreateRecordBean implements Serializable {
     }
 
     /**
-     * @return the collection
+
      */
     public String getCollection() {
         return collection;
@@ -193,7 +193,7 @@ public class CreateRecordBean implements Serializable {
     }
 
     /**
-     * @return the accessCondition
+
      */
     public String getAccessCondition() {
         return accessCondition;
@@ -207,7 +207,7 @@ public class CreateRecordBean implements Serializable {
     }
 
     /*
-     * @return the license
+
      */
     public String getLicense() {
         return license;

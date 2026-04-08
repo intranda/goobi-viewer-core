@@ -34,7 +34,7 @@ import jakarta.faces.component.UINamingContainer;
 import jakarta.faces.context.FacesContext;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 @FacesComponent("io.goobi.viewer.faces.components.MultiSelectDropdown")
 @SuppressWarnings("unchecked")
@@ -48,9 +48,6 @@ public class MultiSelectDropdown extends UINamingContainer {
         super();
     }
 
-    /* (non-Javadoc)
-     * @see jakarta.faces.component.UIComponentBase#encodeBegin(jakarta.faces.context.FacesContext)
-     */
     @Override
     public void encodeBegin(FacesContext context) throws IOException {
         super.encodeBegin(context);

@@ -24,7 +24,7 @@ package io.goobi.viewer.servlets.oembed;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 
 /**
- * PhotoOEmbedResponse class.
+ * oEmbed response for photo-type resources, carrying image URL and dimensions.
  */
 public class PhotoOEmbedResponse extends OEmbedResponse {
 
@@ -62,7 +62,7 @@ public class PhotoOEmbedResponse extends OEmbedResponse {
     /**
      * Getter for the field <code>url</code>.
      *
-     * @return the url
+
      */
     public String getUrl() {
         return url;

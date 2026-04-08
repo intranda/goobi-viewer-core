@@ -75,7 +75,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
 /**
- * Static utility methods for Solr.
+ * Utility class providing static helpers for constructing Solr queries, parsing responses, and field value extraction.
  */
 public final class SolrTools {
 

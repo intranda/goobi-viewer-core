@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 import io.goobi.viewer.model.viewer.collections.CollectionView;
 
 /**
- * CollectionLabeledLink class.
+ * A labeled link targeting a collection browse page, carrying the collection name alongside label and URL.
  *
  * @author Florian Alpers
  */
@@ -53,9 +53,6 @@ public class CollectionLabeledLink extends CompoundLabeledLink {
         this.collection = collection;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.viewer.CompoundLabeledLink#getSubLinks()
-     */
     /** {@inheritDoc} */
     @Override
     public List<LabeledLink> getSubLinks() {

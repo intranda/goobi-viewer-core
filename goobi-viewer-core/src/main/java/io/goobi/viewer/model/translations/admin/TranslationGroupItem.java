@@ -149,21 +149,21 @@ public abstract class TranslationGroupItem {
     }
 
     /**
-     * @return the key
+
      */
     public String getKey() {
         return key;
     }
 
     /**
-     * @return the regex
+
      */
     public boolean isRegex() {
         return regex;
     }
 
     /**
-     * @return the messageKeys
+
      * @throws IndexUnreachableException
      * @throws PresentationException
      */

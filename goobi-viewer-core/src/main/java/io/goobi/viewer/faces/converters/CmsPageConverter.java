@@ -31,7 +31,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 
 /**
- * CmsPageConverter class.
+ * JSF converter that maps between a CMS page object and its string identifier.
  */
 @FacesConverter("cmsPageConverter")
 public class CmsPageConverter implements Converter<CMSPage> {

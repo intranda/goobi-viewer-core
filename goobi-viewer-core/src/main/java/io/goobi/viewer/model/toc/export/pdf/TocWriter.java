@@ -49,7 +49,7 @@ import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.model.toc.TOCElement;
 
 /**
- * TocWriter class.
+ * Writes a table-of-contents structure to a PDF document.
  */
 public class TocWriter {
 

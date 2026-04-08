@@ -439,7 +439,7 @@ public class MediaDeliveryService {
         }
 
         /**
-         * @return the start
+
          */
         public long getStart() {
             return start;
@@ -453,7 +453,7 @@ public class MediaDeliveryService {
         }
 
         /**
-         * @return the end
+
          */
         public long getEnd() {
             return end;
@@ -467,7 +467,7 @@ public class MediaDeliveryService {
         }
 
         /**
-         * @return the length
+
          */
         public long getLength() {
             return length;
@@ -481,7 +481,7 @@ public class MediaDeliveryService {
         }
 
         /**
-         * @return the total
+
          */
         public long getTotal() {
             return total;

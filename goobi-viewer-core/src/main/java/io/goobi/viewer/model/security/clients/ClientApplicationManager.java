@@ -34,7 +34,7 @@ import io.goobi.viewer.model.security.clients.ClientApplication.AccessStatus;
 /**
  * Class managing registration and log-in of {@link ClientApplication}s.
  * 
- * @author florian
+ * @author Florian Alpers
  */
 public class ClientApplicationManager {
 
@@ -95,7 +95,7 @@ public class ClientApplicationManager {
     /**
      * Get the {@link ClientApplication} representing all clients created in {@link #addGeneralClientApplicationToDB()}.
      * 
-     * @return the allClients
+
      */
     public ClientApplication getAllClients() {
         return allClients;
@@ -229,7 +229,7 @@ public class ClientApplicationManager {
     /**
      * Loads the "all clients" ClientApplication directly from the database, so it comes with all licenses.
      * 
-     * @return the client
+
      */
     public ClientApplication getAllClientsFromDatabase() {
         try {

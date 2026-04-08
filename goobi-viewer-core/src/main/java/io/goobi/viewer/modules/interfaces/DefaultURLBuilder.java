@@ -41,7 +41,7 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
 /**
- * DefaultURLBuilder class.
+ * Default implementation of the URL builder interface, constructing standard viewer page URLs.
  *
  * @author Florian Alpers
  */
@@ -49,9 +49,6 @@ public class DefaultURLBuilder implements IURLBuilder {
 
     private static final Logger logger = LogManager.getLogger(DefaultURLBuilder.class);
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.modules.interfaces.IURLBuilder#generateURL(io.goobi.viewer.model.search.BrowseElement)
-     */
     /**
      * {@inheritDoc}
      * 

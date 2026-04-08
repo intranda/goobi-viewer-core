@@ -261,7 +261,7 @@ public class ArchiveEntry implements Serializable {
     }
 
     /**
-     * @return the parentNode
+
      */
     public ArchiveEntry getParentNode() {
         return parentNode;
@@ -275,7 +275,7 @@ public class ArchiveEntry implements Serializable {
     }
 
     /**
-     * @return the subEntryList
+
      */
     public List<ArchiveEntry> getSubEntryList() {
         return subEntryList;
@@ -289,7 +289,7 @@ public class ArchiveEntry implements Serializable {
     }
 
     /**
-     * @return the orderNumber
+
      */
     public Integer getOrderNumber() {
         return orderNumber;
@@ -303,7 +303,7 @@ public class ArchiveEntry implements Serializable {
     }
 
     /**
-     * @return the hierarchyLevel
+
      */
     public Integer getHierarchyLevel() {
         return hierarchyLevel;
@@ -317,7 +317,7 @@ public class ArchiveEntry implements Serializable {
     }
 
     /**
-     * @return the id
+
      */
     public String getId() {
         // logger.trace("getId: {}", id); //NOSONAR Debug
@@ -332,7 +332,7 @@ public class ArchiveEntry implements Serializable {
     }
 
     /**
-     * @return the label
+
      */
     public String getLabel() {
         return label;
@@ -346,7 +346,7 @@ public class ArchiveEntry implements Serializable {
     }
 
     /**
-     * @return the topstructPi
+
      */
     public String getTopstructPi() {
         return topstructPi;
@@ -360,7 +360,7 @@ public class ArchiveEntry implements Serializable {
     }
 
     /**
-     * @return the logId
+
      */
     public String getLogId() {
         return logId;
@@ -374,7 +374,7 @@ public class ArchiveEntry implements Serializable {
     }
 
     /**
-     * @return the searchHit
+
      */
     public boolean isSearchHit() {
         return searchHit;
@@ -388,7 +388,7 @@ public class ArchiveEntry implements Serializable {
     }
 
     /**
-     * @return the nodeType
+
      */
     public String getNodeType() {
         return nodeType;
@@ -402,7 +402,7 @@ public class ArchiveEntry implements Serializable {
     }
 
     /**
-     * @return the displaySearch
+
      */
     public boolean isDisplaySearch() {
         return displaySearch;
@@ -486,7 +486,7 @@ public class ArchiveEntry implements Serializable {
     }
 
     /**
-     * @return the valid
+
      */
     public boolean isValid() {
         return valid;
@@ -500,7 +500,7 @@ public class ArchiveEntry implements Serializable {
     }
 
     /**
-     * @return the descriptionLevel
+
      */
     public String getDescriptionLevel() {
         return descriptionLevel;
@@ -514,7 +514,7 @@ public class ArchiveEntry implements Serializable {
     }
 
     /**
-     * @return the unitdate
+
      */
     public String getUnitdate() {
         return unitdate;
@@ -525,7 +525,7 @@ public class ArchiveEntry implements Serializable {
     }
 
     /**
-     * @return the accessConditions
+
      */
     public List<String> getAccessConditions() {
         return accessConditions;
@@ -539,14 +539,14 @@ public class ArchiveEntry implements Serializable {
     }
 
     /**
-     * @return the hasChild
+
      */
     public boolean isHasChild() {
         return isHasChildren();
     }
 
     /**
-     * @return the associatedRecordPi
+
      */
     public String getAssociatedRecordPi() {
         return associatedRecordPi;
@@ -589,14 +589,14 @@ public class ArchiveEntry implements Serializable {
     }
 
     /**
-     * @return the doc
+
      */
     public SolrDocument getDoc() {
         return doc;
     }
 
     /**
-     * @return the childrenFound
+
      */
     public boolean isChildrenFound() {
         return childrenFound;
@@ -610,7 +610,7 @@ public class ArchiveEntry implements Serializable {
     }
 
     /**
-     * @return the childrenLoaded
+
      */
     public boolean isChildrenLoaded() {
         return childrenLoaded;

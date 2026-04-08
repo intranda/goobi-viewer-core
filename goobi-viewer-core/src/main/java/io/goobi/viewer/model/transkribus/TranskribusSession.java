@@ -24,7 +24,7 @@ package io.goobi.viewer.model.transkribus;
 import java.io.Serializable;
 
 /**
- * TranskribusSession class.
+ * Holds an authenticated Transkribus session token obtained after login.
  */
 public class TranskribusSession implements Serializable {
 
@@ -53,7 +53,7 @@ public class TranskribusSession implements Serializable {
     /**
      * Getter for the field <code>userId</code>.
      *
-     * @return the userId
+
      */
     public String getUserId() {
         return userId;
@@ -62,7 +62,7 @@ public class TranskribusSession implements Serializable {
     /**
      * Getter for the field <code>userName</code>.
      *
-     * @return the userName
+
      */
     public String getUserName() {
         return userName;
@@ -71,7 +71,7 @@ public class TranskribusSession implements Serializable {
     /**
      * Getter for the field <code>sessionId</code>.
      *
-     * @return the sessionId
+
      */
     public String getSessionId() {
         return sessionId;

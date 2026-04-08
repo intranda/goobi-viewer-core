@@ -45,6 +45,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 
+/**
+ * Configuration model for an EAD archive tree embedded in a CMS page.
+ */
 @Entity
 @Table(name = "cms_archive_configs")
 public class CMSArchiveConfig implements CMSMediaMultiHolder, Serializable {
@@ -111,7 +114,7 @@ public class CMSArchiveConfig implements CMSMediaMultiHolder, Serializable {
     }
 
     /**
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -125,7 +128,7 @@ public class CMSArchiveConfig implements CMSMediaMultiHolder, Serializable {
     }
 
     /**
-     * @return the pi
+
      */
     public String getPi() {
         return pi;
@@ -139,7 +142,7 @@ public class CMSArchiveConfig implements CMSMediaMultiHolder, Serializable {
     }
 
     /**
-     * @return the dateUpdated
+
      */
     public LocalDateTime getDateUpdated() {
         return dateUpdated;
@@ -153,7 +156,7 @@ public class CMSArchiveConfig implements CMSMediaMultiHolder, Serializable {
     }
 
     /**
-     * @return the title
+
      */
     public TranslatedText getTitle() {
         return title;
@@ -167,7 +170,7 @@ public class CMSArchiveConfig implements CMSMediaMultiHolder, Serializable {
     }
 
     /**
-     * @return the previewText
+
      */
     public TranslatedText getPreviewText() {
         return previewText;
@@ -181,7 +184,7 @@ public class CMSArchiveConfig implements CMSMediaMultiHolder, Serializable {
     }
 
     /**
-     * @return the description
+
      */
     public TranslatedText getDescription() {
         return description;
@@ -195,7 +198,7 @@ public class CMSArchiveConfig implements CMSMediaMultiHolder, Serializable {
     }
 
     /**
-     * @return the tileImage
+
      */
     public CMSMediaItem getTileImage() {
         return tileImage;
@@ -209,7 +212,7 @@ public class CMSArchiveConfig implements CMSMediaMultiHolder, Serializable {
     }
 
     /**
-     * @return the headerImage
+
      */
     public CMSMediaItem getHeaderImage() {
         return headerImage;

@@ -55,9 +55,9 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
- * CommentBean class.
+ * JSF backing bean for user comment display and submission on record detail pages.
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Named
 @SessionScoped

@@ -51,7 +51,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
- * DFGViewerImage class.
+ * Servlet that delivers images in the format expected by the DFG Viewer image protocol.
  *
  * @author Florian Alpers
  */
@@ -70,9 +70,6 @@ public class DFGViewerImage extends HttpServlet implements Serializable {
         super();
     }
 
-    /* (non-Javadoc)
-     * @see jakarta.servlet.http.HttpServlet#doGet(jakarta.servlet.http.HttpServletRequest, jakarta.servlet.http.HttpServletResponse)
-     */
     /** {@inheritDoc} */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

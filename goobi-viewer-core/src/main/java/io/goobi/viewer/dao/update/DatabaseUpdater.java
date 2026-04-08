@@ -44,7 +44,7 @@ import io.goobi.viewer.model.security.user.UserTools;
  * the dao Appplies a fixed list of {@link IModelUpdate IModelUpdates} to the {@link io.goobi.viewer.dao.IDAO} which are responsible to make the
  * required changes
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class DatabaseUpdater {
 

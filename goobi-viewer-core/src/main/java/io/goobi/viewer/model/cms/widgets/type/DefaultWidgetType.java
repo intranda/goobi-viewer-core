@@ -29,7 +29,7 @@ import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 /**
  * Types of widgets that are always available for CMS pages and cannot be configured.
  *
- * @author florian
+ * @author Florian Alpers
  */
 public enum DefaultWidgetType implements WidgetContentType {
 
@@ -83,7 +83,7 @@ public enum DefaultWidgetType implements WidgetContentType {
     /**
      * A message key for a description of this widget type.
      * 
-     * @return the description
+
      */
     public String getDescription() {
         return description;

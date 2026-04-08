@@ -45,7 +45,7 @@ import mil.nga.sf.geojson.Polygon;
 import mil.nga.sf.geojson.Position;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class GeoMapFeature {
 
@@ -73,7 +73,7 @@ public class GeoMapFeature {
     }
 
     /**
-     * @return the title
+
      */
     public IMetadataValue getTitle() {
         return title;
@@ -87,7 +87,7 @@ public class GeoMapFeature {
     }
 
     /**
-     * @return the description
+
      */
     public IMetadataValue getDescription() {
         return description;
@@ -101,7 +101,7 @@ public class GeoMapFeature {
     }
 
     /**
-     * @return the link
+
      */
     public String getLink() {
         return link;
@@ -130,7 +130,7 @@ public class GeoMapFeature {
     }
 
     /**
-     * @return the documentId
+
      */
     public String getDocumentId() {
         return documentId;
@@ -145,7 +145,7 @@ public class GeoMapFeature {
     }
 
     /**
-     * @return the json
+
      */
     public String getJson() {
         return FeatureConverter.toStringValue(this.geoJson);
@@ -159,7 +159,7 @@ public class GeoMapFeature {
     }
 
     /**
-     * @return the count
+
      */
     public int getCount() {
         return count;
@@ -262,9 +262,6 @@ public class GeoMapFeature {
         }
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         int jsonCode = this.geoJson == null ? "".hashCode() : this.geoJson.hashCode();
@@ -272,9 +269,6 @@ public class GeoMapFeature {
         return jsonCode + 31 * (titleCode);
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -289,9 +283,6 @@ public class GeoMapFeature {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return getJsonObject().toString();

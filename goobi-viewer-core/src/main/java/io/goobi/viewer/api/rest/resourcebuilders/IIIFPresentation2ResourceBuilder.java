@@ -82,7 +82,7 @@ import io.goobi.viewer.solr.SolrTools;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class IIIFPresentation2ResourceBuilder {
 
@@ -500,7 +500,7 @@ public class IIIFPresentation2ResourceBuilder {
     /**
      * Getter for the field <code>collectionBuilder</code>.
      *
-     * @return the manifestBuilder
+
      */
     public CollectionBuilder getCollectionBuilder() {
         if (this.collectionBuilder == null) {

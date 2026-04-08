@@ -75,7 +75,7 @@ import io.goobi.viewer.model.files.upload.FileUploader;
 import io.goobi.viewer.model.xml.XMLError;
 
 /**
- * AdminConfigEditorBean class.
+ * JSF backing bean for the admin configuration editor, allowing administrators to view and modify the viewer config file.
  */
 @Named
 @SessionScoped
@@ -233,7 +233,7 @@ public class AdminConfigEditorBean implements Serializable {
     /**
      * Getter for the field <code>currentFileRecord</code>.
      *
-     * @return the currentFileRecord
+
      */
     public FileRecord getCurrentFileRecord() {
         return currentFileRecord;

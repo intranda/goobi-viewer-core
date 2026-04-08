@@ -62,21 +62,21 @@ public class SecurityQuestion {
     }
 
     /**
-     * @return the questionKey
+
      */
     public String getQuestionKey() {
         return questionKey;
     }
 
     /**
-     * @return the correctAnswers
+
      */
     public Set<String> getCorrectAnswers() {
         return correctAnswers;
     }
 
     /**
-     * @return the answered
+
      */
     public boolean isAnswered() {
         return answered;

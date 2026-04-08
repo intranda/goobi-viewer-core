@@ -34,7 +34,7 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 
 /**
- * BookmarkTools class.
+ * Utility class providing helper methods for bookmark list operations and IIIF collection export.
  */
 public final class BookmarkTools {
 

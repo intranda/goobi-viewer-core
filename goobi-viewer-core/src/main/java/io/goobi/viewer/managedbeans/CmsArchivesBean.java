@@ -147,7 +147,7 @@ public class CmsArchivesBean implements Serializable {
     /**
      * Getter for the field <code>lazyModelArchiveConfigurations</code>.
      *
-     * @return the lazyModelArchiveConfigurations
+
      */
     public TableDataProvider<ArchiveResourceWrapper> getLazyModelArchiveConfigurations() {
         return lazyModelArchiveConfigurations;
@@ -163,7 +163,7 @@ public class CmsArchivesBean implements Serializable {
     }
 
     /**
-     * @return the selectedArchiveWrapper
+
      */
     public ArchiveResourceWrapper getSelectedArchiveWrapper() {
         return selectedArchiveWrapper;
@@ -191,7 +191,7 @@ public class CmsArchivesBean implements Serializable {
     }
 
     /**
-     * @return the imageModeTile
+
      */
     public CMSCollectionImageMode getImageModeTile() {
         return imageModeTile;
@@ -205,7 +205,7 @@ public class CmsArchivesBean implements Serializable {
     }
 
     /**
-     * @return the imageModeHeader
+
      */
     public CMSCollectionImageMode getImageModeHeader() {
         return imageModeHeader;

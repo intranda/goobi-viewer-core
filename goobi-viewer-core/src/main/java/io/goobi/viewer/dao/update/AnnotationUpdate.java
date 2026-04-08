@@ -51,13 +51,10 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class AnnotationUpdate implements IModelUpdate {
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.update.IModelUpdate#update(io.goobi.viewer.dao.IDAO)
-     */
     @Override
     public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
 

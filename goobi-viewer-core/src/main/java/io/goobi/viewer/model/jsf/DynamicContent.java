@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class DynamicContent implements Serializable {
 
@@ -48,7 +48,7 @@ public class DynamicContent implements Serializable {
     }
 
     /**
-     * @return the id
+
      */
     public String getId() {
         return id;
@@ -62,7 +62,7 @@ public class DynamicContent implements Serializable {
     }
 
     /**
-     * @return the attributes
+
      */
     public Map<String, Object> getAttributes() {
         return attributes;
@@ -76,7 +76,7 @@ public class DynamicContent implements Serializable {
     }
 
     /**
-     * @return the type
+
      */
     public DynamicContentType getType() {
         return type;

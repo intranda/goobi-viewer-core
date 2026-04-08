@@ -29,7 +29,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 
 /**
- * BooleanDeserializer class.
+ * Jackson deserialiser that converts various truthy string representations to a Boolean value.
  *
  * @author Florian Alpers
  */

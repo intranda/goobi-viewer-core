@@ -66,7 +66,7 @@ import jakarta.persistence.Transient;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
- * Bookmark class.
+ * Represents a single bookmark entry linking a user to a specific record or page.
  */
 @Entity
 @Table(name = "bookshelf_items")
@@ -191,9 +191,6 @@ public class Bookmark implements Serializable {
         this.dateAdded = LocalDateTime.now();
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -203,9 +200,6 @@ public class Bookmark implements Serializable {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -351,7 +345,7 @@ public class Bookmark implements Serializable {
     /**
      * Getter for the field <code>id</code>.
      *
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -369,7 +363,7 @@ public class Bookmark implements Serializable {
     /**
      * Getter for the field <code>bookmarkList</code>.
      *
-     * @return the bookmarkList
+
      */
     public BookmarkList getBookmarkList() {
         return bookmarkList;
@@ -387,7 +381,7 @@ public class Bookmark implements Serializable {
     /**
      * Getter for the field <code>pi</code>.
      *
-     * @return the pi
+
      */
     // pi is required to identify the record; mark as required with minLength:1 so empty strings are rejected
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, minLength = 1)
@@ -407,7 +401,7 @@ public class Bookmark implements Serializable {
     /**
      * Getter for the field <code>logId</code>.
      *
-     * @return the logId
+
      */
     public String getLogId() {
         return logId;
@@ -425,7 +419,7 @@ public class Bookmark implements Serializable {
     /**
      * Getter for the field <code>urn</code>.
      *
-     * @return the urn
+
      */
     public String getUrn() {
         return urn;
@@ -443,7 +437,7 @@ public class Bookmark implements Serializable {
     /**
      * Getter for the field <code>name</code>.
      *
-     * @return the name
+
      */
     public String getName() {
         return name;
@@ -461,7 +455,7 @@ public class Bookmark implements Serializable {
     /**
      * Getter for the field <code>description</code>.
      *
-     * @return the description
+
      */
     public String getDescription() {
         return description;
@@ -479,7 +473,7 @@ public class Bookmark implements Serializable {
     /**
      * Getter for the field <code>dateAdded</code>.
      *
-     * @return the dateAdded
+
      */
     // dateAdded is set server-side; mark as read-only so clients do not send it in request bodies
     // (LocalDateTime cannot deserialize ISO 8601 strings with timezone suffix like "2000-01-01T00:00:00Z")
@@ -500,7 +494,7 @@ public class Bookmark implements Serializable {
     /**
      * Getter for the field <code>order</code>.
      *
-     * @return the order
+
      */
     public Integer getOrder() {
         return order;

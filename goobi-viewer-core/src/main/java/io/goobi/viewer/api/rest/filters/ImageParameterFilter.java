@@ -50,8 +50,9 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 
 /**
- * Adds additional parameters to iiif contentServer requests as requestContext properties. Parameters must be named "param:" followed by the name of
- * the corresponding contentServer request parameter
+ * JAX-RS request filter that adds additional parameters to ContentServer image requests as request context properties.
+ * <p>
+ * Parameters passed to this filter must be named {@code param:} followed by the name of the corresponding ContentServer request parameter.
  */
 @Provider
 @ContentServerBinding

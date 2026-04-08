@@ -40,7 +40,7 @@ import io.goobi.viewer.model.security.authentication.model.BibliothecaAuthentica
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * BibliothecaProvider class.
+ * Authentication provider that validates user credentials against the Bibliotheca library management system.
  */
 public class BibliothecaProvider extends HttpAuthenticationProvider {
 
@@ -59,9 +59,6 @@ public class BibliothecaProvider extends HttpAuthenticationProvider {
         super(name, label, TYPE_USER_PASSWORD, url, image, timeoutMillis);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#login(java.lang.String, java.lang.String)
-     */
     /** {@inheritDoc} */
     @Override
     public CompletableFuture<LoginResult> login(String readerId, String password) throws AuthenticationProviderException {
@@ -87,35 +84,23 @@ public class BibliothecaProvider extends HttpAuthenticationProvider {
         return CompletableFuture.completedFuture(result);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#logout()
-     */
     /** {@inheritDoc} */
     @Override
     public void logout() throws AuthenticationProviderException {
         //noop
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsPasswordChange()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean allowsPasswordChange() {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsNicknameChange()
-     */
     @Override
     public boolean allowsNicknameChange() {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsEmailChange()
-     */
     @Override
     public boolean allowsEmailChange() {
         return false;

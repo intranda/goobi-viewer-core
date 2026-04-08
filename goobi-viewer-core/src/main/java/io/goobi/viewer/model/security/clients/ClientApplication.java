@@ -54,7 +54,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 /**
- * @author florian
+ * @author Florian Alpers
  *
  *         Represents clients accessing the viewer not through web-browsers but using dedicated client-applications which must register
  *         with the server to view any data but which may also enjoy unique viewing rights via dedicated {@link License Licenses}
@@ -152,7 +152,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     /**
      * Status describing if the client is eligible to receive viewing privileges.
      * 
-     * @author florian
+     * @author Florian Alpers
      */
     public enum AccessStatus {
         /**

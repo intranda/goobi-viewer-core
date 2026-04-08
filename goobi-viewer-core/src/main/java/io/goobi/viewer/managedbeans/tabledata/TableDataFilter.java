@@ -28,7 +28,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * TableDataFilter class.
+ * Represents a single filter criterion applied to a data table column.
  */
 public class TableDataFilter implements Serializable {
 
@@ -104,7 +104,7 @@ public class TableDataFilter implements Serializable {
     /**
      * Getter for the field <code>joinTable</code>.
      *
-     * @return the joinTable
+
      */
     public Optional<String> getJoinTable() {
         return Optional.ofNullable(joinTable);

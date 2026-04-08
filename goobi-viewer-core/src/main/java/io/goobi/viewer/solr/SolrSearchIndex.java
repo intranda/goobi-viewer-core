@@ -82,7 +82,7 @@ import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
 /**
- * SolrSearchIndex class.
+ * Provides all Solr query operations for the viewer, wrapping the SolrJ client with viewer-specific convenience methods.
  */
 public class SolrSearchIndex implements java.io.Closeable {
 
@@ -1438,7 +1438,7 @@ public class SolrSearchIndex implements java.io.Closeable {
     }
 
     /**
-     * @return the dataRepositoryNames
+
      */
     public Map<String, String> getDataRepositoryNames() {
         return dataRepositoryNames;

@@ -24,7 +24,7 @@ package io.goobi.viewer.exceptions;
 import java.io.Serializable;
 
 /**
- * AccessDeniedException class.
+ * Thrown when the requesting user lacks permission to access the requested resource.
  */
 public class AccessDeniedException extends Exception implements Serializable {
 

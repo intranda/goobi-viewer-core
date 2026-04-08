@@ -30,7 +30,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class ArchiveResource implements Serializable {
 
@@ -67,35 +67,35 @@ public class ArchiveResource implements Serializable {
     }
 
     /**
-     * @return the resourceName
+
      */
     public String getResourceName() {
         return resourceName;
     }
 
     /**
-     * @return the resourceId
+
      */
     public String getResourceId() {
         return resourceId;
     }
 
     /**
-     * @return the modifiedDate
+
      */
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
     }
 
     /**
-     * @return the size
+
      */
     public Long getSize() {
         return size;
     }
 
     /**
-     * @return the accessConditions
+
      */
     public List<String> getAccessConditions() {
         return accessConditions;

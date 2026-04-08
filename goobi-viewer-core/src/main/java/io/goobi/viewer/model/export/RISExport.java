@@ -162,14 +162,14 @@ public class RISExport {
     }
 
     /**
-     * @return the fileName
+
      */
     public String getFileName() {
         return fileName;
     }
 
     /**
-     * @return the searchHits
+
      */
     public List<SearchHit> getSearchHits() {
         return searchHits;

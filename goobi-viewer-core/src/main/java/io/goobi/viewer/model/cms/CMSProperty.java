@@ -31,7 +31,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 /**
- * CMSProperty class.
+ * Represents a generic key-value property that can be attached to CMS pages for custom metadata.
  *
  * @author Florian Alpers
  */
@@ -108,7 +108,7 @@ public class CMSProperty implements Serializable {
     /**
      * Getter for the field <code>id</code>.
      *
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -126,7 +126,7 @@ public class CMSProperty implements Serializable {
     /**
      * Getter for the field <code>key</code>.
      *
-     * @return the key
+
      */
     public String getKey() {
         return key;
@@ -144,7 +144,7 @@ public class CMSProperty implements Serializable {
     /**
      * Getter for the field <code>value</code>.
      *
-     * @return the value
+
      */
     public String getValue() {
         return value;
@@ -159,9 +159,6 @@ public class CMSProperty implements Serializable {
         this.value = value;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     /** {@inheritDoc} */
     @Override
     public String toString() {

@@ -30,7 +30,7 @@ import jakarta.persistence.Entity;
  * A subtype of {@link CustomSidebarWidget} to display a RSS feed of selected records. The default settings show a list of the five last imported
  * records
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Entity
 @DiscriminatorValue("RssFeedSidebarWidget")
@@ -70,7 +70,7 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
     /**
      * If this query is not empty only records matching this SOLR query are listed.
      * 
-     * @return the filterQuery
+
      */
     public String getFilterQuery() {
         return filterQuery;
@@ -88,7 +88,7 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
     /**
      * A SOLR field to select and sort the listed entries by.
      * 
-     * @return the sortField
+
      */
     public String getSortField() {
         return sortField;
@@ -106,7 +106,7 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
     /**
      * Returns whether records are sorted in descending order.
      * 
-     * @return the descendingSorting
+
      */
     public boolean isDescendingSorting() {
         return descendingSorting;

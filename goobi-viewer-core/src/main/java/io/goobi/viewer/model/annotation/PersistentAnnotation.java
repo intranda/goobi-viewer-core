@@ -63,7 +63,7 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Transient;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
@@ -214,7 +214,7 @@ public abstract class PersistentAnnotation {
     /**
      * Getter for the field <code>id</code>.
      *
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -232,7 +232,7 @@ public abstract class PersistentAnnotation {
     /**
      * Getter for the field <code>dateCreated</code>.
      *
-     * @return the dateCreated
+
      */
     public LocalDateTime getDateCreated() {
         return dateCreated;
@@ -250,7 +250,7 @@ public abstract class PersistentAnnotation {
     /**
      * Getter for the field <code>dateModified</code>.
      *
-     * @return the dateModified
+
      */
     public LocalDateTime getDateModified() {
         return dateModified;
@@ -268,7 +268,7 @@ public abstract class PersistentAnnotation {
     /**
      * getCreator.
      *
-     * @return the creator
+
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public User getCreator() throws DAOException {
@@ -301,7 +301,7 @@ public abstract class PersistentAnnotation {
     /**
      * getReviewer.
      *
-     * @return the reviewer
+
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public User getReviewer() throws DAOException {
@@ -325,7 +325,7 @@ public abstract class PersistentAnnotation {
     /**
      * getGenerator.
      *
-     * @return the generator
+
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public Question getGenerator() throws DAOException {
@@ -347,7 +347,7 @@ public abstract class PersistentAnnotation {
     /**
      * Getter for the field <code>creatorId</code>.
      *
-     * @return the creatorId
+
      */
     public Long getCreatorId() {
         return creatorId;
@@ -365,7 +365,7 @@ public abstract class PersistentAnnotation {
     /**
      * Getter for the field <code>reviewerId</code>.
      *
-     * @return the reviewerId
+
      */
     public Long getReviewerId() {
         return reviewerId;
@@ -383,7 +383,7 @@ public abstract class PersistentAnnotation {
     /**
      * Getter for the field <code>generatorId</code>.
      *
-     * @return the generatorId
+
      */
     public Long getGeneratorId() {
         return generatorId;
@@ -401,7 +401,7 @@ public abstract class PersistentAnnotation {
     /**
      * Getter for the field <code>body</code>.
      *
-     * @return the body
+
      */
     public String getBody() {
         return body;
@@ -419,7 +419,7 @@ public abstract class PersistentAnnotation {
     /**
      * Getter for the field <code>motivation</code>.
      *
-     * @return the motivation
+
      */
     public String getMotivation() {
         return motivation;
@@ -437,7 +437,7 @@ public abstract class PersistentAnnotation {
     /**
      * Getter for the field <code>target</code>.
      *
-     * @return the target
+
      */
     public String getTarget() {
         return target;
@@ -446,7 +446,7 @@ public abstract class PersistentAnnotation {
     /**
      * Getter for the field <code>targetPI</code>.
      *
-     * @return the targetPI
+
      */
     public String getTargetPI() {
         return targetPI;
@@ -455,7 +455,7 @@ public abstract class PersistentAnnotation {
     /**
      * Getter for the field <code>targetPageOrder</code>.
      *
-     * @return the targetPageOrder
+
      */
     public Integer getTargetPageOrder() {
         return targetPageOrder;
@@ -588,7 +588,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * @return the accessCondition
+
      */
     public String getAccessCondition() {
         return accessCondition;
@@ -601,9 +601,6 @@ public abstract class PersistentAnnotation {
         this.accessCondition = accessCondition;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Crowdsourcing Annotation");
@@ -635,7 +632,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * @return the publicationStatus
+
      */
     public PublicationStatus getPublicationStatus() {
         return publicationStatus;

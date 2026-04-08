@@ -75,9 +75,10 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 /**
- * Creates and monitor (possibly time consuming) {@link Task tasks} within the viewer. These tasks are managed by the {@link TaskManager}
+ * REST resource for creating and monitoring asynchronous {@link io.goobi.viewer.api.rest.model.tasks.TaskManager} tasks within the viewer, such as PDF
+ * pre-rendering.
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Path(TASKS)
 @ViewerRestServiceBinding

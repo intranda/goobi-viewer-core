@@ -22,7 +22,7 @@
 package io.goobi.viewer.model.viewer.collections;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public enum Sorting {
 

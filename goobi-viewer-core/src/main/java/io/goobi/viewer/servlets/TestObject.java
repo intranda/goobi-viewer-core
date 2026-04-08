@@ -25,7 +25,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.Context;
 
 /**
- * TestObject class.
+ * Simple test object used for verifying servlet and bean wiring in integration tests.
  *
  * @author Florian Alpers
  */

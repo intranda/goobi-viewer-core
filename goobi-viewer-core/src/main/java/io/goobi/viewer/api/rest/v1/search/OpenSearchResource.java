@@ -51,8 +51,10 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 
 /**
- * Endpoint for opensearch (https://opensearchfoundation.org/) within the viewer instance. The url is referenced in the header of the template.html in
- * the viewer-theme. This resource returns the xml-document in /resources/opensearch/opensearch.xml
+ * REST resource providing OpenSearch protocol endpoints for search and auto-suggest functionality.
+ * <p>
+ * The endpoint URL is referenced in the header of the viewer theme's {@code template.html}. Returns the XML document
+ * from {@code /resources/opensearch/opensearch.xml}.
  */
 @Path(ApiUrls.OPENSEARCH)
 @ViewerRestServiceBinding

@@ -68,7 +68,7 @@ import jakarta.servlet.http.HttpServletRequest;
 /**
  * Creates a IIIF Search API v1.0 response as {@link de.intranda.api.iiif.search.SearchResult}.
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class IIIFSearchBuilder {
 
@@ -110,7 +110,7 @@ public class IIIFSearchBuilder {
     /**
      * Getter for the field <code>query</code>.
      *
-     * @return the query
+
      */
     public String getQuery() {
         return query;
@@ -119,7 +119,7 @@ public class IIIFSearchBuilder {
     /**
      * Getter for the field <code>pi</code>.
      *
-     * @return the pi
+
      */
     public String getPi() {
         return pi;
@@ -141,7 +141,7 @@ public class IIIFSearchBuilder {
     /**
      * Getter for the field <code>motivation</code>.
      *
-     * @return the motivation
+
      */
     public List<String> getMotivation() {
         return motivation;
@@ -168,7 +168,7 @@ public class IIIFSearchBuilder {
     /**
      * Getter for the field <code>user</code>.
      *
-     * @return the user
+
      */
     public String getUser() {
         return user;
@@ -188,7 +188,7 @@ public class IIIFSearchBuilder {
     /**
      * Getter for the field <code>date</code>.
      *
-     * @return the date
+
      */
     public String getDate() {
         return date;
@@ -197,7 +197,7 @@ public class IIIFSearchBuilder {
     /**
      * Getter for the field <code>min</code>.
      *
-     * @return the min
+
      */
     public String getMin() {
         return min;
@@ -230,7 +230,7 @@ public class IIIFSearchBuilder {
     /**
      * Getter for the field <code>page</code>.
      *
-     * @return the page
+
      */
     public int getPage() {
         return page;
@@ -239,7 +239,7 @@ public class IIIFSearchBuilder {
     /**
      * Getter for the field <code>hitsPerPage</code>.
      *
-     * @return the hitsPerPage
+
      */
     public int getHitsPerPage() {
         return hitsPerPage;

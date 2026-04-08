@@ -30,7 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import jakarta.servlet.ServletContext;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class FileResourceManager {
 

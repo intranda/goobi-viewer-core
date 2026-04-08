@@ -148,7 +148,7 @@ public class ArchiveEntryMetadataList {
     }
 
     /**
-     * @return the identityStatementAreaList
+
      */
     public List<Metadata> getIdentityStatementAreaList() {
         // logger.trace("getIdentityStatementAreaList ({})", id); //NOSONAR Debug
@@ -156,7 +156,7 @@ public class ArchiveEntryMetadataList {
     }
 
     /**
-     * @return the contextAreaList
+
      */
     public List<Metadata> getContextAreaList() {
         // logger.trace("getContextAreaList ({})", id); //NOSONAR Debug
@@ -164,7 +164,7 @@ public class ArchiveEntryMetadataList {
     }
 
     /**
-     * @return the contentAndStructureAreaAreaList
+
      */
     public List<Metadata> getContentAndStructureAreaAreaList() {
         // logger.trace("getContentAndStructureAreaAreaList ({})", id); //NOSONAR Debug
@@ -172,7 +172,7 @@ public class ArchiveEntryMetadataList {
     }
 
     /**
-     * @return the accessAndUseAreaList
+
      */
     public List<Metadata> getAccessAndUseAreaList() {
         // logger.trace("getAccessAndUseAreaList ({})", id); //NOSONAR Debug
@@ -180,7 +180,7 @@ public class ArchiveEntryMetadataList {
     }
 
     /**
-     * @return the alliedMaterialsAreaList
+
      */
     public List<Metadata> getAlliedMaterialsAreaList() {
         // logger.trace("getAlliedMaterialsAreaList ({})", id); //NOSONAR Debug
@@ -188,7 +188,7 @@ public class ArchiveEntryMetadataList {
     }
 
     /**
-     * @return the notesAreaList
+
      */
     public List<Metadata> getNotesAreaList() {
         // logger.trace("getNotesAreaList ({})", id); //NOSONAR Debug
@@ -196,7 +196,7 @@ public class ArchiveEntryMetadataList {
     }
 
     /**
-     * @return the descriptionControlAreaList
+
      */
     public List<Metadata> getDescriptionControlAreaList() {
         // logger.trace("getDescriptionControlAreaList ({})", id); //NOSONAR Debug

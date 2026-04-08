@@ -30,7 +30,7 @@ import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 /**
  * Interface for classes which manipulate the database to conform to the setup required by the viewer.
  *
- * @author florian
+ * @author Florian Alpers
  */
 public interface IModelUpdate {
 

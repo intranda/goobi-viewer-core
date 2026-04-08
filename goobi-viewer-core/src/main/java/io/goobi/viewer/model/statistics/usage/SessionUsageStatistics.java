@@ -44,7 +44,7 @@ import jakarta.persistence.Table;
 /**
  * Persistence class containing request counts for a single http session.
  * 
- * @author florian
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "session_statistics")

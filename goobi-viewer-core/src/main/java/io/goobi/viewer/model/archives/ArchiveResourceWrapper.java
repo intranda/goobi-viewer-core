@@ -62,14 +62,14 @@ public class ArchiveResourceWrapper implements Serializable {
     }
 
     /**
-     * @return the archiveResource
+
      */
     public ArchiveResource getArchiveResource() {
         return archiveResource;
     }
 
     /**
-     * @return the archiveConfig
+
      */
     public CMSArchiveConfig getArchiveConfig() {
         return archiveConfig;

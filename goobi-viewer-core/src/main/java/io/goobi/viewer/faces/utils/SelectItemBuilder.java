@@ -42,7 +42,7 @@ import jakarta.faces.model.SelectItemGroup;
 /**
  * Tools to create SelectItem collections to use in jsf components.
  * 
- * @author florian
+ * @author Florian Alpers
  */
 public final class SelectItemBuilder {
 

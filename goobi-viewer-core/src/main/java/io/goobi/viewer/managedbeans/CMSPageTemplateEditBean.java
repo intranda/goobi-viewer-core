@@ -299,7 +299,7 @@ public class CMSPageTemplateEditBean implements Serializable {
     }
 
     /**
-     * @return the dao
+
      */
     public IDAO getDao() {
         return dao;

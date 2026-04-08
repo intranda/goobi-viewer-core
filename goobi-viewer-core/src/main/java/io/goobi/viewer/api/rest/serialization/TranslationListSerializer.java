@@ -38,13 +38,10 @@ import io.goobi.viewer.model.translations.Translation;
 /**
  * TranslationListSerializer class.
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class TranslationListSerializer extends JsonSerializer<Collection<Translation>> {
 
-    /* (non-Javadoc)
-     * @see com.fasterxml.jackson.databind.JsonSerializer#serialize(java.lang.Object, JsonGenerator, SerializerProvider)
-     */
     /** {@inheritDoc} */
     @Override
     public void serialize(Collection<Translation> translations, JsonGenerator gen, SerializerProvider serializers) throws IOException {

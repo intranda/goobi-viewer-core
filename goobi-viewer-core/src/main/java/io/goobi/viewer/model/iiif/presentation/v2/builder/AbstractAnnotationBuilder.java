@@ -52,7 +52,7 @@ import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class AbstractAnnotationBuilder {
 

@@ -60,7 +60,7 @@ public class SearchChildHit {
     /**
      * Getter for the field <code>type</code>.
      *
-     * @return the type
+
      */
     public HitType getType() {
         return type;

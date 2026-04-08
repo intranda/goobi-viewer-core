@@ -86,7 +86,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.StreamingOutput;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class TextResourceBuilder {
 

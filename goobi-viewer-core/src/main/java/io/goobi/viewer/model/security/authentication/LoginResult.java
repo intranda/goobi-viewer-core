@@ -31,7 +31,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * LoginResult class.
+ * Encapsulates the outcome of an authentication attempt, including the authenticated user and any error message.
  *
  * @author Florian Alpers
  */
@@ -109,7 +109,7 @@ public class LoginResult {
     /**
      * Getter for the field <code>request</code>.
      *
-     * @return the request
+
      */
     public HttpServletRequest getRequest() {
         return request;
@@ -118,7 +118,7 @@ public class LoginResult {
     /**
      * Getter for the field <code>response</code>.
      *
-     * @return the response
+
      */
     public HttpServletResponse getResponse() {
         return response;
@@ -171,7 +171,7 @@ public class LoginResult {
     /**
      * isRefused.
      *
-     * @return the refused
+
      */
     public boolean isRefused() {
         return refused;
@@ -179,7 +179,7 @@ public class LoginResult {
 
     /**
      * 
-     * @return the delay
+
      */
     public long getDelay() {
         return delay;

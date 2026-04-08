@@ -22,7 +22,7 @@
 package io.goobi.viewer.model.viewer;
 
 /**
- * PageOrientation class.
+ * Enum representing the page orientation (left, right, or single) for double-page spread display.
  */
 public enum PageOrientation {
     LEFT,

@@ -27,7 +27,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class GeoMapMarker {
 
@@ -83,7 +83,7 @@ public class GeoMapMarker {
     }
 
     /**
-     * @return the icon
+
      */
     public String getIcon() {
         return icon;
@@ -97,7 +97,7 @@ public class GeoMapMarker {
     }
 
     /**
-     * @return the markerColor
+
      */
     public String getMarkerColor() {
         return markerColor;
@@ -111,7 +111,7 @@ public class GeoMapMarker {
     }
 
     /**
-     * @return the shape
+
      */
     public String getShape() {
         return shape;
@@ -125,7 +125,7 @@ public class GeoMapMarker {
     }
 
     /**
-     * @return the extraClasses
+
      */
     public String getExtraClasses() {
         return extraClasses;
@@ -139,7 +139,7 @@ public class GeoMapMarker {
     }
 
     /**
-     * @return the prefix
+
      */
     public String getPrefix() {
         return prefix;
@@ -153,7 +153,7 @@ public class GeoMapMarker {
     }
 
     /**
-     * @return the iconColor
+
      */
     public String getIconColor() {
         return iconColor;
@@ -167,7 +167,7 @@ public class GeoMapMarker {
     }
 
     /**
-     * @return the iconRotation
+
      */
     public int getIconRotate() {
         return iconRotate;
@@ -181,7 +181,7 @@ public class GeoMapMarker {
     }
 
     /**
-     * @return the number
+
      */
     public String getNumber() {
         return number;
@@ -195,7 +195,7 @@ public class GeoMapMarker {
     }
 
     /**
-     * @return the svg
+
      */
     public boolean isSvg() {
         return svg;
@@ -209,7 +209,7 @@ public class GeoMapMarker {
     }
 
     /**
-     * @return the name
+
      */
     public String getName() {
         return name;
@@ -223,7 +223,7 @@ public class GeoMapMarker {
     }
 
     /**
-     * @return the shadow
+
      */
     public boolean isShadow() {
         return shadow;
@@ -237,7 +237,7 @@ public class GeoMapMarker {
     }
 
     /**
-     * @return the highlightColor
+
      */
     public String getHighlightColor() {
         return highlightColor;
@@ -268,7 +268,7 @@ public class GeoMapMarker {
     }
 
     /**
-     * @return the useDefault
+
      */
     public boolean isUseDefault() {
         return useDefault;
@@ -282,7 +282,7 @@ public class GeoMapMarker {
     }
 
     /**
-     * @return the highlightIcon
+
      */
     public String getHighlightIcon() {
         return highlightIcon;

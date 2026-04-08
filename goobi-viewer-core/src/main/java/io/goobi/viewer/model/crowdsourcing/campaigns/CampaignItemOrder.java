@@ -20,7 +20,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public enum CampaignItemOrder {
 

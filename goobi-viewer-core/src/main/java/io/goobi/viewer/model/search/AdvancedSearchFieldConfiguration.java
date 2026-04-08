@@ -56,14 +56,14 @@ public class AdvancedSearchFieldConfiguration {
     }
 
     /**
-     * @return the field
+
      */
     public String getField() {
         return field;
     }
 
     /**
-     * @return the label
+
      * @should return field if label null
      */
     public String getLabel() {
@@ -83,7 +83,7 @@ public class AdvancedSearchFieldConfiguration {
     }
 
     /**
-     * @return the hierarchical
+
      */
     public boolean isHierarchical() {
         return hierarchical;
@@ -99,7 +99,7 @@ public class AdvancedSearchFieldConfiguration {
     }
 
     /**
-     * @return the range
+
      */
     public boolean isRange() {
         return range;
@@ -115,7 +115,7 @@ public class AdvancedSearchFieldConfiguration {
     }
 
     /**
-     * @return the datepicker
+
      */
     public boolean isDatepicker() {
         return datepicker;
@@ -131,7 +131,7 @@ public class AdvancedSearchFieldConfiguration {
     }
 
     /**
-     * @return the untokenizeForPhraseSearch
+
      */
     public boolean isUntokenizeForPhraseSearch() {
         return untokenizeForPhraseSearch;
@@ -147,7 +147,7 @@ public class AdvancedSearchFieldConfiguration {
     }
 
     /**
-     * @return the disabled
+
      */
     public boolean isDisabled() {
         return disabled;
@@ -163,14 +163,14 @@ public class AdvancedSearchFieldConfiguration {
     }
 
     /**
-     * @return the visible
+
      */
     public boolean isVisible() {
         return visible;
     }
 
     /**
-     * @return the allowMultipleItems
+
      */
     public boolean isAllowMultipleItems() {
         return allowMultipleItems;
@@ -195,7 +195,7 @@ public class AdvancedSearchFieldConfiguration {
     }
 
     /**
-     * @return the displaySelectItemsThreshold
+
      */
     public int getDisplaySelectItemsThreshold() {
         return displaySelectItemsThreshold;
@@ -211,7 +211,7 @@ public class AdvancedSearchFieldConfiguration {
     }
 
     /**
-     * @return the selectType
+
      */
     public String getSelectType() {
         return selectType;
@@ -227,7 +227,7 @@ public class AdvancedSearchFieldConfiguration {
     }
 
     /**
-     * @return the replaceRegex
+
      */
     public String getReplaceRegex() {
         return replaceRegex;
@@ -243,7 +243,7 @@ public class AdvancedSearchFieldConfiguration {
     }
 
     /**
-     * @return the replaceWith
+
      */
     public String getReplaceWith() {
         return replaceWith;
@@ -259,7 +259,7 @@ public class AdvancedSearchFieldConfiguration {
     }
 
     /**
-     * @return the preselectValue
+
      */
     public String getPreselectValue() {
         return preselectValue;

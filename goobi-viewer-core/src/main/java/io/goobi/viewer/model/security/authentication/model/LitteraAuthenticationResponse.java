@@ -25,7 +25,7 @@ package io.goobi.viewer.model.security.authentication.model;
  * Representation of the Littera authentication response which is delivered as xml. It only contains the single information if a login attempt
  * succeeded or not
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class LitteraAuthenticationResponse {
 
@@ -49,7 +49,7 @@ public class LitteraAuthenticationResponse {
     /**
      * isAuthenticationSuccessful.
      *
-     * @return the authenticationSuccessful
+
      */
     public boolean isAuthenticationSuccessful() {
         return authenticationSuccessful;

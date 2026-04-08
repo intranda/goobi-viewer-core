@@ -35,7 +35,7 @@ import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class ClientApplicationFilter implements Filter {
 

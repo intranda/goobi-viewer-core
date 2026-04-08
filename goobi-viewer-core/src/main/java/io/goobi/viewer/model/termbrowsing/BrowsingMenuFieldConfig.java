@@ -32,7 +32,7 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
 /**
- * BrowsingMenuFieldConfig class.
+ * Configuration for a single field entry in the alphabetical browsing menu, specifying the Solr field and display options.
  */
 public class BrowsingMenuFieldConfig implements Serializable {
 
@@ -92,7 +92,7 @@ public class BrowsingMenuFieldConfig implements Serializable {
     /**
      * Getter for the field <code>field</code>.
      *
-     * @return the field
+
      */
     public String getField() {
         return field;
@@ -113,7 +113,7 @@ public class BrowsingMenuFieldConfig implements Serializable {
     /**
      * Getter for the field <code>sortField</code>.
      *
-     * @return the sortField
+
      */
     public String getSortField() {
         return sortField;
@@ -122,14 +122,14 @@ public class BrowsingMenuFieldConfig implements Serializable {
     /**
      * Getter for the field <code>filterQueries</code>.
      *
-     * @return the filterQueries
+
      */
     public List<String> getFilterQueries() {
         return filterQueries;
     }
 
     /**
-     * @return the translate
+
      */
     public boolean isTranslate() {
         return translate;
@@ -145,7 +145,7 @@ public class BrowsingMenuFieldConfig implements Serializable {
     }
 
     /**
-     * @return the alwaysApplyFilter
+
      */
     public boolean isAlwaysApplyFilter() {
         return alwaysApplyFilter;
@@ -161,7 +161,7 @@ public class BrowsingMenuFieldConfig implements Serializable {
     }
 
     /**
-     * @return the skipInWidget
+
      */
     public boolean isSkipInWidget() {
         return skipInWidget;

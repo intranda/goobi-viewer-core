@@ -46,7 +46,7 @@ import io.goobi.viewer.model.cms.SelectableNavigationItem;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
- * CmsNavigationBean class.
+ * JSF backing bean for managing the CMS navigation menu structure.
  */
 @Named
 @SessionScoped
@@ -279,7 +279,7 @@ public class CmsNavigationBean implements Serializable {
     /**
      * getSelectedTheme.
      *
-     * @return the selectedTheme
+
      */
     public String getSelectedTheme() {
         return getItemManager().getAssociatedTheme();

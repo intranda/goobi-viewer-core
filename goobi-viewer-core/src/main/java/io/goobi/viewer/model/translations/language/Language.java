@@ -25,7 +25,7 @@ import java.io.Serializable;
 import java.util.Locale;
 
 /**
- * Language class.
+ * Represents a language with its ISO 639 code and localised names.
  */
 public class Language implements Comparable<Language>, Serializable {
 
@@ -140,7 +140,7 @@ public class Language implements Comparable<Language>, Serializable {
     /**
      * Getter for the field <code>englishName</code>.
      *
-     * @return the englishName
+
      */
     public String getEnglishName() {
         return englishName;
@@ -158,7 +158,7 @@ public class Language implements Comparable<Language>, Serializable {
     /**
      * Getter for the field <code>frenchName</code>.
      *
-     * @return the frenchName
+
      */
     public String getFrenchName() {
         return frenchName;
@@ -176,7 +176,7 @@ public class Language implements Comparable<Language>, Serializable {
     /**
      * Getter for the field <code>germanName</code>.
      *
-     * @return the germanName
+
      */
     public String getGermanName() {
         return germanName;
@@ -204,17 +204,11 @@ public class Language implements Comparable<Language>, Serializable {
         }
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
     @Override
     public int compareTo(Language other) {
         return this.getIsoCode().compareTo(other.getIsoCode());
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -223,9 +217,6 @@ public class Language implements Comparable<Language>, Serializable {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

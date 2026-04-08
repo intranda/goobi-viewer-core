@@ -24,7 +24,7 @@ package io.goobi.viewer.model.security.user.icon;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public interface UserAvatar {
 

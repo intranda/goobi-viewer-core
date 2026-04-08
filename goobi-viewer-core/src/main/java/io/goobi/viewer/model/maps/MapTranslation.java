@@ -31,7 +31,7 @@ import java.io.Serializable;
 import io.goobi.viewer.model.translations.Translation;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "cms_geomap_translation")
@@ -74,7 +74,7 @@ public class MapTranslation extends Translation implements Serializable {
     }
 
     /**
-     * @return the owner
+
      */
     public GeoMap getOwner() {
         return owner;

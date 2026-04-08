@@ -511,7 +511,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * isExists.
      *
-     * @return the exists
+
      */
     public boolean isExists() {
         return exists;
@@ -648,7 +648,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * isFulltextAvailable.
      *
-     * @return the fulltextAvailable
+
      */
     public boolean isFulltextAvailable() {
         return fulltextAvailable;
@@ -666,7 +666,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * Returns true if the record has any ALTO documents indexed in its pages; false otherwise.
      *
-     * @return the altoAvailable
+
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
@@ -683,7 +683,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * Returns true if the record has any NE_* tags indexed in its pages; false otherwise.
      *
-     * @return the nerAvailable
+
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
@@ -793,7 +793,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * Getter for the field <code>ancestors</code>.
      *
-     * @return the ancestors
+
      */
     public Map<String, String> getAncestors() {
         return ancestors;
@@ -802,7 +802,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * Getter for the field <code>groupMemberships</code>.
      *
-     * @return the groupMemberships
+
      */
     public Map<String, String> getGroupMemberships() {
         return groupMemberships;
@@ -1007,7 +1007,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * @return the shapeMetadata
+
      */
     public List<ShapeMetadata> getShapeMetadata() {
         return shapeMetadata;
@@ -1021,7 +1021,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * @return the rtl
+
      */
     public boolean isRtl() {
         return rtl;
@@ -1071,28 +1071,28 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         }
 
         /**
-         * @return the label
+
          */
         public String getLabel() {
             return label;
         }
 
         /**
-         * @return the shape
+
          */
         public String getShape() {
             return shape;
         }
 
         /**
-         * @return the coords
+
          */
         public String getCoords() {
             return coords;
         }
 
         /**
-         * @return the url
+
          */
         public String getUrl() {
             PageType pageType =
@@ -1114,7 +1114,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         }
 
         /**
-         * @return the logId
+
          */
         public String getLogId() {
 
@@ -1122,7 +1122,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         }
 
         /**
-         * @return the pageNo
+
          */
         public int getPageNo() {
             return pageNo;

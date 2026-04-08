@@ -28,7 +28,7 @@ import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
  * a mediaItem in the selectMedia dialog, since the dialog uses
  * {@link io.goobi.viewer.managedbeans.CmsBean#fillSelectedMediaHolder(CategorizableTranslatedSelectable)} to apply the selected MediaItem
  *
- * @author florian
+ * @author Florian Alpers
  */
 public interface CMSMediaHolder {
 

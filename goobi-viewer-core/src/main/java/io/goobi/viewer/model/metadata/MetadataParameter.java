@@ -36,7 +36,7 @@ import org.apache.logging.log4j.Logger;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
 
 /**
- * MetadataParameter class.
+ * Defines a single parameter within a metadata field configuration, specifying the Solr field and display options.
  */
 public class MetadataParameter implements Serializable {
 
@@ -172,11 +172,6 @@ public class MetadataParameter implements Serializable {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -204,7 +199,7 @@ public class MetadataParameter implements Serializable {
     /**
      * Getter for the field <code>source</code>.
      *
-     * @return the source
+
      */
     public String getSource() {
         return source;
@@ -220,7 +215,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * @return the destination
+
      */
     public String getDestination() {
         return destination;
@@ -238,7 +233,7 @@ public class MetadataParameter implements Serializable {
     /**
      * Getter for the field <code>type</code>.
      *
-     * @return the type
+
      */
     public MetadataParameterType getType() {
         return type;
@@ -258,7 +253,7 @@ public class MetadataParameter implements Serializable {
     /**
      * Getter for the field <code>key</code>.
      *
-     * @return the key
+
      */
     public String getKey() {
         return key;
@@ -274,7 +269,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * @return the altKey
+
      */
     public String getAltKey() {
         return altKey;
@@ -292,7 +287,7 @@ public class MetadataParameter implements Serializable {
     /**
      * Getter for the field <code>masterValueFragment</code>.
      *
-     * @return the masterValueFragment
+
      */
     public String getMasterValueFragment() {
         return masterValueFragment;
@@ -310,7 +305,7 @@ public class MetadataParameter implements Serializable {
     /**
      * Getter for the field <code>defaultValue</code>.
      *
-     * @return the defaultValue
+
      */
     public String getDefaultValue() {
         return defaultValue;
@@ -328,7 +323,7 @@ public class MetadataParameter implements Serializable {
     /**
      * Getter for the field <code>prefix</code>.
      *
-     * @return the prefix
+
      */
     public String getPrefix() {
         return prefix;
@@ -346,7 +341,7 @@ public class MetadataParameter implements Serializable {
     /**
      * Getter for the field <code>suffix</code>.
      *
-     * @return the suffix
+
      */
     public String getSuffix() {
         return suffix;
@@ -371,7 +366,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * @return the condition
+
      */
     public String getCondition() {
         return condition;
@@ -387,7 +382,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * @return the inputPattern
+
      */
     public String getInputPattern() {
         return inputPattern;
@@ -403,7 +398,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * @return the outputPattern
+
      */
     public String getOutputPattern() {
         return outputPattern;
@@ -421,7 +416,7 @@ public class MetadataParameter implements Serializable {
     /**
      * isAddUrl.
      *
-     * @return the addUrl
+
      */
     public boolean isAddUrl() {
         return addUrl;
@@ -439,7 +434,7 @@ public class MetadataParameter implements Serializable {
     /**
      * isTopstructValueFallback.
      *
-     * @return the dontUseTopstructValue
+
      */
     public boolean isTopstructValueFallback() {
         return topstructValueFallback;
@@ -455,7 +450,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * @return the removeHighlighting
+
      */
     public boolean isRemoveHighlighting() {
         return removeHighlighting;
@@ -473,7 +468,7 @@ public class MetadataParameter implements Serializable {
     /**
      * Getter for the field <code>replaceRules</code>.
      *
-     * @return the replaceRules
+
      */
     public List<MetadataReplaceRule> getReplaceRules() {
         return replaceRules;

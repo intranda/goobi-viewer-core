@@ -241,9 +241,6 @@ public class Search implements Serializable {
         this.facetFields = facetFields;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -254,9 +251,6 @@ public class Search implements Serializable {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -870,7 +864,7 @@ public class Search implements Serializable {
     /**
      * Getter for the field <code>id</code>.
      *
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -888,7 +882,7 @@ public class Search implements Serializable {
     /**
      * Getter for the field <code>owner</code>.
      *
-     * @return the owner
+
      */
     public User getOwner() {
         return owner;
@@ -906,7 +900,7 @@ public class Search implements Serializable {
     /**
      * Getter for the field <code>name</code>.
      *
-     * @return the name
+
      */
     public String getName() {
         return name;
@@ -924,7 +918,7 @@ public class Search implements Serializable {
     /**
      * Getter for the field <code>userInput</code>.
      *
-     * @return the userInput
+
      */
     public String getUserInput() {
         return userInput;
@@ -942,7 +936,7 @@ public class Search implements Serializable {
     /**
      * Getter for the field <code>searchType</code>.
      *
-     * @return the searchType
+
      */
     public int getSearchType() {
         return searchType;
@@ -960,7 +954,7 @@ public class Search implements Serializable {
     /**
      * Getter for the field <code>searchFilter</code>.
      *
-     * @return the searchFilter
+
      */
     public String getSearchFilter() {
         return searchFilter;
@@ -978,7 +972,7 @@ public class Search implements Serializable {
     /**
      * Getter for the field <code>query</code>.
      *
-     * @return the query
+
      */
     public String getQuery() {
         return query;
@@ -996,7 +990,7 @@ public class Search implements Serializable {
     /**
      * Getter for the field <code>expandQuery</code>.
      *
-     * @return the expandQuery
+
      */
     public String getExpandQuery() {
         return expandQuery;
@@ -1012,7 +1006,7 @@ public class Search implements Serializable {
     }
 
     /**
-     * @return the customFilterQuery
+
      */
     public String getCustomFilterQuery() {
         return customFilterQuery;
@@ -1028,7 +1022,7 @@ public class Search implements Serializable {
     /**
      * Getter for the field <code>page</code>.
      *
-     * @return the page
+
      */
     public int getPage() {
         return page;
@@ -1046,7 +1040,7 @@ public class Search implements Serializable {
     /**
      * Getter for the field <code>facetString</code>.
      *
-     * @return the facetString
+
      */
     public String getFacetString() {
         return facetString;
@@ -1064,7 +1058,7 @@ public class Search implements Serializable {
     /**
      * Getter for the field <code>sortString</code>.
      *
-     * @return the sortString
+
      */
     public String getSortString() {
         return sortString;
@@ -1136,7 +1130,7 @@ public class Search implements Serializable {
     /**
      * Getter for the field <code>sortFields</code>.
      *
-     * @return the sortFields
+
      */
     public List<StringPair> getSortFields() {
         return sortFields;
@@ -1145,7 +1139,7 @@ public class Search implements Serializable {
     /**
      * Getter for the field <code>dateUpdated</code>.
      *
-     * @return the dateUpdated
+
      */
     public LocalDateTime getDateUpdated() {
         return dateUpdated;
@@ -1163,7 +1157,7 @@ public class Search implements Serializable {
     /**
      * Getter for the field <code>lastHitsCount</code>.
      *
-     * @return the lastHitsCount
+
      */
     public long getLastHitsCount() {
         return lastHitsCount;
@@ -1181,7 +1175,7 @@ public class Search implements Serializable {
     /**
      * isNewHitsNotification.
      *
-     * @return the newHitsNotification
+
      */
     public boolean isNewHitsNotification() {
         return newHitsNotification;
@@ -1197,7 +1191,7 @@ public class Search implements Serializable {
     }
 
     /**
-     * @return the proximitySearchDistance
+
      */
     public int getProximitySearchDistance() {
         return proximitySearchDistance;
@@ -1211,7 +1205,7 @@ public class Search implements Serializable {
     }
 
     /**
-     * @return the resultGroups
+
      */
     public List<SearchResultGroup> getResultGroups() {
         return resultGroups;
@@ -1227,7 +1221,7 @@ public class Search implements Serializable {
     /**
      * isSaved.
      *
-     * @return the saved
+
      */
     public boolean isSaved() {
         return saved;
@@ -1245,7 +1239,7 @@ public class Search implements Serializable {
     /**
      * Getter for the field <code>hitsCount</code>.
      *
-     * @return the hitsCount
+
      */
     public long getHitsCount() {
         long ret = 0;
@@ -1272,7 +1266,7 @@ public class Search implements Serializable {
     /**
      * Getter for the field <code>hits</code>.
      *
-     * @return the hits
+
      */
     public List<SearchHit> getHits() {
         if (!resultGroups.isEmpty()) {
@@ -1312,7 +1306,7 @@ public class Search implements Serializable {
     }
 
     /**
-     * @return the hitGeoCoordinateList
+
      */
     public List<Location> getHitsLocationList() {
         if (!resultGroups.isEmpty()) {
@@ -1323,7 +1317,7 @@ public class Search implements Serializable {
     }
 
     /**
-     * @return the hasGeoLocationHits
+
      */
     public boolean isHasGeoLocationHits() {
         if (!resultGroups.isEmpty()) {
@@ -1342,7 +1336,7 @@ public class Search implements Serializable {
     }
 
     /**
-     * @return the metadataListType
+
      */
     public String getMetadataListType() {
         return metadataListType;

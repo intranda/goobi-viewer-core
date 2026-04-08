@@ -40,7 +40,7 @@ public class ProcessCreationRequest {
     private Map<String, String> properties;
 
     /**
-     * @return the identifier
+
      */
     public String getIdentifier() {
         return identifier;
@@ -54,7 +54,7 @@ public class ProcessCreationRequest {
     }
 
     /**
-     * @return the processtitle
+
      */
     public String getProcesstitle() {
         return processtitle;
@@ -68,7 +68,7 @@ public class ProcessCreationRequest {
     }
 
     /**
-     * @return the logicalDSType
+
      */
     public String getLogicalDSType() {
         return logicalDSType;
@@ -82,7 +82,7 @@ public class ProcessCreationRequest {
     }
 
     /**
-     * @return the templateId
+
      */
     public Integer getTemplateId() {
         return templateId;
@@ -96,7 +96,7 @@ public class ProcessCreationRequest {
     }
 
     /**
-     * @return the templateName
+
      */
     public String getTemplateName() {
         return templateName;
@@ -110,7 +110,7 @@ public class ProcessCreationRequest {
     }
 
     /**
-     * @return the metadata
+
      */
     public Map<String, String> getMetadata() {
         return metadata;
@@ -124,7 +124,7 @@ public class ProcessCreationRequest {
     }
 
     /**
-     * @return the properties
+
      */
     public Map<String, String> getProperties() {
         return properties;

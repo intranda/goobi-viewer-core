@@ -89,7 +89,9 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
- * @author florian
+ * REST resource for managing user bookmark lists including creation, sharing, and export in multiple formats.
+ *
+ * @author Florian Alpers
  */
 @Path(USERS_BOOKMARKS)
 @ViewerRestServiceBinding

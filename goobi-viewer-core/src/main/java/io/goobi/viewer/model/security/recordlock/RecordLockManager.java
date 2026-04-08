@@ -184,7 +184,7 @@ public class RecordLockManager {
     }
 
     /**
-     * @return the loadedRecordMap
+
      */
     Map<String, Set<RecordLock>> getLoadedRecordMap() {
         return loadedRecordMap;
@@ -204,14 +204,14 @@ public class RecordLockManager {
     }
 
     /**
-     * @return the recordAccessConditionsCache
+
      */
     public Map<String, List<String>> getRecordAccessConditionsCache() {
         return recordAccessConditionsCache;
     }
 
     /**
-     * @return the recordLimitsCache
+
      */
     public Map<String, List<String>> getRecordLimitsCache() {
         return recordLimitsCache;

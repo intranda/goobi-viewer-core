@@ -37,7 +37,7 @@ import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 @Named
 @ViewScoped
@@ -88,7 +88,7 @@ public class CmsSliderBean implements Serializable {
     }
 
     /**
-     * @return the filter
+
      */
     public TableDataFilter getFilter() {
         return filter;

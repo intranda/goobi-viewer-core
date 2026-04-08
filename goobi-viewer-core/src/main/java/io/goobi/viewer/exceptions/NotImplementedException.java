@@ -22,9 +22,9 @@
 package io.goobi.viewer.exceptions;
 
 /**
- * NotImplementedException class.
+ * Thrown to indicate that a method or operation is not yet implemented.
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class NotImplementedException extends Exception {
 

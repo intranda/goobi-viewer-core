@@ -61,7 +61,7 @@ public class ReportErrorsErrorHandler implements ErrorHandler {
     }
 
     /**
-     * @return the errors
+
      */
     public List<XMLError> getErrors() {
         return errors;

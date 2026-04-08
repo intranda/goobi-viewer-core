@@ -16,7 +16,7 @@
 package io.goobi.viewer.model.job.download;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class AbstractTaskManagerRequest {
 
@@ -43,7 +43,7 @@ public class AbstractTaskManagerRequest {
     }
 
     /**
-     * @return the goobiId
+
      */
     public String getGoobiId() {
         return goobiId;
@@ -57,7 +57,7 @@ public class AbstractTaskManagerRequest {
     }
 
     /**
-     * @return the sourceDir
+
      */
     public String getSourceDir() {
         return sourceDir;
@@ -71,7 +71,7 @@ public class AbstractTaskManagerRequest {
     }
 
     /**
-     * @return the targetDir
+
      */
     public String getTargetDir() {
         return targetDir;
@@ -85,7 +85,7 @@ public class AbstractTaskManagerRequest {
     }
 
     /**
-     * @return the pi
+
      */
     public String getPi() {
         return pi;
@@ -99,7 +99,7 @@ public class AbstractTaskManagerRequest {
     }
 
     /**
-     * @return the logId
+
      */
     public String getLogId() {
         return logId;
@@ -113,7 +113,7 @@ public class AbstractTaskManagerRequest {
     }
 
     /**
-     * @return the language
+
      */
     public String getLanguage() {
         return language;

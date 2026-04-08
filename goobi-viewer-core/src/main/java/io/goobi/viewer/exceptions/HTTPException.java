@@ -24,7 +24,7 @@ package io.goobi.viewer.exceptions;
 import java.io.Serializable;
 
 /**
- * HTTPException class.
+ * Thrown when an HTTP request returns an unexpected or error response code.
  */
 public class HTTPException extends Exception implements Serializable {
 
@@ -46,7 +46,7 @@ public class HTTPException extends Exception implements Serializable {
     /**
      * Getter for the field <code>code</code>.
      *
-     * @return the code
+
      */
     public int getCode() {
         return code;

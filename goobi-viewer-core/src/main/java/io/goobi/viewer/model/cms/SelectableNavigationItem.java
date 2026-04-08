@@ -83,7 +83,7 @@ public class SelectableNavigationItem extends CMSNavigationItem {
     /**
      * isSelected.
      *
-     * @return the selected
+
      */
     public boolean isSelected() {
         return selected;

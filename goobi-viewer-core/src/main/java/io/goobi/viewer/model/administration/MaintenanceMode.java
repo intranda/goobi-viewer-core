@@ -78,7 +78,7 @@ public class MaintenanceMode implements IPolyglott {
     }
 
     /**
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -92,7 +92,7 @@ public class MaintenanceMode implements IPolyglott {
     }
 
     /**
-     * @return the enabled
+
      */
     public boolean isEnabled() {
         return enabled;
@@ -107,7 +107,7 @@ public class MaintenanceMode implements IPolyglott {
     }
 
     /**
-     * @return the translations
+
      */
     public List<MaintenanceModeTranslation> getTranslations() {
         return translations;

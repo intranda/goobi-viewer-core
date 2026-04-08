@@ -48,7 +48,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Transient;
 
 /**
- * Comment class.
+ * Legacy comment model for migrating user comments from the old persistence format.
  */
 //@Entity
 //@Index(name = "index_comments_pi_page", columnNames = { "pi", "page" })
@@ -218,7 +218,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Getter for the field <code>id</code>.
      *
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -236,7 +236,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Getter for the field <code>pi</code>.
      *
-     * @return the pi
+
      */
     public String getPi() {
         return pi;
@@ -254,7 +254,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Getter for the field <code>page</code>.
      *
-     * @return the page
+
      */
     public Integer getPage() {
         return page;
@@ -272,7 +272,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Getter for the field <code>owner</code>.
      *
-     * @return the owner
+
      */
     public User getOwner() {
         return owner;
@@ -300,7 +300,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Getter for the field <code>text</code>.
      *
-     * @return the text
+
      */
     public String getText() {
         return text;
@@ -318,7 +318,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Getter for the field <code>oldText</code>.
      *
-     * @return the oldText
+
      */
     public String getOldText() {
         return oldText;
@@ -327,7 +327,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Getter for the field <code>dateCreated</code>.
      *
-     * @return the dateCreated
+
      */
     public LocalDateTime getDateCreated() {
         return dateCreated;
@@ -345,7 +345,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Getter for the field <code>dateUpdated</code>.
      *
-     * @return the dateUpdated
+
      */
     public LocalDateTime getDateUpdated() {
         return dateUpdated;

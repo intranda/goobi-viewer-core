@@ -29,7 +29,7 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
- * OEmbedRecord class.
+ * Represents a record available for oEmbed discovery, carrying the endpoint URL and format.
  */
 public class OEmbedRecord {
 
@@ -57,7 +57,7 @@ public class OEmbedRecord {
     /**
      * Getter for the field <code>structElement</code>.
      *
-     * @return the structElement
+
      */
     public StructElement getStructElement() {
         return structElement;
@@ -75,7 +75,7 @@ public class OEmbedRecord {
     /**
      * Getter for the field <code>physicalElement</code>.
      *
-     * @return the physicalElement
+
      */
     public PhysicalElement getPhysicalElement() {
         return physicalElement;
@@ -102,7 +102,7 @@ public class OEmbedRecord {
     /**
      * <p>Getter for the field <code>uri</code>.
      *
-     * @return the uri
+
      */
     public URI getUri() {
         return uri;

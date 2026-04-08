@@ -766,7 +766,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * getCurrentElement.
      *
-     * @return the currentElement
+
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public StructElement getCurrentElement() throws IndexUnreachableException {
@@ -872,7 +872,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Getter for the field <code>imageToShow</code>.
      *
-     * @return the imageToShow
+
      */
     public String getImageToShow() {
         synchronized (lock) {
@@ -903,7 +903,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Getter for the field <code>logid</code>.
      *
-     * @return the logid
+
      */
     public String getLogid() {
         synchronized (this) {
@@ -918,7 +918,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * isAnchor.
      *
-     * @return the anchor
+
      */
     public boolean isAnchor() {
         return anchor;
@@ -954,7 +954,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Getter for the field <code>action</code>.
      *
-     * @return the action
+
      */
     public String getAction() {
         synchronized (this) {
@@ -1555,7 +1555,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Getter for the field <code>toc</code>.
      *
-     * @return the toc
+
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1934,7 +1934,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Getter for the field <code>lastReceivedIdentifier</code>.
      *
-     * @return the lastReceivedIdentifier
+
      */
     public String getLastReceivedIdentifier() {
         return lastReceivedIdentifier;
@@ -1952,7 +1952,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Getter for the field <code>recordLanguages</code>.
      *
-     * @return the recordLanguages
+
      */
     public List<String> getRecordLanguages() {
         return recordLanguages;
@@ -2341,7 +2341,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Getter for the field <code>deleteRecordKeepTrace</code>.
      *
-     * @return the deleteRecordKeepTrace
+
      */
     public Boolean getDeleteRecordKeepTrace() {
         return deleteRecordKeepTrace;
@@ -2359,7 +2359,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Getter for the field <code>clearCacheMode</code>.
      *
-     * @return the clearCacheMode
+
      */
     public String getClearCacheMode() {
         return clearCacheMode;
@@ -2512,7 +2512,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * isDownloadImageModalVisible.
      *
-     * @return the downloadImageModalVisible
+
      */
     public boolean isDownloadImageModalVisible() {
         return downloadImageModalVisible;
@@ -2542,7 +2542,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Getter for the field <code>selectedDownloadOptionLabel</code>.
      *
-     * @return the selectedDownloadOptionLabel
+
      */
     public String getSelectedDownloadOptionLabel() {
         return selectedDownloadOptionLabel;

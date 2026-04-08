@@ -76,7 +76,9 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 
 /**
- * @author florian
+ * REST resource managing W3C Web Annotations for IIIF v3 resources with full CRUD support.
+ *
+ * @author Florian Alpers
  */
 @jakarta.ws.rs.Path(ANNOTATIONS)
 @ViewerRestServiceBinding

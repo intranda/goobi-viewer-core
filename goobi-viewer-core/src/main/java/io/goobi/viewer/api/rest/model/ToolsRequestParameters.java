@@ -36,7 +36,7 @@ public class ToolsRequestParameters extends TaskParameter {
     private String dataRepositoryName;
 
     /**
-     * @return the pi
+
      */
     public String getPi() {
         return pi;
@@ -50,7 +50,7 @@ public class ToolsRequestParameters extends TaskParameter {
     }
 
     /**
-     * @return the dataRepositoryName
+
      */
     public String getDataRepositoryName() {
         return dataRepositoryName;

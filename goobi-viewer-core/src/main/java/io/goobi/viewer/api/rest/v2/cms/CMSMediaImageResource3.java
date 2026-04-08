@@ -57,7 +57,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_IMAGE)
 @CORSBinding

@@ -72,9 +72,9 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 
 /**
- * @author florian
+ * REST resource for accessing externally-hosted images via the v2 IIIF image service. Uses ContentServer to proxy external image resource URLs.
  *
- *         Used to call ContentServer with external image resource URLs
+ * @author Florian Alpers
  */
 @Path(EXTERNAL_IMAGES)
 @ContentServerBinding

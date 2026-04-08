@@ -30,7 +30,7 @@ import de.intranda.api.iiif.search.SearchTerm;
  * A collection of search terms. If a {@link de.intranda.api.iiif.search.SearchTerm} is to be added which already exists in the list, the
  * {@link de.intranda.api.iiif.search.SearchTerm#getCount()} is increased by one instead
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class SearchTermList extends ArrayList<SearchTerm> {
 
@@ -61,9 +61,6 @@ public class SearchTermList extends ArrayList<SearchTerm> {
         }
     }
 
-    /* (non-Javadoc)
-     * @see java.util.ArrayList#addAll(java.util.Collection)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean addAll(Collection<? extends SearchTerm> c) {

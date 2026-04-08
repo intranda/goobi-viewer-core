@@ -722,7 +722,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>label</code>.
      *
-     * @return the label
+
      */
     public String getLabel() {
         return label.getValue(BeanUtils.getLocale()).orElse(label.getValue().orElse(""));
@@ -750,7 +750,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>labelShort</code>.
      *
-     * @return the labelShort
+
      */
     public String getLabelShort() {
         return labelShort.getValue(BeanUtils.getLocale()).orElse(labelShort.getValue().orElse(""));
@@ -768,7 +768,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>docStructType</code>.
      *
-     * @return the type
+
      */
     public String getDocStructType() {
         return docStructType;
@@ -777,7 +777,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>iddoc</code>.
      *
-     * @return the iddoc
+
      */
     public String getIddoc() {
         return iddoc;
@@ -786,7 +786,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>thumbnailUrl</code>.
      *
-     * @return the thumbnailUrl
+
      */
     public String getThumbnailUrl() {
         //        logger.trace("thumbnailUrl {}", thumbnailUrl); //NOSONAR Debug
@@ -841,7 +841,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>structElements</code>.
      *
-     * @return the structElements
+
      */
     public List<StructElementStub> getStructElements() {
         return structElements;
@@ -861,7 +861,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     }
 
     /**
-     * @return the events
+
      */
     public List<EventElement> getEvents() {
         return events;
@@ -879,7 +879,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>fulltext</code>.
      *
-     * @return the fulltext
+
      */
     public String getFulltext() {
         return fulltext;
@@ -907,7 +907,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>volumeNo</code>.
      *
-     * @return the volumeNo
+
      */
     public String getVolumeNo() {
         return volumeNo;
@@ -948,7 +948,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     }
 
     /**
-     * @return the cmsPage
+
      */
     public boolean isCmsPage() {
         return cmsPage;
@@ -962,7 +962,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     }
 
     /**
-     * @return the work
+
      */
     public boolean isWork() {
         return work;
@@ -978,7 +978,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * isAnchor.
      *
-     * @return the anchor
+
      */
     public boolean isAnchor() {
         return anchor;
@@ -996,7 +996,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * isHasImages.
      *
-     * @return the hasImages
+
      */
     public boolean isHasImages() {
         return hasImages;
@@ -1012,7 +1012,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     }
 
     /**
-     * @return the hasTeiFiles
+
      */
     public boolean isHasTeiFiles() {
         return hasTeiFiles;
@@ -1036,7 +1036,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>numVolumes</code>.
      *
-     * @return the numVolumes
+
      */
     public long getNumVolumes() {
         return numVolumes;
@@ -1054,7 +1054,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>pi</code>.
      *
-     * @return the identifier
+
      */
     public String getPi() {
         return pi;
@@ -1063,7 +1063,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Returns the search hint URL (without the application root!).
      *
-     * @return the url
+
      */
     public String getUrl() {
         return url;
@@ -1072,7 +1072,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>sidebarPrevUrl</code>.
      *
-     * @return the sidebarPrevUrl
+
      */
     public String getSidebarPrevUrl() {
         return sidebarPrevUrl;
@@ -1081,7 +1081,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>sidebarNextUrl</code>.
      *
-     * @return the sidebarNextUrl
+
      */
     public String getSidebarNextUrl() {
         return sidebarNextUrl;
@@ -1201,7 +1201,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     }
 
     /**
-     * @return the risExport
+
      */
     public String getRisExport() {
         return risExport;
@@ -1312,7 +1312,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     }
 
     /**
-     * @return the existingMetadataFields
+
      */
     public Set<String> getExistingMetadataFields() {
         return existingMetadataFields;
@@ -1321,7 +1321,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>metadataGroupType</code>.
      *
-     * @return the metadataGroupType
+
      */
     public MetadataGroupType getMetadataGroupType() {
         return metadataGroupType;
@@ -1346,7 +1346,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>foundMetadataList</code>.
      *
-     * @return the foundMetadataList
+
      */
     public List<Metadata> getFoundMetadataList() {
         return foundMetadataList;
@@ -1355,14 +1355,14 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>dataRepository</code>.
      *
-     * @return the dataRepository
+
      */
     public String getDataRepository() {
         return dataRepository;
     }
 
     /**
-     * @return the accessPermissionThumbnail
+
      */
     public AccessPermission getAccessPermissionThumbnail() {
         return accessPermissionThumbnail;
@@ -1399,7 +1399,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>recordLanguages</code>.
      *
-     * @return the recordLanguages
+
      */
     public List<String> getRecordLanguages() {
         return recordLanguages;
@@ -1417,7 +1417,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * isHasMedia.
      *
-     * @return the hasMedia
+
      */
     public boolean isHasMedia() {
         return hasMedia;
@@ -1426,7 +1426,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>originalFieldName</code>.
      *
-     * @return the originalFieldName
+
      */
     public String getOriginalFieldName() {
         return originalFieldName;
@@ -1444,7 +1444,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>logId</code>.
      *
-     * @return the logId
+
      */
     public String getLogId() {
         return logId;
@@ -1460,7 +1460,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Getter for the field <code>docType</code>.
      *
-     * @return the docType
+
      */
     public DocType getDocType() {
         return docType;

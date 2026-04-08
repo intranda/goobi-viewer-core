@@ -44,7 +44,7 @@ import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.model.job.JobStatus;
 
 /**
- * TranskribusUtils class.
+ * Utility class for communicating with the Transkribus REST API to submit and monitor HTR jobs.
  */
 public final class TranskribusUtils {
 

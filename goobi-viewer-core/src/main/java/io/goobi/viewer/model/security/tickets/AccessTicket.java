@@ -201,7 +201,7 @@ public class AccessTicket {
     /**
      * Getter for the field <code>id</code>.
      *
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -217,7 +217,7 @@ public class AccessTicket {
     }
 
     /**
-     * @return the type
+
      */
     public AccessTicketType getType() {
         return type;
@@ -231,7 +231,7 @@ public class AccessTicket {
     }
 
     /**
-     * @return the dateCreated
+
      */
     public LocalDateTime getDateCreated() {
         return dateCreated;
@@ -245,7 +245,7 @@ public class AccessTicket {
     }
 
     /**
-     * @return the expirationDate
+
      */
     public LocalDateTime getExpirationDate() {
         return expirationDate;
@@ -259,7 +259,7 @@ public class AccessTicket {
     }
 
     /**
-     * @return the password
+
      */
     public String getPassword() {
         return password;
@@ -273,7 +273,7 @@ public class AccessTicket {
     }
 
     /**
-     * @return the passwordHash
+
      */
     public String getPasswordHash() {
         return passwordHash;
@@ -287,7 +287,7 @@ public class AccessTicket {
     }
 
     /**
-     * @return the email
+
      */
     public String getEmail() {
         return email;
@@ -301,7 +301,7 @@ public class AccessTicket {
     }
 
     /**
-     * @return the pi
+
      */
     public String getPi() {
         return pi;
@@ -315,7 +315,7 @@ public class AccessTicket {
     }
 
     /**
-     * @return the title
+
      */
     public String getTitle() {
         return title;
@@ -329,7 +329,7 @@ public class AccessTicket {
     }
 
     /**
-     * @return the requestMessage
+
      */
     public String getRequestMessage() {
         return requestMessage;

@@ -35,7 +35,7 @@ import io.goobi.viewer.model.annotation.AnnotationConverter;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class AnnotationSheetWriter {
 

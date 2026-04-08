@@ -44,21 +44,21 @@ public class AdvancedSearchOrigin {
     }
 
     /**
-     * @return the pi
+
      */
     public String getPi() {
         return pi;
     }
 
     /**
-     * @return the label
+
      */
     public String getLabel() {
         return label;
     }
 
     /**
-     * @return the docstrct
+
      */
     public String getDocstrct() {
         return docstrct;

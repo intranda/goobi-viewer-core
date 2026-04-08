@@ -85,7 +85,7 @@ public class MaintenanceModeTranslation extends Translation {
     }
 
     /**
-     * @return the owner
+
      */
     public MaintenanceMode getOwner() {
         return owner;

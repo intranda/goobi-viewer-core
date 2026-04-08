@@ -85,6 +85,9 @@ import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.RuntimeDelegate;
 
+/**
+ * REST resource handling IIIF Access Control Service authorization flows and probe requests.
+ */
 @jakarta.ws.rs.Path(AUTH)
 @ViewerRestServiceBinding
 @CORSBinding

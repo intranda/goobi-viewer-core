@@ -41,7 +41,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * LanguageHelper class.
+ * Provides language metadata loaded from ISO 639 definitions for display and selection purposes.
  */
 public class LanguageHelper {
 

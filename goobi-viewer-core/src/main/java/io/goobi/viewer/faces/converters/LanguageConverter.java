@@ -30,22 +30,16 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.translations.language.Language;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 @FacesConverter("languageConverter")
 public class LanguageConverter implements Converter<Language> {
 
-    /* (non-Javadoc)
-     * @see jakarta.faces.convert.Converter#getAsObject(jakarta.faces.context.FacesContext, jakarta.faces.component.UIComponent, java.lang.String)
-     */
     @Override
     public Language getAsObject(FacesContext context, UIComponent component, String value) {
         return DataManager.getInstance().getLanguageHelper().getLanguage(value);
     }
 
-    /* (non-Javadoc)
-     * @see jakarta.faces.convert.Converter#getAsString(jakarta.faces.context.FacesContext, jakarta.faces.component.UIComponent, java.lang.Object)
-     */
     @Override
     public String getAsString(FacesContext context, UIComponent component, Language value) {
         return value.getIsoCode();

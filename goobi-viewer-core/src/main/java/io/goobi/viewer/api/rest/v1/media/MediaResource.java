@@ -54,7 +54,7 @@ import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Context;
 
 /**
- * A rest resource for delivering video and audio files.
+ * REST resource for accessing and delivering audio and video media files associated with digitized records.
  *
  * @author Florian Alpers
  */

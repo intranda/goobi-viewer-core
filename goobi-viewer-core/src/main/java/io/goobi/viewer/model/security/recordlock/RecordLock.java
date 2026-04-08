@@ -45,9 +45,6 @@ public class RecordLock {
         this.timeCreated = System.currentTimeMillis();
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -91,21 +88,21 @@ public class RecordLock {
     }
 
     /**
-     * @return the pi
+
      */
     public String getPi() {
         return pi;
     }
 
     /**
-     * @return the sessionId
+
      */
     public String getSessionId() {
         return sessionId;
     }
 
     /**
-     * @return the timeCreated
+
      */
     public long getTimeCreated() {
         return timeCreated;

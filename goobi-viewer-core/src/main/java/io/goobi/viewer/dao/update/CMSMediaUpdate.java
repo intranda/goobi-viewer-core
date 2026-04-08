@@ -46,7 +46,7 @@ import jakarta.faces.context.FacesContext;
  * Converts {@link CMSMediaItem cms_media_items.link_url} from the LONGBLOB datatype (URI in java) to TEXT (String in java). Extracts the link texts
  * from all entries and writes them into the table again as Text
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class CMSMediaUpdate implements IModelUpdate {
 
@@ -56,9 +56,6 @@ public class CMSMediaUpdate implements IModelUpdate {
     private static final String DATATYPE_NEW = "text";
     private static final String URL_REGEX = "(\\/|http)[\\w\\d-/.:%+!?#]+(?=x$)";
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.update.IModelUpdate#update(io.goobi.viewer.dao.IDAO)
-     */
     @Override
     public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
         return updateDataType(dao) || deleteImageAltText(dao);

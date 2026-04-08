@@ -22,7 +22,7 @@
 package io.goobi.viewer.model.crowdsourcing.campaigns;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public enum CrowdsourcingStatus {
     /**

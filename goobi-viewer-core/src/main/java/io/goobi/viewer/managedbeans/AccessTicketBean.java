@@ -234,7 +234,7 @@ public class AccessTicketBean implements Serializable {
     }
 
     /**
-     * @return the downloadTicketPassword
+
      */
     public String getTicketPassword() {
         return ticketPassword;
@@ -248,7 +248,7 @@ public class AccessTicketBean implements Serializable {
     }
 
     /**
-     * @return the ticketEmail
+
      */
     public String getTicketEmail() {
         if (ticketEmail == null && userBean != null && userBean.getUser() != null) {
@@ -265,7 +265,7 @@ public class AccessTicketBean implements Serializable {
     }
 
     /**
-     * @return the ticketRequestMessage
+
      */
     public String getTicketRequestMessage() {
         return ticketRequestMessage;

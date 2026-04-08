@@ -295,7 +295,7 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * Getter for the field <code>currentCollection</code>.
      *
-     * @return the currentCollection
+
      */
     public CMSCollection getCurrentCollection() {
         return currentCollection;
@@ -313,7 +313,7 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * Getter for the field <code>solrField</code>.
      *
-     * @return the solrField
+
      */
     public String getSolrField() {
         return solrField;
@@ -348,7 +348,7 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * Getter for the field <code>solrFieldValue</code>.
      *
-     * @return the solrFieldValue
+
      */
     public String getSolrFieldValue() {
         return solrFieldValue;
@@ -409,7 +409,7 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * Getter for the field <code>collections</code>.
      *
-     * @return the configuredColelctions
+
      */
     public List<CMSCollection> getCollections() {
         return collections;
@@ -607,7 +607,7 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * @return the imageMode
+
      */
     public CMSCollectionImageMode getImageMode() {
         return imageMode;
@@ -641,7 +641,7 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * @return the currentTab
+
      */
     public CMSCollectionTreeTab getCurrentTab() {
         return currentTab;

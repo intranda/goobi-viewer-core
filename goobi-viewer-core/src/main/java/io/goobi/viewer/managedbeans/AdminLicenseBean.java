@@ -529,7 +529,7 @@ public class AdminLicenseBean implements Serializable {
     /**
      * Getter for the field <code>lazyModelTickets</code>.
      *
-     * @return the lazyModelTickets
+
      */
     public TableDataProvider<AccessTicket> getLazyModelTickets() {
         return lazyModelTickets;
@@ -727,7 +727,7 @@ public class AdminLicenseBean implements Serializable {
     /**
      * Getter for the field <code>currentRole</code>.
      *
-     * @return the currentRole
+
      */
     public Role getCurrentRole() {
         return currentRole;
@@ -745,7 +745,7 @@ public class AdminLicenseBean implements Serializable {
     /**
      * Getter for the field <code>currentLicenseType</code>.
      *
-     * @return the currentLicenseType
+
      */
     public LicenseType getCurrentLicenseType() {
         return currentLicenseType;
@@ -793,7 +793,7 @@ public class AdminLicenseBean implements Serializable {
     /**
      * Getter for the field <code>currentLicense</code>.
      *
-     * @return the currentLicense
+
      */
     public License getCurrentLicense() {
         return currentLicense;
@@ -842,7 +842,7 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * @return the selectedLanguage
+
      */
     public Locale getSelectedLanguage() {
         return selectedLanguage;

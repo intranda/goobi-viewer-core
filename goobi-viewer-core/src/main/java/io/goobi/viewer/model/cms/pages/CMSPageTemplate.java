@@ -257,9 +257,6 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
         }
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -268,9 +265,6 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -292,9 +286,6 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public int compareTo(CMSPageTemplate o) {
@@ -322,7 +313,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * Getter for the field <code>id</code>.
      *
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -340,7 +331,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * Getter for the field <code>dateCreated</code>.
      *
-     * @return the dateCreated
+
      */
     public LocalDateTime getDateCreated() {
         return dateCreated;
@@ -371,7 +362,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * isPublished.
      *
-     * @return the published
+
      */
     public boolean isPublished() {
         return PublicationStatus.PUBLISHED.equals(this.publicationStatus);
@@ -389,7 +380,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * isUseDefaultSidebar.
      *
-     * @return the useDefaultSidebar
+
      */
     public boolean isUseDefaultSidebar() {
         return useDefaultSidebar;
@@ -407,7 +398,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * Getter for the field <code>sidebarElements</code>.
      *
-     * @return the sidebarElements
+
      */
     public List<CMSSidebarElement> getSidebarElements() {
         return sidebarElements;
@@ -498,7 +489,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * Getter for the field <code>categories</code>.
      *
-     * @return the classifications
+
      */
     public List<CMSCategory> getCategories() {
         return categories;
@@ -536,7 +527,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * Getter for the field <code>sidebarElementString</code>.
      *
-     * @return the sidebarElementString
+
      */
     public String getSidebarElementString() {
         return sidebarElementString;
@@ -606,7 +597,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * Getter for the field <code>subTheme</code>.
      *
-     * @return the subTheme
+
      */
     public String getSubTheme() {
         return subTheme;
@@ -633,11 +624,6 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
         return true;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#toString()
-     */
     /** {@inheritDoc} */
     @Override
     public String toString() {
@@ -694,7 +680,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     /**
      * Getter for the field <code>selectableCategories</code>.
      *
-     * @return the selectableCategories
+
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<Selectable<CMSCategory>> getSelectableCategories() throws DAOException {

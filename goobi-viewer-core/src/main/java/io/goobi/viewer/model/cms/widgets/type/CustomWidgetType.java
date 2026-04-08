@@ -27,7 +27,7 @@ import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 /**
  * Types of sidebar widgets that contain individual configuration and must be created by a user.
  *
- * @author florian
+ * @author Florian Alpers
  */
 public enum CustomWidgetType implements WidgetContentType {
 
@@ -72,7 +72,7 @@ public enum CustomWidgetType implements WidgetContentType {
     /**
      * A message key for a description of ths widget type.
      * 
-     * @return the description
+
      */
     public String getDescription() {
         return description;

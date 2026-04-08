@@ -22,7 +22,7 @@
 package io.goobi.viewer.model.viewer.object;
 
 /**
- * Point3D class.
+ * Represents a point in 3D space with x, y, and z coordinates.
  *
  * @author Florian Alpers
  */
@@ -49,7 +49,7 @@ public class Point3D {
     /**
      * Getter for the field <code>x</code>.
      *
-     * @return the x
+
      */
     public double getX() {
         return x;
@@ -67,7 +67,7 @@ public class Point3D {
     /**
      * Getter for the field <code>y</code>.
      *
-     * @return the y
+
      */
     public double getY() {
         return y;
@@ -85,7 +85,7 @@ public class Point3D {
     /**
      * Getter for the field <code>z</code>.
      *
-     * @return the z
+
      */
     public double getZ() {
         return z;

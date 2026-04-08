@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * CalendarItemCentury class.
+ * Calendar browsing item representing a single century.
  */
 public class CalendarItemCentury extends AbstractCalendarItem implements Serializable {
 

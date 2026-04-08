@@ -30,7 +30,7 @@ import java.util.stream.Stream;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class MultiLanguageValue implements IPolyglott {
 
@@ -46,33 +46,21 @@ public class MultiLanguageValue implements IPolyglott {
 
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.IPolyglott#isComplete(java.util.Locale)
-     */
     @Override
     public boolean isComplete(Locale locale) {
         return !this.translations.get(locale).isEmpty();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.IPolyglott#isValid(java.util.Locale)
-     */
     @Override
     public boolean isValid(Locale locale) {
         return isComplete(locale);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.IPolyglott#getSelectedLocale()
-     */
     @Override
     public Locale getSelectedLocale() {
         return this.selectedLocale;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.IPolyglott#setSelectedLocale(java.util.Locale)
-     */
     @Override
     public void setSelectedLocale(Locale locale) {
         this.selectedLocale = locale;
@@ -100,9 +88,6 @@ public class MultiLanguageValue implements IPolyglott {
 
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.IPolyglott#getLocales()
-     */
     @Override
     public Collection<Locale> getLocales() {
         return translations.keySet();
@@ -143,9 +128,6 @@ public class MultiLanguageValue implements IPolyglott {
         return locale != null && this.translations.containsKey(locale);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.IPolyglott#isEmpty(java.util.Locale)
-     */
     @Override
     public boolean isEmpty(Locale locale) {
         return this.translations.get(locale).isEmpty();

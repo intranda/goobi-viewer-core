@@ -24,7 +24,7 @@ package io.goobi.viewer.model.search;
 import java.io.Serializable;
 
 /**
- * SearchFilter class.
+ * Represents a configurable search scope filter (e.g. restricting search to a specific collection or document type).
  */
 public class SearchFilter implements Serializable {
 
@@ -34,9 +34,6 @@ public class SearchFilter implements Serializable {
     private String field;
     private boolean defaultFilter = false;
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -47,9 +44,6 @@ public class SearchFilter implements Serializable {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -97,7 +91,7 @@ public class SearchFilter implements Serializable {
     /**
      * Getter for the field <code>label</code>.
      *
-     * @return the label
+
      */
     public String getLabel() {
         return label;
@@ -115,7 +109,7 @@ public class SearchFilter implements Serializable {
     /**
      * Getter for the field <code>field</code>.
      *
-     * @return the field
+
      */
     public String getField() {
         return field;
@@ -131,7 +125,7 @@ public class SearchFilter implements Serializable {
     }
 
     /**
-     * @return the defaultFilter
+
      */
     public boolean isDefaultFilter() {
         return defaultFilter;

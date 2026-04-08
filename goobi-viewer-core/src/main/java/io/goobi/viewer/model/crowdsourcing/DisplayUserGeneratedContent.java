@@ -187,7 +187,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Getter for the field <code>type</code>.
      *
-     * @return the type
+
      */
     public ContentType getType() {
         return type;
@@ -205,7 +205,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Getter for the field <code>pi</code>.
      *
-     * @return the pi
+
      */
     public String getPi() {
         return pi;
@@ -223,7 +223,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Getter for the field <code>page</code>.
      *
-     * @return the page
+
      */
     public Integer getPage() {
         return page;
@@ -241,7 +241,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Getter for the field <code>label</code>.
      *
-     * @return the label
+
      */
     public String getLabel() {
         return label;
@@ -266,7 +266,7 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * @return the extendendLabel
+
      */
     public String getExtendendLabel() {
         if (StringUtils.isNotBlank(this.extendendLabel)) {
@@ -285,7 +285,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Getter for the field <code>updatedBy</code>.
      *
-     * @return the updatedBy
+
      */
     public User getUpdatedBy() {
         return updatedBy;
@@ -303,7 +303,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Getter for the field <code>dateUpdated</code>.
      *
-     * @return the dateUpdated
+
      */
     public LocalDateTime getDateUpdated() {
         return dateUpdated;
@@ -343,7 +343,7 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * @return the accessCondition
+
      */
     public String getAccessCondition() {
         return accessCondition;
@@ -359,7 +359,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Getter for the field <code>areaString</code>.
      *
-     * @return the areaString
+
      */
     public String getAreaString() {
         return areaString;
@@ -440,9 +440,6 @@ public class DisplayUserGeneratedContent {
         this.displayCoordinates = displayCoordinates;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.crowdsourcing.AbstractCrowdsourcingUpdate#getDisplayPage()
-     */
     /**
      * Alias for {@link #getPage()}.
      *
@@ -454,9 +451,6 @@ public class DisplayUserGeneratedContent {
 
     public static class DateComparator implements Comparator<DisplayUserGeneratedContent> {
 
-        /* (non-Javadoc)
-         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-         */
         @Override
         public int compare(DisplayUserGeneratedContent o1, DisplayUserGeneratedContent o2) {
             return o1.dateUpdated.compareTo(o2.dateUpdated);
@@ -483,7 +477,7 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * @return the annotationBody
+
      */
     public ITypedResource getAnnotationBody() {
         return annotationBody;

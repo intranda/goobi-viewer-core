@@ -33,7 +33,7 @@ import io.goobi.viewer.model.cms.pages.CMSPage;
 /**
  * Simple template to create a json-representation of a viewer page, typically a CMS-Page. Used to provide slides to sliders
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class ViewerPage {
 
@@ -77,28 +77,28 @@ public class ViewerPage {
     }
 
     /**
-     * @return the link
+
      */
     public URI getLink() {
         return link;
     }
 
     /**
-     * @return the image
+
      */
     public IContent getImage() {
         return image;
     }
 
     /**
-     * @return the label
+
      */
     public IMetadataValue getLabel() {
         return label;
     }
 
     /**
-     * @return the order
+
      */
     public long getOrder() {
         return order;

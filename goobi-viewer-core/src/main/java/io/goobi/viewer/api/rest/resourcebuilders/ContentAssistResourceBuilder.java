@@ -38,7 +38,7 @@ import io.goobi.viewer.model.search.SearchHelper;
 /**
  * Manages contentAssist requests by returning lists of suggested values from partial input.
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class ContentAssistResourceBuilder {
 

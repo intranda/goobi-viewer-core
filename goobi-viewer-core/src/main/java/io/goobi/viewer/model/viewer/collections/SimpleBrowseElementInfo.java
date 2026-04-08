@@ -32,7 +32,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * SimpleBrowseElementInfo class.
+ * Lightweight browse element info carrying only a label and URI for simple collection entries.
  */
 public class SimpleBrowseElementInfo implements BrowseElementInfo, Serializable {
 
@@ -73,9 +73,6 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo, Serializable 
         return description;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.viewer.BrowseElementInfo#getDescription(java.lang.String)
-     */
     @Override
     public String getDescription(String language) {
         return description;
@@ -138,27 +135,18 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo, Serializable 
         return getIconURI();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.viewer.BrowseElementInfo#getName()
-     */
     /** {@inheritDoc} */
     @Override
     public String getName() {
         return collectionName;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.viewer.BrowseElementInfo#getTranslationsForName()
-     */
     /** {@inheritDoc} */
     @Override
     public IMetadataValue getTranslationsForName() {
         return ViewerResourceBundle.getTranslations(getName(), false);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.viewer.BrowseElementInfo#getTranslationsForDescription()
-     */
     @Override
     public IMetadataValue getTranslationsForDescription() {
         return null;

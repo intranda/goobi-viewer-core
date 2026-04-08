@@ -37,7 +37,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
- * TocFunctionality class.
+ * CMS item functionality that displays a table of contents for a specified record.
  *
  * @author Florian Alpers
  */
@@ -160,15 +160,12 @@ public class TocFunctionality implements Functionality {
     /**
      * Getter for the field <code>pi</code>.
      *
-     * @return the piPeriodical
+
      */
     public String getPi() {
         return pi == null ? "" : pi;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.itemfunctionality.Functionality#setPageNo(int)
-     */
     /** {@inheritDoc} */
     @Override
     public void setPageNo(int pageNo) {

@@ -104,7 +104,7 @@ import jakarta.jms.TextMessage;
  * {@link ViewerMessage} and calls a {@link MessageHandler} instance to process the message, returning a {@link MessageStatus} result. #handle may
  * either be called directly to handle the message instantly, or from a {@link MessageQueue}
  * 
- * @author florian
+ * @author Florian Alpers
  */
 @Singleton
 @Startup

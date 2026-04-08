@@ -133,11 +133,6 @@ public class EventElement implements Comparable<EventElement>, Serializable {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public int compareTo(EventElement o) {
@@ -242,7 +237,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     /**
      * Getter for the field <code>type</code>.
      *
-     * @return the type
+
      */
     public String getType() {
         return type;
@@ -260,7 +255,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     /**
      * Getter for the field <code>dateStart</code>.
      *
-     * @return the dateStart
+
      */
     public LocalDateTime getDateStart() {
         return dateStart;
@@ -278,7 +273,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     /**
      * Getter for the field <code>dateEnd</code>.
      *
-     * @return the dateEnd
+
      */
     public LocalDateTime getDateEnd() {
         return dateEnd;
@@ -296,7 +291,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     /**
      * Getter for the field <code>metadata</code>.
      *
-     * @return the metadata
+
      */
     public List<Metadata> getMetadata() {
         ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
@@ -336,14 +331,14 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     /**
      * Getter for the field <code>sidebarMetadata</code>.
      *
-     * @return the sidebarMetadata
+
      */
     public List<Metadata> getSidebarMetadata() {
         return sidebarMetadata;
     }
 
     /**
-     * @return the searchHitMetadata
+
      */
     public List<Metadata> getSearchHitMetadata() {
         return searchHitMetadata;

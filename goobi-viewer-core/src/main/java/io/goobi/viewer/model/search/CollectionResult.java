@@ -29,7 +29,7 @@ import java.util.Set;
 /**
  * Contains additional information of collections searched by {@link SearchHelper#findAllCollectionsFromField}.
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class CollectionResult implements Serializable {
 
@@ -60,7 +60,7 @@ public class CollectionResult implements Serializable {
     }
 
     /**
-     * @return the groupingValues
+
      */
     public Set<String> getFacetValues() {
         return facetValues;
@@ -74,7 +74,7 @@ public class CollectionResult implements Serializable {
     }
 
     /**
-     * @return the count
+
      */
     public Long getCount() {
         return recordCount;
@@ -88,7 +88,7 @@ public class CollectionResult implements Serializable {
     }
 
     /**
-     * @return the name
+
      */
     public String getName() {
         return name;

@@ -78,7 +78,7 @@ import io.goobi.viewer.messages.Messages;
 /**
  * Upload of resouces for DC record creation. Files uploaded here are directly written to a subfolder of the viewer hotfolder
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Hidden
 @jakarta.ws.rs.Path(TEMP_MEDIA_FILES)

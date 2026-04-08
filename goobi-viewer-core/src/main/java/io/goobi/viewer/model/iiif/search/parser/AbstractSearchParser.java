@@ -30,9 +30,9 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Abstract AbstractSearchParser class.
+ * Abstract base class for IIIF Search API parsers that extract text matches from different content sources.
  *
- * @author florian
+ * @author Florian Alpers
  */
 public abstract class AbstractSearchParser {
 

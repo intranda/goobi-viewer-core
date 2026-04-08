@@ -70,7 +70,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
- * CMSMediaItem class.
+ * Represents a media file (image, video, audio, or document) managed in the CMS media library.
  */
 @Entity
 @Table(name = "cms_media_items")
@@ -248,7 +248,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /**
      * Getter for the field <code>id</code>.
      *
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -266,7 +266,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /**
      * Getter for the field <code>fileName</code>.
      *
-     * @return the fileName
+
      */
     public String getFileName() {
         return fileName;
@@ -328,7 +328,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /**
      * Getter for the field <code>metadata</code>.
      *
-     * @return the metadata
+
      */
     public List<CMSMediaItemMetadata> getMetadata() {
         return metadata;
@@ -587,12 +587,6 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
         return null;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.model.cms.tilegrid.ImageGalleryTile#
-     * getDisplayOrder()
-     */
     public int getDisplayOrder() {
         return this.displayOrder;
     }

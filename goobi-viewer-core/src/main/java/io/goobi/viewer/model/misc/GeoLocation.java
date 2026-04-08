@@ -30,7 +30,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * GeoLocation class.
+ * Represents a single geographic location with coordinates and an optional display label.
  *
  * @author Florian Alpers
  */
@@ -108,7 +108,7 @@ public class GeoLocation {
     /**
      * Getter for the field <code>latitude</code>.
      *
-     * @return the langitude
+
      */
     public Double getLatitude() {
         return latitude;
@@ -126,7 +126,7 @@ public class GeoLocation {
     /**
      * Getter for the field <code>longitude</code>.
      *
-     * @return the longitude
+
      */
     public Double getLongitude() {
         return longitude;
@@ -172,7 +172,7 @@ public class GeoLocation {
     /**
      * Getter for the field <code>info</code>.
      *
-     * @return the info
+
      */
     public String getInfo() {
         return info;
@@ -190,7 +190,7 @@ public class GeoLocation {
     /**
      * Getter for the field <code>link</code>.
      *
-     * @return the link
+
      */
     public String getLink() {
         return link;

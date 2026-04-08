@@ -214,7 +214,7 @@ public class MetadataValue implements Serializable {
      * getParamLabelWithColon.
      *
      * @param index zero-based parameter index to look up
-     * @return the paramLabels
+
      */
     public String getParamLabelWithColon(int index) {
         // logger.trace("getParamLabelWithColon: {}", index); //NOSONAR Debug
@@ -228,7 +228,7 @@ public class MetadataValue implements Serializable {
     /**
      * Getter for the field <code>paramLabels</code>.
      *
-     * @return the paramLabels
+
      */
     public List<String> getParamLabels() {
         return paramLabels;
@@ -237,7 +237,7 @@ public class MetadataValue implements Serializable {
     /**
      * Getter for the field <code>paramValues</code>.
      *
-     * @return the paramValues
+
      */
     public List<List<String>> getParamValues() {
         return paramValues;
@@ -246,7 +246,7 @@ public class MetadataValue implements Serializable {
     /**
      * Getter for the field <code>paramMasterValueFragments</code>.
      *
-     * @return the paramMasterValueFragments
+
      */
     public List<String> getParamMasterValueFragments() {
         return paramMasterValueFragments;
@@ -255,7 +255,7 @@ public class MetadataValue implements Serializable {
     /**
      * Getter for the field <code>paramPrefixes</code>.
      *
-     * @return the paramPrefixes
+
      */
     public List<String> getParamPrefixes() {
         return paramPrefixes;
@@ -264,7 +264,7 @@ public class MetadataValue implements Serializable {
     /**
      * Getter for the field <code>paramSuffixes</code>.
      *
-     * @return the paramSuffixes
+
      */
     public List<String> getParamSuffixes() {
         return paramSuffixes;
@@ -273,7 +273,7 @@ public class MetadataValue implements Serializable {
     /**
      * Getter for the field <code>paramUrls</code>.
      *
-     * @return the paramUrls
+
      */
     public List<String> getParamUrls() {
         return paramUrls;
@@ -282,7 +282,7 @@ public class MetadataValue implements Serializable {
     /**
      * Getter for the field <code>normDataUrls</code>.
      *
-     * @return the normDataUrls
+
      */
     public Map<String, String> getNormDataUrls() {
         return normDataUrls;
@@ -327,14 +327,14 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * @return the citationValues
+
      */
     public Map<String, List<String>> getCitationValues() {
         return citationValues;
     }
 
     /**
-     * @return the childMetadata
+
      */
     public List<Metadata> getChildMetadata() {
         return childMetadata;
@@ -354,7 +354,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * @return the accessConditions
+
      */
     public Set<String> getAccessConditions() {
         return accessConditions;
@@ -427,7 +427,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * @return the iddoc
+
      */
     public String getIddoc() {
         return iddoc;
@@ -441,7 +441,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * @return the ownerIddoc
+
      */
     public String getOwnerIddoc() {
         return ownerIddoc;
@@ -503,7 +503,7 @@ public class MetadataValue implements Serializable {
     /**
      * Getter for the field <code>masterValue</code>.
      *
-     * @return the masterValue
+
      */
     public String getMasterValue() {
         if (StringUtils.isEmpty(masterValue)) {
@@ -525,7 +525,7 @@ public class MetadataValue implements Serializable {
     /**
      * getGroupTypeForUrl.
      *
-     * @return the groupType
+
      */
     public String getGroupTypeForUrl() {
         if (StringUtils.isEmpty(groupType)) {
@@ -546,7 +546,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * @return the docstrct
+
      */
     public String getDocstrct() {
         return docstrct;
@@ -562,7 +562,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * @return the topstruct
+
      */
     public String getTopstruct() {
         return topstruct;
@@ -576,7 +576,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * @return the label
+
      */
     public String getLabel() {
         return label;

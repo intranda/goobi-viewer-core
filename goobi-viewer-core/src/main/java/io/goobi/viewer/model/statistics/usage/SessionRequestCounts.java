@@ -35,7 +35,7 @@ import org.json.JSONArray;
 /**
  * Class holding counts of requests of different {@link RequestType}s. Should be serialized to a string to dao storage
  * 
- * @author florian
+ * @author Florian Alpers
  */
 public class SessionRequestCounts {
 

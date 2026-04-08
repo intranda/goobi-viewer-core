@@ -53,7 +53,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.StreamingOutput;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 @Path(ApiUrls.RECORDS_SECTIONS)
 @ContentServerBinding

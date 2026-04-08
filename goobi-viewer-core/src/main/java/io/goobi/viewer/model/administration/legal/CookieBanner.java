@@ -41,7 +41,7 @@ import io.goobi.viewer.model.translations.TranslatedText;
 /**
  * Class to persist settings for the cookie banner. Only one instance of this class should be persisted in the database
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "cookie_banner")

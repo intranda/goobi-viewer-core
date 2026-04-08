@@ -50,7 +50,7 @@ import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
 
 /**
- * ContextListener class.
+ * Servlet context listener that initialises and tears down application-wide resources and services on deployment and undeployment.
  */
 @WebListener
 public class ContextListener implements ServletContextListener {

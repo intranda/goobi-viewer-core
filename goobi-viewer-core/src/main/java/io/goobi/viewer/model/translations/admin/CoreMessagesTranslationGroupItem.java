@@ -43,9 +43,6 @@ public class CoreMessagesTranslationGroupItem extends TranslationGroupItem {
         super(key, regex);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.admin.TranslationGroupItem#loadEntries()
-     */
     @Override
     protected void loadEntries() {
         List<String> keys;

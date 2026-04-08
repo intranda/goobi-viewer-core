@@ -56,7 +56,7 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class RisResourceBuilder {
 

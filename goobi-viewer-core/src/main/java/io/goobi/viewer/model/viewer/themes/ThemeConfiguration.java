@@ -41,7 +41,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "theme_configuration")
@@ -114,7 +114,7 @@ public class ThemeConfiguration {
     }
 
     /**
-     * @return the label
+
      */
     public String getLabel() {
         return label;
@@ -128,7 +128,7 @@ public class ThemeConfiguration {
     }
 
     /**
-     * @return the styleSheet
+
      */
     public String getStyleSheet() {
         return styleSheet;
@@ -142,7 +142,7 @@ public class ThemeConfiguration {
     }
 
     /**
-     * @return the socialMediaUrls
+
      */
     public List<ThemeLink> getSocialMediaUrls() {
         return socialMediaUrls;
@@ -156,7 +156,7 @@ public class ThemeConfiguration {
     }
 
     /**
-     * @return the footerLinks
+
      */
     public List<ThemeLink> getFooterLinks() {
         return footerLinks;
@@ -170,14 +170,14 @@ public class ThemeConfiguration {
     }
 
     /**
-     * @return the name
+
      */
     public String getName() {
         return name;
     }
 
     /**
-     * @return the id
+
      */
     public Long getId() {
         return id;

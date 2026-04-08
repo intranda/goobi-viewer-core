@@ -69,7 +69,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
- * License class.
+ * Represents an access licence assigned to a user, user group, or IP range, controlling permissions for specific access conditions.
  */
 @Entity
 @Table(name = "licenses")
@@ -92,7 +92,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
         }
 
         /**
-         * @return the labelKey
+
          */
         public String getLabelKey() {
             return labelKey;
@@ -611,7 +611,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Getter for the field <code>id</code>.
      *
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -629,7 +629,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Getter for the field <code>licenseType</code>.
      *
-     * @return the licenseType
+
      */
     public LicenseType getLicenseType() {
         return licenseType;
@@ -645,7 +645,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * @return the licensees
+
      */
     public List<LicenseRightsHolder> getLicensees() {
         return licensees;
@@ -661,7 +661,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Getter for the field <code>user</code>.
      *
-     * @return the user
+
      */
     @Deprecated(since = "2026.01")
     public User getUser() {
@@ -687,7 +687,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Getter for the field <code>userGroup</code>.
      *
-     * @return the userGroup
+
      */
     @Deprecated(since = "2026.01")
     public UserGroup getUserGroup() {
@@ -713,7 +713,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Getter for the field <code>ipRange</code>.
      *
-     * @return the ipRange
+
      */
     @Deprecated(since = "2026.01")
     public IpRange getIpRange() {
@@ -739,7 +739,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Getter for the field <code>start</code>.
      *
-     * @return the start
+
      */
     public LocalDateTime getStart() {
         return start;
@@ -757,7 +757,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Getter for the field <code>end</code>.
      *
-     * @return the end
+
      */
     public LocalDateTime getEnd() {
         return end;
@@ -775,7 +775,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Getter for the field <code>privileges</code>.
      *
-     * @return the privileges
+
      */
     public Set<String> getPrivileges() {
         return privileges;
@@ -793,7 +793,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Getter for the field <code>conditions</code>.
      *
-     * @return the conditions
+
      */
     public String getConditions() {
         return conditions;
@@ -811,7 +811,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Getter for the field <code>description</code>.
      *
-     * @return the description
+
      */
     public String getDescription() {
         return description;
@@ -827,7 +827,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * @return the ticketRequired
+
      */
     public boolean isTicketRequired() {
         return ticketRequired;
@@ -851,7 +851,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Getter for the field <code>subthemeDiscriminatorValues</code>.
      *
-     * @return the subthemeDiscriminatorValues
+
      */
     public List<String> getSubthemeDiscriminatorValues() {
         return subthemeDiscriminatorValues;
@@ -869,7 +869,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Getter for the field <code>allowedCategories</code>.
      *
-     * @return the allowedCategories
+
      */
     public List<CMSCategory> getAllowedCategories() {
         return allowedCategories;
@@ -887,7 +887,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Getter for the field <code>allowedCmsTemplates</code>.
      *
-     * @return the allowedCmsTemplates
+
      */
     public List<CMSPageTemplate> getAllowedCmsTemplates() {
         return allowedCmsTemplates;
@@ -905,7 +905,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Getter for the field <code>allowedCrowdsourcingCampaigns</code>.
      *
-     * @return the allowedCrowdsourcingCampaigns
+
      */
     public List<Campaign> getAllowedCrowdsourcingCampaigns() {
         return allowedCrowdsourcingCampaigns;
@@ -921,7 +921,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * @return the privilegesCopy
+
      */
     public Set<String> getPrivilegesCopy() {
         return privilegesCopy;
@@ -939,7 +939,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * @return the client
+
      */
     @Deprecated(since = "2026.01")
     public Long getClientId() {

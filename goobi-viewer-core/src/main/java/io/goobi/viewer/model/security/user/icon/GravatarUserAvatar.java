@@ -32,7 +32,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class GravatarUserAvatar implements UserAvatar {
 

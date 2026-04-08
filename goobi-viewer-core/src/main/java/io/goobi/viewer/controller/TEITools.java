@@ -31,7 +31,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 /**
- * TEITools class.
+ * Utility class for parsing and transforming TEI (Text Encoding Initiative) XML documents.
  */
 public final class TEITools {
 

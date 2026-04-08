@@ -61,9 +61,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
- * Class for retrieving usage statistics for a day or a range of days.
- * 
- * @author florian
+ * REST resource providing usage statistics and access metrics for records and viewer resources, covering a single day or a range of days.
+ *
+ * @author Florian Alpers
  */
 @jakarta.ws.rs.Path(ApiUrls.STATISTICS_USAGE)
 @AuthorizationBinding

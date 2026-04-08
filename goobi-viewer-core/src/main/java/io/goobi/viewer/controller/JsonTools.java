@@ -67,7 +67,7 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
- * JsonTools class.
+ * Utility class providing JSON serialisation and deserialisation helpers.
  */
 public final class JsonTools {
 

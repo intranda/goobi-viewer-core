@@ -52,7 +52,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 /**
- * IpRange class.
+ * Represents an IP address range used for IP-based access control and licence assignment.
  */
 @Entity
 @Table(name = "ip_ranges")
@@ -184,7 +184,7 @@ public class IpRange extends AbstractLicensee implements Serializable {
     /**
      * Getter for the field <code>id</code>.
      *
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -217,7 +217,7 @@ public class IpRange extends AbstractLicensee implements Serializable {
     /**
      * Getter for the field <code>subnetMask</code>.
      *
-     * @return the subnetMask
+
      */
     public String getSubnetMask() {
         return subnetMask;
@@ -235,7 +235,7 @@ public class IpRange extends AbstractLicensee implements Serializable {
     /**
      * Getter for the field <code>description</code>.
      *
-     * @return the description
+
      */
     public String getDescription() {
         return description;

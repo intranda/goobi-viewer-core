@@ -61,7 +61,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * OpenIdProvider class.
+ * Authentication provider that authenticates users via an OpenID Connect identity provider.
  */
 public class OpenIdProvider extends HttpAuthenticationProvider {
 
@@ -364,7 +364,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-     * @return the discoveryUri
+
      */
     public String getDiscoveryUri() {
         return discoveryUri;
@@ -382,7 +382,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     /**
      * Getter for the field <code>clientId</code>.
      *
-     * @return the clientId
+
      */
     public String getClientId() {
         return clientId;
@@ -391,14 +391,14 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     /**
      * Getter for the field <code>clientSecret</code>.
      *
-     * @return the clientSecret
+
      */
     public String getClientSecret() {
         return clientSecret;
     }
 
     /**
-     * @return the tokenEndpoint
+
      */
     public String getTokenEndpoint() {
         return tokenEndpoint;
@@ -416,7 +416,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-     * @return the jwksUri
+
      */
     public String getJwksUri() {
         return jwksUri;
@@ -432,7 +432,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-     * @return the redirectionEndpoint
+
      */
     public String getRedirectionEndpoint() {
         return redirectionEndpoint;
@@ -450,7 +450,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-     * @return the scope
+
      */
     public String getScope() {
         return scope;
@@ -468,7 +468,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-     * @return the responseType
+
      */
     public String getResponseType() {
         return responseType;
@@ -484,7 +484,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-     * @return the responseMode
+
      */
     public String getResponseMode() {
         return responseMode;
@@ -500,7 +500,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-     * @return the issuer
+
      */
     public String getIssuer() {
         return issuer;
@@ -516,7 +516,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-     * @return the tokenCheckDelay
+
      */
     public long getTokenCheckDelay() {
         return tokenCheckDelay;
@@ -567,7 +567,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     /**
      * Getter for the field <code>oAuthState</code>.
      *
-     * @return the oAuthState
+
      */
     public String getoAuthState() {
         return oAuthState;
@@ -585,7 +585,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     /**
      * Getter for the field <code>oAuthAccessToken</code>.
      *
-     * @return the oAuthAccessToken
+
      */
     public String getoAuthAccessToken() {
         return oAuthAccessToken;

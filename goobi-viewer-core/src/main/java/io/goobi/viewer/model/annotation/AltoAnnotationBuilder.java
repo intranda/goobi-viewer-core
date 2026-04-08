@@ -50,7 +50,7 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
  *
  * <p>Depending on selected granularity, it is either one annotation per page, per TextBlock, per line or per word
  *
- * @author Florian
+ * @author Florian Alpers
  */
 public class AltoAnnotationBuilder {
 

@@ -114,7 +114,7 @@ import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.core.StreamingOutput;
 
 /**
- * CMSMediaResource class.
+ * REST resource for accessing CMS media files with filtering by category and type.
  *
  * @author Florian Alpers
  */

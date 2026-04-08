@@ -60,7 +60,7 @@ public class Description {
     /**
      * Getter for the field <code>image</code>.
      *
-     * @return the image
+
      */
     public String getImage() {
         return image;
@@ -78,7 +78,7 @@ public class Description {
     /**
      * Getter for the field <code>text</code>.
      *
-     * @return the description
+
      */
     public String getText() {
         return text;

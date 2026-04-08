@@ -24,7 +24,7 @@ package io.goobi.viewer.model.calendar;
 import java.text.DecimalFormat;
 
 /**
- * Abstract AbstractCalendarItem class.
+ * Abstract base class for calendar browsing items representing a time period (year, month, day, etc.).
  */
 public abstract class AbstractCalendarItem implements ICalendarItem {
 
@@ -53,18 +53,12 @@ public abstract class AbstractCalendarItem implements ICalendarItem {
         this.hits = hits;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.ICalendarItem#getName()
-     */
     /** {@inheritDoc} */
     @Override
     public String getName() {
         return name;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.ICalendarItem#getValue()
-     */
     /** {@inheritDoc} */
     @Override
     public int getValue() {
@@ -80,18 +74,12 @@ public abstract class AbstractCalendarItem implements ICalendarItem {
         return (dfTwoDigitInteger.format(value));
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.ICalendarItem#getHits()
-     */
     /** {@inheritDoc} */
     @Override
     public int getHits() {
         return hits;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.ICalendarItem#setHits(int)
-     */
     /** {@inheritDoc} */
     @Override
     public void setHits(int hits) {
@@ -99,18 +87,12 @@ public abstract class AbstractCalendarItem implements ICalendarItem {
 
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.ICalendarItem#isSelected()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean isSelected() {
         return selected;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.ICalendarItem#setSelected(boolean)
-     */
     /** {@inheritDoc} */
     @Override
     public void setSelected(boolean selected) {

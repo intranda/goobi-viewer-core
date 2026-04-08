@@ -53,9 +53,11 @@ import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.ext.Provider;
 
 /**
- * Checks requests for access conditions. Requests must have set the request attribute {@link FilterTools#ATTRIBUTE_PI} and
- * {@link #REQUIRED_PRIVILEGE} to appropriate values for the filter to work properly. Additionally {@link FilterTools#ATTRIBUTE_LOGID} and
- * {@link FilterTools#ATTRIBUTE_FILENAME} may be set in the request to check access to specific files or child documents
+ * JAX-RS request filter that checks access conditions for image and IIIF endpoints.
+ * <p>
+ * Requests must have set the request attribute {@link FilterTools#ATTRIBUTE_PI} and {@link #REQUIRED_PRIVILEGE} to appropriate values for the filter
+ * to work properly. Additionally {@link FilterTools#ATTRIBUTE_LOGID} and {@link FilterTools#ATTRIBUTE_FILENAME} may be set in the request to check
+ * access to specific files or child documents.
  */
 @Provider
 @AccessConditionBinding

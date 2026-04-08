@@ -24,7 +24,7 @@ package io.goobi.viewer.exceptions;
 import java.io.Serializable;
 
 /**
- * ThemeException class.
+ * Thrown when a viewer theme cannot be found, loaded, or applied.
  */
 public class ThemeException extends Exception implements Serializable {
 

@@ -79,7 +79,7 @@ import mil.nga.sf.geojson.Geometry;
 /**
  * Utility methods for converting geo-coordinated between different formats.
  * 
- * @author florian
+ * @author Florian Alpers
  */
 public class GeoCoordinateConverter {
 

@@ -48,7 +48,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 /**
  * Summary of request counts for a certain date range. Used for delivering record counts to users
  * 
- * @author florian
+ * @author Florian Alpers
  */
 @JsonInclude(Include.NON_NULL)
 public class StatisticsSummary {

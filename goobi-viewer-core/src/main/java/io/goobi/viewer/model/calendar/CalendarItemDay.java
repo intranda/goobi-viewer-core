@@ -24,7 +24,7 @@ package io.goobi.viewer.model.calendar;
 import java.io.Serializable;
 
 /**
- * CalendarItemDay class.
+ * Calendar browsing item representing a single day.
  */
 public class CalendarItemDay extends AbstractCalendarItem implements Serializable {
 
@@ -50,7 +50,7 @@ public class CalendarItemDay extends AbstractCalendarItem implements Serializabl
     /**
      * Getter for the field <code>query</code>.
      *
-     * @return the query
+
      */
     public String getQuery() {
         return query;
@@ -68,7 +68,7 @@ public class CalendarItemDay extends AbstractCalendarItem implements Serializabl
     /**
      * Getter for the field <code>singleResultUrl</code>.
      *
-     * @return the singleResultUrl
+
      */
     public String getSingleResultUrl() {
         return singleResultUrl;
@@ -86,7 +86,7 @@ public class CalendarItemDay extends AbstractCalendarItem implements Serializabl
     /**
      * Getter for the field <code>dayOfWeek</code>.
      *
-     * @return the dayOfWeek
+
      */
     public String getDayOfWeek() {
         return dayOfWeek;

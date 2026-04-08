@@ -63,21 +63,21 @@ public class JsonMetadataConfiguration {
     }
 
     /**
-     * @return the template
+
      */
     public String getTemplate() {
         return template;
     }
 
     /**
-     * @return the query
+
      */
     public String getQuery() {
         return query;
     }
 
     /**
-     * @return the fields
+
      */
     public List<Map<String, String>> getFields() {
         return fields;

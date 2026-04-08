@@ -88,14 +88,14 @@ public class CaptchaBean implements Serializable {
     }
 
     /**
-     * @return the securityQuestion
+
      */
     public SecurityQuestion getSecurityQuestion() {
         return securityQuestion;
     }
 
     /**
-     * @return the securityAnswer
+
      */
     public String getSecurityAnswer() {
         return securityAnswer;

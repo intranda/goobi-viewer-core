@@ -31,7 +31,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class SearchSortingOption implements Serializable {
 
@@ -83,14 +83,14 @@ public class SearchSortingOption implements Serializable {
     }
 
     /**
-     * @return the field
+
      */
     public String getField() {
         return field;
     }
 
     /**
-     * @return the ascending
+
      */
     public boolean isAscending() {
         return ascending;
@@ -150,9 +150,6 @@ public class SearchSortingOption implements Serializable {
         return DataManager.getInstance().getConfiguration().getSearchSortingKeyDescending(field).orElse("searchSortingDropdown_descending");
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         return this.field.hashCode();

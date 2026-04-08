@@ -96,7 +96,7 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
- * Abstract AbstractBuilder class.
+ * Abstract base class for IIIF Presentation API v2 resource builders, providing shared URI construction and metadata helpers.
  *
  * @author Florian Alpers
  */

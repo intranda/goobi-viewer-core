@@ -22,7 +22,7 @@
 package io.goobi.viewer.model.toc.export.pdf;
 
 /**
- * WriteTocException class.
+ * Thrown when an error occurs while writing a table of contents to PDF.
  */
 public class WriteTocException extends Exception {
 

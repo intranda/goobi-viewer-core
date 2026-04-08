@@ -53,7 +53,7 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.modules.interfaces.IndexAugmenter;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class AnnotationIndexAugmenter implements IndexAugmenter {
 
@@ -74,9 +74,6 @@ public class AnnotationIndexAugmenter implements IndexAugmenter {
         this.annotations = null; //load annotations in augemntReIndex... methods
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.modules.interfaces.IndexAugmenter#augmentReIndexRecord(java.lang.String, java.lang.String, java.lang.String)
-     */
     @Override
     public void augmentReIndexRecord(String pi, String dataRepository, String namingScheme) throws IndexAugmenterException {
         try {
@@ -90,10 +87,6 @@ public class AnnotationIndexAugmenter implements IndexAugmenter {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.modules.interfaces.IndexAugmenter#augmentReIndexPage(java.lang.String, int, org.apache.solr.common.SolrDocument,
-     * java.lang.String, java.lang.String)
-     */
     @Override
     public boolean augmentReIndexPage(String pi, int page, SolrDocument doc, String dataRepository, String namingScheme)
             throws IndexAugmenterException {

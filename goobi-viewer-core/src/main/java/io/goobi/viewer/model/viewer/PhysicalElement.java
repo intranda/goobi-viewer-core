@@ -488,7 +488,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
 
     /**
      * @param privilegeName Access privilege name to check
-     * @return the accessPermissionAudio
+
      * @throws DAOException
      * @throws IndexUnreachableException
      */
@@ -499,7 +499,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * @param privilegeName Access privilege name to check
      * @param user The User requesting access. If null, it is fetched from the jsfContext if one exists
-     * @return the accessPermissionAudio
+
      * @throws DAOException
      * @throws IndexUnreachableException
      */
@@ -559,7 +559,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * @return the filePathTiff
+
      */
     public String getFilePathTiff() {
         return filePathTiff;
@@ -575,7 +575,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * @return the filePathJpeg
+
      */
     public String getFilePathJpeg() {
         return filePathJpeg;
@@ -611,7 +611,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Getter for the field <code>urn</code>.
      *
-     * @return the urn
+
      */
     public String getUrn() {
         return urn;
@@ -629,7 +629,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Getter for the field <code>purlPart</code>.
      *
-     * @return the purlPart
+
      */
     public String getPurlPart() {
         return purlPart;
@@ -686,7 +686,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Getter for the field <code>mimeType</code>.
      *
-     * @return the mimeType
+
      */
     public String getMimeType() {
         return mimeType;
@@ -722,7 +722,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Getter for the field <code>fileIdRoot</code>.
      *
-     * @return the fileIdRoot
+
      */
     public String getFileIdRoot() {
         return fileIdRoot;
@@ -760,7 +760,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * @return the hasImage
+
      */
     public boolean isHasImage() {
         return hasImage;
@@ -774,7 +774,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * @return the doubleImage
+
      */
     public boolean isDoubleImage() {
         // logger.trace("isDoubleImage: {}", doubleImage); //NOSONAR Debug
@@ -789,7 +789,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * @return the flipRectoVerso
+
      */
     public boolean isFlipRectoVerso() {
         return flipRectoVerso;
@@ -840,14 +840,14 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * isFulltextAvailable.
      *
-     * @return the fulltextAvailable
+
      */
     public boolean isFulltextAvailable() {
         return fulltextAvailable;
     }
 
     /**
-     * @return the fulltextAccessPermission
+
      * @throws ViewerConfigurationException
      * @should return true if access allowed for this page
      * @should return false if access denied for this page
@@ -915,7 +915,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Getter for the field <code>fulltextFileName</code>.
      *
-     * @return the fulltextFileName
+
      */
     public String getFulltextFileName() {
         return fulltextFileName;
@@ -933,7 +933,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Getter for the field <code>altoFileName</code>.
      *
-     * @return the altoFileName
+
      */
     public String getAltoFileName() {
         return altoFileName;
@@ -951,7 +951,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Getter for the field <code>fullText</code>.
      *
-     * @return the fullText
+
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getFullText() throws ViewerConfigurationException {
@@ -1149,7 +1149,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Getter for the field <code>fileNames</code>.
      *
-     * @return the fileNames
+
      */
     public Map<String, String> getFileNames() {
         return fileNames;
@@ -1393,7 +1393,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Getter for the field <code>pi</code>.
      *
-     * @return the pi
+
      */
     public String getPi() {
         return pi;
@@ -1402,7 +1402,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Getter for the field <code>accessConditions</code>.
      *
-     * @return the accessConditions
+
      */
     public Set<String> getAccessConditions() {
         return accessConditions;
@@ -1738,7 +1738,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Getter for the field <code>altoText</code>.
      *
-     * @return the altoText
+
      */
     public String getAltoText() {
         return altoText;
@@ -1765,7 +1765,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * @return the altoCharset
+
      */
     public String getAltoCharset() {
         return altoCharset;
@@ -1774,7 +1774,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Getter for the field <code>wordCoordsFormat</code>.
      *
-     * @return the wordCoordsFormat
+
      */
     public CoordsFormat getWordCoordsFormat() {
         return wordCoordsFormat;
@@ -1783,7 +1783,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Getter for the field <code>dataRepository</code>.
      *
-     * @return the dataRepository
+
      */
     public String getDataRepository() {
         return dataRepository;
@@ -1792,7 +1792,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * Getter for the field <code>fileSize</code>.
      *
-     * @return the fileSize
+
      */
     public long getFileSize() {
         return fileSize;
@@ -1911,7 +1911,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * @return the metadata
+
      */
     public List<Metadata> getMetadata() {
         return metadata;

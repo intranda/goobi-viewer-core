@@ -35,7 +35,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class GeoCoordinateFeature {
 
@@ -196,7 +196,7 @@ public class GeoCoordinateFeature {
 
     /**
      * 
-     * @return the shape
+
      */
     public String getShape() {
         return this.shape;
@@ -204,15 +204,12 @@ public class GeoCoordinateFeature {
 
     /**
      * 
-     * @return the predicate
+
      */
     public String getPredicate() {
         return this.predicate;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (obj != null && obj.getClass().equals(this.getClass())) {

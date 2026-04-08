@@ -102,9 +102,6 @@ public class MessageEntry implements Comparable<MessageEntry> {
         this.values = values;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -113,9 +110,6 @@ public class MessageEntry implements Comparable<MessageEntry> {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -205,7 +199,7 @@ public class MessageEntry implements Comparable<MessageEntry> {
     }
 
     /**
-     * @return the key
+
      * @should trim suffix
      */
     public String getKey() {
@@ -213,7 +207,7 @@ public class MessageEntry implements Comparable<MessageEntry> {
     }
 
     /**
-     * @return the keyPrefix
+
      */
     public String getKeyPrefix() {
         return keyPrefix;
@@ -227,7 +221,7 @@ public class MessageEntry implements Comparable<MessageEntry> {
     }
 
     /**
-     * @return the keySuffix
+
      */
     public String getKeySuffix() {
         return keySuffix;
@@ -249,14 +243,14 @@ public class MessageEntry implements Comparable<MessageEntry> {
     }
 
     /**
-     * @return the values
+
      */
     public List<MessageValue> getValues() {
         return values;
     }
 
     /**
-     * @return the newEntryMode
+
      */
     public boolean isNewEntryMode() {
         return newEntryMode;

@@ -63,7 +63,7 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
 

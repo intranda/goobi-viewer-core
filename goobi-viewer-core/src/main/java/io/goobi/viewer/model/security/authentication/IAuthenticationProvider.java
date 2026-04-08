@@ -107,7 +107,7 @@ public interface IAuthenticationProvider {
     public void setAddUserToGroups(List<String> addUserToGroups);
 
     /**
-     * @return the redirectUrl
+
      */
     public String getRedirectUrl();
 

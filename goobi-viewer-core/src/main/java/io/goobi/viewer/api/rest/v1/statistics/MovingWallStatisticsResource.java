@@ -39,6 +39,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
+/**
+ * REST resource providing statistics about moving wall access restrictions and record availability by publication year.
+ */
 @jakarta.ws.rs.Path(ApiUrls.STATISTICS_MOVING_WALL)
 public class MovingWallStatisticsResource {
 

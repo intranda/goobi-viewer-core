@@ -37,9 +37,9 @@ import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 
 /**
- * AltoSearchParser class.
+ * IIIF Search API parser that searches for matches within ALTO full-text documents.
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class AltoSearchParser extends AbstractSearchParser {
 

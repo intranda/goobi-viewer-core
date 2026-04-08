@@ -24,7 +24,7 @@ package io.goobi.viewer.exceptions;
 import java.io.Serializable;
 
 /**
- * RecordDeletedException class.
+ * Thrown when a requested record has been deleted and is no longer available in the index.
  */
 public class RecordDeletedException extends Exception implements Serializable {
 

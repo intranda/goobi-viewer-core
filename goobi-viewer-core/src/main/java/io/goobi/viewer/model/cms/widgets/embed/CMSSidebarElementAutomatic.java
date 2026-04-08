@@ -35,7 +35,7 @@ import jakarta.persistence.JoinColumn;
 /**
  * Wrapper for automatic widgets contained in a CMSPage. Currently always bound to a {@link GeoMap} object to display in this widget
  * 
- * @author florian
+ * @author Florian Alpers
  */
 @Entity
 @DiscriminatorValue("AUTOMATIC")
@@ -88,7 +88,7 @@ public class CMSSidebarElementAutomatic extends CMSSidebarElement {
     /**
      * The underlying {@link GeoMap}.
      * 
-     * @return the map
+
      */
     public GeoMap getMap() {
         return map;
@@ -102,7 +102,7 @@ public class CMSSidebarElementAutomatic extends CMSSidebarElement {
     /**
      * The title of the underlying geomap.
      * 
-     * @return the title
+
      */
     @Override
     public TranslatedText getTitle() {

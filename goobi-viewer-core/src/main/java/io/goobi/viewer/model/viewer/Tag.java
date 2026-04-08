@@ -94,7 +94,7 @@ public class Tag implements Comparable<Tag>, Serializable {
     /**
      * Getter for the field <code>size</code>.
      *
-     * @return the size
+
      */
     public long getSize() {
         return size;
@@ -112,7 +112,7 @@ public class Tag implements Comparable<Tag>, Serializable {
     /**
      * Getter for the field <code>name</code>.
      *
-     * @return the name
+
      */
     public String getName() {
         return name;
@@ -134,7 +134,7 @@ public class Tag implements Comparable<Tag>, Serializable {
     /**
      * Getter for the field <code>field</code>.
      *
-     * @return the field
+
      */
     public String getField() {
         return field;

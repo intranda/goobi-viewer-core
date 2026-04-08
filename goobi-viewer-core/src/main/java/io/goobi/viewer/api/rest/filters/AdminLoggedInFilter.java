@@ -38,9 +38,9 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * Only allows requests by sessisions belonging to a logged in goobi-viewer admin account.
+ * JAX-RS request filter that only allows requests from sessions belonging to a logged-in Goobi viewer administrator account.
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Provider
 @AdminLoggedInBinding

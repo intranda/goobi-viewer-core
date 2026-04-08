@@ -63,7 +63,9 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
- * @author florian
+ * REST resource for managing client application registrations and their access credentials.
+ *
+ * @author Florian Alpers
  */
 @jakarta.ws.rs.Path(CLIENTS)
 @CORSBinding

@@ -57,7 +57,7 @@ public class SuccessMessage implements IResponseMessage {
     /**
      * isSuccess.
      *
-     * @return the success
+
      */
     public boolean isSuccess() {
         return success;
@@ -66,16 +66,13 @@ public class SuccessMessage implements IResponseMessage {
     /**
      * Getter for the field <code>message</code>.
      *
-     * @return the message
+
      */
     @Override
     public String getMessage() {
         return message;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -84,9 +81,6 @@ public class SuccessMessage implements IResponseMessage {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

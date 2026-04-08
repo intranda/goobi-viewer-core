@@ -61,7 +61,7 @@ public class TagCount implements Comparable<TagCount> {
     /**
      * Getter for the field <code>value</code>.
      *
-     * @return the value
+
      */
     public String getValue() {
         return value;
@@ -79,7 +79,7 @@ public class TagCount implements Comparable<TagCount> {
     /**
      * getCounter.
      *
-     * @return the counter
+
      */
     @JsonProperty("counter")
     public Integer getCounter() {
@@ -89,7 +89,7 @@ public class TagCount implements Comparable<TagCount> {
     /**
      * Getter for the field <code>type</code>.
      *
-     * @return the type
+
      */
     public NERTag.Type getType() {
         return type;
@@ -105,7 +105,7 @@ public class TagCount implements Comparable<TagCount> {
     }
 
     /**
-     * @return the identifier
+
      */
     public String getIdentifier() {
         return identifier;
@@ -121,7 +121,7 @@ public class TagCount implements Comparable<TagCount> {
     /**
      * Getter for the field <code>references</code>.
      *
-     * @return the references
+
      */
     public List<ElementReference> getReferences() {
         return references;
@@ -136,27 +136,18 @@ public class TagCount implements Comparable<TagCount> {
         this.references = references;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public int compareTo(TagCount o) {
         return getCounter().compareTo(o.getCounter());
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return getValue().hashCode();
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {

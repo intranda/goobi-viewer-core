@@ -67,7 +67,7 @@ public class ExcelExport {
     }
 
     /**
-     * @return the workbook
+
      */
     public SXSSFWorkbook getWorkbook() {
         return workbook;
@@ -83,7 +83,7 @@ public class ExcelExport {
     }
 
     /**
-     * @return the fileName
+
      */
     public String getFileName() {
         return fileName;

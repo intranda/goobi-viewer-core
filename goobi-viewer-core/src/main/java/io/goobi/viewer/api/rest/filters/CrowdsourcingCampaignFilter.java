@@ -49,10 +49,11 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * Allows access to crowdsourcing campaign resources for sessions owned by a goobi-viewer user who has access to the campaign. For access check to
- * work, the {@link Campaign#getId() campaign id} must be set as the request attribute "CampaignId"
+ * JAX-RS request filter that allows access to crowdsourcing campaign resources for sessions owned by a logged-in user who has access to the campaign.
+ * <p>
+ * For the access check to work, the {@link Campaign#getId() campaign id} must be set as the request attribute {@value #CAMPAIGN_ID_REQUEST_ATTRIBUTE}.
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Provider
 @CrowdsourcingCampaignBinding

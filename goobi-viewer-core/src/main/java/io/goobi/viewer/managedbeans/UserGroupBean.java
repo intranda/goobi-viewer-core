@@ -47,7 +47,7 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 
 /**
- * UserGroupBean class.
+ * JSF backing bean for managing user groups and their members in the admin interface.
  */
 @Named
 @SessionScoped
@@ -224,7 +224,7 @@ public class UserGroupBean implements Serializable {
     /**
      * Getter for the field <code>currentOtherUserGroup</code>.
      *
-     * @return the currentOtherUserGroup
+
      */
     public UserGroup getCurrentOtherUserGroup() {
         return currentOtherUserGroup;
@@ -242,7 +242,7 @@ public class UserGroupBean implements Serializable {
     /**
      * Getter for the field <code>currentOwnUserGroupId</code>.
      *
-     * @return the currentOwnUserGroupId
+
      */
     public int getCurrentOwnUserGroupId() {
         return currentOwnUserGroupId;
@@ -260,7 +260,7 @@ public class UserGroupBean implements Serializable {
     /**
      * Getter for the field <code>currentOwnUserGroup</code>.
      *
-     * @return the currentOwnUserGroup
+
      */
     public UserGroup getCurrentOwnUserGroup() {
         return currentOwnUserGroup;
@@ -292,7 +292,7 @@ public class UserGroupBean implements Serializable {
     /**
      * Getter for the field <code>currentMember</code>.
      *
-     * @return the currentMember
+
      */
     public User getCurrentMember() {
         return currentMember;
@@ -310,7 +310,7 @@ public class UserGroupBean implements Serializable {
     /**
      * Getter for the field <code>currentRole</code>.
      *
-     * @return the currentRole
+
      */
     public Role getCurrentRole() {
         return currentRole;

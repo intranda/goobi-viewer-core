@@ -93,22 +93,12 @@ public class PageList implements Iterable<String> {
         //        return string;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return pages.hashCode();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -121,7 +111,7 @@ public class PageList implements Iterable<String> {
     /**
      * Getter for the field <code>pages</code>.
      *
-     * @return the pages
+
      */
     public List<String> getPages() {
         return pages;
@@ -233,11 +223,6 @@ public class PageList implements Iterable<String> {
         this.pages = Collections.singletonList(page);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Iterable#iterator()
-     */
     /** {@inheritDoc} */
     @Override
     public Iterator<String> iterator() {

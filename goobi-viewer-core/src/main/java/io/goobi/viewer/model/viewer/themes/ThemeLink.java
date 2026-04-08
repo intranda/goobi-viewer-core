@@ -24,7 +24,7 @@ package io.goobi.viewer.model.viewer.themes;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class ThemeLink {
 

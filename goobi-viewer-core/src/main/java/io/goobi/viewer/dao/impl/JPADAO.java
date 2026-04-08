@@ -122,7 +122,7 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 
 /**
- * JPADAO class.
+ * JPA-based implementation of {@link io.goobi.viewer.dao.IDAO}, providing all database access operations for the viewer.
  */
 public class JPADAO implements IDAO {
 
@@ -718,8 +718,6 @@ public class JPADAO implements IDAO {
 
     /**
      * {@inheritDoc}
-     *
-     * <p>(non-Javadoc)
      *
      * @see io.goobi.viewer.dao.IDAO#updateUserGroup(io.goobi.viewer.model.security.user.UserGroup)
      * @should set id on new license
@@ -3811,9 +3809,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#deleteCampaign(io.goobi.viewer.model.crowdsourcing.campaigns.Campaign)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean deleteCampaign(Campaign campaign) throws DAOException {

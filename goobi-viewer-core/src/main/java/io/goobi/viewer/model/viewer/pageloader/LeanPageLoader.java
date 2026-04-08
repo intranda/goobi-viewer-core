@@ -86,18 +86,12 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
         return numPages;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.viewer.pageloader.IPageLoader#getFirstPageOrder()
-     */
     /** {@inheritDoc} */
     @Override
     public int getFirstPageOrder() {
         return firstPageOrder;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.viewer.pageloader.IPageLoader#getLastPageOrder()
-     */
     /** {@inheritDoc} */
     @Override
     public int getLastPageOrder() {
@@ -129,18 +123,12 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
         return loadPage(-1, fileName);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.viewer.pageloader.IPageLoader#getIddocForPage(int)
-     */
     /** {@inheritDoc} */
     @Override
     public String getOwnerIddocForPage(int pageOrder) throws IndexUnreachableException, PresentationException {
         return DataManager.getInstance().getSearchIndex().getImageOwnerIddoc(topElement.getPi(), pageOrder);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.viewer.IPageLoader#generateSelectItems(List, List, String, Boolean, Locale)
-     */
     /** {@inheritDoc} */
     @Override
     public void generateSelectItems(List<SelectPageItem> dropdownPages, List<SelectPageItem> dropdownFulltext, String urlRoot,

@@ -59,7 +59,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 /**
  * Contains data to create a geomap for a record containing complex metadata (metadata documents) with geo coordinates.
  * 
- * @author florian
+ * @author Florian Alpers
  */
 public class RecordGeoMap {
 

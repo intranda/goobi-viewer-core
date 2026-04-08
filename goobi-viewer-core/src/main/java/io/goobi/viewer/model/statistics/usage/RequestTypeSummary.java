@@ -53,14 +53,14 @@ public class RequestTypeSummary {
     }
 
     /**
-     * @return the totalRequests
+
      */
     public long getTotalRequests() {
         return totalRequests;
     }
 
     /**
-     * @return the uniqueRequests
+
      */
     public long getUniqueRequests() {
         return uniqueRequests;

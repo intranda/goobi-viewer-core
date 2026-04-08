@@ -57,7 +57,7 @@ import jakarta.inject.Named;
 /**
  * Creates and stored {@link io.goobi.viewer.model.viewer.collections.CollectionView}s for a session.
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Named
 @SessionScoped

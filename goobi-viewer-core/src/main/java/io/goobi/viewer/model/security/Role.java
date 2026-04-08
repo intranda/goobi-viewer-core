@@ -88,11 +88,6 @@ public class Role implements Serializable {
         this.name = name;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -103,11 +98,6 @@ public class Role implements Serializable {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -320,7 +310,7 @@ public class Role implements Serializable {
     /**
      * Getter for the field <code>id</code>.
      *
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -338,7 +328,7 @@ public class Role implements Serializable {
     /**
      * Getter for the field <code>name</code>.
      *
-     * @return the name
+
      */
     public String getName() {
         return name;
@@ -356,7 +346,7 @@ public class Role implements Serializable {
     /**
      * Getter for the field <code>description</code>.
      *
-     * @return the description
+
      */
     public String getDescription() {
         return description;
@@ -374,7 +364,7 @@ public class Role implements Serializable {
     /**
      * Getter for the field <code>privileges</code>.
      *
-     * @return the privileges
+
      */
     public Set<String> getPrivileges() {
         return privileges;
@@ -392,7 +382,7 @@ public class Role implements Serializable {
     /**
      * Getter for the field <code>inheritedRoles</code>.
      *
-     * @return the inheritedRoles
+
      */
     public Set<Role> getInheritedRoles() {
         return inheritedRoles;

@@ -217,14 +217,14 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
     }
 
     /**
-     * @return the parameterType
+
      */
     public String getParameterType() {
         return parameterType;
     }
 
     /**
-     * @return the parameterName
+
      */
     public String getParameterName() {
         return parameterName;

@@ -58,9 +58,9 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
- * Request filter to ensure only users with sufficient rights may access campaign resources.
+ * REST resource for retrieving activity logs and progress statistics for crowdsourcing campaign items.
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Hidden
 @Path("/crowdsourcing/campaigns/{campaignId}")

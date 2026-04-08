@@ -40,9 +40,9 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
- * SolrSearchParser class.
+ * IIIF Search API parser that queries the Solr index to find text matches within indexed records.
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class SolrSearchParser extends AbstractSearchParser {
 

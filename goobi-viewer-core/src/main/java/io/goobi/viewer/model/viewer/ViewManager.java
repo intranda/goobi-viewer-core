@@ -1320,7 +1320,7 @@ public class ViewManager implements Serializable {
     /**
      * currentImageOrder.
      *
-     * @return the currentImageOrder
+
      */
     public int getCurrentImageOrder() {
         return currentImageOrder;
@@ -1537,7 +1537,7 @@ public class ViewManager implements Serializable {
     /**
      * Getter for the field <code>dropdownPages</code>.
      *
-     * @return the dropdownPages
+
      */
     public List<SelectPageItem> getDropdownPages() {
         return dropdownPages;
@@ -1556,7 +1556,7 @@ public class ViewManager implements Serializable {
     /**
      * Getter for the field <code>dropdownFulltext</code>.
      *
-     * @return the dropdownPages
+
      */
     public List<SelectPageItem> getDropdownFulltext() {
         return dropdownFulltext;
@@ -1584,7 +1584,7 @@ public class ViewManager implements Serializable {
     /**
      * Getter for the field <code>dropdownSelected</code>.
      *
-     * @return the dropdownSelected
+
      */
     public String getDropdownSelected() {
         return dropdownSelected;
@@ -2282,7 +2282,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * @return the allowUserComments
+
      */
     public Boolean isAllowUserComments() {
         return allowUserComments;
@@ -2705,7 +2705,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * @return the toc
+
      */
     public TOC getToc() {
         return toc;
@@ -2951,7 +2951,7 @@ public class ViewManager implements Serializable {
     /**
      * Getter for the field <code>topStructElementIddoc</code>.
      *
-     * @return the topStructElementIddoc
+
      */
     public String getTopStructElementIddoc() {
         return topStructElementIddoc;
@@ -2969,7 +2969,7 @@ public class ViewManager implements Serializable {
      * Returns <code>topDocument</code>. If the IDDOC of <code>topDocument</code> is different from <code>topDocumentIddoc</code>,
      * <code>topDocument</code> is reloaded.
      *
-     * @return the currentDocument
+
      * @throws IndexUnreachableException
      */
     private StructElement loadTopStructElement() throws IndexUnreachableException {
@@ -3005,7 +3005,7 @@ public class ViewManager implements Serializable {
     /**
      * Getter for the field <code>currentStructElementIddoc</code>.
      *
-     * @return the currentStructElementIddoc
+
      */
     public String getCurrentStructElementIddoc() {
         return currentStructElementIddoc;
@@ -3023,7 +3023,7 @@ public class ViewManager implements Serializable {
     /**
      * Getter for the field <code>currentStructElement</code>.
      *
-     * @return the currentStructElement
+
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public StructElement getCurrentStructElement() throws IndexUnreachableException {
@@ -3072,7 +3072,7 @@ public class ViewManager implements Serializable {
     /**
      * Getter for the field <code>logId</code>.
      *
-     * @return the logId
+
      */
     public String getLogId() {
         return logId;
@@ -3092,7 +3092,7 @@ public class ViewManager implements Serializable {
     /**
      * Getter for the field <code>pageLoader</code>.
      *
-     * @return the pageLoader
+
      */
     public IPageLoader getPageLoader() {
         return pageLoader;
@@ -3359,7 +3359,7 @@ public class ViewManager implements Serializable {
     /**
      * Getter for the field <code>pi</code>.
      *
-     * @return the pi
+
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getPi() throws IndexUnreachableException {
@@ -3386,7 +3386,7 @@ public class ViewManager implements Serializable {
     /**
      * Getter for the field <code>mimeType</code>.
      *
-     * @return the mimeType
+
      */
     public String getMimeType() {
         return mimeType;
@@ -3412,7 +3412,7 @@ public class ViewManager implements Serializable {
     /**
      * isDoublePageMode.
      *
-     * @return the doublePageMode
+
      */
     public boolean isDoublePageMode() {
         return PageNavigation.DOUBLE.equals(getPageNavigation());
@@ -3425,7 +3425,7 @@ public class ViewManager implements Serializable {
     /**
      * Getter for the field <code>firstPdfPage</code>.
      *
-     * @return the firstPdfPage
+
      */
     public String getFirstPdfPage() {
         return String.valueOf(firstPdfPage);
@@ -3445,7 +3445,7 @@ public class ViewManager implements Serializable {
     /**
      * Getter for the field <code>lastPdfPage</code>.
      *
-     * @return the lastPdfPage
+
      */
     public String getLastPdfPage() {
         return String.valueOf(lastPdfPage);
@@ -3500,7 +3500,7 @@ public class ViewManager implements Serializable {
     /**
      * Getter for the field <code>calendarView</code>.
      *
-     * @return the calendarView
+
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
@@ -3514,7 +3514,7 @@ public class ViewManager implements Serializable {
     /**
      * Getter for the field <code>firstPageOrientation</code>.
      *
-     * @return the firstPageOrientation
+
      */
     public PageOrientation getFirstPageOrientation() {
         if (getCurrentPage() != null && getCurrentPage().isFlipRectoVerso()) {
@@ -3819,7 +3819,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * @return the citationStyle
+
      */
     public String getCitationStyle() {
         return citationStyle;
@@ -3833,7 +3833,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * @return the citationProcessorWrapper
+
      */
     public CitationProcessorWrapper getCitationProcessorWrapper() {
         return citationProcessorWrapper;
@@ -4059,7 +4059,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * @return the copyrightIndicatorLicense
+
      * @should return correct license
      * @should return default license if no licenses found
      */

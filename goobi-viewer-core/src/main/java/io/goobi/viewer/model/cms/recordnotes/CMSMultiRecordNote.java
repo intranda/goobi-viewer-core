@@ -47,7 +47,7 @@ import jakarta.persistence.Transient;
 /**
  * Class holding a formatted text related to a single PI which may be edited in the admin/cms-backend and displayed in a (sidebar) widget.
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Entity
 @DiscriminatorValue("MULTI")
@@ -92,7 +92,7 @@ public class CMSMultiRecordNote extends CMSRecordNote {
     }
 
     /**
-     * @return the query
+
      */
     public String getQuery() {
         return query;
@@ -143,25 +143,16 @@ public class CMSMultiRecordNote extends CMSRecordNote {
         return "+(" + this.query + ") +(ISWORK:* ISANCHOR:*)";
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.CMSRecordNote#isSingleRecordNote()
-     */
     @Override
     public boolean isSingleRecordNote() {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.CMSRecordNote#isMultiRecordNote()
-     */
     @Override
     public boolean isMultiRecordNote() {
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.CMSRecordNote#matchesFilter(java.lang.String)
-     */
     @Override
     public boolean matchesFilter(String filter) {
         if (StringUtils.isNotBlank(filter)) {

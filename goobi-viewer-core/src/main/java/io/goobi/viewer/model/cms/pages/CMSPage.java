@@ -110,7 +110,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
- * CMSPage class.
+ * Represents a CMS page with configurable content components, metadata, and URL mappings.
  */
 @Entity
 @Table(name = "cms_pages")
@@ -416,7 +416,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Getter for the field <code>id</code>.
      *
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -434,7 +434,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Getter for the field <code>dateCreated</code>.
      *
-     * @return the dateCreated
+
      */
     public LocalDateTime getDateCreated() {
         return dateCreated;
@@ -467,7 +467,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * isPublished.
      *
-     * @return the published
+
      */
     public boolean isPublished() {
         return PublicationStatus.PUBLISHED.equals(this.publicationStatus);
@@ -485,7 +485,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * isUseDefaultSidebar.
      *
-     * @return the useDefaultSidebar
+
      */
     public boolean isUseDefaultSidebar() {
         return useDefaultSidebar;
@@ -503,7 +503,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Getter for the field <code>sidebarElements</code>.
      *
-     * @return the sidebarElements
+
      */
     public List<CMSSidebarElement> getSidebarElements() {
         return sidebarElements;
@@ -594,7 +594,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Getter for the field <code>categories</code>.
      *
-     * @return the classifications
+
      */
     public List<CMSCategory> getCategories() {
         return categories;
@@ -632,7 +632,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Getter for the field <code>sidebarElementString</code>.
      *
-     * @return the sidebarElementString
+
      */
     public String getSidebarElementString() {
         return sidebarElementString;
@@ -741,7 +741,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Getter for the field <code>subTheme</code>.
      *
-     * @return the subTheme
+
      */
     public String getSubTheme() {
         return subTheme;
@@ -795,7 +795,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Getter for the field <code>persistentUrl</code>.
      *
-     * @return the persistentUrl
+
      */
     public String getPersistentUrl() {
         return persistentUrl;
@@ -888,7 +888,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Getter for the field <code>parentPageId</code>.
      *
-     * @return the parentPageId
+
      */
     public String getParentPageId() {
         return parentPageId;
@@ -897,7 +897,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * isMayContainUrlParameters.
      *
-     * @return the mayContainUrlParameters
+
      */
     public boolean isMayContainUrlParameters() {
         return isContainsPagedComponents();
@@ -910,7 +910,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Getter for the field <code>relatedPI</code>.
      *
-     * @return the relatedPI
+
      */
     public String getRelatedPI() {
         return relatedPI;
@@ -926,7 +926,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     /**
-     * @return the useAsDefaultRecordView
+
      */
     public boolean isUseAsDefaultRecordView() {
         logger.trace("isUseAsDefaultRecordView: {}", useAsDefaultRecordView);
@@ -985,7 +985,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     /**
-     * @return the searchable
+
      */
     public boolean isSearchable() {
         return searchable;
@@ -999,7 +999,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     /**
-     * @return the accessCondition
+
      */
     public String getAccessCondition() {
         for (CMSProperty property : properties) {
@@ -1204,7 +1204,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Getter for the field <code>selectableCategories</code>.
      *
-     * @return the selectableCategories
+
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<Selectable<CMSCategory>> getSelectableCategories() throws DAOException {
@@ -1220,9 +1220,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         this.selectableCategories = null;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.misc.Harvestable#getPi()
-     */
     /** {@inheritDoc} */
     @Override
     public String getPi() {

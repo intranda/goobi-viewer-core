@@ -85,7 +85,9 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
- * @author florian
+ * REST resource for uploading, retrieving, and deleting user avatar images.
+ *
+ * @author Florian Alpers
  */
 @jakarta.ws.rs.Path(USERS_USER_AVATAR_IMAGE)
 @CORSBinding

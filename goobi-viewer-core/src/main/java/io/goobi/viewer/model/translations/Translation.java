@@ -36,7 +36,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 
 /**
- * Abstract Translation class.
+ * Represents a single translated value for a specific language tag.
  */
 @MappedSuperclass
 public class Translation {
@@ -164,7 +164,7 @@ public class Translation {
     /**
      * Getter for the field <code>id</code>.
      *
-     * @return the id
+
      */
     public Long getId() {
         return id;
@@ -182,7 +182,7 @@ public class Translation {
     /**
      * Getter for the field <code>tag</code>.
      *
-     * @return the tag
+
      */
     public String getTag() {
         return tag;
@@ -200,7 +200,7 @@ public class Translation {
     /**
      * Getter for the field <code>language</code>.
      *
-     * @return the language
+
      */
     public String getLanguage() {
         return language;
@@ -218,7 +218,7 @@ public class Translation {
     /**
      * Getter for the field <code>translationValue</code>.
      *
-     * @return the translationValue
+
      */
     public String getTranslationValue() {
         return translationValue;
@@ -233,9 +233,6 @@ public class Translation {
         this.translationValue = translationValue;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     /** {@inheritDoc} */
     @Override
     public String toString() {

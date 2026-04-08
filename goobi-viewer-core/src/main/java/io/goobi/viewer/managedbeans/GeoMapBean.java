@@ -59,7 +59,7 @@ import jakarta.inject.Named;
 /**
  * Bean for managing {@link io.goobi.viewer.model.maps.GeoMap}s in the admin Backend.
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Named
 @ViewScoped
@@ -87,7 +87,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     /**
      * Getter for the field <code>currentMap</code>.
      *
-     * @return the currentMap
+
      */
     public GeoMap getCurrentMap() {
         return currentMap;
@@ -221,7 +221,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     /**
      * Getter for the field <code>selectedLanguage</code>.
      *
-     * @return the selectedLanguage
+
      */
     public Locale getSelectedLanguage() {
         return selectedLanguage;

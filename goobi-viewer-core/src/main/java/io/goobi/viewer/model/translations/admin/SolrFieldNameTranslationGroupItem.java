@@ -46,9 +46,6 @@ public class SolrFieldNameTranslationGroupItem extends TranslationGroupItem {
         super(key, regex);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.admin.TranslationGroupItem#loadEntries()
-     */
     @Override
     protected void loadEntries() throws IndexUnreachableException {
         List<String> keys;

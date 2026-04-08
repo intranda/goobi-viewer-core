@@ -129,7 +129,7 @@ public class LicenseTypePlaceholderInfo extends Translation implements CMSMediaH
     }
 
     /**
-     * @return the owner
+
      */
     public LicenseType getOwner() {
         return owner;
@@ -143,7 +143,7 @@ public class LicenseTypePlaceholderInfo extends Translation implements CMSMediaH
     }
 
     /**
-     * @return the imageMode
+
      */
     public LicenseTypeImageMode getImageMode() {
         if (imageMode == null) {

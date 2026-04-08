@@ -84,7 +84,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 @Path(RECORDS_FILES_IMAGE)
 @ContentServerBinding

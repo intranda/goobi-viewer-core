@@ -25,7 +25,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
- * Object class.
+ * Represents a single 3D object with its source file, format, and associated textures.
  *
  * @author Florian Alpers
  */
@@ -63,7 +63,7 @@ public class Object {
     /**
      * Getter for the field <code>type</code>.
      *
-     * @return the type
+
      */
     public ObjectFormat getType() {
         return type;
@@ -81,7 +81,7 @@ public class Object {
     /**
      * Getter for the field <code>uri</code>.
      *
-     * @return the uri
+
      */
     public URI getUri() {
         return uri;
@@ -99,7 +99,7 @@ public class Object {
     /**
      * Getter for the field <code>center</code>.
      *
-     * @return the center
+
      */
     public Point3D getCenter() {
         return center;
@@ -117,7 +117,7 @@ public class Object {
     /**
      * Getter for the field <code>rotation</code>.
      *
-     * @return the rotation
+
      */
     public Point3D getRotation() {
         return rotation;

@@ -45,7 +45,7 @@ import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
 
 /**
- * JPAClassLoader class.
+ * Custom class loader used to resolve JPA entity classes from the configured persistence unit.
  */
 public class JPAClassLoader extends ClassLoader {
 
