@@ -1282,7 +1282,8 @@ public class AdminBean implements Serializable {
     /**
      * Getter for the field <code>currentTranslationGroup</code>.
      *
-     * @return the {@link io.goobi.viewer.model.translations.admin.TranslationGroup} currently being edited, or null if none selected or session is locked
+     * @return the {@link io.goobi.viewer.model.translations.admin.TranslationGroup} currently being
+     *         edited, or null if none selected or session is locked
      */
     public TranslationGroup getCurrentTranslationGroup() {
         synchronized (TRANSLATION_LOCK) {

@@ -164,7 +164,8 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     /**
      * isOpensInSearch.
      *
-     * @return true if clicking this element should open the collection in a search view (i.e. it does not open in a new window and does not redirect to a single work), false otherwise
+     * @return true if clicking this element should open the collection in a search view (i.e. it does
+     *         not open in a new window and does not redirect to a single work), false otherwise
      */
     public boolean isOpensInSearch() {
         return !isOpensInNewWindow() && !isRedirectsToWork();

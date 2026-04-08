@@ -1625,7 +1625,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
 
     /**
      *
-     * @return true if the current user has permission to view the video content of this page and the concurrent view limit is not exceeded, false otherwise
+     * @return true if the current user has permission to view the video content of this page and the
+     *         concurrent view limit is not exceeded, false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1643,7 +1644,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
 
     /**
      *
-     * @return true if the current user has permission to view the audio content of this page and the concurrent view limit is not exceeded, false otherwise
+     * @return true if the current user has permission to view the audio content of this page and the
+     *         concurrent view limit is not exceeded, false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */

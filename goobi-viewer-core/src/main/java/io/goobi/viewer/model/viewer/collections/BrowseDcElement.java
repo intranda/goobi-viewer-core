@@ -266,7 +266,8 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     /**
      * isDisplayNumberOfVolumes.
      *
-     * @return true if the number of volumes should be displayed for this collection element (i.e. the element level meets the configured threshold), false otherwise
+     * @return true if the number of volumes should be displayed for this collection element (i.e. the
+     *         element level meets the configured threshold), false otherwise
      */
     public boolean isDisplayNumberOfVolumes() {
         return getLevel() >= displayNumberOfVolumesLevel;

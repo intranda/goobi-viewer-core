@@ -2317,7 +2317,8 @@ public class ViewManager implements Serializable {
     /**
      * isDisplayMetadataPdfLink.
      *
-     * @return true if the metadata PDF download link should be shown (record is a top-level work, PDF is enabled in config, and access is permitted), false otherwise
+     * @return true if the metadata PDF download link should be shown (record is a top-level work, PDF
+     *         is enabled in config, and access is permitted), false otherwise
      */
     public boolean isDisplayMetadataPdfLink() {
         return topStructElement != null && topStructElement.isWork() && DataManager.getInstance().getConfiguration().isMetadataPdfEnabled()
@@ -3692,7 +3693,8 @@ public class ViewManager implements Serializable {
     /**
      * isDisplayCiteLinkDocstruct.
      *
-     * @return true if citation links are enabled, a current structure element is loaded, and it differs from the top-level structure element, false otherwise
+     * @return true if citation links are enabled, a current structure element is loaded, and it differs
+     *         from the top-level structure element, false otherwise
      */
     public boolean isDisplayCiteLinkDocstruct() {
         return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetCitationCitationLinks() && currentStructElement != null

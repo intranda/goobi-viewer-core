@@ -871,7 +871,8 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * hasPrivilegeForAllSubthemeDiscriminatorValues.
      *
-     * @return true if this user has access to all CMS subtheme discriminator values (as superuser or via an unrestricted CMS admin license), false otherwise
+     * @return true if this user has access to all CMS subtheme discriminator values (as superuser or
+     *         via an unrestricted CMS admin license), false otherwise
      */
     public boolean hasPrivilegeForAllSubthemeDiscriminatorValues() {
 
