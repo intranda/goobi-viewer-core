@@ -353,7 +353,8 @@ public class AuthorizationFlowResource {
     public Response probeResource(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
             @Parameter(description = "Content file name") @PathParam("filename") String filename, @HeaderParam("Origin") String origin)
             throws JsonProcessingException {
-        logger.debug("probeResource: {}/{}", pi, filename);
+        // Sanitize path parameters before logging to prevent log injection (Sonar S5145)
+        logger.debug("probeResource: {}/{}", pi.replaceAll("[\r\n]", "_"), filename.replaceAll("[\r\n]", "_"));
         // debugRequest();
         if (StringUtils.isEmpty(origin)) {
             logger.warn("No Origin header found.");
@@ -367,7 +368,8 @@ public class AuthorizationFlowResource {
             if (access == null) {
                 try {
                     MimeType mediaType = MimeType.of(Paths.get(filename));
-                    logger.trace("Base mime type: {}", mediaType);
+                    // mediaType is derived from user-controlled filename; sanitize before logging
+                    logger.trace("Base mime type: {}", mediaType.toString().replaceAll("[\r\n]", "_"));
                     if (mediaType.isAllowsImageView()) {
                         // Image/text access check
                         access = AccessConditionUtils
@@ -375,7 +377,7 @@ public class AuthorizationFlowResource {
                                         mediaType.getType(), pi, filename, NetTools.getIpAddress(servletRequest), false)
                                 .isGranted();
                     } else {
-                        logger.warn("Unsupported mime type: {}", mediaType);
+                        logger.warn("Unsupported mime type: {}", mediaType.toString().replaceAll("[\r\n]", "_"));
                     }
                     token.addPermission(key, access);
                 } catch (IndexUnreachableException | DAOException | IOException e) {
