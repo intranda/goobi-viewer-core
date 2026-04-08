@@ -72,8 +72,9 @@ public class RecordGeoMap {
 
     /**
      * Create a new geomap with features from the given StructElement and related documents.
-     * 
+     *
      * @param struct top-level structure element of the record
+     * @throws DAOException if a database error occurs while loading geo map configuration
      */
     public RecordGeoMap(StructElement struct) throws DAOException {
         this(struct, DataManager.getInstance().getDao(),

@@ -280,6 +280,7 @@ public class JPADAO implements IDAO {
      * Commits a persistence context transaction. Only to be used following a {@link #startTransaction(EntityManager)} call
      *
      * @param et the active entity transaction to commit
+     * @throws PersistenceException if the commit fails
      */
     @Override
     public void commitTransaction(EntityTransaction et) throws PersistenceException {
@@ -513,6 +514,7 @@ public class JPADAO implements IDAO {
     /**
      *
      * @param nickname user nickname to look up (case-insensitive)
+     * @throws DAOException if a database error occurs
      * @see io.goobi.viewer.dao.IDAO#getUserByNickname(java.lang.String)
      * @should return null if nickname empty
      */
@@ -1113,6 +1115,7 @@ public class JPADAO implements IDAO {
      * @param userGroup user group to filter by, or null to match any group
      * @param user user to filter by, or null to match any user
      * @param role role to filter by, or null to match any role
+     * @throws DAOException if a database error occurs
      * @see io.goobi.viewer.dao.IDAO#getUserRoleCount(io.goobi.viewer.model.security.user.UserGroup, io.goobi.viewer.model.security.user.User,
      *      io.goobi.viewer.model.security.Role)
      * @should return correct count
@@ -1426,6 +1429,7 @@ public class JPADAO implements IDAO {
 
     /**
      * @param names list of license type names to retrieve; returns empty list if null or empty
+     * @throws DAOException if a database error occurs
      * @see io.goobi.viewer.dao.IDAO#getLicenseTypes(java.util.List)
      * @should return all matching rows
      */
@@ -1454,6 +1458,7 @@ public class JPADAO implements IDAO {
 
     /**
      * @param licenseType the license type for which to find overriding license types
+     * @throws DAOException if a database error occurs
      * @see io.goobi.viewer.dao.IDAO#getOverridingLicenseType(io.goobi.viewer.model.security.LicenseType)
      * @should return all matching rows
      */
@@ -1567,6 +1572,7 @@ public class JPADAO implements IDAO {
 
     /**
      * @param licenseType the license type whose associated licenses are retrieved; must not be null
+     * @throws DAOException if a database error occurs
      * @see io.goobi.viewer.dao.IDAO#getLicenses(io.goobi.viewer.model.security.LicenseType)
      * @should return correct values
      */
@@ -1643,6 +1649,7 @@ public class JPADAO implements IDAO {
 
     /**
      * @param licenseType the license type whose associated licenses are counted; must not be null
+     * @throws DAOException if a database error occurs
      * @see io.goobi.viewer.dao.IDAO#getLicenseCount(io.goobi.viewer.model.security.LicenseType)
      * @should return correct value
      */
@@ -2044,6 +2051,7 @@ public class JPADAO implements IDAO {
     // CommentGroup
 
     /**
+     * @throws DAOException if a database error occurs
      * @see io.goobi.viewer.dao.IDAO#getAllCommentGroups()
      * @should return all rows
      */
@@ -2082,6 +2090,7 @@ public class JPADAO implements IDAO {
 
     /**
      * @param id database ID of the comment group to retrieve
+     * @throws DAOException if a database error occurs
      * @see io.goobi.viewer.dao.IDAO#getCommentGroup(long)
      */
     @Override
@@ -2099,6 +2108,7 @@ public class JPADAO implements IDAO {
 
     /**
      * @param commentGroup the comment group to persist in the database
+     * @throws DAOException if a database error occurs
      * @see io.goobi.viewer.dao.IDAO#addCommentGroup(io.goobi.viewer.model.annotation.comments.CommentGroup)
      */
     @Override
@@ -2121,6 +2131,7 @@ public class JPADAO implements IDAO {
 
     /**
      * @param commentGroup the comment group with updated values to merge into the database
+     * @throws DAOException if a database error occurs
      * @see io.goobi.viewer.dao.IDAO#updateCommentGroup(io.goobi.viewer.model.annotation.comments.CommentGroup)
      */
     @Override
@@ -2143,6 +2154,7 @@ public class JPADAO implements IDAO {
 
     /**
      * @param commentGroup the comment group to remove from the database
+     * @throws DAOException if a database error occurs
      * @see io.goobi.viewer.dao.IDAO#deleteCommentGroup(io.goobi.viewer.model.annotation.comments.CommentGroup)
      */
     @Override
@@ -2413,6 +2425,7 @@ public class JPADAO implements IDAO {
     /**
      * @param pi persistent identifier to restrict deletion to comments on a specific record, or null for any
      * @param owner user whose comments should be deleted, or null to delete regardless of owner
+     * @throws DAOException if a database error occurs
      * @see io.goobi.viewer.dao.IDAO#deleteComments(java.lang.String, io.goobi.viewer.model.security.user.User)
      * @should delete comments for pi correctly
      * @should delete comments for user correctly
@@ -3897,6 +3910,7 @@ public class JPADAO implements IDAO {
     /**
      * @param fromUser the user whose campaign statistic entries are replaced
      * @param toUser the user who replaces fromUser in all campaign statistic entries
+     * @throws DAOException if a database error occurs
      * @see io.goobi.viewer.dao.IDAO#changeCampaignStatisticContributors(io.goobi.viewer.model.security.user.User,
      *      io.goobi.viewer.model.security.user.User)
      * @should replace user in creators and reviewers lists correctly

@@ -1230,6 +1230,7 @@ public interface IDAO {
      * @param propertyName name of the CMS page property to filter by
      * @param propertyValue value of the CMS page property to filter by
      * @return long
+     * @throws DAOException if a database error occurs
      */
     public long getCMSPageCountByPropertyValue(String propertyName, String propertyValue) throws DAOException;
 
@@ -1238,6 +1239,7 @@ public interface IDAO {
      * @param propertyName name of the CMS page property to filter by
      * @param propertyValue value of the CMS page property to filter by
      * @return List<CMSPage>
+     * @throws DAOException if a database error occurs
      */
     public List<CMSPage> getCMSPagesByPropertyValue(String propertyName, String propertyValue) throws DAOException;
 
@@ -2046,6 +2048,7 @@ public interface IDAO {
      *
      * @param mapId database id of the geo map
      * @return The GeoMap of the given id or else null
+     * @throws DAOException if a database error occurs
      */
     public GeoMap getGeoMap(Long mapId) throws DAOException;
 
@@ -2156,6 +2159,7 @@ public interface IDAO {
      *
      * @param id database id of the record note
      * @return {@link CMSSingleRecordNote} with the given id
+     * @throws DAOException if a database error occurs
      */
     public CMSRecordNote getRecordNote(Long id) throws DAOException;
 
@@ -2164,6 +2168,7 @@ public interface IDAO {
      *
      * @param note record note to add
      * @return true if note added successfully; false otherwise
+     * @throws DAOException if a database error occurs
      */
     public boolean addRecordNote(CMSRecordNote note) throws DAOException;
 
@@ -2172,6 +2177,7 @@ public interface IDAO {
      *
      * @param note record note to update
      * @return true if note updated successfully; false otherwise
+     * @throws DAOException if a database error occurs
      */
     public boolean updateRecordNote(CMSRecordNote note) throws DAOException;
 
@@ -2180,6 +2186,7 @@ public interface IDAO {
      *
      * @param note record note to delete
      * @return true if note deleted successfully; false otherwise
+     * @throws DAOException if a database error occurs
      */
     public boolean deleteRecordNote(CMSRecordNote note) throws DAOException;
 
