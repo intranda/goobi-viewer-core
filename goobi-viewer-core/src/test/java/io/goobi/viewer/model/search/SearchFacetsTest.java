@@ -517,6 +517,17 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchFacets#isHasWrongLanguageCode(String,String)
+     * @verifies return false if language code different but active facet selected
+     */
+    @Test
+    void isHasWrongLanguageCode_shouldReturnFalseIfLanguageCodeDifferentButActiveFacetSelected() {
+        SearchFacets facets = new SearchFacets();
+        facets.getActiveFacets().add(new FacetItem("MD_TITLE_LANG_DE:somevalue", false));
+        Assertions.assertFalse(facets.isHasWrongLanguageCode("MD_TITLE_LANG_DE", "en"));
+    }
+
+    /**
      * @see SearchFacets#updateFacetItem(String,String,List,boolean)
      * @verifies update facet item correctly
      */
