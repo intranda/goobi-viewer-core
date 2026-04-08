@@ -1163,10 +1163,15 @@ public class SearchFacets implements Serializable {
      * @should return true if language code different
      * @should return false if language code same
      * @should return false if no language code
+     * @should return false if language code different but active facet selected
      * @return a boolean.
      */
     public boolean isHasWrongLanguageCode(String field, String language) {
-        return SolrTools.isHasWrongLanguageCode(field, language);
+        if (SolrTools.isHasWrongLanguageCode(field, language)) {
+            // Even if the language code is wrong, keep the field visible if a facet value is actively selected
+            return getActiveFacetsForField(field).isEmpty();
+        }
+        return false;
     }
 
     /**
