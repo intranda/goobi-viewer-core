@@ -28,9 +28,7 @@ import jakarta.faces.application.FacesMessage.Severity;
 import jakarta.faces.context.FacesContext;
 
 /**
- * <p>
- * Messages class.
- * </p>
+ * Utility class for looking up localised message strings from the viewer's resource bundles.
  */
 public final class Messages {
 
@@ -42,81 +40,67 @@ public final class Messages {
     }
 
     /**
-     * <p>
      * error.
-     * </p>
      *
-     * @param targetId a {@link java.lang.String} object.
-     * @param message a {@link java.lang.String} object.
-     * @param messageParams a {@link java.lang.String} object.
+     * @param targetId JSF component ID to attach the message to
+     * @param message message key or text to display
+     * @param messageParams placeholder values substituted into the message
      */
     public static void error(String targetId, String message, String... messageParams) {
         showMessage(targetId, message, FacesMessage.SEVERITY_ERROR, messageParams);
     }
 
     /**
-     * <p>
      * error.
-     * </p>
      *
-     * @param message a {@link java.lang.String} object.
+     * @param message message key or text to display
      */
     public static void error(String message) {
         showMessage(null, message, FacesMessage.SEVERITY_ERROR);
     }
 
     /**
-     * <p>
      * info.
-     * </p>
      *
-     * @param targetId a {@link java.lang.String} object.
-     * @param message a {@link java.lang.String} object.
-     * @param messageParams a {@link java.lang.String} object.
+     * @param targetId JSF component ID to attach the message to
+     * @param message message key or text to display
+     * @param messageParams placeholder values substituted into the message
      */
     public static void info(String targetId, String message, String... messageParams) {
         showMessage(targetId, message, FacesMessage.SEVERITY_INFO, messageParams);
     }
 
     /**
-     * <p>
      * info.
-     * </p>
      *
-     * @param message a {@link java.lang.String} object.
+     * @param message message key or text to display
      */
     public static void info(String message) {
         showMessage(null, message, FacesMessage.SEVERITY_INFO);
     }
 
     /**
-     * <p>
      * warn.
-     * </p>
      *
-     * @param message a {@link java.lang.String} object.
+     * @param message message key or text to display
      */
     public static void warn(String message) {
         showMessage(null, message, FacesMessage.SEVERITY_WARN);
     }
 
     /**
-     * <p>
      * warn.
-     * </p>
      *
-     * @param targetId a {@link java.lang.String} object.
-     * @param message a {@link java.lang.String} object.
-     * @param messageParams a {@link java.lang.String} object.
+     * @param targetId JSF component ID to attach the message to
+     * @param message message key or text to display
+     * @param messageParams placeholder values substituted into the message
      */
     public static void warn(String targetId, String message, String... messageParams) {
         showMessage(targetId, message, FacesMessage.SEVERITY_WARN, messageParams);
     }
 
     /**
-     * <p>
      * clear.
-     * </p>
      */
     public static void clear() {
         FacesContext fc = FacesContext.getCurrentInstance();
@@ -137,14 +121,12 @@ public final class Messages {
     }
 
     /**
-     * <p>
      * translate.
-     * </p>
      *
-     * @param inMessage a {@link java.lang.String} object.
-     * @param messageParams a {@link java.lang.String} object.
-     * @param locale a {@link java.util.Locale} object.
-     * @return a {@link java.lang.String} object.
+     * @param inMessage message key to look up in the resource bundle
+     * @param locale locale used for translation lookup
+     * @param messageParams placeholder values substituted into the translated message
+     * @return translated and interpolated message string
      */
     public static String translate(String inMessage, Locale locale, String... messageParams) {
         String translatedMessage = ViewerResourceBundle.getTranslation(inMessage, locale);

@@ -41,7 +41,8 @@
                     </div>
                     <util:icon
                         icon="chevron-down"
-                        styleClass="widget__topbar-icon-collapsible icon-rot-on-open" />
+                        styleClass="widget__topbar-icon-collapsible icon-rot-on-open"
+                        svgClass="widget__topbar-icon-svg widget-metadata__topbar-icon-svg" />
                 </div>
             </div>
 
@@ -86,12 +87,12 @@
                                                                 class="metadata__locked-value-icon"
                                                                 data-toggle="tooltip"
                                                                 title="#{msg.metadata__restricted_value_tooltip}">
-                                                                <util:icon icon="lock-open-2" />
+                                                                <util:icon icon="lock-open-2" svgClass="widget__body-icon-svg widget-metadata__body-icon-svg" />
                                                             </span>
                                                         </ui:fragment>
                                                         <h:outputFormat
                                                             value="#{val.getDisplayValue(navigationHelper.locale, true)}"
-                                                            escape="false"></h:outputFormat>
+                                                            escape="false" />
                                                     </h:panelGroup>
 
                                                     <!-- Nested child metadata -->
@@ -101,16 +102,14 @@
                                                         varStatus="status">
                                                         <ui:fragment rendered="#{!child.isBlank(val.iddoc)}">
                                                             <ui:fragment rendered="#{child.singleString}">
-                                                                <ui:include
-                                                                    src="/resources/includes/metadata/metadataSingleString.xhtml">
+                                                                <ui:include src="/resources/includes/metadata/metadataSingleString.xhtml">
                                                                     <ui:param
                                                                         name="metadata"
                                                                         value="#{metadata.childMetadata[status.index]}" />
                                                                 </ui:include>
                                                             </ui:fragment>
                                                             <ui:fragment rendered="#{!child.singleString}">
-                                                                <ui:include
-                                                                    src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
+                                                                <ui:include src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
                                                                     <ui:param
                                                                         name="metadata"
                                                                         value="#{metadata.childMetadata[status.index]}" />
@@ -140,7 +139,7 @@
                                                                 class="metadata__locked-value-icon"
                                                                 data-toggle="tooltip"
                                                                 title="#{msg.metadata__restricted_value_tooltip}">
-                                                                <util:icon icon="lock-open-2" />
+                                                                <util:icon icon="lock-open-2" svgClass="widget__body-icon-svg widget-metadata__body-icon-svg" />
                                                             </span>
                                                         </ui:fragment>
                                                         <h:outputText
@@ -160,7 +159,7 @@
                                             <dd class="widget-metadata__non-grouped-metadata-dd">
                                                 <h:outputFormat
                                                     value="#{val.getDisplayValue(navigationHelper.locale)}"
-                                                    escape="false"></h:outputFormat>
+                                                    escape="false" />
                                             </dd>
                                         </ui:repeat>
                                     </h:panelGroup>
@@ -202,7 +201,7 @@
                                                         <dd class="widget-metadata__non-grouped-metadata-dd">
                                                             <h:outputFormat
                                                                 value="#{val.getDisplayValue(navigationHelper.locale)}"
-                                                                escape="false"></h:outputFormat>
+                                                                escape="false" />
                                                         </dd>
                                                     </ui:repeat>
                                                 </h:panelGroup>
@@ -218,16 +217,16 @@
 
             <script type="text/javascript">
                 var normdataWidgetConfig = {
-                    path: '#{request.contextPath}',
-                    lang: {
-                        popoverTitle: '#{msg.normdataPopoverTitle}',
-                        popoverClose: '#{msg.normdataPopoverClose}',
-                        showNormdata: '#{msg.normdataExpand}',
-                    },
-                    elemWrapper: $('#widgetMetadata'),
-                };
+    path: '#{request.contextPath}',
+    lang: {
+        popoverTitle: '#{msg.normdataPopoverTitle}',
+        popoverClose: '#{msg.normdataPopoverClose}',
+        showNormdata: '#{msg.normdataExpand}',
+    },
+    elemWrapper: $('#widgetMetadata'),
+};
 
-                viewerJS.normdata.init(normdataWidgetConfig);
+viewerJS.normdata.init(normdataWidgetConfig);
             </script>
         </h:panelGroup>
     </composite:implementation>

@@ -48,14 +48,13 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 /**
  * Summary of request counts for a certain date range. Used for delivering record counts to users
  * 
- * @author florian
- *
+ * @author Florian Alpers
  */
 @JsonInclude(Include.NON_NULL)
 public class StatisticsSummary {
 
     /**
-     * Request counts sorted by {@link RequestType}
+     * Request counts sorted by {@link RequestType}.
      */
     private final Map<RequestType, RequestTypeSummary> types;
     private final LocalDateTime creationTime = LocalDateTime.now();
@@ -66,7 +65,7 @@ public class StatisticsSummary {
     }
 
     /**
-     * Default constructor
+     * Default constructor.
      * 
      * @param types Request counts sorted by {@link RequestType}
      */
@@ -75,7 +74,7 @@ public class StatisticsSummary {
     }
 
     /**
-     * Constructor to create an instance from a {@link DailySessionUsageStatistics} object
+     * Constructor to create an instance from a {@link DailySessionUsageStatistics} object.
      * 
      * @param dailyStats The {@link DailySessionUsageStatistics} from which to retrieve the request counts
      */
@@ -84,7 +83,7 @@ public class StatisticsSummary {
     }
 
     /**
-     * Constructor to create an instance from a {@link DailySessionUsageStatistics} object filtered by a list of record identifiers
+     * Constructor to create an instance from a {@link DailySessionUsageStatistics} object filtered by a list of record identifiers.
      * 
      * @param dailyStats The {@link DailySessionUsageStatistics} from which to retrieve the request counts
      * @param includedIdentifiers A list of record identifiers for which to count the requests. If empty, all requests will be counted
@@ -100,7 +99,7 @@ public class StatisticsSummary {
     }
 
     /**
-     * Create an empty summary
+     * Creates an empty summary.
      * 
      * @return an empty {@link StatisticsSummary}
      */
@@ -113,7 +112,7 @@ public class StatisticsSummary {
     }
 
     /**
-     * Get the request counts sorted by {@link RequestType}
+     * Get the request counts sorted by {@link RequestType}.
      * 
      * @return a {@link Map}
      */
@@ -122,7 +121,7 @@ public class StatisticsSummary {
     }
 
     /**
-     * Create a new summary with the sum of request counts from this and another summary
+     * Creates a new summary with the sum of request counts from this and another summary.
      * 
      * @param other the other {@link SummaryStatistics} to add to this one
      * @return the sum of {@link SummaryStatistics}
@@ -145,7 +144,7 @@ public class StatisticsSummary {
     }
 
     /**
-     * Get the total amount for requests for a given {@link RequestType}
+     * Get the total amount for requests for a given {@link RequestType}.
      * 
      * @param types the {@link RequestType}s to count
      * @return number of requests
@@ -159,7 +158,7 @@ public class StatisticsSummary {
     }
 
     /**
-     * Get the number of unique request for a given {@link RequestType}
+     * Get the number of unique request for a given {@link RequestType}.
      * 
      * @param types the {@link RequestType}s to count
      * @return number of unique requests
@@ -173,7 +172,7 @@ public class StatisticsSummary {
     }
 
     /**
-     * Get the last date for which requests have been recorded
+     * Gets the last date for which requests have been recorded.
      * 
      * @param types the {@link RequestType} to check
      * @return {@link LocalDate}
@@ -219,9 +218,9 @@ public class StatisticsSummary {
 
     /**
      * 
-     * @param start
-     * @param end
-     * @param format
+     * @param start start date of the range
+     * @param end end date of the range
+     * @param format date formatter to apply
      * @return Formatted date range
      */
     private static String getAsString(LocalDate start, LocalDate end, DateTimeFormatter format) {

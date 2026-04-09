@@ -27,6 +27,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+/**
+ * Metadata describing a usage statistics query, including the reporting period (start and end date)
+ * and an optional Solr filter query string used to restrict the statistics data.
+ */
 @JsonInclude(Include.NON_EMPTY)
 public class UsageStatisticsInformation {
 
@@ -35,9 +39,9 @@ public class UsageStatisticsInformation {
     private final String query;
 
     /**
-     * @param startDate
-     * @param endDate
-     * @param query
+     * @param startDate the start date of the statistics period
+     * @param endDate the end date of the statistics period
+     * @param query optional filter query string
      */
     public UsageStatisticsInformation(String startDate, String endDate, String query) {
         super();
@@ -46,16 +50,12 @@ public class UsageStatisticsInformation {
         this.query = query == null ? "" : query;
     }
 
-    /**
-     * @return the startDate
-     */
+    
     public String getStartDate() {
         return startDate;
     }
 
-    /**
-     * @return the endDate
-     */
+    
     public String getEndDate() {
         return endDate;
     }
@@ -69,9 +69,7 @@ public class UsageStatisticsInformation {
         }
     }
 
-    /**
-     * @return the query
-     */
+    
     public String getQuery() {
         return query;
     }

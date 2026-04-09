@@ -22,6 +22,8 @@
 package io.goobi.viewer.api.rest.filters;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.container.ContainerRequestContext;
@@ -39,9 +41,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 
 /**
- * <p>
- * Allows requests authorized by an authrization token.
- * </p>
+ * JAX-RS request filter that performs token-based authentication and authorization checks for protected API endpoints.
  */
 @Provider
 @AuthorizationBinding
@@ -76,9 +76,9 @@ public class AuthorizationFilter implements ContainerRequestFilter {
 
     /**
      *
-     * @param ip
-     * @param token
-     * @param pathInfo
+     * @param ip the client IP address
+     * @param token the bearer token from the request
+     * @param pathInfo the request path info
      * @return Whether or not access is granted
      */
     private static boolean checkPermissions(String ip, String token, String pathInfo) {
@@ -87,6 +87,9 @@ public class AuthorizationFilter implements ContainerRequestFilter {
             logger.trace("No token");
             return false;
         }
-        return token.equals(DataManager.getInstance().getConfiguration().getWebApiToken());
+        // Use constant-time comparison to prevent timing attacks that could allow
+        // an attacker to guess the token character by character via response time analysis.
+        String configToken = DataManager.getInstance().getConfiguration().getWebApiToken();
+        return MessageDigest.isEqual(token.getBytes(StandardCharsets.UTF_8), configToken.getBytes(StandardCharsets.UTF_8));
     }
 }

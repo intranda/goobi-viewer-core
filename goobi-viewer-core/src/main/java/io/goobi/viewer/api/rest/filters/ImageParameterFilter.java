@@ -50,8 +50,9 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 
 /**
- * Adds additional parameters to iiif contentServer requests as requestContext properties. Parameters must be named "param:" followed by the name of
- * the corresponding contentServer request parameter
+ * JAX-RS request filter that adds additional parameters to ContentServer image requests as request context properties.
+ * <p>
+ * Parameters passed to this filter must be named {@code param:} followed by the name of the corresponding ContentServer request parameter.
  */
 @Provider
 @ContentServerBinding
@@ -89,12 +90,10 @@ public class ImageParameterFilter implements ContainerRequestFilter {
     }
 
     /**
-     * <p>
      * addRepositoryPathIfRequired.
-     * </p>
      *
-     * @param request a {@link jakarta.ws.rs.container.ContainerRequestContext} object.
-     * @param pi a {@link java.lang.String} object.
+     * @param request JAX-RS request context to set repository path properties on
+     * @param pi persistent identifier used to look up the data repository path
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public static void addRepositoryPathIfRequired(ContainerRequestContext request, String pi) throws PresentationException {
@@ -114,10 +113,10 @@ public class ImageParameterFilter implements ContainerRequestFilter {
     }
 
     /**
-     * @param request
-     * @param dataRepository
-     * @param repositoryFolder
-     * @param requestParameter
+     * @param request JAX-RS container request context to set the property on
+     * @param dataRepository path to the data repository root directory
+     * @param repositoryFolder subfolder name within the data repository
+     * @param requestParameter name of the request property to set
      */
     private static void addRepositoryParameter(String requestParameter, String dataRepository, String repositoryFolder,
             ContainerRequestContext request) {

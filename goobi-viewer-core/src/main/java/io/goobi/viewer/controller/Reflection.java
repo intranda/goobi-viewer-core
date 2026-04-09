@@ -27,6 +27,11 @@ import java.util.Optional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Utility class providing Java reflection helpers. Currently offers a convenience method to
+ * invoke a named no-argument method on an arbitrary object and return its result wrapped in an
+ * {@link java.util.Optional}.
+ */
 public final class Reflection {
 
     private static final Logger logger = LogManager.getLogger(Reflection.class);
@@ -39,7 +44,7 @@ public final class Reflection {
         try {
             return Optional.ofNullable(object.getClass().getMethod(method).invoke(object));
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-            logger.error("Error calling method {} ob object {}", method, object);
+            logger.warn("Error calling method {} ob object {}", method, object);
             return Optional.empty();
         }
     }

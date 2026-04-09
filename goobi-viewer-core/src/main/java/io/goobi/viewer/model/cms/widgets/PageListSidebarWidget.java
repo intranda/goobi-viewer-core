@@ -35,10 +35,9 @@ import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
 
 /**
- * A subtype of {@link CustomSidebarWidget} to display a list of links to CMS pages
+ * A subtype of {@link CustomSidebarWidget} to display a list of links to CMS pages.
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Entity
 @DiscriminatorValue("PageListSidebarWidget")
@@ -51,16 +50,16 @@ public class PageListSidebarWidget extends CustomSidebarWidget {
     private List<Long> pageIds = new ArrayList<>();
 
     /**
-     * Empty default constructor
+     * Empty default constructor.
      */
     public PageListSidebarWidget() {
 
     }
 
     /**
-     * Cloning constructor
+     * Cloning constructor.
      * 
-     * @param o
+     * @param o the widget to copy from
      */
     public PageListSidebarWidget(PageListSidebarWidget o) {
         super(o);
@@ -76,9 +75,9 @@ public class PageListSidebarWidget extends CustomSidebarWidget {
     }
 
     /**
-     * set the list of ids of listed {@link CMSPage CMSPages}
+     * set the list of ids of listed {@link CMSPage CMSPages}.
      * 
-     * @param pageIds
+     * @param pageIds list of CMS page IDs to display
      */
     public void setPageIds(List<Long> pageIds) {
         this.pageIds = pageIds;

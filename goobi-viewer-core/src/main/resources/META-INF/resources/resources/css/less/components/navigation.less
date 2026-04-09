@@ -6,19 +6,25 @@
 /* BLOCK */
 .navigation {
     position: relative;
-	&__list {
-		display: flex;
-		flex-direction: column;
-		&.-level-0 {
-			flex-direction: row;
-		}
-		&.-level-1 {}
-		&.-level-2 {}
-		&.-level-3 {}
-		&.-level-4 {}
-		&.-level-5 {}
-	}
-    ul {}
+    &__list {
+        display: flex;
+        flex-direction: column;
+        &.-level-0 {
+            flex-direction: row;
+        }
+        &.-level-1 {
+        }
+        &.-level-2 {
+        }
+        &.-level-3 {
+        }
+        &.-level-4 {
+        }
+        &.-level-5 {
+        }
+    }
+    ul {
+    }
     li {
         display: block;
         position: relative;
@@ -27,30 +33,33 @@
             background-color: @lightgray;
         }
     }
-    a, button {
-	    position: relative;
+    a,
+    button {
+        position: relative;
         display: flex;
-	    align-items: center;
-	    justify-content: space-between;
-	    border: none;
-        &:hover, 
-        &:focus, 
+        align-items: center;
+        justify-content: space-between;
+        border: none;
+        &:hover,
+        &:focus,
         &:active {
             text-decoration: none;
             background-color: @lightgray;
         }
     }
     .caret {
-    	margin-left: 5px;
+        margin-left: 5px;
         color: @middlegray;
     }
-    &__user-login {}
+    &__user-login {
+    }
     /* SUB MENU */
-    &__submenu-trigger {}
+    &__submenu-trigger {
+    }
     &__submenu {
         display: none;
         position: absolute;
-        top: calc(~"100% + 1px");
+        top: calc(~'100% + 1px');
         left: 0;
         min-width: 250px;
         border: 1px solid @lightgray;
@@ -68,20 +77,21 @@
                 background-color: @middlegray;
             }
         }
-        a, button {
-        	width: 100%;
+        a,
+        button {
+            width: 100%;
         }
         &.in {
             display: block;
         }
-        &.level-2, 
-        &.level-3, 
+        &.level-2,
+        &.level-3,
         &.level-4,
         &.level-5 {
             top: 0;
             left: 100%;
             &.left {
-            	left: -100%;
+                left: -100%;
             }
         }
     }
@@ -115,9 +125,9 @@
     &__megamenu-element {
         position: relative;
         ul {
-
         }
-        &.level-1 {}
+        &.level-1 {
+        }
         &.level-2 {
             margin-bottom: 15px;
         }
@@ -135,66 +145,76 @@
 
 // ADAPTIONS FOR RIGHT TO LEFT SUPPORT
 @{RTL} .navigation {
-	.caret {
-		margin-left: unset;
-		margin-right: 0.5rem;
-	}
-	 &__submenu {
-        &.level-2, 
-        &.level-3, 
+    .caret {
+        margin-left: unset;
+        margin-right: 0.5rem;
+    }
+    &__submenu {
+        &.level-2,
+        &.level-3,
         &.level-4,
         &.level-5 {
-			right: 100%;
-			left: unset;
-		}
-		&.level-1,
-        &.level-2, 
-        &.level-3, 
+            right: 100%;
+            left: unset;
+        }
+        &.level-1,
+        &.level-2,
+        &.level-3,
         &.level-4,
         &.level-5 {
-        	.caret {
-			}
-		}
-		&-trigger {}
-	 }
+            .caret {
+            }
+        }
+        &-trigger {
+        }
+    }
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {}
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
-	.navigation {
-		&__list {
-			&.-level-0 { 
-				flex-direction: column;
-			}
-			&.-level-1 {}
-			&.-level-2 {}
-			&.-level-3 {}
-			&.-level-4 {}
-			&.-level-5 {}
-		}
-	}
-	@{RTL} .navigation {
-		.caret {
-			margin-left: unset;
-			margin-right: 0.5rem;
-		}
-		 &__submenu {
-	        &.level-2, 
-	        &.level-3, 
-	        &.level-4,
-	        &.level-5 {
-				right: unset;
-			}
-			&-trigger {}
-		 }
-	}
+    .navigation {
+        &__list {
+            &.-level-0 {
+                flex-direction: column;
+            }
+            &.-level-1 {
+            }
+            &.-level-2 {
+            }
+            &.-level-3 {
+            }
+            &.-level-4 {
+            }
+            &.-level-5 {
+            }
+        }
+    }
+    @{RTL} .navigation {
+        .caret {
+            margin-left: unset;
+            margin-right: 0.5rem;
+        }
+        &__submenu {
+            &.level-2,
+            &.level-3,
+            &.level-4,
+            &.level-5 {
+                right: unset;
+            }
+            &-trigger {
+            }
+        }
+    }
 }
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+}

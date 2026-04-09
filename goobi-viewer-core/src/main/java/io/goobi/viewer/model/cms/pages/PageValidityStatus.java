@@ -22,9 +22,7 @@
 package io.goobi.viewer.model.cms.pages;
 
 /**
- * <p>
- * PageValidityStatus class.
- * </p>
+ * Enum representing the validation status of a CMS page, indicating whether the page is valid or which constraint is violated.
  *
  * @author Florian Alpers
  */
@@ -35,11 +33,9 @@ public enum PageValidityStatus {
     INVALID_INVALID_CONTENT;
 
     /**
-     * <p>
      * isValid.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this status represents a valid page (i.e. equals {@link #VALID}), false otherwise
      */
     public boolean isValid() {
         return this.equals(VALID);

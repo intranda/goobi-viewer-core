@@ -32,6 +32,11 @@ import org.quartz.JobExecutionException;
 import io.goobi.viewer.controller.mq.MessageQueueManager;
 import it.burning.cron.CronExpressionDescriptor;
 
+/**
+ * Contract for all Quartz-scheduled viewer background jobs, extending the Quartz {@link Job}
+ * interface with viewer-specific lifecycle methods such as run-state tracking, job naming,
+ * direct parameter-based execution, and cron-expression support.
+ */
 public interface IViewerJob extends Job {
 
     @Override

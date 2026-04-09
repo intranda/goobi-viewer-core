@@ -23,35 +23,33 @@ package io.goobi.viewer.model.cms.media;
 
 import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
 
+/**
+ * Extension of {@link CMSMediaHolder} for content components that manage multiple CMS media items,
+ * each addressed by a zero-based index.
+ */
 public interface CMSMediaMultiHolder extends CMSMediaHolder {
 
     /**
-     * <p>
      * setMediaItem.
-     * </p>
-     * 
+     *
      * @param index Index of the media item
      * @param item a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      */
     public void setMediaItem(int index, CMSMediaItem item);
 
     /**
-     * <p>
      * getMediaItem.
-     * </p>
      *
      * @param index Index of the media item
-     * @return a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
+     * @return the CMS media item at the given index, or null if none is set
      */
     public CMSMediaItem getMediaItem(int index);
 
     /**
-     * <p>
-     * A regular expression determining which filenames are shown in the media list and may be uploaded
-     * </p>
+     * A regular expression determining which filenames are shown in the media list and may be uploaded.
      *
      * @param index Index of the media item
-     * @return a {@link java.lang.String} object.
+     * @return the regex pattern used to filter acceptable media filenames for the item at the given index
      */
     public String getMediaFilter(int index);
 
@@ -64,22 +62,18 @@ public interface CMSMediaMultiHolder extends CMSMediaHolder {
     public String getMediaTypes(int index);
 
     /**
-     * <p>
      * hasMediaItem.
-     * </p>
      *
      * @param index Index of the media item
-     * @return a boolean.
+     * @return true if this holder has an associated CMS media item at the given index, false otherwise
      */
     public boolean hasMediaItem(int index);
 
     /**
-     * <p>
      * getMediaItemWrapper.
-     * </p>
      *
      * @param index Index of the media item
-     * @return a {@link io.goobi.viewer.model.cms.CategorizableTranslatedSelectable} object.
+     * @return the CMS media item at the given index wrapped with category and selection state information
      */
     public CategorizableTranslatedSelectable<CMSMediaItem> getMediaItemWrapper(int index);
 }

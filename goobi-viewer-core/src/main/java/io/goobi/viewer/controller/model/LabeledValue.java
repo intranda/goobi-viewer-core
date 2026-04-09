@@ -21,6 +21,10 @@
  */
 package io.goobi.viewer.controller.model;
 
+/**
+ * Simple value object pairing a string value with a display label and an optional CSS style class,
+ * typically used for select-box options or UI list entries.
+ */
 public class LabeledValue {
 
     private final String label;

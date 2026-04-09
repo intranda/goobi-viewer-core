@@ -36,25 +36,27 @@ import org.apache.logging.log4j.Logger;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
 
 /**
- * <p>
- * MetadataParameter class.
- * </p>
+ * Defines a single parameter within a metadata field configuration, specifying the Solr field and display options.
  */
 public class MetadataParameter implements Serializable {
 
     /**
-     * Needed for reading xml config
+     * Needed for reading xml config.
      */
     private static final String XML_PATH_ATTRIBUTE_CONDITION = "[@condition]";
     /**
-     * Needed for reading xml config
+     * Needed for reading xml config.
      */
     private static final String XML_PATH_ATTRIBUTE_TYPE = "[@type]";
     /**
-     * Needed for reading xml config
+     * Needed for reading xml config.
      */
     private static final String XML_PATH_ATTRIBUTE_URL = "[@url]";
 
+    /**
+     * Enumerates the display and processing types for a metadata parameter, such as plain fields,
+     * translated fields, date fields, identifier fields, norm data fields, and others.
+     */
     public enum MetadataParameterType {
 
         FIELD("field"),
@@ -131,7 +133,7 @@ public class MetadataParameter implements Serializable {
     private List<MetadataReplaceRule> replaceRules = Collections.emptyList();
     /**
      * Optional parameter which signals that the values should come from some other document, either "parent" (data comes from direct parent document)
-     * or "topStruct" (data comes from the main record document)
+     * or "topStruct" (data comes from the main record document).
      */
     private String scope = "";
 
@@ -174,11 +176,6 @@ public class MetadataParameter implements Serializable {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -204,18 +201,16 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>source</code>.
-     * </p>
      *
-     * @return the source
+     * @return the Solr field name from which this parameter's value is read
      */
     public String getSource() {
         return source;
     }
 
     /**
-     * @param source the source to set
+     * @param source the Solr field name from which this parameter's value is read
      * @return this
      */
     public MetadataParameter setSource(String source) {
@@ -223,15 +218,13 @@ public class MetadataParameter implements Serializable {
         return this;
     }
 
-    /**
-     * @return the destination
-     */
+    
     public String getDestination() {
         return destination;
     }
 
     /**
-     * @param destination the destination to set
+     * @param destination the target placeholder name in the master value template where this parameter's value is inserted
      * @return this
      */
     public MetadataParameter setDestination(String destination) {
@@ -240,22 +233,18 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>type</code>.
-     * </p>
      *
-     * @return the type
+     * @return the parameter type controlling how the value is retrieved and rendered
      */
     public MetadataParameterType getType() {
         return type;
     }
 
     /**
-     * <p>
      * Setter for the field <code>type</code>.
-     * </p>
      *
-     * @param type the type to set
+     * @param type the parameter type controlling how the value is retrieved and rendered
      * @return this
      */
     public MetadataParameter setType(MetadataParameterType type) {
@@ -264,18 +253,16 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>key</code>.
-     * </p>
      *
-     * @return the key
+     * @return the Solr field name used as the primary key for value lookup
      */
     public String getKey() {
         return key;
     }
 
     /**
-     * @param key the key to set
+     * @param key the Solr field name used as the primary key for value lookup
      * @return this
      */
     public MetadataParameter setKey(String key) {
@@ -283,15 +270,13 @@ public class MetadataParameter implements Serializable {
         return this;
     }
 
-    /**
-     * @return the altKey
-     */
+    
     public String getAltKey() {
         return altKey;
     }
 
     /**
-     * @param altKey the altKey to set
+     * @param altKey the alternative Solr field name used as a fallback when the primary key yields no value
      * @return this
      */
     public MetadataParameter setAltKey(String altKey) {
@@ -300,18 +285,16 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>masterValueFragment</code>.
-     * </p>
      *
-     * @return the masterValueFragment
+     * @return the message key referencing a fragment of the master value template for this parameter
      */
     public String getMasterValueFragment() {
         return masterValueFragment;
     }
 
     /**
-     * @param masterValueFragment the masterValueFragment to set
+     * @param masterValueFragment the message key referencing a fragment of the master value template for this parameter
      * @return this
      */
     public MetadataParameter setMasterValueFragment(String masterValueFragment) {
@@ -320,18 +303,16 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>defaultValue</code>.
-     * </p>
      *
-     * @return the defaultValue
+     * @return the fallback value used when no value is found in the index
      */
     public String getDefaultValue() {
         return defaultValue;
     }
 
     /**
-     * @param defaultValue the defaultValue to set
+     * @param defaultValue the fallback value to use when no value is found in the index
      * @return this
      */
     public MetadataParameter setDefaultValue(String defaultValue) {
@@ -340,18 +321,16 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>prefix</code>.
-     * </p>
      *
-     * @return the prefix
+     * @return the string prepended to the rendered value in the output
      */
     public String getPrefix() {
         return prefix;
     }
 
     /**
-     * @param prefix the prefix to set
+     * @param prefix the string prepended to the rendered value in the output
      * @return this
      */
     public MetadataParameter setPrefix(String prefix) {
@@ -360,18 +339,16 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>suffix</code>.
-     * </p>
      *
-     * @return the suffix
+     * @return the string appended to the rendered value in the output
      */
     public String getSuffix() {
         return suffix;
     }
 
     /**
-     * @param suffix the suffix to set
+     * @param suffix the string appended to the rendered value in the output
      * @return this
      */
     public MetadataParameter setSuffix(String suffix) {
@@ -388,15 +365,13 @@ public class MetadataParameter implements Serializable {
         return scope;
     }
 
-    /**
-     * @return the condition
-     */
+    
     public String getCondition() {
         return condition;
     }
 
     /**
-     * @param condition the condition to set
+     * @param condition the Solr-query-style condition that must be satisfied for this parameter to be rendered
      * @return this
      */
     public MetadataParameter setCondition(String condition) {
@@ -404,15 +379,13 @@ public class MetadataParameter implements Serializable {
         return this;
     }
 
-    /**
-     * @return the inputPattern
-     */
+    
     public String getInputPattern() {
         return inputPattern;
     }
 
     /**
-     * @param inputPattern the inputPattern to set
+     * @param inputPattern the regular expression pattern applied to the raw input value before transformation
      * @return this
      */
     public MetadataParameter setInputPattern(String inputPattern) {
@@ -420,15 +393,13 @@ public class MetadataParameter implements Serializable {
         return this;
     }
 
-    /**
-     * @return the outputPattern
-     */
+    
     public String getOutputPattern() {
         return outputPattern;
     }
 
     /**
-     * @param outputPattern the outputPattern to set
+     * @param outputPattern the replacement pattern applied to the value after input-pattern matching
      * @return this
      */
     public MetadataParameter setOutputPattern(String outputPattern) {
@@ -437,18 +408,16 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * <p>
      * isAddUrl.
-     * </p>
      *
-     * @return the addUrl
+     * @return true if a hyperlink URL should be generated and attached to this parameter's rendered value, false otherwise
      */
     public boolean isAddUrl() {
         return addUrl;
     }
 
     /**
-     * @param addUrl the addUrl to set
+     * @param addUrl true if a hyperlink URL should be generated and attached to this parameter's rendered value
      * @return this
      */
     public MetadataParameter setAddUrl(boolean addUrl) {
@@ -457,18 +426,16 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * <p>
      * isTopstructValueFallback.
-     * </p>
      *
-     * @return the dontUseTopstructValue
+     * @return true if the top-level structure element's value should be used as a fallback when no value is found, false otherwise
      */
     public boolean isTopstructValueFallback() {
         return topstructValueFallback;
     }
 
     /**
-     * @param topstructValueFallback the topstructValueFallback to set
+     * @param topstructValueFallback true if the top-level structure element's value should be used as a fallback when no value is found
      * @return this
      */
     public MetadataParameter setTopstructValueFallback(boolean topstructValueFallback) {
@@ -476,15 +443,13 @@ public class MetadataParameter implements Serializable {
         return this;
     }
 
-    /**
-     * @return the removeHighlighting
-     */
+    
     public boolean isRemoveHighlighting() {
         return removeHighlighting;
     }
 
     /**
-     * @param removeHighlighting the removeHighlighting to set
+     * @param removeHighlighting true if search-term highlighting markup should be stripped from the rendered value
      * @return this
      */
     public MetadataParameter setRemoveHighlighting(boolean removeHighlighting) {
@@ -493,18 +458,16 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>replaceRules</code>.
-     * </p>
      *
-     * @return the replaceRules
+     * @return the list of find-and-replace rules applied to the value during rendering
      */
     public List<MetadataReplaceRule> getReplaceRules() {
         return replaceRules;
     }
 
     /**
-     * @param replaceRules the replaceRules to set
+     * @param replaceRules the list of find-and-replace rules applied to the value during rendering
      * @return {@link MetadataParameter}
      */
     public MetadataParameter setReplaceRules(List<MetadataReplaceRule> replaceRules) {
@@ -527,8 +490,8 @@ public class MetadataParameter implements Serializable {
 
     /**
      * 
-     * @param config
-     * @param topstructValueFallbackDefaultValue
+     * @param config the hierarchical configuration node to read from
+     * @param topstructValueFallbackDefaultValue whether to fall back to topstruct value as default
      * @return {@link MetadataParameter}
      */
     public static MetadataParameter createFromConfig(HierarchicalConfiguration<ImmutableNode> config, boolean topstructValueFallbackDefaultValue) {

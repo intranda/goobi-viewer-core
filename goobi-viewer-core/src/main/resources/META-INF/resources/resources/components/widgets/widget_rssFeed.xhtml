@@ -1,72 +1,86 @@
-<ui:composition 
-	xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:util="http://goobi.io/util"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
-	<composite:interface>
-		<composite:attribute name="widget"
-			type="io.goobi.viewer.model.cms.widgets.CustomSidebarWidget"
-			required="false"  />
-		<composite:attribute name="filterQuery" required="false"
-			default="#{cc.attrs.widget != null ? cc.attrs.widget.filterQuery : ''}" />
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+    <composite:interface>
+        <composite:attribute
+            name="widget"
+            type="io.goobi.viewer.model.cms.widgets.CustomSidebarWidget"
+            required="false" />
+        <composite:attribute
+            name="filterQuery"
+            required="false"
+            default="#{cc.attrs.widget != null ? cc.attrs.widget.filterQuery : ''}" />
 
-		<composite:attribute name="sortField" required="false"
-			default="#{cc.attrs.widget != null ? cc.attrs.widget.sortField : 'DATECREATED'}" />
-			
-		<composite:attribute name="descendingSorting" required="false"
-			default="#{cc.attrs.widget != null ? cc.attrs.widget.descendingSorting : true}" />
-			
-		<composite:attribute name="title" required="false"
-			default="#{cc.attrs.widget != null ? cc.attrs.widget.title.textOrDefault : msg.lastImports}" />
-	</composite:interface>
-	
-	<!-- USED IN FRONTEND -->
-	<composite:implementation>
-		<h:panelGroup
-			rendered="#{(configurationBean.displaySidebarRssFeed and cc.attrs.widget == null) or cc.attrs.widget.type == 'WIDGET_RSSFEED'}">
+        <composite:attribute
+            name="sortField"
+            required="false"
+            default="#{cc.attrs.widget != null ? cc.attrs.widget.sortField : 'DATECREATED'}" />
 
-			<div class="widget widget-rss">
-				<div class="widget__topbar widget-rss__topbar">
-					<h2 class="widget__title widget-rss__title">
-						#{cc.attrs.title}
-					</h2>
-					<div class="widget__topbar-icons-container">
-						<a 
-							class="widget-rss__rss-link"
-							href="#{navigationHelper.applicationUrl}api/v1/records/rss?query=#{cc.attrs.filterQuery}&amp;sortField=#{cc.attrs.widget.sortField}&amp;sortDescending=#{cc.attrs.widget.descendingSorting}"
-							title="#{msg.rssSubscribe}" 
-							aria-label="#{msg.rssSubscribe}"
-							target="_blank" 
-							data-toggle="tooltip">
-						    <util:icon
-								icon="rss"
-								styleClass="icon-badge icon-badge--16 icon-badge--rss icon-badge--square" />
-						</a>
-					</div>
-				</div>
-				
-				<div class="widget__body widget-rss__body">
-					<dl class="widget-rss__list">
-						<ui:repeat var="entry" value="#{rssBean.getRssFeed(5, cc.attrs.filterQuery, cc.attrs.sortField, cc.attrs.descendingSorting)}">
-							<dt class="widget-rss__entry-title">
-								<a class="widget-rss__entry-link" href="#{entry.link}" title="#{entry.title}" data-ajax="false">
-									#{fn:substring(entry.title, 0, 50)}#{fn:length(entry.title) > 50 ? '...' : ''}
-								</a>
-							</dt>
-							<dd class="widget-rss__entry-info">
-								<small>#{msg.DATECREATED}:</small> 
-								<small> 
-									<h:outputText value="#{entry.publishedDate}">
-										<f:convertDateTime name="pattern" value="#{navigationHelper.datePattern}" />
-									</h:outputText>
-								</small>
-							</dd>
-						</ui:repeat>
-					</dl>
-				</div>
-			</div>
-		</h:panelGroup>
-	</composite:implementation>
+        <composite:attribute
+            name="descendingSorting"
+            required="false"
+            default="#{cc.attrs.widget != null ? cc.attrs.widget.descendingSorting : true}" />
+
+        <composite:attribute
+            name="title"
+            required="false"
+            default="#{cc.attrs.widget != null ? cc.attrs.widget.title.textOrDefault : msg.lastImports}" />
+    </composite:interface>
+
+    <!-- USED IN FRONTEND -->
+    <composite:implementation>
+        <h:panelGroup rendered="#{(configurationBean.displaySidebarRssFeed and cc.attrs.widget == null) or cc.attrs.widget.type == 'WIDGET_RSSFEED'}">
+            <div class="widget widget-rss">
+                <div class="widget__topbar widget-rss__topbar">
+                    <h2 class="widget__title widget-rss__title">#{cc.attrs.title}</h2>
+                    <div class="widget__topbar-icons-container">
+                        <a
+                            class="widget-rss__rss-link"
+                            href="#{navigationHelper.applicationUrl}api/v1/records/rss?query=#{cc.attrs.filterQuery}&amp;sortField=#{cc.attrs.widget.sortField}&amp;sortDescending=#{cc.attrs.widget.descendingSorting}"
+                            title="#{msg.rssSubscribe}"
+                            aria-label="#{msg.rssSubscribe}"
+                            target="_blank"
+                            data-toggle="tooltip">
+                            <util:icon
+                                icon="rss"
+                                styleClass="icon-badge icon-badge--16 icon-badge--rss icon-badge--square"
+                                svgClass="widget__topbar-icon-svg widget-rss__topbar-icon-svg" />
+                        </a>
+                    </div>
+                </div>
+
+                <div class="widget__body widget-rss__body">
+                    <dl class="widget-rss__list">
+                        <ui:repeat
+                            var="entry"
+                            value="#{rssBean.getRssFeed(5, cc.attrs.filterQuery, cc.attrs.sortField, cc.attrs.descendingSorting)}">
+                            <dt class="widget-rss__entry-title">
+                                <a
+                                    class="widget-rss__entry-link"
+                                    href="#{entry.link}"
+                                    title="#{entry.title}"
+                                    data-ajax="false">
+                                    #{fn:substring(entry.title, 0, 50)}#{fn:length(entry.title) > 50 ? '...' : ''}
+                                </a>
+                            </dt>
+                            <dd class="widget-rss__entry-info">
+                                <small>#{msg.DATECREATED}:</small>
+                                <small>
+                                    <h:outputText value="#{entry.publishedDate}">
+                                        <f:convertDateTime
+                                            name="pattern"
+                                            value="#{navigationHelper.datePattern}" />
+                                    </h:outputText>
+                                </small>
+                            </dd>
+                        </ui:repeat>
+                    </dl>
+                </div>
+            </div>
+        </h:panelGroup>
+    </composite:implementation>
 </ui:composition>

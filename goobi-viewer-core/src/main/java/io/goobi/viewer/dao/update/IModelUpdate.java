@@ -28,19 +28,17 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
 /**
- * Interface for classes which manipulate the database to conform to the setup required by the viewer
+ * Interface for classes which manipulate the database to conform to the setup required by the viewer.
  *
- * @author florian
+ * @author Florian Alpers
  */
 public interface IModelUpdate {
 
     /**
-     * <p>
      * update.
-     * </p>
      *
      * @param dao a {@link io.goobi.viewer.dao.IDAO} object.
-     * @param templateManager
+     * @param templateManager CMS template manager used during update
      * @return true if rows were updated; false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.sql.SQLException if any.

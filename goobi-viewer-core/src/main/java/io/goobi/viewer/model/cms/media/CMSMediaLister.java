@@ -34,6 +34,10 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.CMSCategory;
 
+/**
+ * Provides filtered and sorted lists of {@link CMSMediaItem} objects from the DAO, supporting
+ * tag-based filtering, a priority slot mechanism, and optional random ordering.
+ */
 public class CMSMediaLister {
 
     private final IDAO dao;

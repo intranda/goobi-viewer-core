@@ -51,9 +51,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
- * <p>
- * DFGViewerImage class.
- * </p>
+ * Servlet that delivers images in the format expected by the DFG Viewer image protocol.
  *
  * @author Florian Alpers
  */
@@ -61,23 +59,16 @@ public class DFGViewerImage extends HttpServlet implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(DFGViewerImage.class);
 
-    /**
-     *
-     */
+    
     private static final long serialVersionUID = 683037127834153441L;
 
     /**
-     * <p>
-     * Constructor for DFGViewerImage.
-     * </p>
+     * Creates a new DFGViewerImage instance.
      */
     public DFGViewerImage() {
         super();
     }
 
-    /* (non-Javadoc)
-     * @see jakarta.servlet.http.HttpServlet#doGet(jakarta.servlet.http.HttpServletRequest, jakarta.servlet.http.HttpServletResponse)
-     */
     /** {@inheritDoc} */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -121,12 +112,10 @@ public class DFGViewerImage extends HttpServlet implements Serializable {
     }
 
     /**
-     * <p>
      * parseScale.
-     * </p>
      *
-     * @param widthString a {@link java.lang.String} object
-     * @return a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object
+     * @param widthString numeric width or scale method name
+     * @return the Scale instance parsed from the given width or method name
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotImplementedException if any.
      */

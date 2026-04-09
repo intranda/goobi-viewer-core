@@ -1,15 +1,31 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<cms_page_template id="template_simple" version="2015-01-14">
+<cms_page_template
+    id="template_simple"
+    version="2015-01-14">
     <name>cms__template_05__title</name>
     <description>cms__template_05__description</description>
     <icon>cms_template_05_simple.png</icon>
     <html>cms_template_05_simple.xhtml</html>
-    <options>    
+    <options>
         <topBarSlider>true</topBarSlider>
     </options>
     <content>
-        <item id="text01" order="1" label="cms__template_05__text_above_image__label" inlinehelp="cms__template_05__text_above_image__help" type="HTML" />
-        <item id="image01" order="2" label="admin__cms_media_file" type="MEDIA" inlinehelp="cms__template_05__image__help"/>
-        <item id="text02" order="3" label="cms__template_05__text_below_image__label" type="HTML" />
+        <item
+            id="text01"
+            order="1"
+            label="cms__template_05__text_above_image__label"
+            inlinehelp="cms__template_05__text_above_image__help"
+            type="HTML" />
+        <item
+            id="image01"
+            order="2"
+            label="admin__cms_media_file"
+            type="MEDIA"
+            inlinehelp="cms__template_05__image__help" />
+        <item
+            id="text02"
+            order="3"
+            label="cms__template_05__text_below_image__label"
+            type="HTML" />
     </content>
 </cms_page_template>

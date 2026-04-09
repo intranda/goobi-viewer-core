@@ -36,9 +36,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 
 /**
- * <p>
- * Abstract Translation class.
- * </p>
+ * Represents a single translated value for a specific language tag.
  */
 @MappedSuperclass
 public class Translation {
@@ -63,20 +61,16 @@ public class Translation {
     protected String translationValue;
 
     /**
-     * <p>
-     * Constructor for Translation.
-     * </p>
+     * Creates a new Translation instance.
      */
     public Translation() {
     }
 
     /**
-     * <p>
-     * Constructor for Translation.
-     * </p>
+     * Creates a new Translation instance.
      *
-     * @param language a {@link java.lang.String} object.
-     * @param translationValue a {@link java.lang.String} object.
+     * @param language ISO language code for this translation
+     * @param translationValue translated text value
      */
     public Translation(String language, String translationValue) {
         this.language = language;
@@ -84,13 +78,11 @@ public class Translation {
     }
 
     /**
-     * <p>
-     * Constructor for Translation.
-     * </p>
+     * Creates a new Translation instance.
      *
-     * @param language a {@link java.lang.String} object.
-     * @param tag a {@link java.lang.String} object.
-     * @param translationValue a {@link java.lang.String} object.
+     * @param language ISO language code for this translation
+     * @param tag category or purpose label for this translation
+     * @param translationValue translated text value
      */
     public Translation(String language, String tag, String translationValue) {
         this.language = language;
@@ -99,9 +91,9 @@ public class Translation {
     }
 
     /**
-     * Clone constructor
+     * Clones constructor.
      * 
-     * @param t
+     * @param t translation to copy
      */
     public Translation(Translation t) {
         this.id = t.id;
@@ -111,29 +103,25 @@ public class Translation {
     }
 
     /**
-     * <p>
      * getTranslation.
-     * </p>
      *
-     * @param tag a {@link java.lang.String} object.
-     * @param lang a {@link java.lang.String} object.
-     * @param translations a {@link java.util.List} object.
-     * @return a {@link java.lang.String} object.
+     * @param tag category label to match against translation entries
+     * @param lang ISO language code of the desired translation
+     * @param translations list of translations to search in
+     * @return the translation value for the given language and tag, or null if not found
      */
     public static String getTranslation(List<? extends Translation> translations, String lang, String tag) {
         return getTranslation(translations, lang, tag, false);
     }
 
     /**
-     * <p>
      * getTranslation.
-     * </p>
      *
-     * @param tag a {@link java.lang.String} object.
-     * @param lang a {@link java.lang.String} object.
+     * @param tag category label to match against translation entries
+     * @param lang ISO language code of the desired translation
      * @param useFallback if no translation for lang exists, use the application default language
-     * @param translations a {@link java.util.List} object.
-     * @return a {@link java.lang.String} object.
+     * @param translations list of translations to search in
+     * @return the translation value for the given language and tag, falling back to default language if requested and necessary
      */
     public static String getTranslation(List<? extends Translation> translations, String lang, String tag, boolean useFallback) {
         if (tag == null || lang == null) {
@@ -174,96 +162,77 @@ public class Translation {
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
-     * @return the id
+     * @return the database identifier of this translation entry
      */
     public Long getId() {
         return id;
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
-     * @param id the id to set
+     * @param id the database identifier to set
      */
     public void setId(Long id) {
         this.id = id;
     }
 
     /**
-     * <p>
      * Getter for the field <code>tag</code>.
-     * </p>
      *
-     * @return the tag
+     * @return the message key or category tag identifying this translation
      */
     public String getTag() {
         return tag;
     }
 
     /**
-     * <p>
      * Setter for the field <code>tag</code>.
-     * </p>
      *
-     * @param tag the tag to set
+     * @param tag the message key or category tag identifying this translation to set
      */
     public void setTag(String tag) {
         this.tag = tag;
     }
 
     /**
-     * <p>
      * Getter for the field <code>language</code>.
-     * </p>
      *
-     * @return the language
+     * @return the ISO 639-1 language code for this translation
      */
     public String getLanguage() {
         return language;
     }
 
     /**
-     * <p>
      * Setter for the field <code>language</code>.
-     * </p>
      *
-     * @param language the language to set
+     * @param language the ISO 639-1 language code for this translation to set
      */
     public void setLanguage(String language) {
         this.language = language;
     }
 
     /**
-     * <p>
      * Getter for the field <code>translationValue</code>.
-     * </p>
      *
-     * @return the translationValue
+     * @return the translated text value
      */
     public String getTranslationValue() {
         return translationValue;
     }
 
     /**
-     * <p>
      * Setter for the field <code>translationValue</code>.
-     * </p>
      *
-     * @param translationValue the translationValue to set
+     * @param translationValue the translated text value to set
      */
     public void setTranslationValue(String translationValue) {
         this.translationValue = translationValue;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     /** {@inheritDoc} */
     @Override
     public String toString() {
@@ -271,7 +240,9 @@ public class Translation {
     }
 
     /**
-     * Hash code is build from hashCode of language
+     * Hash code is build from hashCode of language.
+     *
+     * @return the hash code value for this object
      */
     @Override
     public int hashCode() {
@@ -282,7 +253,10 @@ public class Translation {
     }
 
     /**
-     * Two Translations are equal if they are of the same class and both tag and language match
+     * Two Translations are equal if they are of the same class and both tag and language match.
+     *
+     * @param obj the object to compare to this translation
+     * @return true if the given object is equal to this instance, false otherwise
      */
     @Override
     public boolean equals(Object obj) {

@@ -43,11 +43,10 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.ViewManager;
-import io.goobi.viewer.solr.SolrConstants;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * A class containing all conditions to possibly check for when deciding whether to display a page element for a record page
+ * A class containing all conditions to possibly check for when deciding whether to display a page element for a record page.
  */
 public class VisibilityCondition {
 
@@ -158,7 +157,7 @@ public class VisibilityCondition {
         Collection<FileType> existingFileTypes = properties.getFileTypesForRecord(viewManager, true);
 
         PageType usePageType = pageType != null ? pageType : PageType.other;
-        MimeType baseMimeType = new MimeType(viewManager.getTopStructElement().getMetadataValue(SolrConstants.MIMETYPE));
+        MimeType baseMimeType = viewManager.getMediaType();
         return checkAccess(viewManager, request, properties)
                 && this.fileTypes.matches(existingFileTypes)
                 && this.sourceFormat.matches(Optional.ofNullable(viewManager)

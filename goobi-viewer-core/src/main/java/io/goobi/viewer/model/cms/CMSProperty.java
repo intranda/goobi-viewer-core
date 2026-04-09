@@ -31,9 +31,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 /**
- * <p>
- * CMSProperty class.
- * </p>
+ * Represents a generic key-value property that can be attached to CMS pages for custom metadata.
  *
  * @author Florian Alpers
  */
@@ -44,10 +42,10 @@ public class CMSProperty implements Serializable {
     private static final long serialVersionUID = -2227539151219620322L;
 
     public static final String KEY_ACCESS_CONDITION = "ACCESSCONDITION";
-    /** Constant <code>KEY_EMPTY="EMPTY"</code> */
+    /** Constant <code>KEY_EMPTY="EMPTY"</code>. */
     public static final String KEY_EMPTY = "EMPTY";
     /**
-     * Boolean specifying that a page list should separate child pages by tag and prepend each group with a header
+     * Boolean specifying that a page list should separate child pages by tag and prepend each group with a header.
      */
     //    public static final String KEY_DISPLAY_CHILD_TAGS_AS_HEADERS = "DISPLAY_CHILD_TAGS_AS_HEADERS";
 
@@ -68,19 +66,15 @@ public class CMSProperty implements Serializable {
     //    private CMSPage owner;
 
     /**
-     * <p>
-     * Constructor for CMSProperty.
-     * </p>
+     * Creates a new CMSProperty instance.
      */
     public CMSProperty() {
     }
 
     /**
-     * <p>
-     * Constructor for CMSProperty.
-     * </p>
+     * Creates a new CMSProperty instance.
      *
-     * @param key a {@link java.lang.String} object.
+     * @param key property key name
      */
     public CMSProperty(String key) {
         this.key = key;
@@ -89,8 +83,8 @@ public class CMSProperty implements Serializable {
     /**
      * Key+value constructor.
      * 
-     * @param key
-     * @param value
+     * @param key property key name
+     * @param value property value
      */
     public CMSProperty(String key, String value) {
         this.key = key;
@@ -98,9 +92,9 @@ public class CMSProperty implements Serializable {
     }
 
     /**
-     * Creates a clone of the given property
+     * Creates a clone of the given property.
      *
-     * @param original a {@link io.goobi.viewer.model.cms.CMSProperty} object.
+     * @param original property to copy key and value from
      */
     public CMSProperty(CMSProperty original) {
         if (original.id != null) {
@@ -112,74 +106,59 @@ public class CMSProperty implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
-     * @return the id
+     * @return the database primary key of this property
      */
     public Long getId() {
         return id;
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
-     * @param id the id to set
+     * @param id the database ID to set
      */
     public void setId(Long id) {
         this.id = id;
     }
 
     /**
-     * <p>
      * Getter for the field <code>key</code>.
-     * </p>
      *
-     * @return the key
+     * @return the property key used to look up this CMS property
      */
     public String getKey() {
         return key;
     }
 
     /**
-     * <p>
      * Setter for the field <code>key</code>.
-     * </p>
      *
-     * @param key the key to set
+     * @param key the property key used to look up this CMS property
      */
     public void setKey(String key) {
         this.key = key;
     }
 
     /**
-     * <p>
      * Getter for the field <code>value</code>.
-     * </p>
      *
-     * @return the value
+     * @return the string value stored for this CMS property
      */
     public String getValue() {
         return value;
     }
 
     /**
-     * <p>
      * Setter for the field <code>value</code>.
-     * </p>
      *
-     * @param value the value to set
+     * @param value the string value stored for this CMS property
      */
     public void setValue(String value) {
         this.value = value;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     /** {@inheritDoc} */
     @Override
     public String toString() {
@@ -187,22 +166,18 @@ public class CMSProperty implements Serializable {
     }
 
     /**
-     * <p>
      * getBooleanValue.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the string value of this property parses to {@code true}, false otherwise
      */
     public boolean getBooleanValue() {
         return Boolean.parseBoolean(value);
     }
 
     /**
-     * <p>
      * getLongValue.
-     * </p>
      *
-     * @return a {@link java.lang.Long} object.
+     * @return the value of this property parsed as a Long, or null if the value is blank or not a valid number
      */
     public Long getLongValue() {
         try {
@@ -213,11 +188,9 @@ public class CMSProperty implements Serializable {
     }
 
     /**
-     * <p>
      * getDoubleValue.
-     * </p>
      *
-     * @return a {@link java.lang.Double} object.
+     * @return the value of this property parsed as a Double, or null if the value is blank or not a valid number
      */
     public Double getDoubleValue() {
         try {

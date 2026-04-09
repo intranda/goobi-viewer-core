@@ -22,9 +22,7 @@
 package io.goobi.viewer.servlets.oembed;
 
 /**
- * <p>
- * Abstract OEmbedResponse class.
- * </p>
+ * Base class for oEmbed response objects, containing the common fields defined by the oEmbed specification.
  */
 public abstract class OEmbedResponse {
 
@@ -48,286 +46,234 @@ public abstract class OEmbedResponse {
     protected Integer thumbnailHeight;
 
     /**
-     * <p>
      * Getter for the field <code>version</code>.
-     * </p>
      *
-     * @return the version
+     * @return the oEmbed spec version string (e.g. "1.0")
      */
     public String getVersion() {
         return version;
     }
 
     /**
-     * <p>
      * Setter for the field <code>version</code>.
-     * </p>
      *
-     * @param version the version to set
+     * @param version the oEmbed spec version string (e.g. "1.0")
      */
     public void setVersion(String version) {
         this.version = version;
     }
 
     /**
-     * <p>
      * Getter for the field <code>type</code>.
-     * </p>
      *
-     * @return the type
+     * @return the oEmbed response type (e.g. "photo", "rich", "video", "link")
      */
     public String getType() {
         return type;
     }
 
     /**
-     * <p>
      * Setter for the field <code>type</code>.
-     * </p>
      *
-     * @param type the type to set
+     * @param type the oEmbed response type (e.g. "photo", "rich", "video", "link")
      */
     public void setType(String type) {
         this.type = type;
     }
 
     /**
-     * <p>
      * Getter for the field <code>width</code>.
-     * </p>
      *
-     * @return the width
+     * @return the width in pixels of the embedded content
      */
     public Integer getWidth() {
         return width;
     }
 
     /**
-     * <p>
      * Setter for the field <code>width</code>.
-     * </p>
      *
-     * @param width the width to set
+     * @param width the width in pixels of the embedded content
      */
     public void setWidth(Integer width) {
         this.width = width;
     }
 
     /**
-     * <p>
      * Getter for the field <code>height</code>.
-     * </p>
      *
-     * @return the height
+     * @return the height in pixels of the embedded content
      */
     public Integer getHeight() {
         return height;
     }
 
     /**
-     * <p>
      * Setter for the field <code>height</code>.
-     * </p>
      *
-     * @param height the height to set
+     * @param height the height in pixels of the embedded content
      */
     public void setHeight(Integer height) {
         this.height = height;
     }
 
     /**
-     * <p>
      * Getter for the field <code>title</code>.
-     * </p>
      *
-     * @return the title
+     * @return the title of the embedded resource
      */
     public String getTitle() {
         return title;
     }
 
     /**
-     * <p>
      * Setter for the field <code>title</code>.
-     * </p>
      *
-     * @param title the title to set
+     * @param title the title of the embedded resource
      */
     public void setTitle(String title) {
         this.title = title;
     }
 
     /**
-     * <p>
      * Getter for the field <code>authorName</code>.
-     * </p>
      *
-     * @return the authorName
+     * @return the name of the author or creator of the embedded resource
      */
     public String getAuthorName() {
         return authorName;
     }
 
     /**
-     * <p>
      * Setter for the field <code>authorName</code>.
-     * </p>
      *
-     * @param authorName the authorName to set
+     * @param authorName the name of the author or creator of the embedded resource
      */
     public void setAuthorName(String authorName) {
         this.authorName = authorName;
     }
 
     /**
-     * <p>
      * Getter for the field <code>authorUrl</code>.
-     * </p>
      *
-     * @return the authorUrl
+     * @return the URL of the author's profile or homepage
      */
     public String getAuthorUrl() {
         return authorUrl;
     }
 
     /**
-     * <p>
      * Setter for the field <code>authorUrl</code>.
-     * </p>
      *
-     * @param authorUrl the authorUrl to set
+     * @param authorUrl the URL of the author's profile or homepage
      */
     public void setAuthorUrl(String authorUrl) {
         this.authorUrl = authorUrl;
     }
 
     /**
-     * <p>
      * Getter for the field <code>providerName</code>.
-     * </p>
      *
-     * @return the providerName
+     * @return the name of the oEmbed content provider
      */
     public String getProviderName() {
         return providerName;
     }
 
     /**
-     * <p>
      * Setter for the field <code>providerName</code>.
-     * </p>
      *
-     * @param providerName the providerName to set
+     * @param providerName the name of the oEmbed content provider
      */
     public void setProviderName(String providerName) {
         this.providerName = providerName;
     }
 
     /**
-     * <p>
      * Getter for the field <code>providerUrl</code>.
-     * </p>
      *
-     * @return the providerUrl
+     * @return the homepage URL of the oEmbed content provider
      */
     public String getProviderUrl() {
         return providerUrl;
     }
 
     /**
-     * <p>
      * Setter for the field <code>providerUrl</code>.
-     * </p>
      *
-     * @param providerUrl the providerUrl to set
+     * @param providerUrl the homepage URL of the oEmbed content provider
      */
     public void setProviderUrl(String providerUrl) {
         this.providerUrl = providerUrl;
     }
 
     /**
-     * <p>
      * Getter for the field <code>cacheAge</code>.
-     * </p>
      *
-     * @return the cacheAge
+     * @return the suggested cache lifetime of this response in seconds
      */
     public Integer getCacheAge() {
         return cacheAge;
     }
 
     /**
-     * <p>
      * Setter for the field <code>cacheAge</code>.
-     * </p>
      *
-     * @param cacheAge the cacheAge to set
+     * @param cacheAge the suggested cache lifetime of this response in seconds
      */
     public void setCacheAge(Integer cacheAge) {
         this.cacheAge = cacheAge;
     }
 
     /**
-     * <p>
      * Getter for the field <code>thumbnailUrl</code>.
-     * </p>
      *
-     * @return the thumbnailUrl
+     * @return the URL of the thumbnail image for the embedded resource
      */
     public String getThumbnailUrl() {
         return thumbnailUrl;
     }
 
     /**
-     * <p>
      * Setter for the field <code>thumbnailUrl</code>.
-     * </p>
      *
-     * @param thumbnailUrl the thumbnailUrl to set
+     * @param thumbnailUrl the URL of the thumbnail image for the embedded resource
      */
     public void setThumbnailUrl(String thumbnailUrl) {
         this.thumbnailUrl = thumbnailUrl;
     }
 
     /**
-     * <p>
      * Getter for the field <code>thumbnailWidth</code>.
-     * </p>
      *
-     * @return the thumbnailWidth
+     * @return the width in pixels of the thumbnail image
      */
     public Integer getThumbnailWidth() {
         return thumbnailWidth;
     }
 
     /**
-     * <p>
      * Setter for the field <code>thumbnailWidth</code>.
-     * </p>
      *
-     * @param thumbnailWidth the thumbnailWidth to set
+     * @param thumbnailWidth the width in pixels of the thumbnail image
      */
     public void setThumbnailWidth(Integer thumbnailWidth) {
         this.thumbnailWidth = thumbnailWidth;
     }
 
     /**
-     * <p>
      * Getter for the field <code>thumbnailHeight</code>.
-     * </p>
      *
-     * @return the thumbnailHeight
+     * @return the height in pixels of the thumbnail image
      */
     public Integer getThumbnailHeight() {
         return thumbnailHeight;
     }
 
     /**
-     * <p>
      * Setter for the field <code>thumbnailHeight</code>.
-     * </p>
      *
-     * @param thumbnailHeight the thumbnailHeight to set
+     * @param thumbnailHeight the height in pixels of the thumbnail image
      */
     public void setThumbnailHeight(Integer thumbnailHeight) {
         this.thumbnailHeight = thumbnailHeight;

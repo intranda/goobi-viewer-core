@@ -45,9 +45,7 @@ import io.goobi.viewer.model.security.authentication.model.VuAuthenticationRespo
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * <p>
- * VuFindProvider class.
- * </p>
+ * Authentication provider that validates user credentials against a VuFind instance.
  *
  * @author Florian Alpers
  */
@@ -59,32 +57,24 @@ public class VuFindProvider extends HttpAuthenticationProvider {
     private VuAuthenticationResponse authenticationResponse;
 
     /**
-     * <p>
-     * Constructor for VuFindProvider.
-     * </p>
+     * Creates a new VuFindProvider instance.
      *
-     * @param name a {@link java.lang.String} object.
-     * @param url a {@link java.lang.String} object.
-     * @param image a {@link java.lang.String} object.
-     * @param label a {@link java.lang.String} object.
-     * @param timeoutMillis a long.
+     * @param name internal provider identifier
+     * @param url base URL of the VuFind authentication endpoint
+     * @param image path to the provider logo image
+     * @param label human-readable provider name shown in the UI
+     * @param timeoutMillis HTTP request timeout in milliseconds
      */
     public VuFindProvider(String name, String label, String url, String image, long timeoutMillis) {
         super(name, label, TYPE_USER_PASSWORD, url, image, timeoutMillis);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#logout()
-     */
     /** {@inheritDoc} */
     @Override
     public void logout() throws AuthenticationProviderException {
         //noop
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#login(java.lang.String, java.lang.String)
-     */
     /** {@inheritDoc} */
     @Override
     public CompletableFuture<LoginResult> login(String loginName, String password) throws AuthenticationProviderException {
@@ -116,7 +106,7 @@ public class VuFindProvider extends HttpAuthenticationProvider {
     }
 
     /**
-     * @param request
+     * @param request authentication request containing username and password
      * @return Optional<User>
      * @throws AuthenticationProviderException
      */
@@ -188,27 +178,18 @@ public class VuFindProvider extends HttpAuthenticationProvider {
         return Optional.ofNullable(user);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsPasswordChange()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean allowsPasswordChange() {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsNicknameChange()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean allowsNicknameChange() {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsEmailChange()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean allowsEmailChange() {

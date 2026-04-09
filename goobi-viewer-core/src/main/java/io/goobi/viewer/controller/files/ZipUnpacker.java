@@ -36,6 +36,11 @@ import org.apache.logging.log4j.Logger;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.exceptions.ArchiveSizeExceededException;
 
+/**
+ * Extracts ZIP archives to a target directory while enforcing configurable size limits per entry
+ * and for the total unpacked archive. Guards against zip-bomb attacks by checking compression
+ * ratios during extraction.
+ */
 public class ZipUnpacker {
 
     private static final long DEFAULT_MAX_ARCHIVE_SIZE = 10_000_000_000L; //10GB

@@ -7,18 +7,25 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
->
-    <ui:param name="hideOwned" value="#{hideOwned != null ? hideOwned : false}"></ui:param>
-    <ui:param name="userList" value="#{userList != null ? userList : false}"></ui:param>
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <ui:param
+        name="hideOwned"
+        value="#{hideOwned != null ? hideOwned : false}" />
+    <ui:param
+        name="userList"
+        value="#{userList != null ? userList : false}" />
     <ui:param
         name="bookmarkLists"
-        value="#{userList ? bookmarkBean.getBookmarkListsForUser(userBean.user) : source }"
-    ></ui:param>
+        value="#{userList ? bookmarkBean.getBookmarkListsForUser(userBean.user) : source }" />
 
     <ui:fragment rendered="#{bookmarkLists != null}">
-        <ui:repeat value="#{bookmarkLists}" var="bookmarkList" varStatus="status">
-            <ui:param name="owned" value="#{bookmarkList.isOwnedBy(userBean.user)}"></ui:param>
+        <ui:repeat
+            value="#{bookmarkLists}"
+            var="bookmarkList"
+            varStatus="status">
+            <ui:param
+                name="owned"
+                value="#{bookmarkList.isOwnedBy(userBean.user)}" />
 
             <ui:fragment rendered="#{!(hideOwned and owned)}">
                 <div class="col-12 user-bookmark__panel">
@@ -26,53 +33,44 @@
                         <div class="col-8 col-sm-9">
                             <h2>
                                 <ui:fragment rendered="#{userList}">
-                                    <a
-                                        href="#{request.contextPath}/user/bookmarks/show/#{bookmarkList.id}/"
-                                    >
-                                        #{bookmarkList.name}
-                                    </a>
+                                    <a href="#{request.contextPath}/user/bookmarks/show/#{bookmarkList.id}/">#{bookmarkList.name}</a>
                                 </ui:fragment>
                                 <ui:fragment rendered="#{!userList}">
-                                    <a href="#{bookmarkBean.getShareLink(bookmarkList)}">
-                                        #{bookmarkList.name}
-                                    </a>
+                                    <a href="#{bookmarkBean.getShareLink(bookmarkList)}">#{bookmarkList.name}</a>
                                 </ui:fragment>
                                 <ui:fragment rendered="#{!owned}">
-                                    <small
-                                        >(#{bookmarkList.items.size()} #{bookmarkList.items.size()
-                                        == 1 ? msg.bookmarkList_object : msg.bookmarkList_objects},
+                                    <small>
+                                        (#{bookmarkList.items.size()} #{bookmarkList.items.size() == 1 ?
+                                        msg.bookmarkList_object : msg.bookmarkList_objects},
                                         #{navigationHelper.getTranslationWithParams(msg.bookmarks__shared_by,
-                                        bookmarkList.owner.displayName)})</small
-                                    >
+                                        bookmarkList.owner.displayName)})
+                                    </small>
                                 </ui:fragment>
                                 <ui:fragment rendered="#{owned}">
-                                    <small
-                                        >(#{bookmarkList.items.size()} #{bookmarkList.items.size()
-                                        == 1 ? msg.bookmarkList_object :
-                                        msg.bookmarkList_objects})</small
-                                    >
+                                    <small>
+                                        (#{bookmarkList.items.size()} #{bookmarkList.items.size() == 1 ?
+                                        msg.bookmarkList_object : msg.bookmarkList_objects})
+                                    </small>
                                 </ui:fragment>
                             </h2>
                         </div>
                         <div class="col-4 col-sm-3 user-bookmark__panel-action text-right">
-                            <h:panelGroup rendered="#{userList}" id="isPublicMarker">
+                            <h:panelGroup
+                                rendered="#{userList}"
+                                id="isPublicMarker">
                                 <ui:fragment rendered="#{bookmarkList.isPublic}">
                                     <span
                                         title="#{msg.bookmarkList_public}"
                                         data-toggle="tooltip"
-                                        data-placement="bottom"
-                                    >
+                                        data-placement="bottom">
                                         <util:icon icon="lock-open-2" />
                                     </span>
                                 </ui:fragment>
-                                <ui:fragment
-                                    rendered="#{!bookmarkList.isPublic and bookmarkList.hasShareKey()}"
-                                >
+                                <ui:fragment rendered="#{!bookmarkList.isPublic and bookmarkList.hasShareKey()}">
                                     <span
                                         title="#{msg.bookmarkList_shared}"
                                         data-toggle="tooltip"
-                                        data-placement="bottom"
-                                    >
+                                        data-placement="bottom">
                                         <util:icon icon="share" />
                                     </span>
                                 </ui:fragment>
@@ -91,44 +89,36 @@
 
                     <div class="col-12 col-sm-12">
                         <div class="user-bookmark__items-image-preview">
-                            <ui:repeat value="#{bookmarkList.items}" var="item" varStatus="status">
+                            <ui:repeat
+                                value="#{bookmarkList.items}"
+                                var="item"
+                                varStatus="status">
                                 <ui:fragment rendered="#{item.hasImages}">
                                     <div class="user-bookmark__single-image-container">
                                         <div
                                             class="user-bookmark__single-image"
-                                            style="
-                                                background-image: url('#{item.getRepresentativeImageUrl(240,400)}');
-                                            "
-                                        >
+                                            style="background-image: url('#{item.getRepresentativeImageUrl(240,400)}')">
                                             <!--  IMAGE -->
                                             <a
                                                 href="#{request.contextPath}#{item.url}"
                                                 title="#{item.name}"
                                                 data-toggle="tooltip"
                                                 data-placement="bottom"
-                                                aria-label="#{item.name}"
-                                            >
-                                            </a>
+                                                aria-label="#{item.name}" />
                                         </div>
                                     </div>
                                 </ui:fragment>
                             </ui:repeat>
                             <ui:fragment
-                                rendered="#{bookmarkList.numItemsWithoutImages() gt 0 and bookmarkList.numItemsWithoutImages() lt bookmarkList.items.size()}"
-                            >
+                                rendered="#{bookmarkList.numItemsWithoutImages() gt 0 and bookmarkList.numItemsWithoutImages() lt bookmarkList.items.size()}">
                                 <ui:fragment rendered="#{userList}">
                                     <div class="user-bookmark__link-more-items">
-                                        <a
-                                            href="#{request.contextPath}/user/bookmarks/show/#{bookmarkList.id}/"
-                                        >
+                                        <a href="#{request.contextPath}/user/bookmarks/show/#{bookmarkList.id}/">
                                             <span>
                                                 <h:outputFormat
                                                     value="#{bookmarkList.numItemsWithoutImages() gt 1 ? msg.bookmarkList__further_items : msg.bookmarkList__further_item}"
-                                                    escape="false"
-                                                >
-                                                    <f:param
-                                                        value="#{bookmarkList.numItemsWithoutImages()}"
-                                                    />
+                                                    escape="false">
+                                                    <f:param value="#{bookmarkList.numItemsWithoutImages()}" />
                                                 </h:outputFormat>
                                             </span>
                                         </a>
@@ -140,11 +130,8 @@
                                             <span>
                                                 <h:outputFormat
                                                     value="#{bookmarkList.numItemsWithoutImages() gt 1 ? msg.bookmarkList__further_items : msg.bookmarkList__further_item}"
-                                                    escape="false"
-                                                >
-                                                    <f:param
-                                                        value="#{bookmarkList.numItemsWithoutImages()}"
-                                                    />
+                                                    escape="false">
+                                                    <f:param value="#{bookmarkList.numItemsWithoutImages()}" />
                                                 </h:outputFormat>
                                             </span>
                                         </a>
@@ -159,9 +146,7 @@
                         <!-- ACTION -->
                         <div class="user-bookmark__panel-action text-center">
                             <ui:fragment rendered="#{userList}">
-                                <ui:fragment
-                                    rendered="#{bookmarkList.items.size() gt 0 and bookmarkList.numItemsWithoutImages() lt bookmarkList.items.size()}"
-                                >
+                                <ui:fragment rendered="#{bookmarkList.items.size() gt 0 and bookmarkList.numItemsWithoutImages() lt bookmarkList.items.size()}">
                                     <a
                                         data-toggle="tooltip"
                                         title="#{msg.bookmarkList_openMirador}"
@@ -169,12 +154,10 @@
                                         class="view-mirador__link"
                                         target="_blank"
                                         rel="noopener"
-                                        aria-label="#{bookmarkList.name}: #{msg.viewMiradorComparison}"
-                                    >
+                                        aria-label="#{bookmarkList.name}: #{msg.viewMiradorComparison}">
                                         <util:icon-text
                                             icon="grid-dots"
-                                            text="#{msg.viewMiradorComparison}"
-                                        />
+                                            text="#{msg.viewMiradorComparison}" />
                                     </a>
                                 </ui:fragment>
 
@@ -182,9 +165,10 @@
                                     data-toggle="tooltip"
                                     title="#{msg.action__search_in_bookmarks__description}"
                                     href="#{request.contextPath}/user/bookmarks/search/#{bookmarkList.escapedName}/"
-                                    aria-label="#{bookmarkList.name}: #{msg.search}"
-                                >
-                                    <util:icon-text icon="search" text="#{msg.search}" />
+                                    aria-label="#{bookmarkList.name}: #{msg.search}">
+                                    <util:icon-text
+                                        icon="search"
+                                        text="#{msg.search}" />
                                 </a>
 
                                 <button
@@ -193,106 +177,90 @@
                                     data-popover-placement="bottom"
                                     data-popover-title=""
                                     data-popover-dismiss="click-outside"
-                                    class="share-bookmarkList"
-                                >
-                                    <util:icon-text icon="share" text="#{msg.action__share}" />
+                                    class="share-bookmarkList">
+                                    <util:icon-text
+                                        icon="share"
+                                        text="#{msg.action__share}" />
                                 </button>
 
-                                <div id="sharePopover_#{status.index}" class="viewerPopover user-bookmark__panel-share-popover">
+                                <div
+                                    id="sharePopover_#{status.index}"
+                                    class="viewerPopover user-bookmark__panel-share-popover">
                                     <h:panelGroup id="editBookmarkListPublicWrapper">
                                         <ui:fragment rendered="#{!bookmarkList.isPublic}">
-                                            <h:commandLink
-                                                action="#{bookmarkBean.setPublic(bookmarkList, true)}"
-                                            >
+                                            <h:commandLink action="#{bookmarkBean.setPublic(bookmarkList, true)}">
                                                 <util:icon-text
                                                     icon="square"
-                                                    text="#{msg.option__share_bookmarklist}"
-                                                />
+                                                    text="#{msg.option__share_bookmarklist}" />
                                                 <f:ajax
                                                     execute="@this"
-                                                    render="editBookmarkListPublicWrapper isPublicMarker"
-                                                ></f:ajax>
+                                                    render="editBookmarkListPublicWrapper isPublicMarker" />
                                             </h:commandLink>
                                         </ui:fragment>
                                         <ui:fragment rendered="#{bookmarkList.isPublic}">
-                                            <h:commandLink
-                                                action="#{bookmarkBean.setPublic(bookmarkList, false)}"
-                                            >
+                                            <h:commandLink action="#{bookmarkBean.setPublic(bookmarkList, false)}">
                                                 <util:icon-text
                                                     icon="checkbox"
-                                                    text="#{msg.option__share_bookmarklist}"
-                                                />
+                                                    text="#{msg.option__share_bookmarklist}" />
                                                 <f:ajax
                                                     execute="@this"
-                                                    render="editBookmarkListPublicWrapper isPublicMarker"
-                                                ></f:ajax>
+                                                    render="editBookmarkListPublicWrapper isPublicMarker" />
                                             </h:commandLink>
                                         </ui:fragment>
 
                                         <ui:fragment rendered="#{!bookmarkList.hasShareKey()}">
-                                            <h:commandLink
-                                                action="#{bookmarkBean.getShareLink(bookmarkList)}"
-                                            >
+                                            <h:commandLink action="#{bookmarkBean.getShareLink(bookmarkList)}">
                                                 <util:icon-text
                                                     icon="share"
-                                                    text="#{msg.action__create_bookmarklist_sharelink}"
-                                                />
+                                                    text="#{msg.action__create_bookmarklist_sharelink}" />
                                                 <f:ajax
                                                     execute="@this"
-                                                    render="editBookmarkListPublicWrapper isPublicMarker"
-                                                ></f:ajax>
+                                                    render="editBookmarkListPublicWrapper isPublicMarker" />
                                             </h:commandLink>
                                         </ui:fragment>
 
                                         <ui:fragment rendered="#{bookmarkList.hasShareKey()}">
-                                            <button type="button" class="btn btn--clean"
+                                            <button
+                                                type="button"
+                                                class="btn btn--clean"
                                                 title="#{msgcopyUrl}"
                                                 data-copy-value="#{bookmarkList.getIIIFCollectionURI()}"
-                                                data-copy-done-msg="#{msg.copyUrlDone}"
-                                            >
+                                                data-copy-done-msg="#{msg.copyUrlDone}">
                                                 <util:icon-text
                                                     icon="share-3"
-                                                    text="#{msg.bookmarkList_shareCollection}"
-                                                />
+                                                    text="#{msg.bookmarkList_shareCollection}" />
                                             </button>
                                             <a
                                                 title="#{msg.copyUrl}"
                                                 data-copy-value="#{bookmarkBean.getShareLink(bookmarkList)}"
-                                                data-copy-done-msg="#{msg.copyUrlDone}"
-                                            >
+                                                data-copy-done-msg="#{msg.copyUrlDone}">
                                                 <util:icon-text
                                                     icon="share"
-                                                    text="#{msg.action__copy_bookmarklist_sharelink}"
-                                                />
+                                                    text="#{msg.action__copy_bookmarklist_sharelink}" />
                                             </a>
                                             <h:commandLink
                                                 rendered="#{!bookmarkList.isPublic}"
-                                                action="#{bookmarkBean.resetShareLink(bookmarkList)}"
-                                            >
+                                                action="#{bookmarkBean.resetShareLink(bookmarkList)}">
                                                 <util:icon-text
                                                     icon="trash"
-                                                    text="#{msg.action__delete_bookmarklist_sharelink}"
-                                                />
+                                                    text="#{msg.action__delete_bookmarklist_sharelink}" />
                                                 <f:ajax
                                                     execute="@this"
-                                                    render="editBookmarkListPublicWrapper isPublicMarker"
-                                                ></f:ajax>
+                                                    render="editBookmarkListPublicWrapper isPublicMarker" />
                                             </h:commandLink>
                                         </ui:fragment>
                                     </h:panelGroup>
                                 </div>
 
-                                <h:commandLink
-                                    action="#{bookmarkBean.editBookmarkListAction(bookmarkList)}"
-                                >
-                                    <util:icon-text icon="edit" text="#{msg.edit}" />
+                                <h:commandLink action="#{bookmarkBean.editBookmarkListAction(bookmarkList)}">
+                                    <util:icon-text
+                                        icon="edit"
+                                        text="#{msg.edit}" />
                                 </h:commandLink>
                             </ui:fragment>
 
                             <ui:fragment rendered="#{!userList}">
-                                <ui:fragment
-                                    rendered="#{bookmarkList.items.size() > 0 and bookmarkList.numItemsWithoutImages() lt bookmarkList.items.size()}"
-                                >
+                                <ui:fragment rendered="#{bookmarkList.items.size() > 0 and bookmarkList.numItemsWithoutImages() lt bookmarkList.items.size()}">
                                     <a
                                         data-toggle="tooltip"
                                         title="#{msg.bookmarkList_openMirador}"
@@ -300,21 +268,20 @@
                                         class="view-mirador__link"
                                         target="_blank"
                                         rel="noopener"
-                                        aria-label="#{bookmarkList.name}: #{msg.viewMiradorComparison}"
-                                    >
+                                        aria-label="#{bookmarkList.name}: #{msg.viewMiradorComparison}">
                                         <util:icon-text
                                             icon="grid-dots"
-                                            text="#{msg.viewMiradorComparison}"
-                                        />
+                                            text="#{msg.viewMiradorComparison}" />
                                     </a>
                                 </ui:fragment>
                                 <a
                                     data-toggle="tooltip"
                                     title="#{msg.action__search_in_bookmarks__description}"
                                     href="#{request.contextPath}/bookmarks/search/key/#{bookmarkList.shareKey}"
-                                    aria-label="#{bookmarkList.name}: #{msg.search}"
-                                >
-                                    <util:icon-text icon="search" text="#{msg.search}" />
+                                    aria-label="#{bookmarkList.name}: #{msg.search}">
+                                    <util:icon-text
+                                        icon="search"
+                                        text="#{msg.search}" />
                                 </a>
 
                                 <button
@@ -323,12 +290,10 @@
                                     title="#{msg.copyUrl}"
                                     data-copy-value="#{bookmarkList.getIIIFCollectionURI()}"
                                     data-copy-done-msg="#{msg.copyUrlDone}"
-                                    aria-label="#{bookmarkList.name}: #{msg.bookmarkList_shareCollection}"
-                                >
+                                    aria-label="#{bookmarkList.name}: #{msg.bookmarkList_shareCollection}">
                                     <util:icon-text
                                         icon="share-3"
-                                        text="#{msg.bookmarkList_shareCollection}"
-                                    />
+                                        text="#{msg.bookmarkList_shareCollection}" />
                                 </button>
                                 <button
                                     type="button"
@@ -336,12 +301,10 @@
                                     title="#{msg.copyUrl}"
                                     data-copy-value="#{bookmarkBean.getShareLink(bookmarkList)}"
                                     data-copy-done-msg="#{msg.copyUrlDone}"
-                                    aria-label="#{bookmarkList.name}: #{msg.action__copy_bookmarklist_sharelink}"
-                                >
+                                    aria-label="#{bookmarkList.name}: #{msg.action__copy_bookmarklist_sharelink}">
                                     <util:icon-text
                                         icon="share"
-                                        text="#{msg.action__copy_bookmarklist_sharelink}"
-                                    />
+                                        text="#{msg.action__copy_bookmarklist_sharelink}" />
                                 </button>
                             </ui:fragment>
                         </div>
@@ -350,8 +313,6 @@
             </ui:fragment>
         </ui:repeat>
 
-        <script>
-            viewerJS.clipboard.init();
-        </script>
+        <script>viewerJS.clipboard.init();</script>
     </ui:fragment>
 </ui:composition>

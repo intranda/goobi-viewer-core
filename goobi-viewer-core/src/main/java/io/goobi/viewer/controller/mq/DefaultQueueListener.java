@@ -41,6 +41,11 @@ import jakarta.jms.MessageConsumer;
 import jakarta.jms.Session;
 import jakarta.jms.TextMessage;
 
+/**
+ * Background listener that continuously polls an ActiveMQ queue and dispatches incoming messages
+ * to the appropriate message handler. Runs on a dedicated daemon thread and supports graceful
+ * shutdown as well as configurable redelivery policies.
+ */
 public class DefaultQueueListener {
 
     private static final Logger log = LogManager.getLogger(DefaultQueueListener.class);
@@ -51,11 +56,12 @@ public class DefaultQueueListener {
     private volatile boolean shouldStop = false;
     private volatile LocalDateTime lastLoopCircle = LocalDateTime.now();
     private final String queueType;
+    private ActiveMQConnection conn = null;
 
     /**
-     * 
-     * @param messageBroker
-     * @param queueType
+     *
+     * @param messageBroker message queue manager used to obtain connections and handle messages
+     * @param queueType name of the ActiveMQ queue to listen on
      */
     public DefaultQueueListener(MessageQueueManager messageBroker, String queueType) {
         this.messageBroker = messageBroker;
@@ -66,21 +72,21 @@ public class DefaultQueueListener {
         if (this.thread != null) {
             throw new IllegalStateException("Listener is already registered");
         }
-        ActiveMQConnection conn = this.messageBroker.getConnection();
+        this.conn = this.messageBroker.getConnection();
         ActiveMQPrefetchPolicy prefetchPolicy = new ActiveMQPrefetchPolicy();
         prefetchPolicy.setAll(0);
-        conn.setPrefetchPolicy(prefetchPolicy);
-        RedeliveryPolicy policy = conn.getRedeliveryPolicy();
+        this.conn.setPrefetchPolicy(prefetchPolicy);
+        RedeliveryPolicy policy = this.conn.getRedeliveryPolicy();
         policy.setMaximumRedeliveries(0);
-        thread = new Thread(() -> startMessageLoop(queueType, conn));
+        thread = new Thread(() -> startMessageLoop(queueType, this.conn));
         thread.setDaemon(true);
         thread.start();
     }
 
     /**
-     * 
-     * @param queueType
-     * @param conn
+     *
+     * @param queueType name of the ActiveMQ queue to listen on
+     * @param conn active ActiveMQ connection used to start the listener
      */
     void startMessageLoop(String queueType, ActiveMQConnection conn) {
         try {
@@ -88,20 +94,22 @@ public class DefaultQueueListener {
             startListener(queueType, conn);
             log.info("Exiting listener thread for message queue {}: ", queueType);
         } catch (JMSException e) {
-            log.error("Error starting listener for queue {}. Aborting listerner startup", e.toString(), e);
+            if (!shouldStop && !conn.isTransportFailed()) {
+                log.error("Error starting listener for queue {}. Aborting listener startup", queueType, e);
+            }
         }
     }
 
     /**
-     * 
-     * @param queueType
-     * @param conn
+     *
+     * @param queueType name of the ActiveMQ queue to consume messages from
+     * @param conn active ActiveMQ connection from which to create a session
      * @throws JMSException
      */
     void startListener(String queueType, ActiveMQConnection conn) throws JMSException {
         try (Session sess = conn.createSession(false, Session.CLIENT_ACKNOWLEDGE);
                 MessageConsumer consumer = sess.createConsumer(sess.createQueue(queueType));) {
-            while (!shouldStop) {
+            while (!shouldStop && !conn.isTransportFailed()) {
                 lastLoopCircle = LocalDateTime.now();
                 waitForMessage(sess, consumer);
                 if (Thread.interrupted()) {
@@ -115,13 +123,16 @@ public class DefaultQueueListener {
     }
 
     /**
-     * 
-     * @param sess
-     * @param consumer
+     *
+     * @param sess JMS session used to recover on error or wait
+     * @param consumer message consumer to poll for the next message
      */
     void waitForMessage(Session sess, MessageConsumer consumer) {
         try {
-            Message message = consumer.receive();
+            Message message = consumer.receive(1000);
+            if (message == null) {
+                return;
+            }
             ViewerMessage ticket = null;
             if (message instanceof TextMessage tm) {
                 ticket = ViewerMessage.parseJSON(tm.getText());
@@ -135,7 +146,7 @@ public class DefaultQueueListener {
                 handleTicket(sess, message, ticket);
             }
         } catch (JMSException | JsonProcessingException e) {
-            if (!shouldStop) {
+            if (!shouldStop && (conn == null || !conn.isTransportFailed())) {
                 // back off a little bit, maybe we have a problem with the connection or we are shutting down
                 try {
                     Thread.sleep(3000);
@@ -143,7 +154,7 @@ public class DefaultQueueListener {
                     Thread.currentThread().interrupt();
                     return;
                 }
-                if (!shouldStop) {
+                if (!shouldStop && (conn == null || !conn.isTransportFailed())) {
                     log.error("Message listener {} has encountered an error. Attempting to resume listener", this, e);
                 }
             }
@@ -161,6 +172,7 @@ public class DefaultQueueListener {
     public void restartLoop() throws JMSException {
         close();
         this.thread = null;
+        this.conn = null;
         this.shouldStop = false;
         this.register();
     }
@@ -170,10 +182,10 @@ public class DefaultQueueListener {
     }
 
     /**
-     * 
-     * @param sess
-     * @param message
-     * @param inTicket
+     *
+     * @param sess JMS session used to acknowledge or recover the message
+     * @param message raw JMS message to acknowledge or recover after processing
+     * @param inTicket parsed viewer message containing the task to handle
      * @throws JMSException
      */
     void handleTicket(final Session sess, Message message, final ViewerMessage inTicket) throws JMSException {
@@ -205,8 +217,13 @@ public class DefaultQueueListener {
                 message.acknowledge();
             }
         } catch (JMSException | NullPointerException | IllegalArgumentException t) {
-            log.error("Error handling ticket {}: ", message.getJMSMessageID(), t);
-            sess.recover();
+            // During shutdown the connection/consumer is closed before the listener thread
+            // exits, so acknowledge/recover will throw IllegalStateException (a JMSException
+            // subclass). Suppress these expected errors to avoid noisy ERROR log entries.
+            if (!shouldStop) {
+                log.error("Error handling ticket {}: ", message.getJMSMessageID(), t);
+                sess.recover();
+            }
         } finally {
             MessageQueueManager.notifyMessageQueueStateUpdate();
         }
@@ -219,9 +236,19 @@ public class DefaultQueueListener {
     public void close() {
         this.shouldStop = true;
         log.info("Stopping MessageQueue listener {}...", this);
+        if (this.conn != null) {
+            try {
+                this.conn.close();
+            } catch (JMSException e) {
+                log.warn("Error closing connection for queue listener {}", queueType, e);
+            }
+        }
+        if (this.thread != null) {
+            this.thread.interrupt();
+        }
         try {
             if (this.thread != null) {
-                this.thread.join(1000);
+                this.thread.join(5000);
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

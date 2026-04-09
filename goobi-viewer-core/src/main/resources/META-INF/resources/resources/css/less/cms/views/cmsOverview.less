@@ -3,11 +3,13 @@
    style declarations for adminCmsOverview.xhtml
    ==============================================================*/
 #cmsOverview {
-    h1 {}
+    h1 {
+    }
     #cmsOverviewWrapper {
         #cmsOverviewTable_length {
             label {
-                select {}
+                select {
+                }
             }
         }
         #cmsOverviewTable_filter {
@@ -22,14 +24,16 @@
             thead {
                 tr {
                     th {
-                        &.column_template {}
+                        &.column_template {
+                        }
                         &.column_language {
                             text-align: center;
                             width: 5%;
                         }
                         &.column_title {
                         }
-                        &.column_classification {}
+                        &.column_classification {
+                        }
                         &.column_date_updated {
                         }
                         &.column_actions {
@@ -40,11 +44,13 @@
             }
             tbody {
                 tr {
-                    &.odd {}
-                    &.even {}
+                    &.odd {
+                    }
+                    &.even {
+                    }
                     &.invalid_template {
-	                	opacity: 0.2;
-	                }
+                        opacity: 0.2;
+                    }
                     td {
                         vertical-align: top;
                         &:nth-child(7) {
@@ -60,9 +66,11 @@
                             list-style: none;
                             margin: 0;
                             padding: 0;
-                            li {}
+                            li {
+                            }
                         }
-                        .btn {}
+                        .btn {
+                        }
                         img {
                             width: 64px;
                         }
@@ -76,13 +84,13 @@
                             }
                         }
                         .column_title {
-	                        &__main_title {
-	                        	display: block;
-	                        }
-	                        &__menu_title {
-	                        	font-size: @fontSmall;
-	                        }
-						}
+                            &__main_title {
+                                display: block;
+                            }
+                            &__menu_title {
+                                font-size: @fontSmall;
+                            }
+                        }
                     }
                 }
             }
@@ -93,61 +101,64 @@
     }
 }
 
-
 .cms-pages-overview {
-	&__single-row-translation-indicator {
-		flex-shrink: 0;
-		.nav {
-			flex-wrap: wrap;
-		}
-		.nav-tabs {
-			border-bottom: unset;
-		}
-		.nav-tabs li a {
-			display: none;
-		}
-		.admin__translation-indicator-list {
-			display: flex;
-			gap: 8px;
-		}
-		.admin__translation-indicator {
-			margin-bottom: 0;
-			&:first-child {
-				background: @blue !important;
-			}
-			width: 15px;
-			height: 15px;
-			background: @grayBar;
-			&:last-child {
-				margin-right: 0;
-			}
-			&.-already-translated {
-				background: @greenBar;
-			}
-			&.-partly-translated {
-				background: @yellowBar;
-			}
-		}
-	}
-	&__title-wrapper {
-		display: flex;
-		gap: 10px;
-		align-items: center;
-	}
-	&__access-condition-wrapper {
-	}
-	&__access-condition-icon {
-		font-size: 16px;
-	}
+    &__single-row-translation-indicator {
+        flex-shrink: 0;
+        .nav {
+            flex-wrap: wrap;
+        }
+        .nav-tabs {
+            border-bottom: unset;
+        }
+        .nav-tabs li a {
+            display: none;
+        }
+        .admin__translation-indicator-list {
+            display: flex;
+            gap: 8px;
+        }
+        .admin__translation-indicator {
+            margin-bottom: 0;
+            &:first-child {
+                background: @blue !important;
+            }
+            width: 15px;
+            height: 15px;
+            background: @grayBar;
+            &:last-child {
+                margin-right: 0;
+            }
+            &.-already-translated {
+                background: @greenBar;
+            }
+            &.-partly-translated {
+                background: @yellowBar;
+            }
+        }
+    }
+    &__title-wrapper {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+    &__access-condition-wrapper {
+    }
+    &__access-condition-icon {
+        font-size: 16px;
+    }
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+}

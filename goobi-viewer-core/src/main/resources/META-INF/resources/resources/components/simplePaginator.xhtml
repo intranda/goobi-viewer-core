@@ -1,288 +1,237 @@
 <ui:composition
-  xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:f="http://xmlns.jcp.org/jsf/core"
-  xmlns:h="http://xmlns.jcp.org/jsf/html"
-  xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-  xmlns:c="http://java.sun.com/jsp/jstl/core"
-  xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-  xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-  xmlns:util="http://goobi.io/util"
->
-  <ui:define name="metadata">
-    <f:metadata>
-      <!--
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:util="http://goobi.io/util">
+    <ui:define name="metadata">
+        <f:metadata>
+            <!--
 			<f:event type="preRenderView" listener="#{activeDocumentBean.action}" />
 			<f:viewParam name="action" value="#{activeDocumentBean.action}" />
 			<f:viewParam name="iddoc" value="#{activeDocumentBean.elementToShow}" />
 			<f:viewParam name="page" value="#{activeDocumentBean.imageToShow}" />
 			<f:viewParam name="logId" value="#{activeDocumentBean.logid}" />
 			-->
-    </f:metadata>
-  </ui:define>
+        </f:metadata>
+    </ui:define>
 
-  <composite:interface>
-    <composite:attribute
-      name="itemCount"
-      required="true"
-      type="java.lang.Integer"
-    />
-    <composite:attribute
-      name="itemActive"
-      required="true"
-      type="java.lang.Integer"
-    />
-    <composite:attribute
-      name="firstItem"
-      required="false"
-      type="java.lang.Integer"
-      default="1"
-    />
-    <composite:attribute
-      name="lastItem"
-      required="false"
-      type="java.lang.Integer"
-      default="#{cc.attrs.itemCount}"
-    />
-    <composite:attribute name="urlPrefix" required="true" />
-    <composite:attribute name="urlSuffix" required="false" />
-    <composite:attribute name="rtl" required="false" default="false" />
-    <composite:attribute
-      name="positionBottom"
-      required="false"
-      default="false"
-    />
-    <composite:attribute name="classSuffix" required="false" default="" />
-  </composite:interface>
+    <composite:interface>
+        <composite:attribute
+            name="itemCount"
+            required="true"
+            type="java.lang.Integer" />
+        <composite:attribute
+            name="itemActive"
+            required="true"
+            type="java.lang.Integer" />
+        <composite:attribute
+            name="firstItem"
+            required="false"
+            type="java.lang.Integer"
+            default="1" />
+        <composite:attribute
+            name="lastItem"
+            required="false"
+            type="java.lang.Integer"
+            default="#{cc.attrs.itemCount}" />
+        <composite:attribute
+            name="urlPrefix"
+            required="true" />
+        <composite:attribute
+            name="urlSuffix"
+            required="false" />
+        <composite:attribute
+            name="rtl"
+            required="false"
+            default="false" />
+        <composite:attribute
+            name="positionBottom"
+            required="false"
+            default="false" />
+        <composite:attribute
+            name="classSuffix"
+            required="false"
+            default="" />
+    </composite:interface>
 
-  <composite:implementation>
-    <h:panelGroup
-      rendered="#{cc.attrs.itemCount > 1}"
-      styleClass="#{cc.attrs.rtl ? 'numeric-paginator -rtl' : 'numeric-paginator -ltr'} #{cc.attrs.classSuffix}"
-      layout="block"
-      id="#{cc.clientId}"
-    >
-      <nav
-        aria-label="#{cc.attrs.positionBottom ? msg.aria_label__pagination_bottom : msg.aria_label__pagination_pages}"
-      >
-        <ul>
-          <!-- PREV / NEXT (RTL) -->
-          <h:panelGroup rendered="#{cc.attrs.itemActive gt cc.attrs.firstItem}">
-            <li class="numeric-paginator__navigate navigate_prev">
-              <a
-                href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive - 1}/#{cc.attrs.urlSuffix}"
-                data-target="paginatorPrevPage"
-                aria-label="#{msg.aria_label__pagination_previous}"
-              >
-                <ui:fragment
-                  rendered="#{!activeDocumentBean.viewManager.topStructElement.rtl}"
-                >
-                  <util:icon
-                    icon="#{msg.numericPaginator_prev}"
-                    styleClass="numeric-paginator__icon"
-                    svgClass="numeric-paginator__icon-svg"
-                  />
-                </ui:fragment>
-                <ui:fragment
-                  rendered="#{activeDocumentBean.viewManager.topStructElement.rtl}"
-                >
-                  <util:icon
-                    icon="#{msg.numericPaginator_next}"
-                    styleClass="numeric-paginator__icon"
-                    svgClass="numeric-paginator__icon-svg"
-                  />
-                </ui:fragment>
-              </a>
-            </li>
-          </h:panelGroup>
+    <composite:implementation>
+        <h:panelGroup
+            rendered="#{cc.attrs.itemCount > 1}"
+            styleClass="#{cc.attrs.rtl ? 'numeric-paginator -rtl' : 'numeric-paginator -ltr'} #{cc.attrs.classSuffix}"
+            layout="block"
+            id="#{cc.clientId}">
+            <nav aria-label="#{cc.attrs.positionBottom ? msg.aria_label__pagination_bottom : msg.aria_label__pagination_pages}">
+                <ul>
+                    <!-- PREV / NEXT (RTL) -->
+                    <h:panelGroup rendered="#{cc.attrs.itemActive gt cc.attrs.firstItem}">
+                        <li class="numeric-paginator__navigate navigate_prev">
+                            <a
+                                href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive - 1}/#{cc.attrs.urlSuffix}"
+                                data-target="paginatorPrevPage"
+                                aria-label="#{msg.aria_label__pagination_previous}">
+                                <ui:fragment rendered="#{!activeDocumentBean.viewManager.topStructElement.rtl}">
+                                    <util:icon
+                                        icon="#{msg.numericPaginator_prev}"
+                                        styleClass="numeric-paginator__icon"
+                                        svgClass="numeric-paginator__icon-svg" />
+                                </ui:fragment>
+                                <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.rtl}">
+                                    <util:icon
+                                        icon="#{msg.numericPaginator_next}"
+                                        styleClass="numeric-paginator__icon"
+                                        svgClass="numeric-paginator__icon-svg" />
+                                </ui:fragment>
+                            </a>
+                        </li>
+                    </h:panelGroup>
 
-          <h:panelGroup rendered="#{cc.attrs.itemActive gt cc.attrs.firstItem}">
-            <li class="navigate_first">
-              <a
-                href="#{cc.attrs.urlPrefix}#{cc.attrs.firstItem}/#{cc.attrs.urlSuffix}"
-                >#{cc.attrs.firstItem}</a
-              >
-            </li>
+                    <h:panelGroup rendered="#{cc.attrs.itemActive gt cc.attrs.firstItem}">
+                        <li class="navigate_first">
+                            <a href="#{cc.attrs.urlPrefix}#{cc.attrs.firstItem}/#{cc.attrs.urlSuffix}">#{cc.attrs.firstItem}</a>
+                        </li>
 
-            <h:panelGroup
-              rendered="#{cc.attrs.itemActive gt (cc.attrs.firstItem + 3)}"
-            >
-              <li>
-                <a
-                  href="#{cc.attrs.urlPrefix}#{cc.attrs.firstItem + 1}/#{cc.attrs.urlSuffix}"
-                  >#{cc.attrs.firstItem + 1}</a
-                >
-              </li>
-            </h:panelGroup>
-          </h:panelGroup>
+                        <h:panelGroup rendered="#{cc.attrs.itemActive gt (cc.attrs.firstItem + 3)}">
+                            <li>
+                                <a href="#{cc.attrs.urlPrefix}#{cc.attrs.firstItem + 1}/#{cc.attrs.urlSuffix}">#{cc.attrs.firstItem + 1}</a>
+                            </li>
+                        </h:panelGroup>
+                    </h:panelGroup>
 
-          <h:panelGroup
-            rendered="#{cc.attrs.itemActive gt (cc.attrs.firstItem + 1)}"
-          >
-            <!-- DOTS -->
-            <h:panelGroup
-              rendered="#{cc.attrs.itemActive gt (cc.attrs.firstItem + 4)}"
-            >
-              <li class="numeric-paginator__dots">
-                <span>...</span>
-              </li>
-            </h:panelGroup>
+                    <h:panelGroup rendered="#{cc.attrs.itemActive gt (cc.attrs.firstItem + 1)}">
+                        <!-- DOTS -->
+                        <h:panelGroup rendered="#{cc.attrs.itemActive gt (cc.attrs.firstItem + 4)}">
+                            <li class="numeric-paginator__dots">
+                                <span>...</span>
+                            </li>
+                        </h:panelGroup>
 
-            <h:panelGroup
-              rendered="#{cc.attrs.itemActive gt (cc.attrs.firstItem + 2)}"
-            >
-              <li>
-                <a
-                  href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive -  2}/#{cc.attrs.urlSuffix}"
-                  aria-label="#{msg.aria__label_pagination_goto} #{cc.attrs.itemActive - 2}"
-                  >#{cc.attrs.itemActive - 2}</a
-                >
-              </li>
-            </h:panelGroup>
+                        <h:panelGroup rendered="#{cc.attrs.itemActive gt (cc.attrs.firstItem + 2)}">
+                            <li>
+                                <a
+                                    href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive -  2}/#{cc.attrs.urlSuffix}"
+                                    aria-label="#{msg.aria__label_pagination_goto} #{cc.attrs.itemActive - 2}">
+                                    #{cc.attrs.itemActive - 2}
+                                </a>
+                            </li>
+                        </h:panelGroup>
 
-            <li>
-              <a
-                href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive - 1}/#{cc.attrs.urlSuffix}"
-                aria-label="#{msg.aria__label_pagination_goto} #{cc.attrs.itemActive - 1}"
-                >#{cc.attrs.itemActive - 1}</a
-              >
-            </li>
-          </h:panelGroup>
+                        <li>
+                            <a
+                                href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive - 1}/#{cc.attrs.urlSuffix}"
+                                aria-label="#{msg.aria__label_pagination_goto} #{cc.attrs.itemActive - 1}">
+                                #{cc.attrs.itemActive - 1}
+                            </a>
+                        </li>
+                    </h:panelGroup>
 
-          <!-- ACTIVE ITEM -->
-          <li
-            data-page="#{cc.attrs.itemActive}"
-            class="numeric-paginator__navigate -active"
-            aria-current="page"
-          >
-            <span>#{cc.attrs.itemActive}</span>
-          </li>
+                    <!-- ACTIVE ITEM -->
+                    <li
+                        data-page="#{cc.attrs.itemActive}"
+                        class="numeric-paginator__navigate -active"
+                        aria-current="page">
+                        <span>#{cc.attrs.itemActive}</span>
+                    </li>
 
-          <h:panelGroup
-            rendered="#{cc.attrs.itemActive lt (cc.attrs.lastItem)}"
-          >
-            <li
-              class="numeric-paginator__navigate"
-              data-page="#{cc.attrs.itemActive + 1}"
-            >
-              <a
-                href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive + 1}/#{cc.attrs.urlSuffix}"
-                aria-label="#{msg.aria__label_pagination_goto} #{cc.attrs.itemActive + 1}"
-                >#{cc.attrs.itemActive + 1}</a
-              >
-            </li>
+                    <h:panelGroup rendered="#{cc.attrs.itemActive lt (cc.attrs.lastItem)}">
+                        <li
+                            class="numeric-paginator__navigate"
+                            data-page="#{cc.attrs.itemActive + 1}">
+                            <a
+                                href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive + 1}/#{cc.attrs.urlSuffix}"
+                                aria-label="#{msg.aria__label_pagination_goto} #{cc.attrs.itemActive + 1}">
+                                #{cc.attrs.itemActive + 1}
+                            </a>
+                        </li>
 
-            <h:panelGroup
-              rendered="#{cc.attrs.itemActive lt (cc.attrs.lastItem - 1)}"
-            >
-              <li
-                class="numeric-paginator__navigate"
-                data-page="#{cc.attrs.itemActive + 2}"
-              >
-                <a
-                  href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive + 2}/#{cc.attrs.urlSuffix}"
-                  aria-label="#{msg.aria__label_pagination_goto} #{cc.attrs.itemActive + 2}"
-                  >#{cc.attrs.itemActive + 2}</a
-                >
-              </li>
-            </h:panelGroup>
+                        <h:panelGroup rendered="#{cc.attrs.itemActive lt (cc.attrs.lastItem - 1)}">
+                            <li
+                                class="numeric-paginator__navigate"
+                                data-page="#{cc.attrs.itemActive + 2}">
+                                <a
+                                    href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive + 2}/#{cc.attrs.urlSuffix}"
+                                    aria-label="#{msg.aria__label_pagination_goto} #{cc.attrs.itemActive + 2}">
+                                    #{cc.attrs.itemActive + 2}
+                                </a>
+                            </li>
+                        </h:panelGroup>
 
-            <h:panelGroup
-              rendered="#{cc.attrs.itemActive + 2 lt (cc.attrs.lastItem - 2)}"
-            >
-              <li class="numeric-paginator__dots">
-                <span>...</span>
-              </li>
-            </h:panelGroup>
-          </h:panelGroup>
+                        <h:panelGroup rendered="#{cc.attrs.itemActive + 2 lt (cc.attrs.lastItem - 2)}">
+                            <li class="numeric-paginator__dots">
+                                <span>...</span>
+                            </li>
+                        </h:panelGroup>
+                    </h:panelGroup>
 
-          <h:panelGroup
-            rendered="#{cc.attrs.itemActive lt (cc.attrs.lastItem - 2)}"
-          >
-            <h:panelGroup
-              rendered="#{cc.attrs.itemActive lt (cc.attrs.lastItem - 2) and cc.attrs.itemActive != (cc.attrs.lastItem - 3)}"
-            >
-              <li
-                class="numeric-paginator__navigate"
-                data-page="#{cc.attrs.lastItem - 1}"
-              >
-                <a
-                  href="#{cc.attrs.urlPrefix}#{(cc.attrs.lastItem - 1)}/#{cc.attrs.urlSuffix}"
-                  >#{cc.attrs.lastItem - 1}</a
-                >
-              </li>
-            </h:panelGroup>
+                    <h:panelGroup rendered="#{cc.attrs.itemActive lt (cc.attrs.lastItem - 2)}">
+                        <h:panelGroup rendered="#{cc.attrs.itemActive lt (cc.attrs.lastItem - 2) and cc.attrs.itemActive != (cc.attrs.lastItem - 3)}">
+                            <li
+                                class="numeric-paginator__navigate"
+                                data-page="#{cc.attrs.lastItem - 1}">
+                                <a href="#{cc.attrs.urlPrefix}#{(cc.attrs.lastItem - 1)}/#{cc.attrs.urlSuffix}">#{cc.attrs.lastItem - 1}</a>
+                            </li>
+                        </h:panelGroup>
 
-            <h:panelGroup
-              rendered="#{cc.attrs.itemActive lt (cc.attrs.lastItem - 1)}"
-            >
-              <li
-                class="navigate_last numeric-paginator__navigate numeric-paginator__last-entry"
-                data-page="#{cc.attrs.lastItem}"
-              >
-                <a
-                  href="#{cc.attrs.urlPrefix}#{cc.attrs.lastItem}/#{cc.attrs.urlSuffix}"
-                  >#{cc.attrs.lastItem}</a
-                >
-              </li>
-            </h:panelGroup>
-          </h:panelGroup>
+                        <h:panelGroup rendered="#{cc.attrs.itemActive lt (cc.attrs.lastItem - 1)}">
+                            <li
+                                class="navigate_last numeric-paginator__navigate numeric-paginator__last-entry"
+                                data-page="#{cc.attrs.lastItem}">
+                                <a href="#{cc.attrs.urlPrefix}#{cc.attrs.lastItem}/#{cc.attrs.urlSuffix}">#{cc.attrs.lastItem}</a>
+                            </li>
+                        </h:panelGroup>
+                    </h:panelGroup>
 
-          <!-- NEXT / PREV (RTL) -->
-          <h:panelGroup rendered="#{cc.attrs.itemActive lt cc.attrs.lastItem }">
-            <li class="numeric-paginator__navigate navigate_next">
-              <a
-                href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive + 1}/#{cc.attrs.urlSuffix}"
-                data-target="paginatorNextPage"
-                aria-label="#{msg.aria_label__pagination_next}"
-              >
-                <ui:fragment
-                  rendered="#{!activeDocumentBean.viewManager.topStructElement.rtl}"
-                >
-                  <util:icon
-                    icon="#{msg.numericPaginator_next}"
-                    styleClass="numeric-paginator__icon"
-                    svgClass="numeric-paginator__icon-svg"
-                  />
-                </ui:fragment>
-                <ui:fragment
-                  rendered="#{activeDocumentBean.viewManager.topStructElement.rtl}"
-                >
-                  <util:icon
-                    icon="#{msg.numericPaginator_prev}"
-                    styleClass="numeric-paginator__icon"
-                    svgClass="numeric-paginator__icon-svg"
-                  />
-                </ui:fragment>
-              </a>
-            </li>
-          </h:panelGroup>
-        </ul>
-      </nav>
+                    <!-- NEXT / PREV (RTL) -->
+                    <h:panelGroup rendered="#{cc.attrs.itemActive lt cc.attrs.lastItem }">
+                        <li class="numeric-paginator__navigate navigate_next">
+                            <a
+                                href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive + 1}/#{cc.attrs.urlSuffix}"
+                                data-target="paginatorNextPage"
+                                aria-label="#{msg.aria_label__pagination_next}">
+                                <ui:fragment rendered="#{!activeDocumentBean.viewManager.topStructElement.rtl}">
+                                    <util:icon
+                                        icon="#{msg.numericPaginator_next}"
+                                        styleClass="numeric-paginator__icon"
+                                        svgClass="numeric-paginator__icon-svg" />
+                                </ui:fragment>
+                                <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.rtl}">
+                                    <util:icon
+                                        icon="#{msg.numericPaginator_prev}"
+                                        styleClass="numeric-paginator__icon"
+                                        svgClass="numeric-paginator__icon-svg" />
+                                </ui:fragment>
+                            </a>
+                        </li>
+                    </h:panelGroup>
+                </ul>
+            </nav>
 
-      <script type="text/javascript">
-        // RUN FUNCTION ONLY ONCE
-        if (typeof doClick === "function") {
-          // console.log('already defined - do nothing');
-        } else {
-          // console.log('not already defined');
-          var paginatorConfig = {
-            previous: () => doClick('[data-target="paginatorPrevPage"]'),
-            next: () => doClick('[data-target="paginatorNextPage"]'),
-            first: () => doClick('[data-target="paginatorFirstPage"]'),
-            last: () => doClick('[data-target="paginatorLastPage"]'),
-            rightToLeft:
-              "#{activeDocumentBean.viewManager.topStructElement.rtl}",
-          };
-          function doClick(selector) {
-            let query = $(selector);
-            if (query.length) {
-              query.get(0).click();
-            }
-          }
-          viewerJS.paginator.init(paginatorConfig);
+            <script type="text/javascript">
+                // RUN FUNCTION ONLY ONCE
+if (typeof doClick === 'function') {
+    // console.log('already defined - do nothing');
+} else {
+    // console.log('not already defined');
+    var paginatorConfig = {
+        previous: () => doClick('[data-target="paginatorPrevPage"]'),
+        next: () => doClick('[data-target="paginatorNextPage"]'),
+        first: () => doClick('[data-target="paginatorFirstPage"]'),
+        last: () => doClick('[data-target="paginatorLastPage"]'),
+        rightToLeft: '#{activeDocumentBean.viewManager.topStructElement.rtl}',
+    };
+    function doClick(selector) {
+        let query = $(selector);
+        if (query.length) {
+            query.get(0).click();
         }
-      </script>
-    </h:panelGroup>
-  </composite:implementation>
+    }
+    viewerJS.paginator.init(paginatorConfig);
+}
+            </script>
+        </h:panelGroup>
+    </composite:implementation>
 </ui:composition>

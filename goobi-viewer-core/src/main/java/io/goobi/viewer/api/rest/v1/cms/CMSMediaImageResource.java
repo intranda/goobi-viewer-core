@@ -45,6 +45,8 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.GET;
@@ -56,8 +58,9 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 /**
- * @author florian
+ * REST resource for serving CMS media images with optional resizing.
  *
+ * @author Florian Alpers
  */
 @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_IMAGE)
 @CORSBinding
@@ -103,7 +106,7 @@ public class CMSMediaImageResource extends ImageResource {
     }
 
     /**
-     * @param filename
+     * @param filename name of the CMS media image file
      * @return {@link URI}
      */
     private static URI getMediaFileUrl(String filename) {
@@ -124,6 +127,11 @@ public class CMSMediaImageResource extends ImageResource {
     @ContentServerImageInfoBinding
     @Operation(tags = { "iiif" },
             summary = "IIIF image identifier for the CMS image file of the given filename. Returns a IIIF 2.1.1 image information object")
+    @ApiResponse(responseCode = "200", description = "IIIF image information object",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @ApiResponse(responseCode = "400", description = "Invalid filename — non-image extension filenames are rejected by the fallback handler")
+    @ApiResponse(responseCode = "404", description = "Image not found")
+    @ApiResponse(responseCode = "405", description = "Method not allowed — e.g. when filename contains special characters matching another route")
     public Response redirectToCanonicalImageInfo() throws ContentLibException {
         return super.redirectToCanonicalImageInfo();
     }

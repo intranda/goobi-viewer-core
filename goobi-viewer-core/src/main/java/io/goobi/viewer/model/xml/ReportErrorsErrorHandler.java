@@ -28,6 +28,10 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+/**
+ * SAX {@link ErrorHandler} implementation that collects all warnings, errors, and fatal errors
+ * into a list of {@link XMLError} objects instead of throwing exceptions immediately.
+ */
 public class ReportErrorsErrorHandler implements ErrorHandler {
 
     private List<XMLError> errors;
@@ -38,8 +42,8 @@ public class ReportErrorsErrorHandler implements ErrorHandler {
 
     /**
      * 
-     * @param e
-     * @param severity
+     * @param e the SAX parse exception to record
+     * @param severity the severity level string (e.g. "ERROR", "FATAL", "WARNING")
      */
     private void addError(SAXParseException e, String severity) {
         errors.add(new XMLError(e.getLineNumber(), e.getColumnNumber(), severity, e.getMessage()));
@@ -60,16 +64,12 @@ public class ReportErrorsErrorHandler implements ErrorHandler {
         addError(exception, "WARNING");
     }
 
-    /**
-     * @return the errors
-     */
+    
     public List<XMLError> getErrors() {
         return errors;
     }
 
-    /**
-     * @param errors the errors to set
-     */
+    
     public void setErrors(List<XMLError> errors) {
         this.errors = errors;
     }

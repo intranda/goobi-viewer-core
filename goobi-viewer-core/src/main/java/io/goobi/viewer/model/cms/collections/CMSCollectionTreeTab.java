@@ -82,41 +82,26 @@ public class CMSCollectionTreeTab implements IPolyglott, Serializable {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.IPolyglott#isComplete(java.util.Locale)
-     */
     @Override
     public boolean isComplete(Locale locale) {
         return TranslationStatus.FULL.equals(translationStatusMap.get(locale));
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.IPolyglott#isValid(java.util.Locale)
-     */
     @Override
     public boolean isValid(Locale locale) {
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.IPolyglott#isEmpty(java.util.Locale)
-     */
     @Override
     public boolean isEmpty(Locale locale) {
         return TranslationStatus.NONE.equals(translationStatusMap.get(locale));
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.IPolyglott#getSelectedLocale()
-     */
     @Override
     public Locale getSelectedLocale() {
         return selectedLocale;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.IPolyglott#setSelectedLocale(java.util.Locale)
-     */
     @Override
     public void setSelectedLocale(Locale locale) {
         this.selectedLocale = locale;

@@ -23,9 +23,7 @@
                     class="widget__topbar widget-metadata-tech__topbar #{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'metadata-tech') ? 'collapsible' : ''} #{!configurationBean.isSidebarWidgetForViewCollapsedByDefault(navigationHelper.currentView,'metadata-tech') ? 'in' : ''}"
                     tabindex="#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'metadata-tech') ? '0' : ''}"
                     role="#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'metadata-tech') ? 'button' : ''}">
-                    <h2 class="widget__title widget-metadata__title widget-metadata-tech__title">
-                        #{msg.metadataTech}
-                    </h2>
+                    <h2 class="widget__title widget-metadata__title widget-metadata-tech__title">#{msg.metadataTech}</h2>
 
                     <div class="widget__topbar-icons-container">
                         <div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
@@ -33,7 +31,8 @@
                         </div>
                         <util:icon
                             icon="chevron-down"
-                            styleClass="widget__topbar-icon-collapsible icon-rot-on-open" />
+                            styleClass="widget__topbar-icon-collapsible icon-rot-on-open"
+                            svgClass="widget__topbar-icon-svg widget-metadata-tech__topbar-icon-svg" />
                     </div>
                 </div>
 
@@ -60,11 +59,11 @@
                                             <!-- Metadata value -->
                                             <h:panelGroup rendered="#{metadata.singleString}">
                                                 <ui:fragment rendered="#{val.accessRestricted}">
-                                                    <util:icon icon="lock-open-2" />
+                                                    <util:icon icon="lock-open-2" svgClass="widget__body-icon-svg widget-metadata-tech__body-icon-svg" />
                                                 </ui:fragment>
                                                 <h:outputFormat
                                                     value="#{val.getDisplayValue(navigationHelper.locale, true)}"
-                                                    escape="false"></h:outputFormat>
+                                                    escape="false" />
                                             </h:panelGroup>
 
                                             <!-- Nested child metadata -->
@@ -74,16 +73,14 @@
                                                 varStatus="status">
                                                 <ui:fragment rendered="#{!child.isBlank(val.iddoc)}">
                                                     <ui:fragment rendered="#{child.singleString}">
-                                                        <ui:include
-                                                            src="/resources/includes/metadata/metadataSingleString.xhtml">
+                                                        <ui:include src="/resources/includes/metadata/metadataSingleString.xhtml">
                                                             <ui:param
                                                                 name="metadata"
                                                                 value="#{metadata.childMetadata[status.index]}" />
                                                         </ui:include>
                                                     </ui:fragment>
                                                     <ui:fragment rendered="#{!child.singleString}">
-                                                        <ui:include
-                                                            src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
+                                                        <ui:include src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
                                                             <ui:param
                                                                 name="metadata"
                                                                 value="#{metadata.childMetadata[status.index]}" />
@@ -109,7 +106,7 @@
                                             </dt>
                                             <dd>
                                                 <ui:fragment rendered="#{val.accessRestricted}">
-                                                    <util:icon icon="lock-open-2" />
+                                                    <util:icon icon="lock-open-2" svgClass="widget__body-icon-svg widget-metadata-tech__body-icon-svg" />
                                                 </ui:fragment>
                                                 <h:outputText
                                                     value="#{val.getDisplayParamValue(ind0)}"
@@ -128,7 +125,7 @@
                                         var="val">
                                         <h:outputFormat
                                             value="#{val.getDisplayValue(navigationHelper.locale)}"
-                                            escape="false"></h:outputFormat>
+                                            escape="false" />
                                         <br />
                                     </ui:repeat>
                                 </dd>
@@ -141,16 +138,16 @@
 
         <script type="text/javascript">
             var normdataWidgetConfig = {
-                path: '#{request.contextPath}',
-                lang: {
-                    popoverTitle: '#{msg.normdataPopoverTitle}',
-                    popoverClose: '#{msg.normdataPopoverClose}',
-                    showNormdata: '#{msg.normdataExpand}',
-                },
-                elemWrapper: $('#widgetMetadata'),
-            };
+    path: '#{request.contextPath}',
+    lang: {
+        popoverTitle: '#{msg.normdataPopoverTitle}',
+        popoverClose: '#{msg.normdataPopoverClose}',
+        showNormdata: '#{msg.normdataExpand}',
+    },
+    elemWrapper: $('#widgetMetadata'),
+};
 
-            viewerJS.normdata.init(normdataWidgetConfig);
+viewerJS.normdata.init(normdataWidgetConfig);
         </script>
     </composite:implementation>
 </ui:composition>

@@ -10,8 +10,8 @@ import * as demo from './verovio/demo.js';
 class VerovioApp {
     constructor() {
         this.verovio = null;
-        this.mei = "";
-        this.filename = "untitled.xml";
+        this.mei = '';
+        this.filename = 'untitled.xml';
         this.fallbackMEI = null;
         this.currentContainer = null;
 
@@ -45,9 +45,8 @@ class VerovioApp {
                 scale: 100, // Default zoom level
                 adjustPageWidth: true,
                 pageWidth: 2100,
-                pageHeight: 2970
+                pageHeight: 2970,
             });
-
         } catch (error) {
             console.error('Failed to initialize Verovio:', error);
             return this;
@@ -60,7 +59,7 @@ class VerovioApp {
             },
             onPageChange: (newPage, oldPage) => {
                 this.renderCurrentPage();
-            }
+            },
         });
 
         // Check for verovio input and load MEI data
@@ -129,7 +128,7 @@ class VerovioApp {
                 this.navigationController.setContainer(container);
             }
 
-             // console.log('Container found and set:', container.id || container.className);
+            // console.log('Container found and set:', container.id || container.className);
 
             // If we have MEI data, render it immediately
             if (this.mei) {
@@ -140,7 +139,7 @@ class VerovioApp {
         }
     }
 
-    loadData(mei, filename = "untitled.xml") {
+    loadData(mei, filename = 'untitled.xml') {
         if (!this.verovio) {
             console.error('Verovio not initialized');
             return false;
@@ -159,7 +158,7 @@ class VerovioApp {
                 'loadMusicXML',
                 'loadDocument',
                 'setMEI',
-                'from'
+                'from',
             ];
 
             let loadResult = false;
@@ -378,8 +377,6 @@ class VerovioApp {
     getCurrentMEI() {
         return this.mei;
     }
-
-
 
     // Demo methods - delegate to demo module
     renderDemo() {

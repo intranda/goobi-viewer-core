@@ -21,13 +21,17 @@
  */
 package io.goobi.viewer.controller;
 
+/**
+ * Central repository of shared string constants used throughout the Goobi viewer. Groups
+ * related literals such as access conditions, MIME types, message keys, URL prefixes, and
+ * common log message templates to avoid duplication and improve maintainability.
+ */
 public final class StringConstants {
 
     public static final String ACCESSCONDITION_METADATA_ACCESS_RESTRICTED = "metadata_access_restricted";
     
     public static final String ANCHOR_THUMBNAIL_MODE_GENERIC = "GENERIC";
     public static final String ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME = "FIRSTVOLUME";
-
 
     public static final String DEFAULT = "default";
     public static final String DEFAULT_NAME = "_DEFAULT";

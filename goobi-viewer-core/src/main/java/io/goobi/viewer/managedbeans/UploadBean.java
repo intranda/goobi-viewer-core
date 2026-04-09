@@ -1,4 +1,4 @@
-/**
+/*
  * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
  *
  * Visit these websites for more information.
@@ -38,9 +38,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 /**
- * <p>
- * UploadBean class.
- * </p>
+ * JSF backing bean for handling file uploads in the viewer, including record and media uploads.
  */
 @Named
 @ViewScoped
@@ -61,16 +59,16 @@ public class UploadBean implements Serializable {
     private UploadJob currentUploadJob;
 
     /**
-     * Required setter for ManagedProperty injection
+     * Required setter for ManagedProperty injection.
      *
-     * @param userBean the userBean to set
+     * @param userBean the UserBean instance to inject for testing
      */
     public void setBreadcrumbBean(UserBean userBean) {
         this.userBean = userBean;
     }
 
     /**
-     * Initialize all campaigns as lazily loaded list
+     * Initializes all campaigns as lazily loaded list.
      */
     @PostConstruct
     public void init() {
@@ -111,22 +109,18 @@ public class UploadBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>lazyModelUploadJobs</code>.
-     * </p>
      *
-     * @return the lazyModelUploadJobs
+     * @return the lazy-loading table data provider for upload jobs
      */
     public TableDataProvider<UploadJob> getLazyModelUploadJobs() {
         return lazyModelUploadJobs;
     }
 
     /**
-     * <p>
      * Getter for the field <code>currentUploadJob</code>.
-     * </p>
      *
-     * @return the currentUploadJob
+     * @return the currently selected or newly created upload job
      */
     public UploadJob getCurrentUploadJob() {
         if (currentUploadJob == null) {
@@ -136,11 +130,9 @@ public class UploadBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>currentUploadJob</code>.
-     * </p>
      *
-     * @param currentUploadJob the currentUploadJob to set
+     * @param currentUploadJob the upload job to set as currently active
      */
     public void setCurrentUploadJob(UploadJob currentUploadJob) {
         this.currentUploadJob = currentUploadJob;

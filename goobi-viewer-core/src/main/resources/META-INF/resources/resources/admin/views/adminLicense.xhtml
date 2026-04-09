@@ -5,142 +5,184 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
-    
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
-
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminLicenseType')}" />
+            <f:event
+                type="preRenderView"
+                listener="#{navigationHelper.setCurrentPageAdmin('adminLicenseType')}" />
         </f:metadata>
     </ui:define>
 
     <ui:define name="content">
-        <f:view contentType="text/html" encoding="utf-8">
+        <f:view
+            contentType="text/html"
+            encoding="utf-8">
             <div id="adminLicense">
                 <h:panelGroup rendered="#{userBean.admin and adminLicenseBean.currentLicenseType != null}">
-                    <h:form id="editLicenseTypeForm" styleClass="form-horizontal" prependId="false">
+                    <h:form
+                        id="editLicenseTypeForm"
+                        styleClass="form-horizontal"
+                        prependId="false">
                         <div class="admin__title-bar">
                             <h1 class="admin__title">
-                                <h:outputText value="#{msg.admin__license_new}"  rendered="#{adminLicenseBean.currentLicenseType.id == null}" />
-                                <h:outputText value="#{msg.admin__license_edit}" rendered="#{adminLicenseBean.currentLicenseType.id != null}" />
+                                <h:outputText
+                                    value="#{msg.admin__license_new}"
+                                    rendered="#{adminLicenseBean.currentLicenseType.id == null}" />
+                                <h:outputText
+                                    value="#{msg.admin__license_edit}"
+                                    rendered="#{adminLicenseBean.currentLicenseType.id != null}" />
                             </h1>
                         </div>
-                        
+
                         <viewerComponent:adminBreadcrumbs />
 
                         <div class="admin__content-inner-content">
                             <h2>#{msg.general}</h2>
                             <div class="admin__default-block">
                                 <div class="form-group form-row">
-                                    <h:outputLabel for="name" styleClass="col-sm-2 control-label" value="#{msg.name}:" />
-                                    <div class="col-sm-10">
-                                        #{adminLicenseBean.currentLicenseType.name}
-                                    </div>
+                                    <h:outputLabel
+                                        for="name"
+                                        styleClass="col-sm-2 control-label"
+                                        value="#{msg.name}:" />
+                                    <div class="col-sm-10">#{adminLicenseBean.currentLicenseType.name}</div>
                                 </div>
                                 <div class="form-group form-row">
                                     <div class="col-2 control-label admin__form-label">
                                         <label for="description">#{msg.description}:</label>
                                     </div>
                                     <div class="col-9 admin__form-input">
-                                        <h:inputTextarea value="#{adminLicenseBean.currentLicenseType.description}" id="description" styleClass="form-control" />
+                                        <h:inputTextarea
+                                            value="#{adminLicenseBean.currentLicenseType.description}"
+                                            id="description"
+                                            styleClass="form-control" />
                                         <span class="admin__form-help-text">#{msg.admin__license_description__help}</span>
                                     </div>
                                     <div class="col-1 admin__form-help-icon">
-                                        <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                        <button
+                                            type="button"
+                                            class="btn btn--clean"
+                                            data-toggle="helptext"
+                                            aria-label="inline help icon">
                                             <util:icon icon="help" />
                                         </button>
                                     </div>
                                 </div>
                             </div>
-                            
-                        <h2>#{msg.admin__license_placeholders}</h2>
-                        <h:panelGroup layout="block" id="placeholderGroup">
-                        
-                            <div class="admin__language-tabs">
-                                <viewerComponent:localeSelector object="#{adminLicenseBean.currentLicenseType}" render="placeholderGroup" />
-                            </div>
-                                                    
-                            <div class="admin__default-block">
-                                <ui:param name="language" value="de"></ui:param>
-                                <div id="nameLanguage-#{adminLicenseBean.currentLicenseType.selectedLocale}">
-                                
-<!--                                 <div class="form-group form-row"> -->
-<!--                                     #{msg.admin__license_placeholder_image_desc} -->
-<!--                                 </div> -->
-                                
 
-                                    <!-- IMAGE SELECTION -->
-                                    <div class="form-group form-row">
-                                        <h:panelGroup layout="block" id="imageModeGroup" styleClass="admin__cms-edit-collection-image-actions-wrapper">
-                            
-                                            <div class="form-group admin__cms-edit-collection-connected-radio-buttons">
-                                                <div class="connected-top">
-                                                    <h:selectOneRadio group="imageModeRadio" immediate="true"
-                                                        value="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).imageMode}">
-                                                        <f:selectItem itemValue="DEFAULT" itemLabel="#{msg.admin__license_placeholders_image_mode_default}" />
-                                                        <f:ajax render="imageModeGroup" />
-                                                    </h:selectOneRadio>
-                                                </div>
-                                                <div class="connected-bottom">
-                                                    <h:selectOneRadio group="imageModeRadio" immediate="true"
-                                                        value="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).imageMode}">
-                                                        <f:selectItem itemValue="UPLOADED_IMAGE" itemLabel="#{msg.admin__license_placeholders_image_mode_custom}" />
-                                                        <f:ajax render="imageModeGroup" />
-                                                    </h:selectOneRadio>
-                                                </div>
-                                            </div>
-                                            
+                            <h2>#{msg.admin__license_placeholders}</h2>
+                            <h:panelGroup
+                                layout="block"
+                                id="placeholderGroup">
+                                <div class="admin__language-tabs">
+                                    <viewerComponent:localeSelector
+                                        object="#{adminLicenseBean.currentLicenseType}"
+                                        render="placeholderGroup" />
+                                </div>
 
-                                            <h:panelGroup layout="block" styleClass="admin__cms-edit-collection-wrapper-choose-image"
-                                                id="defaultImageGroup"
-                                                rendered="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).imageMode == 'DEFAULT'}">
-                                                <div class="admin__cms-edit-collection-image-thumbnail">
-                                                    <img class="img-fluid" alt=""
-                                                        src="#{request.contextPath}#{navigationHelper.getResource('images/access_denied.png')}" />
+                                <div class="admin__default-block">
+                                    <ui:param
+                                        name="language"
+                                        value="de" />
+                                    <div id="nameLanguage-#{adminLicenseBean.currentLicenseType.selectedLocale}">
+                                        <!--                                 <div class="form-group form-row"> -->
+                                        <!--                                     #{msg.admin__license_placeholder_image_desc} -->
+                                        <!--                                 </div> -->
+
+                                        <!-- IMAGE SELECTION -->
+                                        <div class="form-group form-row">
+                                            <h:panelGroup
+                                                layout="block"
+                                                id="imageModeGroup"
+                                                styleClass="admin__cms-edit-collection-image-actions-wrapper">
+                                                <div class="form-group admin__cms-edit-collection-connected-radio-buttons">
+                                                    <div class="connected-top">
+                                                        <h:selectOneRadio
+                                                            group="imageModeRadio"
+                                                            immediate="true"
+                                                            value="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).imageMode}">
+                                                            <f:selectItem
+                                                                itemValue="DEFAULT"
+                                                                itemLabel="#{msg.admin__license_placeholders_image_mode_default}" />
+                                                            <f:ajax render="imageModeGroup" />
+                                                        </h:selectOneRadio>
+                                                    </div>
+                                                    <div class="connected-bottom">
+                                                        <h:selectOneRadio
+                                                            group="imageModeRadio"
+                                                            immediate="true"
+                                                            value="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).imageMode}">
+                                                            <f:selectItem
+                                                                itemValue="UPLOADED_IMAGE"
+                                                                itemLabel="#{msg.admin__license_placeholders_image_mode_custom}" />
+                                                            <f:ajax render="imageModeGroup" />
+                                                        </h:selectOneRadio>
+                                                    </div>
                                                 </div>
+
+                                                <h:panelGroup
+                                                    layout="block"
+                                                    styleClass="admin__cms-edit-collection-wrapper-choose-image"
+                                                    id="defaultImageGroup"
+                                                    rendered="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).imageMode == 'DEFAULT'}">
+                                                    <div class="admin__cms-edit-collection-image-thumbnail">
+                                                        <img
+                                                            class="img-fluid"
+                                                            alt=""
+                                                            src="#{request.contextPath}#{navigationHelper.getResource('images/access_denied.png')}" />
+                                                    </div>
+                                                </h:panelGroup>
+
+                                                <h:panelGroup
+                                                    layout="block"
+                                                    styleClass="admin__cms-edit-collection-wrapper-choose-image"
+                                                    id="mediaGroup"
+                                                    rendered="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).imageMode == 'UPLOADED_IMAGE'}">
+                                                    <!-- MEDIA THUMBNAIL -->
+                                                    <div class="admin__cms-edit-collection-image-thumbnail">
+                                                        <ui:fragment
+                                                            rendered="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).imageMode == 'UPLOADED_IMAGE' and adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).hasMediaItem()}">
+                                                            <img
+                                                                class="img-fluid"
+                                                                alt=""
+                                                                src="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).mediaThumbnailURI}" />
+                                                        </ui:fragment>
+                                                        <ui:fragment
+                                                            rendered="#{!adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).hasMediaItem()}">
+                                                            <img
+                                                                src="#{imageDelivery.thumbs.getThumbnailPath(null)}"
+                                                                data-viewer-thumbnail="thumbnail"
+                                                                class="img-fluid"
+                                                                alt="" />
+                                                        </ui:fragment>
+                                                    </div>
+
+                                                    <!-- ACTIONS -->
+                                                    <div class="admin__cms-edit-collection-image-actions">
+                                                        <h:commandLink
+                                                            action="#{cmsBean.setSelectedMediaHolder(adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale))}"
+                                                            value="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).hasMediaItem() ? msg.cms_selectMedia : msg.cms_media_editFile}"
+                                                            class="#{!adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).hasMediaItem() ? 'btn btn--default' : ''}"
+                                                            role="button">
+                                                            <f:ajax
+                                                                execute="@form"
+                                                                render="mediaSelectPanel" />
+                                                        </h:commandLink>
+                                                        <h:commandLink
+                                                            rendered="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).hasMediaItem()}"
+                                                            action="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).setMediaItem(null)}"
+                                                            value="#{msg.cms_selectMediaItem_deselect}"
+                                                            class="-redlink"
+                                                            role="button">
+                                                            <f:ajax render="mediaGroup" />
+                                                        </h:commandLink>
+                                                    </div>
+                                                </h:panelGroup>
                                             </h:panelGroup>
-                            
-                                            <h:panelGroup layout="block" styleClass="admin__cms-edit-collection-wrapper-choose-image"
-                                                id="mediaGroup"
-                                                rendered="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).imageMode == 'UPLOADED_IMAGE'}">
-                                                <!-- MEDIA THUMBNAIL -->
-                                                <div class="admin__cms-edit-collection-image-thumbnail">
-                                                    <ui:fragment
-                                                        rendered="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).imageMode == 'UPLOADED_IMAGE' and adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).hasMediaItem()}">
-                                                        <img class="img-fluid" alt=""
-                                                            src="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).mediaThumbnailURI}" />
-                                                    </ui:fragment>
-                                                    <ui:fragment
-                                                        rendered="#{!adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).hasMediaItem()}">
-                                                        <img src="#{imageDelivery.thumbs.getThumbnailPath(null)}" data-viewer-thumbnail="thumbnail" class="img-fluid" alt="" />
-                                                    </ui:fragment> 
-                                                </div>
-                                
-                                                <!-- ACTIONS -->
-                                                <div class="admin__cms-edit-collection-image-actions">
-                                                    <h:commandLink 
-                                                        action="#{cmsBean.setSelectedMediaHolder(adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale))}" 
-                                                        value="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).hasMediaItem() ? msg.cms_selectMedia : msg.cms_media_editFile}" 
-                                                        class="#{!adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).hasMediaItem() ? 'btn btn--default' : ''}" 
-                                                        role="button">
-                                                        <f:ajax execute="@form" render="mediaSelectPanel" />
-                                                    </h:commandLink>
-                                                    <h:commandLink 
-                                                        rendered="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).hasMediaItem()}" 
-                                                        action="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).setMediaItem(null)}" 
-                                                        value="#{msg.cms_selectMediaItem_deselect}" 
-                                                        class="-redlink"
-                                                        role="button"> 
-                                                        <f:ajax render="mediaGroup" /> 
-                                                    </h:commandLink>                    
-                                                </div>
-                                            </h:panelGroup> 
-                                            
-                                        </h:panelGroup>
-                                    </div>
+                                        </div>
 
                                         <!-- DESCRIPTION -->
                                         <div class="form-group form-row">
@@ -148,368 +190,488 @@
                                                 <label for="placeholderDesc">#{msg.description}:</label>
                                             </div>
                                             <div class="col-9 admin__form-input cms-module__option-control">
-                                                <h:inputTextarea id="placeholderDescDesc" styleClass="form-control tinyMCE"
+                                                <h:inputTextarea
+                                                    id="placeholderDescDesc"
+                                                    styleClass="form-control tinyMCE"
                                                     value="#{adminLicenseBean.currentLicenseType.getPlaceholderDescription(adminLicenseBean.currentLicenseType.selectedLocale).translationValue}">
-                                                    <f:passThroughAttribute name="aria-label"
+                                                    <f:passThroughAttribute
+                                                        name="aria-label"
                                                         value="#{msg.description}" />
                                                 </h:inputTextarea>
-                                                <div id="descHelp"
-                                                    class="admin__form-help-text">#{msg.admin__license_placeholders_description__help}</div>
+                                                <div
+                                                    id="descHelp"
+                                                    class="admin__form-help-text">
+                                                    #{msg.admin__license_placeholders_description__help}
+                                                </div>
                                             </div>
                                             <div class="col-1 admin__form-help-icon">
-                                                <button type="button" class="btn btn--clean"
-                                                    data-toggle="helptext" 
+                                                <button
+                                                    type="button"
+                                                    class="btn btn--clean"
+                                                    data-toggle="helptext"
                                                     aria-label="inline help icon">
-													<util:icon icon="help" />
+                                                    <util:icon icon="help" />
                                                 </button>
                                             </div>
                                         </div>
-
                                     </div>
                                 </div>
-                                
                             </h:panelGroup>
 
                             <!-- FUNCTIONS -->
                             <h2>#{msg.admin__license_functions}</h2>
                             <div class="admin__default-block pb-0">
-                            	<div class="#{adminLicenseBean.currentLicenseType.accessTicketRequired or adminLicenseBean.currentLicenseType.movingWall or adminLicenseBean.currentLicenseType.redirect ? '-licenceHidden' : ''}" data-watched-element="exclusive">
-	                                <div class="form-group form-row mb-3">
-	                                    <div class="col-2 control-label admin__form-label">
-	                                        <span>#{msg.openAccess}:</span>
-	                                    </div>
-	                                    <div class="col-9 admin__form-input">
-	                                    
-	                                	<viewerComponent:toggleSwitch
-										   name="openAccessToggle"
-										   value="#{adminLicenseBean.currentLicenseType.openAccess}" />    
-	                                        <span class="admin__form-help-text in">#{msg.admin__license_functions_open_access_desc}</span>
-	                                    </div>
-	                                </div>
-								</div>
+                                <div
+                                    class="#{adminLicenseBean.currentLicenseType.accessTicketRequired or adminLicenseBean.currentLicenseType.movingWall or adminLicenseBean.currentLicenseType.redirect ? '-licenceHidden' : ''}"
+                                    data-watched-element="exclusive">
+                                    <div class="form-group form-row mb-3">
+                                        <div class="col-2 control-label admin__form-label">
+                                            <span>#{msg.openAccess}:</span>
+                                        </div>
+                                        <div class="col-9 admin__form-input">
+                                            <viewerComponent:toggleSwitch
+                                                name="openAccessToggle"
+                                                value="#{adminLicenseBean.currentLicenseType.openAccess}" />
+                                            <span class="admin__form-help-text in">#{msg.admin__license_functions_open_access_desc}</span>
+                                        </div>
+                                    </div>
+                                </div>
 
                                 <!-- MOVING WALL -->
-                                <div class="admin__license-functions #{adminLicenseBean.currentLicenseType.accessTicketRequired or adminLicenseBean.currentLicenseType.openAccess or adminLicenseBean.currentLicenseType.redirect ? '-licenceHidden' : ''}" data-watched-element="keepFunctions">
-	                                <div class="form-group form-row">
-	                                    <div class="col-2 control-label admin__form-label">
-	                                        <span>#{msg.movingWall}:</span>
-	                                    </div>
-	                                    <div class="col-9 admin__form-input mb-3">
-	                                        <div class="admin__radio-switch movingWallToggle">
-	                                            <h:selectOneRadio group="movingWallToggle" value="#{adminLicenseBean.currentLicenseType.movingWall}"
-	                                                immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
-	                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-	                                            </h:selectOneRadio>
-	                                            <h:selectOneRadio group="movingWallToggle" value="#{adminLicenseBean.currentLicenseType.movingWall}"
-	                                                immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
-	                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-	                                            </h:selectOneRadio>
-	                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
-	                                        </div>
-	                                        <span class="admin__form-help-text in">#{msg.admin__license_functions_moving_wall_desc}</span>
-	                                    </div>
-	                                </div>
+                                <div
+                                    class="admin__license-functions #{adminLicenseBean.currentLicenseType.accessTicketRequired or adminLicenseBean.currentLicenseType.openAccess or adminLicenseBean.currentLicenseType.redirect ? '-licenceHidden' : ''}"
+                                    data-watched-element="keepFunctions">
+                                    <div class="form-group form-row">
+                                        <div class="col-2 control-label admin__form-label">
+                                            <span>#{msg.movingWall}:</span>
+                                        </div>
+                                        <div class="col-9 admin__form-input mb-3">
+                                            <div class="admin__radio-switch movingWallToggle">
+                                                <h:selectOneRadio
+                                                    group="movingWallToggle"
+                                                    value="#{adminLicenseBean.currentLicenseType.movingWall}"
+                                                    immediate="true"
+                                                    checked="#{visibleItem.openInNewWindow ? null : 'false'}">
+                                                    <f:selectItem
+                                                        itemValue="#{false}"
+                                                        itemLabel="#{msg.no}" />
+                                                </h:selectOneRadio>
+                                                <h:selectOneRadio
+                                                    group="movingWallToggle"
+                                                    value="#{adminLicenseBean.currentLicenseType.movingWall}"
+                                                    immediate="true"
+                                                    checked="#{visibleItem.openInNewWindow ? 'true' : null}">
+                                                    <f:selectItem
+                                                        itemValue="#{true}"
+                                                        itemLabel="#{msg.yes}" />
+                                                </h:selectOneRadio>
+                                                <span class="toggle-outside">
+                                                    <span class="toggle-inside" />
+                                                </span>
+                                            </div>
+                                            <span class="admin__form-help-text in">#{msg.admin__license_functions_moving_wall_desc}</span>
+                                        </div>
+                                    </div>
                                 </div>
-                                
+
                                 <!-- ACCESS TICKET -->
-                                <div class="admin__license-functions #{adminLicenseBean.currentLicenseType.movingWall or adminLicenseBean.currentLicenseType.openAccess or adminLicenseBean.currentLicenseType.redirect ? '-licenceHidden' : ''}" data-watched-element="keepFunctions">
+                                <div
+                                    class="admin__license-functions #{adminLicenseBean.currentLicenseType.movingWall or adminLicenseBean.currentLicenseType.openAccess or adminLicenseBean.currentLicenseType.redirect ? '-licenceHidden' : ''}"
+                                    data-watched-element="keepFunctions">
                                     <div class="form-group form-row">
                                         <div class="col-2 control-label admin__form-label">
                                             <span>#{msg.admin__license_ticket_required_label}:</span>
                                         </div>
                                         <div class="col-9 admin__form-input mb-3">
                                             <div class="admin__radio-switch ticketRequiredToggle">
-                                                <h:selectOneRadio group="ticketRequiredToggle" value="#{adminLicenseBean.currentLicenseType.accessTicketRequired}"
-                                                    immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
-                                                    <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+                                                <h:selectOneRadio
+                                                    group="ticketRequiredToggle"
+                                                    value="#{adminLicenseBean.currentLicenseType.accessTicketRequired}"
+                                                    immediate="true"
+                                                    checked="#{visibleItem.openInNewWindow ? null : 'false'}">
+                                                    <f:selectItem
+                                                        itemValue="#{false}"
+                                                        itemLabel="#{msg.no}" />
                                                     <f:ajax render="functionsGroup" />
                                                 </h:selectOneRadio>
-                                                <h:selectOneRadio group="ticketRequiredToggle" value="#{adminLicenseBean.currentLicenseType.accessTicketRequired}"
-                                                    immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
-                                                    <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                                <h:selectOneRadio
+                                                    group="ticketRequiredToggle"
+                                                    value="#{adminLicenseBean.currentLicenseType.accessTicketRequired}"
+                                                    immediate="true"
+                                                    checked="#{visibleItem.openInNewWindow ? 'true' : null}">
+                                                    <f:selectItem
+                                                        itemValue="#{true}"
+                                                        itemLabel="#{msg.yes}" />
                                                     <f:ajax render="functionsGroup" />
                                                 </h:selectOneRadio>
-                                                <span class="toggle-outside"><span class="toggle-inside"></span></span>
+                                                <span class="toggle-outside">
+                                                    <span class="toggle-inside" />
+                                                </span>
                                             </div>
                                             <span class="admin__form-help-text in">#{msg.admin__license_ticket_required_desc}</span>
                                         </div>
                                     </div>
                                 </div>
-                                
-                                <!-- REDIRECT TO PAGE -->
-                                <h:panelGroup layout="block" id="urlInputGroup">
-                                <div class="#{adminLicenseBean.currentLicenseType.accessTicketRequired or adminLicenseBean.currentLicenseType.movingWall or adminLicenseBean.currentLicenseType.openAccess ? '-licenceHidden' : ''}" data-watched-element="exclusiveAndInput">
-	                                <div class="form-group form-row admin__license-functions mb-0">
-	                                    <div class="col-2 control-label admin__form-label">
-	                                        <span>#{msg.admin__license_functions_redirect}:</span>
-	                                    </div>
-	                                    <div class="col-9 admin__form-input">
-	                                        <div class="admin__radio-switch redirectToggle">
-	                                            <h:selectOneRadio group="redirectToggle" value="#{adminLicenseBean.currentLicenseType.redirect}"
-	                                                immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
-	                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-	                                                <f:ajax render="redirectUrl" />
-	                                            </h:selectOneRadio>
-	                                            <h:selectOneRadio group="redirectToggle" value="#{adminLicenseBean.currentLicenseType.redirect}"
-	                                                immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
-	                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-	                                                <f:ajax render="redirectUrl" />
-	                                            </h:selectOneRadio>
-	                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
-	                                        </div>
-	                                        <span class="admin__form-help-text in">#{msg.admin__license_functions_redirect_desc}</span>
-	                                    </div>
-	                                </div>
-                                </div>
-                                
-                                <div class="#{!adminLicenseBean.currentLicenseType.redirect ? '-licenceHidden' : ''}" data-target-redirect="input">
-	                                <div class="form-group form-row admin__license-selectable-block">
-	                                    <div class="col-2 control-label admin__form-label">
-                                            <label for="placeholderDesc">#{msg.admin__highlights__target_type_url}:</label>
-                                        </div>
-		                                <div class="col-9 admin__form-input cms-module__option-control mt-2 mb-3">
-		                                	<!-- VALIDATOR HAS TO BE REWORKED/EXTENDED TO CHECK FOR VALID URL PATTERNS -->
-		                                    
-		                    				<h:message for="redirectUrl" errorClass="-validation-message -danger"></h:message>
-	                                            <div class="-validation-mark">
-	                                                <i class="fa fa-check" aria-hidden="true"></i>
-	                                                <i class="fa fa-exclamation" aria-hidden="true"></i>
-	                                            </div>
-		                                    <h:inputText value="#{adminLicenseBean.currentLicenseType.redirectUrl}"
-		                                        id="redirectUrl" required="#{adminLicenseBean.currentLicenseType.redirect}" styleClass="form-control -validation-input" requiredMessage="#{msg.info__input_required}"
-		                                        validator="URISyntaxValidator" validator_requireAbsoluteURI="true" validator_active="#{adminLicenseBean.currentLicenseType.redirect}">
-<!-- 												<f:ajax event="valueChange" render="urlInputGroup"/> -->
-													<!-- required="#{adminLicenseBean.currentLicenseType.redirect}" -->
-		                                    </h:inputText>
-		                                    
 
-		                                    
-		                                        
-		                                </div>
-	
-	                                </div>
-                                </div>
-                                
+                                <!-- REDIRECT TO PAGE -->
+                                <h:panelGroup
+                                    layout="block"
+                                    id="urlInputGroup">
+                                    <div
+                                        class="#{adminLicenseBean.currentLicenseType.accessTicketRequired or adminLicenseBean.currentLicenseType.movingWall or adminLicenseBean.currentLicenseType.openAccess ? '-licenceHidden' : ''}"
+                                        data-watched-element="exclusiveAndInput">
+                                        <div class="form-group form-row admin__license-functions mb-0">
+                                            <div class="col-2 control-label admin__form-label">
+                                                <span>#{msg.admin__license_functions_redirect}:</span>
+                                            </div>
+                                            <div class="col-9 admin__form-input">
+                                                <div class="admin__radio-switch redirectToggle">
+                                                    <h:selectOneRadio
+                                                        group="redirectToggle"
+                                                        value="#{adminLicenseBean.currentLicenseType.redirect}"
+                                                        immediate="true"
+                                                        checked="#{visibleItem.openInNewWindow ? null : 'false'}">
+                                                        <f:selectItem
+                                                            itemValue="#{false}"
+                                                            itemLabel="#{msg.no}" />
+                                                        <f:ajax render="redirectUrl" />
+                                                    </h:selectOneRadio>
+                                                    <h:selectOneRadio
+                                                        group="redirectToggle"
+                                                        value="#{adminLicenseBean.currentLicenseType.redirect}"
+                                                        immediate="true"
+                                                        checked="#{visibleItem.openInNewWindow ? 'true' : null}">
+                                                        <f:selectItem
+                                                            itemValue="#{true}"
+                                                            itemLabel="#{msg.yes}" />
+                                                        <f:ajax render="redirectUrl" />
+                                                    </h:selectOneRadio>
+                                                    <span class="toggle-outside">
+                                                        <span class="toggle-inside" />
+                                                    </span>
+                                                </div>
+                                                <span class="admin__form-help-text in">#{msg.admin__license_functions_redirect_desc}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        class="#{!adminLicenseBean.currentLicenseType.redirect ? '-licenceHidden' : ''}"
+                                        data-target-redirect="input">
+                                        <div class="form-group form-row admin__license-selectable-block">
+                                            <div class="col-2 control-label admin__form-label">
+                                                <label for="placeholderDesc">#{msg.admin__highlights__target_type_url}:</label>
+                                            </div>
+                                            <div class="col-9 admin__form-input cms-module__option-control mt-2 mb-3">
+                                                <!-- VALIDATOR HAS TO BE REWORKED/EXTENDED TO CHECK FOR VALID URL PATTERNS -->
+
+                                                <h:message
+                                                    for="redirectUrl"
+                                                    errorClass="-validation-message -danger" />
+                                                <div class="-validation-mark">
+                                                    <i
+                                                        class="fa fa-check"
+                                                        aria-hidden="true" />
+                                                    <i
+                                                        class="fa fa-exclamation"
+                                                        aria-hidden="true" />
+                                                </div>
+                                                <h:inputText
+                                                    value="#{adminLicenseBean.currentLicenseType.redirectUrl}"
+                                                    id="redirectUrl"
+                                                    required="#{adminLicenseBean.currentLicenseType.redirect}"
+                                                    styleClass="form-control -validation-input"
+                                                    requiredMessage="#{msg.info__input_required}"
+                                                    validator="URISyntaxValidator"
+                                                    validator_requireAbsoluteURI="true"
+                                                    validator_active="#{adminLicenseBean.currentLicenseType.redirect}">
+                                                    <!-- 												<f:ajax event="valueChange" render="urlInputGroup"/> -->
+                                                    <!-- required="#{adminLicenseBean.currentLicenseType.redirect}" -->
+                                                </h:inputText>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </h:panelGroup>
 
                                 <h:panelGroup id="functionsGroup">
-                                <div class="admin__license-functions #{adminLicenseBean.currentLicenseType.redirect or adminLicenseBean.currentLicenseType.openAccess ? '-licenceHidden' : ''}"
-                                    data-target-visibility="keepVisible">
-                                    <hr />
-                                    <div class="form-group form-row pb-3">
-                                        <div class="col-2">#{msg.admin__license_functions}:</div>
-                                        <div class="col-9 pb-1">#{msg.admin__license_functions_added}</div>
-                                        <div class="col-1"></div>
-                                        <div class="col-2"></div>
-                                        <div class="col-9 badge-hover pb-3">
-                                            <c:forEach var="priv"
-                                                items="#{adminLicenseBean.currentLicenseType.getSortedPrivileges(adminLicenseBean.currentLicenseType.privilegesCopy)}">
-                                                <c:choose>
-                                                    <c:when test="#{adminLicenseBean.currentLicenseType.accessTicketRequired and priv == 'LIST'}">
-                                                        <button disabled="true" class="btn btn--link admin__badge admin__badge-secondary admin__license-action" 
-                                                        jsf:action="#{adminLicenseBean.currentLicenseType.removePrivilege(priv)}"
-                                                        title="#{msg.remove}">
-                                                            <span>#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</span>
-                                                        </button>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <button class="btn btn--link admin__badge admin__badge-active admin__license-action" 
-                                                            jsf:action="#{adminLicenseBean.currentLicenseType.removePrivilege(priv)}"
-                                                            title="#{msg.remove}">
-                                                            <span>#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</span>
-                                                            <!-- remove button -->
-                                                            <util:icon icon="trash" />
-                                                        </button>
-                                                    </c:otherwise>
-                                                </c:choose>
-                                            </c:forEach>
-                                        </div>
-                                        <div class="col-1 admin__form-help-icon">
-                                            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                                <util:icon icon="help" />
-                                            </button>
-                                        </div>
-                                        
-                                        
-                                        <div class="col-2"></div>
-                                        <div class="col-10 pb-1">#{msg.admin__license_functions_available}</div>
-                                        <div class="col-2"></div>
-                                        <div class="col-9 badge-hover">
-                                            <c:forEach var="priv" items="#{adminLicenseBean.currentLicenseType.availablePrivileges}">
-                                                <button 
-                                                    class="btn btn--link admin__badge admin__badge-dark admin__license-action" 
-                                                    jsf:action="#{adminLicenseBean.currentLicenseType.addPrivilege(priv)}" title="#{msg.add}">
+                                    <div
+                                        class="admin__license-functions #{adminLicenseBean.currentLicenseType.redirect or adminLicenseBean.currentLicenseType.openAccess ? '-licenceHidden' : ''}"
+                                        data-target-visibility="keepVisible">
+                                        <hr />
+                                        <div class="form-group form-row pb-3">
+                                            <div class="col-2">#{msg.admin__license_functions}:</div>
+                                            <div class="col-9 pb-1">#{msg.admin__license_functions_added}</div>
+                                            <div class="col-1" />
+                                            <div class="col-2" />
+                                            <div class="col-9 badge-hover pb-3">
+                                                <c:forEach
+                                                    var="priv"
+                                                    items="#{adminLicenseBean.currentLicenseType.getSortedPrivileges(adminLicenseBean.currentLicenseType.privilegesCopy)}">
+                                                    <c:choose>
+                                                        <c:when test="#{adminLicenseBean.currentLicenseType.accessTicketRequired and priv == 'LIST'}">
+                                                            <button
+                                                                disabled="true"
+                                                                class="btn btn--link admin__badge admin__badge-secondary admin__license-action"
+                                                                jsf:action="#{adminLicenseBean.currentLicenseType.removePrivilege(priv)}"
+                                                                title="#{msg.remove}">
+                                                                <span>#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</span>
+                                                            </button>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <button
+                                                                class="btn btn--link admin__badge admin__badge-active admin__license-action"
+                                                                jsf:action="#{adminLicenseBean.currentLicenseType.removePrivilege(priv)}"
+                                                                title="#{msg.remove}">
+                                                                <span>#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</span>
+                                                                <!-- remove button -->
+                                                                <util:icon icon="trash" />
+                                                            </button>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </c:forEach>
+                                            </div>
+                                            <div class="col-1 admin__form-help-icon">
+                                                <button
+                                                    type="button"
+                                                    class="btn btn--clean"
+                                                    data-toggle="helptext"
+                                                    aria-label="inline help icon">
+                                                    <util:icon icon="help" />
+                                                </button>
+                                            </div>
+
+                                            <div class="col-2" />
+                                            <div class="col-10 pb-1">#{msg.admin__license_functions_available}</div>
+                                            <div class="col-2" />
+                                            <div class="col-9 badge-hover">
+                                                <c:forEach
+                                                    var="priv"
+                                                    items="#{adminLicenseBean.currentLicenseType.availablePrivileges}">
+                                                    <button
+                                                        class="btn btn--link admin__badge admin__badge-dark admin__license-action"
+                                                        jsf:action="#{adminLicenseBean.currentLicenseType.addPrivilege(priv)}"
+                                                        title="#{msg.add}">
                                                         #{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}
                                                         <!-- add button -->
                                                         <util:icon icon="plus" />
-                                                </button>
-                                            </c:forEach>
+                                                    </button>
+                                                </c:forEach>
+                                            </div>
+                                            <div class="col-2" />
+                                            <div class="col-9 admin__license-functions-help">
+                                                <h:outputText
+                                                    value="#{msg.admin__license_functions__help}"
+                                                    styleClass="admin__form-help-text"
+                                                    escape="false" />
+                                            </div>
                                         </div>
-                                        <div class="col-2"></div>
-	                                    <div class="col-9 admin__license-functions-help">
-	                                        <h:outputText value="#{msg.admin__license_functions__help}" styleClass="admin__form-help-text" escape="false" />
-	                                    </div>
-									</div>
-									
-                                    <!-- CONCURRENT VIEWS LIMIT -->
-                                    <ui:fragment rendered="#{adminLicenseBean.getConcurrentViewsLimitRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name) > 0}">
-                                    <div class="form-group form-row mb-3">
-                                        <div class="col-2"></div>
-                                        <h:panelGroup id="pdf_concurrent_views_limit_info_box" layout="block" styleClass="col-9">
-                                            <!-- No records found -->
-<!--                                             <ui:fragment -->
-<!--                                                 rendered="#{adminLicenseBean.getConcurrentViewsLimitRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name) == 0}"> -->
-<!--                                                     <div class="admin__default-block mb-0 -info-box"> -->
-<!--                                                         <h:outputFormat value="#{msg.admin__license_concurrent_views_limit_record_count_nok}" escape="false"> -->
-<!--                                                             <f:param value="#{adminLicenseBean.getConcurrentViewsLimitRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name)}" /> -->
-<!--                                                         </h:outputFormat> -->
-<!--                                                     </div> -->
-<!--                                             </ui:fragment> -->
-                                            <!-- Yes, records found -->
-                                            <ui:fragment
-                                                rendered="#{adminLicenseBean.getConcurrentViewsLimitRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name) > 0}">
-                                                <div class="admin__default-block mb-0 -success-box">
-                                                    <p class="mb-3">
-                                                        <h:outputFormat value="#{msg.admin__license_concurrent_views_limit_record_count_ok}" escape="false">
-                                                            <f:param value="#{adminLicenseBean.getConcurrentViewsLimitRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name)}" />
-                                                        </h:outputFormat>
-                                                    </p>
-                                                    <div class="row">
-                                                        <div class="col-2">#{msg.admin__license_concurrent_views_limit_active}:</div>
-                                                        <div class="col-10">
-                                                            <div class="admin__radio-switch -on-off">
-                                                                <h:selectOneRadio group="concurentViewsLimitToggle" value="#{adminLicenseBean.currentLicenseType.concurrentViewsLimit}"
-                                                                    immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
-                                                                    <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-                                                                </h:selectOneRadio>
-                                                                <h:selectOneRadio group="concurentViewsLimitToggle" value="#{adminLicenseBean.currentLicenseType.concurrentViewsLimit}"
-                                                                    immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
-                                                                    <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-                                                                </h:selectOneRadio>
-                                                                <span class="toggle-outside"><span class="toggle-inside"></span></span>
+
+                                        <!-- CONCURRENT VIEWS LIMIT -->
+                                        <ui:fragment
+                                            rendered="#{adminLicenseBean.getConcurrentViewsLimitRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name) > 0}">
+                                            <div class="form-group form-row mb-3">
+                                                <div class="col-2" />
+                                                <h:panelGroup
+                                                    id="pdf_concurrent_views_limit_info_box"
+                                                    layout="block"
+                                                    styleClass="col-9">
+                                                    <!-- No records found -->
+                                                    <!--                                             <ui:fragment -->
+                                                    <!--                                                 rendered="#{adminLicenseBean.getConcurrentViewsLimitRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name) == 0}"> -->
+                                                    <!--                                                     <div class="admin__default-block mb-0 -info-box"> -->
+                                                    <!--                                                         <h:outputFormat value="#{msg.admin__license_concurrent_views_limit_record_count_nok}" escape="false"> -->
+                                                    <!--                                                             <f:param value="#{adminLicenseBean.getConcurrentViewsLimitRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name)}" /> -->
+                                                    <!--                                                         </h:outputFormat> -->
+                                                    <!--                                                     </div> -->
+                                                    <!--                                             </ui:fragment> -->
+                                                    <!-- Yes, records found -->
+                                                    <ui:fragment
+                                                        rendered="#{adminLicenseBean.getConcurrentViewsLimitRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name) > 0}">
+                                                        <div class="admin__default-block mb-0 -success-box">
+                                                            <p class="mb-3">
+                                                                <h:outputFormat
+                                                                    value="#{msg.admin__license_concurrent_views_limit_record_count_ok}"
+                                                                    escape="false">
+                                                                    <f:param
+                                                                        value="#{adminLicenseBean.getConcurrentViewsLimitRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name)}" />
+                                                                </h:outputFormat>
+                                                            </p>
+                                                            <div class="row">
+                                                                <div class="col-2">#{msg.admin__license_concurrent_views_limit_active}:</div>
+                                                                <div class="col-10">
+                                                                    <div class="admin__radio-switch -on-off">
+                                                                        <h:selectOneRadio
+                                                                            group="concurentViewsLimitToggle"
+                                                                            value="#{adminLicenseBean.currentLicenseType.concurrentViewsLimit}"
+                                                                            immediate="true"
+                                                                            checked="#{visibleItem.openInNewWindow ? null : 'false'}">
+                                                                            <f:selectItem
+                                                                                itemValue="#{false}"
+                                                                                itemLabel="#{msg.no}" />
+                                                                        </h:selectOneRadio>
+                                                                        <h:selectOneRadio
+                                                                            group="concurentViewsLimitToggle"
+                                                                            value="#{adminLicenseBean.currentLicenseType.concurrentViewsLimit}"
+                                                                            immediate="true"
+                                                                            checked="#{visibleItem.openInNewWindow ? 'true' : null}">
+                                                                            <f:selectItem
+                                                                                itemValue="#{true}"
+                                                                                itemLabel="#{msg.yes}" />
+                                                                        </h:selectOneRadio>
+                                                                        <span class="toggle-outside">
+                                                                            <span class="toggle-inside" />
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                </div>
-                                            </ui:fragment>
-                                        </h:panelGroup>
+                                                    </ui:fragment>
+                                                </h:panelGroup>
+                                            </div>
+                                        </ui:fragment>
+
+                                        <!-- PDF DOWNLOAD QUOTA -->
+                                        <ui:fragment
+                                            rendered="#{adminLicenseBean.getPdfQuotaRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name) > 0}">
+                                            <div class="form-group form-row mb-3">
+                                                <div class="col-2" />
+                                                <h:panelGroup
+                                                    id="pdf_download_quota_info_box"
+                                                    layout="block"
+                                                    styleClass="col-9">
+                                                    Records found
+                                                    <ui:fragment
+                                                        rendered="#{!adminLicenseBean.currentLicenseType.hasPrivilegeCopy('DOWNLOAD_PDF') and !adminLicenseBean.currentLicenseType.hasPrivilegeCopy('DOWNLOAD_PAGE_PDF')}">
+                                                        <div class="admin__default-block mb-0 -info-box">
+                                                            <h:outputFormat
+                                                                value="#{msg.admin__license_pdf_download_quota_record_found}"
+                                                                escape="false">
+                                                                <f:param
+                                                                    value="#{adminLicenseBean.getPdfQuotaRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name)}" />
+                                                            </h:outputFormat>
+                                                        </div>
+                                                    </ui:fragment>
+
+                                                    <ui:fragment
+                                                        rendered="#{adminLicenseBean.currentLicenseType.hasPrivilegeCopy('DOWNLOAD_PDF') or adminLicenseBean.currentLicenseType.hasPrivilegeCopy('DOWNLOAD_PAGE_PDF')}">
+                                                        <div class="admin__default-block mb-0 -success-box">
+                                                            <p class="mb-3">
+                                                                <h:outputFormat
+                                                                    value="#{msg.admin__license_pdf_download_quota_record_count_ok}"
+                                                                    escape="false">
+                                                                    <f:param
+                                                                        value="#{adminLicenseBean.getPdfQuotaRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name)}" />
+                                                                </h:outputFormat>
+                                                            </p>
+                                                            <div class="row">
+                                                                <div class="col-2">#{msg.admin__license_pdf_download_quota_active}:</div>
+                                                                <div class="col-10">
+                                                                    <div class="admin__radio-switch -on-off">
+                                                                        <h:selectOneRadio
+                                                                            group="pdfDownloadQuotaToggle"
+                                                                            value="#{adminLicenseBean.currentLicenseType.pdfDownloadQuota}"
+                                                                            immediate="true"
+                                                                            checked="#{visibleItem.openInNewWindow ? null : 'false'}">
+                                                                            <f:selectItem
+                                                                                itemValue="#{false}"
+                                                                                itemLabel="#{msg.no}" />
+                                                                            <f:ajax render="pdf_download_quota_info_box" />
+                                                                        </h:selectOneRadio>
+                                                                        <h:selectOneRadio
+                                                                            group="pdfDownloadQuotaToggle"
+                                                                            value="#{adminLicenseBean.currentLicenseType.pdfDownloadQuota}"
+                                                                            immediate="true"
+                                                                            checked="#{visibleItem.openInNewWindow ? 'true' : null}">
+                                                                            <f:selectItem
+                                                                                itemValue="#{true}"
+                                                                                itemLabel="#{msg.yes}" />
+                                                                            <f:ajax render="pdf_download_quota_info_box" />
+                                                                        </h:selectOneRadio>
+                                                                        <span class="toggle-outside">
+                                                                            <span class="toggle-inside" />
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </ui:fragment>
+                                                </h:panelGroup>
+                                            </div>
+                                        </ui:fragment>
                                     </div>
-                                    </ui:fragment>
-
-                                    <!-- PDF DOWNLOAD QUOTA -->
-                                    <ui:fragment rendered="#{adminLicenseBean.getPdfQuotaRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name) > 0}">
-	                                <div class="form-group form-row mb-3">
-	                                    <div class="col-2"></div>
-	                                    <h:panelGroup id="pdf_download_quota_info_box" layout="block" styleClass="col-9">
-	                                        Records found
-	                                        <ui:fragment
-	                                            rendered="#{!adminLicenseBean.currentLicenseType.hasPrivilegeCopy('DOWNLOAD_PDF') and !adminLicenseBean.currentLicenseType.hasPrivilegeCopy('DOWNLOAD_PAGE_PDF')}">
-                                                    <div class="admin__default-block mb-0 -info-box">
-                                                        <h:outputFormat value="#{msg.admin__license_pdf_download_quota_record_found}" escape="false">
-                                                            <f:param value="#{adminLicenseBean.getPdfQuotaRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name)}" />
-                                                        </h:outputFormat>
-                                                    </div>
-	                                        </ui:fragment>
-
-	                                        <ui:fragment rendered="#{adminLicenseBean.currentLicenseType.hasPrivilegeCopy('DOWNLOAD_PDF') or adminLicenseBean.currentLicenseType.hasPrivilegeCopy('DOWNLOAD_PAGE_PDF')}">
-	                                            <div class="admin__default-block mb-0 -success-box">
-	                                                <p class="mb-3">
-	                                                    <h:outputFormat value="#{msg.admin__license_pdf_download_quota_record_count_ok}" escape="false">
-	                                                        <f:param value="#{adminLicenseBean.getPdfQuotaRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name)}" />
-	                                                    </h:outputFormat>
-	                                                </p>
-                                                    <div class="row">
-                                                        <div class="col-2">#{msg.admin__license_pdf_download_quota_active}:</div>
-                                                        <div class="col-10">
-                                                            <div class="admin__radio-switch -on-off">
-                                                                <h:selectOneRadio group="pdfDownloadQuotaToggle" value="#{adminLicenseBean.currentLicenseType.pdfDownloadQuota}"
-                                                                    immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
-                                                                    <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-                                                                    <f:ajax render="pdf_download_quota_info_box" />
-                                                                </h:selectOneRadio>
-                                                                <h:selectOneRadio group="pdfDownloadQuotaToggle" value="#{adminLicenseBean.currentLicenseType.pdfDownloadQuota}"
-                                                                    immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
-                                                                    <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-                                                                    <f:ajax render="pdf_download_quota_info_box" />
-                                                                </h:selectOneRadio>
-                                                                <span class="toggle-outside"><span class="toggle-inside"></span></span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-	                                        </ui:fragment>
-	                                    </h:panelGroup>
-	                                </div>
-	                                </ui:fragment>
-                                </div>
                                 </h:panelGroup>
-                                
                             </div>
 
                             <!-- OVERRIDING LICENSES -->
                             <h2>#{msg.admin__license_overriding__overridden_licenses}</h2>
 
                             <div class="admin__default-block">
-                                <div class="form-group form-row">
-                                    #{msg.admin__license_overriding__help}
-                                </div>
+                                <div class="form-group form-row">#{msg.admin__license_overriding__help}</div>
                                 <div class="form-group form-row">
                                     <div class="col-2 control-label admin__form-label">
                                         <label for="overridindlicense">#{msg.admin__licenses}:</label>
                                     </div>
                                     <div class="col-9 admin__form-input">
-                                        <h:selectManyListbox id="overriding" styleClass="form-control" converter="licenseTypeConverter"
+                                        <h:selectManyListbox
+                                            id="overriding"
+                                            styleClass="form-control"
+                                            converter="licenseTypeConverter"
                                             value="#{adminLicenseBean.currentLicenseType.overriddenLicenseTypes}">
-                                            <f:passThroughAttribute name="aria-label" value="overriding licenses" />
-                                            <f:selectItems value="#{adminLicenseBean.otherLicenseTypes}" var="licenseType" itemLabel="#{msg[licenseType.name]}" />
+                                            <f:passThroughAttribute
+                                                name="aria-label"
+                                                value="overriding licenses" />
+                                            <f:selectItems
+                                                value="#{adminLicenseBean.otherLicenseTypes}"
+                                                var="licenseType"
+                                                itemLabel="#{msg[licenseType.name]}" />
                                             <f:ajax render="@none" />
                                         </h:selectManyListbox>
                                     </div>
-
                                 </div>
                             </div>
 
                             <div class="admin__final-actions">
-                                <h:commandLink action="pretty:adminLicenses" value="#{msg.cancel}" styleClass="btn admin__cancel-button" immediate="true" />
+                                <h:commandLink
+                                    action="pretty:adminLicenses"
+                                    value="#{msg.cancel}"
+                                    styleClass="btn admin__cancel-button"
+                                    immediate="true" />
                                 <button
-                                    jsf:action="#{adminLicenseBean.saveCurrentLicenseTypeAction}" 
+                                    jsf:action="#{adminLicenseBean.saveCurrentLicenseTypeAction}"
                                     class="btn btn--success">
                                     #{msg.save}
                                 </button>
                             </div>
                         </div>
-                        
-		            <script>
- 		           	adminJS.licenceToggle.init(); 
-		            </script>
-		            
-		            <h:panelGroup id="mediaSelectPanel">
-						<ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
-			                   <div class="admin-cms-media-select-overlay">
-			                    
-			                    <!-- SELECT MEDIA ITEM OVERLAY -->
-		                            <div class="admin-cms-media__select-overlay"></div>
-		                            
-		                            <!-- SELECT MEDIA ITEM -->
-		                            <div class="admin-cms-media__select">                            
-		                                 <ui:include src="/resources/cms/includes/mediaSelect.xhtml">
-		                                 	<ui:param name="mediaDisplayPanel" value="mediaGroup" />
-		                                 	<ui:param name="fileTypes" value="#{cmsMediaBean.getImageTypes()}"/>
-		        							<ui:param name="fileTypeValidator" value="#{cmsMediaBean.getImageFilter()}"/>
-		                                </ui:include>
-		                            </div>
-			                   </div>
-						</ui:fragment>
-			        </h:panelGroup>
-                        
-                    </h:form>
-                    
 
-                    
+                        <script>adminJS.licenceToggle.init();</script>
+
+                        <h:panelGroup id="mediaSelectPanel">
+                            <ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
+                                <div class="admin-cms-media-select-overlay">
+                                    <!-- SELECT MEDIA ITEM OVERLAY -->
+                                    <div class="admin-cms-media__select-overlay" />
+
+                                    <!-- SELECT MEDIA ITEM -->
+                                    <div class="admin-cms-media__select">
+                                        <ui:include src="/resources/cms/includes/mediaSelect.xhtml">
+                                            <ui:param
+                                                name="mediaDisplayPanel"
+                                                value="mediaGroup" />
+                                            <ui:param
+                                                name="fileTypes"
+                                                value="#{cmsMediaBean.getImageTypes()}" />
+                                            <ui:param
+                                                name="fileTypeValidator"
+                                                value="#{cmsMediaBean.getImageFilter()}" />
+                                        </ui:include>
+                                    </div>
+                                </div>
+                            </ui:fragment>
+                        </h:panelGroup>
+                    </h:form>
                 </h:panelGroup>
             </div>
-            
         </f:view>
     </ui:define>
-
 </ui:composition>

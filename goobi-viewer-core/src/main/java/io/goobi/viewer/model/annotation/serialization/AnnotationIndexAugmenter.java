@@ -53,14 +53,13 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.modules.interfaces.IndexAugmenter;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class AnnotationIndexAugmenter implements IndexAugmenter {
 
     private final Logger logger = LogManager.getLogger(AnnotationIndexAugmenter.class);
 
-    /** Constant <code>SUFFIX_ANNOTATIONS="_annotations"</code> */
+    /** Constant <code>SUFFIX_ANNOTATIONS="_annotations"</code>. */
     public static final String SUFFIX_ANNOTATIONS = "_ugc";
 
     private final List<PersistentAnnotation> annotations;
@@ -75,9 +74,6 @@ public class AnnotationIndexAugmenter implements IndexAugmenter {
         this.annotations = null; //load annotations in augemntReIndex... methods
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.modules.interfaces.IndexAugmenter#augmentReIndexRecord(java.lang.String, java.lang.String, java.lang.String)
-     */
     @Override
     public void augmentReIndexRecord(String pi, String dataRepository, String namingScheme) throws IndexAugmenterException {
         try {
@@ -91,10 +87,6 @@ public class AnnotationIndexAugmenter implements IndexAugmenter {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.modules.interfaces.IndexAugmenter#augmentReIndexPage(java.lang.String, int, org.apache.solr.common.SolrDocument,
-     * java.lang.String, java.lang.String)
-     */
     @Override
     public boolean augmentReIndexPage(String pi, int page, SolrDocument doc, String dataRepository, String namingScheme)
             throws IndexAugmenterException {
@@ -184,7 +176,10 @@ public class AnnotationIndexAugmenter implements IndexAugmenter {
     }
 
     /**
-     * Two instances are equal if they contain the same annotations (disregarding order)
+     * Two instances are equal if they contain the same annotations (disregarding order).
+     *
+     * @param obj the object to compare with
+     * @return true if the given object is equal to this instance, false otherwise
      */
     @Override
     public boolean equals(Object obj) {

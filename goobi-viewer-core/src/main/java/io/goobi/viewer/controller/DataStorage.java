@@ -21,6 +21,11 @@
  */
 package io.goobi.viewer.controller;
 
+/**
+ * Simple key-value storage abstraction used to pass arbitrary data between components.
+ * Implementations may back this interface with session attributes, maps, or other storage
+ * mechanisms.
+ */
 public interface DataStorage {
 
     public DataStorage put(String key, Object value);

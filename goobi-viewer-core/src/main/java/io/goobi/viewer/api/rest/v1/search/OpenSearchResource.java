@@ -42,6 +42,7 @@ import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -50,10 +51,10 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 
 /**
+ * REST resource providing OpenSearch protocol endpoints for search and auto-suggest functionality.
  * <p>
- * Endpoint for opensearch (https://opensearchfoundation.org/) within the viewer instance. The url is referenced in the header of the template.html in
- * the viewer-theme. This resource returns the xml-document in /resources/opensearch/opensearch.xml
- * </p>
+ * The endpoint URL is referenced in the header of the viewer theme's {@code template.html}. Returns the XML document
+ * from {@code /resources/opensearch/opensearch.xml}.
  */
 @Path(ApiUrls.OPENSEARCH)
 @ViewerRestServiceBinding
@@ -67,15 +68,14 @@ public class OpenSearchResource {
     private HttpServletRequest servletRequest;
 
     /**
-     * <p>
      * getXml.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the OpenSearch description document as an XML string
      */
     @GET
     @Produces({ MediaType.TEXT_XML })
-    @Operation(tags = { "search" }, summary = "Endpoint for opensearch api")
+    @Operation(tags = { "search" }, summary = "OpenSearch description document")
+    @ApiResponse(responseCode = "200", description = "OpenSearch description XML")
     public String getXml() {
         String xml = null;
         try {

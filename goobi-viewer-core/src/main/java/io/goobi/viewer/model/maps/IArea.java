@@ -22,10 +22,9 @@
 package io.goobi.viewer.model.maps;
 
 /**
- * Represents any shape on a GeoMap, mainly points and polygons
+ * Represents any shape on a GeoMap, mainly points and polygons.
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 public interface IArea {
 

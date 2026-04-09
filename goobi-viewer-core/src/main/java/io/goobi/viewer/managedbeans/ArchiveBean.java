@@ -62,6 +62,10 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Named;
 
+/**
+ * JSF backing bean for the archive view. Manages loading, searching, and navigating EAD-based
+ * archive trees, and maintains the selected archive resource and entry state per user session.
+ */
 @Named
 @SessionScoped
 public class ArchiveBean implements Serializable {
@@ -163,19 +167,14 @@ public class ArchiveBean implements Serializable {
         return getArchiveTree().getRootElement();
     }
 
-    /**
-     *
-     * @return the archiveTree
-     */
+    
     public ArchiveTree getArchiveTree() {
         // logger.trace("getArchiveTree: {} from ArchiveBean {}", archiveTree != null ?
         // archiveTree.toString() : "null", this.toString()); //NOSONAR Debug
         return archiveTree;
     }
 
-    /**
-     * @return the archiveConfig
-     */
+    
     public CMSArchiveConfig getArchiveConfig() {
         return archiveConfig;
     }
@@ -190,9 +189,7 @@ public class ArchiveBean implements Serializable {
     }
 
     /**
-     * <p>
      * expandEntry.
-     * </p>
      *
      * @param entry a {@link io.goobi.viewer.model.toc.TOCElement} object.
      */
@@ -212,9 +209,7 @@ public class ArchiveBean implements Serializable {
     }
 
     /**
-     * <p>
      * collapseEntry.
-     * </p>
      *
      * @param entry a {@link io.goobi.viewer.model.toc.TOCElement} object.
      */
@@ -241,7 +236,7 @@ public class ArchiveBean implements Serializable {
 
     /**
      *
-     * @param entry
+     * @param entry archive entry to select
      * @return empty string
      */
     public String selectEntryAction(ArchiveEntry entry) {
@@ -303,16 +298,12 @@ public class ArchiveBean implements Serializable {
         }
     }
 
-    /**
-     * @return the searchString
-     */
+    
     public String getSearchString() {
         return searchString;
     }
 
-    /**
-     * @param searchString the searchString to set
-     */
+    
     public void setSearchString(String searchString) {
         logger.trace("setSearchString: {}", searchString);
         if (!Strings.CS.equals(this.searchString, searchString)) {
@@ -387,9 +378,7 @@ public class ArchiveBean implements Serializable {
         return Optional.ofNullable(getArchiveTree().getSelectedEntry()).orElse(getArchiveTree().getRootElement());
     }
 
-    /**
-     * @return the databaseState
-     */
+    
     public DatabaseState getDatabaseState() {
         logger.trace("getDatabaseState"); //NOSONAR Debug
         if (isDatabaseLoaded()) {
@@ -408,16 +397,12 @@ public class ArchiveBean implements Serializable {
         return this.databaseLoaded;
     }
 
-    /**
-     * @return the currentResource
-     */
+    
     public String getCurrentResource() {
         return currentResource;
     }
 
-    /**
-     * @param currentResource the currentResource to set
-     */
+    
     public void setCurrentResource(String currentResource) {
         this.currentResource = StringTools.decodeUrl(currentResource);
     }
@@ -524,9 +509,7 @@ public class ArchiveBean implements Serializable {
     }
 
     /**
-     * <p>
      * getMetsResolverUrl.
-     * </p>
      *
      * @return METS resolver link
      */
@@ -549,7 +532,7 @@ public class ArchiveBean implements Serializable {
     /**
      * Exports the currently loaded archive for re-indexing.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the empty navigation outcome string after triggering re-indexing
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.RecordNotFoundException if any.
@@ -567,9 +550,7 @@ public class ArchiveBean implements Serializable {
     }
 
     /**
-     * <p>
      * deleteArchiveAction.
-     * </p>
      *
      * @return outcome
      * @throws java.io.IOException if any.
@@ -593,7 +574,7 @@ public class ArchiveBean implements Serializable {
     /**
      * For tests.
      * 
-     * @param databaseLoaded the databaseLoaded to set
+
      */
     void setDatabaseLoaded(boolean databaseLoaded) {
         this.databaseLoaded = databaseLoaded;
@@ -602,7 +583,7 @@ public class ArchiveBean implements Serializable {
     /**
      * For tests.
      * 
-     * @param archiveTree the archiveTree to set
+
      */
     void setArchiveTree(ArchiveTree archiveTree) {
         this.archiveTree = archiveTree;

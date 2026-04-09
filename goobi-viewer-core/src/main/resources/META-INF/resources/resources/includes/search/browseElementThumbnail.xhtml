@@ -1,71 +1,61 @@
 <ui:composition
-  xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-  xmlns:c="http://java.sun.com/jsp/jstl/core"
-  xmlns:h="http://xmlns.jcp.org/jsf/html"
-  xmlns:f="http://xmlns.jcp.org/jsf/core"
-  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-  xmlns:jsf="http://xmlns.jcp.org/jsf"
-  xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-  xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-  xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
->
-  <ui:param
-    name="browseElement"
-    value="#{browseElement != null ? browseElement : null}"
-  ></ui:param>
-  <ui:fragment rendered="#{browseElement.showThumbnail}">
-    <!-- THUMBNAIL -->
-    <figure class="search-list__hit-thumbnail">
-      <!-- SINGLEVOLUME -->
-      <h:outputLink
-        value="#{navigationHelper.applicationUrl}#{browseElement.url}"
-        rendered="#{browseElement.thumbnailUrl != null and !browseElement.anchor}"
-        title="#{browseElement.label}"
-      >
-        <img
-          src="#{browseElement.thumbnailUrl}"
-          alt="#{browseElement.label}"
-          data-viewer-thumbnail="thumbnail"
-          data-viewer-access-denied-url="#{browseElement.getAccessDeniedThumbnailUrl(navigationHelper.locale)}"
-        />
-      </h:outputLink>
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+    <ui:param
+        name="browseElement"
+        value="#{browseElement != null ? browseElement : null}" />
+    <ui:fragment rendered="#{browseElement.showThumbnail}">
+        <!-- THUMBNAIL -->
+        <figure class="search-list__hit-thumbnail">
+            <!-- SINGLEVOLUME -->
+            <h:outputLink
+                value="#{navigationHelper.applicationUrl}#{browseElement.url}"
+                rendered="#{browseElement.thumbnailUrl != null and !browseElement.anchor and !browseElement.group}"
+                title="#{browseElement.label}">
+                <img
+                    src="#{browseElement.thumbnailUrl}"
+                    alt="#{browseElement.label}"
+                    data-viewer-thumbnail="thumbnail"
+                    data-viewer-access-denied-url="#{browseElement.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />
+            </h:outputLink>
 
-      <!-- SINGLEVOLUME WITHOUT IMAGE -->
-      <h:outputLink
-        value="#{navigationHelper.applicationUrl}#{browseElement.url}"
-        rendered="#{browseElement.thumbnailUrl == null and !browseElement.anchor}"
-        title="#{browseElement.label}"
-      >
-        <img
-          src="/resources/themes/#{navigationHelper.theme}/images/image_not_found.png"
-          alt="#{browseElement.label}"
-          data-viewer-thumbnail="thumbnail"
-        />
-      </h:outputLink>
+            <!-- SINGLEVOLUME WITHOUT IMAGE -->
+            <h:outputLink
+                value="#{navigationHelper.applicationUrl}#{browseElement.url}"
+                rendered="#{browseElement.thumbnailUrl == null and !browseElement.anchor and !browseElement.group}"
+                title="#{browseElement.label}">
+                <img
+                    src="/resources/themes/#{navigationHelper.theme}/images/image_not_found.png"
+                    alt="#{browseElement.label}"
+                    data-viewer-thumbnail="thumbnail" />
+            </h:outputLink>
 
-      <!-- MULTIVOLUME -->
-      <h:outputLink
-        value="#{navigationHelper.applicationUrl}#{browseElement.url}"
-        rendered="#{browseElement.anchor}"
-        styleClass="stackedThumbEffect"
-      >
-        <div class="stackedThumbEffect-inner">
-          <h:panelGroup
-            rendered="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME'}"
-          >
-            <div class="stacked-thumbnail-before"></div>
-            <div class="stacked-thumbnail-after"></div>
-          </h:panelGroup>
-          <img
-            src="#{browseElement.thumbnailUrl}"
-            data-viewer-thumbnail="thumbnail"
-            data-viewer-access-denied-url="#{browseElement.getAccessDeniedThumbnailUrl(navigationHelper.locale)}"
-            class="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME' ? 'stacked-thumbnail' : ''}"
-            alt="Thumbnail"
-          />
-        </div>
-      </h:outputLink>
-    </figure>
-  </ui:fragment>
+            <!-- MULTIVOLUME -->
+            <h:outputLink
+                value="#{navigationHelper.applicationUrl}#{browseElement.url}"
+                rendered="#{browseElement.anchor or browseElement.group}"
+                styleClass="stackedThumbEffect">
+                <div class="stackedThumbEffect-inner">
+                    <h:panelGroup rendered="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME'}">
+                        <div class="stacked-thumbnail-before" />
+                        <div class="stacked-thumbnail-after" />
+                    </h:panelGroup>
+                    <img
+                        src="#{browseElement.thumbnailUrl}"
+                        data-viewer-thumbnail="thumbnail"
+                        data-viewer-access-denied-url="#{browseElement.getAccessDeniedThumbnailUrl(navigationHelper.locale)}"
+                        class="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME' ? 'stacked-thumbnail' : ''}"
+                        alt="Thumbnail" />
+                </div>
+            </h:outputLink>
+        </figure>
+    </ui:fragment>
 </ui:composition>

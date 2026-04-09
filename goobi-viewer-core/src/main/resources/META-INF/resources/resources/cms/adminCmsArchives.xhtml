@@ -58,7 +58,7 @@
                                                 alt="#{archiveWrapper.archiveConfig.mediaItem.alternativeText != '' ? archiveWrapper.archiveConfig.mediaItem.alternativeText : archiveWrapper.archiveResource.resourceName}" />
                                         </ui:fragment>
                                         <ui:fragment rendered="#{!archiveWrapper.archiveConfig.hasMediaItem()}">
-                                            <div class="admin__archives-card__image-placeholder"></div>
+                                            <div class="admin__archives-card__image-placeholder" />
                                         </ui:fragment>
                                     </div>
                                     <!-- CARD CONTENT -->
@@ -66,8 +66,7 @@
                                         <h2>#{archiveWrapper.archiveResource.resourceName}</h2>
                                         <ui:fragment rendered="#{not empty archiveWrapper.archiveConfig.description}">
                                             <div class="admin__archives-card__description">
-                                                <h:outputText
-                                                    value="#{archiveWrapper.archiveConfig.getShortDescription(200)}" />
+                                                <h:outputText value="#{archiveWrapper.archiveConfig.getShortDescription(200)}" />
                                             </div>
                                         </ui:fragment>
                                     </div>

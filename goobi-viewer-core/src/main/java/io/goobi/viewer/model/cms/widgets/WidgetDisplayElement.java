@@ -46,8 +46,7 @@ import jakarta.persistence.GenerationType;
  * custom widgets explicitly created by users They are further distinguished by {@link #getContentType()} corresponding to the individual widget xhtml
  * component
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDisplayElement> {
 
@@ -57,7 +56,7 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     private final WidgetGenerationType generationType;
     private final WidgetContentType contentType;
     /**
-     * Identifier of the underlying CustomSidebarWidget or GeoMap, if any
+     * Identifier of the underlying CustomSidebarWidget or GeoMap, if any.
      */
     private final Long id;
     private final IPolyglott translations;
@@ -65,11 +64,11 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     /**
      * Default constructor for widgets without underlying data (i.e. default widgets)
      *
-     * @param title
-     * @param description
-     * @param embeddingPages
-     * @param generationType
-     * @param contentType
+     * @param title displayed title of the widget
+     * @param description short description of the widget
+     * @param embeddingPages CMS pages that embed this widget
+     * @param generationType the way the widget's data is generated and stored
+     * @param contentType the specific xhtml component used for this widget
      */
     public WidgetDisplayElement(IMetadataValue title, IMetadataValue description, List<CMSPage> embeddingPages, WidgetGenerationType generationType,
             WidgetContentType contentType) {
@@ -78,13 +77,13 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
 
     /**
      *
-     * Default constructor for widgets with underlying data identified by the given id
+     * Default constructor for widgets with underlying data identified by the given id.
      *
-     * @param title
-     * @param description
-     * @param embeddingPages
-     * @param generationType
-     * @param contentType
+     * @param title displayed title of the widget
+     * @param description short description of the widget
+     * @param embeddingPages CMS pages that embed this widget
+     * @param generationType the way the widget's data is generated and stored
+     * @param contentType the specific xhtml component used for this widget
      * @param id the database id of the underlying content. The type of content depends on generationType and contentType
      * @param translations used to display translation status of the widget. Usually the underlying custom widget
      */
@@ -114,18 +113,18 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     }
 
     /**
-     * The displayed title of the element
-     * 
-     * @return the title
+     * The displayed title of the element.
+     *
+     * @return the title of this widget display element as a {@link TranslatedText}
      */
     public TranslatedText getTitle() {
         return title;
     }
 
     /**
-     * A description of the element
-     * 
-     * @return the description
+     * A description of the element.
+     *
+     * @return the description of this widget display element as a {@link TranslatedText}
      */
     public TranslatedText getDescription() {
         return description;
@@ -141,15 +140,15 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
 
     /**
      * A list of CMS pages using this element. Only used to automatic and custom widgets
-     * 
-     * @return the embeddingPages
+     *
+     * @return the list of {@link CMSPage} instances that embed this widget
      */
     public List<CMSPage> getEmbeddingPages() {
         return embeddingPages;
     }
 
     /**
-     * Describes they way in which way data for this widget is created and stored
+     * Describes they way in which way data for this widget is created and stored.
      * 
      * @return the {@link GenerationType generation type}
      */
@@ -158,25 +157,28 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     }
 
     /**
-     * Describes the specific xhtml component used for this widget
-     * 
-     * @return the contentType
+     * Describes the specific xhtml component used for this widget.
+     *
+     * @return the {@link WidgetContentType} identifying the xhtml component for this widget
      */
     public WidgetContentType getContentType() {
         return contentType;
     }
 
     /**
-     * Identifier of the underlying data, if any
-     * 
-     * @return the id
+     * Identifier of the underlying data, if any.
+     *
+     * @return the database identifier of the underlying widget data, or null if no persistent data exists
      */
     public Long getId() {
         return id;
     }
 
     /**
-     * Both title and description are filled
+     * Both title and description are filled.
+     *
+     * @param locale the locale to check translation completeness for
+     * @return true if both title and description are non-empty for the given locale, false otherwise
      */
     @Override
     public boolean isComplete(Locale locale) {
@@ -184,7 +186,10 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     }
 
     /**
-     * At least one of title and description is filled
+     * At least one of title and description is filled.
+     *
+     * @param locale the locale to check validity for
+     * @return true if the title is non-empty for any locale, false otherwise
      */
     @Override
     public boolean isValid(Locale locale) {
@@ -202,7 +207,9 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     }
 
     /**
-     * Not used, since this element isn't editable
+     * Not used, since this element isn't editable.
+     *
+     * @param locale the locale to set (ignored)
      */
     @Override
     public void setSelectedLocale(Locale locale) {
@@ -234,7 +241,10 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     }
 
     /**
-     * Two elements are equal if their titles are equal
+     * Two elements are equal if their titles are equal.
+     *
+     * @param other the widget display element to compare to
+     * @return a negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the specified object
      */
     @Override
     public int compareTo(WidgetDisplayElement other) {

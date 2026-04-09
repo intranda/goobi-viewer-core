@@ -89,9 +89,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
- * <p>
- * ManifestBuilder class.
- * </p>
+ * Builds IIIF Presentation API v2 Manifest resources from Solr index data and content files.
  *
  * @author Florian Alpers
  */
@@ -102,24 +100,20 @@ public class ManifestBuilder extends AbstractBuilder {
     private BuildMode buildMode = BuildMode.IIIF;
 
     /**
-     * <p>
-     * Constructor for ManifestBuilder.
-     * </p>
+     * Creates a new ManifestBuilder instance.
      *
-     * @param apiUrlManager
+     * @param apiUrlManager API URL manager for building IIIF resource URIs
      */
     public ManifestBuilder(AbstractApiUrlManager apiUrlManager) {
         super(apiUrlManager);
     }
 
     /**
-     * <p>
      * generateManifest.
-     * </p>
      *
-     * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @param pagesToInclude
-     * @return a {@link de.intranda.api.iiif.presentation.IPresentationModelElement} object.
+     * @param ele top-level structure element of the record
+     * @param pagesToInclude list of physical page orders to include; empty means all pages
+     * @return the generated IIIF Manifest or Collection for the given structure element
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -190,13 +184,11 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * populate.
-     * </p>
      *
-     * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @param manifest a {@link de.intranda.api.iiif.presentation.v2.AbstractPresentationModelElement2} object.
-     * @param pages
+     * @param ele structure element providing metadata and hierarchy
+     * @param manifest IIIF presentation element to populate with data
+     * @param pages resolved physical pages used for thumbnail and rendering links
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -362,9 +354,9 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param manifest
-     * @param ele
-     * @param page
+     * @param manifest the manifest to add rendering links to
+     * @param ele the top-level structure element of the record
+     * @param page optional single page; if present, page-level rendering URLs are used
      * @throws URISyntaxException
      */
     public void addRenderings(AbstractPresentationModelElement2 manifest, StructElement ele, Optional<PhysicalElement> page) {
@@ -403,9 +395,9 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * 
-     * @param page
-     * @param target
+     *
+     * @param page the physical page for which to build the URI
+     * @param target the type of linking resource to resolve
      * @return {@link URI}
      */
     private URI getLinkingPropertyUri(PhysicalElement page, LinkingTarget target) {
@@ -444,8 +436,8 @@ public class ManifestBuilder extends AbstractBuilder {
 
     /**
      * 
-     * @param page
-     * @param target
+     * @param page optional physical page to check access restrictions for
+     * @param target linking target type determining which resource is checked
      * @return AuthProbeService2 (and other auth services) if access to resource is restricted; empty list otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -485,9 +477,9 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * 
-     * @param ele
-     * @param target
+     *
+     * @param ele the structure element for which to build the URI
+     * @param target the type of linking resource to resolve
      * @return {@link URISyntaxException}
      * @throws URISyntaxException
      * @throws PresentationException
@@ -563,12 +555,10 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * addVolumes.
-     * </p>
      *
-     * @param anchor a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
-     * @param volumes a {@link java.util.List} object.
+     * @param anchor IIIF collection representing the anchor record
+     * @param volumes list of volume structure elements to add as manifests
      */
     public void addVolumes(Collection2 anchor, List<StructElement> volumes) {
         for (StructElement volume : volumes) {
@@ -585,12 +575,10 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * addAnchor.
-     * </p>
      *
-     * @param manifest a {@link de.intranda.api.iiif.presentation.v2.Manifest2} object.
-     * @param anchorPI a {@link java.lang.String} object.
+     * @param manifest volume manifest to add the anchor reference to
+     * @param anchorPI persistent identifier of the anchor record
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws java.net.URISyntaxException if any.
@@ -607,7 +595,7 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param volume
+     * @param volume the volume struct element whose sort number to read
      * @return {@link Integer}
      */
     private static Integer getSortingNumber(StructElement volume) {
@@ -661,23 +649,19 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * Getter for the field <code>buildMode</code>.
-     * </p>
      *
-     * @return the buildMode
+     * @return the build mode controlling which parts of the manifest are generated
      */
     public BuildMode getBuildMode() {
         return buildMode;
     }
 
     /**
-     * <p>
      * Setter for the field <code>buildMode</code>.
-     * </p>
      *
-     * @param buildMode the buildMode to set
-     * @return a {@link io.goobi.viewer.model.iiif.presentation.v2.builder.ManifestBuilder} object.
+     * @param buildMode the build mode controlling which parts of the manifest are generated
+     * @return this ManifestBuilder instance for method chaining
      */
     public ManifestBuilder setBuildMode(BuildMode buildMode) {
         this.buildMode = buildMode;

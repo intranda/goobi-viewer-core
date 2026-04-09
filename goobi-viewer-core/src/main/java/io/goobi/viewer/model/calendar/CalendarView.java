@@ -57,7 +57,7 @@ public class CalendarView implements Serializable {
      *
      * @param pi Record identifier
      * @param anchorPi Anchor record identifier (must be same as pi if this is an anchor)
-     * @param anchorField
+     * @param anchorField Solr field name linking volumes to their anchor
      * @param year Year of a volume; null, if this is an anchor!
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -102,7 +102,7 @@ public class CalendarView implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public void populateCalendar() throws PresentationException, IndexUnreachableException {
-        if (anchorPi != null && anchorPi.equals(pi)) {
+        if (anchorPi != null && anchorField != null) {
             calendarItems = CalendarBean.populateMonthsWithDays(year, null, " +" + anchorField + ":\"" + anchorPi + "\"");
         } else {
             calendarItems = CalendarBean.populateMonthsWithDays(year, null, " +" + SolrConstants.PI_TOPSTRUCT + ":\"" + pi + "\"");
@@ -111,11 +111,9 @@ public class CalendarView implements Serializable {
     }
 
     /**
-     * <p>
      * getVolumeYears.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of year strings for volumes of this anchor that have calendar day data
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @should only return volume years that have YEARMONTHDAY field
@@ -131,26 +129,26 @@ public class CalendarView implements Serializable {
             }
         }
 
+        if (year == null && !volumeYears.isEmpty()) {
+            setYear(volumeYears.get(0));
+        }
+
         return volumeYears;
     }
 
     /**
-     * <p>
      * Getter for the field <code>year</code>.
-     * </p>
      *
-     * @return the year
+     * @return the four-digit year string currently displayed in the calendar
      */
     public String getYear() {
         return year;
     }
 
     /**
-     * <p>
      * Setter for the field <code>year</code>.
-     * </p>
      *
-     * @param year the year to set
+     * @param year the four-digit year string to display; triggers calendar population
      */
     public void setYear(String year) {
         this.year = year;
@@ -162,11 +160,33 @@ public class CalendarView implements Serializable {
     }
 
     /**
-     * <p>
-     * Getter for the field <code>calendarItems</code>.
-     * </p>
+     * Returns the parent identifier used for calendar queries.
      *
-     * @return the calendarItems
+     * <p>For anchor volumes this is the anchor PI, for group members it is the group identifier value
+     * (i.e. the PI of the GROUP document).
+     *
+     * @return the parent persistent identifier used for calendar hit queries
+     */
+    public String getAnchorPi() {
+        return anchorPi;
+    }
+
+    /**
+     * Returns the Solr field name used for parent lookups.
+     *
+     * <p>For anchor volumes this is {@code PI_ANCHOR}, for group members it is the group identifier field
+     * (e.g. {@code GROUPID_NEWSPAPER}).
+     *
+     * @return the Solr field name used for parent identifier lookups in calendar queries
+     */
+    public String getAnchorField() {
+        return anchorField;
+    }
+
+    /**
+     * Getter for the field <code>calendarItems</code>.
+     *
+     * @return list of calendar month items representing the current calendar year
      */
     public List<CalendarItemMonth> getCalendarItems() {
         return calendarItems;

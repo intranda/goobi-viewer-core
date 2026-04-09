@@ -21,60 +21,64 @@
             color: @middlegray;
         }
     }
-    &__text {}
+    &__text {
+    }
     &__list-item {
         margin-bottom: 15px;
         display: flex;
         flex-wrap: wrap;
         flex: 0 0 100%;
     }
-	&__list-item-inner {
-		display: grid;
-		grid-template-columns: 400px 1fr;
-		gap: 30px;
-		width: 100%;
-	}
-	&__list-item-right {
-		display: flex;
-		flex-direction: column;
-	}
-    &__list-image {
-    	overflow: hidden;
-		margin-bottom: 0;
-		img {
-			object-fit: cover;
-			  object-position: center;
-			  max-width: 100%;
-			  max-height: 500px;
-		}
+    &__list-item-inner {
+        display: grid;
+        grid-template-columns: 400px 1fr;
+        gap: 30px;
+        width: 100%;
     }
-    &__list-preview {}
+    &__list-item-right {
+        display: flex;
+        flex-direction: column;
+    }
+    &__list-image {
+        overflow: hidden;
+        margin-bottom: 0;
+        img {
+            object-fit: cover;
+            object-position: center;
+            max-width: 100%;
+            max-height: 500px;
+        }
+    }
+    &__list-preview {
+    }
     &__preview-date {
         margin-bottom: 15px;
     }
     &__preview-text {
         margin-bottom: 15px;
     }
-    &__preview-continue {}
-	&__more-link {
-		margin-top: auto;
-	}
+    &__preview-continue {
+    }
+    &__more-link {
+        margin-top: auto;
+    }
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
-	.tpl-news-overview {
-	   
-		&__list-item-inner {
-			grid-template-columns: 1fr;
-		}
-}
+    .tpl-news-overview {
+        &__list-item-inner {
+            grid-template-columns: 1fr;
+        }
+    }
 }
 
 /* BREAKPOINT FOR SMARTPHONES */

@@ -47,13 +47,13 @@
                 <script
                     src="https://www.google.com/recaptcha/api.js"
                     async="async"
-                    defer="defer"></script>
+                    defer="defer" />
             </h:panelGroup>
 
             <!-- TODO: use appropriate class and maybe styling -->
             <div
                 id="AJAXLoader"
-                class="archives-tree__loader"></div>
+                class="archives-tree__loader" />
 
             <!-- No access ticket required or already unlocked -->
             <ui:fragment rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
@@ -87,28 +87,55 @@
                             prependId="false">
                             <!-- MULTI VOLUME TOC -->
                             <h:panelGroup rendered="#{activeDocumentBean.anchor or activeDocumentBean.group}">
-                                <div class="toc_metadata">
-                                    <ui:include src="/resources/includes/metadata/metadataElement.xhtml">
-                                        <ui:param
-                                            name="metadataElement"
-                                            value="#{metadataBean.getTopMetadataElement(0)}" />
-                                        <ui:param
-                                            name="renderTitle"
-                                            value="false" />
-                                    </ui:include>
+                                <div class="toc__metadata">
+                                    <div class="toc__metadata-thumbnail">
+                                        <ui:fragment rendered="#{not empty imageDelivery.representativeThumbnail}">
+                                            <img
+                                                src="#{imageDelivery.representativeThumbnail}"
+                                                alt=""
+                                                data-viewer-thumbnail="thumbnail" />
+                                        </ui:fragment>
+                                        <ui:fragment rendered="#{empty imageDelivery.representativeThumbnail}">
+                                            <div class="toc__metadata-thumbnail-placeholder">
+                                                <util:icon
+                                                    icon="photo"
+                                                    svgClass="icon icon-xl" />
+                                            </div>
+                                        </ui:fragment>
+                                    </div>
+                                    <div class="toc__metadata-content">
+                                        <ui:include src="/resources/includes/metadata/metadataElement.xhtml">
+                                            <ui:param
+                                                name="metadataElement"
+                                                value="#{metadataBean.getTopMetadataElement(0)}" />
+                                            <ui:param
+                                                name="renderTitle"
+                                                value="false" />
+                                        </ui:include>
+                                    </div>
                                 </div>
 
-                                <div class="toc__multi-volume">
-                                    <!-- TILE VIEW -->
-                                    <ui:fragment rendered="#{configurationBean.tocAnchorLayout == 'grid'}">
-                                        <ui:include src="/resources/includes/toc/tileView.xhtml"></ui:include>
-                                    </ui:fragment>
+                                <!-- CALENDAR TOC (newspapers/periodicals with calendar data) -->
+                                <ui:fragment rendered="#{activeDocumentBean.viewManager.calendarView.display}">
+                                    <div class="search-calendar">
+                                        <ui:include src="/resources/includes/toc/calendarTocView.xhtml" />
+                                    </div>
+                                </ui:fragment>
 
-                                    <!-- GROUPS: DEFAULT AND != DEFAULT -->
-                                    <ui:fragment rendered="#{configurationBean.tocAnchorLayout == 'list'}">
-                                        <ui:include src="/resources/includes/toc/listView.xhtml"></ui:include>
-                                    </ui:fragment>
-                                </div>
+                                <!-- STANDARD MULTI-VOLUME TOC (no calendar data) -->
+                                <ui:fragment rendered="#{!activeDocumentBean.viewManager.calendarView.display}">
+                                    <div class="toc__multi-volume">
+                                        <!-- TILE VIEW -->
+                                        <ui:fragment rendered="#{configurationBean.tocAnchorLayout == 'grid'}">
+                                            <ui:include src="/resources/includes/toc/tileView.xhtml" />
+                                        </ui:fragment>
+
+                                        <!-- GROUPS: DEFAULT AND != DEFAULT -->
+                                        <ui:fragment rendered="#{configurationBean.tocAnchorLayout == 'list'}">
+                                            <ui:include src="/resources/includes/toc/listView.xhtml" />
+                                        </ui:fragment>
+                                    </div>
+                                </ui:fragment>
                             </h:panelGroup>
 
                             <!-- TOC TREEVIEW -->
@@ -119,10 +146,10 @@
                                     scope="request" />
 
                                 <!-- EXPANDABLE TREEVIEW -->
-                                <ui:include src="/resources/includes/toc/expandableTreeView.xhtml"></ui:include>
+                                <ui:include src="/resources/includes/toc/expandableTreeView.xhtml" />
 
                                 <!-- FULL TREEVIEW -->
-                                <ui:include src="/resources/includes/toc/fullTreeView.xhtml"></ui:include>
+                                <ui:include src="/resources/includes/toc/fullTreeView.xhtml" />
                             </h:panelGroup>
                         </h:form>
                     </div>
@@ -163,42 +190,52 @@
             </h:panelGroup>
 
             <script type="text/javascript">
-                $('[data-toggle="mv-element"]').on('click', function () {
-                    var currBtn = $(this);
+//<![CDATA[
+$('[data-toggle="mv-element"]').on('click', function () {
+    var currBtn = $(this);
 
-                    currBtn.toggleClass('active');
-                    currBtn
-                        .parents()
-                        .next('.toc__mv-element')
-                        .slideToggle({
-                            duration: 0,
-                            start: function () {
-                                currBtn.prev().toggleClass('inactive');
-                            },
-                        });
-                });
+    currBtn.toggleClass('active');
+    currBtn
+        .parents()
+        .next('.toc__mv-element')
+        .slideToggle({
+            duration: 0,
+            start: function () {
+                currBtn.prev().toggleClass('inactive');
+            },
+        });
+});
 
-                $('[data-iddoc*="iddoc"] a').on('click', function (event) {
-                    event.preventDefault();
+$('[data-iddoc*="iddoc"] a').on('click', function (event) {
+    event.preventDefault();
 
-                    var currIdDoc = $(this).parents('li').attr('data-iddoc');
-                    var currUrl = $(this).attr('href');
+    var currIdDoc = $(this).parents('li').attr('data-iddoc');
+    var currUrl = $(this).attr('href');
 
-                    sessionStorage.setItem('currIdDoc', currIdDoc);
-                    location.href = currUrl;
-                });
+    sessionStorage.setItem('currIdDoc', currIdDoc);
+    location.href = currUrl;
+});
 
-                var normdataConfig = {
-                    path: '#{request.contextPath}',
-                    lang: {
-                        popoverTitle: '#{msg.normdataPopoverTitle}',
-                        popoverClose: '#{msg.normdataPopoverClose}',
-                        showNormdata: '#{msg.normdataExpand}',
-                    },
-                    elemWrapper: $('#metadataElementWrapper'),
-                };
+var normdataConfig = {
+    path: '#{request.contextPath}',
+    lang: {
+        popoverTitle: '#{msg.normdataPopoverTitle}',
+        popoverClose: '#{msg.normdataPopoverClose}',
+        showNormdata: '#{msg.normdataExpand}',
+    },
+    elemWrapper: $('#metadataElementWrapper'),
+};
 
-                viewerJS.normdata.init(normdataConfig);
+viewerJS.normdata.init(normdataConfig);
+
+viewerJS.tocNewspaper.init({
+    contextPath: '#{request.contextPath}',
+    popoverTitle: '#{activeDocumentBean.titleBarLabel}',
+    locale: '#{navigationHelper.localeString}',
+    dateFromSelector: "[data-datepicker-range-group='tocNewspaperDateRange']",
+    dateToSelector: "[data-datepicker-range-end='tocNewspaperDateRange']",
+});
+//]]>
             </script>
         </f:view>
     </ui:define>

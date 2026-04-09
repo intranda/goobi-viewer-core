@@ -4,48 +4,50 @@
    ==============================================================*/
 
 #adminLicense {
-	.admin {
-		&__license-action {
-			opacity: 1 !important;
-			&:hover {
-				text-decoration: none;
-			}
-			&.badge-active {
-				&:hover {
-					color: @black;
-				}
-			}
-			&.badge-dark {
-				background-color: #F5F5F5;
-				color: @black;
-			}
-		}
-		&__license-list {
-			display: flex;
-			flex-direction: column;
-		}
-	}
-	.-licenceHidden {
-		display: none;
-	}
+    .admin {
+        &__license-action {
+            opacity: 1 !important;
+            &:hover {
+                text-decoration: none;
+            }
+            &.badge-active {
+                &:hover {
+                    color: @black;
+                }
+            }
+            &.badge-dark {
+                background-color: #f5f5f5;
+                color: @black;
+            }
+        }
+        &__license-list {
+            display: flex;
+            flex-direction: column;
+        }
+    }
+    .-licenceHidden {
+        display: none;
+    }
 }
 
 #pdf_download_quota_info_box {
-	.admin__default-block {
-		transition: all 0.2s ease;
-	}
+    .admin__default-block {
+        transition: all 0.2s ease;
+    }
 }
 
-
-
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+}

@@ -27,6 +27,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.model.files.external.Progress;
 
+/**
+ * Value object representing the state of an in-progress or completed external file download job,
+ * including download progress, target path, message ID, and any error description.
+ */
 public class ExternalFilesDownloadJob {
 
     private final Progress progress;

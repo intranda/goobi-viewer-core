@@ -37,65 +37,53 @@ public class SelectableNavigationItem extends CMSNavigationItem {
     private boolean selected = false;
 
     /**
-     * <p>
-     * Constructor for SelectableNavigationItem.
-     * </p>
+     * Creates a new SelectableNavigationItem instance.
      */
     public SelectableNavigationItem() {
         super();
     }
 
     /**
-     * <p>
-     * Constructor for SelectableNavigationItem.
-     * </p>
+     * Creates a new SelectableNavigationItem instance.
      *
-     * @param original a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
+     * @param original navigation item to copy state from
      */
     public SelectableNavigationItem(CMSNavigationItem original) {
         super(original);
     }
 
     /**
-     * <p>
-     * Constructor for SelectableNavigationItem.
-     * </p>
+     * Creates a new SelectableNavigationItem instance.
      *
-     * @param cmsPage a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
+     * @param cmsPage CMS page to wrap as a navigation item
      */
     public SelectableNavigationItem(CMSPage cmsPage) {
         super(cmsPage);
     }
 
     /**
-     * <p>
-     * Constructor for SelectableNavigationItem.
-     * </p>
+     * Creates a new SelectableNavigationItem instance.
      *
-     * @param targetUrl a {@link java.lang.String} object.
-     * @param label a {@link java.lang.String} object.
+     * @param targetUrl navigation target URL
+     * @param label display label for the menu item
      */
     public SelectableNavigationItem(String targetUrl, String label) {
         super(targetUrl, label);
     }
 
     /**
-     * <p>
      * Setter for the field <code>selected</code>.
-     * </p>
      *
-     * @param selected the selected to set
+     * @param selected true if this navigation item should be marked as selected
      */
     public void setSelected(boolean selected) {
         this.selected = selected;
     }
 
     /**
-     * <p>
      * isSelected.
-     * </p>
      *
-     * @return the selected
+     * @return true if this navigation item is currently selected for inclusion in the menu; false otherwise
      */
     public boolean isSelected() {
         return selected;

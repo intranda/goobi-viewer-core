@@ -2,11 +2,10 @@
    Variables
    ==============================================================*/
 /* FONTS */
-@fontFamily: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-  Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-@fontBackend: "Inter", "Roboto", "Helvetica Neue", "Helvectia", "Lato", "Arial",
-  sans-serif;
-@fonts: "../../fonts";
+@fontFamily: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol';
+@fontBackend: 'Inter', 'Roboto', 'Helvetica Neue', 'Helvectia', 'Lato', 'Arial', sans-serif;
+@fonts: '../../fonts';
 @fontSmall: 1.2rem;
 @fontMedium: 1.4rem;
 @fontNormal: 1.6rem;
@@ -14,7 +13,7 @@
 @fontXLarge: 2.1rem;
 
 /* IMAGES */
-@images: "../../images";
+@images: '../../images';
 
 // Colors
 //
@@ -61,7 +60,7 @@
 @middarkgray: #6e6e6e;
 @darkgray: #4b4b4b;
 @white: #fff;
-@blue: #3365a9;
+@blue: #015999;
 @hoverblue: #134ea0;
 @activeblue: #0d3a79;
 @orange: #f08421;
@@ -188,7 +187,7 @@
 @fsDarkgray: #666;
 
 /* RIGHT TO LEFT LANGUAGES STYLING */
-@RTL: ~"html[dir=rtl]";
+@RTL: ~'html[dir=rtl]';
 
 /* BACKEND COLOR */
 @greenBar: #5cb85c;
@@ -224,6 +223,14 @@
 @login-nav-bookmarks-counter-background: var(--login-nav-bookmarks-counter-background);
 @login-nav-dropdown-border-color: var(--login-nav-dropdown-border-color);
 
+/* TOC PAGE VARIABLES */
+@toc-page-hover-bg: var(--toc-page-hover-bg);
+@toc-page-toggle-icon-color: var(--toc-page-toggle-icon-color);
+@toc-page-toggle-icon-color-hover: var(--toc-page-toggle-icon-color-hover);
+@toc-page-link-color: var(--toc-page-link-color);
+@toc-page-link-color-hover: var(--toc-page-link-color-hover);
+@toc-page-border-color: var(--toc-page-border-color);
+
 /* SEARCH TOOLBAR VARIABLES */
 @search-toolbar-background-active: var(--search-toolbar-background-active);
 @search-toolbar-text-color-active: var(--search-toolbar-text-color-active);
@@ -243,3 +250,21 @@
 @image-controls-action-background-hover: var(--image-controls-action-background-hover);
 @image-controls-slider-thumb-background: var(--image-controls-slider-thumb-background);
 @image-controls-slider-border-color: var(--image-controls-slider-border-color);
+
+/* DATEPICKER VARIABLES */
+@datepicker-bg: var(--datepicker-bg);
+@datepicker-border-color: var(--datepicker-border-color);
+@datepicker-header-bg: var(--datepicker-header-bg);
+@datepicker-header-fg: var(--datepicker-header-fg);
+@datepicker-weekday-fg: var(--datepicker-weekday-fg);
+@datepicker-day-fg: var(--datepicker-day-fg);
+@datepicker-day-hover-bg: var(--datepicker-day-hover-bg);
+@datepicker-day-selected-bg: var(--datepicker-day-selected-bg);
+@datepicker-day-selected-fg: var(--datepicker-day-selected-fg);
+@datepicker-day-today-border-color: var(--datepicker-day-today-border-color);
+@datepicker-day-disabled-fg: var(--datepicker-day-disabled-fg);
+@datepicker-day-hasdata-bg: var(--datepicker-day-hasdata-bg);
+@datepicker-day-hasdata-fg: var(--datepicker-day-hasdata-fg);
+@datepicker-day-hasdata-hover-bg: var(--datepicker-day-hasdata-hover-bg);
+@datepicker-day-hasdata-hover-fg: var(--datepicker-day-hasdata-hover-fg);
+@datepicker-day-range-bg: var(--datepicker-day-range-bg);

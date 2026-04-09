@@ -10,7 +10,7 @@
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
-    <composite:interface></composite:interface>
+    <composite:interface />
 
     <composite:implementation>
         <div
@@ -29,7 +29,8 @@
                     </div>
                     <util:icon
                         icon="chevron-down"
-                        styleClass="widget__topbar-icon-collapsible icon-rot-on-open" />
+                        styleClass="widget__topbar-icon-collapsible icon-rot-on-open"
+                        svgClass="widget__topbar-icon-svg widget-citation__topbar-icon-svg" />
                 </div>
             </div>
 
@@ -173,9 +174,7 @@
                     </ui:repeat>
 
                     <!-- ACTIVATE CLIPBOARD (TOOLTIPS + COPY URL)  -->
-                    <script>
-                        viewerJS.clipboard.init();
-                    </script>
+                    <script>viewerJS.clipboard.init();</script>
                 </div>
 
                 <viewerComponent:citationRecommendation

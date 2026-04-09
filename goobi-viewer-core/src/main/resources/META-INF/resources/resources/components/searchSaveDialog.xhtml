@@ -1,44 +1,85 @@
-<ui:composition 
-    xmlns="http://www.w3.org/1999/xhtml" 
-    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:util="http://goobi.io/util">
-
     <composite:interface />
 
     <composite:implementation>
         <div class="search-list__save-search">
-			<span data-toggle="tooltip" data-placement="top" title="#{msg.saveSearch}">
-				<button type="button" class="btn btn--icon" data-toggle="modal" data-target="#saveSearchModal" data-backdrop="false" aria-label="#{msg.saveSearch}">
-					<util:icon icon="device-floppy" svgClass="icon" />
-				</button>
-			</span>
+            <span
+                data-toggle="tooltip"
+                data-placement="top"
+                title="#{msg.saveSearch}">
+                <button
+                    type="button"
+                    class="btn btn--icon search-list__option-button"
+                    data-toggle="modal"
+                    data-target="#saveSearchModal"
+                    data-backdrop="false"
+                    aria-label="#{msg.saveSearch}">
+                    <util:icon
+                        icon="device-floppy"
+                        svgClass="icon" />
+                </button>
+            </span>
 
-            <div class="modal fade" id="saveSearchModal" tabindex="-1" role="dialog" aria-labelledby="saveSearchModalLabel">
-			    <h:form id="saveSearchForm" prependId="false">
-                    <div class="modal-dialog" role="document">
+            <div
+                class="modal fade"
+                id="saveSearchModal"
+                tabindex="-1"
+                role="dialog"
+                aria-labelledby="saveSearchModalLabel">
+                <h:form
+                    id="saveSearchForm"
+                    prependId="false">
+                    <div
+                        class="modal-dialog"
+                        role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h2 class="modal-title" id="saveSearchModalLabel">#{msg.saveSearch}</h2>
-                                <button type="button" class="fancy-close" data-dismiss="modal" aria-label="#{msg.customer_gaugs_close}">
-                                </button>
+                                <h2
+                                    class="modal-title"
+                                    id="saveSearchModalLabel">
+                                    #{msg.saveSearch}
+                                </h2>
+                                <button
+                                    type="button"
+                                    class="fancy-close"
+                                    data-dismiss="modal"
+                                    aria-label="#{msg.customer_gaugs_close}" />
                             </div>
                             <div class="modal-body">
                                 <div class="form-group">
-                                    <h:outputLabel for="saveSearchInput" value="#{msg.name}:" />
-                                    <h:inputText id="saveSearchInput" value="#{searchBean.currentSearch.name}" styleClass="form-control"
+                                    <h:outputLabel
+                                        for="saveSearchInput"
+                                        value="#{msg.name}:" />
+                                    <h:inputText
+                                        id="saveSearchInput"
+                                        value="#{searchBean.currentSearch.name}"
+                                        styleClass="form-control"
                                         required="required" />
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn" data-dismiss="modal">#{msg.cancel}</button>
-                                <h:commandButton styleClass="btn btn--success" action="#{searchBean.saveSearchAction()}" value="#{msg.save}" />
+                                <button
+                                    type="button"
+                                    class="btn"
+                                    data-dismiss="modal">
+                                    #{msg.cancel}
+                                </button>
+                                <h:commandButton
+                                    styleClass="btn btn--success"
+                                    action="#{searchBean.saveSearchAction()}"
+                                    value="#{msg.save}" />
                             </div>
                         </div>
                     </div>
-					<div class="alt-backdrop" data-dismiss="modal"></div>
+                    <div
+                        class="alt-backdrop"
+                        data-dismiss="modal" />
                 </h:form>
             </div>
         </div>

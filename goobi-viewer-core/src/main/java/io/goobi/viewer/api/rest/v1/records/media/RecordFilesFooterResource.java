@@ -41,8 +41,7 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Path(RECORDS_FILES_FOOTER)
 @ContentServerBinding
@@ -52,13 +51,13 @@ public class RecordFilesFooterResource extends FooterResource {
     private static final Logger logger = LogManager.getLogger(RecordFilesFooterResource.class);
 
     /**
-     * @param context
-     * @param request
-     * @param response
-     * @param urls
-     * @param pi
-     * @param filename
-     * @param cacheManager
+     * @param context JAX-RS container request context
+     * @param request incoming HTTP servlet request
+     * @param response outgoing HTTP servlet response
+     * @param urls API URL manager for building resource URIs
+     * @param pi persistent identifier of the record
+     * @param filename filename of the image file
+     * @param cacheManager content server cache manager
      * @throws ContentLibException
      */
     public RecordFilesFooterResource(

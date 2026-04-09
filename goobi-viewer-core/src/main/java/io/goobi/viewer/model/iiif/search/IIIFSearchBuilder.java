@@ -66,9 +66,9 @@ import io.goobi.viewer.solr.SolrTools;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * Creates a IIIF Search API v1.0 response as {@link de.intranda.api.iiif.search.SearchResult}
+ * Creates a IIIF Search API v1.0 response as {@link de.intranda.api.iiif.search.SearchResult}.
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class IIIFSearchBuilder {
 
@@ -92,12 +92,12 @@ public class IIIFSearchBuilder {
     private final HttpServletRequest request;
 
     /**
-     * Initializes the builder with all required parameters
+     * Initializes the builder with all required parameters.
      *
-     * @param urls
+     * @param urls the API URL manager for constructing resource URIs
      * @param query the query string
      * @param pi the pi of the manifest to search
-     * @param request
+     * @param request the current HTTP servlet request
      */
     public IIIFSearchBuilder(AbstractApiUrlManager urls, final String query, String pi, HttpServletRequest request) {
         this.query = query != null ? query.replace("+", " ") : query;
@@ -108,34 +108,28 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>
      * Getter for the field <code>query</code>.
-     * </p>
      *
-     * @return the query
+     * @return the search query string
      */
     public String getQuery() {
         return query;
     }
 
     /**
-     * <p>
      * Getter for the field <code>pi</code>.
-     * </p>
      *
-     * @return the pi
+     * @return the persistent identifier of the record to search within
      */
     public String getPi() {
         return pi;
     }
 
     /**
-     * <p>
      * Setter for the field <code>motivation</code>.
-     * </p>
      *
-     * @param motivation the motivation to set
-     * @return a {@link io.goobi.viewer.model.iiif.search.IIIFSearchBuilder} object.
+     * @param motivation space- or plus-separated list of IIIF motivation values to filter search results
+     * @return this IIIFSearchBuilder instance for method chaining
      */
     public IIIFSearchBuilder setMotivation(final String motivation) {
         if (StringUtils.isNotBlank(motivation)) {
@@ -145,11 +139,9 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>
      * Getter for the field <code>motivation</code>.
-     * </p>
      *
-     * @return the motivation
+     * @return the list of IIIF motivation values used to filter search results
      */
     public List<String> getMotivation() {
         return motivation;
@@ -163,12 +155,10 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>
      * Setter for the field <code>user</code>.
-     * </p>
      *
-     * @param user the user to set
-     * @return a {@link io.goobi.viewer.model.iiif.search.IIIFSearchBuilder} object.
+     * @param user the user filter value; currently ignored and recorded as an ignored parameter
+     * @return this IIIFSearchBuilder instance for method chaining
      */
     public IIIFSearchBuilder setUser(String user) {
         this.user = user;
@@ -176,23 +166,19 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>
      * Getter for the field <code>user</code>.
-     * </p>
      *
-     * @return the user
+     * @return the user filter value; currently recorded but not applied to search results
      */
     public String getUser() {
         return user;
     }
 
     /**
-     * <p>
      * Setter for the field <code>date</code>.
-     * </p>
      *
-     * @param date the date to set
-     * @return a {@link io.goobi.viewer.model.iiif.search.IIIFSearchBuilder} object.
+     * @param date the date filter value; currently ignored and recorded as an ignored parameter
+     * @return this IIIFSearchBuilder instance for method chaining
      */
     public IIIFSearchBuilder setDate(String date) {
         this.date = date;
@@ -200,34 +186,28 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>
      * Getter for the field <code>date</code>.
-     * </p>
      *
-     * @return the date
+     * @return the date filter value; currently recorded but not applied to search results
      */
     public String getDate() {
         return date;
     }
 
     /**
-     * <p>
      * Getter for the field <code>min</code>.
-     * </p>
      *
-     * @return the min
+     * @return the minimum relevance threshold filter value; currently recorded but not applied to search results
      */
     public String getMin() {
         return min;
     }
 
     /**
-     * <p>
      * Setter for the field <code>min</code>.
-     * </p>
      *
-     * @param min the min to set
-     * @return a {@link io.goobi.viewer.model.iiif.search.IIIFSearchBuilder} object.
+     * @param min the minimum relevance threshold filter; currently ignored and recorded as an ignored parameter
+     * @return this IIIFSearchBuilder instance for method chaining
      */
     public IIIFSearchBuilder setMin(String min) {
         this.min = min;
@@ -235,12 +215,10 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>
      * Setter for the field <code>page</code>.
-     * </p>
      *
-     * @param page the page to set
-     * @return a {@link io.goobi.viewer.model.iiif.search.IIIFSearchBuilder} object.
+     * @param page the 1-based result page number; ignored if null
+     * @return this IIIFSearchBuilder instance for method chaining
      */
     public IIIFSearchBuilder setPage(Integer page) {
         if (page != null) {
@@ -250,34 +228,28 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>
      * Getter for the field <code>page</code>.
-     * </p>
      *
-     * @return the page
+     * @return the 1-based result page number
      */
     public int getPage() {
         return page;
     }
 
     /**
-     * <p>
      * Getter for the field <code>hitsPerPage</code>.
-     * </p>
      *
-     * @return the hitsPerPage
+     * @return the maximum number of hits returned per result page
      */
     public int getHitsPerPage() {
         return hitsPerPage;
     }
 
     /**
-     * <p>
      * Setter for the field <code>hitsPerPage</code>.
-     * </p>
      *
-     * @param hitsPerPage the hitsPerPage to set
-     * @return a {@link io.goobi.viewer.model.iiif.search.IIIFSearchBuilder} object.
+     * @param hitsPerPage the maximum number of hits to return per result page
+     * @return this IIIFSearchBuilder instance for method chaining
      */
     public IIIFSearchBuilder setHitsPerPage(int hitsPerPage) {
         this.hitsPerPage = hitsPerPage;
@@ -285,7 +257,7 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * @return a list of all passed paramters that are ignored
+     * @return a list of all passed parameters that are ignored
      */
     private List<String> getIgnoredParameterList() {
         List<String> ignored = new ArrayList<>();
@@ -420,8 +392,8 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * 
-     * @param query
+     *
+     * @param query search query string
      * @param pi Record identifier
      * @return {@link SearchTermList}
      */
@@ -445,11 +417,11 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * 
-     * @param query
+     *
+     * @param query search query string
      * @param pi Record identifier
-     * @param firstHitIndex
-     * @param hitsPerPage
+     * @param firstHitIndex zero-based index of the first result to return
+     * @param hitsPerPage maximum number of results to return
      * @return {@link AnnotationResultList}
      */
     private AnnotationResultList searchMetadata(String query, String pi, int firstHitIndex, int hitsPerPage) {
@@ -500,8 +472,8 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * 
-     * @param query
+     *
+     * @param query search query string
      * @param pi Record identifier
      * @return SearchTermList
      */
@@ -553,8 +525,8 @@ public class IIIFSearchBuilder {
     /**
      * @param query Solr query
      * @param pi Record identifier
-     * @param firstHitIndex
-     * @param hitsPerPage
+     * @param firstHitIndex zero-based index of the first result to return
+     * @param hitsPerPage maximum number of results to return
      * @param request {@link HttpServletRequest}
      * @return {@link AnnotationResultList}
      */
@@ -656,10 +628,10 @@ public class IIIFSearchBuilder {
 
     /**
      * Test if the given fieldName is included in the configuredFields or matches any of the contained wildcard fieldNames.
-     * 
-     * @param fieldName
-     * @param configuredFields
-     * @return a boolean
+     *
+     * @param fieldName the Solr field name to test
+     * @param configuredFields list of configured field names, may contain wildcards
+     * @return true if the field name matches any entry in the configured fields list (exactly or via wildcard pattern), false otherwise
      */
     private static boolean fieldNameMatches(String fieldName, List<String> configuredFields) {
         for (String configuredField : configuredFields) {
@@ -721,7 +693,7 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * @param page
+     * @param page result page number for pagination
      * @return {@link URI}
      */
     private URI getURI(Integer page) {

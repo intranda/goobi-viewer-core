@@ -33,8 +33,7 @@ import io.goobi.viewer.model.security.user.User;
 /**
  * Simplified representation of a {@link User} object for json (de-)serialization.
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 @JsonInclude(Include.NON_NULL)
 public class UserJsonFacade {
@@ -51,9 +50,9 @@ public class UserJsonFacade {
     private final boolean superuser;
 
     /**
-     * 
-     * @param user
-     * @param request
+     *
+     * @param user the user to create the facade from
+     * @param request current HTTP request for resolving avatar URL
      */
     public UserJsonFacade(User user, HttpServletRequest request) {
         this.name = user.getDisplayName();
@@ -67,16 +66,16 @@ public class UserJsonFacade {
     }
 
     /**
-     * 
-     * @param user
+     *
+     * @param user the user to create the facade from
      */
     public UserJsonFacade(User user) {
         this(user, null);
     }
 
     /**
-     * 
-     * @param orig
+     *
+     * @param orig the instance to copy all fields from
      */
     public UserJsonFacade(UserJsonFacade orig) {
         this.avatar = orig.avatar;
@@ -90,14 +89,14 @@ public class UserJsonFacade {
     }
 
     /**
-     * @param userId
-     * @param name
-     * @param avatar
-     * @param score
-     * @param active
-     * @param suspended
-     * @param anonymous
-     * @param superuser
+     * @param userId database ID of the user
+     * @param name display name of the user
+     * @param avatar URL of the user's avatar image
+     * @param score gamification score of the user
+     * @param active whether the user account is active
+     * @param suspended whether the user account is suspended
+     * @param anonymous whether the user is an anonymous guest
+     * @param superuser whether the user has superuser privileges
      */
     @JsonCreator
     public UserJsonFacade(
@@ -120,71 +119,52 @@ public class UserJsonFacade {
     }
 
     /**
-     * @param name
+     * @param name display name for the anonymous user facade
      */
     public UserJsonFacade(String name) {
         this(null, name, null, 0, false, false, true, false);
     }
 
-    /**
-     * @return the userId
-     */
+    
     public Long getUserId() {
         return userId;
     }
 
-    /**
-     * @return the name
-     */
+    
     public String getName() {
         return name;
     }
 
-    /**
-     * @return the avatar
-     */
+    
     public String getAvatar() {
         return avatar;
     }
 
-    /**
-     * @return the score
-     */
+    
     public long getScore() {
         return score;
     }
 
-    /**
-     * @return the active
-     */
+    
     public boolean isActive() {
         return active;
     }
 
-    /**
-     * @return the suspended
-     */
+    
     public boolean isSuspended() {
         return suspended;
     }
 
-    /**
-     * @return the anonymous
-     */
+    
     public boolean isAnonymous() {
         return anonymous;
     }
 
-    /**
-     * @return the superuser
-     */
+    
     public boolean isSuperuser() {
         return superuser;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return this.name + " ID:" + this.userId + " avatar:" + this.avatar;

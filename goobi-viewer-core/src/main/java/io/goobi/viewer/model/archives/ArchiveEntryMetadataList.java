@@ -48,7 +48,7 @@ public class ArchiveEntryMetadataList {
     private static final Logger logger = LogManager.getLogger(ArchiveEntryMetadataList.class);
 
     /**
-     * id referencing an archiveEntry
+     * Id referencing an archiveEntry.
      */
     private final String id;
 
@@ -102,7 +102,7 @@ public class ArchiveEntryMetadataList {
 
     /**
      * 
-     * @param id
+     * @param id identifier for this archive entry metadata list
      * @param doc Archive node Solr doc
      * @param metadataList Metadata configuration list
      * @should populate metadata correctly
@@ -120,8 +120,8 @@ public class ArchiveEntryMetadataList {
 
     /**
      * 
-     * @param doc
-     * @param metadataList
+     * @param doc Solr document for the archive node
+     * @param metadataList metadata configuration list to populate from
      * @should populate metadata correctly
      */
     void populateMetadata(SolrDocument doc, List<Metadata> metadataList) {
@@ -133,7 +133,7 @@ public class ArchiveEntryMetadataList {
         try {
             StructElement se = new StructElement(doc);
             for (Metadata md : metadataList) {
-                logger.error("Populating archive metadata field: {}", md.getLabel());
+                logger.trace("Populating archive metadata field: {}", md.getLabel()); //NOSONAR Debug
                 if (!se.isHasMetadata(md.getLabel())) {
                     // Field must exist on StructElement to be populated
                     se.getMetadataFields().put(md.getLabel(), new ArrayList<>());
@@ -147,57 +147,43 @@ public class ArchiveEntryMetadataList {
         }
     }
 
-    /**
-     * @return the identityStatementAreaList
-     */
+    
     public List<Metadata> getIdentityStatementAreaList() {
         // logger.trace("getIdentityStatementAreaList ({})", id); //NOSONAR Debug
         return identityStatementAreaList;
     }
 
-    /**
-     * @return the contextAreaList
-     */
+    
     public List<Metadata> getContextAreaList() {
         // logger.trace("getContextAreaList ({})", id); //NOSONAR Debug
         return contextAreaList;
     }
 
-    /**
-     * @return the contentAndStructureAreaAreaList
-     */
+    
     public List<Metadata> getContentAndStructureAreaAreaList() {
         // logger.trace("getContentAndStructureAreaAreaList ({})", id); //NOSONAR Debug
         return contentAndStructureAreaAreaList;
     }
 
-    /**
-     * @return the accessAndUseAreaList
-     */
+    
     public List<Metadata> getAccessAndUseAreaList() {
         // logger.trace("getAccessAndUseAreaList ({})", id); //NOSONAR Debug
         return accessAndUseAreaList;
     }
 
-    /**
-     * @return the alliedMaterialsAreaList
-     */
+    
     public List<Metadata> getAlliedMaterialsAreaList() {
         // logger.trace("getAlliedMaterialsAreaList ({})", id); //NOSONAR Debug
         return alliedMaterialsAreaList;
     }
 
-    /**
-     * @return the notesAreaList
-     */
+    
     public List<Metadata> getNotesAreaList() {
         // logger.trace("getNotesAreaList ({})", id); //NOSONAR Debug
         return notesAreaList;
     }
 
-    /**
-     * @return the descriptionControlAreaList
-     */
+    
     public List<Metadata> getDescriptionControlAreaList() {
         // logger.trace("getDescriptionControlAreaList ({})", id); //NOSONAR Debug
         return descriptionControlAreaList;
@@ -251,10 +237,9 @@ public class ArchiveEntryMetadataList {
     }
 
     /**
-     * Add the metadata to the configured level.
+     * Adds the metadata to the configured level.
      *
-     * @param entry
-     * @param metadata
+     * @param metadata metadata item to add to the appropriate area list
      */
     void addMetadataField(Metadata metadata) {
         if (metadata == null) {

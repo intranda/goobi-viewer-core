@@ -5,234 +5,242 @@
 /* LOGIN NAVIGATION */
 /* BLOCK */
 .login-navigation {
-	.mx-list-reset;
-	position: relative;
-	&__list {
-		.mx-list-reset;
-	}
-	&__toggle-button {
-		display: flex;
-		align-items: center;
-	}
-	/* ELEMENT */
-	/* NOT LOGGED IN */
-	[data-login="false"] {
-
-	}
-	/* LOGGED IN */
-	[data-login="true"] {
-		button[data-toggle="user-dropdown"] {
-			font-size: @fontMedium;
-			span {}
-			display: flex;
-		  align-items: center;
-		  justify-content: center;
-		  max-width: 150px;
-		}
-		.login-navigation {
-			/* TOGGLE USER DROPDOWN */
-			&__user-name {
-				max-width: 135px;
-				padding-right: 5px;
-				text-overflow: ellipsis;
-				overflow: hidden;
-				white-space: nowrap;
-			}			
-			&__user-icon {
-				display: flex;
-				padding-right: 5px;
-				padding-left: 5px;
-				img {
-					max-height: 16px;
-				}
-			}
-			/* USER DROPDOWN */
-		&__user-dropdown {
-			display: none;
-			position: absolute;
-			top: ~"calc(100% + 6px)";
-			right: 0;
-			width: 260px;
-			padding: 0.35rem 0;
-			font-size: @fontMedium;
-			background: @login-nav-background;
-			border: 1px solid @login-nav-dropdown-border-color;
-			box-shadow: 0 18px 36px rgba(0, 0, 0, 0.18);
-			border-radius: 0.85rem;
-			overflow: hidden;
-			z-index: 2020;
-			color: @login-nav-text-color;
-			li {
-				margin: 0;
-			}
-		}
-		&__user-dropdown-item {
-			font-size: @fontMedium;
-			&:hover {
-				background-color: @login-nav-background-hover;
-			}
-		}
-		&__user-dropdown-item-link {
-			display: inline-flex;
-			align-items: center;
-			gap: 1rem;
-			width: 100%;
-			padding: 0.7rem 1.2rem 0.7rem 1.5rem;
-			line-height: 1;
-			text-decoration: none;
-			color: @login-nav-text-color;
-			transition: color 0.2s ease, padding-left 0.18s ease, background-color 0.2s ease;
-		}
-		&__user-dropdown-item-link:hover {
-			color: @login-nav-text-color-hover;
-			padding-left: 1.8rem;
-			background-color: @login-nav-background-hover;
-		}
-		&__user-dropdown-item-text {
-			white-space: nowrap;
-			color: @login-nav-text-color;
-			transition: color 0.2s ease;
-		}
-		&__user-dropdown-item-icon-text {
-			svg {
-				color: @login-nav-icon-color;
-				transition: color 0.2s ease;
-			}
-		}
-		&__user-dropdown-item-link:hover &__user-dropdown-item-icon-text svg {
-			color: @login-nav-icon-color-hover;
-		}
-		&__user-dropdown-item-caret {
-			margin-left: auto;
-			color: @login-nav-icon-color;
-		}
-			/* BOOKMARK DROPDOWN */
-			&__bookmarks-dropdown {
-				.mx-list-reset;
-				display: block;
-			}
-			&__bookmarks-small-list {
-				display: none;
-				padding: 0.5rem 1rem 0.5rem 1.5rem;
-				background-color: @login-nav-bookmarks-background;
-			}
-			&__bookmarks-entry {
-				display: flex;
-				justify-content: space-between;
-				padding: 0.3rem 0;
-				font-size: 1.4rem;
-			}
-			&__bookmarks-name {
-				flex-grow: 1;
-				a {
-					white-space: nowrap;
-					width: 100%;
-					max-width: 155px;
-					overflow: hidden;
-					text-overflow: ellipsis;
-				}
-			}
-			&__bookmarks-name a, 
-			&__bookmarks-icon-list .fa, 
-			&__bookmarks-icon-list svg,
-			&__bookmarks-icon-list {
-				color: @login-nav-bookmarks-text-color;
-				a {
-					margin-right: 0;
-					color: @login-nav-bookmarks-text-color;
-				}
-				&:hover {
-					color: @login-nav-bookmarks-text-color-hover;
-				}
-			}
-			&__bookmarks-icon-list,
-			&__bookmarks-icon-list a {
-				display: flex;
-				text-decoration: none;
-				align-items: center;
-				gap: 0.7rem;
-			}
-			&__bookmarks-icon-list a {
-				transition: color 0.2s ease;
-			}
-			&__bookmarks-icon-list svg {
-				width: 1.8rem;
-				height: 1.8rem;
-				stroke: currentColor;
-				transition: stroke 0.2s ease, transform 0.2s ease;
-			}
-			&__bookmarks-icon-list a:hover svg {
-				transform: scale(1.08);
-			}
-			&__bookmarks-counter {
-				padding: 0 0.3rem;
-				font-size: 1.2rem;
-				color: #fff;
-				border-radius: 2px;
-				background-color: @login-nav-bookmarks-counter-background;
-				align-self: center;
-			}
-			&__bookmarks-overview-link {
-				margin-left: auto;
-				color: @login-nav-bookmarks-text-color;
-				&:hover {
-					color: @login-nav-bookmarks-text-color-hover;
-				}
-			}
-			&__bookmarks-trigger {
-				.mx-no-style-button;
-				width: 100%;
-			}
-			&__mini-avatar {
-				border-radius: 20px;
-				width: 16px;
-				height: 16px;
-			}
-		}
-	}	
+    .mx-list-reset;
+    position: relative;
+    &__list {
+        .mx-list-reset;
+    }
+    &__toggle-button {
+        display: flex;
+        align-items: center;
+    }
+    /* ELEMENT */
+    /* NOT LOGGED IN */
+    [data-login='false'] {
+    }
+    /* LOGGED IN */
+    [data-login='true'] {
+        button[data-toggle='user-dropdown'] {
+            font-size: @fontMedium;
+            span {
+            }
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            max-width: 150px;
+        }
+        .login-navigation {
+            /* TOGGLE USER DROPDOWN */
+            &__user-name {
+                max-width: 135px;
+                padding-right: 5px;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+            }
+            &__user-icon {
+                display: flex;
+                padding-right: 5px;
+                padding-left: 5px;
+                img {
+                    max-height: 16px;
+                }
+            }
+            /* USER DROPDOWN */
+            &__user-dropdown {
+                display: none;
+                position: absolute;
+                top: ~'calc(100% + 6px)';
+                right: 0;
+                width: 260px;
+                padding: 0.35rem 0;
+                font-size: @fontMedium;
+                background: @login-nav-background;
+                border: 1px solid @login-nav-dropdown-border-color;
+                box-shadow: 0 18px 36px rgba(0, 0, 0, 0.18);
+                border-radius: 0.85rem;
+                overflow: hidden;
+                z-index: 2020;
+                color: @login-nav-text-color;
+                li {
+                    margin: 0;
+                }
+            }
+            &__user-dropdown-item {
+                font-size: @fontMedium;
+                &:hover {
+                    background-color: @login-nav-background-hover;
+                }
+            }
+            &__user-dropdown-item-link {
+                display: inline-flex;
+                align-items: center;
+                gap: 1rem;
+                width: 100%;
+                padding: 0.7rem 1.2rem 0.7rem 1.5rem;
+                line-height: 1;
+                text-decoration: none;
+                color: @login-nav-text-color;
+                transition:
+                    color 0.2s ease,
+                    padding-left 0.18s ease,
+                    background-color 0.2s ease;
+            }
+            &__user-dropdown-item-link:hover {
+                color: @login-nav-text-color-hover;
+                padding-left: 1.8rem;
+                background-color: @login-nav-background-hover;
+            }
+            &__user-dropdown-item-text {
+                white-space: nowrap;
+                color: @login-nav-text-color;
+                transition: color 0.2s ease;
+            }
+            &__user-dropdown-item-icon-text {
+                svg {
+                    color: @login-nav-icon-color;
+                    transition: color 0.2s ease;
+                }
+            }
+            &__user-dropdown-item-link:hover &__user-dropdown-item-icon-text svg {
+                color: @login-nav-icon-color-hover;
+            }
+            &__user-dropdown-item-caret {
+                margin-left: auto;
+                color: @login-nav-icon-color;
+            }
+            /* BOOKMARK DROPDOWN */
+            &__bookmarks-dropdown {
+                .mx-list-reset;
+                display: block;
+            }
+            &__bookmarks-small-list {
+                display: none;
+                padding: 0.5rem 1rem 0.5rem 1.5rem;
+                background-color: @login-nav-bookmarks-background;
+            }
+            &__bookmarks-entry {
+                display: flex;
+                justify-content: space-between;
+                padding: 0.3rem 0;
+                font-size: 1.4rem;
+            }
+            &__bookmarks-name {
+                flex-grow: 1;
+                a {
+                    white-space: nowrap;
+                    width: 100%;
+                    max-width: 155px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+            }
+            &__bookmarks-name a,
+            &__bookmarks-icon-list .fa,
+            &__bookmarks-icon-list svg,
+            &__bookmarks-icon-list {
+                color: @login-nav-bookmarks-text-color;
+                a {
+                    margin-right: 0;
+                    color: @login-nav-bookmarks-text-color;
+                }
+                &:hover {
+                    color: @login-nav-bookmarks-text-color-hover;
+                }
+            }
+            &__bookmarks-icon-list,
+            &__bookmarks-icon-list a {
+                display: flex;
+                text-decoration: none;
+                align-items: center;
+                gap: 0.7rem;
+            }
+            &__bookmarks-icon-list a {
+                transition: color 0.2s ease;
+            }
+            &__bookmarks-icon-list svg {
+                width: 1.8rem;
+                height: 1.8rem;
+                stroke: currentColor;
+                transition:
+                    stroke 0.2s ease,
+                    transform 0.2s ease;
+            }
+            &__bookmarks-icon-list a:hover svg {
+                transform: scale(1.08);
+            }
+            &__bookmarks-counter {
+                padding: 0 0.3rem;
+                font-size: 1.2rem;
+                color: #fff;
+                border-radius: 2px;
+                background-color: @login-nav-bookmarks-counter-background;
+                align-self: center;
+            }
+            &__bookmarks-overview-link {
+                margin-left: auto;
+                color: @login-nav-bookmarks-text-color;
+                &:hover {
+                    color: @login-nav-bookmarks-text-color-hover;
+                }
+            }
+            &__bookmarks-trigger {
+                .mx-no-style-button;
+                width: 100%;
+            }
+            &__mini-avatar {
+                border-radius: 20px;
+                width: 16px;
+                height: 16px;
+            }
+        }
+    }
 }
 
 @{RTL} {
-	.login-navigation {
-		[data-login="true"] {
-			.login-navigation {
-				&__user-dropdown {
-					right: unset;
-					left: 0;
-				}
-				&__bookmarks-icon-list {
-					a {
-						margin-left: 0.7rem;
-						margin-right: unset;
-					}
-				}
-				&__user-dropdown-item-icon {
-					padding-left: 0;
-					padding-right: 1.5rem;
-				}
-			}
-		}
-	}
+    .login-navigation {
+        [data-login='true'] {
+            .login-navigation {
+                &__user-dropdown {
+                    right: unset;
+                    left: 0;
+                }
+                &__bookmarks-icon-list {
+                    a {
+                        margin-left: 0.7rem;
+                        margin-right: unset;
+                    }
+                }
+                &__user-dropdown-item-icon {
+                    padding-left: 0;
+                    padding-right: 1.5rem;
+                }
+            }
+        }
+    }
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
-	.login-navigation {
-		[data-login="true"] {
-			.login-navigation {
-				&__user-icon {
-					display: none;
-				}
-			}
-		}
-	}
-} 
+    .login-navigation {
+        [data-login='true'] {
+            .login-navigation {
+                &__user-icon {
+                    display: none;
+                }
+            }
+        }
+    }
+}

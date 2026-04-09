@@ -33,9 +33,7 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 
 /**
- * <p>
  * Adds an "Access-Control-Allow-Origin" header to a REST response with the value configured in {@link Configuration#getCORSHeaderValue()}.
- * </p>
  */
 @Provider
 @CORSBinding

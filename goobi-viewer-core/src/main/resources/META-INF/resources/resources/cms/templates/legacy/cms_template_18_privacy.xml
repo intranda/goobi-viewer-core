@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<cms_page_template id="templatePrivacy" version="2018-02-07">
+<cms_page_template
+    id="templatePrivacy"
+    version="2018-02-07">
     <name>cms__template_18__title</name>
     <description>cms__template_18__description</description>
     <icon>cms_template_18_privacy.png</icon>
     <html>cms_template_18_privacy.xhtml</html>
     <content>
-        <item id="text01" label="cms__template_18__text_top__label" type="HTML" mandatory="true" />
-        <item id="text02" label="cms__template_18__text_bottom__label" type="HTML" mandatory="false" />
+        <item
+            id="text01"
+            label="cms__template_18__text_top__label"
+            type="HTML"
+            mandatory="true" />
+        <item
+            id="text02"
+            label="cms__template_18__text_bottom__label"
+            type="HTML"
+            mandatory="false" />
     </content>
 </cms_page_template>

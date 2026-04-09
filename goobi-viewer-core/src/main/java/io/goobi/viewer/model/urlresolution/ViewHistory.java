@@ -39,9 +39,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 /**
- * This class offers methods to store information about the current and previous html-view (page) in the session store
+ * Offers methods to store information about the current and previous html-view (page) in the session store.
  *
- * The fullscreen view is explicitly excluded from the recorded views, since it acts only as a magnification of the image view, not as a seperate page
+ * <p>The fullscreen view is explicitly excluded from the recorded views, since it acts only as a magnification of the image view, not as a separate
+ * page
  *
  * @author Florian Alpers
  */
@@ -94,9 +95,9 @@ public final class ViewHistory {
 
     /**
      * Saves the given {@code currentPath} to the session map, keeping the previously stored currentPath as previousPath if it has a different
-     * PageType than the current path
+     * PageType than the current path.
      *
-     * The path stored as currentPath can be retrieved by {@link #getCurrentView(ServletRequest)}; the previously stored path can be retrieved by
+     * <p>The path stored as currentPath can be retrieved by {@link #getCurrentView(ServletRequest)}; the previously stored path can be retrieved by
      * {@link #getPreviousView(ServletRequest)}
      *
      * @param session The http session to store the path in
@@ -116,7 +117,7 @@ public final class ViewHistory {
     }
 
     /**
-     * Returns true if the path matches one of the ignored views
+     * Returns true if the path matches one of the ignored views.
      *
      * @param path The path to check
      * @return true if path contains an ignored view type; false otherwise
@@ -131,11 +132,11 @@ public final class ViewHistory {
     }
 
     /**
-     * Retrieves the stored currentPath from the session associated the the passed {@code request}
+     * Retrieves the stored currentPath from the session associated the the passed {@code request}.
      *
+     * @param request a {@link jakarta.servlet.ServletRequest} object.
      * @return An optional containing the last stored current path if available. An empty optional if no session is available or no path has been
      *         stored yet
-     * @param request a {@link jakarta.servlet.ServletRequest} object.
      */
     public static synchronized Optional<ViewerPath> getCurrentView(ServletRequest request) {
         if (request != null) {
@@ -153,11 +154,11 @@ public final class ViewHistory {
     }
 
     /**
-     * Retrieves the stored previousPath from the session associated the the passed {@code request}
+     * Retrieves the stored previousPath from the session associated the the passed {@code request}.
      *
+     * @param request a {@link jakarta.servlet.ServletRequest} object.
      * @return An optional containing the last stored previous path if available. An empty optional if no session is available or no previous path has
      *         been stored yet
-     * @param request a {@link jakarta.servlet.ServletRequest} object.
      */
     public static synchronized Optional<ViewerPath> getPreviousView(ServletRequest request) {
         if (request != null) {
@@ -175,14 +176,12 @@ public final class ViewHistory {
     }
 
     /**
-     * Directly redirect to the given url
+     * Directly redirect to the given url.
      *
      * @param url The url to redirect to
      * @throws java.io.IOException if any.
      */
     public static synchronized void redirectToUrl(String url) throws IOException {
-
-        FacesContext.getCurrentInstance().getExternalContext().getFlash().setRedirect(true);
         FacesContext.getCurrentInstance().getExternalContext().redirect(url);
     }
 

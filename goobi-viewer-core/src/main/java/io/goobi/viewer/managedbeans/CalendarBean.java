@@ -46,6 +46,8 @@ import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 
 import com.ibm.icu.text.RuleBasedNumberFormat;
 
@@ -106,9 +108,7 @@ public class CalendarBean implements Serializable {
     private List<CalendarItemMonth> monthList;
 
     /**
-     * <p>
-     * Constructor for CalendarBean.
-     * </p>
+     * Creates a new CalendarBean instance.
      */
     public CalendarBean() {
         // the emptiness inside
@@ -128,9 +128,9 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * Required setter for ManagedProperty injection
+     * Required setter for ManagedProperty injection.
      *
-     * @param searchBean the searchBean to set
+     * @param searchBean the SearchBean instance to inject for testing
      */
     public void setSearchBean(SearchBean searchBean) {
         this.searchBean = searchBean;
@@ -409,9 +409,9 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * This method generates a search string for selected year, month and day.
+     * Generates a search string for selected year, month and day.
      *
-     * @param day
+     * @param day Day of month as integer
      * @return String with format YYYYMMDD
      */
 
@@ -432,9 +432,7 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>currentYear</code>.
-     * </p>
      *
      * @return selected year
      */
@@ -446,7 +444,7 @@ public class CalendarBean implements Serializable {
      * Set a new value for year. If the selected year is the same as the old selection, the data will be unselected. Otherwise the new data will be
      * generated.
      *
-     * @param currentYear a {@link io.goobi.viewer.model.calendar.CalendarItemYear} object.
+     * @param currentYear newly selected calendar year item
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -468,9 +466,7 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>rowIndex</code>.
-     * </p>
      *
      * @return a int.
      */
@@ -479,9 +475,7 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>rowIndex</code>.
-     * </p>
      *
      * @param rowIndex a int.
      */
@@ -490,33 +484,27 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>monthRow</code>.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.model.calendar.CalendarRow} object.
+     * @return the calendar row containing the month items
      */
     public CalendarRow getMonthRow() {
         return monthRow;
     }
 
     /**
-     * <p>
      * Setter for the field <code>monthRow</code>.
-     * </p>
      *
-     * @param monthRow a {@link io.goobi.viewer.model.calendar.CalendarRow} object.
+     * @param monthRow calendar row containing month items to set
      */
     public void setMonthRow(CalendarRow monthRow) {
         this.monthRow = monthRow;
     }
 
     /**
-     * <p>
      * Getter for the field <code>currentMonth</code>.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.model.calendar.CalendarItemMonth} object.
+     * @return the currently selected calendar month item
      */
     public CalendarItemMonth getCurrentMonth() {
         return currentMonth;
@@ -526,7 +514,7 @@ public class CalendarBean implements Serializable {
      * Set a new value for month. If the selected month is the same as the old selection, the month and day will be unselected. Otherwise the data for
      * the month gets generated.
      *
-     * @param currentMonth a {@link io.goobi.viewer.model.calendar.CalendarItemMonth} object.
+     * @param currentMonth newly selected calendar month item
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -543,22 +531,18 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>currentDay</code>.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.model.calendar.CalendarItemDay} object.
+     * @return the currently selected calendar day item
      */
     public CalendarItemDay getCurrentDay() {
         return currentDay;
     }
 
     /**
-     * <p>
      * Setter for the field <code>currentDay</code>.
-     * </p>
      *
-     * @param currentDay a {@link io.goobi.viewer.model.calendar.CalendarItemDay} object.
+     * @param currentDay newly selected calendar day item
      */
     public void setCurrentDay(CalendarItemDay currentDay) {
         if (this.currentDay == currentDay) {
@@ -569,11 +553,9 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>
      * getCurrentDate.
-     * </p>
      *
-     * @return a {@link java.time.LocalDateTime} object.
+     * @return the current date/time with the selected year, month, and day applied
      */
     public LocalDateTime getCurrentDate() {
         LocalDateTime ldt = LocalDateTime.now();
@@ -598,32 +580,28 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>dayRow</code>.
-     * </p>
      *
-     * @return the dayRow
+     * @return the calendar row containing the day items for the currently selected week row
      */
     public CalendarRow getDayRow() {
         return dayRow;
     }
 
     /**
-     * <p>
      * Setter for the field <code>dayRow</code>.
-     * </p>
      *
-     * @param dayRow the dayRow to set
+     * @param dayRow calendar row containing day items to set
      */
     public void setDayRow(CalendarRow dayRow) {
         this.dayRow = dayRow;
     }
 
     /**
-     * This method generates the search string for the time line based search tab. The search string will be handed over to the search bean to execute
+     * Generates the search string for the time line based search tab. The search string will be handed over to the search bean to execute
      * the search.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the navigation outcome after executing the timeline search
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -673,7 +651,7 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * This method resets the current selection for year, month and day; also selectYear and collection.
+     * Resets the current selection for year, month and day; also selectYear and collection.
      */
     public void resetCurrentSelection() {
         currentDay = null;
@@ -701,11 +679,11 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * This method returns a list of all active centuries. <br />
+     * Returns a list of all active centuries. <br />
      *
-     * The method searches for the facet of the field 'CENTURY'. If the count of a facet is greater than 0, the century is active.
+     * <p>The method searches for the facet of the field 'CENTURY'. If the count of a facet is greater than 0, the century is active.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of CalendarItemCentury objects for each century that has at least one indexed record
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -777,9 +755,7 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>
      * resetYears.
-     * </p>
      *
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -795,7 +771,7 @@ public class CalendarBean implements Serializable {
     /**
      * Select a year. If the new value differs from the old one, the data for the new value gets generated.
      *
-     * @param selectYear the selectYear to set
+     * @param selectYear four-digit year string to select and populate calendar data for
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -816,25 +792,23 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>selectYear</code>.
-     * </p>
      *
-     * @return the selectYear
+     * @return the four-digit year string currently selected for the calendar view
      */
     public String getSelectYear() {
         return selectYear;
     }
 
     /**
-     * This method generates the data for each month of the selected year. <br/>
+     * Generates the data for each month of the selected year. <br/>
      * It runs a facet search for YEARMONTH and YEARMONTHDAY for the current year. For each day of the year, the method checks if the count of the
      * field YEARMONTHDAY is greater than 0. If this is the case, the day is an active element, otherwise it has no hits.
      *
-     * @param selectYear a {@link java.lang.String} object.
-     * @param collection a {@link java.lang.String} object.
-     * @param filterQuery a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
+     * @param selectYear four-digit year string to populate data for
+     * @param collection Solr collection filter value, or null for all
+     * @param filterQuery additional Solr filter query to restrict results
+     * @return a list of CalendarItemMonth objects with day-level hit data populated for the given year
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -987,6 +961,24 @@ public class CalendarBean implements Serializable {
                                 .append(monthItem.getFormattedValue())
                                 .append(dayItem.getFormattedValue()) + filterQuery;
                         dayItem.setQuery(query);
+                        if (count.getCount() == 1) {
+                            try {
+                                SolrDocumentList docs = DataManager.getInstance().getSearchIndex()
+                                        .search(query + SearchHelper.getAllSuffixes(),
+                                                Arrays.asList(SolrConstants.PI_TOPSTRUCT, SolrConstants.THUMBPAGENO, SolrConstants.LOGID));
+                                if (docs != null && !docs.isEmpty()) {
+                                    SolrDocument doc = docs.get(0);
+                                    String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
+                                    Object thumbPageNo = doc.getFieldValue(SolrConstants.THUMBPAGENO);
+                                    String logId = (String) doc.getFieldValue(SolrConstants.LOGID);
+                                    if (pi != null && thumbPageNo != null && logId != null) {
+                                        dayItem.setSingleResultUrl("image/" + pi + "/" + thumbPageNo + "/" + logId + "/");
+                                    }
+                                }
+                            } catch (PresentationException | IndexUnreachableException e) {
+                                logger.error("Could not resolve single result URL for calendar day {}: {}", facetName, e.getMessage());
+                            }
+                        }
                         break;
                     }
                 }
@@ -1036,10 +1028,10 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * Add as many {@link CalendarItemDay}s to 'currentWeek' as there are days between the start of the month and the previous monday
+     * Add as many {@link CalendarItemDay}s to 'currentWeek' as there are days between the start of the month and the previous monday.
      * 
-     * @param currentWeek
-     * @param date
+     * @param currentWeek Week item to prepend empty days to
+     * @param date First day of the month
      */
     protected static void addEmptyDays(CalendarItemWeek currentWeek, LocalDate date) {
 
@@ -1050,66 +1042,54 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>monthList</code>.
-     * </p>
      *
-     * @return the monthList
+     * @return the list of calendar month items for the currently selected year
      */
     public List<CalendarItemMonth> getMonthList() {
         return monthList;
     }
 
     /**
-     * <p>
      * Getter for the field <code>yearEnd</code>.
-     * </p>
      *
-     * @return the yearEnd
+     * @return the last year (inclusive) of the date range displayed in the calendar
      */
     public int getYearEnd() {
         return yearEnd;
     }
 
     /**
-     * <p>
      * Getter for the field <code>yearStart</code>.
-     * </p>
      *
-     * @return the yearStart
+     * @return the first year (inclusive) of the date range displayed in the calendar
      */
     public int getYearStart() {
         return yearStart;
     }
 
     /**
-     * <p>
      * Setter for the field <code>yearEnd</code>.
-     * </p>
      *
-     * @param yearEnd the yearEnd to set
+     * @param yearEnd the last year (inclusive) of the date range to display
      */
     public void setYearEnd(int yearEnd) {
         this.yearEnd = yearEnd;
     }
 
     /**
-     * <p>
      * Setter for the field <code>yearStart</code>.
-     * </p>
      *
-     * @param yearStart the yearStart to set
+     * @param yearStart the first year (inclusive) of the date range to display
      */
     public void setYearStart(int yearStart) {
         this.yearStart = yearStart;
     }
 
     /**
-     * <p>
      * Setter for the field <code>collection</code>.
-     * </p>
      *
-     * @param collection the collection to set
+     * @param collection Solr collection filter value to restrict the calendar view, or null for all collections
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -1121,24 +1101,20 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>collection</code>.
-     * </p>
      *
-     * @return the collection
+     * @return the Solr collection filter value restricting the calendar view, or null for all collections
      */
     public String getCollection() {
         return collection;
     }
 
     /**
-     * <p>
      * searchCalendar.
-     * </p>
      *
      * @param month a {@link io.goobi.viewer.model.calendar.CalendarItemMonth} object.
      * @param day a {@link io.goobi.viewer.model.calendar.CalendarItemDay} object.
-     * @return a {@link java.lang.String} object.
+     * @return the navigation outcome after executing the calendar search for the given month and day
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1152,10 +1128,10 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * This method generates the search string for the calendar search tab. The search string will be handed over to the search bean to execute the
+     * Generates the search string for the calendar search tab. The search string will be handed over to the search bean to execute the
      * search.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the navigation outcome after executing the calendar search
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1209,9 +1185,9 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * This method generates a search string to search for data with a value in YEAR but without a value in YEARMONTHDAY.
+     * Generates a search string to search for data with a value in YEAR but without a value in YEARMONTHDAY.
      *
-     * @param date
+     * @param date Year value used in the CALENDAR_YEAR query
      * @return Generated query
      */
     private String getQueryForIncompleteData(String date) {
@@ -1227,7 +1203,7 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * This method returns the count of all data without a value in YEARMONTHDAY for the selected year.
+     * Returns the count of all data without a value in YEARMONTHDAY for the selected year.
      *
      * @return a int.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -1252,11 +1228,9 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>
      * getActualYear.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the currently selected year string, or null if no year has been selected
      */
     public String getActualYear() {
         String year = "";
@@ -1270,9 +1244,9 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * This method generates the search string for incomplete data. The search string will be handed over to the search bean to execute the search.
+     * Generates the search string for incomplete data. The search string will be handed over to the search bean to execute the search.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the navigation outcome after executing the search for records with incomplete calendar data
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.

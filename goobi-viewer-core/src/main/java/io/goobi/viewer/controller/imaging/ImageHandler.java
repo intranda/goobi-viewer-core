@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -55,6 +56,7 @@ import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.RestApiManager;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.controller.model.ViewAttributes;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -63,7 +65,7 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 
 /**
- * Provides urls to download pdfs, images and image footer
+ * Provides urls to download pdfs, images and image footer.
  *
  * @author Florian Alpers
  */
@@ -78,7 +80,7 @@ public class ImageHandler {
     }
 
     /**
-     * @param contentUrlManager
+     * @param contentUrlManager API URL manager for building content and image resource URLs
      */
     public ImageHandler(AbstractApiUrlManager contentUrlManager) {
         this.urls = contentUrlManager;
@@ -88,9 +90,9 @@ public class ImageHandler {
      * Returns the image link for the given page and pageType. For external images, this links to the IIIF image information json+ls For external
      * images, this may either also be a IIIF image information or the image itself
      *
-     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
-     * @param pageType a {@link io.goobi.viewer.model.viewer.PageType} object.
-     * @return a {@link java.lang.String} object.
+     * @param page physical page providing the image filename and PI
+     * @param pageType viewer page type used to select the appropriate URL pattern
+     * @return the IIIF image info URL for the given page and page type
      */
     public String getImageUrl(PhysicalElement page, PageType pageType) {
         if (page == null) {
@@ -114,10 +116,10 @@ public class ImageHandler {
     }
 
     /**
-     * @param pageType
-     * @param pi
-     * @param filepath
-     * @param filename
+     * @param pageType viewer page type used to select the appropriate URL pattern
+     * @param pi persistent identifier of the record
+     * @param filepath relative or full path to the image file
+     * @param filename image filename used for URL construction
      * @return Generated URL
      */
     public String getImageUrl(PageType pageType, String pi, String filepath, String filename) {
@@ -154,20 +156,18 @@ public class ImageHandler {
      * Returns the image link for the given page. For external images, this links to the IIIF image information json+ls For external images, this may
      * either also be a IIIF image information or the image itself
      *
-     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
-     * @return a {@link java.lang.String} object.
+     * @param page physical page providing the image filename and PI
+     * @return the IIIF image info URL for the given page using the default viewImage page type
      */
     public String getImageUrl(PhysicalElement page) {
         return getImageUrl(page, PageType.viewImage);
     }
 
     /**
-     * <p>
      * getImageInformation.
-     * </p>
      *
-     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
-     * @param pageType
+     * @param page physical page providing image dimensions and access permissions
+     * @param pageType page type determining tile and zoom configuration
      * @return The image information for the image file of the given page
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException if any.
      * @throws java.net.URISyntaxException if any.
@@ -178,12 +178,12 @@ public class ImageHandler {
      */
     public ImageInformation getImageInformation(PhysicalElement page, PageType pageType)
             throws ContentLibException, ViewerConfigurationException, URISyntaxException, IndexUnreachableException, DAOException {
-        URI fileUri = new URI(getIIIFBaseUrl(page.getFilepath()));
+        URI fileUri = PathConverter.toURI(getIIIFBaseUrl(page.getFilepath()));
         int width = page.getImageWidth(); //0 if width is not known
         int height = page.getImageHeight(); //0 if height is not known
 
         URI apiUri;
-        if (fileUri.getScheme() != null && fileUri.getScheme().matches("^http.*")) {
+        if (StringUtils.isNotBlank(fileUri.getScheme()) && !"file".equals(fileUri.getScheme())) {
             if (width * height == 0) {
                 //no internal size information. return external url
                 return new ImageInformation(fileUri);
@@ -192,13 +192,14 @@ public class ImageHandler {
             apiUri = fileUri;
         } else {
             //create internal imageInformation uri
-            apiUri = urls.path(ApiUrls.RECORDS_FILES_IMAGE).params(page.getPi(), PathConverter.getPath(fileUri).getFileName().toString()).buildURI();
+            apiUri = urls.path(ApiUrls.RECORDS_FILES_IMAGE).params(page.getPi(), fileUri).buildURI();
         }
 
-        Map<Integer, List<Integer>> tileSizes = DataManager.getInstance().getConfiguration().getTileSizes(pageType, page.getMimeType());
+        ViewAttributes viewAttributes = new ViewAttributes(page, pageType);
+        Map<Integer, List<Integer>> tileSizes = DataManager.getInstance().getConfiguration().getTileSizes(viewAttributes);
         List<Integer> sizes = DataManager.getInstance()
                 .getConfiguration()
-                .getImageViewZoomScales(pageType, page.getMimeType())
+                .getImageViewZoomScales(viewAttributes)
                 .stream()
                 .filter(s -> s.matches("\\d{1,9}"))
                 .map(Integer::parseInt)
@@ -233,7 +234,7 @@ public class ImageHandler {
      * Get the IIIF base url (resource id) from an iiif info.json url or a iiif image url. If the given url does not match a iiif image resource
      * pattern, return the unchanged url
      * 
-     * @param url
+     * @param url IIIF image info.json or image URL to extract the base URL from
      * @return the base url/id of the given iiif image resource.
      */
     public static String getIIIFBaseUrl(String url) {
@@ -241,11 +242,9 @@ public class ImageHandler {
     }
 
     /**
-     * <p>
      * getImageInformation.
-     * </p>
      *
-     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @param page physical page whose image file is read
      * @return The image information for the image file of the given page
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException if any.
      * @throws java.net.URISyntaxException if any.
@@ -269,12 +268,10 @@ public class ImageHandler {
     }
 
     /**
-     * <p>
      * getImageInformation.
-     * </p>
      *
-     * @param url a {@link java.lang.String} object.
-     * @return a {@link de.intranda.api.iiif.image.ImageInformation} object.
+     * @param url IIIF image or info.json URL to retrieve image information from
+     * @return the IIIF ImageInformation for the resolved image URL
      * @throws java.net.URISyntaxException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException if any.
      */
@@ -288,11 +285,9 @@ public class ImageHandler {
     }
 
     /**
-     * <p>
      * isExternalUrl.
-     * </p>
      *
-     * @param path a {@link java.lang.String} object.
+     * @param path file path or URL to test
      * @return true exactly if the given path starts with {@code http://} or {@code https://}
      */
     public static boolean isExternalUrl(String path) {
@@ -300,13 +295,11 @@ public class ImageHandler {
     }
 
     /**
-     * <p>
      * isImageUrl.
-     * </p>
      *
      * @param displayableTypesOnly if true, the method only returns true for images that can be directly displayed in a browser (jpg and png)
-     * @return true if the url ends with an image file suffix
      * @param url a {@link java.lang.String} object.
+     * @return true if the url ends with an image file suffix
      */
     protected static boolean isImageUrl(String url, boolean displayableTypesOnly) {
         String extension = FilenameUtils.getExtension(StringTools.removeTrailingSlashes(url).toLowerCase());
@@ -325,12 +318,10 @@ public class ImageHandler {
     }
 
     /**
-     * <p>
      * isRestrictedUrl.
-     * </p>
      *
+     * @param path file path or URL to test against configured restricted patterns
      * @return true if the path is an external url which has restricted access and must therefore be delivered via the contenetServer
-     * @param path a {@link java.lang.String} object.
      */
     public static boolean isRestrictedUrl(String path) {
         return DataManager.getInstance()

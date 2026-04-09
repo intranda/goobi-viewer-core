@@ -47,7 +47,7 @@ public class Role implements Serializable {
 
     private static final long serialVersionUID = -264290351046020590L;
 
-    /** Constant <code>SUPERUSER_ROLE="admin"</code> */
+    /** Constant <code>SUPERUSER_ROLE="admin"</code>. */
     public static final String SUPERUSER_ROLE = "admin";
 
     @Id
@@ -80,21 +80,14 @@ public class Role implements Serializable {
     }
 
     /**
-     * <p>
-     * Constructor for Role.
-     * </p>
+     * Creates a new Role instance.
      *
-     * @param name a {@link java.lang.String} object.
+     * @param name unique name identifying this role
      */
     public Role(String name) {
         this.name = name;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -105,11 +98,6 @@ public class Role implements Serializable {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -164,22 +152,18 @@ public class Role implements Serializable {
     }
 
     /**
-     * <p>
      * isPrivDeleteOcrPage.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this role grants the privilege to delete OCR page content, false otherwise
      */
     public boolean isPrivDeleteOcrPage() {
         return hasPrivilege(IPrivilegeHolder.PRIV_DELETE_OCR_PAGE);
     }
 
     /**
-     * <p>
      * setPrivDeleteOcrPage.
-     * </p>
      *
-     * @param priv a boolean.
+     * @param priv true to grant, false to revoke the privilege
      */
     public void setPrivDeleteOcrPage(boolean priv) {
         if (priv) {
@@ -190,22 +174,18 @@ public class Role implements Serializable {
     }
 
     /**
-     * <p>
      * isPrivSetRepresentativeImage.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this role grants the privilege to set the representative image for a record, false otherwise
      */
     public boolean isPrivSetRepresentativeImage() {
         return hasPrivilege(IPrivilegeHolder.PRIV_SET_REPRESENTATIVE_IMAGE);
     }
 
     /**
-     * <p>
      * setPrivSetRepresentativeImage.
-     * </p>
      *
-     * @param priv a boolean.
+     * @param priv true to grant, false to revoke the privilege
      */
     public void setPrivSetRepresentativeImage(boolean priv) {
         if (priv) {
@@ -216,22 +196,18 @@ public class Role implements Serializable {
     }
 
     /**
-     * <p>
      * isPrivCmsPages.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this role grants the privilege to manage CMS pages, false otherwise
      */
     public boolean isPrivCmsPages() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES);
     }
 
     /**
-     * <p>
      * setPrivCmsPages.
-     * </p>
      *
-     * @param priv a boolean.
+     * @param priv true to grant, false to revoke the privilege
      */
     public void setPrivCmsPages(boolean priv) {
         if (priv) {
@@ -242,22 +218,18 @@ public class Role implements Serializable {
     }
 
     /**
-     * <p>
      * isPrivCmsMenu.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this role grants the privilege to manage the CMS navigation menu, false otherwise
      */
     public boolean isPrivCmsMenu() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_MENU);
     }
 
     /**
-     * <p>
      * setPrivCmsMenu.
-     * </p>
      *
-     * @param priv a boolean.
+     * @param priv true to grant, false to revoke the privilege
      */
     public void setPrivCmsMenu(boolean priv) {
         if (priv) {
@@ -268,22 +240,18 @@ public class Role implements Serializable {
     }
 
     /**
-     * <p>
      * isPrivCmsStaticPages.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this role grants the privilege to manage CMS static pages, false otherwise
      */
     public boolean isPrivCmsStaticPages() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
     }
 
     /**
-     * <p>
      * setPrivCmsStaticPages.
-     * </p>
      *
-     * @param priv a boolean.
+     * @param priv true to grant, false to revoke the privilege
      */
     public void setPrivCmsStaticPages(boolean priv) {
         if (priv) {
@@ -294,22 +262,18 @@ public class Role implements Serializable {
     }
 
     /**
-     * <p>
      * isPrivCmsCollections.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this role grants the privilege to manage CMS collections, false otherwise
      */
     public boolean isPrivCmsCollections() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
     }
 
     /**
-     * <p>
      * setPrivCmsCollections.
-     * </p>
      *
-     * @param priv a boolean.
+     * @param priv true to grant, false to revoke the privilege
      */
     public void setPrivCmsCollections(boolean priv) {
         if (priv) {
@@ -320,22 +284,18 @@ public class Role implements Serializable {
     }
 
     /**
-     * <p>
      * isPrivCmsCategories.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this role grants the privilege to manage CMS categories, false otherwise
      */
     public boolean isPrivCmsCategories() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_CATEGORIES);
     }
 
     /**
-     * <p>
      * setPrivCmsCategories.
-     * </p>
      *
-     * @param priv a boolean.
+     * @param priv true to grant, false to revoke the privilege
      */
     public void setPrivCmsCategories(boolean priv) {
         if (priv) {
@@ -348,110 +308,90 @@ public class Role implements Serializable {
     /*********************************** Getter and Setter ***************************************/
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
-     * @return the id
+     * @return the database primary key for this role
      */
     public Long getId() {
         return id;
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
-     * @param id the id to set
+     * @param id the database primary key for this role
      */
     public void setId(Long id) {
         this.id = id;
     }
 
     /**
-     * <p>
      * Getter for the field <code>name</code>.
-     * </p>
      *
-     * @return the name
+     * @return the unique name identifying this role
      */
     public String getName() {
         return name;
     }
 
     /**
-     * <p>
      * Setter for the field <code>name</code>.
-     * </p>
      *
-     * @param name the name to set
+     * @param name the unique name identifying this role
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * <p>
      * Getter for the field <code>description</code>.
-     * </p>
      *
-     * @return the description
+     * @return the human-readable description of this role
      */
     public String getDescription() {
         return description;
     }
 
     /**
-     * <p>
      * Setter for the field <code>description</code>.
-     * </p>
      *
-     * @param description the description to set
+     * @param description the human-readable description of this role
      */
     public void setDescription(String description) {
         this.description = description;
     }
 
     /**
-     * <p>
      * Getter for the field <code>privileges</code>.
-     * </p>
      *
-     * @return the privileges
+     * @return the set of privilege names granted by this role
      */
     public Set<String> getPrivileges() {
         return privileges;
     }
 
     /**
-     * <p>
      * Setter for the field <code>privileges</code>.
-     * </p>
      *
-     * @param privileges the privileges to set
+     * @param privileges the set of privilege names granted by this role
      */
     public void setPrivileges(Set<String> privileges) {
         this.privileges = privileges;
     }
 
     /**
-     * <p>
      * Getter for the field <code>inheritedRoles</code>.
-     * </p>
      *
-     * @return the inheritedRoles
+     * @return the set of roles whose privileges are inherited by this role
      */
     public Set<Role> getInheritedRoles() {
         return inheritedRoles;
     }
 
     /**
-     * <p>
      * Setter for the field <code>inheritedRoles</code>.
-     * </p>
      *
-     * @param inheritedRoles the inheritedRoles to set
+     * @param inheritedRoles the set of roles whose privileges are inherited by this role
      */
     public void setInheritedRoles(Set<Role> inheritedRoles) {
         this.inheritedRoles = inheritedRoles;

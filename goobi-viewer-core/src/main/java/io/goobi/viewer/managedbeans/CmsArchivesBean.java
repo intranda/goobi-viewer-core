@@ -47,6 +47,11 @@ import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 
+/**
+ * JSF backing bean for the CMS archive administration view. Manages the list of archive resources
+ * and their CMS configurations, and supports editing display settings such as image modes for
+ * archive tiles and headers.
+ */
 @Named
 @SessionScoped
 public class CmsArchivesBean implements Serializable {
@@ -145,37 +150,29 @@ public class CmsArchivesBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>lazyModelArchiveConfigurations</code>.
-     * </p>
      *
-     * @return the lazyModelArchiveConfigurations
+     * @return the lazy-loading table data provider for archive resource configurations
      */
     public TableDataProvider<ArchiveResourceWrapper> getLazyModelArchiveConfigurations() {
         return lazyModelArchiveConfigurations;
     }
 
     /**
-     * <p>
      * getPageArchiveWrappers.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of archive resource wrappers for the current page in the paginated archive configurations list
      */
     public List<ArchiveResourceWrapper> getPageArchiveWrappers() {
         return lazyModelArchiveConfigurations.getPaginatorList();
     }
 
-    /**
-     * @return the selectedArchiveWrapper
-     */
+    
     public ArchiveResourceWrapper getSelectedArchiveWrapper() {
         return selectedArchiveWrapper;
     }
 
-    /**
-     * @param selectedArchiveWrapper the selectedArchiveWrapper to set
-     */
+    
     public void setSelectedArchiveWrapper(ArchiveResourceWrapper selectedArchiveWrapper) {
         this.selectedArchiveWrapper = selectedArchiveWrapper;
     }
@@ -194,30 +191,22 @@ public class CmsArchivesBean implements Serializable {
         this.selectedArchiveWrapper = null;
     }
 
-    /**
-     * @return the imageModeTile
-     */
+    
     public CMSCollectionImageMode getImageModeTile() {
         return imageModeTile;
     }
 
-    /**
-     * @param imageModeTile the imageModeTile to set
-     */
+    
     public void setImageModeTile(CMSCollectionImageMode imageModeTile) {
         this.imageModeTile = imageModeTile;
     }
 
-    /**
-     * @return the imageModeHeader
-     */
+    
     public CMSCollectionImageMode getImageModeHeader() {
         return imageModeHeader;
     }
 
-    /**
-     * @param imageModeHeader the imageModeHeader to set
-     */
+    
     public void setImageModeHeader(CMSCollectionImageMode imageModeHeader) {
         this.imageModeHeader = imageModeHeader;
     }

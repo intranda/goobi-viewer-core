@@ -3,19 +3,21 @@
    ==============================================================*/
 /* IMAGE CONTROLS */
 @font-face {
-    font-family: "viewer_controls";
-    src:url("@{fonts}/viewer_controls.eot?tbdisb");
-    src:url("@{fonts}/viewer_controls.eot?tbdisb#iefix") format("embedded-opentype"),
-        url("@{fonts}/viewer_controls.ttf?tbdisb") format("truetype"),
-        url("@{fonts}/viewer_controls.woff?tbdisb") format("woff"),
-        url("@{fonts}/viewer_controls.svg?tbdisb#viewer_controls") format("svg");
+    font-family: 'viewer_controls';
+    src: url('@{fonts}/viewer_controls.eot?tbdisb');
+    src:
+        url('@{fonts}/viewer_controls.eot?tbdisb#iefix') format('embedded-opentype'),
+        url('@{fonts}/viewer_controls.ttf?tbdisb') format('truetype'),
+        url('@{fonts}/viewer_controls.woff?tbdisb') format('woff'),
+        url('@{fonts}/viewer_controls.svg?tbdisb#viewer_controls') format('svg');
     font-weight: normal;
     font-style: normal;
 }
 
-[class^="control-icon-"], [class*=" control-icon-"] {
+[class^='control-icon-'],
+[class*=' control-icon-'] {
     /* use !important to prevent issues with browser extensions that change fonts */
-    font-family: "viewer_controls" !important;
+    font-family: 'viewer_controls' !important;
     speak: none;
     font-style: normal;
     font-weight: normal;
@@ -29,125 +31,133 @@
 }
 
 .control-icon-fs_back:before {
-    content: "\e900";
+    content: '\e900';
 }
 .control-icon-fs_exit:before {
-    content: "\e901";
-} 
+    content: '\e901';
+}
 .control-icon-fs_forward:before {
-    content: "\e902";
+    content: '\e902';
 }
 .control-icon-start:before {
-    content: "\e600";
+    content: '\e600';
 }
 .control-icon-back:before {
-    content: "\e601";
+    content: '\e601';
 }
 .control-icon-end:before {
-    content: "\e602";
+    content: '\e602';
 }
 .control-icon-forward:before {
-    content: "\e603";
+    content: '\e603';
 }
 .control-icon-rotate_left:before {
-    content: "\e604";
+    content: '\e604';
 }
 .control-icon-rotate_right:before {
-    content: "\e605";
+    content: '\e605';
 }
 .control-icon-reset:before {
-    content: "\e606";
+    content: '\e606';
 }
 .control-icon-fullscreen:before {
-    content: "\e607";
+    content: '\e607';
 }
 
 /* STANDARD VIEWER FONT (FRONTEND, BACKEND, CONTROLS) */
 /*** INTER FONT v3.19 ***/
 @font-face {
-  font-family: 'Inter';
-  font-style:  normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("@{fonts}/inter/inter-400.woff2") format("woff2"),
-       url("@{fonts}/inter/inter-400.woff") format("woff");
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src:
+        url('@{fonts}/inter/inter-400.woff2') format('woff2'),
+        url('@{fonts}/inter/inter-400.woff') format('woff');
 }
 @font-face {
-  font-family: 'Inter';
-  font-style:  italic;
-  font-weight: 400;
-  font-display: swap;
-  src: url("@{fonts}/inter/inter-400i.woff2") format("woff2"),
-       url("@{fonts}/inter/inter-400i.woff") format("woff");
+    font-family: 'Inter';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src:
+        url('@{fonts}/inter/inter-400i.woff2') format('woff2'),
+        url('@{fonts}/inter/inter-400i.woff') format('woff');
 }
 
 @font-face {
-  font-family: 'Inter';
-  font-style:  normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url("@{fonts}/inter/inter-500.woff2") format("woff2"),
-       url("@{fonts}/inter/inter-500.woff") format("woff");
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src:
+        url('@{fonts}/inter/inter-500.woff2') format('woff2'),
+        url('@{fonts}/inter/inter-500.woff') format('woff');
 }
 @font-face {
-  font-family: 'Inter';
-  font-style:  italic;
-  font-weight: 500;
-  font-display: swap;
-  src: url("@{fonts}/inter/inter-500i.woff2") format("woff2"),
-       url("@{fonts}/inter/inter-500i.woff") format("woff");
+    font-family: 'Inter';
+    font-style: italic;
+    font-weight: 500;
+    font-display: swap;
+    src:
+        url('@{fonts}/inter/inter-500i.woff2') format('woff2'),
+        url('@{fonts}/inter/inter-500i.woff') format('woff');
 }
 
 @font-face {
-  font-family: 'Inter';
-  font-style:  normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url("@{fonts}/inter/inter-600.woff2") format("woff2"),
-       url("@{fonts}/inter/inter-600.woff") format("woff");
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src:
+        url('@{fonts}/inter/inter-600.woff2') format('woff2'),
+        url('@{fonts}/inter/inter-600.woff') format('woff');
 }
 @font-face {
-  font-family: 'Inter';
-  font-style:  italic;
-  font-weight: 600;
-  font-display: swap;
-  src: url("@{fonts}/inter/inter-600i.woff2") format("woff2"),
-       url("@{fonts}/inter/inter-600i.woff") format("woff");
+    font-family: 'Inter';
+    font-style: italic;
+    font-weight: 600;
+    font-display: swap;
+    src:
+        url('@{fonts}/inter/inter-600i.woff2') format('woff2'),
+        url('@{fonts}/inter/inter-600i.woff') format('woff');
 }
 
 @font-face {
-  font-family: 'Inter';
-  font-style:  normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url("@{fonts}/inter/inter-700.woff2") format("woff2"),
-       url("@{fonts}/inter/inter-700.woff") format("woff");
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src:
+        url('@{fonts}/inter/inter-700.woff2') format('woff2'),
+        url('@{fonts}/inter/inter-700.woff') format('woff');
 }
 @font-face {
-  font-family: 'Inter';
-  font-style:  italic;
-  font-weight: 700;
-  font-display: swap;
-  src: url("@{fonts}/inter/inter-700i.woff2") format("woff2"),
-       url("@{fonts}/inter/inter-700i.woff") format("woff");
+    font-family: 'Inter';
+    font-style: italic;
+    font-weight: 700;
+    font-display: swap;
+    src:
+        url('@{fonts}/inter/inter-700i.woff2') format('woff2'),
+        url('@{fonts}/inter/inter-700i.woff') format('woff');
 }
-
 
 /* NEW IMAGE CONTROLS */
 @font-face {
-  font-family: "image-controls";
-  src:  url("@{fonts}/image-controls.eot?qi49ep");
-  src:  url("@{fonts}/image-controls.eot?qi49ep#iefix") format("embedded-opentype"),
-    url("@{fonts}/image-controls.ttf?qi49ep") format("truetype"),
-    url("@{fonts}/image-controls.woff?qi49ep") format("woff"),
-    url("@{fonts}/image-controls.svg?qi49ep#image-controls") format("svg");
-  font-weight: normal;
-  font-style: normal;
+    font-family: 'image-controls';
+    src: url('@{fonts}/image-controls.eot?qi49ep');
+    src:
+        url('@{fonts}/image-controls.eot?qi49ep#iefix') format('embedded-opentype'),
+        url('@{fonts}/image-controls.ttf?qi49ep') format('truetype'),
+        url('@{fonts}/image-controls.woff?qi49ep') format('woff'),
+        url('@{fonts}/image-controls.svg?qi49ep#image-controls') format('svg');
+    font-weight: normal;
+    font-style: normal;
 }
 
-//i[class^="image-"], 
+//i[class^="image-"],
 //i[class*=" image-"],
-//span[class^="image-"], 
+//span[class^="image-"],
 //span[class*=" image-"] {
 //  /* use !important to prevent issues with browser extensions that change fonts */
 //  font-family: "image-controls" !important;
@@ -163,72 +173,73 @@
 //  -moz-osx-font-smoothing: grayscale;
 //}
 .image-back:before {
-  content: "\e900";
+    content: '\e900';
 }
 .image-forward:before {
-  content: "\e901";
+    content: '\e901';
 }
 .image-start:before {
-  content: "\e902";
+    content: '\e902';
 }
 .image-end:before {
-  content: "\e903";
+    content: '\e903';
 }
 .image-rotate_left:before {
-  content: "\e904";
+    content: '\e904';
 }
 .image-rotate_right:before {
-  content: "\e905";
+    content: '\e905';
 }
 .image-reset:before {
-  content: "\e906";
+    content: '\e906';
 }
 .image-fullscreen:before {
-  content: "\e907";
+    content: '\e907';
 }
 .image-resultback:before {
-  content: "\e908";
+    content: '\e908';
 }
 .image-resultforward:before {
-  content: "\e909";
+    content: '\e909';
 }
 .image-singlePageView:before {
-  content: "\e90a";
+    content: '\e90a';
 }
 .image-doublePageView:before {
-  content: "\e90b";
+    content: '\e90b';
 }
-.image-switchPages {}
-.image-switchPages span[class*="path"] {
-	position: absolute;
-	min-width: inherit;
-	height: auto;
-	margin-left: 3px;
-	color: inherit;
-	border: none;
-	background-color: transparent;
+.image-switchPages {
 }
-.image-switchPages .path1:before {
-  content: "\e90c";
+.image-switchPages span[class*='path'] {
+    position: absolute;
+    min-width: inherit;
+    height: auto;
+    margin-left: 3px;
+    color: inherit;
+    border: none;
+    background-color: transparent;
 }
 .image-switchPages .path1:before {
-  content: "\e90d";
+    content: '\e90c';
+}
+.image-switchPages .path1:before {
+    content: '\e90d';
 }
 .image-switchPages .path2:before {
-  content: "\e90e";
+    content: '\e90e';
 }
 .image-switchPages .path3:before {
-  content: "\e90f";
+    content: '\e90f';
 }
 .image-switchPages .path4:before {
-  content: "\e910";
+    content: '\e910';
 }
 .image-switchPages .path5:before {
-  content: "\e911";
+    content: '\e911';
 }
 .image-switchPages .path7:before {
-  content: "\e912";
+    content: '\e912';
 }
 .image-switchPages .path8:before {
-  content: "\e913";
+    content: '\e913';
 }

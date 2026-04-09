@@ -22,66 +22,54 @@
 package io.goobi.viewer.model.toc.export.pdf;
 
 /**
- * <p>
- * WriteTocException class.
- * </p>
+ * Thrown when an error occurs while writing a table of contents to PDF.
  */
 public class WriteTocException extends Exception {
 
     private static final long serialVersionUID = -4454192342277070479L;
 
     /**
-     * <p>
-     * Constructor for WriteTocException.
-     * </p>
+     * Creates a new WriteTocException instance.
      */
     public WriteTocException() {
         super();
     }
 
     /**
-     * <p>
-     * Constructor for WriteTocException.
-     * </p>
+     * Creates a new WriteTocException instance.
      *
-     * @param message a {@link java.lang.String} object.
-     * @param cause a {@link java.lang.Throwable} object.
-     * @param enableSuppression a boolean.
-     * @param writableStackTrace a boolean.
+     * @param message human-readable error description
+     * @param cause underlying exception that triggered this error
+     * @param enableSuppression whether suppression is enabled
+     * @param writableStackTrace whether the stack trace is writable
      */
     public WriteTocException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
     /**
-     * <p>
-     * Constructor for WriteTocException.
-     * </p>
+     * Creates a new WriteTocException instance.
      *
-     * @param message a {@link java.lang.String} object.
-     * @param cause a {@link java.lang.Throwable} object.
+     * @param message human-readable error description
+     * @param cause underlying exception that triggered this error
      */
     public WriteTocException(String message, Throwable cause) {
         super(message, cause);
     }
 
     /**
-     * <p>
-     * Constructor for WriteTocException.
-     * </p>
+     * Creates a new WriteTocException instance.
      *
-     * @param message a {@link java.lang.String} object.
+     * @param message human-readable error description
      */
     public WriteTocException(String message) {
         super(message);
     }
 
     /**
-     * <p>
-     * Constructor for WriteTocException.
-     * </p>
+     * Creates a new WriteTocException instance.
      *
-     * @param cause a {@link java.lang.Throwable} object.
+     * @param cause underlying exception that triggered this error
      */
     public WriteTocException(Throwable cause) {
         super(cause);

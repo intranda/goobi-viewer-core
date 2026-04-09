@@ -24,9 +24,7 @@ package io.goobi.viewer.model.transkribus;
 import java.io.Serializable;
 
 /**
- * <p>
- * TranskribusSession class.
- * </p>
+ * Holds an authenticated Transkribus session token obtained after login.
  */
 public class TranskribusSession implements Serializable {
 
@@ -40,13 +38,11 @@ public class TranskribusSession implements Serializable {
     private final String sessionId;
 
     /**
-     * <p>
-     * Constructor for TranskribusSession.
-     * </p>
+     * Creates a new TranskribusSession instance.
      *
-     * @param userId a {@link java.lang.String} object.
-     * @param userName a {@link java.lang.String} object.
-     * @param sessionId a {@link java.lang.String} object.
+     * @param userId internal Transkribus user account ID.
+     * @param userName login name (e-mail address) of the user.
+     * @param sessionId authentication token for subsequent API calls.
      */
     public TranskribusSession(String userId, String userName, String sessionId) {
         this.userId = userId;
@@ -55,33 +51,27 @@ public class TranskribusSession implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>userId</code>.
-     * </p>
      *
-     * @return the userId
+     * @return the Transkribus user identifier
      */
     public String getUserId() {
         return userId;
     }
 
     /**
-     * <p>
      * Getter for the field <code>userName</code>.
-     * </p>
      *
-     * @return the userName
+     * @return the Transkribus user name
      */
     public String getUserName() {
         return userName;
     }
 
     /**
-     * <p>
      * Getter for the field <code>sessionId</code>.
-     * </p>
      *
-     * @return the sessionId
+     * @return the Transkribus session identifier
      */
     public String getSessionId() {
         return sessionId;

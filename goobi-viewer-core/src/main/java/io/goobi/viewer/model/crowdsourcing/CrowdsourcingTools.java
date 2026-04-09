@@ -26,6 +26,10 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.security.user.User;
 
+/**
+ * Utility class providing static helper methods for crowdsourcing-related checks, such as
+ * determining whether a user owns any user groups assigned to campaigns.
+ */
 public final class CrowdsourcingTools {
 
     /** Private constructor. */

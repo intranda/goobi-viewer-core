@@ -65,6 +65,11 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.servlet.http.HttpServletRequest;
 
+/**
+ * JSF session-scoped backing bean that manages the breadcrumb navigation trail. Builds and
+ * maintains the ordered list of labeled links representing the user's current navigation path
+ * through collections, records, and CMS pages.
+ */
 @Named
 @SessionScoped
 public class BreadcrumbBean implements Serializable {
@@ -74,37 +79,37 @@ public class BreadcrumbBean implements Serializable {
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(BreadcrumbBean.class);
 
-    /** Constant <code>WEIGHT_TAG_MAIN_MENU=1</code> */
+    /** Constant <code>WEIGHT_TAG_MAIN_MENU=1</code>. */
     public static final int WEIGHT_TAG_MAIN_MENU = 1;
-    /** Constant <code>WEIGHT_ACTIVE_COLLECTION=2</code> */
+    /** Constant <code>WEIGHT_ACTIVE_COLLECTION=2</code>. */
     public static final int WEIGHT_ACTIVE_COLLECTION = 2;
-    /** Constant <code>WEIGHT_OPEN_DOCUMENT=3</code> */
+    /** Constant <code>WEIGHT_OPEN_DOCUMENT=3</code>. */
     public static final int WEIGHT_OPEN_DOCUMENT = 3;
-    /** Constant <code>WEIGHT_BROWSE=1</code> */
+    /** Constant <code>WEIGHT_BROWSE=1</code>. */
     public static final int WEIGHT_BROWSE = 1;
-    /** Constant <code>WEIGHT_SEARCH=1</code> */
+    /** Constant <code>WEIGHT_SEARCH=1</code>. */
     public static final int WEIGHT_SEARCH = 1;
-    /** Constant <code>WEIGHT_SEARCH_RESULTS=2</code> */
+    /** Constant <code>WEIGHT_SEARCH_RESULTS=2</code>. */
     public static final int WEIGHT_SEARCH_RESULTS = 2;
-    /** Constant <code>WEIGHT_SEARCH_TERMS=1</code> */
+    /** Constant <code>WEIGHT_SEARCH_TERMS=1</code>. */
     public static final int WEIGHT_SEARCH_TERMS = 1;
-    /** Constant <code>WEIGHT_TAG_CLOUD=1</code> */
+    /** Constant <code>WEIGHT_TAG_CLOUD=1</code>. */
     public static final int WEIGHT_TAG_CLOUD = 1;
-    /** Constant <code>WEIGHT_SITELINKS=1</code> */
+    /** Constant <code>WEIGHT_SITELINKS=1</code>. */
     public static final int WEIGHT_SITELINKS = 1;
-    /** Constant <code>WEIGHT_USER_ACCOUNT=1</code> */
+    /** Constant <code>WEIGHT_USER_ACCOUNT=1</code>. */
     public static final int WEIGHT_USER_ACCOUNT = 1;
-    /** Constant <code>WEIGHT_CROWDSOURCING_OVERVIEW=3</code> */
+    /** Constant <code>WEIGHT_CROWDSOURCING_OVERVIEW=3</code>. */
     public static final int WEIGHT_CROWDSOURCING_OVERVIEW = 3;
-    /** Constant <code>WEIGHT_CROWDSOURCING_EDIT_OVERVIEW=4</code> */
+    /** Constant <code>WEIGHT_CROWDSOURCING_EDIT_OVERVIEW=4</code>. */
     public static final int WEIGHT_CROWDSOURCING_EDIT_OVERVIEW = 4;
-    /** Constant <code>WEIGHT_CROWDSOURCING_EDIT_OCR_CONTENTS=5</code> */
+    /** Constant <code>WEIGHT_CROWDSOURCING_EDIT_OCR_CONTENTS=5</code>. */
     public static final int WEIGHT_CROWDSOURCING_EDIT_OCR_CONTENTS = 5;
-    /** Constant <code>WEIGHT_CROWDSOURCING_CAMPAIGN=2</code> */
+    /** Constant <code>WEIGHT_CROWDSOURCING_CAMPAIGN=2</code>. */
     public static final int WEIGHT_CROWDSOURCING_CAMPAIGN = 2;
-    /** Constant <code>WEIGHT_CROWDSOURCING_CAMPAIGN_ITEM=3</code> */
+    /** Constant <code>WEIGHT_CROWDSOURCING_CAMPAIGN_ITEM=3</code>. */
     public static final int WEIGHT_CROWDSOURCING_CAMPAIGN_ITEM = 3;
-    /** Constant <code>WEIGHT_CROWDSOURCING_CAMPAIGN_PARENT=1</code> */
+    /** Constant <code>WEIGHT_CROWDSOURCING_CAMPAIGN_PARENT=1</code>. */
     public static final int WEIGHT_CROWDSOURCING_CAMPAIGN_PARENT = 1;
 
     private List<LabeledLink> breadcrumbs = new LinkedList<>();
@@ -211,28 +216,40 @@ public class BreadcrumbBean implements Serializable {
                 tempBreadcrumbs.add(0, link);
             }
 
+            boolean abort = false;
             while (currentPage != null) {
                 if (linkedPages.contains(currentPage)) {
                     //encountered a breadcrumb loop. Simply break here
                     break;
                 }
                 linkedPages.add(currentPage);
-                if (DataManager.getInstance()
+                for (CMSStaticPage staticPage : DataManager.getInstance()
                         .getDao()
-                        .getStaticPageForCMSPage(currentPage)
-                        .stream()
-                        .findFirst()
-                        .map(CMSStaticPage::getPageName)
-                        .filter(name -> PageType.index.name().equals(name))
-                        .isPresent()) {
-                    logger.trace("CMS index page found");
-                    // The current page is the start page, which is already the breadcrumb root
+                        .getStaticPageForCMSPage(currentPage)) {
+                    if (PageType.index.name().equals(staticPage.getPageName())) {
+                        // The current page is the start page, which is already the breadcrumb root
+                        logger.trace("CMS index page found");
+                        abort = true;
+                        break;
+                    } else if (PageType.search.name().equals(staticPage.getPageName())) {
+                        // Use search result URL here instead of search 
+                        logger.trace("Overriding search page");
+                        SearchBean searchBean = BeanUtils.getSearchBean();
+                        if (searchBean != null && StringUtils.isNotEmpty(searchBean.getLastUsedSearchUrl())) {
+                            addStaticLinkToBreadcrumb("searchHitNavigation", searchBean.getLastUsedSearchUrl(), WEIGHT_SEARCH_RESULTS);
+                        }
+                        abort = true;
+                        break;
+                    }
+                }
+                if (abort) {
                     break;
                 }
                 LabeledLink pageLink =
                         new LabeledLink(StringUtils.isNotBlank(currentPage.getMenuTitle()) ? currentPage.getMenuTitle() : currentPage.getTitle(),
                                 currentPage.getPageUrl(), weight);
                 tempBreadcrumbs.add(0, pageLink);
+                logger.trace("Added CMS page to breadcrumbs: {} ({})", currentPage.getTitle(), weight);
                 if (StringUtils.isNotBlank(currentPage.getParentPageId())) {
                     try {
                         Long cmsPageId = Long.parseLong(currentPage.getParentPageId());
@@ -244,7 +261,6 @@ public class BreadcrumbBean implements Serializable {
                 } else {
                     currentPage = null;
                 }
-
             }
         } finally {
             //            List<LabeledLink> breadcrumbs = Collections.synchronizedList(this.breadcrumbs);
@@ -261,7 +277,7 @@ public class BreadcrumbBean implements Serializable {
     /**
      * This is used for flipping search result pages (so that the breadcrumb always has the last visited result page as its URL).
      *
-     * @param facetString a {@link java.lang.String} object.
+     * @param facetString URL-encoded active facet filter string
      */
     public void updateBreadcrumbsForSearchHits(final String facetString) {
         logger.trace("updateBreadcrumbsForSearchHits: {}", facetString);
@@ -326,8 +342,8 @@ public class BreadcrumbBean implements Serializable {
     /**
      * Adds a link to the breadcrumbs using the current PrettyURL. Can be called from XHTML.
      *
-     * @param linkName a {@link java.lang.String} object.
-     * @param linkWeight a int.
+     * @param linkName display label for the breadcrumb entry
+     * @param linkWeight position weight determining order in the breadcrumb trail
      */
     public void addStaticLinkToBreadcrumb(String linkName, int linkWeight) {
         addStaticLinkToBreadcrumb(linkName, navigationHelper.getCurrentPrettyUrl(), linkWeight);
@@ -336,9 +352,9 @@ public class BreadcrumbBean implements Serializable {
     /**
      * Adds a link to the breadcrumbs using the given URL. Can be called from XHTML.
      *
-     * @param linkName a {@link java.lang.String} object.
-     * @param linkWeight a int.
-     * @param url a {@link java.lang.String} object.
+     * @param linkName display label for the breadcrumb entry
+     * @param linkWeight position weight determining order in the breadcrumb trail
+     * @param url target URL for the breadcrumb link
      */
     public void addStaticLinkToBreadcrumb(String linkName, final String url, int linkWeight) {
         // logger.trace("addStaticLinkToBreadcrumb: {} - {} ({})", linkName, url, linkWeight); //NOSONAR Debug
@@ -355,13 +371,11 @@ public class BreadcrumbBean implements Serializable {
     }
 
     /**
-     * <p>
      * addCollectionHierarchyToBreadcrumb.
-     * </p>
      *
      * @param collection Full collection string containing all levels
      * @param field Solr field
-     * @param splittingChar a {@link java.lang.String} object.
+     * @param splittingChar character used to split collection hierarchy levels
      * @should create breadcrumbs correctly
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -388,9 +402,9 @@ public class BreadcrumbBean implements Serializable {
 
     /**
      *
-     * @param viewManager
-     * @param name
-     * @param url
+     * @param viewManager ViewManager for the current record
+     * @param name display name for the breadcrumb entry
+     * @param url URL to associate with the breadcrumb entry
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws PresentationException
@@ -471,7 +485,7 @@ public class BreadcrumbBean implements Serializable {
     /**
      * Returns the bottom breadcrumb. Used to return to the previous page from the errorGeneral page.
      *
-     * @return a {@link io.goobi.viewer.model.viewer.LabeledLink} object.
+     * @return the last (deepest) breadcrumb link, or null if the breadcrumb list is empty
      */
     public LabeledLink getLastBreadcrumb() {
         //        List<LabeledLink> breadcrumbs = Collections.synchronizedList(this.breadcrumbs);
@@ -485,18 +499,16 @@ public class BreadcrumbBean implements Serializable {
     }
 
     /**
-     * <p>
      * getBrowseUrl.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the absolute URL to the browse page
      */
     private static String getBrowseUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse.getName();
     }
 
     /**
-     * @param page
+     * @param page viewer page type for which to build the URL
      * @return Absolute URL to the given page type
      */
     private static String getUrl(PageType page) {
@@ -504,11 +516,9 @@ public class BreadcrumbBean implements Serializable {
     }
 
     /**
-     * <p>
      * getApplicationUrl.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the absolute base URL of the viewer application ending with a slash
      */
     private static String getApplicationUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/";

@@ -22,20 +22,20 @@
 package io.goobi.viewer.model.security.recordlock;
 
 /**
- * Possible result for a record lock action, specifically {@link RecordLockManager#lockRecord(String, String, Integer)}
+ * Possible result for a record lock action, specifically {@link RecordLockManager#lockRecord(String, String, Integer)}.
  */
 public enum LockRecordResult {
 
     /**
-     * The action was carried out and the record is locked
+     * The action was carried out and the record is locked.
      */
     RECORD_LOCKED,
     /**
-     * No action was carried out, either because no locking is required, or because the record is already locked by this sessions
+     * No action was carried out, either because no locking is required, or because the record is already locked by this sessions.
      */
     NO_ACTION,
     /**
-     * The record could not be locked because the lock limit has already been exceeded
+     * The record could not be locked because the lock limit has already been exceeded.
      */
     LIMIT_EXCEEDED;
 

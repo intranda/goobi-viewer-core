@@ -5,71 +5,75 @@
 /* VIEW THUMBS */
 /* BLOCK */
 .view-thumbs {
-	margin-bottom: 15px;
-	/* ELEMENT */
-	&__thumbnails {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
-		grid-gap: 5px;
-		margin-top: 15px;
+    margin-bottom: 15px;
+    /* ELEMENT */
+    &__thumbnails {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+        grid-gap: 5px;
+        margin-top: 15px;
         &.-ltr {
-           direction: ltr;     
+            direction: ltr;
         }
         &.-rtl {
-           direction: rtl;     
+            direction: rtl;
         }
-	}
-	&__thumbnail {
-		padding: 5px;
-		border: 1px solid @lightgray;
-		transition: background-color 0.15s ease;
-		&:hover {
-			background-color: rgba(0,0,0,0.045);
-		}
-		
-	}
-	&__thumbnail-image {
-		a {}
-		img {
-			display: block;
-			max-width: 100%;
-			min-height: 120px;
-			max-height: 120px;
-			margin: 0 auto;
-		}
-		figcaption {
-			display: flex;
-			justify-content: center;
-			padding: 5px;
-			padding-bottom: 0;
-		}
-	}
-	&__thumbnail-image-order {
-		padding-right: 5px;
-	}
-	&__thumbnail-image-fulltext {
-		padding-left: 5px;
-	}
+    }
+    &__thumbnail {
+        padding: 5px;
+        border: 1px solid @lightgray;
+        transition: background-color 0.15s ease;
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.045);
+        }
+    }
+    &__thumbnail-image {
+        a {
+        }
+        img {
+            display: block;
+            max-width: 100%;
+            min-height: 120px;
+            max-height: 120px;
+            margin: 0 auto;
+        }
+        figcaption {
+            display: flex;
+            justify-content: center;
+            padding: 5px;
+            padding-bottom: 0;
+        }
+    }
+    &__thumbnail-image-order {
+        padding-right: 5px;
+    }
+    &__thumbnail-image-fulltext {
+        padding-left: 5px;
+    }
 }
 
 @{RTL} {
-	.view-thumbs {
-		&__thumbnails {
-			&.-ltr {
-				direction: rtl;
-			}
-		}
-	}
+    .view-thumbs {
+        &__thumbnails {
+            &.-ltr {
+                direction: rtl;
+            }
+        }
+    }
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+}

@@ -38,6 +38,11 @@ import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocumen
 import de.intranda.digiverso.ocr.alto.utils.HyphenationLinker;
 import io.goobi.viewer.controller.StringTools;
 
+/**
+ * Parses an ALTO XML document and extracts its plain text content, preserving the structural
+ * hierarchy of pages, text blocks, lines, and words. Optionally applies a chain of
+ * {@link TextEnricher} instances to augment individual word tokens (e.g. with named-entity markup).
+ */
 public class AltoTextReader {
 
     private static final CharSequence PAGE_SEPARATOR = "\n\n";

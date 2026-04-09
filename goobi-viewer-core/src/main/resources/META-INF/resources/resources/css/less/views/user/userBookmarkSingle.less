@@ -5,111 +5,118 @@
 /* USER VIEW BOOKMARK */
 /* BLOCK */
 .view-bookmark {
-	/* ELEMENT */
-	h1 {}
-	h2 {}
-	p {
-		font-size: @fontSmall;
-		font-style: italic;
-	}
-	&__action {
-		text-align: right;
-		a {
-			display: inline-block;
-			width: 28px;
-		    height: 28px;
-		    line-height: 26px;
-		}
-	}
-	&__item {
-		height: 300px;
-		margin-bottom: 30px;
-		border: 1px solid @middlegray;
-		transition: all .3s ease-in;
-		&-action {
-			display: none;
-		}
-		&:hover {
-			background-color: @lightgray;
-			.view-bookmark__item-action {
-				display: block;
-			}
-		}
-	}
-	&__item-image,
-	&__item-info,
-	&__item-action {
-		float: left;
-		width: 50%;
-	}
-	&__item-image {
-		height: 300px;
-		background-repeat: no-repeat;
-		background-position: center center;
-		background-size: cover;
-		a {
-			display: block;
-			width: 100%;
-			height: 100%;
-		}
-	}
-	&__item-info {
-		height: 250px;
-		padding: 15px 15px 0 15px;
-		overflow-y: auto;
-		position: relative;
-		h3 {
-			text-overflow: ellipsis;
-			overflow: hidden;
-		}
-		a {
-			width: 100%;
-			height: 100%;
-			display: block;
-			position: absolute;
-			top: 0;
-			right: 0;
-		}
-		textarea {
-			width: 100%;
-			height: 150px;
-			resize: none;
-			border: none;
-			background-color: transparent;
-		}
-	}
-	&__item-action {
-		height: 50px;
-		padding: 15px;
-		text-align: right;
-		a {
-			display: inline-block;
-		    height: 16px;
-		}
-		[data-bookmark-list-type="delete"] {
-			background-size: 70%;
-		}
-	}
-	&__single-entry {
-		background: @white;
-		margin-bottom: 2rem;
-		padding: 2rem;
-		border: 1px solid #ccc;
-	}
+    /* ELEMENT */
+    h1 {
+    }
+    h2 {
+    }
+    p {
+        font-size: @fontSmall;
+        font-style: italic;
+    }
+    &__action {
+        text-align: right;
+        a {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            line-height: 26px;
+        }
+    }
+    &__item {
+        height: 300px;
+        margin-bottom: 30px;
+        border: 1px solid @middlegray;
+        transition: all 0.3s ease-in;
+        &-action {
+            display: none;
+        }
+        &:hover {
+            background-color: @lightgray;
+            .view-bookmark__item-action {
+                display: block;
+            }
+        }
+    }
+    &__item-image,
+    &__item-info,
+    &__item-action {
+        float: left;
+        width: 50%;
+    }
+    &__item-image {
+        height: 300px;
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: cover;
+        a {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+    }
+    &__item-info {
+        height: 250px;
+        padding: 15px 15px 0 15px;
+        overflow-y: auto;
+        position: relative;
+        h3 {
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+        a {
+            width: 100%;
+            height: 100%;
+            display: block;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            resize: none;
+            border: none;
+            background-color: transparent;
+        }
+    }
+    &__item-action {
+        height: 50px;
+        padding: 15px;
+        text-align: right;
+        a {
+            display: inline-block;
+            height: 16px;
+        }
+        [data-bookmark-list-type='delete'] {
+            background-size: 70%;
+        }
+    }
+    &__single-entry {
+        background: @white;
+        margin-bottom: 2rem;
+        padding: 2rem;
+        border: 1px solid #ccc;
+    }
 }
 
-
 #viewBookmark {
-    h1 {}
-    h2 {}
+    h1 {
+    }
+    h2 {
+    }
     #single_bookshelf_data_table {
         thead {
             tr {
                 th {
-                    &:nth-child(1) {}
-                    &:nth-child(2) {}
-                    &:nth-child(3) {}
-                    &:nth-child(4) {}
+                    &:nth-child(1) {
+                    }
+                    &:nth-child(2) {
+                    }
+                    &:nth-child(3) {
+                    }
+                    &:nth-child(4) {
+                    }
                 }
             }
         }
@@ -117,7 +124,8 @@
             tr {
                 td {
                     a {
-                        img {}
+                        img {
+                        }
                     }
                 }
             }
@@ -132,30 +140,34 @@
 }
 
 .btn.delete {
-	color: @btnCleanDelete;
-	&:hover,
-	&:active,
-	&:focus {
-		color: @btnDanger;
-	}
+    color: @btnCleanDelete;
+    &:hover,
+    &:active,
+    &:focus {
+        color: @btnDanger;
+    }
 }
 
 @{RTL} {
-	.view-bookmark {
-		&__action {
-			text-align: left;
-		}
-	}
+    .view-bookmark {
+        &__action {
+            text-align: left;
+        }
+    }
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+}

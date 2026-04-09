@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- Test config for overlapping PageType name mappings (viewImage and viewObject both mapped to "object") -->
+<config>
+    <configFolder>src/test/resources/</configFolder>
+    <viewerHome>src/test/resources/data/viewer/</viewerHome>
+    <dataRepositoriesHome>src/test/resources/data/viewer/data/</dataRepositoriesHome>
+
+    <viewer>
+        <pageTypes>
+            <viewImage>object</viewImage>
+            <viewObject>object</viewObject>
+        </pageTypes>
+    </viewer>
+</config>

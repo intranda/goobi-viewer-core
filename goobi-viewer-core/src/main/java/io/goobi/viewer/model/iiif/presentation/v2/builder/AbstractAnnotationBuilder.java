@@ -52,8 +52,7 @@ import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class AbstractAnnotationBuilder {
 
@@ -84,10 +83,10 @@ public class AbstractAnnotationBuilder {
     }
 
     /**
-     * Search for both UGC docs with given IDDOC and with MD_ANNOTATION_ID = "annotation_<id>". Searching for IDDOC is only included for backwards
+     * Searches for both UGC docs with given IDDOC and with MD_ANNOTATION_ID = "annotation_<id>". Searching for IDDOC is only included for backwards
      * compatibility purposes. The correct identifier is MD_ANNOTATION_ID since it reflects the original sql identifier
      *
-     * @param id
+     * @param id numeric database identifier of the annotation to query for
      * @return Generated query
      */
     public String getAnnotationQuery(long id) {
@@ -95,9 +94,9 @@ public class AbstractAnnotationBuilder {
     }
 
     /**
-     * 
-     * @param query
-     * @param request
+     *
+     * @param query Solr query string to select annotation documents
+     * @param request current HTTP servlet request for access checking
      * @return List<SolrDocument>
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -108,7 +107,7 @@ public class AbstractAnnotationBuilder {
     }
 
     /**
-     * Return sort fields to sort results ascending after topstruct PI, then page order, then IDDOC;
+     * Returns sort fields to sort results ascending after topstruct PI, then page order, then IDDOC;.
      *
      * @return sort fields for PI_TOPSTRUCT, ORDER and IDDOC
      */
@@ -120,10 +119,10 @@ public class AbstractAnnotationBuilder {
     }
 
     /**
-     * 
-     * @param query
-     * @param sortFields
-     * @param request
+     *
+     * @param query Solr query string to select annotation documents
+     * @param sortFields list of field/direction pairs for result ordering
+     * @param request current HTTP servlet request for access checking
      * @return List<SolrDocument>
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -134,12 +133,12 @@ public class AbstractAnnotationBuilder {
     }
 
     /**
-     * 
-     * @param query
-     * @param first
-     * @param rows
-     * @param sortFields
-     * @param request
+     *
+     * @param query Solr query string to select annotation documents
+     * @param first zero-based offset of the first result to return
+     * @param rows maximum number of results to return
+     * @param sortFields list of field/direction pairs for result ordering
+     * @param request current HTTP servlet request for access checking
      * @return List<SolrDocument>
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -159,9 +158,9 @@ public class AbstractAnnotationBuilder {
     }
 
     /**
-     * 
-     * @param id
-     * @param request
+     *
+     * @param id numeric database identifier of the annotation to retrieve
+     * @param request current HTTP servlet request (unused but reserved for access checks)
      * @return Optional<SolrDocument>
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -172,10 +171,10 @@ public class AbstractAnnotationBuilder {
     }
 
     /**
-     * 
-     * @param doc
-     * @param query
-     * @param request
+     *
+     * @param doc Solr document containing the access condition field
+     * @param query original Solr query used for access condition evaluation
+     * @param request current HTTP servlet request carrying the user session
      * @return true if user session is allowed access; false otherwise
      */
     private static boolean isAccessGranted(SolrDocument doc, String query, HttpServletRequest request) {
@@ -196,8 +195,8 @@ public class AbstractAnnotationBuilder {
     }
 
     /**
-     * 
-     * @param request
+     *
+     * @param request current HTTP servlet request for access filtering
      * @return Annotation count
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -217,8 +216,8 @@ public class AbstractAnnotationBuilder {
     }
 
     /**
-     * 
-     * @param idString
+     *
+     * @param idString string identifier containing a numeric annotation ID suffix
      * @return Optional<IAnnotation>
      */
     public Optional<IAnnotation> getAnnotation(String idString) {

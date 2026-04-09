@@ -48,6 +48,10 @@ import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.viewer.Dataset;
 
+/**
+ * Download job that generates a PDF file for a digitized record or one of its structural divisions via the content server.
+ * Supports optional log ID scoping, configuration variants, and pre-existing PDF source files.
+ */
 public class PdfDownloadJob extends DownloadJob {
 
     private static final Logger logger = LogManager.getLogger(PdfDownloadJob.class);

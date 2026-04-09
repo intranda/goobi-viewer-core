@@ -24,12 +24,16 @@ package io.goobi.viewer.api.rest.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * POST request parameters for RecordsResource.
  */
 @Schema(name = "SolrRequestParameters", description = "SOLR query and additional parameters", requiredProperties = { "query" })
+// Ignore unknown JSON properties so schemathesis-generated requests with extra fields are accepted
+// instead of causing Jackson to return HTTP 400 with "Unrecognized field" error.
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RecordsRequestParameters {
 
     @Schema(description = "Raw SOLR query", example = "+ISWORK:true +DOCSTRCT:monograph +(FACET_PLACEPUBLISH:Berlin FACET_PLACEPUBLISH:'New York')")
@@ -47,7 +51,10 @@ public class RecordsRequestParameters {
     private String jsonFormat = "";
     @Schema(description = "The maximum number of results to return. Negative values don't set a limit", example = "10")
     private int count = -1;
-    @Schema(description = "The absolute index of the first result to return", example = "0")
+    // Maximum is 2^31-1 because the field is stored as Java int; larger values cause Jackson to throw
+    // a deserialization error which results in HTTP 400 instead of a meaningful response.
+    @Schema(description = "The absolute index of the first result to return", example = "0",
+            minimum = "0", maximum = "2147483647")
     private int offset = 0;
     @Schema(description = "Set to 'true' to randomize all results. If used in conjuction with sortFields,"
             + " randomization only applies to results with identical values in the sortFields",
@@ -66,170 +73,122 @@ public class RecordsRequestParameters {
     @Schema(description = "A list of SOLR field names to get facet results for", example = "[\"DC\",\"DOCSTRCT\"]")
     private List<String> facetFields = new ArrayList<>();
 
-    /**
-     * @return the query
-     */
+    
     public String getQuery() {
         return query;
     }
 
-    /**
-     * @param query the query to set
-     */
+    
     public void setQuery(String query) {
         this.query = query;
     }
 
-    /**
-     * @return the resultFields
-     */
+    
     public List<String> getResultFields() {
         return resultFields;
     }
 
-    /**
-     * @param resultFields the resultFields to set
-     */
+    
     public void setResultFields(List<String> resultFields) {
         this.resultFields = resultFields;
     }
 
-    /**
-     * @return the sortFields
-     */
+    
     public List<String> getSortFields() {
         return sortFields;
     }
 
-    /**
-     * @param sortFields the sortFields to set
-     */
+    
     public void setSortFields(List<String> sortFields) {
         this.sortFields = sortFields;
     }
 
-    /**
-     * @return the sortOrder
-     */
+    
     public String getSortOrder() {
         return sortOrder;
     }
 
-    /**
-     * @param sortOrder the sortOrder to set
-     */
+    
     public void setSortOrder(String sortOrder) {
         this.sortOrder = sortOrder;
     }
 
-    /**
-     * @return the jsonFormat
-     */
+    
     public String getJsonFormat() {
         return jsonFormat;
     }
 
-    /**
-     * @param jsonFormat the jsonFormat to set
-     */
+    
     public void setJsonFormat(String jsonFormat) {
         this.jsonFormat = jsonFormat;
     }
 
-    /**
-     * @return the count
-     */
+    
     public int getCount() {
         return count;
     }
 
-    /**
-     * @param count the count to set
-     */
+    
     public void setCount(int count) {
         this.count = count;
     }
 
-    /**
-     * @return the offset
-     */
+    
     public int getOffset() {
         return offset;
     }
 
-    /**
-     * @param offset the offset to set
-     */
+    
     public void setOffset(int offset) {
         this.offset = offset;
     }
 
-    /**
-     * @return the randomize
-     */
+    
     public boolean isRandomize() {
         return randomize;
     }
 
-    /**
-     * @param randomize the randomize to set
-     */
+    
     public void setRandomize(boolean randomize) {
         this.randomize = randomize;
     }
 
-    /**
-     * @return the language
-     */
+    
     public String getLanguage() {
         return language;
     }
 
-    /**
-     * @param language the language to set
-     */
+    
     public void setLanguage(String language) {
         this.language = language;
     }
 
-    /**
-     * @return the includeChildHits
-     */
+    
     public boolean isIncludeChildHits() {
         return includeChildHits;
     }
 
-    /**
-     * @param includeChildHits the includeChildHits to set
-     */
+    
     public void setIncludeChildHits(boolean includeChildHits) {
         this.includeChildHits = includeChildHits;
     }
 
-    /**
-     * @return the boostTopLevelDocstructs
-     */
+    
     public boolean isBoostTopLevelDocstructs() {
         return boostTopLevelDocstructs;
     }
 
-    /**
-     * @param boostTopLevelDocstructs the boostTopLevelDocstructs to set
-     */
+    
     public void setBoostTopLevelDocstructs(boolean boostTopLevelDocstructs) {
         this.boostTopLevelDocstructs = boostTopLevelDocstructs;
     }
 
-    /**
-     * @return the facetFields
-     */
+    
     public List<String> getFacetFields() {
         return facetFields;
     }
 
-    /**
-     * @param facetFields the facetFields to set
-     */
+    
     public void setFacetFields(List<String> facetFields) {
         this.facetFields = facetFields;
     }

@@ -33,6 +33,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
@@ -65,8 +66,7 @@ import jakarta.servlet.http.HttpServletRequest;
  * Manages (possibly timeconsuming) {@link Task tasks} within the viewer which can be triggered and monitored via the {@link TasksResource}. The tasks
  * are not executed sequentially or queued in any way, except through the limit of the internal thread pool (5 parallel tasks)
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class TaskManager {
 
@@ -79,7 +79,7 @@ public class TaskManager {
     private final Duration timeToLive;
 
     /**
-     * Create new JobManager.
+     * Creates new JobManager.
      *
      * @param jobLiveTime The guaranteed live time of jobs in the jobManager
      */
@@ -123,7 +123,7 @@ public class TaskManager {
     }
 
     /**
-     * @param pool
+     * @param pool executor service to query
      * @return Number of active threads
      */
     private static int getActiveThreads(ExecutorService pool) {
@@ -143,7 +143,29 @@ public class TaskManager {
     }
 
     /**
-     * @param type
+     * Shuts down the internal thread pool. Attempts to stop running tasks; waits up to 5 seconds
+     * for threads to terminate. Should be called from the servlet context listener on undeploy.
+     */
+    public void shutdown() {
+        executorService.shutdownNow();
+        try {
+            if (!executorService.awaitTermination(5, TimeUnit.SECONDS)) {
+                logger.warn("TaskManager executor did not terminate within 5 seconds");
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    /**
+     * @return true if the internal executor service has been shut down
+     */
+    public boolean isShutdown() {
+        return executorService.isShutdown();
+    }
+
+    /**
+     * @param type task type for which to create the handler
      * @return BiConsumer&lt;HttpServletRequest, Task&gt;
      */
     public static BiConsumer<HttpServletRequest, Task> createTask(TaskType type) {

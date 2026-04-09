@@ -65,8 +65,10 @@ import io.goobi.viewer.model.security.authentication.AuthenticationProviderExcep
 import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.PhysicalElementBuilder;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -83,6 +85,9 @@ import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.RuntimeDelegate;
 
+/**
+ * REST resource handling IIIF Access Control Service authorization flows and probe requests.
+ */
 @jakarta.ws.rs.Path(AUTH)
 @ViewerRestServiceBinding
 @CORSBinding
@@ -105,9 +110,11 @@ public class AuthorizationFlowResource {
      * 
      * @return {@link AuthProbeService2}
      */
+    // For testing purposes only — not part of the public API
+    @Hidden
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "")
+    @Operation(hidden = true)
     public AuthProbeService2 getServiceDescription() {
         logger.debug("session id from request: {}", servletRequest.getSession().getId());
         return AuthorizationFlowTools.getAuthServicesEmbedded("PPN123", "00000001.xml");
@@ -122,7 +129,9 @@ public class AuthorizationFlowResource {
     @GET
     @jakarta.ws.rs.Path(AUTH_LOGIN)
     @Produces({ MediaType.TEXT_HTML })
-    @Operation(tags = { "records", "iiif" }, summary = "")
+    @Operation(tags = { "auth", "iiif" }, summary = "IIIF Auth 2.0 login service — redirects the user to the viewer login page")
+    @ApiResponse(responseCode = "302", description = "Redirect to the login page")
+    @ApiResponse(responseCode = "400", description = "Origin parameter missing or could not be stored in session")
     public Response loginService(@QueryParam("origin") String origin) {
         logger.debug("loginService");
         servletRequest.getSession(true); // Force session creation
@@ -155,7 +164,9 @@ public class AuthorizationFlowResource {
     @GET
     @jakarta.ws.rs.Path(AUTH_ACCESS_TOKEN)
     @Produces({ MediaType.TEXT_HTML })
-    @Operation(tags = { "records", "iiif" }, summary = "")
+    @Operation(tags = { "auth", "iiif" }, summary = "IIIF Auth 2.0 token service — issues a bearer token for authenticated users")
+    @ApiResponse(responseCode = "200",
+            description = "HTML page with postMessage containing either a bearer token or an error object")
     public Response accessTokenService(@QueryParam("messageId") String messageId, @QueryParam("origin") String origin)
             throws JsonProcessingException {
         logger.debug("accessTokenService");
@@ -216,9 +227,9 @@ public class AuthorizationFlowResource {
     }
 
     /**
-     * 
-     * @param origin
-     * @param logContext
+     *
+     * @param origin value of the HTTP Origin header from the preflight request
+     * @param logContext description of the resource being probed, used for logging
      * @return {@link Response}
      */
     private static Response handleProbePreflightCommon(String origin, String logContext) {
@@ -238,10 +249,10 @@ public class AuthorizationFlowResource {
 
     /**
      * Common probe endpoint code.
-     * 
-     * @param origin
-     * @param path
-     * @param accessCheck
+     *
+     * @param origin value of the HTTP Origin header from the client request
+     * @param path resource path used to build auth service links on failure
+     * @param accessCheck predicate that evaluates the bearer token against the resource
      * @return {@link Response}
      * @throws JsonProcessingException
      */
@@ -317,7 +328,9 @@ public class AuthorizationFlowResource {
     @OPTIONS
     @jakarta.ws.rs.Path(AUTH_PROBE_REQUEST)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "")
+    @Operation(tags = { "auth", "iiif" }, summary = "IIIF Auth 2.0 probe service CORS preflight for image/text resources")
+    @ApiResponse(responseCode = "200", description = "CORS preflight response for probe endpoint")
+    @ApiResponse(responseCode = "403", description = "Origin header missing")
     public Response handleProbePreflight(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
             @Parameter(description = "Content file name") @PathParam("filename") String filename, @HeaderParam("Origin") String origin) {
         return handleProbePreflightCommon(origin, pi + "/" + filename);
@@ -325,21 +338,23 @@ public class AuthorizationFlowResource {
 
     /**
      * Probe service endpoint (image and text). The session will probably be different here from previous login/token queries.
-     * 
-     * @param pi
-     * @param filename
-     * @param origin
+     *
+     * @param pi record identifier
+     * @param filename name of the content file to check access for
+     * @param origin value of the HTTP Origin header from the client request
      * @return {@link Response}
      * @throws JsonProcessingException
      */
     @GET
     @jakarta.ws.rs.Path(AUTH_PROBE_REQUEST)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "")
+    @Operation(tags = { "auth", "iiif" }, summary = "IIIF Auth 2.0 probe service — checks access permission for an image or text resource")
+    @ApiResponse(responseCode = "200", description = "IIIF Auth 2.0 probe result indicating access status (200 granted, 401 denied)")
     public Response probeResource(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
             @Parameter(description = "Content file name") @PathParam("filename") String filename, @HeaderParam("Origin") String origin)
             throws JsonProcessingException {
-        logger.debug("probeResource: {}/{}", pi, filename);
+        // Sanitize path parameters before logging to prevent log injection (Sonar S5145)
+        logger.debug("probeResource: {}/{}", pi.replaceAll("[\r\n]", "_"), filename.replaceAll("[\r\n]", "_"));
         // debugRequest();
         if (StringUtils.isEmpty(origin)) {
             logger.warn("No Origin header found.");
@@ -353,7 +368,8 @@ public class AuthorizationFlowResource {
             if (access == null) {
                 try {
                     MimeType mediaType = MimeType.of(Paths.get(filename));
-                    logger.trace("Base mime type: {}", mediaType);
+                    // mediaType is derived from user-controlled filename; sanitize before logging
+                    logger.trace("Base mime type: {}", mediaType.toString().replaceAll("[\r\n]", "_"));
                     if (mediaType.isAllowsImageView()) {
                         // Image/text access check
                         access = AccessConditionUtils
@@ -361,7 +377,7 @@ public class AuthorizationFlowResource {
                                         mediaType.getType(), pi, filename, NetTools.getIpAddress(servletRequest), false)
                                 .isGranted();
                     } else {
-                        logger.warn("Unsupported mime type: {}", mediaType);
+                        logger.warn("Unsupported mime type: {}", mediaType.toString().replaceAll("[\r\n]", "_"));
                     }
                     token.addPermission(key, access);
                 } catch (IndexUnreachableException | DAOException | IOException e) {
@@ -383,7 +399,9 @@ public class AuthorizationFlowResource {
     @OPTIONS
     @jakarta.ws.rs.Path(AUTH_PROBE_REQUEST_PDF)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "")
+    @Operation(tags = { "auth", "iiif" }, summary = "IIIF Auth 2.0 probe service CORS preflight for page PDF resources")
+    @ApiResponse(responseCode = "200", description = "CORS preflight response for probe endpoint")
+    @ApiResponse(responseCode = "403", description = "Origin header missing")
     public Response handleProbePreflight(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
             @Parameter(description = "Page number") @PathParam("order") int order, @HeaderParam("Origin") String origin) {
         return handleProbePreflightCommon(origin, "pdf/" + pi + "/" + order);
@@ -394,14 +412,15 @@ public class AuthorizationFlowResource {
      * 
      * @param pi Record identifier
      * @param order Page number
-     * @param origin
+     * @param origin HTTP Origin header value for CORS
      * @return {@link Response}
      * @throws JsonProcessingException
      */
     @GET
     @jakarta.ws.rs.Path(AUTH_PROBE_REQUEST_PDF)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "")
+    @Operation(tags = { "auth", "iiif" }, summary = "IIIF Auth 2.0 probe service — checks access permission for a page PDF")
+    @ApiResponse(responseCode = "200", description = "IIIF Auth 2.0 probe result indicating access status (200 granted, 401 denied)")
     public Response probeResource(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
             @Parameter(description = "Page number") @PathParam("order") int order, @HeaderParam("Origin") String origin)
             throws JsonProcessingException {
@@ -441,7 +460,8 @@ public class AuthorizationFlowResource {
     @GET
     @jakarta.ws.rs.Path(AUTH_PROBE_REQUEST_RESOLVER)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "")
+    @Operation(tags = { "auth", "iiif" }, summary = "IIIF Auth 2.0 probe service — checks access permission for METS resolver download")
+    @ApiResponse(responseCode = "200", description = "IIIF Auth 2.0 probe result indicating access status (200 granted, 401 denied)")
     public Response probeResource(@Parameter(description = "Record identifier") @PathParam("pi") String pi, @HeaderParam("Origin") String origin)
             throws JsonProcessingException {
         logger.debug("probeResource: resolver/{}", pi);
@@ -472,17 +492,19 @@ public class AuthorizationFlowResource {
     }
 
     /**
-     * Probe pre-flight endpoint for general record related resources
-     * 
+     * Probe pre-flight endpoint for general record related resources.
+     *
      * @param pi Record identifier
-     * @param privilege
+     * @param privilege name of the privilege to check
      * @param origin Client origin
      * @return {@link Response}
      */
     @OPTIONS
     @jakarta.ws.rs.Path(AUTH_PROBE_REQUEST_RECORD)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "")
+    @Operation(tags = { "auth", "iiif" }, summary = "IIIF Auth 2.0 probe service CORS preflight for record-level privilege checks")
+    @ApiResponse(responseCode = "200", description = "CORS preflight response for probe endpoint")
+    @ApiResponse(responseCode = "403", description = "Origin header missing")
     public Response handleProbePreflightRecordResource(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
             @Parameter(description = "Privilege name") @PathParam("privilege") String privilege,
             @HeaderParam("Origin") String origin) {
@@ -490,7 +512,7 @@ public class AuthorizationFlowResource {
     }
 
     /**
-     * Probe service endpoint for general record related resources
+     * Probe service endpoint for general record related resources.
      * 
      * @param pi Record identifier
      * @param privilege The privilege to check
@@ -501,7 +523,8 @@ public class AuthorizationFlowResource {
     @GET
     @jakarta.ws.rs.Path(AUTH_PROBE_REQUEST_RECORD)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "")
+    @Operation(tags = { "auth", "iiif" }, summary = "IIIF Auth 2.0 probe service — checks a named privilege for a record")
+    @ApiResponse(responseCode = "200", description = "IIIF Auth 2.0 probe result indicating access status (200 granted, 401 denied)")
     public Response probeRecordResource(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
             @Parameter(description = "Privilege name") @PathParam("privilege") String privilege,
             @HeaderParam("Origin") String origin)
@@ -534,7 +557,7 @@ public class AuthorizationFlowResource {
     }
 
     /**
-     * Probe pre-flight endpoint for general record related resources
+     * Probe pre-flight endpoint for general record related resources.
      * 
      * @param pi Record identifier
      * @param logId structure log id
@@ -545,7 +568,9 @@ public class AuthorizationFlowResource {
     @OPTIONS
     @jakarta.ws.rs.Path(AUTH_PROBE_REQUEST_SECTION)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "")
+    @Operation(tags = { "auth", "iiif" }, summary = "IIIF Auth 2.0 probe service CORS preflight for section-level privilege checks")
+    @ApiResponse(responseCode = "200", description = "CORS preflight response for probe endpoint")
+    @ApiResponse(responseCode = "403", description = "Origin header missing")
     public Response handleProbePreflightStructureResource(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
             @Parameter(description = "structure log id") @PathParam("logid") String logId,
             @Parameter(description = "Privilege name") @PathParam("privilege") String privilege,
@@ -554,7 +579,7 @@ public class AuthorizationFlowResource {
     }
 
     /**
-     * Probe service endpoint for general record related resources
+     * Probe service endpoint for general record related resources.
      * 
      * @param pi Record identifier
      * @param logId LOGID
@@ -566,7 +591,8 @@ public class AuthorizationFlowResource {
     @GET
     @jakarta.ws.rs.Path(AUTH_PROBE_REQUEST_SECTION)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "")
+    @Operation(tags = { "auth", "iiif" }, summary = "IIIF Auth 2.0 probe service — checks a named privilege for a structural section of a record")
+    @ApiResponse(responseCode = "200", description = "IIIF Auth 2.0 probe result indicating access status (200 granted, 401 denied)")
     public Response probeRecordStructureResource(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
             @Parameter(description = "structure log id") @PathParam("logid") String logId,
             @Parameter(description = "Privilege name") @PathParam("privilege") String privilege,
@@ -602,7 +628,9 @@ public class AuthorizationFlowResource {
     @GET
     @jakarta.ws.rs.Path(AUTH_LOGOUT)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "")
+    @Operation(tags = { "auth", "iiif" }, summary = "IIIF Auth 2.0 logout service — logs out the current user")
+    @ApiResponse(responseCode = "200", description = "User successfully logged out")
+    @ApiResponse(responseCode = "500", description = "Logout failed due to an internal error")
     public Response logout() {
         logger.debug("logout");
         UserBean userBean = BeanUtils.getUserBean();

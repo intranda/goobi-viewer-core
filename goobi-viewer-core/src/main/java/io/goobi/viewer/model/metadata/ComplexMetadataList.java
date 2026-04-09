@@ -38,6 +38,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.controller.sorting.ObjectComparatorBuilder;
 
+/**
+ * Wraps a list of {@link ComplexMetadata} entries and provides sorting, filtering, grouping,
+ * and value-extraction operations over that list, optionally using related-document references.
+ */
 public class ComplexMetadataList {
 
     public static final String SORT_DIRECTION_ASCENDING = "asc";

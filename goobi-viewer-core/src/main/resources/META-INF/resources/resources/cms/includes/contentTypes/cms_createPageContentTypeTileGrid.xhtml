@@ -1,13 +1,12 @@
-<ui:composition 
+<ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:util="http://goobi.io/util"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
-
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
     <!-- CONTENT TYPE TILE GRID -->
     <!-- CATEGORIES -->
     <div class="cms-module__option-group">
@@ -15,29 +14,44 @@
         <div class="cms-module__option-label">
             <label for="tileGridCategories">#{msg[contentItem.itemLabel]}#{contentItem.mandatory?'*':''}:</label>
         </div>
-        
+
         <div class="cms-module__option-control">
             <!-- AREA FOR AJAX REFRESH -->
             <h:panelGroup id="tileGridCategoriesGroup">
                 <!-- VALIDATION MESSAGE -->
                 <div class="cms-module__option-message">
-                    <h:messages for="tileGridCategories" infoClass="cms-module__option-message-status success" warnClass="cms-module__option-message-status warning"
+                    <h:messages
+                        for="tileGridCategories"
+                        infoClass="cms-module__option-message-status success"
+                        warnClass="cms-module__option-message-status warning"
                         errorClass="cms-module__option-message-status danger" />
 
                     <div class="cms-module__option-message-mark">
-                        <i class="fa fa-check" aria-hidden="true"></i>
-                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+                        <i
+                            class="fa fa-check"
+                            aria-hidden="true" />
+                        <i
+                            class="fa fa-exclamation"
+                            aria-hidden="true" />
                     </div>
                 </div>
 
                 <!-- MULTI SELECT MENU -->
                 <div class="cms-module__option-dropdown">
-                    <div class="cms-module__option-dropdown-trigger" data-toggle="option-dropdown">#{msg.admin__category_select}</div>
+                    <div
+                        class="cms-module__option-dropdown-trigger"
+                        data-toggle="option-dropdown">
+                        #{msg.admin__category_select}
+                    </div>
                     <ul>
-                        <ui:repeat var="selectable" value="#{contentItem.selectableCategories}">
+                        <ui:repeat
+                            var="selectable"
+                            value="#{contentItem.selectableCategories}">
                             <li>
                                 <label>
-                                    <h:selectBooleanCheckbox type="checkbox" value="#{selectable.selected}" />
+                                    <h:selectBooleanCheckbox
+                                        type="checkbox"
+                                        value="#{selectable.selected}" />
                                     #{selectable.value.name}
                                 </label>
                             </li>
@@ -49,14 +63,18 @@
             <!-- INLINE HELP -->
             <span class="cms-module__option-control-helptext">#{msg.inline_help__cms_content_type_tile_grid_categories}</span>
         </div>
-        
+
         <!-- TOGGLE INLINE HELP -->
         <div class="cms-module__option-help">
-            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+            <button
+                type="button"
+                class="btn btn--clean"
+                data-toggle="helptext"
+                aria-label="#{msg.aria_label__help}">
                 <util:icon icon="help" />
             </button>
         </div>
-    </div>    
+    </div>
 
     <!-- IMPORTANT TILES -->
     <div class="cms-module__option-group">
@@ -64,46 +82,57 @@
         <div class="cms-module__option-label">
             <label for="importantTiles">#{msg.cms_itemTileGrid_numberOfImportantTiles}:</label>
         </div>
-        
+
         <div class="cms-module__option-control">
             <!-- AREA FOR AJAX REFRESH -->
             <h:panelGroup id="importantTilesGroup">
                 <!-- VALIDATION MESSAGE -->
                 <div class="cms-module__option-message">
-                    <h:messages for="importantTiles" 
-                        infoClass="cms-module__option-message-status success" 
+                    <h:messages
+                        for="importantTiles"
+                        infoClass="cms-module__option-message-status success"
                         warnClass="cms-module__option-message-status warning"
                         errorClass="cms-module__option-message-status danger" />
 
                     <div class="cms-module__option-message-mark">
-                        <i class="fa fa-check" aria-hidden="true"></i>
-                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+                        <i
+                            class="fa fa-check"
+                            aria-hidden="true" />
+                        <i
+                            class="fa fa-exclamation"
+                            aria-hidden="true" />
                     </div>
                 </div>
-                
+
                 <!-- SELECT MENU -->
                 <div class="custom-control custom-control--select">
-                    <h:selectOneMenu 
+                    <h:selectOneMenu
                         id="importantTiles"
-                        styleClass="form-control" 
+                        styleClass="form-control"
                         value="#{contentItem.numberOfImportantTiles}">
-                        <f:selectItems value="#{[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30]}"/>
-                        <f:passThroughAttribute name="aria-label" value="#{msg.cms_itemTileGrid_numberOfImportantTiles}" />
-                     </h:selectOneMenu>
+                        <f:selectItems value="#{[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30]}" />
+                        <f:passThroughAttribute
+                            name="aria-label"
+                            value="#{msg.cms_itemTileGrid_numberOfImportantTiles}" />
+                    </h:selectOneMenu>
                 </div>
             </h:panelGroup>
-            
+
             <!-- INLINE HELP -->
             <span class="cms-module__option-control-helptext">#{msg.inline_help__cms_content_type_tile_grid_important_tiles}</span>
-        </div> 
-        
+        </div>
+
         <!-- TOGGLE INLINE HELP -->
         <div class="cms-module__option-help">
-            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+            <button
+                type="button"
+                class="btn btn--clean"
+                data-toggle="helptext"
+                aria-label="#{msg.aria_label__help}">
                 <util:icon icon="help" />
             </button>
         </div>
-    </div>    
+    </div>
 
     <!-- TILE COUNT -->
     <div class="cms-module__option-group">
@@ -111,42 +140,53 @@
         <div class="cms-module__option-label">
             <label for="tileCount">#{msg.cms_itemTileGrid_numberOfTiles}:</label>
         </div>
-        
+
         <div class="cms-module__option-control">
             <!-- AREA FOR AJAX REFRESH -->
             <h:panelGroup id="tileCountGroup">
                 <!-- VALIDATION MESSAGE -->
                 <div class="cms-module__option-message">
-                    <h:messages for="tileCount" 
-                        infoClass="cms-module__option-message-status success" 
+                    <h:messages
+                        for="tileCount"
+                        infoClass="cms-module__option-message-status success"
                         warnClass="cms-module__option-message-status warning"
                         errorClass="cms-module__option-message-status danger" />
 
                     <div class="cms-module__option-message-mark">
-                        <i class="fa fa-check" aria-hidden="true"></i>
-                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+                        <i
+                            class="fa fa-check"
+                            aria-hidden="true" />
+                        <i
+                            class="fa fa-exclamation"
+                            aria-hidden="true" />
                     </div>
                 </div>
-                
+
                 <!-- SELECT MENU -->
                 <div class="custom-control custom-control--select">
-                    <h:selectOneMenu 
+                    <h:selectOneMenu
                         id="tileCount"
-                        styleClass="form-control" 
+                        styleClass="form-control"
                         value="#{contentItem.numberOfTiles}">
-                        <f:selectItems value="#{[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30]}"/>
-						<f:passThroughAttribute name="aria-label" value="#{msg.cms_itemTileGrid_numberOfTiles}" />
+                        <f:selectItems value="#{[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30]}" />
+                        <f:passThroughAttribute
+                            name="aria-label"
+                            value="#{msg.cms_itemTileGrid_numberOfTiles}" />
                     </h:selectOneMenu>
                 </div>
             </h:panelGroup>
-            
+
             <!-- INLINE HELP -->
             <span class="cms-module__option-control-helptext">#{msg.inline_help__cms_content_type_tile_grid_tile_count}</span>
         </div>
-        
+
         <!-- TOGGLE INLINE HELP -->
         <div class="cms-module__option-help">
-            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+            <button
+                type="button"
+                class="btn btn--clean"
+                data-toggle="helptext"
+                aria-label="#{msg.aria_label__help}">
                 <util:icon icon="help" />
             </button>
         </div>

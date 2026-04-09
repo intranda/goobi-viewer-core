@@ -86,8 +86,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.StreamingOutput;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class TextResourceBuilder {
 
@@ -113,8 +112,8 @@ public class TextResourceBuilder {
     }
 
     /**
-     * 
-     * @param pi
+     *
+     * @param pi persistent identifier of the work
      * @param request {@link HttpServletRequest}
      * @return {@link StreamingOutput}
      * @throws IOException
@@ -143,6 +142,12 @@ public class TextResourceBuilder {
         }
         tempFiles.sort((f1, f2) -> f1.getFileName().toString().compareTo(f2.getFileName().toString()));
 
+        // Return 404 if no fulltext files exist for this record instead of letting
+        // FileTools.compressZipFile throw an IllegalArgumentException
+        if (tempFiles.isEmpty()) {
+            throw new ContentNotFoundException("No fulltext files found for record " + pi);
+        }
+
         try {
             return writeZipFile(tempFiles, filename);
         } finally {
@@ -165,6 +170,12 @@ public class TextResourceBuilder {
         String crowdsourcingFolderName = DataManager.getInstance().getConfiguration().getAltoCrowdsourcingFolder();
         List<Path> files = getFiles(pi, foldername, crowdsourcingFolderName, null, request);
 
+        // Return 404 if no ALTO files exist for this record instead of letting
+        // FileTools.compressZipFile throw an IllegalArgumentException
+        if (files.isEmpty()) {
+            throw new ContentNotFoundException("No ALTO files found for record " + pi);
+        }
+
         return writeZipFile(files, zipFileName);
     }
 
@@ -185,8 +196,8 @@ public class TextResourceBuilder {
 
     /**
      *
-     * @param pi
-     * @param fileName
+     * @param pi persistent identifier of the work
+     * @param fileName file name of the ALTO document to retrieve
      * @return StringPair(ALTO,charset)
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -222,9 +233,9 @@ public class TextResourceBuilder {
     }
 
     /**
-     * 
-     * @param pi
-     * @param filename
+     *
+     * @param pi persistent identifier of the work
+     * @param filename file name of the plain-text page to convert
      * @return Plain text extracted from TEI
      * @throws PresentationException
      * @throws ContentLibException
@@ -258,9 +269,9 @@ public class TextResourceBuilder {
     }
 
     /**
-     * 
-     * @param pi
-     * @param langCode
+     *
+     * @param pi persistent identifier of the work
+     * @param langCode ISO language code for the requested TEI version
      * @param request {@link HttpServletRequest}
      * @return TEI document as {@link String}
      * @throws PresentationException
@@ -321,9 +332,9 @@ public class TextResourceBuilder {
     }
 
     /**
-     * 
-     * @param pi
-     * @param langCode
+     *
+     * @param pi persistent identifier of the work
+     * @param langCode ISO language code for the requested TEI version
      * @param request {@link HttpServletRequest}
      * @return {@link StreamingOutput}
      * @throws PresentationException
@@ -384,8 +395,8 @@ public class TextResourceBuilder {
 
     /**
      *
-     * @param pi
-     * @param langCode
+     * @param pi persistent identifier of the work
+     * @param langCode ISO language code for the requested CMDI version
      * @return CMDI document as {@link String}
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -429,13 +440,11 @@ public class TextResourceBuilder {
     }
 
     /**
-     * <p>
      * getFulltext.
-     * </p>
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param fileName a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param pi persistent identifier of the work
+     * @param fileName file name of the plain-text or ALTO page to retrieve
+     * @return plain text content of the requested page
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
@@ -473,9 +482,9 @@ public class TextResourceBuilder {
      * Collects full-text file paths and content in a map. Priority is given to files from plaintext resources, with missing files being stuffed with
      * converted ALTO.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param request {@link HttpServletRequest}
-     * @return a {@link java.util.Map} object.
+     * @param pi persistent identifier of the work
+     * @param request current HTTP servlet request for access checking
+     * @return map of page file paths to their full-text content
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -541,15 +550,14 @@ public class TextResourceBuilder {
     }
 
     /**
-     * <p>
      * getFiles.
-     * </p>
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param foldername a {@link java.lang.String} object.
-     * @param altFoldername a {@link java.lang.String} object.
-     * @param filter a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
+     * @param pi persistent identifier used to locate the data directory
+     * @param foldername primary folder name to search for files
+     * @param altFoldername fallback folder name if primary is missing
+     * @param filter optional filename regex pattern; null matches all files
+     * @param request current HTTP servlet request for access checking
+     * @return sorted, access-filtered list of matching file paths
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -564,15 +572,13 @@ public class TextResourceBuilder {
     }
 
     /**
-     * <p>
      * getFiles.
-     * </p>
      *
-     * @param folder a {@link java.nio.file.Path} object.
-     * @param altFolder a {@link java.nio.file.Path} object.
-     * @param filter a {@link java.lang.String} object.
-     * @param request {@link HttpServletRequest}
-     * @return a {@link java.util.List} object.
+     * @param folder primary directory path to list files from
+     * @param altFolder fallback directory path merged with primary results
+     * @param filter optional filename regex pattern; null matches all files
+     * @param request current HTTP servlet request for access checking
+     * @return sorted, access-filtered, deduplicated list of file paths
      * @throws java.io.IOException if any.
      */
     private static List<java.nio.file.Path> getFiles(java.nio.file.Path folder, java.nio.file.Path altFolder, String filter,
@@ -631,12 +637,10 @@ public class TextResourceBuilder {
     }
 
     /**
-     * <p>
      * createTEIHeader.
-     * </p>
      *
-     * @param solrDoc a {@link org.apache.solr.common.SolrDocument} object.
-     * @return a {@link de.intranda.digiverso.ocr.tei.header.TEIHeaderBuilder} object.
+     * @param solrDoc Solr document providing title, author, and identifier metadata
+     * @return TEI header builder populated with metadata from the Solr document
      */
     private static TEIHeaderBuilder createTEIHeader(SolrDocument solrDoc) {
         TEIHeaderBuilder header = new TEIHeaderBuilder();
@@ -671,8 +675,8 @@ public class TextResourceBuilder {
      * Returns the first file on the given folder path that contains the requested language code in its name. ISO-3 files are preferred, with a
      * fallback to ISO-2.
      *
-     * @param folder
-     * @param language
+     * @param folder directory path to search for language-specific files
+     * @param language the requested document language
      * @return Path of the requested file; null if not found
      * @throws IOException
      */
@@ -702,12 +706,10 @@ public class TextResourceBuilder {
     }
 
     /**
-     * <p>
      * getTEIFiles.
-     * </p>
      *
-     * @param pi a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
+     * @param pi persistent identifier used to locate the TEI folder
+     * @return list of all language-specific TEI file paths for the record
      */
     public List<java.nio.file.Path> getTEIFiles(String pi) {
         try {
@@ -733,13 +735,11 @@ public class TextResourceBuilder {
     }
 
     /**
-     * <p>
      * getTEIFiles.
-     * </p>
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param langCode
-     * @return a {@link java.util.List} object.
+     * @param pi persistent identifier used to locate the TEI folder
+     * @param langCode ISO language code to filter TEI files by
+     * @return list of TEI file paths matching the requested language
      */
     public List<java.nio.file.Path> getTEIFiles(String pi, String langCode) {
         try {
@@ -771,13 +771,11 @@ public class TextResourceBuilder {
     }
 
     /**
-     * <p>
      * getCMDIFile.
-     * </p>
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param langCode a {@link java.lang.String} object.
-     * @return a {@link java.nio.file.Path} object.
+     * @param pi persistent identifier used to locate the CMDI folder
+     * @param langCode ISO language code to select the matching CMDI file
+     * @return path to the language-specific CMDI file, or null if not found
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -803,12 +801,10 @@ public class TextResourceBuilder {
     }
 
     /**
-     * <p>
      * getCMDIFiles.
-     * </p>
      *
-     * @param pi a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
+     * @param pi persistent identifier used to locate the CMDI folder
+     * @return list of all language-specific CMDI file paths for the record
      */
     public List<java.nio.file.Path> getCMDIFiles(String pi) {
 
@@ -834,9 +830,9 @@ public class TextResourceBuilder {
     }
 
     /**
-     * 
-     * @param contentMap
-     * @param filename
+     *
+     * @param contentMap map of file paths to their text content to include in the ZIP
+     * @param filename desired name of the resulting ZIP file
      * @return {@link StreamingOutput}
      * @throws ContentLibException
      */
@@ -870,9 +866,9 @@ public class TextResourceBuilder {
     }
 
     /**
-     * 
-     * @param files
-     * @param filename
+     *
+     * @param files list of file paths to include in the ZIP
+     * @param filename desired name of the resulting ZIP file
      * @return {@link StreamingOutput}
      * @throws ContentLibException
      */
@@ -906,10 +902,10 @@ public class TextResourceBuilder {
     }
 
     /**
-     * 
-     * @param converter
-     * @param input
-     * @param identifier
+     *
+     * @param converter the TEI converter to apply
+     * @param input the raw text input to convert
+     * @param identifier source identifier used in error messages
      * @return Converted input
      * @throws UncheckedPresentationException
      */

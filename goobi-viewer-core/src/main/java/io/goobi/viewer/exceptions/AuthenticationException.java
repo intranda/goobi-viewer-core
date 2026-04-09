@@ -24,18 +24,14 @@ package io.goobi.viewer.exceptions;
 import java.io.Serializable;
 
 /**
- * <p>
- * AuthenticationException class.
- * </p>
+ * Thrown when user authentication fails due to invalid credentials or an expired session.
  */
 public class AuthenticationException extends Exception implements Serializable {
 
     private static final long serialVersionUID = -5535245246816475462L;
 
     /**
-     * <p>
-     * Constructor for AuthenticationException.
-     * </p>
+     * Creates a new AuthenticationException instance.
      *
      * @param string {@link java.lang.String}
      */

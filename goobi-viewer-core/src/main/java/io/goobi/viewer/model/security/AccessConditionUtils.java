@@ -73,9 +73,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 /**
- * <p>
- * AccessConditionUtils class.
- * </p>
+ * Utility class providing methods to evaluate access conditions and licence restrictions for records, images, and metadata.
  */
 public final class AccessConditionUtils {
 
@@ -89,16 +87,14 @@ public final class AccessConditionUtils {
     }
 
     /**
-     * <p>
      * checkAccess.
-     * </p>
      *
-     * @param session a {@link jakarta.servlet.http.HttpSession} object.
-     * @param action a {@link java.lang.String} object.
-     * @param pi a {@link java.lang.String} object.
-     * @param contentFileName a {@link java.lang.String} object.
-     * @param ipAddress
-     * @param isThumbnail a boolean.
+     * @param session HTTP session for caching permission results
+     * @param action access action type (e.g. "image", "text", "pdf")
+     * @param pi persistent identifier of the record
+     * @param contentFileName name of the content file being accessed
+     * @param ipAddress client IP address
+     * @param isThumbnail true if the request is for a thumbnail image
      * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -110,16 +106,14 @@ public final class AccessConditionUtils {
     }
 
     /**
-     * <p>
      * checkAccess.
-     * </p>
      *
-     * @param session a {@link jakarta.servlet.http.HttpSession} object.
-     * @param action a {@link java.lang.String} object.
-     * @param pi a {@link java.lang.String} object.
-     * @param contentFileName a {@link java.lang.String} object.
-     * @param ipAddress
-     * @param isThumbnail a boolean.
+     * @param session HTTP session for caching permission results
+     * @param action access action type (e.g. "image", "text", "pdf")
+     * @param pi persistent identifier of the record
+     * @param contentFileName name of the content file being accessed
+     * @param ipAddress client IP address
+     * @param isThumbnail true if the request is for a thumbnail image
      * @param user the User requesting access. If null, it is fetched from the jsfContext if one exists
      * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -179,8 +173,8 @@ public final class AccessConditionUtils {
 
     /**
      *
-     * @param identifier
-     * @param fileName
+     * @param identifier persistent identifier of the record
+     * @param fileName content file name to build the query for
      * @return Constructed query
      * @should use correct field name for AV files
      * @should use correct file name for text files
@@ -290,9 +284,10 @@ public final class AccessConditionUtils {
      *
      * @param identifier Work identifier (PI).
      * @param fileName Image file name. For all files of a record, use "*".
-     * @param privilegeName a {@link java.lang.String} object.
-     * @param ipAddress
-     * @param session
+     * @param privilegeName access privilege name to verify
+     * @param ipAddress client IP address
+     * @param session HTTP session for caching permission results
+     * @param user currently logged-in user, or null for anonymous access
      * @return true if access is granted; false otherwise.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -345,27 +340,33 @@ public final class AccessConditionUtils {
         }
     }
 
-    private static User retrieveUserFromContext(HttpSession session) {
-        User user = BeanUtils.getUserFromSession(session);
-        if (user == null) {
-            try {
-                UserBean userBean = BeanUtils.getUserBean();
-                if (userBean != null) {
-                    user = userBean.getUser();
+    /**
+     * Central method to retrieve user from a HttpSession.
+     * 
+     * @param session The session in which the user data is stored
+     * @return The user logged into the given session. May be null if no user is logged in
+     */
+    public static User retrieveUserFromContext(HttpSession session) {
+        try {
+            UserBean userBean = BeanUtils.getUserBean(); //CDI lookup, faster than scanning session
+            if (userBean != null) {
+                User user = userBean.getUser();
+                if (user != null) {
+                    return user;
                 }
-            } catch (ContextNotActiveException e) {
-                logger.warn("Failed to retrieve userBean: No jsf context available");
             }
+        } catch (ContextNotActiveException e) {
+            // No CDI context (background thread) - fall through to session scan
         }
-        return user;
+        return BeanUtils.getUserFromSession(session); //expensive scan of whole session. Only as fallback
     }
 
     /**
      * Checks whether the client may access an image (by PI + file name).
      *
      * @param request Calling HttpServiceRequest.
-     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
-     * @param privilegeName a {@link java.lang.String} object.
+     * @param page physical page element whose access conditions are checked
+     * @param privilegeName access privilege name to verify
      * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -378,13 +379,7 @@ public final class AccessConditionUtils {
 
         String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + page.getPi() + " +" + SolrConstants.ORDER + ":" + page.getOrder();
         try {
-            User user = BeanUtils.getUserFromSession(request != null ? request.getSession() : null);
-            if (user == null) {
-                UserBean userBean = BeanUtils.getUserBean();
-                if (userBean != null) {
-                    user = userBean.getUser();
-                }
-            }
+            User user = retrieveUserFromContext(request != null ? request.getSession() : null);
             return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), page.getAccessConditions(),
                     privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
         } catch (PresentationException e) {
@@ -401,7 +396,7 @@ public final class AccessConditionUtils {
      * @param request Calling HttpServiceRequest.
      * @param pi identifier of the record
      * @param pageOrder order property of the page
-     * @param privilegeName a {@link java.lang.String} object.
+     * @param privilegeName access privilege name to verify
      * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -415,13 +410,7 @@ public final class AccessConditionUtils {
         String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi + " +" + SolrConstants.ORDER + ":" + pageOrder;
 
         try {
-            User user = BeanUtils.getUserFromSession(request != null ? request.getSession() : null);
-            if (user == null) {
-                UserBean userBean = BeanUtils.getUserBean();
-                if (userBean != null) {
-                    user = userBean.getUser();
-                }
-            }
+            User user = retrieveUserFromContext(request != null ? request.getSession() : null);
 
             SolrDocumentList results = DataManager.getInstance()
                     .getSearchIndex()
@@ -447,7 +436,7 @@ public final class AccessConditionUtils {
      * @param identifier The PI to check.
      * @param logId The LOGID to check (optional).
      * @param privilegeName Particular privilege for which to check the permission.
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param request HTTP servlet request providing session and IP address
      * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -512,10 +501,10 @@ public final class AccessConditionUtils {
 
     /**
      *
-     * @param doc
-     * @param originalQuery
-     * @param privilegeName
-     * @param request
+     * @param doc Solr document whose access conditions are checked
+     * @param originalQuery original Solr query used to retrieve the document
+     * @param privilegeName access privilege name to verify
+     * @param request HTTP servlet request providing session and IP address
      * @return {@link AccessPermission}
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -538,17 +527,7 @@ public final class AccessConditionUtils {
                 }
             }
 
-            User user = BeanUtils.getUserFromSession(request != null ? request.getSession() : null);
-            if (user == null) {
-                UserBean userBean = BeanUtils.getUserBean();
-                if (userBean != null) {
-                    try {
-                        user = userBean.getUser();
-                    } catch (ContextNotActiveException e) {
-                        logger.trace("Cannot access bean method from different thread: UserBean.getUser()");
-                    }
-                }
-            }
+            User user = retrieveUserFromContext(request != null ? request.getSession() : null);
             return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), requiredAccessConditions,
                     privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), originalQuery);
         } catch (PresentationException e) {
@@ -561,9 +540,9 @@ public final class AccessConditionUtils {
     /**
      * Checks whether the current users has the given access permissions each element of the record with the given identifier.
      *
-     * @param identifier a {@link java.lang.String} object.
-     * @param privilegeName a {@link java.lang.String} object.
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param identifier persistent identifier of the record
+     * @param privilegeName access privilege name to verify
+     * @param request HTTP servlet request providing session and IP address
      * @return Map with true/false for each LOGID
      * @should fill map completely
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -599,13 +578,7 @@ public final class AccessConditionUtils {
                         .search(query, SolrSearchIndex.MAX_HITS, null,
                                 Arrays.asList(SolrConstants.LOGID, SolrConstants.ACCESSCONDITION));
                 if (results != null) {
-                    User user = BeanUtils.getUserFromSession(session);
-                    if (user == null) {
-                        UserBean userBean = BeanUtils.getUserBean();
-                        if (userBean != null) {
-                            user = userBean.getUser();
-                        }
-                    }
+                    User user = retrieveUserFromContext(session);
 
                     //                    long start = System.nanoTime();
                     List<LicenseType> nonOpenAccessLicenseTypes = DataManager.getInstance().getDao().getRecordLicenseTypes();
@@ -641,7 +614,7 @@ public final class AccessConditionUtils {
     }
 
     /**
-     * Checks if the record with the given identifier should allow access to the given request
+     * Checks if the record with the given identifier should allow access to the given request.
      *
      * @param identifier The PI of the work to check
      * @param request The HttpRequest which may provide a {@link jakarta.servlet.http.HttpSession} to store the access map
@@ -699,8 +672,8 @@ public final class AccessConditionUtils {
      *
      * @param imageUrn Image URN.
      * @param request Calling HttpServiceRequest.
+     * @param privilegeName access privilege name to verify
      * @return {@link AccessPermission}
-     * @param privilegeName a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -733,13 +706,7 @@ public final class AccessConditionUtils {
                 }
             }
 
-            User user = BeanUtils.getUserFromSession(request != null ? request.getSession() : null);
-            if (user == null) {
-                UserBean userBean = BeanUtils.getUserBean();
-                if (userBean != null) {
-                    user = userBean.getUser();
-                }
-            }
+            User user = retrieveUserFromContext(request != null ? request.getSession() : null);
             return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), requiredAccessConditions,
                     privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
         } catch (PresentationException e) {
@@ -749,14 +716,12 @@ public final class AccessConditionUtils {
     }
 
     /**
-     * <p>
      * checkAccessPermission.
-     * </p>
      *
-     * @param requiredAccessConditions a {@link java.util.Set} object.
-     * @param privilegeName a {@link java.lang.String} object.
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @param query a {@link java.lang.String} object.
+     * @param requiredAccessConditions set of access condition names to satisfy
+     * @param privilegeName access privilege name to verify
+     * @param query Solr query describing the resource in question
+     * @param request HTTP servlet request providing session and IP address
      * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -764,13 +729,7 @@ public final class AccessConditionUtils {
      */
     public static AccessPermission checkAccessPermission(Set<String> requiredAccessConditions, String privilegeName, String query,
             HttpServletRequest request) throws IndexUnreachableException, PresentationException, DAOException {
-        User user = BeanUtils.getUserFromSession(request != null ? request.getSession() : null);
-        if (user == null) {
-            UserBean userBean = BeanUtils.getUserBean();
-            if (userBean != null) {
-                user = userBean.getUser();
-            }
-        }
+        User user = retrieveUserFromContext(request != null ? request.getSession() : null);
         return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), requiredAccessConditions, privilegeName, user,
                 NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
     }
@@ -778,10 +737,10 @@ public final class AccessConditionUtils {
     /**
      * Checks access permission for the given image and puts the permission status into the corresponding session map.
      *
-     * @param session a {@link jakarta.servlet.http.HttpSession} object.
-     * @param pi a {@link java.lang.String} object.
-     * @param contentFileName a {@link java.lang.String} object.
-     * @param ipAddress
+     * @param session HTTP session for caching permission results
+     * @param pi persistent identifier of the record
+     * @param contentFileName name of the image file to check
+     * @param ipAddress client IP address
      * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -795,10 +754,10 @@ public final class AccessConditionUtils {
     /**
      * Checks access permission for the given image and puts the permission status into the corresponding session map.
      *
-     * @param session a {@link jakarta.servlet.http.HttpSession} object.
-     * @param pi a {@link java.lang.String} object.
-     * @param contentFileName a {@link java.lang.String} object.
-     * @param ipAddress
+     * @param session HTTP session for caching permission results
+     * @param pi persistent identifier of the record
+     * @param contentFileName name of the image file to check
+     * @param ipAddress client IP address
      * @param user the user requesting permission. If null, it is fetchted from the jsf context if it exists
      * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -814,10 +773,10 @@ public final class AccessConditionUtils {
     /**
      * Checks access permission for the given thumbnail and puts the permission status into the corresponding session map.
      *
-     * @param session a {@link jakarta.servlet.http.HttpSession} object.
-     * @param pi a {@link java.lang.String} object.
-     * @param contentFileName a {@link java.lang.String} object.
-     * @param ipAddress
+     * @param session HTTP session for caching permission results
+     * @param pi persistent identifier of the record
+     * @param contentFileName name of the thumbnail file to check
+     * @param ipAddress client IP address
      * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -830,10 +789,10 @@ public final class AccessConditionUtils {
     /**
      * Checks access permission for the given thumbnail and puts the permission status into the corresponding session map.
      *
-     * @param session a {@link jakarta.servlet.http.HttpSession} object.
-     * @param pi a {@link java.lang.String} object.
-     * @param contentFileName a {@link java.lang.String} object.
-     * @param ipAddress
+     * @param session HTTP session for caching permission results
+     * @param pi persistent identifier of the record
+     * @param contentFileName name of the thumbnail file to check
+     * @param ipAddress client IP address
      * @param user the user requesting permission. If null, it is fetchted from the jsf context if it exists
      * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -849,8 +808,8 @@ public final class AccessConditionUtils {
     /**
      * Checks access permission for the given image and puts the permission status into the corresponding session map.
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @param request HTTP servlet request providing session and IP address
+     * @param page physical page element to check PDF download permission for
      * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -865,13 +824,11 @@ public final class AccessConditionUtils {
     }
 
     /**
-     * <p>
      * checkAccessPermissionByIdentifierAndFilePathWithSessionMap.
-     * </p>
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param request HTTP servlet request providing session and IP address
      * @param filePath FILENAME_ALTO or FILENAME_FULLTEXT value
-     * @param privilegeType a {@link java.lang.String} object.
+     * @param privilegeType access privilege type to verify
      * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -882,13 +839,11 @@ public final class AccessConditionUtils {
     }
 
     /**
-     * <p>
      * checkAccessPermissionByIdentifierAndFilePathWithSessionMap.
-     * </p>
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param request HTTP servlet request providing session and IP address
      * @param filePath FILENAME_ALTO or FILENAME_FULLTEXT value
-     * @param privilegeType a {@link java.lang.String} object.
+     * @param privilegeType access privilege type to verify
      * @param user the user requesting permission. If null, it is fetchted from the jsf context if it exists
      * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -910,12 +865,12 @@ public final class AccessConditionUtils {
 
     /**
      * Checks access permission of the given privilege type for the given image and puts the permission status into the corresponding session map.
-     * 
-     * @param session {@link HttpSession}
-     * @param pi a {@link java.lang.String} object.
-     * @param contentFileName a {@link java.lang.String} object.
-     * @param privilegeType a {@link java.lang.String} object.
-     * @param ipAddress
+     *
+     * @param session HTTP session for caching permission results
+     * @param pi persistent identifier of the record
+     * @param contentFileName name of the content file to check
+     * @param privilegeType access privilege type to verify
+     * @param ipAddress client IP address
      * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -928,12 +883,12 @@ public final class AccessConditionUtils {
 
     /**
      * Checks access permission of the given privilege type for the given image and puts the permission status into the corresponding session map.
-     * 
-     * @param session {@link HttpSession}
-     * @param pi a {@link java.lang.String} object.
-     * @param contentFileName a {@link java.lang.String} object.
-     * @param privilegeType a {@link java.lang.String} object.
-     * @param ipAddress
+     *
+     * @param session HTTP session for caching permission results
+     * @param pi persistent identifier of the record
+     * @param contentFileName name of the content file to check
+     * @param privilegeType access privilege type to verify
+     * @param ipAddress client IP address
      * @param user the {@link User} requesting access. May be null in which case the the method will attempt to retrieve the user from the
      *            {@link UserBean}, given an existing jsfContext
      * @return {@link AccessPermission}
@@ -990,8 +945,8 @@ public final class AccessConditionUtils {
     }
 
     /**
-     * 
-     * @param request
+     *
+     * @param request HTTP servlet request providing session and IP address
      * @param page {@link CMSPage} to check
      * @return {@link AccessPermission}
      * @throws DAOException
@@ -1008,13 +963,7 @@ public final class AccessConditionUtils {
             return AccessPermission.granted();
         }
 
-        User user = BeanUtils.getUserFromSession(request != null ? request.getSession() : null);
-        if (user == null) {
-            UserBean userBean = BeanUtils.getUserBean();
-            if (userBean != null) {
-                user = userBean.getUser();
-            }
-        }
+        User user = retrieveUserFromContext(request != null ? request.getSession() : null);
         if (user != null && user.isSuperuser()) {
             logger.trace("Access granted to admin.");
             return AccessPermission.granted();
@@ -1031,16 +980,14 @@ public final class AccessConditionUtils {
     }
 
     /**
-     * <p>
      * Base method for checking access permissions of various types.
-     * </p>
      *
-     * @param allLicenseTypes a {@link java.util.List} object.
+     * @param allLicenseTypes all configured license types to evaluate
      * @param requiredAccessConditions Set of access condition names to satisfy (one suffices).
      * @param privilegeName The particular privilege to check.
      * @param user Logged in user.
-     * @param remoteAddress a {@link java.lang.String} object.
-     * @param client
+     * @param remoteAddress client IP address string
+     * @param client optional client application making the request
      * @param query Solr query describing the resource in question.
      * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -1197,7 +1144,7 @@ public final class AccessConditionUtils {
      * condition and OPENACCESS is not contained in allLicenseTypes. In this and only this case can we safely assume that everything is permitted. If
      * OPENACCESS is in the database then it likely contains some access restrictions which need to be checked
      *
-     * @param requiredAccessConditions a {@link java.util.Set} object.
+     * @param requiredAccessConditions set of access condition names from the Solr document
      * @param allLicenseTypes all license types relevant for access. If null, the DAO is checked if it contains the OPENACCESS condition
      * @return true if we can savely assume that we have entirely open access
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1218,9 +1165,9 @@ public final class AccessConditionUtils {
     /**
      * Filters the given list of license types my removing those that have Solr query conditions that do not match the given identifier.
      *
-     * @param allLicenseTypes
-     * @param requiredAccessConditions
-     * @param query
+     * @param allLicenseTypes all configured license types to filter
+     * @param requiredAccessConditions set of required access condition names
+     * @param query Solr query describing the resource, used for moving wall checks
      * @return Map<String, List<LicenseType>>
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -1282,7 +1229,7 @@ public final class AccessConditionUtils {
 
     /**
      *
-     * @param pi
+     * @param pi persistent identifier of the record
      * @return Number of allowed downloads for given pi; 100 of no value set
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -1343,7 +1290,7 @@ public final class AccessConditionUtils {
 
     /**
      *
-     * @param accessConditions
+     * @param accessConditions list of access condition strings to check
      * @return true if any license type for the given list of access conditions has concurrent views limit enabled; false otherwise
      * @throws DAOException
      * @should return false if access conditions null or empty
@@ -1394,12 +1341,12 @@ public final class AccessConditionUtils {
 
     /**
      * List all licenses ("rights") that the given user and ipAddress is entitled to, either because they are directly given to the user, a group the
-     * user belongs to or to the given ipAddress, whether or not the given user exists
+     * user belongs to or to the given ipAddress, whether or not the given user exists.
      * 
-     * @param user
-     * @param ipAddress
-     * @param type
-     * @param dao
+     * @param user optional logged-in user to match against licenses
+     * @param ipAddress client IP address used for IP range matching
+     * @param type license type to query licenses for
+     * @param dao DAO instance used to retrieve licenses and IP ranges
      * @return List<License>
      * @throws DAOException
      */
@@ -1455,8 +1402,8 @@ public final class AccessConditionUtils {
 
     /**
      * 
-     * @param attributeName
-     * @param session
+     * @param attributeName session attribute key for the permission entry
+     * @param session HTTP session to look up the attribute in
      * @return Object found in session; null otherwise
      */
     public static Object getSessionPermission(String attributeName, HttpSession session) {
@@ -1469,9 +1416,9 @@ public final class AccessConditionUtils {
 
     /**
      * 
-     * @param attributeName
-     * @param attributeValue
-     * @param session
+     * @param attributeName session attribute key under which the value is stored
+     * @param attributeValue permission value to store in the session
+     * @param session HTTP session to store the attribute in
      * @return true if successful; false otherwise
      */
     public static boolean addSessionPermission(String attributeName, Object attributeValue, HttpSession session) {
@@ -1486,8 +1433,8 @@ public final class AccessConditionUtils {
 
     /**
      * Removes privileges saved in the user session.
-     * 
-     * @param session
+     *
+     * @param session HTTP session whose permission attributes are cleared
      * @return Number of removed session attributes
      */
     public static int clearSessionPermissions(HttpSession session) {
@@ -1517,9 +1464,9 @@ public final class AccessConditionUtils {
     }
 
     /**
-     * @param pi
-     * @param fileName
-     * @param privilegeName
+     * @param pi persistent identifier of the record
+     * @param fileName content file name to check access for
+     * @param privilegeName access privilege name to verify
      * @return {@link AccessPermission}
      * @throws DAOException
      * @throws IndexUnreachableException
@@ -1530,9 +1477,9 @@ public final class AccessConditionUtils {
     }
 
     /**
-     * @param pi
-     * @param fileName
-     * @param privilegeName
+     * @param pi persistent identifier of the record
+     * @param fileName content file name to check access for
+     * @param privilegeName access privilege name to verify
      * @param user The user requesting access. If null it is retrieved from the jsfContext if available
      * @return {@link AccessPermission}
      * @throws DAOException

@@ -19,119 +19,119 @@
 //
 // Styleguide Components.button
 .btn {
-	color: @btnDefault;
-	border-radius: 0;
-	background-color: transparent;
-	&:hover,
-	&:active,
-	&:focus,
-	&:active:focus,
-	&.active,
-	&.active.focus,
-	&.active:focus,
-	&.focus,
-	&:active.focus {
-		outline: none;
-		box-shadow: none;
-		.fa {
-			color: inherit;
-		}
-	}
+    color: @btnDefault;
+    border-radius: 0;
+    background-color: transparent;
+    &:hover,
+    &:active,
+    &:focus,
+    &:active:focus,
+    &.active,
+    &.active.focus,
+    &.active:focus,
+    &.focus,
+    &:active.focus {
+        outline: none;
+        box-shadow: none;
+        .fa {
+            color: inherit;
+        }
+    }
 }
 .btn--trans {
-	background-color: transparent;
-	border: 0;
+    background-color: transparent;
+    border: 0;
 }
 
 /* MODIFICATIONS */
 .btn--default {
-	border-color: @btnDefaultBorder;
-	background-color: @btnDefaultBgc;
-	&:hover,
-	&:active,
-	&:focus {
-		background-color: @btnDefaultHoverBgc;
-	}
+    border-color: @btnDefaultBorder;
+    background-color: @btnDefaultBgc;
+    &:hover,
+    &:active,
+    &:focus {
+        background-color: @btnDefaultHoverBgc;
+    }
 }
 
 .btn--success {
-	color: @btnSuccess;
-	border-color: @btnSuccessBorder;
-	background-color: @btnSuccessBgc;
-	&:hover,
-	&:active,
-	&:focus {
-		color: @btnSuccess;
-		background-color: @btnSuccessHoverBgc;
-	}
+    color: @btnSuccess;
+    border-color: @btnSuccessBorder;
+    background-color: @btnSuccessBgc;
+    &:hover,
+    &:active,
+    &:focus {
+        color: @btnSuccess;
+        background-color: @btnSuccessHoverBgc;
+    }
 }
 
 .btn--danger {
-	color: @btnDanger;
-	border-color: @btnDangerBorder;
-	background-color: @btnDangerBgc;
-	&:hover,
-	&:active,
-	&:focus {
-		color: @btnDanger;
-		background-color: @btnDangerHoverBgc;
-	}
+    color: @btnDanger;
+    border-color: @btnDangerBorder;
+    background-color: @btnDangerBgc;
+    &:hover,
+    &:active,
+    &:focus {
+        color: @btnDanger;
+        background-color: @btnDangerHoverBgc;
+    }
 }
 
 .btn--full {
-	color: @white;
-	border-color: @blue;
-	background-color: @blue;
-	&:hover,
-	&:active,
-	&:focus {
-		color: @white;
-		background-color: @btnFullHoverBgc;
-	}
+    color: @white;
+    border-color: @blue;
+    background-color: @blue;
+    &:hover,
+    &:active,
+    &:focus {
+        color: @white;
+        background-color: @btnFullHoverBgc;
+    }
 }
 
 .btn--clean {
-	padding: 0;
-	line-height: inherit;
-	color: inherit;
-	border: none;
+    padding: 0;
+    line-height: inherit;
+    color: inherit;
+    border: none;
 }
 
 .btn--link {
-	padding: 0;
-	color: @blue;
-	border: none;
-	&:hover,
-	&:active,
-	&:focus {
-		text-decoration: underline;
-		color: @btnDefault;
-	}
+    padding: 0;
+    color: @blue;
+    border: none;
+    &:hover,
+    &:active,
+    &:focus {
+        text-decoration: underline;
+        color: @btnDefault;
+    }
 }
 
 .btn--hidden {
-	display: none ! important;
+    display: none !important;
 }
 
 .btn--inactive {
-	cursor: not-allowed;
-	opacity: .65;
+    cursor: not-allowed;
+    opacity: 0.65;
 }
 
 .btn--icon {
-	padding: 2px;
-	font-size: inherit; // !important removed - check themes for changes
-	color: @black;
-	border: none;
-	&:hover,
-	&:active,
-	&:focus {
-		color: @black;
-	}
+    padding: 2px;
+    font-size: inherit; // !important removed - check themes for changes
+    color: @black;
+    border: none;
+    &:hover,
+    &:active,
+    &:focus {
+        color: @black;
+    }
 }
 
 a.btn--icon {
-	line-height: normal;
+    line-height: normal;
 }
 
 // BUTTONS MIN-WIDTH
@@ -139,24 +139,27 @@ a.btn--icon {
 .btn--default,
 .btn--danger,
 .btn--success {
-	min-width: 100px;
+    min-width: 100px;
 }
 
-@media screen and (max-width: @largeBreakpoint) {}
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
-	// BUTTONS MIN-WIDTH
-	.btn--full,
-	.btn--default,
-	.btn--danger,
-	.btn--success {
-		min-width: 60px;
-	}
+    // BUTTONS MIN-WIDTH
+    .btn--full,
+    .btn--default,
+    .btn--danger,
+    .btn--success {
+        min-width: 60px;
+    }
 }
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+}

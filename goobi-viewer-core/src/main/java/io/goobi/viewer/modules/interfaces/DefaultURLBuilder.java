@@ -29,6 +29,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.model.ViewAttributes;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
@@ -40,9 +41,7 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
 /**
- * <p>
- * DefaultURLBuilder class.
- * </p>
+ * Default implementation of the URL builder interface, constructing standard viewer page URLs.
  *
  * @author Florian Alpers
  */
@@ -50,9 +49,6 @@ public class DefaultURLBuilder implements IURLBuilder {
 
     private static final Logger logger = LogManager.getLogger(DefaultURLBuilder.class);
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.modules.interfaces.IURLBuilder#generateURL(io.goobi.viewer.model.search.BrowseElement)
-     */
     /**
      * {@inheritDoc}
      * 
@@ -91,6 +87,7 @@ public class DefaultURLBuilder implements IURLBuilder {
         } else {
             // Regular record
             PageType pageType = getPageType(ele);
+            logger.trace("page type: " + pageType);
             if (PageType.viewFulltext.equals(pageType) && ele.isHasTeiFiles()) {
                 // Add language to the URL if record has TEI full-text
                 Language lang = DataManager.getInstance().getLanguageHelper().getLanguage(BeanUtils.getLocale().getLanguage());
@@ -150,8 +147,8 @@ public class DefaultURLBuilder implements IURLBuilder {
                 .append('/');
         if (!topStruct || imageNo > 1) {
             try {
-                if (!DataManager.getInstance().getConfiguration().isSequencePageNavigationEnabled(pageType, null)
-                        && DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault(pageType, null)) {
+                if (!DataManager.getInstance().getConfiguration().isSequencePageNavigationEnabled(new ViewAttributes(pageType))
+                        && DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault(new ViewAttributes(pageType))) {
                     sb.append(imageNo).append("-").append(imageNo).append("/");
                 } else {
                     sb.append(imageNo)
@@ -170,12 +167,10 @@ public class DefaultURLBuilder implements IURLBuilder {
     }
 
     /**
-     * <p>
      * getPageType.
-     * </p>
      *
-     * @param ele a {@link io.goobi.viewer.model.search.BrowseElement} object.
-     * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
+     * @param ele browse element whose page type to determine
+     * @return the PageType appropriate for the given browse element, adjusted for UGC and TEI records
      */
     protected PageType getPageType(BrowseElement ele) {
         PageType pageType = ele.determinePageType();
@@ -189,13 +184,11 @@ public class DefaultURLBuilder implements IURLBuilder {
     }
 
     /**
-     * <p>
      * buildSearchUrl.
-     * </p>
      *
-     * @param fieldName a {@link java.lang.String} object.
-     * @param fieldValue a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param fieldName Solr field name to search in
+     * @param fieldValue field value to search for
+     * @return the viewer search URL for the given Solr field and value
      */
     protected String buildSearchUrl(String fieldName, String fieldValue) {
         StringBuilder sb = new StringBuilder();

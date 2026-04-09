@@ -79,10 +79,8 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
- * <p>
  * Template to create a {@link CMSPage}. Contains some general information about the template as well as a list of {@link CMSComponent components} and
  * {@link CMSSidebarElement sidebar widgets} to be included in the page
- * </p>
  */
 @Entity
 @Table(name = "cms_page_templates")
@@ -105,7 +103,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     private LocalDateTime dateUpdated;
 
     /**
-     * Set to true to disallow users to change {@link CMSComponent}s contained in a page created from this template. The content of those components
+     * Sets to true to disallow users to change {@link CMSComponent}s contained in a page created from this template. The content of those components
      * may still be edited
      */
     @Column(name = "lock_components")
@@ -118,8 +116,8 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     @Column(name = "use_default_sidebar", nullable = false)
     private boolean useDefaultSidebar = false;
 
-    @Column(name = "subtheme_discriminator", nullable = true)
-    private String subThemeDiscriminatorValue = "";
+    @Column(name = "subtheme", nullable = true)
+    private String subTheme = "";
 
     @OneToMany(mappedBy = "ownerTemplate", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @OrderBy("order")
@@ -148,7 +146,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     private boolean legacyTemplate = false;
 
     /**
-     * A html class name to be applied to the DOM element containing the page html
+     * A html class name to be applied to the DOM element containing the page html.
      */
     @Column(name = "wrapper_element_class")
     private String wrapperElementClass = "";
@@ -165,19 +163,20 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     @Transient
     private List<CMSComponent> cmsComponents = new ArrayList<>();
 
+    @Transient
+    private boolean cmsComponentsInitialized = false;
+
     /**
-     * <p>
-     * Constructor for CMSPage.
-     * </p>
+     * Creates a new CMSPage instance.
      */
     public CMSPageTemplate() {
         this.dateCreated = LocalDateTime.now();
     }
 
     /**
-     * creates a deep copy of the original CMSPage. Only copies persisted properties and performs initialization for them
+     * Creates a deep copy of the original CMSPage. Only copies persisted properties and performs initialization for them
      *
-     * @param original a {@link io.goobi.viewer.model.cms.pages.CMSPageTemplate} object.
+     * @param original template to copy all persistent properties from.
      */
     public CMSPageTemplate(CMSPageTemplate original) {
         if (original.id != null) {
@@ -189,7 +188,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
         this.dateUpdated = original.dateUpdated;
         this.publicationStatus = original.publicationStatus;
         this.useDefaultSidebar = original.useDefaultSidebar;
-        this.subThemeDiscriminatorValue = original.subThemeDiscriminatorValue;
+        this.subTheme = original.subTheme;
         this.categories = new ArrayList<>(original.categories);
         this.wrapperElementClass = original.wrapperElementClass;
         this.lockComponents = original.lockComponents;
@@ -215,7 +214,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
         this.dateCreated = LocalDateTime.now();
         this.dateUpdated = LocalDateTime.now();
         this.useDefaultSidebar = original.isUseDefaultSidebar();
-        this.subThemeDiscriminatorValue = original.getSubThemeDiscriminatorValue();
+        this.subTheme = original.getSubTheme();
         this.categories = new ArrayList<>(original.getCategories());
         this.wrapperElementClass = original.getWrapperElementClass();
 
@@ -243,8 +242,11 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
                     .orElse(null);
             if (comp != null) {
                 this.cmsComponents.add(comp);
+            } else {
+                logger.warn("No component template found for '{}' on CMS template {}", persistentComponent.getTemplateFilename(), this.id);
             }
         }
+        this.cmsComponentsInitialized = true;
         sortComponents();
     }
 
@@ -255,9 +257,6 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
         }
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -266,9 +265,6 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -290,9 +286,6 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public int compareTo(CMSPageTemplate o) {
@@ -307,11 +300,9 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * addSidebarElement.
-     * </p>
      *
-     * @param element a {@link io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement} object.
+     * @param element sidebar widget element to append to the list.
      */
     public void addSidebarElement(CMSSidebarElement element) {
         if (element != null) {
@@ -320,44 +311,36 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
-     * @return the id
+     * @return the database primary key of this page template
      */
     public Long getId() {
         return id;
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
-     * @param id the id to set
+     * @param id the database primary key to set
      */
     public void setId(Long id) {
         this.id = id;
     }
 
     /**
-     * <p>
      * Getter for the field <code>dateCreated</code>.
-     * </p>
      *
-     * @return the dateCreated
+     * @return the date and time when this page template was created
      */
     public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
     /**
-     * <p>
      * Setter for the field <code>dateCreated</code>.
-     * </p>
      *
-     * @param dateCreated the dateCreated to set
+     * @param dateCreated the date and time when this page template was created
      */
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
@@ -368,77 +351,63 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * Setter for the field <code>dateUpdated</code>.
-     * </p>
      *
-     * @param dateUpdated the dateUpdated to set
+     * @param dateUpdated the date and time when this page template was last updated
      */
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
 
     /**
-     * <p>
      * isPublished.
-     * </p>
      *
-     * @return the published
+     * @return true if the publication status is PUBLISHED, false otherwise
      */
     public boolean isPublished() {
         return PublicationStatus.PUBLISHED.equals(this.publicationStatus);
     }
 
     /**
-     * <p>
      * Setter for the field <code>published</code>.
-     * </p>
      *
-     * @param published the published to set
+     * @param published true sets the publication status to PUBLISHED, false sets it to PRIVATE
      */
     public void setPublished(boolean published) {
         this.publicationStatus = published ? PublicationStatus.PUBLISHED : PublicationStatus.PRIVATE;
     }
 
     /**
-     * <p>
      * isUseDefaultSidebar.
-     * </p>
      *
-     * @return the useDefaultSidebar
+     * @return true if this template uses the default sidebar instead of a custom one, false otherwise
      */
     public boolean isUseDefaultSidebar() {
         return useDefaultSidebar;
     }
 
     /**
-     * <p>
      * Setter for the field <code>useDefaultSidebar</code>.
-     * </p>
      *
-     * @param useDefaultSidebar the useDefaultSidebar to set
+     * @param useDefaultSidebar true if this template should use the default sidebar instead of a custom one
      */
     public void setUseDefaultSidebar(boolean useDefaultSidebar) {
         this.useDefaultSidebar = useDefaultSidebar;
     }
 
     /**
-     * <p>
      * Getter for the field <code>sidebarElements</code>.
-     * </p>
      *
-     * @return the sidebarElements
+     * @return the list of sidebar elements configured for this template
      */
     public List<CMSSidebarElement> getSidebarElements() {
         return sidebarElements;
     }
 
     /**
-     * <p>
      * Setter for the field <code>sidebarElements</code>.
-     * </p>
      *
-     * @param sidebarElements the sidebarElements to set
+     * @param sidebarElements the list of sidebar widget elements to assign to this template
      */
     public void setSidebarElements(List<CMSSidebarElement> sidebarElements) {
         this.sidebarElements = sidebarElements;
@@ -518,33 +487,27 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * Getter for the field <code>categories</code>.
-     * </p>
      *
-     * @return the classifications
+     * @return the list of categories assigned to this template
      */
     public List<CMSCategory> getCategories() {
         return categories;
     }
 
     /**
-     * <p>
      * Setter for the field <code>categories</code>.
-     * </p>
      *
-     * @param categories a {@link java.util.List} object.
+     * @param categories list of categories to assign to this template.
      */
     public void setCategories(List<CMSCategory> categories) {
         this.categories = categories;
     }
 
     /**
-     * <p>
      * addCategory.
-     * </p>
      *
-     * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
+     * @param category category to add if not already present.
      */
     public void addCategory(CMSCategory category) {
         if (category != null && !categories.contains(category)) {
@@ -553,33 +516,27 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * removeCategory.
-     * </p>
      *
-     * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
+     * @param category category to remove from this template.
      */
     public void removeCategory(CMSCategory category) {
         categories.remove(category);
     }
 
     /**
-     * <p>
      * Getter for the field <code>sidebarElementString</code>.
-     * </p>
      *
-     * @return the sidebarElementString
+     * @return the serialized string representation of the sidebar elements
      */
     public String getSidebarElementString() {
         return sidebarElementString;
     }
 
     /**
-     * <p>
      * Setter for the field <code>sidebarElementString</code>.
-     * </p>
      *
-     * @param sidebarElementString the sidebarElementString to set
+     * @param sidebarElementString the serialized string representation of sidebar elements
      */
     public void setSidebarElementString(String sidebarElementString) {
         logger.trace("setSidebarElementString: {}", sidebarElementString);
@@ -587,12 +544,10 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * isLanguageComplete.
-     * </p>
      *
-     * @param locale a {@link java.util.Locale} object.
-     * @return a boolean.
+     * @param locale locale to check translation completeness for.
+     * @return true if the title and all persistent components are complete for the given locale, false otherwise
      */
     public boolean isLanguageComplete(Locale locale) {
         if (!this.title.isComplete(locale)) {
@@ -609,23 +564,19 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * getTitle.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the CMS page template title in the default language
      */
     public String getTitle() {
         return this.title.getTextOrDefault();
     }
 
     /**
-     * <p>
      * getTitle.
-     * </p>
      *
-     * @param locale a {@link java.util.Locale} object.
-     * @return a {@link java.lang.String} object.
+     * @param locale locale to retrieve the title translation for.
+     * @return the CMS page template title in the given locale
      */
     public String getTitle(Locale locale) {
         return this.title.getText(locale);
@@ -644,33 +595,27 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
-     * Getter for the field <code>subThemeDiscriminatorValue</code>.
-     * </p>
+     * Getter for the field <code>subTheme</code>.
      *
-     * @return the subThemeDiscriminatorValue
+     * @return the sub-theme name associated with this template, or an empty string if none is set
      */
-    public String getSubThemeDiscriminatorValue() {
-        return subThemeDiscriminatorValue;
+    public String getSubTheme() {
+        return subTheme;
     }
 
     /**
-     * <p>
-     * Setter for the field <code>subThemeDiscriminatorValue</code>.
-     * </p>
+     * Setter for the field <code>subTheme</code>.
      *
-     * @param subThemeDiscriminatorValue the subThemeDiscriminatorValue to set
+     * @param subTheme the sub-theme name to associate with this template; null is treated as empty string
      */
-    public void setSubThemeDiscriminatorValue(String subThemeDiscriminatorValue) {
-        this.subThemeDiscriminatorValue = subThemeDiscriminatorValue == null ? "" : subThemeDiscriminatorValue;
+    public void setSubTheme(String subTheme) {
+        this.subTheme = subTheme == null ? "" : subTheme;
     }
 
     /**
-     * <p>
      * isHasSidebarElements.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this template uses the default sidebar or has at least one custom sidebar element, false otherwise
      */
     public boolean isHasSidebarElements() {
         if (!isUseDefaultSidebar()) {
@@ -679,11 +624,6 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
         return true;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#toString()
-     */
     /** {@inheritDoc} */
     @Override
     public String toString() {
@@ -696,9 +636,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * Getter for the field <code>wrapperElementClass</code>.
-     * </p>
      *
      * @return the {@link #wrapperElementClass}
      */
@@ -707,9 +645,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * Setter for the field <code>wrapperElementClass</code>.
-     * </p>
      *
      * @param wrapperElementClass the {@link #wrapperElementClass} to set
      */
@@ -718,7 +654,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * Retrieve all categories fresh from the DAO and write them to this depending on the state of the selectableCategories list. Saving the
+     * Retrieves all categories fresh from the DAO and write them to this depending on the state of the selectableCategories list. Saving the
      * categories from selectableCategories directly leads to ConcurrentModificationexception when persisting page
      */
     public void writeSelectableCategories() {
@@ -742,11 +678,9 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * Getter for the field <code>selectableCategories</code>.
-     * </p>
      *
-     * @return the selectableCategories
+     * @return the list of all allowed categories wrapped as selectable items, with selection state reflecting current template categories
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<Selectable<CMSCategory>> getSelectableCategories() throws DAOException {
@@ -772,7 +706,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     public List<CMSComponent> getComponents() {
-        if (this.cmsComponents.size() != this.persistentComponents.size()) {
+        if (!this.cmsComponentsInitialized && !this.persistentComponents.isEmpty()) {
             logger.error("CMSComponents not initialized. Call initialiseCMSComponents to do so");
         }
         return this.cmsComponents;
@@ -852,11 +786,11 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * Set the order attribute of the {@link PersistentCMSComponent} belonging to the given {@link CMSComponent} to the given order value. Also, sets
+     * Sets the order attribute of the {@link PersistentCMSComponent} belonging to the given {@link CMSComponent} to the given order value. Also, sets
      * the order value of all Components which previously had the given order to the order value of the given component
      * 
-     * @param component
-     * @param order
+     * @param component the CMS component whose order to set
+     * @param order the new order value to assign
      */
     public void setComponentOrder(CMSComponent component, int order) {
         PersistentCMSComponent persistentComponent = component.getPersistentComponent();

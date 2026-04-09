@@ -24,9 +24,9 @@ package io.goobi.viewer.model.cms;
 import java.util.Locale;
 
 /**
- * A {@link io.goobi.viewer.model.cms.Selectable} which may also hold a locale to indicate the currently visible language/translation
+ * A {@link io.goobi.viewer.model.cms.Selectable} which may also hold a locale to indicate the currently visible language/translation.
  *
- * @author florian
+ * @author Florian Alpers
  * @param <T>
  */
 public class TranslatedSelectable<T> extends Selectable<T> {
@@ -36,13 +36,11 @@ public class TranslatedSelectable<T> extends Selectable<T> {
     private Locale locale;
 
     /**
-     * <p>
-     * Constructor for TranslatedSelectable.
-     * </p>
+     * Creates a new TranslatedSelectable instance.
      *
-     * @param value a T object.
-     * @param selected a boolean.
-     * @param defaultLocale a {@link java.util.Locale} object.
+     * @param value wrapped value of type T.
+     * @param selected true if this item is pre-selected.
+     * @param defaultLocale initial locale for translation display.
      */
     public TranslatedSelectable(T value, boolean selected, Locale defaultLocale) {
         super(value, selected);
@@ -51,44 +49,36 @@ public class TranslatedSelectable<T> extends Selectable<T> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>locale</code>.
-     * </p>
      *
-     * @return the locale
+     * @return the locale used to determine the display language for this selectable item
      */
     public Locale getLocale() {
         return locale;
     }
 
     /**
-     * <p>
      * Setter for the field <code>locale</code>.
-     * </p>
      *
-     * @param locale the locale to set
+     * @param locale the locale used to determine the display language for this selectable item
      */
     public void setLocale(Locale locale) {
         this.locale = locale;
     }
 
     /**
-     * <p>
      * getLanguage.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return BCP 47 language tag of the current locale.
      */
     public String getLanguage() {
         return locale.getLanguage();
     }
 
     /**
-     * <p>
      * setLanguage.
-     * </p>
      *
-     * @param language a {@link java.lang.String} object.
+     * @param language BCP 47 language tag to set as locale.
      */
     public void setLanguage(String language) {
         this.locale = Locale.forLanguageTag(language);

@@ -42,7 +42,9 @@ import jakarta.ws.rs.core.MediaType;
 import org.apache.commons.lang3.StringUtils;
 
 import de.intranda.api.iiif.presentation.v2.Collection2;
+import jakarta.ws.rs.BadRequestException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.resourcebuilders.ContentAssistResourceBuilder;
@@ -55,11 +57,13 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
- * @author florian
+ * REST resource for browsing collection hierarchies and retrieving collection metadata.
  *
+ * @author Florian Alpers
  */
 @jakarta.ws.rs.Path(COLLECTIONS)
 @ViewerRestServiceBinding
@@ -72,8 +76,14 @@ public class CollectionsResource {
     private ApiUrls urls;
 
     public CollectionsResource(
-            @Parameter(description = "Name of the SOLR field the collection is based on. Typically 'DC'") @PathParam("field") String solrField,
+            @Parameter(description = "Name of the Solr field the collection is based on. Typically 'DC'",
+                    schema = @Schema(pattern = "^[A-Za-z_][A-Za-z0-9_]*$")) @PathParam("field") String solrField,
             @Context HttpServletRequest request) {
+        // Validate field name against the documented pattern [A-Za-z_][A-Za-z0-9_]* to prevent
+        // invalid Solr field names (e.g. "-") from reaching the index and causing 500 errors.
+        if (!solrField.matches("[A-Za-z_][A-Za-z0-9_]*")) {
+            throw new BadRequestException("Invalid collection field: " + solrField);
+        }
         this.solrField = solrField.toUpperCase();
         this.request = request;
     }
@@ -81,9 +91,13 @@ public class CollectionsResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "iiif" }, summary = "Get all collections as IIIF Presentation 2.1.1 collection")
-    @ApiResponse(responseCode = "400", description = "No collections available for field")
+    @ApiResponse(responseCode = "200", description = "IIIF Presentation 2.1.1 collection containing all collections for this field")
+    @ApiResponse(responseCode = "400", description = "Invalid or missing collection field parameter")
+    @ApiResponse(responseCode = "404", description = "No collections available for field")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
     public Collection2 getAllCollections(
-            @Parameter(description = "Add values of this field to response to allow grouping of results") @QueryParam("grouping") String grouping,
+            @Parameter(description = "Add values of this field to response to allow grouping of results",
+                    schema = @Schema(pattern = "^[A-Za-z_][A-Za-z0-9_]*$")) @QueryParam("grouping") String grouping,
             @Parameter(description = "comma separated list of collections to ignore in response") @QueryParam("ignore") String ignoreString)
             throws PresentationException, IndexUnreachableException, ContentLibException, URISyntaxException, ViewerConfigurationException {
         IIIFPresentation2ResourceBuilder builder = new IIIFPresentation2ResourceBuilder(urls, request);
@@ -95,8 +109,8 @@ public class CollectionsResource {
             collection = builder.getCollectionsWithGrouping(solrField, ignore, grouping);
         }
         if (collection.getMembers() == null || collection.getMembers().isEmpty()) {
-            //can't be a collection
-            throw new IllegalRequestException("No collections found for field " + solrField);
+            // No collections exist for this field - return 404 rather than 400
+            throw new ContentNotFoundException("No collections found for field " + solrField);
         }
         return collection;
     }
@@ -105,17 +119,29 @@ public class CollectionsResource {
     @jakarta.ws.rs.Path(COLLECTIONS_COLLECTION)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "iiif" }, summary = "Get given collection as a IIIF Presentation 2.1.1 collection")
-    @ApiResponse(responseCode = "400", description = "Invalid collection name or field")
+    @ApiResponse(responseCode = "200", description = "IIIF Presentation 2.1.1 collection for the given collection name")
+    @ApiResponse(responseCode = "400", description = "Invalid or missing collection field or name parameter")
+    @ApiResponse(responseCode = "404", description = "Collection not found for given field and name")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
     public Collection2 getCollection(
-            @Parameter(description = "Name of the collection. Must be a value of the SOLR field the collection is based on") 
+            @Parameter(description = "Name of the collection. Must be a value of the Solr field the collection is based on") 
             @PathParam("collection") final String inCollectionName,
-            @Parameter(description = "Add values of this field to response to allow grouping of results") 
+            @Parameter(description = "Add values of this field to response to allow grouping of results",
+                    schema = @Schema(pattern = "^[A-Za-z_][A-Za-z0-9_]*$"))
             @QueryParam("grouping") String grouping,
-            @Parameter(description = "comma separated list of subcollections to ignore in response") 
+            @Parameter(description = "comma separated list of subcollections to ignore in response")
             @QueryParam("ignore") String ignoreString)
             throws PresentationException, IndexUnreachableException, ContentLibException, URISyntaxException, ViewerConfigurationException {
         IIIFPresentation2ResourceBuilder builder = new IIIFPresentation2ResourceBuilder(urls, request);
-        String collectionName = StringTools.decodeUrl(inCollectionName);
+        // StringTools.decodeUrl uses URLDecoder which throws IllegalArgumentException for malformed
+        // percent-encoded sequences (e.g. '%ó' — a bare '%' not followed by two hex digits).
+        // Catch this and return 400 instead of letting the unchecked exception produce HTTP 500.
+        String collectionName;
+        try {
+            collectionName = StringTools.decodeUrl(inCollectionName);
+        } catch (IllegalArgumentException e) {
+            throw new jakarta.ws.rs.BadRequestException("Invalid collection name: " + inCollectionName);
+        }
         Collection2 collection;
         List<String> ignore = StringUtils.isNotBlank(ignoreString) ? Arrays.asList(ignoreString.split(",")) : Collections.emptyList();
         if (StringUtils.isBlank(grouping)) {
@@ -124,8 +150,8 @@ public class CollectionsResource {
             collection = builder.getCollectionWithGrouping(solrField, collectionName, grouping, ignore);
         }
         if (collection.getMembers() == null || collection.getMembers().isEmpty()) {
-            //can't be a collection
-            throw new IllegalRequestException("No valid collection: " + solrField + ":" + collectionName);
+            // Collection does not exist - return 404 rather than 400
+            throw new ContentNotFoundException("No valid collection: " + solrField + ":" + collectionName);
         }
         return collection;
     }
@@ -133,11 +159,14 @@ public class CollectionsResource {
     @GET
     @jakarta.ws.rs.Path(COLLECTIONS_CONTENTASSIST)
     @Produces({ MediaType.APPLICATION_JSON })
-    @ApiResponse(responseCode = "400", description = "No collections available for field")
-    //    @Operation(tags = { "collections"}, summary = "Return a list of collections starting with the given input")
+    @Operation(tags = { "iiif" }, summary = "Return a list of collection names starting with the given input for content assist")
+    @ApiResponse(responseCode = "200", description = "List of matching collection names")
+    @ApiResponse(responseCode = "400", description = "Invalid collection field name")
+    @ApiResponse(responseCode = "404", description = "Solr field not found in index")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
     public List<String> contentAssist(
             @Parameter(description = "User input for which content assist is requested") @QueryParam("query") String input)
-            throws IndexUnreachableException, IllegalRequestException {
+            throws IndexUnreachableException, IllegalRequestException, ContentNotFoundException {
         ContentAssistResourceBuilder builder = new ContentAssistResourceBuilder();
         return builder.getCollections(solrField, input);
     }

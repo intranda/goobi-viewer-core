@@ -27,9 +27,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 /**
- * <p>
- * CMSMediaItemMetadata class.
- * </p>
+ * Stores locale-specific metadata (title, description, link) for a {@link io.goobi.viewer.model.cms.media.CMSMediaItem}.
  */
 @Embeddable
 public class CMSMediaItemMetadata implements Serializable {
@@ -49,14 +47,14 @@ public class CMSMediaItemMetadata implements Serializable {
     private String alternativeText = "";
 
     /**
-     * default constructor
+     * Default constructor.
      */
     public CMSMediaItemMetadata() {
 
     }
 
     /**
-     * copy constructor
+     * Copy constructor.
      *
      * @param orig a {@link io.goobi.viewer.model.cms.media.CMSMediaItemMetadata} object.
      */
@@ -100,81 +98,65 @@ public class CMSMediaItemMetadata implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>language</code>.
-     * </p>
      *
-     * @return the language
+     * @return the BCP 47 language code for this metadata entry
      */
     public String getLanguage() {
         return language;
     }
 
     /**
-     * <p>
      * Setter for the field <code>language</code>.
-     * </p>
      *
-     * @param language the language to set
+     * @param language the BCP 47 language code for this metadata entry
      */
     public void setLanguage(String language) {
         this.language = language;
     }
 
     /**
-     * <p>
      * Getter for the field <code>name</code>.
-     * </p>
      *
-     * @return the name
+     * @return the localized name of the media item
      */
     public String getName() {
         return name;
     }
 
     /**
-     * <p>
      * Setter for the field <code>name</code>.
-     * </p>
      *
-     * @param name the name to set
+     * @param name the localized name of the media item
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * <p>
      * Getter for the field <code>description</code>.
-     * </p>
      *
-     * @return the description
+     * @return the localized description text for the media item
      */
     public String getDescription() {
         return description;
     }
 
     /**
-     * <p>
      * Setter for the field <code>description</code>.
-     * </p>
      *
-     * @param description the description to set
+     * @param description the localized description text for the media item
      */
     public void setDescription(String description) {
         this.description = description;
     }
 
-    /**
-     * @return the alternativeText
-     */
+    
     public String getAlternativeText() {
         return alternativeText;
     }
 
-    /**
-     * @param alternativeText the alternativeText to set
-     */
+    
     public void setAlternativeText(String alternativeText) {
         this.alternativeText = alternativeText;
     }

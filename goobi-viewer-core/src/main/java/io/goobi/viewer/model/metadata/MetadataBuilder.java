@@ -52,6 +52,10 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.viewer.StructElement;
 
+/**
+ * Builds localised metadata values from Solr documents and struct elements by applying
+ * configured {@link io.goobi.viewer.model.metadata.MetadataParameter} definitions.
+ */
 public class MetadataBuilder {
 
     private static final String IDENTIFIER_WHITESPACE_REPLACEMENT = "_";
@@ -75,8 +79,8 @@ public class MetadataBuilder {
     }
 
     /**
-     * 
-     * @param doc
+     *
+     * @param doc Solr document to extract metadata from
      */
     public MetadataBuilder(SolrDocument doc) {
         this(MetadataContainer.createMetadataEntity(doc));
@@ -87,16 +91,16 @@ public class MetadataBuilder {
     }
 
     /**
-     * 
-     * @param metadata
+     *
+     * @param metadata complex metadata object to extract values from
      */
     public MetadataBuilder(ComplexMetadata metadata) {
         this(metadata.getMetadata());
     }
 
     /**
-     * 
-     * @param values
+     *
+     * @param values map of field names to their metadata values
      */
     public MetadataBuilder(Map<String, List<IMetadataValue>> values) {
         this.values.put("", values);
@@ -147,9 +151,8 @@ public class MetadataBuilder {
     }
 
     /**
-     * 
-     * @param config
-     * @param metadata
+     *
+     * @param config metadata configuration defining parameters and master value template
      * @return {@link IMetadataValue}
      */
     private IMetadataValue createFromConfig(Metadata config) {
@@ -203,10 +206,10 @@ public class MetadataBuilder {
     }
 
     /**
-     * 
-     * @param param
-     * @param keyValue
-     * @param altKeyValue
+     *
+     * @param param metadata parameter configuration including output pattern and default value
+     * @param keyValue value retrieved from the primary field key
+     * @param altKeyValue value retrieved from the alternative field key
      * @return {@link IMetadataValue}
      */
     public static IMetadataValue getDateFieldValue(MetadataParameter param, IMetadataValue keyValue, IMetadataValue altKeyValue) {

@@ -9,154 +9,158 @@
     /* ELEMENT */
     /* HITS */
     &__hits {
-		&.grid {
-			.search-list {
-				&__hit-result-group-heading {
-					margin: 5px 0px;
-				}
-				&__hit-inner-structure {
-				    display: flex;
-				    flex-direction: column-reverse;
-				    gap: 0;
-				}
-				&__hit-info-wrapper {
-					padding: 1rem;
-				}
-			}
-			.search-list__hits-list {
-				display: grid;
-			    grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
-			    grid-gap: 10px;
-			   // grid-auto-rows: minmax(300px, auto);
-			   // grid-auto-flow: dense;
-			 	h2:nth-child(n + 2 of .search-list__hit-result-group-heading) {
-					margin-top: 15px;
-				}
-			}
-			.search-list__hit {
-				margin: 0;
-				padding: 0;
-				.row,
-				[class*="col-"] {
-					float: none;
-					width: auto;
-					margin: 0;
-					padding: 0;
-					max-width: 100%;
-				}
-			}
-			.search-list__hit-header {
-				.row {
-				    display: flex;
-				    flex-direction: column;
-				}
-				.col-12.col-sm-10 {
-					order: 2;
-				}
-				.col-12.col-sm-2 {
-					order: 1;
-				}
-			}
-			.search-list__hit-archive-link {
-				display: none;
-			}
-			.search-list__thumb-bookmark-wrapper {
-				right: 10px;
-  				top: 5px;
-			}
-			.search-list__hit-thumbnail {
-				min-height: 175px;
-				background-repeat: no-repeat;
-				background-position: center top;
-				background-size: cover;
-				flex: 0 0 100%;
-				a {
-					display: block;
-					height: 175px;
-				}
-				
-			}
-			.search-list__hit-title {
-				[data-bookmark-list-type="add"] {
-					top: 0;
-					right: 5px;
-					padding: 5px;
-				}
-				&.-extraMetadataForGrid {
-					margin-bottom: 0;
-					h3 a {
-						min-height: 70px;
-						text-align: left;
-						-webkit-line-clamp: 3;
-					}
-				}
-			}
-			.search-list__hit-title h3 a {
-				text-align: center;
-				text-overflow: ellipsis;
-				display: -webkit-box;
-				-webkit-line-clamp: 7;
-				-webkit-box-orient: vertical;
-				overflow: hidden;
-				line-height: 1.45;
-			}
-			.search-list__hit-thumbnail img,
-			.search-list__hit-metadata-first,
-			.search-list__hit-docstruct,
-			.search-list__hit-content {
-				.mx-hidden;
-			}
-			// RESULT GROUP STYLES
-			.search-list__hit-result-group-heading,
-			.search-list__expand-group-link {
-				grid-column: 1 / -1;
-			}
+        &.grid {
+            .search-list {
+                &__hit-result-group-heading {
+                    margin: 5px 0px;
+                }
+                &__hit-inner-structure {
+                    display: flex;
+                    flex-direction: column-reverse;
+                    gap: 0;
+                }
+                &__hit-info-wrapper {
+                    padding: 1rem;
+                }
+            }
+            .search-list__hits-list {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
+                grid-gap: 10px;
+                // grid-auto-rows: minmax(300px, auto);
+                // grid-auto-flow: dense;
+                h2:nth-child(n + 2 of .search-list__hit-result-group-heading) {
+                    margin-top: 15px;
+                }
+            }
+            .search-list__hit {
+                margin: 0;
+                padding: 0;
+                .row,
+                [class*='col-'] {
+                    float: none;
+                    width: auto;
+                    margin: 0;
+                    padding: 0;
+                    max-width: 100%;
+                }
+            }
+            .search-list__hit-header {
+                .row {
+                    display: flex;
+                    flex-direction: column;
+                }
+                .col-12.col-sm-10 {
+                    order: 2;
+                }
+                .col-12.col-sm-2 {
+                    order: 1;
+                }
+            }
+            .search-list__hit-archive-link {
+                display: none;
+            }
+            .search-list__thumb-bookmark-wrapper {
+                right: 10px;
+                top: 5px;
+            }
+            .search-list__hit-thumbnail {
+                min-height: 175px;
+                background-repeat: no-repeat;
+                background-position: center top;
+                background-size: cover;
+                flex: 0 0 100%;
+                a {
+                    display: block;
+                    height: 175px;
+                }
+            }
+            .search-list__hit-title {
+                [data-bookmark-list-type='add'] {
+                    top: 0;
+                    right: 5px;
+                    padding: 5px;
+                }
+                &.-extraMetadataForGrid {
+                    margin-bottom: 0;
+                    h3 a {
+                        min-height: 70px;
+                        text-align: left;
+                        -webkit-line-clamp: 3;
+                    }
+                }
+            }
+            .search-list__hit-title h3 a {
+                text-align: center;
+                text-overflow: ellipsis;
+                display: -webkit-box;
+                -webkit-line-clamp: 7;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                line-height: 1.45;
+            }
+            .search-list__hit-thumbnail img,
+            .search-list__hit-metadata-first,
+            .search-list__hit-docstruct,
+            .search-list__hit-content {
+                .mx-hidden;
+            }
+            // RESULT GROUP STYLES
+            .search-list__hit-result-group-heading,
+            .search-list__expand-group-link {
+                grid-column: 1 / -1;
+            }
 
-			// EXTRA METADATA LIST FOR GRID STYLING
-			.search-list__hit-info-wrapper.-extraMetadataForGrid {
-				display: block !important;
-				visibility: visible !important;
-				.search-list__hit-metadata-first, .search-list__hit-docstruct {
-					display: none !important;
-				}
-				.search-list__hit-metadata-second {
-					display: block !important;
-					.search-list__hit-text-label {
-						display: none;
-					}
-					.search-list__hit-text {
-//						font-size: 13px;
-//						display: flex;
-//						flex-direction: column;
-						.search-list__hit-text-value {
-							max-width: 100%;
-							width: 100%;
-						}
-					}
-				}
-			}
-			a[data-toggle="hit-content"],
-			button[data-toggle="hit-content"] {
-		//		display: none;
-			}
-		}
-	}
+            // EXTRA METADATA LIST FOR GRID STYLING
+            .search-list__hit-info-wrapper.-extraMetadataForGrid {
+                display: block !important;
+                visibility: visible !important;
+                .search-list__hit-metadata-first,
+                .search-list__hit-docstruct {
+                    display: none !important;
+                }
+                .search-list__hit-metadata-second {
+                    display: block !important;
+                    .search-list__hit-text-label {
+                        display: none;
+                    }
+                    .search-list__hit-text {
+                        //						font-size: 13px;
+                        //						display: flex;
+                        //						flex-direction: column;
+                        .search-list__hit-text-value {
+                            max-width: 100%;
+                            width: 100%;
+                        }
+                    }
+                }
+            }
+            a[data-toggle='hit-content'],
+            button[data-toggle='hit-content'] {
+                //		display: none;
+            }
+        }
+    }
 }
 @{RTL} {
-	.search-list__thumb-bookmark-wrapper {
-		right: unset;
-		left: 20px;
-	}
+    .search-list__thumb-bookmark-wrapper {
+        right: unset;
+        left: 20px;
+    }
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+}

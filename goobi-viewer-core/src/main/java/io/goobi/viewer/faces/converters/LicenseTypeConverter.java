@@ -31,9 +31,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.security.LicenseType;
 
 /**
- * <p>
- * LicenseTypeConverter class.
- * </p>
+ * JSF converter that maps between a license type object and its string identifier.
  */
 @FacesConverter("licenseTypeConverter")
 public class LicenseTypeConverter implements Converter<Object> {

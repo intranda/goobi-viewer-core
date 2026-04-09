@@ -44,9 +44,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
- * <p>
- * MetadataElement class.
- * </p>
+ * Represents a group of metadata fields belonging to a single structural element of a digitized record.
  */
 public class MetadataElement implements Serializable {
 
@@ -71,11 +69,6 @@ public class MetadataElement implements Serializable {
             this.type = type;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.lang.Object#hashCode()
-         */
         @Override
         public int hashCode() {
             final int prime = 31;
@@ -85,11 +78,6 @@ public class MetadataElement implements Serializable {
             return result;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.lang.Object#equals(java.lang.Object)
-         */
         @Override
         public boolean equals(Object obj) {
             if (this == obj) {
@@ -110,11 +98,6 @@ public class MetadataElement implements Serializable {
             return type == other.type;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.lang.Comparable#compareTo(java.lang.Object)
-         */
         @Override
         public int compareTo(MetadataType o) {
             if (o.getType() > type) {
@@ -146,16 +129,12 @@ public class MetadataElement implements Serializable {
             //
         }
 
-        /**
-         * @return the type
-         */
+        
         public int getType() {
             return type;
         }
 
-        /**
-         * @param type the type to set
-         */
+        
         public void setType(int type) {
             this.type = type;
         }
@@ -174,21 +153,29 @@ public class MetadataElement implements Serializable {
     private String groupType = null;
     private String mimeType = null;
     private String url = null;
+    private String pi = null;
     private List<Metadata> metadataList = new ArrayList<>();
     private List<Metadata> sidebarMetadataList = null;
     private List<MetadataType> metadataTypes;
     /** True if this ISWORK=true or ISANCHOR=true. */
     private boolean topElement;
     private boolean anchor;
-    private boolean filesOnly;
+    private boolean filesOnly = false;
+    private boolean hasImages = true;
     /** Selected language version of the current record. This can be different from the current viewer locale. */
     private String selectedRecordLanguage;
+    /**
+     * The index of the element in the {@link #metadataList} before which the "fold" element occurs in the configuration. If no such element exists,
+     * the index is {@link Integer#MAX_VALUE}. Otherwise, only metadata before the index should be displayed initially, and metadata starting with
+     * this index should be shown only when the user expands the list
+     */
+    private int metadataFoldIndex = Integer.MAX_VALUE;
 
     /**
      *
      * @param se StructElement
      * @param metadataViewIndex Metadata view index
-     * @param sessionLocale
+     * @param sessionLocale locale for translations/formatting
      * @return Constructed {@link MetadataElement}
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -209,27 +196,34 @@ public class MetadataElement implements Serializable {
         docType = ViewerResourceBundle.getTranslation(se.getDocStructType(), null);
         docStructType = se.getDocStructType();
         topElement = se.isAnchor() || se.isWork();
-        se.getPi(); // TODO why?
+        pi = se.getPi();
         anchor = se.isAnchor();
         filesOnly = "application".equalsIgnoreCase(getMimeType(se));
+        hasImages = se.isHasImages();
 
-        PageType pageType = PageType.determinePageType(docStructType, getMimeType(se), se.isAnchor(), true, false);
+        PageType pageType = PageType.determinePageType(docStructType, getMimeType(se), se.isAnchor(), hasImages, false);
         url = se.getUrl(pageType);
-
-        for (Metadata metadata : DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(metadataViewIndex, se.getDocStructType())) {
-            try {
-                if (!metadata.populate(se, String.valueOf(se.getLuceneId()), metadata.getSortFields(), sessionLocale)) {
-                    continue;
-                }
-                if (metadata.hasParam(SolrConstants.URN) || metadata.hasParam(SolrConstants.IMAGEURN_OAI)) {
-                    if (se.isWork() || se.isAnchor()) {
+        List<MetadataListElement> metadataItems = DataManager.getInstance()
+                .getConfiguration()
+                .getMainMetadataListItemsForTemplate(metadataViewIndex, se.getDocStructType());
+        for (MetadataListElement item : metadataItems) {
+            if (item instanceof Metadata metadata) {
+                try {
+                    if (!metadata.populate(se, String.valueOf(se.getLuceneId()), metadata.getSortFields(), sessionLocale)) {
+                        continue;
+                    }
+                    if (metadata.hasParam(SolrConstants.URN) || metadata.hasParam(SolrConstants.IMAGEURN_OAI)) {
+                        if (se.isWork() || se.isAnchor()) {
+                            metadataList.add(metadata);
+                        }
+                    } else {
                         metadataList.add(metadata);
                     }
-                } else {
-                    metadataList.add(metadata);
+                } catch (IndexUnreachableException | PresentationException e) {
+                    logger.error("Error populating {}", metadata.getLabel(), e);
                 }
-            } catch (IndexUnreachableException | PresentationException e) {
-                logger.error("Error populating {}", metadata.getLabel(), e);
+            } else if (this.metadataFoldIndex == Integer.MAX_VALUE) { //only allow setting metadata fold index if it isn't already set
+                this.metadataFoldIndex = metadataList.size();
             }
         }
 
@@ -267,12 +261,11 @@ public class MetadataElement implements Serializable {
                 sidebarMetadataList.add(metadata);
             }
         }
-
         return this;
     }
 
     /**
-     * Determines the mimetype from the structElement's metadata, or its first child if the structElement is an anchor
+     * Determines the mimetype from the structElement's metadata, or its first child if the structElement is an anchor.
      *
      * @param se {@link StructElement}
      * @return Mime type form metadata field
@@ -289,6 +282,14 @@ public class MetadataElement implements Serializable {
         }
 
         return mimeType;
+    }
+
+    public boolean isHasMetadataListFold() {
+        return Integer.MAX_VALUE != this.metadataFoldIndex;
+    }
+
+    public int getMetadataFoldIndex() {
+        return metadataFoldIndex;
     }
 
     /**
@@ -312,7 +313,7 @@ public class MetadataElement implements Serializable {
     /**
      * Returns a sorted list of all metadata types contained in metadataList.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of distinct metadata types present in the metadata list
      */
     public List<MetadataType> getMetadataTypes() {
         if (metadataTypes == null) {
@@ -336,8 +337,8 @@ public class MetadataElement implements Serializable {
     /**
      * Returns the first instance of a Metadata object whose label matches the given field name.
      *
-     * @param name a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.metadata.Metadata} object.
+     * @param name Solr field name to look up
+     * @return the first Metadata object whose label matches the given field name, or null if not found
      */
     public Metadata getMetadata(String name) {
         return getMetadata(name, null);
@@ -347,11 +348,11 @@ public class MetadataElement implements Serializable {
      * Returns the first instance of a Metadata object whose label matches the given field name. If a language is given, a localized field name will
      * be used.
      *
-     * @param name a {@link java.lang.String} object.
+     * @param name Solr field name to look up
      * @param language Optional language
      * @should return correct language metadata field
      * @should fall back to non language field if language field not found
-     * @return a {@link io.goobi.viewer.model.metadata.Metadata} object.
+     * @return the first Metadata object matching the field name and optional language, or null if not found
      */
     public Metadata getMetadata(String name, String language) {
         if (StringUtils.isEmpty(name) || metadataList.isEmpty()) {
@@ -390,11 +391,9 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * <p>
      * getMetadata.
-     * </p>
      *
-     * @param fields a {@link java.util.List} object.
+     * @param fields Solr field names to retrieve metadata for
      * @return List of Metadata objects that match the given field names
      */
     public List<Metadata> getMetadata(List<String> fields) {
@@ -414,33 +413,52 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>metadataList</code>.
-     * </p>
      *
-     * @param metadataList the metadataList to set
+     * @param metadataList the list of metadata fields to display in the main metadata section
      */
     public void setMetadataList(List<Metadata> metadataList) {
         this.metadataList = metadataList;
     }
 
     /**
-     * <p>
      * Getter for the field <code>metadataList</code>.
-     * </p>
      *
-     * @return the oneMetadataList
+     * @return the full list of {@link Metadata} objects for this element, filtered by the selected record language
      */
     public List<Metadata> getMetadataList() {
-        return Metadata.filterMetadata(metadataList, selectedRecordLanguage, null);
+        return getMetadataList(false);
     }
 
     /**
-     * <p>
-     * hasMetadata.
-     * </p>
+     * Getter for the field <code>metadataList</code>.
      *
-     * @return a boolean.
+     * @param beforeFold if true, only list metadata before index #{@link #metadataFoldIndex}
+     * @return the list of {@link Metadata} objects, optionally truncated at the fold index
+     */
+    public List<Metadata> getMetadataList(boolean beforeFold) {
+        List<Metadata> mdList = (beforeFold && isHasMetadataListFold()) ? metadataList.subList(0, this.metadataFoldIndex) : metadataList;
+        return Metadata.filterMetadata(mdList, selectedRecordLanguage, null);
+    }
+
+    /**
+     * Alias for {@link #getMetadataList(boolean) getMetadataList(true)}.
+     *
+     * @return the list of {@link Metadata} objects that appear before the fold index
+     */
+    public List<Metadata> getMetadataListBeforeFold() {
+        return getMetadataList(true);
+    }
+
+    public List<Metadata> getMetadataListAfterFold() {
+        List<Metadata> mdList = isHasMetadataListFold() ? metadataList.subList(this.metadataFoldIndex, this.metadataList.size()) : metadataList;
+        return Metadata.filterMetadata(mdList, selectedRecordLanguage, null);
+    }
+
+    /**
+     * hasMetadata.
+     *
+     * @return true if this element has at least one non-blank metadata entry in the main metadata list, false otherwise
      */
     public boolean hasMetadata() {
         if (metadataList != null) {
@@ -452,7 +470,7 @@ public class MetadataElement implements Serializable {
     /**
      * Checks whether all metadata fields for this element can be displayed in a single box (i.e. no table type grouped metadata are configured).
      *
-     * @param type
+     * @param type the metadata type to check
      * @return true if all metadata are not configured as single string; false otherwise
      * @should return false if at least one metadata with same type not single string
      * @should return true if all metadata of same type single string
@@ -471,11 +489,9 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * <p>
      * hasSidebarMetadata.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this element has at least one non-blank metadata entry in the sidebar metadata list, false otherwise
      */
     public boolean hasSidebarMetadata() {
         if (sidebarMetadataList != null) {
@@ -485,33 +501,27 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>sidebarMetadataList</code>.
-     * </p>
      *
-     * @return the sidebarMetadataList
+     * @return the list of {@link Metadata} objects configured for display in the sidebar, filtered by the selected record language
      */
     public List<Metadata> getSidebarMetadataList() {
         return Metadata.filterMetadata(this.sidebarMetadataList, selectedRecordLanguage, null);
     }
 
     /**
-     * <p>
      * Setter for the field <code>sidebarMetadataList</code>.
-     * </p>
      *
-     * @param sidebarMetadataList the sidebarMetadataList to set
+     * @param sidebarMetadataList the list of metadata fields to display in the sidebar section
      */
     public void setSidebarMetadataList(List<Metadata> sidebarMetadataList) {
         this.sidebarMetadataList = sidebarMetadataList;
     }
 
     /**
-     * <p>
      * isHasSidebarMetadata.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the sidebar metadata list is non-null and not empty, false otherwise
      */
     public boolean isHasSidebarMetadata() {
         return sidebarMetadataList != null && !sidebarMetadataList.isEmpty();
@@ -533,11 +543,9 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>label</code>.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the display label for this metadata element, or null if not set
      */
     public String getLabel() {
         if (StringUtils.isNotEmpty(label)) {
@@ -547,44 +555,36 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>label</code>.
-     * </p>
      *
-     * @param label a {@link java.lang.String} object.
+     * @param label display label for this metadata element
      */
     public void setLabel(String label) {
         this.label = label;
     }
 
     /**
-     * <p>
      * Getter for the field <code>title</code>.
-     * </p>
      *
-     * @return the title
+     * @return the title of the record or structure element represented by this metadata element
      */
     public String getTitle() {
         return title;
     }
 
     /**
-     * <p>
      * Getter for the field <code>url</code>.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the URL associated with this metadata element
      */
     public String getUrl() {
         return url;
     }
 
     /**
-     * <p>
      * Setter for the field <code>url</code>.
-     * </p>
      *
-     * @param url a {@link java.lang.String} object.
+     * @param url viewer URL for this element's record page
      */
     public void setUrl(String url) {
         this.url = url;
@@ -600,74 +600,68 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>docType</code>.
-     * </p>
      *
-     * @return the docType
+     * @return the document type string (e.g. "monograph", "periodical") of the record represented by this element
      */
     public String getDocType() {
         return docType;
     }
 
     /**
-     * <p>
      * Getter for the field <code>docStructType</code>.
-     * </p>
      *
-     * @return the docStructType
+     * @return the document structure type (e.g. "Chapter", "Article") of the record represented by this element
      */
     public String getDocStructType() {
         return docStructType;
     }
 
-    /**
-     * @param docStructType the docStructType to set
-     */
+    
     void setDocStructType(String docStructType) {
         this.docStructType = docStructType;
     }
 
-    /**
-     * @return the groupType
-     */
+    
     public String getGroupType() {
         return groupType;
     }
 
-    /**
-     * @param groupType the groupType to set
-     */
+    
     void setGroupType(String groupType) {
         this.groupType = groupType;
     }
 
+    
+    public String getPi() {
+        return pi;
+    }
+
     /**
-     * <p>
      * isAnchor.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this metadata element belongs to an anchor (multi-volume) record, false otherwise
      */
     public boolean isAnchor() {
         return anchor;
     }
 
     /**
-     * <p>
      * isFilesOnly.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this metadata element represents a files-only record (no displayable image), false otherwise
      */
     public boolean isFilesOnly() {
         return filesOnly;
     }
 
+    
+    public boolean isHasImages() {
+        return hasImages;
+    }
+
     /**
-     * <p>
      * getFirstMetadataValue.
-     * </p>
      *
      * @param name The name of the metadata
      * @return the best available metadata value, or an empty string if no metadata was found
@@ -688,12 +682,10 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * <p>
      * getFirstMetadataValueIfExists.
-     * </p>
      *
-     * @param name a {@link java.lang.String} object.
-     * @return a {@link java.util.Optional} object.
+     * @param name Solr field name to look up
+     * @return an Optional containing the first non-blank metadata value for the field, or empty if not found
      */
     public Optional<String> getFirstMetadataValueIfExists(String name) {
         String value = getFirstMetadataValue(name);
@@ -704,14 +696,12 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * <p>
      * getFirstMetadataValue.
-     * </p>
      *
-     * @param prefix a {@link java.lang.String} object.
-     * @param name a {@link java.lang.String} object.
-     * @param suffix a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param prefix string prepended to the metadata value
+     * @param name Solr field name to look up
+     * @param suffix string appended to the metadata value
+     * @return the first metadata value for the given Solr field, wrapped with the given prefix and suffix
      */
     public String getFirstMetadataValue(String prefix, String name, String suffix) {
         String value = getFirstMetadataValue(name);
@@ -722,11 +712,9 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>selectedRecordLanguage</code>.
-     * </p>
      *
-     * @param language a {@link java.lang.String} object.
+     * @param language ISO language code for the selected record language
      * @return this
      */
     public MetadataElement setSelectedRecordLanguage(String language) {

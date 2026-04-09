@@ -125,9 +125,7 @@
 
                                         <!-- SELECT BOX ARCHIVE -->
                                         <h:form>
-                                            <h:outputLabel for="selectArchivesDropdown">
-                                                #{msg.archives__choose_database}:
-                                            </h:outputLabel>
+                                            <h:outputLabel for="selectArchivesDropdown">#{msg.archives__choose_database}:</h:outputLabel>
                                             <div class="archives__modal-select-database-dropdown-wrapper">
                                                 <h:selectOneMenu
                                                     id="selectArchivesDropdown"
@@ -141,7 +139,7 @@
                                                         value="#{archiveBean.filteredDatabases}"
                                                         var="database"
                                                         itemValue="#{database.resourceId}"
-                                                        itemLabel="#{database.resourceName}"></f:selectItems>
+                                                        itemLabel="#{database.resourceName}" />
                                                 </h:selectOneMenu>
                                             </div>
 
@@ -160,7 +158,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="alt-backdrop"></div>
+                        <div class="alt-backdrop" />
                     </div>
 
                     <script>
@@ -190,10 +188,10 @@
         <!-- HC STICKY INIT FOR ARCHIVES -->
         <script type="text/javascript">
             viewerJS.archives.init({
-                initHcSticky: true,
-                initSearch: true,
-                initTextTree: true,
-            });
+    initHcSticky: true,
+    initSearch: true,
+    initTextTree: true,
+});
         </script>
     </div>
 </ui:composition>

@@ -54,9 +54,7 @@ public class PageList implements Iterable<String> {
     private List<String> pages = new ArrayList<>();
 
     /**
-     * <p>
-     * Constructor for PageList.
-     * </p>
+     * Creates a new PageList instance.
      */
     public PageList() {
         super();
@@ -67,11 +65,9 @@ public class PageList implements Iterable<String> {
     }
 
     /**
-     * <p>
-     * Constructor for PageList.
-     * </p>
+     * Creates a new PageList instance.
      *
-     * @param stringRep a {@link java.lang.String} object.
+     * @param stringRep semicolon-separated string of CMS page IDs or page type names.
      */
     public PageList(String stringRep) {
         super();
@@ -97,22 +93,12 @@ public class PageList implements Iterable<String> {
         //        return string;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return pages.hashCode();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -123,29 +109,25 @@ public class PageList implements Iterable<String> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>pages</code>.
-     * </p>
      *
-     * @return the pages
+     * @return the list of CMS page IDs or page type names managed by this page list
      */
     public List<String> getPages() {
         return pages;
     }
 
     /**
-     * <p>
      * Setter for the field <code>pages</code>.
-     * </p>
      *
-     * @param pages the pages to set
+     * @param pages the list of page names or identifiers managed by this page list
      */
     public void setPages(List<String> pages) {
         this.pages = pages;
     }
 
     /**
-     * get the if/pageName of the first page, or an empty string if no pages exist
+     * Get the if/pageName of the first page, or an empty string if no pages exist.
      *
      * @return the if/pageName of the first page, or an empty string if no pages exist
      */
@@ -154,12 +136,10 @@ public class PageList implements Iterable<String> {
     }
 
     /**
-     * <p>
      * getPage.
-     * </p>
      *
-     * @param index a int.
-     * @return a {@link java.lang.String} object.
+     * @param index zero-based position in the page list.
+     * @return the page URL at the given index, or an empty string if the index is out of range
      */
     public String getPage(int index) {
         if (pages.size() > index) {
@@ -182,12 +162,10 @@ public class PageList implements Iterable<String> {
     }
 
     /**
-     * <p>
      * getSearch.
-     * </p>
      *
-     * @param pageIndex a int.
-     * @return a {@link io.goobi.viewer.model.search.SearchInterface} object.
+     * @param pageIndex zero-based position of the desired page in the list.
+     * @return the SearchInterface for the given page, or null if not available
      * @throws java.lang.NumberFormatException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -207,9 +185,7 @@ public class PageList implements Iterable<String> {
     }
 
     /**
-     * <p>
      * getUrl.
-     * </p>
      *
      * @param pageIndex the index of the desired page in the page list
      * @return the url of the page at pageIndex, relative to the host url
@@ -231,7 +207,7 @@ public class PageList implements Iterable<String> {
     }
 
     /**
-     * @param page
+     * @param page string to test
      * @return true if the given string is a number, i.e. it is the identifier of a cms page
      */
     private static boolean isCMSPage(String page) {
@@ -239,19 +215,14 @@ public class PageList implements Iterable<String> {
     }
 
     /**
-     * Sets the pages list to a list containing only the given string
+     * Sets the pages list to a list containing only the given string.
      *
-     * @param page a {@link java.lang.String} object.
+     * @param page CMS page ID or page type name to set as sole entry.
      */
     public void setPage(String page) {
         this.pages = Collections.singletonList(page);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Iterable#iterator()
-     */
     /** {@inheritDoc} */
     @Override
     public Iterator<String> iterator() {
@@ -259,12 +230,10 @@ public class PageList implements Iterable<String> {
     }
 
     /**
-     * <p>
      * getPage.
-     * </p>
      *
-     * @param idString a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
+     * @param idString numeric CMS page ID as string.
+     * @return the CMS page with the given ID
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public CMSPage getPage(String idString) throws DAOException {
@@ -279,11 +248,9 @@ public class PageList implements Iterable<String> {
     }
 
     /**
-     * <p>
      * isEmpty.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this page list contains no pages, false otherwise
      */
     public boolean isEmpty() {
         return pages == null || pages.isEmpty();

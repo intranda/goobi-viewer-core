@@ -37,12 +37,20 @@ import jakarta.faces.convert.Converter;
 import jakarta.faces.convert.ConverterException;
 import jakarta.faces.convert.FacesConverter;
 
+/**
+ * JSF {@link Converter} that converts between {@link LocalDateTime} objects and their locale- and
+ * timezone-aware string representations for use in UI form components.
+ */
 @FacesConverter("localDateTimeConverter")
 public class LocalDateTimeConverter implements Converter<LocalDateTime> {
 
     private Locale locale;
 
     /**
+     * @param context the current JSF faces context
+     * @param component the UI component this converter is attached to
+     * @param submittedValue the string value submitted from the UI form field
+     * @return the parsed LocalDateTime in UTC, or null if the submitted value is null or empty
      * @should convert English dateTime correctly
      * @should convert German dateTime correctly
      * @should covert generic dateTime correctly
@@ -61,6 +69,10 @@ public class LocalDateTimeConverter implements Converter<LocalDateTime> {
     }
 
     /**
+     * @param context the current JSF faces context
+     * @param component the UI component this converter is attached to
+     * @param ldt the LocalDateTime value to convert to a string
+     * @return the formatted date-time string, or an empty string if {@code ldt} is null
      * @should convert English dateTime correctly
      * @should convert German dateTime correctly
      * @should covert generic dateTime correctly
@@ -112,7 +124,7 @@ public class LocalDateTimeConverter implements Converter<LocalDateTime> {
     /**
      * For tests.
      * 
-     * @param locale the locale to set
+
      * @return this
      */
     LocalDateTimeConverter setLocale(Locale locale) {

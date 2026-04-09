@@ -24,8 +24,7 @@ package io.goobi.viewer.model.security.user.icon;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public enum UserAvatarOption {
 

@@ -23,6 +23,8 @@ package io.goobi.viewer.model.translations.language;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.configuration2.HierarchicalConfiguration;
@@ -39,22 +41,20 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * <p>
- * LanguageHelper class.
- * </p>
+ * Provides language metadata loaded from ISO 639 definitions for display and selection purposes.
  */
 public class LanguageHelper {
 
     private static final Logger logger = LogManager.getLogger(LanguageHelper.class);
 
     private ReloadingFileBasedConfigurationBuilder<XMLConfiguration> builder;
+    private PeriodicReloadingTrigger trigger;
+    private ScheduledExecutorService executorService;
 
     /**
-     * <p>
-     * Constructor for LanguageHelper.
-     * </p>
+     * Creates a new LanguageHelper instance.
      *
-     * @param configFilePath a {@link java.lang.String} object.
+     * @param configFilePath path to the languages XML configuration file
      */
     public LanguageHelper(String configFilePath) {
         try {
@@ -65,11 +65,30 @@ public class LanguageHelper {
                                     .setListDelimiterHandler(new DefaultListDelimiterHandler('&')) // TODO Why '&'?
                                     .setThrowExceptionOnMissing(false));
             builder.getConfiguration().setExpressionEngine(new XPathExpressionEngine());
-            PeriodicReloadingTrigger trigger = new PeriodicReloadingTrigger(builder.getReloadingController(),
-                    null, 10, TimeUnit.SECONDS);
+            executorService = Executors.newSingleThreadScheduledExecutor();
+            trigger = new PeriodicReloadingTrigger(builder.getReloadingController(),
+                    null, 10, TimeUnit.SECONDS, executorService);
             trigger.start();
         } catch (ConfigurationException e) {
             logger.error(e.getMessage());
+        }
+    }
+
+    public void shutdown() {
+        if (trigger != null) {
+            trigger.shutdown(true);
+        }
+        if (executorService != null) {
+            // Interrupt the scheduled thread immediately and wait for it to actually stop,
+            // so Tomcat does not report a false memory-leak warning on shutdown.
+            executorService.shutdownNow();
+            try {
+                if (!executorService.awaitTermination(5, TimeUnit.SECONDS)) {
+                    logger.warn("LanguageHelper executor did not terminate within 5 seconds");
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
     }
 
@@ -113,10 +132,10 @@ public class LanguageHelper {
     }
 
     /**
-     * Gets the language data for the given iso-code 639-1 or 639-2B
+     * Gets the language data for the given iso-code 639-1 or 639-2B.
      *
-     * @param inIsoCode a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.translations.language.Language} object.
+     * @param inIsoCode ISO 639-1 or 639-2/B language code to look up
+     * @return the Language data for the given ISO code, or null if not found
      */
     public Language getLanguage(final String inIsoCode) {
         if (inIsoCode == null) {
@@ -151,7 +170,7 @@ public class LanguageHelper {
     }
 
     /**
-     * @param languageConfig
+     * @param languageConfig XML configuration node for a single language entry
      * @return Created {@link Language}
      */
     public Language createLanguage(HierarchicalConfiguration<ImmutableNode> languageConfig) {

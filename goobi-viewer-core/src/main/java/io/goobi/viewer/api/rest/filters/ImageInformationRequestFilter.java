@@ -25,6 +25,8 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE_INFO;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
@@ -37,16 +39,15 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import jakarta.annotation.Priority;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
 
 /**
- * <p>
- * Forwards requests to IIIF image resources referencing a image number (Solr-field "ORDER") to a requests with the appropriate filename.
- * </p>
+ * JAX-RS request filter for IIIF Image Information API requests. Forwards requests referencing a page order number (Solr field {@code ORDER}) to the
+ * request with the appropriate filename resolved from the index.
  */
 @Provider
 @ContentServerImageInfoBinding
@@ -57,8 +58,6 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
 
     @Context
     private HttpServletRequest servletRequest;
-    @Context
-    private HttpServletResponse servletResponse;
 
     /** {@inheritDoc} */
     @Override
@@ -70,37 +69,39 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
 
         imageName = StringTools.decodeUrl(imageName);
         // logger.trace("image: {}", imageName); //NOSONAR Debug
-        if (forwardToCanonicalUrl(pi, imageName, servletRequest, servletResponse)) {
-            //if page order is given for image filename, forward to url with correct filename
+        String redirectURI = forwardToCanonicalUrl(pi, imageName, servletRequest);
+        if (redirectURI != null) {
+            //if page order is given for image filename, redirect to url with correct filename
+            try {
+                request.abortWith(Response.status(Response.Status.FOUND).location(new URI(redirectURI)).build());
+            } catch (URISyntaxException e) {
+                logger.error("Invalid redirect URI '{}': {}", redirectURI, e.getMessage());
+            }
             return;
         }
     }
 
     /**
-     * <p>
      * forwardToCanonicalUrl.
-     * </p>
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param imageName a {@link java.lang.String} object.
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
-     * @return a boolean.
+     * @param pi persistent identifier of the record
+     * @param imageName numeric page order number to resolve to a filename
+     * @param request incoming HTTP request to update with resolved filename
+     * @return the redirect URI if a redirect is needed, or null otherwise.
      * @throws java.io.IOException if any.
      */
-    public boolean forwardToCanonicalUrl(String pi, String imageName, HttpServletRequest request, HttpServletResponse response)
+    public String forwardToCanonicalUrl(String pi, String imageName, HttpServletRequest request)
             throws IOException {
         if (imageName == null || imageName.contains(".") || !imageName.matches("\\d+")) {
-            return false;
+            return null;
         }
-        //        if (imageName != null && !imageName.contains(".") && imageName.matches("\\d+")) {
         try {
             Optional<String> filename = DataManager.getInstance().getSearchIndex().getFilename(pi, imageName);
 
             if (filename.isPresent()) {
                 String filenameValue = filename.get();
                 request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, filenameValue);
-                String redirectURI = DataManager.getInstance()
+                return DataManager.getInstance()
                         .getRestApiManager()
                         .getContentApiManager()
                         .map(urls -> urls
@@ -108,14 +109,12 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
                                 .params(pi, filenameValue)
                                 .build())
                         .orElse(request.getRequestURI().replace("/" + imageName, "/" + filenameValue));
-                response.sendRedirect(redirectURI);
-                return true;
             } else if (imageName.matches("\\d+")) {
                 filename = DataManager.getInstance().getSearchIndex().getFilename(pi, Integer.parseInt(imageName));
                 if (filename.isPresent()) {
                     String filenameValue = filename.get();
                     request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, filenameValue);
-                    String redirectURI = DataManager.getInstance()
+                    return DataManager.getInstance()
                             .getRestApiManager()
                             .getContentApiManager()
                             .map(urls -> urls
@@ -123,15 +122,12 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
                                     .params(pi, filenameValue)
                                     .build())
                             .orElse(request.getRequestURI().replace("/" + imageName, "/" + filenameValue));
-                    response.sendRedirect(redirectURI);
-                    return true;
                 }
             }
         } catch (NumberFormatException | PresentationException | IndexUnreachableException e) {
             logger.error("Unable to resolve image file for image order {} and pi {}", imageName, pi);
         }
-        //        }
-        return false;
+        return null;
     }
 
 }

@@ -5,46 +5,50 @@
 /* ALPHABETIC PAGINATOR */
 /* BLOCK */
 .alphabetic-paginator {
-	margin-bottom: 1.3125rem;
-	/* ELEMENT */
-	ul {
-		display: flex;
-		flex-wrap: wrap;
-	}
-	li {
-		width: 32px;
-		height: 32px;
-		margin: 0 5px 5px 0;
-		border: 1px solid @lightgray;
-		&.active {
-			font-weight: bold;
-			background-color: @blue;
-			a {
-				color: @white;				
-			}
-		}
-	}
-	a {
-		display: block;
-		height: 100%;
-    	line-height: 30px;
-		text-align: center;
-		text-decoration: none;
-		&:hover,
-		&:active,
-		&:focus {
-			background-color: @lightgray;
-		}
-	}
+    margin-bottom: 1.3125rem;
+    /* ELEMENT */
+    ul {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    li {
+        width: 32px;
+        height: 32px;
+        margin: 0 5px 5px 0;
+        border: 1px solid @lightgray;
+        &.active {
+            font-weight: bold;
+            background-color: @blue;
+            a {
+                color: @white;
+            }
+        }
+    }
+    a {
+        display: block;
+        height: 100%;
+        line-height: 30px;
+        text-align: center;
+        text-decoration: none;
+        &:hover,
+        &:active,
+        &:focus {
+            background-color: @lightgray;
+        }
+    }
 }
 
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+}

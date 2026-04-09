@@ -1,13 +1,12 @@
-<ui:composition 
+<ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:util="http://goobi.io/util"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
-
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
     <!-- SOLR INPUT -->
     <div class="cms-module__option-group">
         <div class="cms-module__option-label">
@@ -16,26 +15,44 @@
         <div class="cms-module__option-control">
             <h:panelGroup id="solrQueryInputGroup">
                 <div class="cms-module__option-message">
-                    <h:messages for="solrQueryInput" 
-                        infoClass="cms-module__option-message-status success" 
+                    <h:messages
+                        for="solrQueryInput"
+                        infoClass="cms-module__option-message-status success"
                         warnClass="cms-module__option-message-status warning"
                         errorClass="cms-module__option-message-status danger" />
 
                     <div class="cms-module__option-message-mark">
-                        <i class="fa fa-check" aria-hidden="true"></i>
-                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+                        <i
+                            class="fa fa-check"
+                            aria-hidden="true" />
+                        <i
+                            class="fa fa-exclamation"
+                            aria-hidden="true" />
                     </div>
                 </div>
-                <h:inputText id="solrQueryInput" value="#{contentItem.solrQuery}" styleClass="form-control">
-                    <f:validator validatorId="solrQueryValidator" for="solrQueryInput" />
-                    <f:ajax event="blur" render="solrQueryInputGroup" />
-                    <f:passThroughAttribute name="aria-label" value="#{msg.cms_itemSolrQuery}" />
+                <h:inputText
+                    id="solrQueryInput"
+                    value="#{contentItem.solrQuery}"
+                    styleClass="form-control">
+                    <f:validator
+                        validatorId="solrQueryValidator"
+                        for="solrQueryInput" />
+                    <f:ajax
+                        event="blur"
+                        render="solrQueryInputGroup" />
+                    <f:passThroughAttribute
+                        name="aria-label"
+                        value="#{msg.cms_itemSolrQuery}" />
                 </h:inputText>
             </h:panelGroup>
             <span class="cms-module__option-control-helptext">#{msg.inline_help__input_solr_query}</span>
         </div>
         <div class="cms-module__option-help">
-            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+            <button
+                type="button"
+                class="btn btn--clean"
+                data-toggle="helptext"
+                aria-label="#{msg.aria_label__help}">
                 <util:icon icon="help" />
             </button>
         </div>
@@ -43,42 +60,59 @@
 
     <!-- SOLR SORT FIELDS -->
     <ui:fragment rendered="#{!contentItem.showHitListOptions}">
-	    <div class="cms-module__option-group">
-	        <div class="cms-module__option-label">
-	            <label for="solrSortFields">#{msg.cms_itemSolrSortFields}:</label>
-	        </div>
-	        <div class="cms-module__option-control">
-	            <div class="custom-control custom-control--select">
-	                <h:selectOneMenu id="solrSortFields" styleClass="form-control" value="#{contentItem.solrSortFields}">
-	                    <c:forEach var="field" items="#{cmsBean.possibleSortFields}">
+        <div class="cms-module__option-group">
+            <div class="cms-module__option-label">
+                <label for="solrSortFields">#{msg.cms_itemSolrSortFields}:</label>
+            </div>
+            <div class="cms-module__option-control">
+                <div class="custom-control custom-control--select">
+                    <h:selectOneMenu
+                        id="solrSortFields"
+                        styleClass="form-control"
+                        value="#{contentItem.solrSortFields}">
+                        <c:forEach
+                            var="field"
+                            items="#{cmsBean.possibleSortFields}">
                             <c:choose>
                                 <c:when test="#{field eq 'RELEVANCE'}">
-                                    <f:selectItem itemValue="#{field}" itemLabel="#{msg.searchSortingDropdown_relevance}" />
+                                    <f:selectItem
+                                        itemValue="#{field}"
+                                        itemLabel="#{msg.searchSortingDropdown_relevance}" />
                                 </c:when>
                                 <c:when test="#{field eq 'RANDOM'}">
-                                    <f:selectItem itemValue="#{field}" itemLabel="#{msg.searchSortingDropdown_random}" />
+                                    <f:selectItem
+                                        itemValue="#{field}"
+                                        itemLabel="#{msg.searchSortingDropdown_random}" />
                                 </c:when>
                                 <c:otherwise>
-                                    <f:selectItem itemValue="#{field}"
+                                    <f:selectItem
+                                        itemValue="#{field}"
                                         itemLabel="#{msg[field]} (#{msg.searchSortingDropdown_ascending})" />
-                                    <f:selectItem itemValue="!#{field}"
+                                    <f:selectItem
+                                        itemValue="!#{field}"
                                         itemLabel="#{msg[field]} (#{msg.searchSortingDropdown_descending})" />
                                 </c:otherwise>
                             </c:choose>
-	                    </c:forEach>
-	                    <f:passThroughAttribute name="aria-label" value="#{msg.cms_itemSolrSortFields}" />
-	                </h:selectOneMenu>
-	            </div>
-	            <span class="cms-module__option-control-helptext">#{msg.inline_help__solr_sort_fields}</span>
-	        </div>
-	        <div class="cms-module__option-help">
-	            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
-	                <util:icon icon="help" />
-	            </button>
-	        </div>
-	    </div>
+                        </c:forEach>
+                        <f:passThroughAttribute
+                            name="aria-label"
+                            value="#{msg.cms_itemSolrSortFields}" />
+                    </h:selectOneMenu>
+                </div>
+                <span class="cms-module__option-control-helptext">#{msg.inline_help__solr_sort_fields}</span>
+            </div>
+            <div class="cms-module__option-help">
+                <button
+                    type="button"
+                    class="btn btn--clean"
+                    data-toggle="helptext"
+                    aria-label="#{msg.aria_label__help}">
+                    <util:icon icon="help" />
+                </button>
+            </div>
+        </div>
     </ui:fragment>
-    
+
     <!-- GROUP BY SOLR FIELD -->
     <div class="cms-module__option-group">
         <div class="cms-module__option-label">
@@ -86,45 +120,66 @@
         </div>
         <div class="cms-module__option-control">
             <div class="custom-control custom-control--select">
-                <h:selectOneMenu id="groupByFieldSolr" styleClass="form-control" value="#{contentItem.groupBy}">
-                    <f:selectItem itemValue="" itemLabel="#{msg.select}" />
-                    <f:selectItems value="#{cmsBean.possibleGroupFields}" 
-                    	var="field"
-                    	itemValue="#{field}" 
-                    	itemLabel="#{msg[field]} (#{field})" />
-                    <f:passThroughAttribute name="aria-label" value="#{msg.cms_itemGroupByField}" />
+                <h:selectOneMenu
+                    id="groupByFieldSolr"
+                    styleClass="form-control"
+                    value="#{contentItem.groupBy}">
+                    <f:selectItem
+                        itemValue=""
+                        itemLabel="#{msg.select}" />
+                    <f:selectItems
+                        value="#{cmsBean.possibleGroupFields}"
+                        var="field"
+                        itemValue="#{field}"
+                        itemLabel="#{msg[field]} (#{field})" />
+                    <f:passThroughAttribute
+                        name="aria-label"
+                        value="#{msg.cms_itemGroupByField}" />
                 </h:selectOneMenu>
             </div>
             <span class="cms-module__option-control-helptext">#{msg.inline_help__group_by_field}</span>
         </div>
         <div class="cms-module__option-help">
-            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+            <button
+                type="button"
+                class="btn btn--clean"
+                data-toggle="helptext"
+                aria-label="#{msg.aria_label__help}">
                 <util:icon icon="help" />
             </button>
         </div>
     </div>
-    
+
     <!-- CONTENT TYPE PAGE BREADCRUMB PARENT -->
     <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeNoSearchAggregation.xhtml" />
 
     <!-- ITEM COUNT -->
     <ui:fragment rendered="#{!contentItem.showHitListOptions}">
-	    <div class="cms-module__option-group">
-	        <div class="cms-module__option-label">
-	            <label for="itemCount">#{msg.cms_itemCount}:</label>
-	        </div>
-	        <div class="cms-module__option-control">
-	            <h:inputText id="itemCount" styleClass="form-control" value="#{contentItem.elementsPerPage}">
-	            	<f:passThroughAttribute name="aria-label" value="#{msg.cms_itemGroupByField}" />
-					<!-- <f:ajax event="change" render="@this" /> -->
-	            </h:inputText>
-	            <span class="cms-module__option-control-helptext">#{msg.inline_help__solr_item_count}</span>
-	        </div>
-	        <div class="cms-module__option-help">
-	            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
-	                <util:icon icon="help" />
-	            </button>
-	        </div>
-	    </div>
+        <div class="cms-module__option-group">
+            <div class="cms-module__option-label">
+                <label for="itemCount">#{msg.cms_itemCount}:</label>
+            </div>
+            <div class="cms-module__option-control">
+                <h:inputText
+                    id="itemCount"
+                    styleClass="form-control"
+                    value="#{contentItem.elementsPerPage}">
+                    <f:passThroughAttribute
+                        name="aria-label"
+                        value="#{msg.cms_itemGroupByField}" />
+                    <!-- <f:ajax event="change" render="@this" /> -->
+                </h:inputText>
+                <span class="cms-module__option-control-helptext">#{msg.inline_help__solr_item_count}</span>
+            </div>
+            <div class="cms-module__option-help">
+                <button
+                    type="button"
+                    class="btn btn--clean"
+                    data-toggle="helptext"
+                    aria-label="#{msg.aria_label__help}">
+                    <util:icon icon="help" />
+                </button>
+            </div>
+        </div>
     </ui:fragment>
 </ui:composition>

@@ -44,8 +44,7 @@ import io.goobi.viewer.solr.SolrTools;
  * Representation of one or more Solr documents of DOCTYPE 'Metadata'. Several documents may be combined into one CompleMetadata object if the share
  * the same 'MD_REFID'. They each represent a translation for a different language for the same data. The language is taken from the value of 'LABEL'.
  * 
- * @author florian
- *
+ * @author Florian Alpers
  */
 public final class ComplexMetadata {
 
@@ -59,21 +58,21 @@ public final class ComplexMetadata {
      */
     private final String field;
     /**
-     * Taken from 'METADATATYPE'
+     * Taken from 'METADATATYPE'.
      */
     private final String type;
     /**
-     * IDDOC_OWNER
+     * IDDOC_OWNER.
      */
     private final String ownerId;
 
     /**
-     * IDDOC
+     * IDDOC.
      */
     private final String id;
 
     /**
-     * PI_TOPSTRUCT
+     * PI_TOPSTRUCT.
      */
     private final String topStructIdentifier;
 

@@ -5,53 +5,59 @@
 /* WIDGET SEARCH IN CURRENT ITEM */
 /* BLOCK */
 .widget-search-in-current-item {
-	/* ELEMENT */
+    /* ELEMENT */
     .form-group {
         width: 100%;
         margin: 0;
     }
     .input-group {
-    	width: 100%;
-    	input {}
-    } 
+        width: 100%;
+        input {
+        }
+    }
     .input-group-addon {
-    	align-items: center;
-    	padding: 0;
-    	border-radius: 0;
-    	input {}
-		button {
-			display: flex;
-			justify-content: center;
-			align-items: center;
-		    width: 33px;
-			height: 33px;
-		    margin: 0;
-		    padding: 0;
-		    border: none;
-		    font-size: initial;
-		}
+        align-items: center;
+        padding: 0;
+        border-radius: 0;
+        input {
+        }
+        button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 33px;
+            height: 33px;
+            margin: 0;
+            padding: 0;
+            border: none;
+            font-size: initial;
+        }
     }
 }
 
 /* CHROME POSITIONING HACK */
 @media screen and (-webkit-min-device-pixel-ratio: 0) {
-	.widget-search-in-current-item {
-		.input-group-addon {
-	    	input {
-	    		position: relative;
-	    	}
-	    }
-	}
+    .widget-search-in-current-item {
+        .input-group-addon {
+            input {
+                position: relative;
+            }
+        }
+    }
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+}

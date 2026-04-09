@@ -52,24 +52,23 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
- * Responsible for retrieving data from Index to build any IIIF resources
+ * Responsible for retrieving data from Index to build any IIIF resources.
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class DataRetriever {
 
     private static final Logger logger = LogManager.getLogger(DataRetriever.class);
 
     /**
-     * Required field to create manifest stubs for works in collection
+     * Required field to create manifest stubs for works in collection.
      */
     public static final String[] CONTAINED_WORKS_QUERY_FIELDS =
             { SolrConstants.PI, SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT,
                     SolrConstants.IDDOC };
 
     /**
-     * Required fields to create manifests with structure
+     * Required fields to create manifests with structure.
      */
     public static final String[] REQUIRED_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.TITLE, SolrConstants.PI_TOPSTRUCT,
             SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE, SolrConstants.METADATATYPE,
@@ -82,7 +81,7 @@ public class DataRetriever {
      * Queries all DocStructs which have the given PI as PI_TOPSTRUCT or anchor (or are the anchor themselves). Works are sorted by a
      * {@link io.goobi.viewer.model.iiif.presentation.v2.builder.StructElementComparator} If no hits are found, an empty list is returned
      *
-     * @param pi a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record to retrieve
      * @return A list of all docstructs with the given pi or children thereof. An empty list if no hits are found
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -133,7 +132,7 @@ public class DataRetriever {
     /**
      * Get all top level collections (i.e. those without splitting-char) along with the number of contained works and direct children
      *
-     * @param solrField
+     * @param solrField Solr field used to store the collection hierarchy
      * @return List<CollectionResult> (immutable!)
      * @throws IndexUnreachableException
      */
@@ -149,10 +148,10 @@ public class DataRetriever {
     }
 
     /**
-     * Get all collections which are direct children of the given collection along with the number of contained works and direct children
+     * Gets all collections which are direct children of the given collection along with the number of contained works and direct children.
      *
-     * @param solrField
-     * @param collectionName
+     * @param solrField Solr field used to store the collection hierarchy
+     * @param collectionName name of the parent collection whose children to retrieve
      * @return List<CollectionResult> (immutable!)
      * @throws IndexUnreachableException
      */
@@ -173,10 +172,10 @@ public class DataRetriever {
     }
 
     /**
-     * Get all records directly belonging to the given collection, only the fields in {@link #CONTAINED_WORKS_QUERY_FIELDS} are returned
+     * Gets all records directly belonging to the given collection, only the fields in {@link #CONTAINED_WORKS_QUERY_FIELDS} are returned.
      *
-     * @param solrField
-     * @param collectionName
+     * @param solrField Solr field used to store the collection hierarchy
+     * @param collectionName name of the collection whose records to retrieve
      * @return List<StructElement> (immutable!)
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -200,8 +199,8 @@ public class DataRetriever {
     }
 
     /**
-     * 
-     * @param doc
+     *
+     * @param doc Solr document from which to construct the element
      * @return Constructed {@link StructElement}
      */
     private static StructElement createStructElement(SolrDocument doc) {
@@ -214,9 +213,9 @@ public class DataRetriever {
     }
 
     /**
-     * @param collection
-     * @param splittingChar
-     * @param allCollections
+     * @param collection name of the collection whose direct children to count
+     * @param splittingChar character used to separate hierarchy levels in collection names
+     * @param allCollections set of all known collection names to search within
      * @return Child count
      */
     private static long getChildCount(String collection, String splittingChar, Set<String> allCollections) {
@@ -251,11 +250,9 @@ public class DataRetriever {
     }
 
     /**
-     * <p>
      * getEventFields.
-     * </p>
      *
-     * @return a {@link java.util.Map} object.
+     * @return a map of event type names to their associated Solr field names, as configured for IIIF
      */
     protected Map<String, List<String>> getEventFields() {
         List<String> eventStrings = DataManager.getInstance().getConfiguration().getIIIFEventFields();
@@ -278,12 +275,10 @@ public class DataRetriever {
     }
 
     /**
-     * <p>
      * getDocument.
-     * </p>
      *
-     * @param pi a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param pi persistent identifier of the record to retrieve
+     * @return the StructElement for the given PI, or null if the document was not found
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -303,11 +298,9 @@ public class DataRetriever {
     }
 
     /**
-     * <p>
      * getSolrFieldList.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of Solr field names required for IIIF presentation data retrieval
      */
     public List<String> getSolrFieldList() {
         Set<String> fields = new HashSet<>(DataManager.getInstance().getConfiguration().getIIIFMetadataFields());
@@ -324,8 +317,8 @@ public class DataRetriever {
     }
 
     /**
-     * @param displayFields
-     * @param locales
+     * @param displayFields base list of Solr field names to expand with language variants
+     * @param locales locales for which to add language-specific field variants
      * @return List<String> (immutable!)
      */
     protected static List<String> addLanguageFields(List<String> displayFields, List<Locale> locales) {
@@ -333,10 +326,10 @@ public class DataRetriever {
     }
 
     /**
-     * 
-     * @param field
-     * @param locales
-     * @param includeSelf
+     *
+     * @param field base Solr field name to expand
+     * @param locales locales for which to generate language-specific variants
+     * @param includeSelf whether to include the base field name itself in the result
      * @return List<String>
      */
     private static List<String> getLanguageFields(String field, List<Locale> locales, boolean includeSelf) {

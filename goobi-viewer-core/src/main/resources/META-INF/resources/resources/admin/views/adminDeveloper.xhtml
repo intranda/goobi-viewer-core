@@ -92,9 +92,7 @@
                                         <!-- END: zip archive progress monitor -->
                                     </div>
 
-                                    <div class="admin__developer-sql-info-text">
-                                        #{msg.admin__developer__unzip_file}:
-                                    </div>
+                                    <div class="admin__developer-sql-info-text">#{msg.admin__developer__unzip_file}:</div>
                                     <div class="admin__developer-code-block">
                                         <!-- UNZIP FILE LINUX CODE -->
                                         <div
@@ -150,9 +148,7 @@
                             <!-- PLACE MSG AND CONFIG FILES LOCALLY -->
                             <h2>#{msg.admin__developer__local_messages_config_heading}</h2>
                             <div class="admin__default-block">
-                                <div class="admin__developer-sql-info-text">
-                                    #{msg.admin__developer__local_messages_config_text}:
-                                </div>
+                                <div class="admin__developer-sql-info-text">#{msg.admin__developer__local_messages_config_text}:</div>
 
                                 <div class="admin__developer-code-block">
                                     <div
@@ -200,7 +196,7 @@
                                         '(failed)' : ''}
                                     </div>
                                     <div
-                                        class="admin__developer-autopull-status-icon #{adminDeveloperBean.autopullError ? '-isError' : ''} #{adminDeveloperBean.autopullActive ? '-isActive' : '-isOff'}"></div>
+                                        class="admin__developer-autopull-status-icon #{adminDeveloperBean.autopullError ? '-isError' : ''} #{adminDeveloperBean.autopullActive ? '-isActive' : '-isOff'}" />
                                 </div>
                                 <div class="admin__developer-autopull-version-info">
                                     <c:set
@@ -208,39 +204,31 @@
                                         var="versionInfo"
                                         value="#{adminDeveloperBean.lastVersionInfo}" />
                                     <div class="admin__developer-autopull-build-date">
-                                        <span class="admin__developer-autopull-version-info-label">
-                                            #{msg.admin__developer__pull_theme_execute_date}:
-                                        </span>
+                                        <span class="admin__developer-autopull-version-info-label">#{msg.admin__developer__pull_theme_execute_date}:</span>
                                         <span>#{versionInfo.buildDate}</span>
                                     </div>
                                     <div class="admin__developer-autopull-git-revision">
-                                        <span class="admin__developer-autopull-version-info-label">
-                                            #{msg.admin__developer__pull_theme_revision}:
-                                        </span>
+                                        <span class="admin__developer-autopull-version-info-label">#{msg.admin__developer__pull_theme_revision}:</span>
                                         <span>#{versionInfo.gitRevision}</span>
                                     </div>
                                     <div class="admin__developer-autopull-release-version">
-                                        <span class="admin__developer-autopull-version-info-label">
-                                            #{msg.admin__developer__pull_theme_branch}:
-                                        </span>
+                                        <span class="admin__developer-autopull-version-info-label">#{msg.admin__developer__pull_theme_branch}:</span>
                                         <span>#{versionInfo.releaseVersion}</span>
                                     </div>
                                     <div class="admin__developer-autopull-commit-message">
-                                        <span class="admin__developer-autopull-version-info-label">
-                                            #{msg.admin__developer__pull_theme_message}:
-                                        </span>
+                                        <span class="admin__developer-autopull-version-info-label">#{msg.admin__developer__pull_theme_message}:</span>
                                         <span>#{versionInfo.commitMessage}</span>
                                     </div>
 
                                     <div class="admin__developer-autopull-status-button-wrapper">
                                         <h:commandScript
                                             name="updateTheme"
-                                            render="updateThemeGroup"></h:commandScript>
+                                            render="updateThemeGroup" />
                                         <h:commandButton
                                             styleClass="btn btn--default mt-3"
                                             action="#{adminDeveloperBean.triggerPullTheme}"
                                             value="#{msg.admin__developer__pull_theme_button}">
-                                            <f:ajax render="@form"></f:ajax>
+                                            <f:ajax render="@form" />
                                         </h:commandButton>
                                     </div>
 
@@ -282,9 +270,7 @@
                                 layout="block"
                                 styleClass="admin__developer-autopull-wrapper -isOff"
                                 rendered="#{configurationBean.pullThemeEnabled == false}">
-                                <p class="admin__developer-autopull-wrapper-text">
-                                    #{msg.admin__developer__pull_theme_not_possible}
-                                </p>
+                                <p class="admin__developer-autopull-wrapper-text">#{msg.admin__developer__pull_theme_not_possible}</p>
                             </h:panelGroup>
 
                             <!-- PULL VIA BACKEND IS NOT POSSIBLE BECAUSE MSG QUEUE NOT RUNNING -->
@@ -292,9 +278,7 @@
                                 layout="block"
                                 styleClass="admin__developer-autopull-wrapper -isOff"
                                 rendered="#{configurationBean.pullThemeEnabled == true and (userBean.admin and messageQueueBean.messageQueueState == 'INACTIVE' or userBean.admin and messageQueueBean.messageQueueState == 'STOPPED')}">
-                                <p class="admin__developer-autopull-wrapper-text">
-                                    #{msg.admin__developer__pull_theme_queue_offline}
-                                </p>
+                                <p class="admin__developer-autopull-wrapper-text">#{msg.admin__developer__pull_theme_queue_offline}</p>
                             </h:panelGroup>
                         </h:form>
                     </div>

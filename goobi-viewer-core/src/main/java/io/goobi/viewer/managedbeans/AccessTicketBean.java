@@ -152,7 +152,7 @@ public class AccessTicketBean implements Serializable {
 
     /**
      * 
-     * @param type
+     * @param type access ticket type to request (e.g. DOWNLOAD)
      * @return
      * @throws DAOException
      * @throws IndexUnreachableException
@@ -218,9 +218,9 @@ public class AccessTicketBean implements Serializable {
 
     /**
      * 
-     * @param recipients
-     * @param subject
-     * @param body
+     * @param recipients list of email addresses to send the notification to
+     * @param subject email subject line
+     * @param body email body text
      */
     private static void sendEmailNotification(List<String> recipients, String subject, String body) {
         try {
@@ -233,23 +233,17 @@ public class AccessTicketBean implements Serializable {
         }
     }
 
-    /**
-     * @return the downloadTicketPassword
-     */
+    
     public String getTicketPassword() {
         return ticketPassword;
     }
 
-    /**
-     * @param ticketPassword the ticketPassword to set
-     */
+    
     public void setTicketPassword(String ticketPassword) {
         this.ticketPassword = ticketPassword;
     }
 
-    /**
-     * @return the ticketEmail
-     */
+    
     public String getTicketEmail() {
         if (ticketEmail == null && userBean != null && userBean.getUser() != null) {
             ticketEmail = userBean.getUser().getEmail();
@@ -257,23 +251,17 @@ public class AccessTicketBean implements Serializable {
         return ticketEmail;
     }
 
-    /**
-     * @param ticketEmail the ticketEmail to set
-     */
+    
     public void setTicketEmail(String ticketEmail) {
         this.ticketEmail = ticketEmail;
     }
 
-    /**
-     * @return the ticketRequestMessage
-     */
+    
     public String getTicketRequestMessage() {
         return ticketRequestMessage;
     }
 
-    /**
-     * @param ticketRequestMessage the ticketRequestMessage to set
-     */
+    
     public void setTicketRequestMessage(String ticketRequestMessage) {
         this.ticketRequestMessage = ticketRequestMessage;
     }

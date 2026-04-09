@@ -22,20 +22,16 @@
 package io.goobi.viewer.model.viewer;
 
 /**
- * <p>
- * PageOrientation class.
- * </p>
+ * Enum representing the page orientation (left, right, or single) for double-page spread display.
  */
 public enum PageOrientation {
     LEFT,
     RIGHT;
 
     /**
-     * <p>
      * opposite.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.model.viewer.PageOrientation} object.
+     * @return the opposite page orientation (LEFT becomes RIGHT and vice versa)
      */
     public PageOrientation opposite() {
         return this.equals(LEFT) ? RIGHT : LEFT;

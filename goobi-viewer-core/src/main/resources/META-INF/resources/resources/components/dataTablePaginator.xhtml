@@ -8,67 +8,107 @@
     xmlns:component="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:jsf="http://xmlns.jcp.org/jsf">
-
     <!-- interface options -->
     <composite:interface>
-        <composite:attribute name="tableValues" required="true" />
-        <composite:attribute name="onevent" required="false" default="''" />
-        <composite:attribute name="paginatorId" required="false" default="dataTablePaginator"/>
+        <composite:attribute
+            name="tableValues"
+            required="true" />
+        <composite:attribute
+            name="onevent"
+            required="false"
+            default="''" />
+        <composite:attribute
+            name="paginatorId"
+            required="false"
+            default="dataTablePaginator" />
     </composite:interface>
 
     <!-- component content -->
     <composite:implementation>
-        <nav id="#{cc.attrs.paginatorId}" class="data-table-paginator clearfix">
+        <nav
+            id="#{cc.attrs.paginatorId}"
+            class="data-table-paginator clearfix">
             <ul>
                 <li>
-                  <button
-                    class="btn #{cc.attrs.tableValues.firstPage ? 'data-table-paginator__button btn--inactive' : 'data-table-paginator__button'}"
-                    jsf:disabled="#{cc.attrs.tableValues.firstPage}"
-                    jsf:action="#{cc.attrs.tableValues.cmdMoveFirst}">
-                    <util:icon icon="chevrons-left" styleClass="data-table-paginator__icon" svgClass="icon data-table-paginator__icon-svg" />
-                    <f:passThroughAttribute name="aria-label" value="first page" />
-                  </button>
-                </li>
-                <li>
-                  <button
-                    class="btn #{cc.attrs.tableValues.firstPage ? 'data-table-paginator__button btn--inactive' : 'data-table-paginator__button'}"
-                    jsf:action="#{cc.attrs.tableValues.cmdMovePrevious}"
-                    jsf:disabled="#{cc.attrs.tableValues.firstPage}">
-                    <util:icon icon="chevron-left" styleClass="data-table-paginator__icon" svgClass="icon data-table-paginator__icon-svg" />
-                    <f:passThroughAttribute name="aria-label" value="#{msg.previousHits}" />
-                  </button>
-                </li>
-                <li class="data-table-paginator__page-count">
-                    <!-- SHOW CURRENT PAGE -->
-                    <span id="txtMoveTo1" class="data-table-paginator__current-page">
-                        #{cc.attrs.tableValues.pageNumberCurrent}
-                    </span>
-                    <span id="txtMoveTo2" class="data-table-paginator__input">
-                        <h:inputText  value="#{cc.attrs.tableValues.txtMoveTo}" required="true" />
-                    </span>
-                    <span id="totalCount" class="data-table-paginator__total-count">
-                        #{msg.of} #{cc.attrs.tableValues.pageNumberLast}
-                    </span>
-
-                    <!-- GO TO PAGE -->
-                    <h:commandButton action="#{navigationHelper.reload()}" id="cmdMoveTo" class="btn btn--clean" />
-                </li>
-                <li>
                     <button
-                      class="btn #{cc.attrs.tableValues.lastPage ? 'data-table-paginator__button btn-inactive' : 'data-table-paginator__button'}"
-                      jsf:action="#{cc.attrs.tableValues.cmdMoveNext}"
-                      jsf:disabled="#{cc.attrs.tableValues.lastPage}">
-                      <util:icon icon="chevron-right" styleClass="data-table-paginator__icon" svgClass="icon data-table-paginator__icon-svg" />
-                      <f:passThroughAttribute name="aria-label" value="#{msg.nextHit}" />
+                        class="btn #{cc.attrs.tableValues.firstPage ? 'data-table-paginator__button btn--inactive' : 'data-table-paginator__button'}"
+                        jsf:disabled="#{cc.attrs.tableValues.firstPage}"
+                        jsf:action="#{cc.attrs.tableValues.cmdMoveFirst}">
+                        <util:icon
+                            icon="chevrons-left"
+                            styleClass="data-table-paginator__icon"
+                            svgClass="icon data-table-paginator__icon-svg" />
+                        <f:passThroughAttribute
+                            name="aria-label"
+                            value="first page" />
                     </button>
                 </li>
                 <li>
                     <button
-                      class="btn #{cc.attrs.tableValues.lastPage ? 'data-table-paginator__button btn--inactive' : 'data-table-paginator__button'}"
-                      jsf:action="#{cc.attrs.tableValues.cmdMoveLast}"
-                      jsf:disabled="#{cc.attrs.tableValues.lastPage}">
-                      <util:icon icon="chevrons-right" styleClass="data-table-paginator__icon" svgClass="icon data-table-paginator__icon-svg" />
-                      <f:passThroughAttribute name="aria-label" value="last page" />
+                        class="btn #{cc.attrs.tableValues.firstPage ? 'data-table-paginator__button btn--inactive' : 'data-table-paginator__button'}"
+                        jsf:action="#{cc.attrs.tableValues.cmdMovePrevious}"
+                        jsf:disabled="#{cc.attrs.tableValues.firstPage}">
+                        <util:icon
+                            icon="chevron-left"
+                            styleClass="data-table-paginator__icon"
+                            svgClass="icon data-table-paginator__icon-svg" />
+                        <f:passThroughAttribute
+                            name="aria-label"
+                            value="#{msg.previousHits}" />
+                    </button>
+                </li>
+                <li class="data-table-paginator__page-count">
+                    <!-- SHOW CURRENT PAGE -->
+                    <span
+                        id="txtMoveTo1"
+                        class="data-table-paginator__current-page">
+                        #{cc.attrs.tableValues.pageNumberCurrent}
+                    </span>
+                    <span
+                        id="txtMoveTo2"
+                        class="data-table-paginator__input">
+                        <h:inputText
+                            value="#{cc.attrs.tableValues.txtMoveTo}"
+                            required="true" />
+                    </span>
+                    <span
+                        id="totalCount"
+                        class="data-table-paginator__total-count">
+                        #{msg.of} #{cc.attrs.tableValues.pageNumberLast}
+                    </span>
+
+                    <!-- GO TO PAGE -->
+                    <h:commandButton
+                        action="#{navigationHelper.reload()}"
+                        id="cmdMoveTo"
+                        class="btn btn--clean" />
+                </li>
+                <li>
+                    <button
+                        class="btn #{cc.attrs.tableValues.lastPage ? 'data-table-paginator__button btn-inactive' : 'data-table-paginator__button'}"
+                        jsf:action="#{cc.attrs.tableValues.cmdMoveNext}"
+                        jsf:disabled="#{cc.attrs.tableValues.lastPage}">
+                        <util:icon
+                            icon="chevron-right"
+                            styleClass="data-table-paginator__icon"
+                            svgClass="icon data-table-paginator__icon-svg" />
+                        <f:passThroughAttribute
+                            name="aria-label"
+                            value="#{msg.nextHit}" />
+                    </button>
+                </li>
+                <li>
+                    <button
+                        class="btn #{cc.attrs.tableValues.lastPage ? 'data-table-paginator__button btn--inactive' : 'data-table-paginator__button'}"
+                        jsf:action="#{cc.attrs.tableValues.cmdMoveLast}"
+                        jsf:disabled="#{cc.attrs.tableValues.lastPage}">
+                        <util:icon
+                            icon="chevrons-right"
+                            styleClass="data-table-paginator__icon"
+                            svgClass="icon data-table-paginator__icon-svg" />
+                        <f:passThroughAttribute
+                            name="aria-label"
+                            value="last page" />
                     </button>
                 </li>
             </ul>

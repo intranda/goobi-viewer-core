@@ -28,8 +28,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class MaintenanceModeUpdate implements IModelUpdate {
 

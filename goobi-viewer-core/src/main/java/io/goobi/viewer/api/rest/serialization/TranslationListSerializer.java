@@ -36,17 +36,14 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import io.goobi.viewer.model.translations.Translation;
 
 /**
- * <p>
- * TranslationListSerializer class.
- * </p>
+ * Jackson serializer for a collection of {@link io.goobi.viewer.model.translations.Translation} objects.
+ * Groups translations by their tag label and serializes them as a nested JSON object of the form
+ * {@code { "<tag>": { "<language>": ["<value>"] } }}, or {@code null} if the collection is empty.
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class TranslationListSerializer extends JsonSerializer<Collection<Translation>> {
 
-    /* (non-Javadoc)
-     * @see com.fasterxml.jackson.databind.JsonSerializer#serialize(java.lang.Object, JsonGenerator, SerializerProvider)
-     */
     /** {@inheritDoc} */
     @Override
     public void serialize(Collection<Translation> translations, JsonGenerator gen, SerializerProvider serializers) throws IOException {

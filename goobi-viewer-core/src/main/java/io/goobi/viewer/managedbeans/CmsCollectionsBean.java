@@ -89,13 +89,11 @@ public class CmsCollectionsBean implements Serializable {
     private List<CMSCollection> collections;
     private boolean piValid = true;
     private CMSCollectionImageMode imageMode = CMSCollectionImageMode.NONE;
-    /** Current tab language */
+    /** Current tab language. */
     private CMSCollectionTreeTab currentTab = new CMSCollectionTreeTab(solrField);
 
     /**
-     * <p>
-     * Constructor for CmsCollectionsBean.
-     * </p>
+     * Creates a new CmsCollectionsBean instance.
      */
     public CmsCollectionsBean() {
         try {
@@ -236,8 +234,8 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * 
-     * @param solrField
+     *
+     * @param solrField Solr field whose collection descriptions to import
      * @return empty string
      * @throws DAOException
      */
@@ -295,44 +293,36 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>currentCollection</code>.
-     * </p>
      *
-     * @return the currentCollection
+     * @return the currently selected CMS collection being edited
      */
     public CMSCollection getCurrentCollection() {
         return currentCollection;
     }
 
     /**
-     * <p>
      * Setter for the field <code>currentCollection</code>.
-     * </p>
      *
-     * @param currentCollection the currentCollection to set
+     * @param currentCollection the CMSCollection to set as the currently selected collection
      */
     public void setCurrentCollection(CMSCollection currentCollection) {
         this.currentCollection = currentCollection;
     }
 
     /**
-     * <p>
      * Getter for the field <code>solrField</code>.
-     * </p>
      *
-     * @return the solrField
+     * @return the Solr field name used to group and display collections
      */
     public String getSolrField() {
         return solrField;
     }
 
     /**
-     * <p>
      * Setter for the field <code>solrField</code>.
-     * </p>
      *
-     * @param solrField the solrField to set
+     * @param solrField the Solr field name used to group and display collections
      */
     public void setSolrField(String solrField) {
         this.solrField = solrField;
@@ -349,29 +339,25 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * For unit tests.
      * 
-     * @param solrField the solrField to set
+
      */
     void setSolrFieldNoUpdates(String solrField) {
         this.solrField = solrField;
     }
 
     /**
-     * <p>
      * Getter for the field <code>solrFieldValue</code>.
-     * </p>
      *
-     * @return the solrFieldValue
+     * @return the value of the Solr field identifying the current collection
      */
     public String getSolrFieldValue() {
         return solrFieldValue;
     }
 
     /**
-     * <p>
      * Setter for the field <code>solrFieldValue</code>.
-     * </p>
      *
-     * @param solrFieldValue the solrFieldValue to set
+     * @param solrFieldValue the value of the Solr field identifying the current collection
      */
     public void setSolrFieldValue(String solrFieldValue) {
         this.solrFieldValue = solrFieldValue;
@@ -412,31 +398,25 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getAllCollectionFields.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all configured collection Solr field names
      */
     public List<String> getAllCollectionFields() {
         return DataManager.getInstance().getConfiguration().getConfiguredCollections();
     }
 
     /**
-     * <p>
      * Getter for the field <code>collections</code>.
-     * </p>
      *
-     * @return the configuredColelctions
+     * @return the list of all CMS collections for the currently selected Solr field
      */
     public List<CMSCollection> getCollections() {
         return collections;
     }
 
     /**
-     * <p>
      * updateCollections.
-     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -450,7 +430,7 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * @param collection
+     * @param collection Collection whose info is added to all matching collection views
      */
     private static void addToCollectionViews(CMSCollection collection) {
         CollectionView collectionView = BeanUtils.getBrowseBean().getCollection(collection.getSolrField());
@@ -462,7 +442,7 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * @param collection
+     * @param collection Collection whose info is removed from all matching collection views
      */
     private static void removeFromCollectionViews(CMSCollection collection) {
         CollectionView collectionView = BeanUtils.getBrowseBean().getCollection(collection.getSolrField());
@@ -475,11 +455,9 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>
      * deleteCollection.
-     * </p>
      *
-     * @param collection a {@link io.goobi.viewer.model.cms.collections.CMSCollection} object.
+     * @param collection collection to delete from the database
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void deleteCollection(CMSCollection collection) throws DAOException {
@@ -489,12 +467,10 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>
      * editCollection.
-     * </p>
      *
-     * @param collection a {@link io.goobi.viewer.model.cms.collections.CMSCollection} object.
-     * @return a {@link java.lang.String} object.
+     * @param collection collection to set as current and prepare for editing
+     * @return the pretty URL name for the collection edit view
      */
     public String editCollection(CMSCollection collection) {
         setCurrentCollection(collection);
@@ -504,35 +480,29 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getCurrentLabel.
-     * </p>
      *
-     * @param language a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.cms.collections.CMSCollectionTranslation} object.
+     * @param language ISO language code to retrieve the label for
+     * @return the label translation of the current collection for the given language
      */
     public CMSCollectionTranslation getCurrentLabel(String language) {
         return getCurrentCollection().getLabelAsTranslation(language);
     }
 
     /**
-     * <p>
      * getCurrentDescription.
-     * </p>
      *
-     * @param language a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.cms.collections.CMSCollectionTranslation} object.
+     * @param language ISO language code to retrieve the description for
+     * @return the description translation of the current collection for the given language
      */
     public CMSCollectionTranslation getCurrentDescription(String language) {
         return getCurrentCollection().getDescriptionAsTranslation(language);
     }
 
     /**
-     * <p>
      * saveCurrentCollection.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the pretty URL name for the collections overview after saving the current collection
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String saveCurrentCollection() throws DAOException {
@@ -565,11 +535,9 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>
      * resetCurrentCollection.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the pretty URL name for the collections overview after discarding changes to the current collection
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String resetCurrentCollection() throws DAOException {
@@ -584,7 +552,7 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * Checks the current collection for validity. Currently only checks if a possibly entered PI exists in the solr
      *
-     * @return a boolean.
+     * @return true if the current collection is valid (i.e. any configured representative work PI exists in Solr), false otherwise
      */
     public boolean isCurrentCollectionValid() {
         if (getCurrentCollection() != null && StringUtils.isNotBlank(getCurrentCollection().getRepresentativeWorkPI())) {
@@ -595,13 +563,11 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>
      * validatePI.
-     * </p>
      *
-     * @param context a {@link jakarta.faces.context.FacesContext} object.
-     * @param comp a {@link jakarta.faces.component.UIComponent} object.
-     * @param value a {@link java.lang.Object} object.
+     * @param context current JSF faces context
+     * @param comp UI component that triggered the validation
+     * @param value PI value submitted by the user
      * @throws jakarta.faces.validator.ValidatorException if any.
      */
     public void validatePI(FacesContext context, UIComponent comp, Object value) throws ValidatorException {
@@ -626,8 +592,8 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * Checks if the given pi matches a known PI in the solr index. If the pi is empty, true is returned to allow not setting any pi
      *
+     * @param pi persistent identifier to look up in the Solr index
      * @return false if no current collection is set, the pi does not match any known work
-     * @param pi a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
@@ -640,16 +606,12 @@ public class CmsCollectionsBean implements Serializable {
         return true;
     }
 
-    /**
-     * @return the imageMode
-     */
+    
     public CMSCollectionImageMode getImageMode() {
         return imageMode;
     }
 
-    /**
-     * @param imageMode the imageMode to set
-     */
+    
     public void setImageMode(CMSCollectionImageMode imageMode) {
         logger.trace("setImageMode: {}", imageMode);
         this.imageMode = imageMode;
@@ -674,16 +636,12 @@ public class CmsCollectionsBean implements Serializable {
         }
     }
 
-    /**
-     * @return the currentTab
-     */
+    
     public CMSCollectionTreeTab getCurrentTab() {
         return currentTab;
     }
 
-    /**
-     * @param currentTab the currentTab to set
-     */
+    
     public void setCurrentTab(CMSCollectionTreeTab currentTab) {
         this.currentTab = currentTab;
     }
@@ -691,7 +649,7 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * Initializes the collection tree for the given index field name.
      *
-     * @param field
+     * @param field Solr field name to load the collection for
      * @throws IllegalRequestException
      * @throws IndexUnreachableException
      */

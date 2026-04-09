@@ -244,10 +244,14 @@
                 this.currentPageNo = document.querySelector(_config.elementSelectors.data.page).textContent;
                 this.pageType = document.querySelector(_config.elementSelectors.data.pageType).textContent;
                 this.viewMode = imageElement.dataset[_config.datasets.image.viewMode];
-                
+
                 this.topMarginElement = document.querySelector(_config.elementSelectors.data.topMarginElement)?.textContent;
-                this.leftMarginElement = document.querySelector(_config.elementSelectors.data.leftMarginElement)?.textContent;
-                this.rightMarginElement = document.querySelector(_config.elementSelectors.data.rightMarginElement)?.textContent;
+                this.leftMarginElement = document.querySelector(
+                    _config.elementSelectors.data.leftMarginElement
+                )?.textContent;
+                this.rightMarginElement = document.querySelector(
+                    _config.elementSelectors.data.rightMarginElement
+                )?.textContent;
 
                 const imageViewConfig = createZoomableImageConfig(imageElement);
                 this.viewer = new ImageView.Image(imageViewConfig);
@@ -314,13 +318,16 @@
         }
 
         load() {
-            if(this.viewer) {
-                return this.viewer.load( Object.values(this.tileSources), this.getCurrentTileSourceIndex() )
-                .then(image => {
+            if (this.viewer) {
+                return this.viewer.load(Object.values(this.tileSources), this.getCurrentTileSourceIndex()).then((image) => {
                     this.sequence?.initialize(this.getCurrentTileSourceId());
-                    this.overlayGroups.forEach(group => group.show());
+                    this.overlayGroups.forEach((group) => group.show());
                     this.initWindowResize();
                     return this;
+                });
+            } else {
+                return new Promise((resolve, reject) => {
+                    reject('no image found');
                 });
             } else {
                 return new Promise( ( resolve, reject ) => {
@@ -362,6 +369,13 @@
         }
 
         getTileSourceOrderFromId(id) {
+            if (this.sequence) {
+                id =
+                    this.sequence.urlMap
+                        .entries()
+                        .find((e) => e[1] == id)
+                        ?.at(0) ?? id;
+            }
             return this.tileSourceIdToOrder[id];
         }
 
@@ -393,8 +407,6 @@
                     let value = tileSources[key];
                     if(typeof value == "string" && (value.startsWith("{") || value.startsWith("["))) {
                         tileSources[key] = JSON.parse(value);
-                    } else if(value.endsWith("/info.json")) {
-                        tileSources[key] = value.replace("/info.json", "");
                     }
                 });
                 return tileSources;
@@ -554,7 +566,8 @@
             if(this.fragmentSelect) {            
                 this.fragmentSelect.finishedHook.subscribe( area => {
                     var areaString = this.getAreaString(area);
-                    var pageUrl = window.location.origin + window.location.pathname +  window.location.search + "#xywh=" + areaString;
+                    var pageUrl =
+                        window.location.origin + window.location.pathname + window.location.search + '#xywh=' + areaString;
                     var imageUrl = this.getRegionUrl(area);
                     console.log("set area data ", pageUrl, imageUrl);
                     $('[data-fragment-link="page"]').attr("data-copy-share-image", pageUrl);
@@ -568,13 +581,20 @@
         }
 
         getAreaString(area) {
-             if(area && area.x != undefined && area.y != undefined && area.width != undefined && area.height != undefined) {             
-                 var areaString = area.x.toFixed(0) + "," + area.y.toFixed(0) + "," + area.width.toFixed(0) + "," + area.height.toFixed(0);
-                 return areaString;
-             } else {
-                 return "full";
-             }
-         }
+            if (area && area.x != undefined && area.y != undefined && area.width != undefined && area.height != undefined) {
+                var areaString =
+                    area.x.toFixed(0) +
+                    ',' +
+                    area.y.toFixed(0) +
+                    ',' +
+                    area.width.toFixed(0) +
+                    ',' +
+                    area.height.toFixed(0);
+                return areaString;
+            } else {
+                return 'full';
+            }
+        }
 
          getAreaFromString(string) {
             const parts = string.split(",").filter(s => s.match(/^\d+$/)).map(s => Number(s));
@@ -670,7 +690,7 @@
         constructor(config) {
             this.config = jQuery.extend(true, {}, _default, config);
             this.container = document.querySelector(this.config.container);
-           // console.log('init voyager3d', this);
+            // console.log('init voyager3d', this);
             if (this.isVisible()) {
                 this.loaded = this.initView().then(() => {
                 });

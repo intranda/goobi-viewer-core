@@ -1,12 +1,11 @@
-<ui:composition 
+<ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
-    
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
     <!-- CONTENT TYPE PAGE LIST -->
     <!-- SELECT CATEGORY -->
     <div class="cms-module__option-group">
@@ -18,25 +17,38 @@
             <h:panelGroup id="pageListCategoryGroup">
                 <!-- VALIDATION MESSAGE -->
                 <div class="cms-module__option-message">
-                    <h:messages for="pageListCategory" 
-                        infoClass="cms-module__option-message-status success" 
+                    <h:messages
+                        for="pageListCategory"
+                        infoClass="cms-module__option-message-status success"
                         warnClass="cms-module__option-message-status warning"
                         errorClass="cms-module__option-message-status danger" />
 
                     <div class="cms-module__option-message-mark">
-                        <i class="fa fa-check" aria-hidden="true"></i>
-                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+                        <i
+                            class="fa fa-check"
+                            aria-hidden="true" />
+                        <i
+                            class="fa fa-exclamation"
+                            aria-hidden="true" />
                     </div>
                 </div>
 
                 <!-- MULTI SELECT MENU -->
-                <div class="cms-module__option-dropdown"> 
-                    <div class="cms-module__option-dropdown-trigger" data-toggle="option-dropdown">#{msg.admin__category_select}</div>
+                <div class="cms-module__option-dropdown">
+                    <div
+                        class="cms-module__option-dropdown-trigger"
+                        data-toggle="option-dropdown">
+                        #{msg.admin__category_select}
+                    </div>
                     <ul>
-                        <ui:repeat var="selectable" value="#{contentItem.selectableCategories}">
+                        <ui:repeat
+                            var="selectable"
+                            value="#{contentItem.selectableCategories}">
                             <li>
                                 <label>
-                                    <h:selectBooleanCheckbox type="checkbox" value="#{selectable.selected}" />
+                                    <h:selectBooleanCheckbox
+                                        type="checkbox"
+                                        value="#{selectable.selected}" />
                                     #{selectable.value.name}
                                 </label>
                             </li>
@@ -44,13 +56,17 @@
                     </ul>
                 </div>
             </h:panelGroup>
-            
+
             <!-- INLINE HELP -->
             <span class="cms-module__option-control-helptext">#{msg.inline_help__cms_page_type_page_list_category}</span>
         </div>
         <!-- TOGGLE INLINE HELP -->
         <div class="cms-module__option-help">
-            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+            <button
+                type="button"
+                class="btn btn--clean"
+                data-toggle="helptext"
+                aria-label="#{msg.aria_label__help}">
                 <util:icon icon="help" />
             </button>
         </div>
@@ -58,45 +74,54 @@
 
     <!-- ITEM COUNT -->
     <ui:fragment rendered="#{contentItem.paginated}">
-    <div class="cms-module__option-group">
-        <div class="cms-module__option-label">
-            <label for="pageListItemCount">#{msg.cms_itemCount}:</label>
-        </div>
-        <div class="cms-module__option-control">
-            <!-- AREA FOR AJAX REFRESH -->
-            <h:panelGroup id="pageListItemCountGroup">
-                <!-- VALIDATION MESSAGE -->
-                <div class="cms-module__option-message">
-                    <h:messages for="pageListItemCount" 
-                        infoClass="cms-module__option-message-status success" 
-                        warnClass="cms-module__option-message-status warning"
-                        errorClass="cms-module__option-message-status danger" />
+        <div class="cms-module__option-group">
+            <div class="cms-module__option-label">
+                <label for="pageListItemCount">#{msg.cms_itemCount}:</label>
+            </div>
+            <div class="cms-module__option-control">
+                <!-- AREA FOR AJAX REFRESH -->
+                <h:panelGroup id="pageListItemCountGroup">
+                    <!-- VALIDATION MESSAGE -->
+                    <div class="cms-module__option-message">
+                        <h:messages
+                            for="pageListItemCount"
+                            infoClass="cms-module__option-message-status success"
+                            warnClass="cms-module__option-message-status warning"
+                            errorClass="cms-module__option-message-status danger" />
 
-                    <div class="cms-module__option-message-mark">
-                        <i class="fa fa-check" aria-hidden="true"></i>
-                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+                        <div class="cms-module__option-message-mark">
+                            <i
+                                class="fa fa-check"
+                                aria-hidden="true" />
+                            <i
+                                class="fa fa-exclamation"
+                                aria-hidden="true" />
+                        </div>
                     </div>
-                </div>
-                
-                <!-- INPUT TEXT -->
-                <h:inputText
-                    id="pageListItemCount" 
-                    value="#{contentItem.elementsPerPage}" 
-                    styleClass="form-control" />
-            </h:panelGroup>
-            
-            <!-- INLINE HELP -->
-            <span class="cms-module__option-control-helptext">#{msg.inline_help__cms_page_type_page_list_item_count}</span>
+
+                    <!-- INPUT TEXT -->
+                    <h:inputText
+                        id="pageListItemCount"
+                        value="#{contentItem.elementsPerPage}"
+                        styleClass="form-control" />
+                </h:panelGroup>
+
+                <!-- INLINE HELP -->
+                <span class="cms-module__option-control-helptext">#{msg.inline_help__cms_page_type_page_list_item_count}</span>
+            </div>
+            <!-- TOGGLE INLINE HELP -->
+            <div class="cms-module__option-help">
+                <button
+                    type="button"
+                    class="btn btn--clean"
+                    data-toggle="helptext"
+                    aria-label="#{msg.aria_label__help}">
+                    <util:icon icon="help" />
+                </button>
+            </div>
         </div>
-        <!-- TOGGLE INLINE HELP -->
-        <div class="cms-module__option-help">
-            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
-                <util:icon icon="help" />
-            </button>
-        </div>
-    </div>
-	</ui:fragment>
-	
+    </ui:fragment>
+
     <!-- CATEGORIES AS HEADER -->
     <div class="cms-module__option-group">
         <div class="cms-module__option-label">
@@ -104,33 +129,45 @@
         </div>
         <div class="cms-module__option-control">
             <!-- AREA FOR AJAX REFRESH -->
-            <h:panelGroup layout="block" id="pageListCategoriesAsHeaderGroup" styleClass="cms-module__option-checkbox">
+            <h:panelGroup
+                layout="block"
+                id="pageListCategoriesAsHeaderGroup"
+                styleClass="cms-module__option-checkbox">
                 <!-- VALIDATION MESSAGE -->
                 <div class="cms-module__option-message">
-                    <h:messages for="pageListCategoriesAsHeader" 
-                        infoClass="cms-module__option-message-status success" 
+                    <h:messages
+                        for="pageListCategoriesAsHeader"
+                        infoClass="cms-module__option-message-status success"
                         warnClass="cms-module__option-message-status warning"
                         errorClass="cms-module__option-message-status danger" />
 
                     <div class="cms-module__option-message-mark">
-                        <i class="fa fa-check" aria-hidden="true"></i>
-                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+                        <i
+                            class="fa fa-check"
+                            aria-hidden="true" />
+                        <i
+                            class="fa fa-exclamation"
+                            aria-hidden="true" />
                     </div>
                 </div>
 
                 <!-- CHECKBOX -->
-                <h:selectBooleanCheckbox 
-                    id="pageListCategoriesAsHeader" 
+                <h:selectBooleanCheckbox
+                    id="pageListCategoriesAsHeader"
                     value="#{cmsBean.selectedPage.getProperty('DISPLAY_CHILD_TAGS_AS_HEADERS').value}"
-                    onclick="cmsJS.createPage.disablePreview();" />
+                    onclick="cmsJS.createPage.disablePreview()" />
             </h:panelGroup>
-            
+
             <!-- INLINE HELP -->
             <span class="cms-module__option-control-helptext inline">#{msg.inline_help__cms_page_type_page_list_categories_as_header}</span>
         </div>
         <!-- TOGGLE INLINE HELP -->
         <div class="cms-module__option-help">
-            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+            <button
+                type="button"
+                class="btn btn--clean"
+                data-toggle="helptext"
+                aria-label="#{msg.aria_label__help}">
                 <util:icon icon="help" />
             </button>
         </div>

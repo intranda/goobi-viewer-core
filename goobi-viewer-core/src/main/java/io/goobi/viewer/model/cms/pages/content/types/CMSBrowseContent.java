@@ -44,6 +44,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
+/**
+ * CMS content type that renders an alphabetical browse index for a configurable Solr field,
+ * supporting paginated navigation through indexed terms.
+ */
 @Entity
 @Table(name = "cms_content_browse")
 @DiscriminatorValue("browse")
@@ -108,9 +112,9 @@ public class CMSBrowseContent extends CMSContent implements PagedCMSContent {
             browse.reset();
         }
         //filter for subtheme
-        if (StringUtils.isNotBlank(getOwningPage().getSubThemeDiscriminatorValue())) {
+        if (StringUtils.isNotBlank(getOwningPage().getSubTheme())) {
             browse.setFilter(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField(),
-                    getOwningPage().getSubThemeDiscriminatorValue());
+                    getOwningPage().getSubTheme());
         } else {
             //reset subtheme filter
             browse.setFilter(null, null);

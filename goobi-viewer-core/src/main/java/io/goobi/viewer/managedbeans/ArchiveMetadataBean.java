@@ -48,23 +48,25 @@ public class ArchiveMetadataBean implements Serializable {
     private final Configuration config;
 
     /**
-     * default constructor using local configuration to load metadata list
+     * Default constructor using local configuration to load metadata list.
      */
     public ArchiveMetadataBean() {
         this(DataManager.getInstance().getConfiguration());
     }
 
     /**
-     * Constructor for testing. Receives custom config object of which only the method {@link Configuration#getArchiveMetadata()} is used
+     * Creates a new ArchiveMetadataBean instance for testing.
+     *
+     * <p>Receives custom config object of which only the method {@link Configuration#getArchiveMetadata()} is used.
      * 
-     * @param config
+     * @param config configuration object used to load archive metadata definitions
      */
     public ArchiveMetadataBean(Configuration config) {
         this.config = config;
     }
 
     /**
-     * Check if metadata for the {@link ArchiveEntry} with the given id has already been cached in the bean
+     * Checks if metadata for the {@link ArchiveEntry} with the given id has already been cached in the bean.
      * 
      * @param entryId id of the archive entry
      * @return true if metadata for the entry is stored in the bean
@@ -79,7 +81,7 @@ public class ArchiveMetadataBean implements Serializable {
      * 
      * @param entry The entry which metadata to return
      * @return the metadata list for the given entry
-     * @throws PresentationException If the metadata list had to be created and an error occured while doing so
+     * @throws PresentationException If the metadata list had to be created and an error occurred while doing so
      */
     public ArchiveEntryMetadataList getMetadata(ArchiveEntry entry) throws PresentationException {
         if (!isMetadataLoaded(entry.getId())) {

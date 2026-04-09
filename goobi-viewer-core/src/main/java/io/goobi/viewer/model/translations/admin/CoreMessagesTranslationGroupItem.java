@@ -36,16 +36,13 @@ public class CoreMessagesTranslationGroupItem extends TranslationGroupItem {
     /**
      * Protected constructor.
      *
-     * @param key
-     * @param regex
+     * @param key the message key or pattern
+     * @param regex whether the key is a regular expression
      */
     protected CoreMessagesTranslationGroupItem(String key, boolean regex) {
         super(key, regex);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.admin.TranslationGroupItem#loadEntries()
-     */
     @Override
     protected void loadEntries() {
         List<String> keys;

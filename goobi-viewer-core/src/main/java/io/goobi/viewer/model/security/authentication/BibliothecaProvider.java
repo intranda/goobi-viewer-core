@@ -40,32 +40,25 @@ import io.goobi.viewer.model.security.authentication.model.BibliothecaAuthentica
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * <p>
- * BibliothecaProvider class.
- * </p>
+ * Authentication provider that validates user credentials against the Bibliotheca library management system.
  */
 public class BibliothecaProvider extends HttpAuthenticationProvider {
 
     private static final Logger logger = LogManager.getLogger(BibliothecaProvider.class);
 
     /**
-     * <p>
-     * Constructor for XServiceProvider.
-     * </p>
+     * Creates a new XServiceProvider instance.
      *
-     * @param name a {@link java.lang.String} object.
-     * @param label a {@link java.lang.String} object.
-     * @param url a {@link java.lang.String} object.
-     * @param image a {@link java.lang.String} object.
-     * @param timeoutMillis a long.
+     * @param name internal provider identifier
+     * @param label human-readable provider name shown in the UI
+     * @param url base URL of the Bibliotheca authentication endpoint
+     * @param image path to the provider logo image
+     * @param timeoutMillis HTTP request timeout in milliseconds
      */
     public BibliothecaProvider(String name, String label, String url, String image, long timeoutMillis) {
         super(name, label, TYPE_USER_PASSWORD, url, image, timeoutMillis);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#login(java.lang.String, java.lang.String)
-     */
     /** {@inheritDoc} */
     @Override
     public CompletableFuture<LoginResult> login(String readerId, String password) throws AuthenticationProviderException {
@@ -91,35 +84,23 @@ public class BibliothecaProvider extends HttpAuthenticationProvider {
         return CompletableFuture.completedFuture(result);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#logout()
-     */
     /** {@inheritDoc} */
     @Override
     public void logout() throws AuthenticationProviderException {
         //noop
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsPasswordChange()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean allowsPasswordChange() {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsNicknameChange()
-     */
     @Override
     public boolean allowsNicknameChange() {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsEmailChange()
-     */
     @Override
     public boolean allowsEmailChange() {
         return false;
@@ -128,8 +109,8 @@ public class BibliothecaProvider extends HttpAuthenticationProvider {
     /**
      * Retrieves or creates User object for the given credentials.
      *
-     * @param request
-     * @param response
+     * @param request the authentication request containing credentials
+     * @param response the authentication response from the Bibliotheca service
      * @return User object
      * @throws AuthenticationProviderException
      */

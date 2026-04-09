@@ -545,6 +545,7 @@ function bundleViewerJS(changedFilePath = null) {
         )
         .pipe(guard())
         .pipe(concat('viewer.min.js'))
+        .pipe(terser())
         .pipe(header(banner))
         .pipe(gulp.dest(paths.jsDistRoot))
         .pipe(safeDest('resources/javascript/dist'))
@@ -577,6 +578,7 @@ function bundleStatisticsJS(changedFilePath = null) {
         .src(joinPosix(paths.jsModulesRoot, 'statistics', 'statistics.js'), { allowEmpty: true })
         .pipe(guard())
         .pipe(concat('statistics.min.js'))
+        .pipe(terser())
         .pipe(header(banner))
         .pipe(gulp.dest(paths.jsDistRoot))
         .pipe(safeDest('resources/javascript/dist'))
@@ -609,6 +611,7 @@ function bundleBrowserSupportJS(changedFilePath = null) {
         .src(joinPosix(paths.jsModulesRoot, 'browsersupport', 'browsersupport.js'), { allowEmpty: true })
         .pipe(guard())
         .pipe(concat('browsersupport.min.js'))
+        .pipe(terser())
         .pipe(header(banner))
         .pipe(gulp.dest(paths.jsDistRoot))
         .pipe(safeDest('resources/javascript/dist'))
@@ -889,6 +892,10 @@ async function java() {
  */
 function watchMode() {
     requireDeploymentDir();
+    logBlock('watch', [
+        `deploy: ${colors.blue(prettyPath(DEPLOYMENT_DIR))}`,
+        colors.gray('watching for changes — run "npm run sync" for a full initial sync'),
+    ]);
     // JS bundles
     gulp.watch([
         joinPosix(paths.jsModulesRoot, '{viewer,cms,admin,crowdsourcing}', '**', '*.js'),
@@ -925,7 +932,10 @@ function watchMode() {
         '!' + joinPosix(paths.staticRoot, 'resources', 'css', 'dist', '**', '*.css'),
     ];
 
-    const staticWatcher = gulp.watch(staticGlobs, { ignoreInitial: true });
+    const staticWatcher = gulp.watch(staticGlobs, {
+        ignoreInitial: true,
+        awaitWriteFinish: { stabilityThreshold: 200, pollInterval: 100 },
+    });
 
     function mirrorStatic(filePath) {
         const started = process.hrtime.bigint();
@@ -1003,8 +1013,8 @@ const buildJS = gulp.series(bundleModules, bundleViewerJS, bundleStatisticsJS, b
 const buildAll = gulp.series(gulp.parallel(buildStyles, buildJS, compileRiotTags));
 
 exports.build = buildAll;
-exports.dev = gulp.series(fullSync, watchMode);
-exports['copy-deps'] = gulp.series(buildIcons, copyDependencies);
+exports.dev = watchMode;
+exports['copy-deps'] = copyDependencies;
 exports['sync-all'] = fullSync;
 exports.target = printTargets;
 exports.java = java;
@@ -1012,7 +1022,7 @@ exports.icons = buildIcons;
 
 /* ── Task exports ────────────────────────────────────────────────────────────────────────────
    - npm run build      → builds styles, JS bundles, riot tags, icons
-   - npm run dev        → builds icons, full project → deploy mirror once, then starts watchers
+   - npm run dev        → starts watchers (no initial full sync; run npm run sync separately if needed)
    - npm run copyDeps   → copies declared 3rd-party assets
    - npm run icons      → rebuilds Tabler SVG sprite assets
    - npm run sync       → one-shot full project → deploy mirror

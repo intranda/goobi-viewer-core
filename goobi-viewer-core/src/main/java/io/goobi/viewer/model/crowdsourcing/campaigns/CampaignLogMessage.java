@@ -34,8 +34,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.goobi.viewer.model.log.LogMessage;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "cs_campaign_log")
@@ -56,11 +55,11 @@ public class CampaignLogMessage extends LogMessage {
     }
 
     /**
-     * @param message
-     * @param creatorId
-     * @param dateCreated
-     * @param campaign
-     * @param pi
+     * @param message log message text
+     * @param creatorId ID of the user who created the message
+     * @param dateCreated creation timestamp of the message
+     * @param campaign the campaign this log message belongs to
+     * @param pi persistent identifier of the record this message refers to
      */
     public CampaignLogMessage(String message, Long creatorId, LocalDateTime dateCreated, Campaign campaign, String pi) {
         super(message, creatorId, dateCreated, null);
@@ -69,10 +68,10 @@ public class CampaignLogMessage extends LogMessage {
     }
 
     /**
-     * @param message
-     * @param creatorId
-     * @param campaign
-     * @param pi
+     * @param message log message text
+     * @param creatorId ID of the user who created the message
+     * @param campaign the campaign this log message belongs to
+     * @param pi persistent identifier of the record this message refers to
      */
     public CampaignLogMessage(String message, Long creatorId, Campaign campaign, String pi) {
         super(message, creatorId, null);
@@ -86,16 +85,12 @@ public class CampaignLogMessage extends LogMessage {
         this.pi = pi;
     }
 
-    /**
-     * @return the campaign
-     */
+    
     public Campaign getCampaign() {
         return campaign;
     }
 
-    /**
-     * @return the pi
-     */
+    
     public String getPi() {
         return pi;
     }

@@ -55,6 +55,10 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
+/**
+ * CMS content type that displays a digital collection hierarchy for a configurable Solr field,
+ * supporting sorting, filtering by sub-collection, and integration with the collection view.
+ */
 @Entity
 @Table(name = "cms_content_collection")
 @DiscriminatorValue("collection")
@@ -166,7 +170,7 @@ public class CMSCollectionContent extends CMSContent {
     }
 
     /**
-     * get {@link #openExpanded}
+     * Get {@link #openExpanded}.
      * 
      * @return {@link #openExpanded}
      */
@@ -175,16 +179,16 @@ public class CMSCollectionContent extends CMSContent {
     }
 
     /**
-     * Set {@link #openExpanded}
+     * Sets {@link #openExpanded}.
      * 
-     * @param openExpanded
+     * @param openExpanded true to expand collection on initial load
      */
     public void setOpenExpanded(boolean openExpanded) {
         this.openExpanded = openExpanded;
     }
 
     /**
-     * Getter for {@link #ignoreHierarchy}
+     * Getter for {@link #ignoreHierarchy}.
      * 
      * @return {@link #ignoreHierarchy}
      */
@@ -193,20 +197,18 @@ public class CMSCollectionContent extends CMSContent {
     }
 
     /**
-     * Setter for {@link #ignoreHierarchy}
+     * Setter for {@link #ignoreHierarchy}.
      * 
-     * @param ignoreHierarchy
+     * @param ignoreHierarchy true to flatten collection hierarchy
      */
     public void setIgnoreHierarchy(boolean ignoreHierarchy) {
         this.ignoreHierarchy = ignoreHierarchy;
     }
 
     /**
-     * <p>
      * getIgnoreCollectionsAsList.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of collection names to be excluded from the collection display
      */
     public List<String> getIgnoreCollectionsAsList() {
         if (StringUtils.isNotBlank(ignoreCollections)) {
@@ -228,11 +230,9 @@ public class CMSCollectionContent extends CMSContent {
     }
 
     /**
-     * <p>
      * setIgnoreCollectionsAsList.
-     * </p>
      *
-     * @param toIgnore a {@link java.util.List} object.
+     * @param toIgnore collection names to exclude from display
      */
     public void setIgnoreCollectionsAsList(List<String> toIgnore) {
         if (toIgnore == null || toIgnore.isEmpty()) {
@@ -244,7 +244,7 @@ public class CMSCollectionContent extends CMSContent {
     }
 
     /**
-     * remove cached CollectionView for this content from {@link CollectionViewBean}
+     * Remove cached CollectionView for this content from {@link CollectionViewBean}.
      */
     private void resetCollection() {
         BeanUtils.getCollectionViewBean().removeCollection(this);
@@ -266,8 +266,8 @@ public class CMSCollectionContent extends CMSContent {
     }
 
     /**
-     * @param resetResults
-     * @param component
+     * @param resetResults true to reset cached collection results
+     * @param component the owning CMS component
      * @return {@link String}
      */
     @Override
@@ -279,7 +279,7 @@ public class CMSCollectionContent extends CMSContent {
      * @return {@link String}
      */
     public String getCombinedFilterQuery() {
-        String subThemeDiscriminatorValue = Optional.ofNullable(getOwningPage()).map(CMSPage::getSubThemeDiscriminatorValue).orElse("");
+        String subThemeDiscriminatorValue = Optional.ofNullable(getOwningPage()).map(CMSPage::getSubTheme).orElse("");
         if (StringUtils.isNoneBlank(subThemeDiscriminatorValue, this.filterQuery)) {
             return "(" + this.filterQuery + ") AND " + DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField() + ":"
                     + subThemeDiscriminatorValue;

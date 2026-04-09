@@ -34,13 +34,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocumentList;
 
-import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
-import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.model.ViewAttributes;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -52,9 +51,7 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
- * <p>
- * WatermarkHandler class.
- * </p>
+ * Applies configured watermarks to images delivered through the image service.
  *
  * @author Florian Alpers
  */
@@ -76,7 +73,7 @@ public class WatermarkHandler implements Serializable {
             SolrConstants.ISWORK, SolrConstants.ISANCHOR, SolrConstants.DOCSTRCT, SolrConstants.DATAREPOSITORY };
 
     /**
-     * caches all watermark texts for documents by document pi.
+     * Caches all watermark texts for documents by document pi.
      */
     private final Map<String, String> documentWatermarkTextMap = new HashMap<>();
     private final List<String> watermarkTextConfiguration;
@@ -84,12 +81,10 @@ public class WatermarkHandler implements Serializable {
     private final String servletPath;
 
     /**
-     * <p>
-     * Constructor for WatermarkHandler.
-     * </p>
+     * Creates a new WatermarkHandler instance.
      *
-     * @param configuration a {@link io.goobi.viewer.controller.Configuration} object.
-     * @param servletPath a {@link java.lang.String} object.
+     * @param configuration viewer configuration supplying watermark settings
+     * @param servletPath base servlet path used to build PURL watermark texts
      */
     public WatermarkHandler(Configuration configuration, String servletPath) {
         this.watermarkTextConfiguration =
@@ -103,17 +98,18 @@ public class WatermarkHandler implements Serializable {
      * {@link io.goobi.viewer.model.viewer.PhysicalElement} page. If the watermark height of the given pageType and image is 0, an empty optional is
      * returned
      *
-     * @param page a {@link java.util.Optional} object.
-     * @param doc a {@link java.util.Optional} object.
+     * @param page optional physical page element for watermark text resolution
+     * @param doc optional top-level struct element for watermark ID resolution
      * @param pageType The pageType of the currentView. Taken into consideration for footer height, if not null
-     * @return a {@link java.util.Optional} object.
+     * @return an Optional containing the watermark URL, or empty if the footer height is zero
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public Optional<String> getWatermarkUrl(Optional<PhysicalElement> page, Optional<StructElement> doc, Optional<PageType> pageType)
             throws ViewerConfigurationException, IndexUnreachableException, DAOException {
-        return getWatermarkUrl(Scale.MAX, pageType, page.map(p -> p.getImageType()), doc.map(d -> getFooterIdIfExists(d).orElse(null)),
+        ViewAttributes viewAttributes = new ViewAttributes(page.orElse(null), doc.orElse(null), pageType.orElse(null));
+        return getWatermarkUrl(Scale.MAX, viewAttributes, doc.map(d -> getFooterIdIfExists(d).orElse(null)),
                 page.map(p -> getWatermarkTextIfExists(p).orElse(null)));
     }
 
@@ -123,22 +119,21 @@ public class WatermarkHandler implements Serializable {
      * {@link io.goobi.viewer.model.viewer.PhysicalElement} page. If the watermark height of the given pageType and image is 0, an empty optional is
      * returned.
      *
-     * @param pageType The pageType of the currentView. Taken into consideration for footer height, if not null
-     * @param scale a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
-     * @param imageType a {@link java.util.Optional} object.
-     * @param watermarkId a {@link java.util.Optional} object.
-     * @param watermarkText a {@link java.util.Optional} object.
-     * @return a {@link java.util.Optional} object.
+     * @param scale image scale to use in the watermark URL
+     * @param viewAttributes a {@link ViewAttributes} object
+     * @param watermarkId optional footer image variant identifier to embed in the URL
+     * @param watermarkText optional text string to overlay on the watermark image
+     * @return an Optional containing the constructed watermark URL, or empty if the footer height is zero
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public Optional<String> getWatermarkUrl(Scale scale, Optional<PageType> pageType, Optional<ImageType> imageType, Optional<String> watermarkId,
+    public Optional<String> getWatermarkUrl(Scale scale, ViewAttributes viewAttributes, Optional<String> watermarkId,
             Optional<String> watermarkText) throws IndexUnreachableException, DAOException, ViewerConfigurationException {
 
         int footerHeight = DataManager.getInstance()
                 .getConfiguration()
-                .getFooterHeight(pageType.orElse(null), imageType.map(ImageType::getFormat).map(ImageFileFormat::getMimeType).orElse(""));
+                .getFooterHeight(viewAttributes);
         if (footerHeight > 0) {
             String format = DataManager.getInstance().getConfiguration().getWatermarkFormat();
 
@@ -176,8 +171,8 @@ public class WatermarkHandler implements Serializable {
     /**
      * Optionally returns the watermark text for the given page. If the text is empty or none is configures, an empty optional is returned
      *
-     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
-     * @return a {@link java.util.Optional} object.
+     * @param page physical page element used to resolve URN, PURL, or Solr-based watermark text
+     * @return an Optional containing the resolved watermark text, or empty if no text is configured or resolved
      */
     public Optional<String> getWatermarkTextIfExists(PhysicalElement page) {
         if (!watermarkTextConfiguration.isEmpty()) {
@@ -233,8 +228,8 @@ public class WatermarkHandler implements Serializable {
     /**
      * Optionally returns the watermark text for the given pi. If the text is empty or none is configures, an empty optional is returned
      *
-     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @return a {@link java.util.Optional} object.
+     * @param doc struct element used to resolve URN, PURL, or Solr-based watermark text
+     * @return an Optional containing the resolved watermark text for the struct element, or empty if none is found
      */
     public Optional<String> getWatermarkTextIfExists(StructElement doc) {
         if (documentWatermarkTextMap.containsKey(doc.getPi())) {
@@ -303,10 +298,10 @@ public class WatermarkHandler implements Serializable {
     }
 
     /**
-     * Return the watermark id for the given {@link io.goobi.viewer.model.viewer.StructElement}.
+     * Returns the watermark id for the given {@link io.goobi.viewer.model.viewer.StructElement}.
      *
-     * @param topDocument a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @return a {@link java.util.Optional} object.
+     * @param topDocument top-level struct element whose metadata fields supply the footer ID
+     * @return an Optional containing the resolved footer ID, or empty if none is found in the configured fields
      */
     public Optional<String> getFooterIdIfExists(StructElement topDocument) {
         String footerId = null;

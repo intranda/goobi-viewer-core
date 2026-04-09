@@ -7,100 +7,121 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:h="http://xmlns.jcp.org/jsf/html">
-
     <composite:interface />
 
-    <composite:implementation> 
-        <h:panelGroup id="widgetAdmin" styleClass="admin-widget" layout="block">
-            <h:form id="widgetAdminForm"> 
+    <composite:implementation>
+        <h:panelGroup
+            id="widgetAdmin"
+            styleClass="admin-widget"
+            layout="block">
+            <h:form id="widgetAdminForm">
                 <div class="admin-widget__header">#{msg.admin__administration_title}</div>
 
-                    <ul>
+                <ul>
                     <ui:fragment rendered="#{userBean.admin}">
-                        <li class="#{navigationHelper.currentPage == 'adminUsers' ? 'active' : '' or
-                                     navigationHelper.currentPage == 'adminUser' ? 'active' : ''}">
+                        <li
+                            class="#{navigationHelper.currentPage == 'adminUsers' ? 'active' : '' or navigationHelper.currentPage == 'adminUser' ? 'active' : ''}">
                             <h:outputLink value="#{navigationHelper.getPageUrl('adminUsers')}/">
-                                <util:icon-text icon="user"
-                                                text="#{msg.admin__users}"
-                                                styleClass="icon-text--nav"/>
+                                <util:icon-text
+                                    icon="user"
+                                    text="#{msg.admin__users}"
+                                    styleClass="icon-text--nav" />
                             </h:outputLink>
                         </li>
-                        <li class="#{navigationHelper.currentPage == 'adminUserGroups' ? 'active' : '' or
-                                     navigationHelper.currentPage == 'adminUserGroup' ? 'active' : ''}">
-                             <h:outputLink value="#{navigationHelper.getPageUrl('adminUserGroups')}/">
+                        <li
+                            class="#{navigationHelper.currentPage == 'adminUserGroups' ? 'active' : '' or navigationHelper.currentPage == 'adminUserGroup' ? 'active' : ''}">
+                            <h:outputLink value="#{navigationHelper.getPageUrl('adminUserGroups')}/">
                                 <util:icon-text
                                     icon="users"
                                     text="#{msg.admin__groups}"
                                     styleClass="icon-text--nav" />
                             </h:outputLink>
                         </li>
-                        <li class="#{navigationHelper.currentPage == 'adminIpRanges' ? 'active' : '' or
-                                     navigationHelper.currentPage == 'adminIpRange' ? 'active' : ''}">
-                             <h:outputLink value="#{navigationHelper.getPageUrl('adminIpRanges')}/">
+                        <li
+                            class="#{navigationHelper.currentPage == 'adminIpRanges' ? 'active' : '' or navigationHelper.currentPage == 'adminIpRange' ? 'active' : ''}">
+                            <h:outputLink value="#{navigationHelper.getPageUrl('adminIpRanges')}/">
                                 <util:icon-text
                                     icon="bolt"
                                     text="#{msg.admin__ip_ranges}"
                                     styleClass="icon-text--nav" />
                             </h:outputLink>
                         </li>
-						<li class="admin-widget__clients-link #{navigationHelper.currentPage == 'adminClients' ? 'active' : ''}">
-							<c:set scope="view"
-								value="#{adminClientsBean.notConfiguredClients}"
-								var="notConfiguredClients"></c:set> <h:outputLink
-								value="#{navigationHelper.getPageUrl('adminClients')}/">
-								<util:icon-text
-									icon="device-desktop"
-									text="#{msg.admin__clients__title}"
-									styleClass="icon-text--nav" />
-								<ui:fragment rendered="#{not empty notConfiguredClients}">
-									<span class="admin-widget__counter" data-toggle="tooltip" title="#{msg.admin__clients__tooltip_not_configured}">#{notConfiguredClients.size()}</span>
-								</ui:fragment>
-							</h:outputLink>
-						</li>
-						<li class="admin-widget__licences-link #{navigationHelper.currentPage == 'adminLicenseType' ? 'active' : '' or
-                                     navigationHelper.currentPage == 'adminLicenseTypes' ? 'active' : ''}">
-                             <h:outputLink value="#{navigationHelper.getPageUrl('adminLicenseTypes')}/">
+                        <li class="admin-widget__clients-link #{navigationHelper.currentPage == 'adminClients' ? 'active' : ''}">
+                            <c:set
+                                scope="view"
+                                value="#{adminClientsBean.notConfiguredClients}"
+                                var="notConfiguredClients" />
+                            <h:outputLink value="#{navigationHelper.getPageUrl('adminClients')}/">
+                                <util:icon-text
+                                    icon="device-desktop"
+                                    text="#{msg.admin__clients__title}"
+                                    styleClass="icon-text--nav" />
+                                <ui:fragment rendered="#{not empty notConfiguredClients}">
+                                    <span
+                                        class="admin-widget__counter"
+                                        data-toggle="tooltip"
+                                        title="#{msg.admin__clients__tooltip_not_configured}">
+                                        #{notConfiguredClients.size()}
+                                    </span>
+                                </ui:fragment>
+                            </h:outputLink>
+                        </li>
+                        <li
+                            class="admin-widget__licences-link #{navigationHelper.currentPage == 'adminLicenseType' ? 'active' : '' or navigationHelper.currentPage == 'adminLicenseTypes' ? 'active' : ''}">
+                            <h:outputLink value="#{navigationHelper.getPageUrl('adminLicenseTypes')}/">
                                 <util:icon-text
                                     icon="key"
                                     text="#{msg.admin__licenses}"
                                     styleClass="icon-text--nav" />
                                 <ui:fragment rendered="#{fn:length(adminLicenseBean.notConfiguredAccessConditions) gt 0}">
-                            	   <span data-toggle="tooltip" title="#{msg.admin__licenses__tooltip_not_configured}" class="admin-widget__counter">#{fn:length(adminLicenseBean.notConfiguredAccessConditions)}</span>
-                            	</ui:fragment>
+                                    <span
+                                        data-toggle="tooltip"
+                                        title="#{msg.admin__licenses__tooltip_not_configured}"
+                                        class="admin-widget__counter">
+                                        #{fn:length(adminLicenseBean.notConfiguredAccessConditions)}
+                                    </span>
+                                </ui:fragment>
                             </h:outputLink>
-                            <div >
-                            </div>
+                            <div />
                         </li>
-                        <li class="#{navigationHelper.currentPage == 'adminRights' ? 'active' : '' or
-                                     navigationHelper.currentPage == 'adminRight' ? 'active' : ''}">
+                        <li
+                            class="#{navigationHelper.currentPage == 'adminRights' ? 'active' : '' or navigationHelper.currentPage == 'adminRight' ? 'active' : ''}">
                             <h:outputLink value="#{navigationHelper.getPageUrl('adminRights')}/">
                                 <util:icon-text
                                     icon="lock"
                                     text="#{msg.admin__rights}"
                                     styleClass="icon-text--nav" />
                                 <ui:fragment rendered="#{adminLicenseBean.ticketRequests.size() gt 0 and adminLicenseBean.ticketRequests.size() le 99}">
-									<span data-toggle="tooltip" title="#{msg.admin__rights__download_tickets_tooltip}" class="admin-widget__counter">#{adminLicenseBean.ticketRequests.size()}</span>
-								</ui:fragment>
+                                    <span
+                                        data-toggle="tooltip"
+                                        title="#{msg.admin__rights__download_tickets_tooltip}"
+                                        class="admin-widget__counter">
+                                        #{adminLicenseBean.ticketRequests.size()}
+                                    </span>
+                                </ui:fragment>
                                 <ui:fragment rendered="#{adminLicenseBean.ticketRequests.size() gt 99}">
-									<span data-toggle="tooltip" title="#{msg.admin__rights__download_tickets_tooltip}" class="admin-widget__counter -small">99+</span>
-								</ui:fragment>
+                                    <span
+                                        data-toggle="tooltip"
+                                        title="#{msg.admin__rights__download_tickets_tooltip}"
+                                        class="admin-widget__counter -small">
+                                        99+
+                                    </span>
+                                </ui:fragment>
                             </h:outputLink>
                         </li>
-                    </ui:fragment> 
-                        <li class="#{navigationHelper.currentPage == 'adminUserCommentGroupNew' ? 'active' : '' or
-                                     navigationHelper.currentPage == 'adminUserCommentGroups' ? 'active' : '' or
-                                     navigationHelper.currentPage == 'adminUserComments' ? 'active' : '' or
-                                     navigationHelper.currentPage == 'adminUserCommentGroupAll' ? 'active' : ''}">
-                             <h:outputLink value="#{navigationHelper.getPageUrl('adminUserCommentGroups')}/">
-                                <util:icon-text
-                                    icon="message-circle-user"
-                                    text="#{msg.admin__comments}"
-                                    styleClass="icon-text--nav" />
-                            </h:outputLink>
-                        </li>
+                    </ui:fragment>
+                    <li
+                        class="#{navigationHelper.currentPage == 'adminUserCommentGroupNew' ? 'active' : '' or navigationHelper.currentPage == 'adminUserCommentGroups' ? 'active' : '' or navigationHelper.currentPage == 'adminUserComments' ? 'active' : '' or navigationHelper.currentPage == 'adminUserCommentGroupAll' ? 'active' : ''}">
+                        <h:outputLink value="#{navigationHelper.getPageUrl('adminUserCommentGroups')}/">
+                            <util:icon-text
+                                icon="message-circle-user"
+                                text="#{msg.admin__comments}"
+                                styleClass="icon-text--nav" />
+                        </h:outputLink>
+                    </li>
                     <ui:fragment rendered="#{userBean.admin}">
                         <li class="#{navigationHelper.currentPage == 'adminCreateRecord' ? 'active' : ''}">
-                             <h:outputLink value="#{navigationHelper.getPageUrl('adminCreateRecord')}/">
+                            <h:outputLink value="#{navigationHelper.getPageUrl('adminCreateRecord')}/">
                                 <util:icon-text
                                     icon="plus"
                                     text="#{msg.admin__create_record__link}"
@@ -115,18 +136,26 @@
                                         text="#{msg.admin__translations__link}"
                                         styleClass="icon-text--nav" />
                                     <ui:fragment rendered="#{adminBean.configuredTranslationGroupsCount gt 0}">
-                                	    <span data-toggle="tooltip" title="#{msg.admin__translations__tooltip_count}" class="admin-widget__counter">#{adminBean.configuredTranslationGroupsCount}</span>
-								    </ui:fragment>
+                                        <span
+                                            data-toggle="tooltip"
+                                            title="#{msg.admin__translations__tooltip_count}"
+                                            class="admin-widget__counter">
+                                            #{adminBean.configuredTranslationGroupsCount}
+                                        </span>
+                                    </ui:fragment>
                                     <ui:fragment rendered="#{!adminBean.hasAccessPermissingForTranslationFiles}">
-                                        <span data-toggle="tooltip" title="#{msg.admin__translations__tooltip_no_access}" class="admin-widget__counter -redMark">
+                                        <span
+                                            data-toggle="tooltip"
+                                            title="#{msg.admin__translations__tooltip_no_access}"
+                                            class="admin-widget__counter -redMark">
                                             <util:icon icon="exclamation-mark" />
                                         </span>
-								    </ui:fragment>
+                                    </ui:fragment>
                                 </h:outputLink>
                             </li>
                         </ui:fragment>
                         <li class="#{navigationHelper.currentPage == 'adminThemes' ? 'active' : ''}">
-                             <h:outputLink value="#{request.contextPath}/admin/themes/">
+                            <h:outputLink value="#{request.contextPath}/admin/themes/">
                                 <util:icon-text
                                     icon="brush"
                                     text="#{msg.admin__themes__title}"
@@ -143,33 +172,36 @@
                                 </h:outputLink>
                             </li>
                         </ui:fragment>
-                        
-                        <li  class="#{navigationHelper.currentPage == 'adminMessageQueue' ? 'active' : ''}">
-                            <h:outputLink id="widgetAdminTasksLink" value="#{navigationHelper.getPageUrl('adminMessageQueue')}/">
+
+                        <li class="#{navigationHelper.currentPage == 'adminMessageQueue' ? 'active' : ''}">
+                            <h:outputLink
+                                id="widgetAdminTasksLink"
+                                value="#{navigationHelper.getPageUrl('adminMessageQueue')}/">
                                 <util:icon-text
                                     icon="loader"
                                     text="#{msg.admin__tasks__title}"
                                     styleClass="icon-text--nav" />
-                                    <ui:fragment rendered="#{messageQueueBean.paused or quartzBean.paused}">
-                                        <span data-toggle="tooltip" title="#{msg.admin__tasks__tooltip_queue_not_running}" class="admin-widget__counter">
-                                            <util:icon icon="exclamation-mark" />
-                                        </span>
-								    </ui:fragment>
+                                <ui:fragment rendered="#{messageQueueBean.paused or quartzBean.paused}">
+                                    <span
+                                        data-toggle="tooltip"
+                                        title="#{msg.admin__tasks__tooltip_queue_not_running}"
+                                        class="admin-widget__counter">
+                                        <util:icon icon="exclamation-mark" />
+                                    </span>
+                                </ui:fragment>
                             </h:outputLink>
                         </li>
-                        
-                        <li  class="#{navigationHelper.currentPage == 'adminMaintenanceMode' ? 'active' : ''}">
+
+                        <li class="#{navigationHelper.currentPage == 'adminMaintenanceMode' ? 'active' : ''}">
                             <h:outputLink value="#{request.contextPath}/admin/maintenance/">
                                 <util:icon-text
                                     icon="mug"
                                     text="#{msg.admin__maintenance_mode__title}"
                                     styleClass="icon-text--nav" />
                             </h:outputLink>
-                        </li>   
+                        </li>
                     </ui:fragment>
-
-				</ul>
-
+                </ul>
             </h:form>
         </h:panelGroup>
     </composite:implementation>

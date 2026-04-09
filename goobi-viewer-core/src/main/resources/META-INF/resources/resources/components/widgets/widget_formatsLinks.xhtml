@@ -10,7 +10,7 @@
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
-    <composite:interface></composite:interface>
+    <composite:interface />
 
     <composite:implementation>
         <div
@@ -30,7 +30,8 @@
 
                     <util:icon
                         icon="chevron-down"
-                        styleClass="widget__topbar-icon-collapsible icon-rot-on-open" />
+                        styleClass="widget__topbar-icon-collapsible icon-rot-on-open"
+                        svgClass="widget__topbar-icon-svg widget-format-links__topbar-icon-svg" />
                 </div>
             </div>
 
@@ -283,8 +284,6 @@
         </div>
 
         <!-- ACTIVATE CLIPBOARD (TOOLTIPS + COPY URL)  -->
-        <script>
-            viewerJS.clipboard.init();
-        </script>
+        <script>viewerJS.clipboard.init();</script>
     </composite:implementation>
 </ui:composition>

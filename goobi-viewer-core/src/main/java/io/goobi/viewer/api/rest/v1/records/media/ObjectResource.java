@@ -66,7 +66,11 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.media.voyager.VoyagerSceneBuilder;
 import io.goobi.viewer.model.viewer.object.ObjectInfo;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.Consumes;
@@ -82,13 +86,14 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 
 /**
- * <p>
- * ObjectResource class.
- * </p>
+ * JAX-RS resource that serves 3D object files (scene, auxiliary files, and scene-info JSON) for a given record.
+ * Endpoints are bound under the {@code RECORDS_FILES_3D} path and enforce access-condition checks; scene metadata
+ * can also be written back via PUT requests by authenticated admins.
  *
  * @author Florian Alpers
  */
 
+@Hidden
 @jakarta.ws.rs.Path(RECORDS_FILES_3D)
 @AccessConditionBinding
 @CORSBinding
@@ -106,11 +111,11 @@ public class ObjectResource {
     private final AbstractApiUrlManager urls;
 
     /**
-     * @param context
-     * @param request
-     * @param response
-     * @param pi
-     * @param filename
+     * @param context JAX-RS container request context
+     * @param request incoming HTTP servlet request
+     * @param response outgoing HTTP servlet response
+     * @param pi persistent identifier of the record
+     * @param filename filename of the 3D object file
      */
     public ObjectResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
@@ -124,19 +129,22 @@ public class ObjectResource {
     }
 
     /**
-     * <p>
      * getInfo.
-     * </p>
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
-     * @return a {@link io.goobi.viewer.model.viewer.object.ObjectInfo} object.
+     * @param request incoming HTTP request providing the request URL
+     * @param response outgoing HTTP response (unused, injected by JAX-RS)
+     * @return the ObjectInfo describing the 3D object and its associated resource URIs
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_3D_INFO)
     @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Get 3D object information for a record file", tags = { "records", "media" })
+    @ApiResponse(responseCode = "200", description = "Object information",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @ApiResponse(responseCode = "403", description = "Access to this file is restricted")
+    @ApiResponse(responseCode = "500", description = "Internal error reading object information")
     public ObjectInfo getInfo(@Context HttpServletRequest request, @Context HttpServletResponse response)
             throws PresentationException, IndexUnreachableException {
 
@@ -169,6 +177,11 @@ public class ObjectResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_3D_SCENE)
     @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Get Voyager scene description for a 3D object", tags = { "records", "media" })
+    @ApiResponse(responseCode = "200", description = "Voyager scene JSON",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @ApiResponse(responseCode = "403", description = "Access to this file is restricted")
+    @ApiResponse(responseCode = "500", description = "Error reading media directory or scene file")
     public Response getScene() {
         String baseFilename = FilenameUtils.getBaseName(filename);
         String svxFilename = baseFilename + ".svx.json";
@@ -195,8 +208,8 @@ public class ObjectResource {
             }
 
         } catch (PresentationException | IndexUnreachableException e) {
-            logger.error("Error reading media directory for {} ", pi, e);
-            return Response.serverError().entity("Error reading media directory: " + e.toString()).build();
+            logger.error("Error reading media directory for {}", pi, e);
+            return Response.serverError().entity("Error reading media directory").build();
         }
         return Response.ok().build();
     }
@@ -205,6 +218,10 @@ public class ObjectResource {
     @jakarta.ws.rs.Path(RECORDS_FILES_3D_SCENE)
     @Consumes({ MediaType.APPLICATION_JSON })
     @AdminLoggedInBinding
+    @Operation(summary = "Save a Voyager scene description for a 3D object", tags = { "records", "media" })
+    @ApiResponse(responseCode = "200", description = "Scene saved successfully")
+    @ApiResponse(responseCode = "401", description = "Admin login required")
+    @ApiResponse(responseCode = "500", description = "Error writing scene file")
     public Response setScene(String scene) {
 
         String baseFilename = FilenameUtils.getBaseName(filename);
@@ -222,25 +239,28 @@ public class ObjectResource {
 
         } catch (IOException | PresentationException | IndexUnreachableException e) {
             logger.error("Error writing voyager scene file {}", svxFilename, e);
-            return Response.serverError().entity("Error writing voyager scene file: " + e.toString()).build();
+            return Response.serverError().entity("Error writing voyager scene file").build();
         }
         return Response.ok().build();
     }
 
     /**
-     * <p>
      * getObject.
-     * </p>
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
-     * @return a {@link jakarta.ws.rs.core.StreamingOutput} object.
+     * @param request incoming HTTP request (unused, injected by JAX-RS)
+     * @param response outgoing HTTP response for setting content headers
+     * @return a StreamingOutput that writes the 3D object file content to the response
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     @GET
     @Produces({ MediaType.TEXT_PLAIN })
+    @Operation(summary = "Serve a 3D object file for a record", tags = { "records", "media" })
+    @ApiResponse(responseCode = "200", description = "3D object file content", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM))
+    @ApiResponse(responseCode = "403", description = "Access to this file is restricted")
+    @ApiResponse(responseCode = "404", description = "Object file not found")
+    @ApiResponse(responseCode = "500", description = "Error reading object file")
     public StreamingOutput getObject(@Context HttpServletRequest request, @Context HttpServletResponse response)
             throws IOException, PresentationException, IndexUnreachableException {
 
@@ -274,16 +294,14 @@ public class ObjectResource {
     }
 
     /**
-     * <p>
      * getObjectResource.
-     * </p>
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
-     * @param pi a {@link java.lang.String} object.
-     * @param subfolder a {@link java.lang.String} object.
-     * @param auxfilename a {@link java.lang.String} object.
-     * @return a {@link jakarta.ws.rs.core.StreamingOutput} object.
+     * @param request incoming HTTP request (unused, injected by JAX-RS)
+     * @param response outgoing HTTP response (unused, injected by JAX-RS)
+     * @param pi persistent identifier of the record
+     * @param subfolder first-level subfolder under the media directory
+     * @param auxfilename filename of the auxiliary resource to serve
+     * @return a StreamingOutput that writes the auxiliary resource file content (one subfolder level) to the response
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -291,6 +309,11 @@ public class ObjectResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_3D_AUXILIARY_FILE_1)
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
+    @Operation(summary = "Serve an auxiliary resource file for a 3D object (one subfolder level)", tags = { "records", "media" })
+    @ApiResponse(responseCode = "200", description = "Auxiliary resource file content",
+            content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM))
+    @ApiResponse(responseCode = "403", description = "Access to this file is restricted")
+    @ApiResponse(responseCode = "404", description = "Auxiliary file not found")
     public StreamingOutput getObjectResource(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
             @PathParam("subfolder") String subfolder, @PathParam("auxfilename") final String auxfilename)
             throws IOException, PresentationException, IndexUnreachableException {
@@ -306,16 +329,14 @@ public class ObjectResource {
     }
 
     /**
-     * <p>
      * getObjectResource2.
-     * </p>
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
-     * @param pi a {@link java.lang.String} object.
-     * @param subfolder a {@link java.lang.String} object.
-     * @param auxfilename a {@link java.lang.String} object.
-     * @return a {@link jakarta.ws.rs.core.StreamingOutput} object.
+     * @param request incoming HTTP request (unused, injected by JAX-RS)
+     * @param response outgoing HTTP response (unused, injected by JAX-RS)
+     * @param pi persistent identifier of the record
+     * @param subfolder first-level subfolder under the media directory
+     * @param auxfilename filename of the auxiliary resource to serve
+     * @return a StreamingOutput that writes the auxiliary resource file content (alternate path, one subfolder level) to the response
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -323,6 +344,12 @@ public class ObjectResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_3D_AUXILIARY_FILE_1_ALT)
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
+    @Operation(summary = "Serve an auxiliary resource file for a 3D object (alternate path, one subfolder level)",
+            tags = { "records", "media" })
+    @ApiResponse(responseCode = "200", description = "Auxiliary resource file content",
+            content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM))
+    @ApiResponse(responseCode = "403", description = "Access to this file is restricted")
+    @ApiResponse(responseCode = "404", description = "Auxiliary file not found")
     public StreamingOutput getObjectResource2(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
             @PathParam("subfolder") String subfolder, @PathParam("auxfilename") final String auxfilename)
             throws IOException, PresentationException, IndexUnreachableException {
@@ -330,17 +357,15 @@ public class ObjectResource {
     }
 
     /**
-     * <p>
      * getObjectResource.
-     * </p>
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
-     * @param pi a {@link java.lang.String} object.
-     * @param subfolder1 a {@link java.lang.String} object.
-     * @param subfolder2 a {@link java.lang.String} object.
-     * @param auxfilename a {@link java.lang.String} object.
-     * @return a {@link jakarta.ws.rs.core.StreamingOutput} object.
+     * @param request incoming HTTP request (unused, injected by JAX-RS)
+     * @param response outgoing HTTP response (unused, injected by JAX-RS)
+     * @param pi persistent identifier of the record
+     * @param subfolder1 first-level subfolder under the media directory
+     * @param subfolder2 second-level subfolder under subfolder1
+     * @param auxfilename filename of the auxiliary resource to serve
+     * @return a StreamingOutput that writes the auxiliary resource file content (two subfolder levels) to the response
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -348,6 +373,11 @@ public class ObjectResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_3D_AUXILIARY_FILE_2)
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
+    @Operation(summary = "Serve an auxiliary resource file for a 3D object (two subfolder levels)", tags = { "records", "media" })
+    @ApiResponse(responseCode = "200", description = "Auxiliary resource file content",
+            content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM))
+    @ApiResponse(responseCode = "403", description = "Access to this file is restricted")
+    @ApiResponse(responseCode = "404", description = "Auxiliary file not found")
     public StreamingOutput getObjectResource(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
             @PathParam("subfolder") String subfolder1, @PathParam("subsubfolder") String subfolder2, @PathParam("auxfilename") String auxfilename)
             throws IOException, PresentationException, IndexUnreachableException {
@@ -364,17 +394,15 @@ public class ObjectResource {
     }
 
     /**
-     * <p>
      * getObjectResource2.
-     * </p>
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
-     * @param pi a {@link java.lang.String} object.
-     * @param subfolder1 a {@link java.lang.String} object.
-     * @param subfolder2 a {@link java.lang.String} object.
-     * @param auxfilename a {@link java.lang.String} object.
-     * @return a {@link jakarta.ws.rs.core.StreamingOutput} object.
+     * @param request incoming HTTP request (unused, injected by JAX-RS)
+     * @param response outgoing HTTP response (unused, injected by JAX-RS)
+     * @param pi persistent identifier of the record
+     * @param subfolder1 first-level subfolder under the media directory
+     * @param subfolder2 second-level subfolder under subfolder1
+     * @param auxfilename filename of the auxiliary resource to serve
+     * @return a StreamingOutput that writes the auxiliary resource file content (alternate path, two subfolder levels) to the response
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -382,6 +410,12 @@ public class ObjectResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_3D_AUXILIARY_FILE_2_ALT)
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
+    @Operation(summary = "Serve an auxiliary resource file for a 3D object (alternate path, two subfolder levels)",
+            tags = { "records", "media" })
+    @ApiResponse(responseCode = "200", description = "Auxiliary resource file content",
+            content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM))
+    @ApiResponse(responseCode = "403", description = "Access to this file is restricted")
+    @ApiResponse(responseCode = "404", description = "Auxiliary file not found")
     public StreamingOutput getObjectResource2(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
             @PathParam("subfolder") String subfolder1, @PathParam("subsubfolder") String subfolder2, @PathParam("auxfilename") String auxfilename)
             throws IOException, PresentationException, IndexUnreachableException {
@@ -410,9 +444,9 @@ public class ObjectResource {
     }
 
     /**
-     * @param baseFolder
-     * @param baseFilename
-     * @param baseURI
+     * @param baseFolder absolute path to the media directory
+     * @param baseFilename object filename without extension
+     * @param baseURI base URI used to construct resource URIs
      * @return List<URI>
      * @throws IOException
      * @throws URISyntaxException

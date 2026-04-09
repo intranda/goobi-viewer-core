@@ -57,9 +57,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 /**
- * <p>
- * CMSSidebarWidgetsBean class.
- * </p>
+ * JSF backing bean that manages sidebar widget configuration for CMS pages.
  */
 @Named("cmsSidebarWidgetsBean")
 @RequestScoped
@@ -87,11 +85,9 @@ public class CMSSidebarWidgetsBean implements Serializable {
     private CmsBean cmsBean;
 
     /**
-     * <p>
      * getAllWidgets.
-     * </p>
      *
-     * @return a {@link java.util.List} object
+     * @return the list of all sidebar widget display elements (default, automatic, and custom)
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<WidgetDisplayElement> getAllWidgets() throws DAOException {
@@ -99,12 +95,10 @@ public class CMSSidebarWidgetsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getAllWidgets.
-     * </p>
      *
-     * @param queryAdditionalInformation a boolean
-     * @return a {@link java.util.List} object
+     * @param queryAdditionalInformation if true, queries embedding pages for each widget
+     * @return the list of all sidebar widget display elements, optionally with embedding page information
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<WidgetDisplayElement> getAllWidgets(boolean queryAdditionalInformation) throws DAOException {
@@ -173,11 +167,9 @@ public class CMSSidebarWidgetsBean implements Serializable {
     }
 
     /**
-     * <p>
      * deleteWidget.
-     * </p>
      *
-     * @param id a {@link java.lang.Long} object
+     * @param id database ID of the custom widget to delete
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void deleteWidget(Long id) throws DAOException {
@@ -185,13 +177,11 @@ public class CMSSidebarWidgetsBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>sidebarGroup</code>.
-     * </p>
      *
-     * @param elements a {@link java.util.List} object
-     * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object
-     * @return a {@link jakarta.faces.component.html.HtmlPanelGroup} object
+     * @param elements ordered list of sidebar elements to render
+     * @param page CMS page owning the sidebar elements
+     * @return the HtmlPanelGroup containing the rendered sidebar widget components
      */
     public HtmlPanelGroup getSidebarGroup(List<CMSSidebarElement> elements, CMSPage page) {
         if (elements != null && !elements.isEmpty()) {
@@ -205,11 +195,9 @@ public class CMSSidebarWidgetsBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>sidebarGroup</code>.
-     * </p>
      *
-     * @return a {@link jakarta.faces.component.html.HtmlPanelGroup} object
+     * @return the HtmlPanelGroup for the current CMS page's sidebar, or an empty group if no page is active
      */
     public HtmlPanelGroup getSidebarGroup() {
         return Optional.ofNullable(cmsBean).map(CmsBean::getCurrentPage).map(page -> {
@@ -219,11 +207,9 @@ public class CMSSidebarWidgetsBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>sidebarGroup</code>.
-     * </p>
      *
-     * @param sidebarGroup a {@link jakarta.faces.component.html.HtmlPanelGroup} object
+     * @param sidebarGroup panel group to set as the sidebar container
      */
     public void setSidebarGroup(HtmlPanelGroup sidebarGroup) {
         this.sidebarGroup = sidebarGroup;

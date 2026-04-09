@@ -1,203 +1,266 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:util="http://goobi.io/util"
+    xmlns:util="http://goobi.io/util"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:goobi="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:facelets="http://io.goobi.viewer"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
-
     <composite:interface>
-    	<composite:attribute name="cmsPage" type="io.goobi.viewer.model.cms.pages.CMSPage" required="false" default="#{null}" />
+        <composite:attribute
+            name="cmsPage"
+            type="io.goobi.viewer.model.cms.pages.CMSPage"
+            required="false"
+            default="#{null}" />
     </composite:interface>
 
     <composite:implementation>
         <h:panelGroup rendered="#{searchBean.facets.allAvailableFacets.entrySet().toArray() != null}">
-            <div id="searchListFacetsWrapper" class="widget-search-facets #{cc.attrs.widget.cssClass}">
-                <h:form id="searchListFacetsForm" prependId="false">
+            <div
+                id="searchListFacetsWrapper"
+                class="widget-search-facets #{cc.attrs.widget.cssClass}">
+                <h:form
+                    id="searchListFacetsForm"
+                    prependId="false">
                     <!-- FACETS -->
-                    <c:forEach var="field" items="#{searchBean.facets.allAvailableFacets.entrySet().toArray()}" varStatus="status">
-                        <h:panelGroup id="collectionFacetsPanelGroup_#{status.index}" layout="block"
+                    <c:forEach
+                        var="field"
+                        items="#{searchBean.facets.allAvailableFacets.entrySet().toArray()}"
+                        varStatus="status">
+                        <h:panelGroup
+                            id="collectionFacetsPanelGroup_#{status.index}"
+                            layout="block"
                             rendered="#{!searchBean.facets.isHasWrongLanguageCode(field.key, navigationHelper.localeString) and (searchBean.facets.isFacetListSizeSufficient(field.key) or fn:length(searchBean.facets.getActiveFacetsForField(field.key)) > 0)}">
-                            <div class="widget widget-search-facets__collection" data-facet="searchFacetFilter">
+                            <div
+                                class="widget widget-search-facets__collection"
+                                data-facet="searchFacetFilter"
+                                data-facetfield="#{field.key}">
                                 <div class="widget__topbar widget-search-facets__topbar">
-                                	<h2 class="widget__title widget-search-facets__title" data-heading="searchFacetFilter">#{msg[field.key.concat('_DD')]}</h2>
-	                                <!-- FILTER FACETS -->
-	                                <ui:fragment rendered="#{configurationBean.isFacetFieldDisplayValueFilter(field.key)}">
-	                                    <div class="widget-search-facets__filter" data-wrapper="searchFacetFilter">
-	                                        <input
-	                                          type="text"
-	                                          id="collectionFacetsFilter_#{status.index}"
-	                                          class="widget-search-facets__filter-input -no-outline"
-	                                          placeholder="#{msg.placeholder__filter_search_results}"
-	                                          aria-label="#{msg.placeholder__filter_search_results}"
-	                                          data-input="searchFacetFilter" />
-	                                        <button
-	                                            type="button"
-	                                            class="btn btn--clean widget-search-facets__filter-button"
-	                                            data-toggle="searchFacetFilter"
-	                                            aria-label="#{msg.placeholder__filter_search_results}">
-	                                        	<util:icon icon="search" />
-	                                        </button>
-	                                    </div>
-	                                </ui:fragment>
+                                    <h2
+                                        class="widget__title widget-search-facets__title"
+                                        data-heading="searchFacetFilter">
+                                        #{msg[field.key.concat('_DD')]}
+                                    </h2>
+                                    <!-- FILTER FACETS -->
+                                    <ui:fragment rendered="#{configurationBean.isFacetFieldDisplayValueFilter(field.key)}">
+                                        <div
+                                            class="widget-search-facets__filter"
+                                            data-wrapper="searchFacetFilter">
+                                            <input
+                                                type="text"
+                                                id="collectionFacetsFilter_#{status.index}"
+                                                class="widget-search-facets__filter-input -no-outline"
+                                                placeholder="#{msg.placeholder__filter_search_results}"
+                                                aria-label="#{msg.placeholder__filter_search_results}"
+                                                data-input="searchFacetFilter" />
+                                            <button
+                                                type="button"
+                                                class="btn btn--clean widget-search-facets__filter-button"
+                                                data-toggle="searchFacetFilter"
+                                                aria-label="#{msg.placeholder__filter_search_results}">
+                                                <util:icon icon="search" svgClass="widget__topbar-icon-svg widget-search-facets__topbar-icon-svg" />
+                                            </button>
+                                        </div>
+                                    </ui:fragment>
                                 </div>
-                                
+
                                 <ui:fragment rendered="#{configurationBean.isFacetFieldTypeBoolean(field.key)}">
                                     <div class="widget__body widget-search-facets__body">
-										<div class="widget-search-facets__boolean">
-											<ui:fragment
-												rendered="#{searchBean.facets.isFacetStringCurrentlyUsed(field.key.concat(':true'))}">
+                                        <div class="widget-search-facets__boolean">
+                                            <ui:fragment rendered="#{searchBean.facets.isFacetStringCurrentlyUsed(field.key.concat(':true'))}">
+                                                <div class="widget-search-facets__boolean-button-wrapper small-button-loader__wrapper">
+                                                    <h:commandLink
+                                                        action="#{searchBean.removeFacetAction(field.key.concat(':true'))}"
+                                                        styleClass="btn widget-search-facets__boolean-button -active"
+                                                        title="#{msg.removeFacet}">
+                                                        #{msg.yes}
+                                                        <f:passThroughAttribute
+                                                            name="data-triggerjs"
+                                                            value="clickedFacet" />
+                                                        <f:passThroughAttribute
+                                                            name="data-toggle"
+                                                            value="tooltip" />
+                                                        <f:passThroughAttribute
+                                                            name="data-placement"
+                                                            value="top" />
+                                                        <f:passThroughAttribute
+                                                            name="aria-label"
+                                                            value="#{msg.removeFacet}: #{msg[field.key.concat('_DD')]} #{msg.yes}" />
+                                                    </h:commandLink>
+                                                    <div
+                                                        class="small-button-loader__icon -top-right"
+                                                        data-target="buttonLoader" />
+                                                </div>
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{!searchBean.facets.isFacetStringCurrentlyUsed(field.key.concat(':true'))}">
+                                                <div class="widget-search-facets__boolean-button-wrapper small-button-loader__wrapper">
+                                                    <h:outputLink
+                                                        styleClass="btn widget-search-facets__boolean-button"
+                                                        title="#{msg.yes} (#{searchBean.facets.getFacet(field.key,'true').count})"
+                                                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeContext}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.getActiveFacetStringPrefix(field.key)}#{field.key}:true/">
+                                                        #{msg.yes}
+                                                        <f:passThroughAttribute
+                                                            name="data-triggerjs"
+                                                            value="clickedFacet" />
+                                                        <f:passThroughAttribute
+                                                            name="aria-label"
+                                                            value="#{msg[field.key.concat('_DD')]}: #{msg.yes}" />
+                                                    </h:outputLink>
+                                                    <div
+                                                        class="small-button-loader__icon -top-right"
+                                                        data-target="buttonLoader" />
+                                                </div>
+                                            </ui:fragment>
 
-												<div class="widget-search-facets__boolean-button-wrapper small-button-loader__wrapper">
-													<h:commandLink
-														action="#{searchBean.removeFacetAction(field.key.concat(':true'))}"
-														styleClass="btn widget-search-facets__boolean-button -active"
-														title="#{msg.removeFacet}">
-	                                            	#{msg.yes}
-	                                            	<f:passThroughAttribute name="data-triggerjs" value="clickedFacet" />
-	                                                <f:passThroughAttribute
-															name="data-toggle" value="tooltip" />
-														<f:passThroughAttribute name="data-placement" value="top" />
-														<f:passThroughAttribute name="aria-label"
-															value="#{msg.removeFacet}: #{msg[field.key.concat('_DD')]} #{msg.yes}" />
-													</h:commandLink>
-													<div class="small-button-loader__icon -top-right" data-target="buttonLoader"></div>
-												</div>
-												
-											</ui:fragment>
-											<ui:fragment
-												rendered="#{!searchBean.facets.isFacetStringCurrentlyUsed(field.key.concat(':true'))}">
-												<div class="widget-search-facets__boolean-button-wrapper small-button-loader__wrapper">
-													<h:outputLink
-														styleClass="btn widget-search-facets__boolean-button"
-														title="#{msg.yes} (#{searchBean.facets.getFacet(field.key,'true').count})"
-														value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeContext}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.getActiveFacetStringPrefix(field.key)}#{field.key}:true/">
-	                                                    #{msg.yes}
-	                                                    <f:passThroughAttribute name="data-triggerjs" value="clickedFacet" />
-	                                                    <f:passThroughAttribute
-															name="aria-label"
-															value="#{msg[field.key.concat('_DD')]}: #{msg.yes}" />
-													</h:outputLink>
-													<div class="small-button-loader__icon -top-right" data-target="buttonLoader"></div>
-												</div>
-											</ui:fragment>
-
-											<ui:fragment
-												rendered="#{searchBean.facets.isFacetStringCurrentlyUsed(field.key.concat(':false'))}">
-												<div class="widget-search-facets__boolean-button-wrapper small-button-loader__wrapper">
-													<h:commandLink
-														action="#{searchBean.removeFacetAction(field.key.concat(':false'))}"
-														styleClass="btn widget-search-facets__boolean-button -active"
-														title="#{msg.removeFacet}">
-	                                            	#{msg.no}
-	                                            	<f:passThroughAttribute name="data-triggerjs" value="clickedFacet" />
-	                                                <f:passThroughAttribute
-															name="data-toggle" value="tooltip" />
-														<f:passThroughAttribute name="data-placement" value="top" />
-														<f:passThroughAttribute name="aria-label"
-															value="#{msg.removeFacet}: #{msg[field.key.concat('_DD')]} #{msg.no}" />
-													</h:commandLink>
-														<div class="small-button-loader__icon -top-right" data-target="buttonLoader"></div>
-												</div>
-											</ui:fragment>
-											<ui:fragment
-												rendered="#{!searchBean.facets.isFacetStringCurrentlyUsed(field.key.concat(':false'))}">
-												<div class="widget-search-facets__boolean-button-wrapper small-button-loader__wrapper">
-													<h:outputLink
-														styleClass="btn widget-search-facets__boolean-button"
-														title="#{msg.no} (#{searchBean.facets.getFacet(field.key,'false').count})"
-														value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeContext}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.getActiveFacetStringPrefix(field.key)}#{field.key}:false/">
-	                                                    #{msg.no}
-	                                                    <f:passThroughAttribute name="data-triggerjs" value="clickedFacet" />
-	                                                    <f:passThroughAttribute
-															name="aria-label"
-															value="#{msg[field.key.concat('_DD')]}: #{msg.no}" />
-													</h:outputLink>
-													<div class="small-button-loader__icon -top-right" data-target="buttonLoader"></div>
-												</div>
-											</ui:fragment>
-										</div>
-									</div>
+                                            <ui:fragment rendered="#{searchBean.facets.isFacetStringCurrentlyUsed(field.key.concat(':false'))}">
+                                                <div class="widget-search-facets__boolean-button-wrapper small-button-loader__wrapper">
+                                                    <h:commandLink
+                                                        action="#{searchBean.removeFacetAction(field.key.concat(':false'))}"
+                                                        styleClass="btn widget-search-facets__boolean-button -active"
+                                                        title="#{msg.removeFacet}">
+                                                        #{msg.no}
+                                                        <f:passThroughAttribute
+                                                            name="data-triggerjs"
+                                                            value="clickedFacet" />
+                                                        <f:passThroughAttribute
+                                                            name="data-toggle"
+                                                            value="tooltip" />
+                                                        <f:passThroughAttribute
+                                                            name="data-placement"
+                                                            value="top" />
+                                                        <f:passThroughAttribute
+                                                            name="aria-label"
+                                                            value="#{msg.removeFacet}: #{msg[field.key.concat('_DD')]} #{msg.no}" />
+                                                    </h:commandLink>
+                                                    <div
+                                                        class="small-button-loader__icon -top-right"
+                                                        data-target="buttonLoader" />
+                                                </div>
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{!searchBean.facets.isFacetStringCurrentlyUsed(field.key.concat(':false'))}">
+                                                <div class="widget-search-facets__boolean-button-wrapper small-button-loader__wrapper">
+                                                    <h:outputLink
+                                                        styleClass="btn widget-search-facets__boolean-button"
+                                                        title="#{msg.no} (#{searchBean.facets.getFacet(field.key,'false').count})"
+                                                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeContext}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.getActiveFacetStringPrefix(field.key)}#{field.key}:false/">
+                                                        #{msg.no}
+                                                        <f:passThroughAttribute
+                                                            name="data-triggerjs"
+                                                            value="clickedFacet" />
+                                                        <f:passThroughAttribute
+                                                            name="aria-label"
+                                                            value="#{msg[field.key.concat('_DD')]}: #{msg.no}" />
+                                                    </h:outputLink>
+                                                    <div
+                                                        class="small-button-loader__icon -top-right"
+                                                        data-target="buttonLoader" />
+                                                </div>
+                                            </ui:fragment>
+                                        </div>
+                                    </div>
                                 </ui:fragment>
-                                
+
                                 <script>
-									// SHOW LOADER AFTER TRIGGERING BOOLEAN BUTTON/FACET TO INDICATE ACTIVITY
-									$('[data-triggerjs="clickedFacet"]').click(function(event) {
-										$(this).next('[data-target="buttonLoader"]').fadeIn('fast');
-									});
-								</script>
-                                 
+                                    // SHOW LOADER AFTER TRIGGERING BOOLEAN BUTTON/FACET TO INDICATE ACTIVITY
+                                    $('[data-triggerjs="clickedFacet"]').click(function (event) {
+                                        $(this).next('[data-target="buttonLoader"]').fadeIn('fast');
+                                    });
+                                </script>
+
                                 <ui:fragment rendered="#{!configurationBean.isFacetFieldTypeBoolean(field.key)}">
+                                    <div class="widget__body widget-search-facets__body">
+                                        <!-- DESCRIPTIONAL INFORMATION/TEXT ABOVE FACET (CONFIG + MSG KEY) -->
+                                        <ui:fragment rendered="#{configurationBean.getFacetFieldDescriptionKey(field.key) != null}">
+                                            <p class="widget__description-text widget-search-facets__description-text">
+                                                <h:outputFormat
+                                                    escape="false"
+                                                    value="#{msg[configurationBean.getFacetFieldDescriptionKey(field.key)]}" />
+                                            </p>
+                                        </ui:fragment>
 
-                                <div class="widget__body widget-search-facets__body">
+                                        <ul class="widget-search-facets__list">
+                                            <!-- ACTIVE FACETS -->
+                                            <c:forEach 
+                                                items="#{searchBean.facets.getActiveFacetsForField(field.key)}"
+                                                var="facet">
+                                                <li class="widget-search-facets__list-item active">
+                                                    <h:commandLink
+                                                        styleClass="widget-search-facets__list-item-link -active"
+                                                        action="#{searchBean.removeFacetAction(facet.link)}"
+                                                        title="#{msg.removeFacet}">
+                                                        <div class="widget-search-facets__list-item-link-inner">
+                                                            <div class="widget-search-facets__list-item-label">#{facet.translatedLabel}</div>
+                                                            <div class="widget-search-facets__list-item-icon">
+                                                                <util:icon icon="x" svgClass="widget__body-icon-svg widget-search-facets__body-icon-svg" />
+                                                            </div>
+                                                        </div>
+                                                        <f:passThroughAttribute
+                                                            name="data-toggle"
+                                                            value="tooltip" />
+                                                        <f:passThroughAttribute
+                                                            name="data-placement"
+                                                            value="top" />
+                                                        <f:passThroughAttribute
+                                                            name="aria-label"
+                                                            value="#{msg[field.key.concat('_DD')]}: #{facet.translatedLabel}" />
+                                                    </h:commandLink>
+                                                </li>
+                                            </c:forEach>
 
-                                    <!-- DESCRIPTIONAL INFORMATION/TEXT ABOVE FACET (CONFIG + MSG KEY) -->
-                                    <ui:fragment rendered="#{configurationBean.getFacetFieldDescriptionKey(field.key) != null}">
-                                        <p class="widget__description-text widget-search-facets__description-text"><h:outputFormat escape="false" value="#{msg[configurationBean.getFacetFieldDescriptionKey(field.key)]}" /></p>
-                                    </ui:fragment>
-                                                         
-                                	<ul class="widget-search-facets__list">
-	                                    <!-- ACTIVE FACETS -->
-	                                    <c:forEach items="#{searchBean.facets.getActiveFacetsForField(field.key)}" var="facet">
-	                                        <li class="widget-search-facets__list-item active">
-	                                            <h:commandLink styleClass="widget-search-facets__list-item-link" action="#{searchBean.removeFacetAction(facet.link)}" title="#{msg.removeFacet}">
-	                                                <div class="widget-search-facets__list-item-link-inner">
-	                                                    <div class="widget-search-facets__list-item-link-active">#{facet.translatedLabel}</div>
-	                                                    <div class="widget-search-facets__list-item-link-icon">
-															<util:icon icon="x" />
-	                                                    </div>
-	                                                </div>
-	                                                <f:passThroughAttribute name="data-toggle" value="tooltip" />
-	                                                <f:passThroughAttribute name="data-placement" value="top" />
-	                                                <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{facet.translatedLabel}" />
-	                                            </h:commandLink>
-	                                        </li>                        
-	                                    </c:forEach>
-	                                    
-	                                    <!-- AVAILABLE FACETS -->
-	                                    <ui:repeat value="#{searchBean.facets.getLimitedFacetListForField(field.key)}" var="facet">
-	                                        <li class="widget-search-facets__list-item">
-	                                            <h:outputLink styleClass="widget-search-facets__list-item-link"
-	                                                value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/">
-	                                                <span class="widget-search-facets__list-item-label">#{facet.translatedLabel}</span>  <span class="widget-search-facets__list-item-count">(#{facet.count})</span>
-	                                                <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{facet.translatedLabel}" />
-	                                            </h:outputLink>
-	                                        </li>
-	                                    </ui:repeat>                         			
-                                	</ul>
-                                </div>
-
+                                            <!-- AVAILABLE FACETS -->
+                                            <ui:repeat
+                                                value="#{searchBean.facets.getLimitedFacetListForField(field.key)}"
+                                                var="facet">
+                                                <li class="widget-search-facets__list-item">
+                                                    <h:outputLink
+                                                        styleClass="widget-search-facets__list-item-link"
+                                                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/">
+                                                        <span class="widget-search-facets__list-item-label">#{facet.translatedLabel}</span>
+                                                        <span class="widget-search-facets__list-item-count">(#{facet.count})</span>
+                                                        <f:passThroughAttribute
+                                                            name="aria-label"
+                                                            value="#{msg[field.key.concat('_DD')]}: #{facet.translatedLabel}" />
+                                                    </h:outputLink>
+                                                </li>
+                                            </ui:repeat>
+                                        </ul>
+                                    </div>
                                 </ui:fragment>
 
                                 <!-- EXPAND/COLLAPSE FACET -->
                                 <ui:fragment rendered="#{searchBean.facets.isDisplayFacetExpandLink(field.key)}">
                                     <div class="widget-search-facets__collapse">
-                                        <button class="btn btn--clean"
+                                        <button
+                                            class="btn btn--clean widget-search-facets__collapse-button -expand"
                                             jsf:action="#{searchBean.facets.expandFacet(field.key)}"
                                             title="#{msg.slideDown}">
-											<util:icon icon="chevron-down" />
-                                            <f:passThroughAttribute name="data-collapse-link" value="collapse-link-#{status.index}" />
+                                            <util:icon icon="chevron-down" svgClass="widget-search-facets__collapse-button" />
+                                            <f:passThroughAttribute
+                                                name="data-collapse-link"
+                                                value="collapse-link-#{status.index}" />
                                             <f:ajax render="collectionFacetsPanelGroup_#{status.index}" />
                                         </button>
                                     </div>
                                 </ui:fragment>
                                 <ui:fragment rendered="#{searchBean.facets.isDisplayFacetCollapseLink(field.key)}">
                                     <div class="widget-search-facets__collapse">
-                                        <button class="btn btn--clean"
-                                            jsf:action="#{searchBean.facets.collapseFacet(field.key)}" title="#{msg.slideUp}">
-                                            <util:icon icon="chevron-up" />
-                                            <f:passThroughAttribute name="data-collapse-link" value="collapse-link-#{status.index}" />
-                                                <f:ajax render="collectionFacetsPanelGroup_#{status.index}" />
+                                        <button
+                                            class="btn btn--clean widget-search-facets__collapse-button -collapse"
+                                            jsf:action="#{searchBean.facets.collapseFacet(field.key)}"
+                                            title="#{msg.slideUp}">
+                                            <util:icon icon="chevron-up" svgClass="widget-search-facets__collapse-button"/>
+                                            <f:passThroughAttribute
+                                                name="data-collapse-link"
+                                                value="collapse-link-#{status.index}" />
+                                            <f:ajax render="collectionFacetsPanelGroup_#{status.index}" />
                                         </button>
                                     </div>
                                 </ui:fragment>
-                                
                             </div>
                         </h:panelGroup>
                     </c:forEach>
@@ -205,9 +268,10 @@
             </div>
         </h:panelGroup>
 
-        <h:panelGroup
-            rendered="#{searchBean.facets.allAvailableFacets.entrySet().toArray() == null}">
-            <div id="widgetSearchHelp" class="widget-searchhelp">
+        <h:panelGroup rendered="#{searchBean.facets.allAvailableFacets.entrySet().toArray() == null}">
+            <div
+                id="widgetSearchHelp"
+                class="widget-searchhelp">
                 <viewerComponent:searchHelpText />
             </div>
         </h:panelGroup>

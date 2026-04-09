@@ -151,7 +151,7 @@ export async function createCompleteDemo(verovioApp, options = {}) {
         // Create demo container
         const container = createDemoContainer('Verovio Complete Demo', {
             style: 'max-width: 1200px; margin: 20px auto;',
-            ...options
+            ...options,
         });
 
         // Load demo content
@@ -166,7 +166,7 @@ export async function createCompleteDemo(verovioApp, options = {}) {
             const toolbar = createFloatingToolbar({
                 verovio: verovioApp,
                 navigation: verovioApp.navigation,
-                playback: verovioApp.playback
+                playback: verovioApp.playback,
             });
 
             // Position toolbar relative to demo container
@@ -229,7 +229,7 @@ export async function initializeDemoMode(verovioApp, options = {}) {
 export function cleanupDemo() {
     // Remove demo containers
     const demoContainers = document.querySelectorAll('#verovio-demo-container');
-    demoContainers.forEach(container => container.remove());
+    demoContainers.forEach((container) => container.remove());
 
     // Remove floating toolbar
     const floatingToolbar = document.getElementById('verovio-floating-toolbar');
@@ -254,7 +254,7 @@ export const demoUtils = {
             if (verovioApp.navigation) {
                 verovioApp.navigation.setZoom(level);
             }
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise((resolve) => setTimeout(resolve, 1000));
         }
     },
 
@@ -270,7 +270,7 @@ export const demoUtils = {
         for (let i = 1; i <= pageInfo.total; i++) {
             console.log(`Navigating to page ${i}`);
             verovioApp.navigation.setPage(i);
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            await new Promise((resolve) => setTimeout(resolve, 1500));
         }
     },
 
@@ -281,11 +281,11 @@ export const demoUtils = {
         console.log('Testing MIDI playback');
         try {
             await verovioApp.playMEI();
-            await new Promise(resolve => setTimeout(resolve, 3000));
+            await new Promise((resolve) => setTimeout(resolve, 3000));
             verovioApp.pauseMidi();
             console.log('MIDI test completed');
         } catch (error) {
             console.error('MIDI test failed:', error);
         }
-    }
+    },
 };

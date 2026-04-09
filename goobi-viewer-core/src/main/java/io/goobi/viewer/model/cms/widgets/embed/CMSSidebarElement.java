@@ -51,10 +51,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 /**
- * <p>
- * CMSSidebarElement class.
- * </p>
- * Wrapper to link sidebar widgets to cms-pages. Has a subclass for each type of sidebar widget
+ * Represents a sidebar widget embedded in a CMS page with its configuration and position.
+ *
+ * <p>Wrapper to link sidebar widgets to cms-pages. Has a subclass for each type of sidebar widget
  */
 @Entity
 @Table(name = "cms_page_sidebar_elements")
@@ -71,7 +70,7 @@ public class CMSSidebarElement implements Serializable {
     public static final String WIDGET_TYPE_AUTOMATIC = "AUTOMATIC";
     public static final String WIDGET_TYPE_CUSTOM = "CUSTOM";
 
-    /** Constant <code>HASH_MULTIPLIER=11</code> */
+    /** Constant <code>HASH_MULTIPLIER=11</code>. */
     protected static final int HASH_MULTIPLIER = 11;
     // private static final NumberIterator ID_COUNTER = new NumberIterator();
     @Id
@@ -101,16 +100,16 @@ public class CMSSidebarElement implements Serializable {
     private WidgetContentType contentType;
 
     /**
-     * Empty constructor for the DAO
+     * Empty constructor for the DAO.
      */
     public CMSSidebarElement() {
 
     }
 
     /**
-     * Default constructor for a certain type of widget
-     * 
-     * @param type
+     * Default constructor for a certain type of widget.
+     *
+     * @param type the content type determining the widget's behaviour and rendering
      */
     public CMSSidebarElement(WidgetContentType type) {
         this.generationType = WidgetContentType.getGenerationType(type);
@@ -118,10 +117,10 @@ public class CMSSidebarElement implements Serializable {
     }
 
     /**
-     * Default constructor for a certain type of widget
-     * 
-     * @param type
-     * @param owner
+     * Default constructor for a certain type of widget.
+     *
+     * @param type the content type determining the widget's behaviour and rendering
+     * @param owner the CMS page that owns this sidebar element
      */
     public CMSSidebarElement(WidgetContentType type, CMSPage owner) {
         this(type);
@@ -129,10 +128,10 @@ public class CMSSidebarElement implements Serializable {
     }
 
     /**
-     * Default constructor for a certain type of widget
-     * 
-     * @param type
-     * @param owner
+     * Default constructor for a certain type of widget.
+     *
+     * @param type the content type determining the widget's behaviour and rendering
+     * @param owner the CMS page template that owns this sidebar element
      */
     public CMSSidebarElement(WidgetContentType type, CMSPageTemplate owner) {
         this(type);
@@ -140,10 +139,10 @@ public class CMSSidebarElement implements Serializable {
     }
 
     /**
-     * Default constructor for a certain type of widget and owning CMSPage
-     * 
-     * @param orig
-     * @param owner
+     * Default constructor for a certain type of widget and owning CMSPage.
+     *
+     * @param orig the sidebar element to copy
+     * @param owner the CMS page that will own the copied element
      */
     public CMSSidebarElement(CMSSidebarElement orig, CMSPage owner) {
         this(orig.contentType);
@@ -153,10 +152,10 @@ public class CMSSidebarElement implements Serializable {
     }
 
     /**
-     * Default constructor for a certain type of widget and owning CMSPageTemplate
-     * 
-     * @param orig
-     * @param owner
+     * Default constructor for a certain type of widget and owning CMSPageTemplate.
+     *
+     * @param orig the sidebar element to copy
+     * @param owner the CMS page template that will own the copied element
      */
     public CMSSidebarElement(CMSSidebarElement orig, CMSPageTemplate owner) {
         this(orig.contentType);
@@ -167,9 +166,9 @@ public class CMSSidebarElement implements Serializable {
 
     /**
      * Clones the given sidebar element and assigns the given CMSPage as owner. Depends on cloning constructors of subclasses
-     * 
-     * @param orig
-     * @param owner
+     *
+     * @param orig the sidebar element to copy
+     * @param owner the CMS page that will own the copied element
      * @return {@link CMSSidebarElement}
      */
     public static CMSSidebarElement copy(CMSSidebarElement orig, CMSPage owner) {
@@ -187,9 +186,9 @@ public class CMSSidebarElement implements Serializable {
 
     /**
      * Clones the given sidebar element and assigns the given CMSPage as owner. Depends on cloning constructors of subclasses
-     * 
-     * @param orig
-     * @param owner
+     *
+     * @param orig the sidebar element to copy
+     * @param owner the CMS page template that will own the copied element
      * @return {@link CMSSidebarElement}
      */
     public static CMSSidebarElement copy(CMSSidebarElement orig, CMSPageTemplate owner) {
@@ -206,33 +205,29 @@ public class CMSSidebarElement implements Serializable {
     }
 
     /**
-     * the database id
-     * 
-     * @return the id
+     * The database id.
+     *
+     * @return the database primary key of this sidebar element
      */
     public Long getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
+    
     public void setId(Long id) {
         this.id = id;
     }
 
     /**
-     * the {@link CMSPage} containing the element
-     * 
-     * @return the ownerPage
+     * The {@link CMSPage} containing the element.
+     *
+     * @return the {@link CMSPage} that owns this sidebar element
      */
     public CMSPage getOwnerPage() {
         return ownerPage;
     }
 
-    /**
-     * @param ownerPage the ownerPage to set
-     */
+    
     public void setOwnerPage(CMSPage ownerPage) {
         this.ownerPage = ownerPage;
     }
@@ -247,54 +242,48 @@ public class CMSSidebarElement implements Serializable {
 
     /**
      * The order in which the element is shown. Low numbers are displayed on top of the sidebar, high numbers at the bottom
-     * 
-     * @return the order
+     *
+     * @return the display order of this element within the sidebar
      */
     public int getOrder() {
         return order;
     }
 
-    /**
-     * @param order the order to set
-     */
+    
     public void setOrder(int order) {
         this.order = order;
     }
 
     /**
-     * the {@link WidgetGenerationType} of the underlying widget
-     * 
-     * @return the generationType
+     * The {@link WidgetGenerationType} of the underlying widget.
+     *
+     * @return the {@link WidgetGenerationType} describing how this widget's data is generated
      */
     public WidgetGenerationType getGenerationType() {
         return generationType;
     }
 
-    /**
-     * @param generationType the generationType to set
-     */
+    
     public void setGenerationType(WidgetGenerationType generationType) {
         this.generationType = generationType;
     }
 
     /**
-     * the {@link WidgetContentType} of the underlying widget
-     * 
-     * @return the contentType
+     * The {@link WidgetContentType} of the underlying widget.
+     *
+     * @return the {@link WidgetContentType} identifying the xhtml component used for this sidebar element
      */
     public WidgetContentType getContentType() {
         return contentType;
     }
 
-    /**
-     * @param contentType the contentType to set
-     */
+    
     public void setContentType(WidgetContentType contentType) {
         this.contentType = contentType;
     }
 
     /**
-     * The title displayed for this element when editing the owning CMSPage
+     * The title displayed for this element when editing the owning CMSPage.
      * 
      * @return {@link TranslatedText}
      */

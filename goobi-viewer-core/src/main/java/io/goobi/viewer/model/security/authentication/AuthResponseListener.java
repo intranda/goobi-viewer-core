@@ -26,17 +26,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Implementation of {@link io.goobi.viewer.model.security.authentication.AuthResponseListener} which keeps all providers waiting for a response in a
- * {@link java.util.concurrent.ConcurrentHashMap}
+ * {@link java.util.concurrent.ConcurrentHashMap}.
  *
- * @param <T>
  * @author Florian Alpers
+ * @param <T>
  */
 public class AuthResponseListener<T extends IAuthenticationProvider> {
 
     private final ConcurrentHashMap<T, Boolean> authenticationProviders = new ConcurrentHashMap<>(5, 0.75f, 6);
 
     /**
-     * Make an Auth provider issuing an authentication request eligible for receiving a response
+     * Make an Auth provider issuing an authentication request eligible for receiving a response.
      *
      * @param provider The provider issuing the request
      */
@@ -57,7 +57,7 @@ public class AuthResponseListener<T extends IAuthenticationProvider> {
     }
 
     /**
-     * Gets a list of all registered providers
+     * Gets a list of all registered providers.
      *
      * @return The registered providers
      */

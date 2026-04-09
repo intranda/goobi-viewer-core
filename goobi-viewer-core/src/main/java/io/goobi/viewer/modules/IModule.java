@@ -32,36 +32,30 @@ import io.goobi.viewer.modules.interfaces.IURLBuilder;
 import io.goobi.viewer.modules.interfaces.IndexAugmenter;
 
 /**
- * <p>
- * IModule interface.
- * </p>
+ * Contract that every Goobi viewer extension module must implement.
+ * Provides identity and version information, configuration access, UI contribution hooks (sidebar widgets, admin links,
+ * CMS menu entries), task-type registration, and lifecycle callbacks for record resets and user-content management.
  */
 public interface IModule extends IndexAugmenter {
 
     /**
-     * <p>
      * getId.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the unique identifier of this module
      */
     public String getId();
 
     /**
-     * <p>
      * getName.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the display name of this module
      */
     public String getName();
 
     /**
-     * <p>
      * getVersion.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the version string of this module
      */
     public String getVersion();
 
@@ -71,32 +65,30 @@ public interface IModule extends IndexAugmenter {
     public String getVersionJson();
 
     /**
-     * <p>
      * isLoaded.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this module has been successfully loaded and is active, false otherwise
      */
     public boolean isLoaded();
 
     /**
      * Module configuration object.
      *
-     * @return a {@link io.goobi.viewer.controller.AbstractConfiguration} object.
+     * @return the configuration object for this module
      */
     public AbstractConfiguration getConfiguration();
 
     /**
      * URLs for the CMS menu.
      *
-     * @return a {@link java.util.Map} object.
+     * @return a map of display labels to URLs for this module's CMS menu contributions
      */
     public Map<String, String> getCmsMenuContributions();
 
     /**
      * URLs to sidebar widgets.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of sidebar widget URLs contributed by this module
      */
     public List<String> getSidebarContributions();
 
@@ -110,22 +102,22 @@ public interface IModule extends IndexAugmenter {
     /**
      * URLs to widgets containing admin menu links.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of admin widget URLs contributed by this module
      */
     public List<String> getAdminContributions();
 
     /**
      * URLs to widgets containing navigation menu links.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of login navigation widget URLs contributed by this module
      */
     public List<String> getLoginNavigationContributions();
 
     /**
      * Generic widget URLs than can be used from virtually anywhere. The URLs are configured in the config file.
      *
-     * @param type a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
+     * @param type widget type identifier from configuration
+     * @return a list of widget URLs of the given type contributed by this module
      */
     public List<String> getWidgets(String type);
 
@@ -161,9 +153,7 @@ public interface IModule extends IndexAugmenter {
     public int moveUserContributions(User fromUser, User toUser);
 
     /**
-     * <p>
      * getURLBuilder.
-     * </p>
      *
      * @return the {@link io.goobi.viewer.modules.interfaces.IURLBuilder} for this module, if any. If this module should not alter url building, an
      *         empty optional should be returned

@@ -1,13 +1,12 @@
-<ui:composition 
+<ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:util="http://goobi.io/util"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
-
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
     <!-- CONTENT TYPE COLLECTION -->
     <!-- COLLECTION SELECT -->
     <div class="cms-module__option-group">
@@ -15,47 +14,58 @@
         <div class="cms-module__option-label">
             <label for="pageListCategory">#{msg[contentItem.itemLabel]}#{contentItem.mandatory?'*':''}:</label>
         </div>
-        
+
         <div class="cms-module__option-control">
             <!-- AREA FOR AJAX REFRESH -->
             <h:panelGroup id="collectionSelectGroup">
                 <!-- VALIDATION MESSAGE -->
                 <div class="cms-module__option-message">
-                    <h:messages for="collectionSelect" 
-                        infoClass="cms-module__option-message-status success" 
+                    <h:messages
+                        for="collectionSelect"
+                        infoClass="cms-module__option-message-status success"
                         warnClass="cms-module__option-message-status warning"
                         errorClass="cms-module__option-message-status danger" />
 
                     <div class="cms-module__option-message-mark">
-                        <i class="fa fa-check" aria-hidden="true"></i>
-                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+                        <i
+                            class="fa fa-check"
+                            aria-hidden="true" />
+                        <i
+                            class="fa fa-exclamation"
+                            aria-hidden="true" />
                     </div>
                 </div>
-                
+
                 <!-- SELECT MENU -->
                 <div class="custom-control custom-control--select">
                     <h:selectOneMenu
                         id="collectionSelect"
-                        styleClass="form-control" 
+                        styleClass="form-control"
                         value="#{contentItem.collectionField}">
-                        <f:selectItems 
+                        <f:selectItems
                             value="#{cmsBean.getLuceneFields()}"
                             var="field"
                             itemValue="#{field}"
                             itemLabel="#{field}" />
                         <f:ajax render="baseCollection ignoreCollectionGroup" />
-                        <f:passThroughAttribute name="aria-label" value="#{msg[contentItem.itemLabel]}" />
+                        <f:passThroughAttribute
+                            name="aria-label"
+                            value="#{msg[contentItem.itemLabel]}" />
                     </h:selectOneMenu>
                 </div>
             </h:panelGroup>
-            
+
             <!-- INLINE HELP -->
             <span class="cms-module__option-control-helptext">#{msg.inline_help__cms_page_type_collection_select}</span>
         </div>
-        
+
         <!-- TOGGLE INLINE HELP -->
         <div class="cms-module__option-help">
-            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+            <button
+                type="button"
+                class="btn btn--clean"
+                data-toggle="helptext"
+                aria-label="#{msg.aria_label__help}">
                 <util:icon icon="help" />
             </button>
         </div>
@@ -67,48 +77,59 @@
         <div class="cms-module__option-label">
             <label for="baseCollection">#{msg.cms_itemBaseCollection}:</label>
         </div>
-        
+
         <div class="cms-module__option-control">
             <!-- AREA FOR AJAX REFRESH -->
             <h:panelGroup id="baseCollectionGroup">
                 <!-- VALIDATION MESSAGE -->
                 <div class="cms-module__option-message">
-                    <h:messages for="baseCollection" 
-                        infoClass="cms-module__option-message-status success" 
+                    <h:messages
+                        for="baseCollection"
+                        infoClass="cms-module__option-message-status success"
                         warnClass="cms-module__option-message-status warning"
                         errorClass="cms-module__option-message-status danger" />
 
                     <div class="cms-module__option-message-mark">
-                        <i class="fa fa-check" aria-hidden="true"></i>
-                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+                        <i
+                            class="fa fa-check"
+                            aria-hidden="true" />
+                        <i
+                            class="fa fa-exclamation"
+                            aria-hidden="true" />
                     </div>
                 </div>
-                
+
                 <!-- SELECT MENU -->
                 <div class="custom-control custom-control--select">
-                    <h:selectOneMenu  
+                    <h:selectOneMenu
                         id="baseCollection"
-                        styleClass="form-control" 
+                        styleClass="form-control"
                         value="#{contentItem.baseCollection}"
                         disabled="#{empty contentItem.collectionField}">
-                        <f:selectItems 
-                            value="#{collectionViewBean.getPossibleBaseCollectionList(contentItem)}" 
-                            var="field" 
-                            itemValue="#{field}" 
+                        <f:selectItems
+                            value="#{collectionViewBean.getPossibleBaseCollectionList(contentItem)}"
+                            var="field"
+                            itemValue="#{field}"
                             itemLabel="#{field}" />
                         <f:ajax render="ignoreCollectionGroup" />
-                        <f:passThroughAttribute name="aria-label" value="#{msg.cms_itemBaseCollection}" />
+                        <f:passThroughAttribute
+                            name="aria-label"
+                            value="#{msg.cms_itemBaseCollection}" />
                     </h:selectOneMenu>
                 </div>
             </h:panelGroup>
-            
+
             <!-- INLINE HELP -->
             <span class="cms-module__option-control-helptext">#{msg.inline_help__cms_page_type_collection_base}</span>
         </div>
-        
+
         <!-- TOGGLE INLINE HELP -->
         <div class="cms-module__option-help">
-            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+            <button
+                type="button"
+                class="btn btn--clean"
+                data-toggle="helptext"
+                aria-label="#{msg.aria_label__help}">
                 <util:icon icon="help" />
             </button>
         </div>
@@ -120,127 +141,160 @@
         <div class="cms-module__option-label">
             <label for="ignoreCollection">#{msg.cms_itemIgnoreCollections}:</label>
         </div>
-        
+
         <div class="cms-module__option-control">
             <!-- AREA FOR AJAX REFRESH -->
             <h:panelGroup id="ignoreCollectionGroup">
                 <!-- VALIDATION MESSAGE -->
                 <div class="cms-module__option-message">
-                    <h:messages for="ignoreCollection" 
-                        infoClass="cms-module__option-message-status success" 
+                    <h:messages
+                        for="ignoreCollection"
+                        infoClass="cms-module__option-message-status success"
                         warnClass="cms-module__option-message-status warning"
                         errorClass="cms-module__option-message-status danger" />
 
                     <div class="cms-module__option-message-mark">
-                        <i class="fa fa-check" aria-hidden="true"></i>
-                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+                        <i
+                            class="fa fa-check"
+                            aria-hidden="true" />
+                        <i
+                            class="fa fa-exclamation"
+                            aria-hidden="true" />
                     </div>
                 </div>
-                
+
                 <!-- MULTI SELECT MENU -->
                 <div class="custom-control custom-control--select multiple">
-                    <h:selectManyMenu 
-                        id="ignoreCollection" 
-                        styleClass="form-control" 
+                    <h:selectManyMenu
+                        id="ignoreCollection"
+                        styleClass="form-control"
                         value="#{contentItem.ignoreCollectionsAsList}"
                         disabled="#{empty contentItem.collectionField}">
-                        <f:selectItem  
-                            itemLabel="#{msg.cms_itemIgnoreNoCollection}" />
-                        <f:selectItems 
-                            value="#{contentItem.possibleIgnoreCollectionList}" 
-                            var="field" 
-                            itemValue="#{field}" 
+                        <f:selectItem itemLabel="#{msg.cms_itemIgnoreNoCollection}" />
+                        <f:selectItems
+                            value="#{contentItem.possibleIgnoreCollectionList}"
+                            var="field"
+                            itemValue="#{field}"
                             itemLabel="#{msg[field]}" />
                         <f:ajax render="@none" />
-                        <f:passThroughAttribute name="aria-label" value="#{msg.cms_itemIgnoreCollections}" />
+                        <f:passThroughAttribute
+                            name="aria-label"
+                            value="#{msg.cms_itemIgnoreCollections}" />
                     </h:selectManyMenu>
                 </div>
             </h:panelGroup>
-            
+
             <!-- INLINE HELP -->
             <span class="cms-module__option-control-helptext">#{msg.inline_help__cms_page_type_collection_ignore}</span>
         </div>
-        
+
         <!-- TOGGLE INLINE HELP -->
         <div class="cms-module__option-help">
-            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+            <button
+                type="button"
+                class="btn btn--clean"
+                data-toggle="helptext"
+                aria-label="#{msg.aria_label__help}">
                 <util:icon icon="help" />
             </button>
         </div>
     </div>
-    
-                <!-- GROUP BY SOLR FIELD -->
-		    <div class="cms-module__option-group">
-		        <div class="cms-module__option-label">
-		            <label for="groupByFieldCollection">#{msg.cms_itemGroupByField}:</label>
-		        </div>
-		        <div class="cms-module__option-control">
-		            <div class="custom-control custom-control--select">
-		                <h:selectOneMenu id="groupByFieldCollection" styleClass="form-control" value="#{contentItem.groupBy}">
-		                    <f:selectItem itemValue="" itemLabel="#{msg.select}" />
-		                    <f:selectItems value="#{cmsBean.possibleGroupFields}" 
-		                    	var="field"
-		                    	itemValue="#{field}" 
-		                    	itemLabel="#{msg[field]} (#{field})" />
-		                    	<f:passThroughAttribute name="aria-label" value="#{msg.cms_itemGroupByField}" />
-		                </h:selectOneMenu>
-		            </div>
-		            <span class="cms-module__option-control-helptext">#{msg.inline_help__group_by_field}</span>
-		        </div>
-		        <div class="cms-module__option-help">
-		            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
-		                <util:icon icon="help" />
-		            </button>
-		        </div>
-		    </div>
-		    
-		 <!-- SORTING MODE -->
-		 <div class="cms-module__option-group">
-	        <div class="cms-module__option-label">
-	            <label for="groupByFieldCollection">#{msg.label__sorting_mode}:</label>
-	        </div>
-			 <div class="cms-module__option-control">
-	            <!-- AREA FOR AJAX REFRESH -->
-	            <h:panelGroup id="sortingSelectGroup">
-	                <!-- VALIDATION MESSAGE -->
-	                <div class="cms-module__option-message">
-	                    <h:messages for="sortingSelect" 
-	                        infoClass="cms-module__option-message-status success" 
-	                        warnClass="cms-module__option-message-status warning"
-	                        errorClass="cms-module__option-message-status danger" />
-	
-	                    <div class="cms-module__option-message-mark">
-	                        <i class="fa fa-check" aria-hidden="true"></i>
-	                        <i class="fa fa-exclamation" aria-hidden="true"></i>
-	                    </div>
-	                </div>
-	                
-	                <!-- SELECT MENU -->
-	                <div class="custom-control custom-control--select">
-	                    <h:selectOneMenu
-	                        id="sortingSelect"
-	                        styleClass="form-control" 
-	                        value="#{contentItem.sorting}">
-	                        <f:selectItems 
-	                            value="#{cmsBean.sortingModes}"
-	                            var="mode"
-	                            itemValue="#{mode}"
-	                            itemLabel="#{msg[mode.label]}" />
-	                        <f:passThroughAttribute name="aria-label" value="#{msg.label__sorting_mode}" />
-	                    </h:selectOneMenu>
-	                </div>
-	            </h:panelGroup>
-	            
-	            <!-- INLINE HELP -->
-	            <span class="cms-module__option-control-helptext">#{msg.inline_help__sorting_mode}</span>
-	        </div>
-	        <div class="cms-module__option-help">
-	            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
-	                <util:icon icon="help" />
-	            </button>
-	        </div>
-	    </div>
-    
+
+    <!-- GROUP BY SOLR FIELD -->
+    <div class="cms-module__option-group">
+        <div class="cms-module__option-label">
+            <label for="groupByFieldCollection">#{msg.cms_itemGroupByField}:</label>
+        </div>
+        <div class="cms-module__option-control">
+            <div class="custom-control custom-control--select">
+                <h:selectOneMenu
+                    id="groupByFieldCollection"
+                    styleClass="form-control"
+                    value="#{contentItem.groupBy}">
+                    <f:selectItem
+                        itemValue=""
+                        itemLabel="#{msg.select}" />
+                    <f:selectItems
+                        value="#{cmsBean.possibleGroupFields}"
+                        var="field"
+                        itemValue="#{field}"
+                        itemLabel="#{msg[field]} (#{field})" />
+                    <f:passThroughAttribute
+                        name="aria-label"
+                        value="#{msg.cms_itemGroupByField}" />
+                </h:selectOneMenu>
+            </div>
+            <span class="cms-module__option-control-helptext">#{msg.inline_help__group_by_field}</span>
+        </div>
+        <div class="cms-module__option-help">
+            <button
+                type="button"
+                class="btn btn--clean"
+                data-toggle="helptext"
+                aria-label="#{msg.aria_label__help}">
+                <util:icon icon="help" />
+            </button>
+        </div>
+    </div>
+
+    <!-- SORTING MODE -->
+    <div class="cms-module__option-group">
+        <div class="cms-module__option-label">
+            <label for="groupByFieldCollection">#{msg.label__sorting_mode}:</label>
+        </div>
+        <div class="cms-module__option-control">
+            <!-- AREA FOR AJAX REFRESH -->
+            <h:panelGroup id="sortingSelectGroup">
+                <!-- VALIDATION MESSAGE -->
+                <div class="cms-module__option-message">
+                    <h:messages
+                        for="sortingSelect"
+                        infoClass="cms-module__option-message-status success"
+                        warnClass="cms-module__option-message-status warning"
+                        errorClass="cms-module__option-message-status danger" />
+
+                    <div class="cms-module__option-message-mark">
+                        <i
+                            class="fa fa-check"
+                            aria-hidden="true" />
+                        <i
+                            class="fa fa-exclamation"
+                            aria-hidden="true" />
+                    </div>
+                </div>
+
+                <!-- SELECT MENU -->
+                <div class="custom-control custom-control--select">
+                    <h:selectOneMenu
+                        id="sortingSelect"
+                        styleClass="form-control"
+                        value="#{contentItem.sorting}">
+                        <f:selectItems
+                            value="#{cmsBean.sortingModes}"
+                            var="mode"
+                            itemValue="#{mode}"
+                            itemLabel="#{msg[mode.label]}" />
+                        <f:passThroughAttribute
+                            name="aria-label"
+                            value="#{msg.label__sorting_mode}" />
+                    </h:selectOneMenu>
+                </div>
+            </h:panelGroup>
+
+            <!-- INLINE HELP -->
+            <span class="cms-module__option-control-helptext">#{msg.inline_help__sorting_mode}</span>
+        </div>
+        <div class="cms-module__option-help">
+            <button
+                type="button"
+                class="btn btn--clean"
+                data-toggle="helptext"
+                aria-label="#{msg.aria_label__help}">
+                <util:icon icon="help" />
+            </button>
+        </div>
+    </div>
+
     <!-- CONTENT ITEM MODE EXPANDED -->
     <ui:fragment rendered="#{contentItem.mode == 'expanded'}">
         <!-- BASE LEVELS -->
@@ -249,57 +303,90 @@
             <div class="cms-module__option-label">
                 <label for="collectionBaseLevels">#{msg.cms_baseLevels}:</label>
             </div>
-            
+
             <div class="cms-module__option-control">
                 <!-- AREA FOR AJAX REFRESH -->
                 <h:panelGroup id="collectionBaseLevelsGroup">
                     <!-- VALIDATION MESSAGE -->
                     <div class="cms-module__option-message">
-                        <h:messages for="collectionBaseLevels" 
-                            infoClass="cms-module__option-message-status success" 
+                        <h:messages
+                            for="collectionBaseLevels"
+                            infoClass="cms-module__option-message-status success"
                             warnClass="cms-module__option-message-status warning"
                             errorClass="cms-module__option-message-status danger" />
-    
+
                         <div class="cms-module__option-message-mark">
-                            <i class="fa fa-check" aria-hidden="true"></i>
-                            <i class="fa fa-exclamation" aria-hidden="true"></i>
+                            <i
+                                class="fa fa-check"
+                                aria-hidden="true" />
+                            <i
+                                class="fa fa-exclamation"
+                                aria-hidden="true" />
                         </div>
                     </div>
-                    
+
                     <!-- SELECT MENU -->
                     <div class="custom-control custom-control--select">
-                        <h:selectOneMenu 
+                        <h:selectOneMenu
                             id="collectionBaseLevels"
-                            styleClass="form-control" 
+                            styleClass="form-control"
                             value="#{contentItem.collectionBaseLevels}">
-                            <f:selectItem itemValue="0" itemLabel="#{msg.none}" />
-                            <f:selectItem itemValue="1" itemLabel="1" />
-                            <f:selectItem itemValue="2" itemLabel="2" />
-                            <f:selectItem itemValue="3" itemLabel="3" />
-                            <f:selectItem itemValue="4" itemLabel="4" />
-                            <f:selectItem itemValue="5" itemLabel="5" />
-                            <f:selectItem itemValue="6" itemLabel="6" />
-                            <f:selectItem itemValue="7" itemLabel="7" />
-                            <f:selectItem itemValue="8" itemLabel="8" />
-                            <f:selectItem itemValue="9" itemLabel="9" />
-                            <f:selectItem itemValue="10" itemLabel="10" />
+                            <f:selectItem
+                                itemValue="0"
+                                itemLabel="#{msg.none}" />
+                            <f:selectItem
+                                itemValue="1"
+                                itemLabel="1" />
+                            <f:selectItem
+                                itemValue="2"
+                                itemLabel="2" />
+                            <f:selectItem
+                                itemValue="3"
+                                itemLabel="3" />
+                            <f:selectItem
+                                itemValue="4"
+                                itemLabel="4" />
+                            <f:selectItem
+                                itemValue="5"
+                                itemLabel="5" />
+                            <f:selectItem
+                                itemValue="6"
+                                itemLabel="6" />
+                            <f:selectItem
+                                itemValue="7"
+                                itemLabel="7" />
+                            <f:selectItem
+                                itemValue="8"
+                                itemLabel="8" />
+                            <f:selectItem
+                                itemValue="9"
+                                itemLabel="9" />
+                            <f:selectItem
+                                itemValue="10"
+                                itemLabel="10" />
                             <f:ajax render="@none" />
-		                    <f:passThroughAttribute name="aria-label" value="#{msg.cms_baseLevels}" />
+                            <f:passThroughAttribute
+                                name="aria-label"
+                                value="#{msg.cms_baseLevels}" />
                         </h:selectOneMenu>
                     </div>
                 </h:panelGroup>
-                
+
                 <!-- INLINE HELP -->
                 <span class="cms-module__option-control-helptext">#{msg.inline_help__cms_page_type_collection_base_levels}</span>
             </div>
-            
+
             <!-- TOGGLE INLINE HELP -->
             <div class="cms-module__option-help">
-                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+                <button
+                    type="button"
+                    class="btn btn--clean"
+                    data-toggle="helptext"
+                    aria-label="#{msg.aria_label__help}">
                     <util:icon icon="help" />
                 </button>
             </div>
-        </div>    
+        </div>
 
         <!-- COLLECTION EXPANDED -->
         <div class="cms-module__option-group">
@@ -307,43 +394,59 @@
             <div class="cms-module__option-label">
                 <label for="collectionExpanded">#{msg.cms_collectionOpenExpanded}:</label>
             </div>
-            
+
             <div class="cms-module__option-control align-self-center">
                 <!-- AREA FOR AJAX REFRESH -->
-                <h:panelGroup id="collectionExpandedGroup" layout="block" styleClass="cms-module__option-checkbox">
+                <h:panelGroup
+                    id="collectionExpandedGroup"
+                    layout="block"
+                    styleClass="cms-module__option-checkbox">
                     <!-- VALIDATION MESSAGE -->
                     <div class="cms-module__option-message">
-                        <h:messages for="collectionExpanded" 
-                            infoClass="cms-module__option-message-status success" 
+                        <h:messages
+                            for="collectionExpanded"
+                            infoClass="cms-module__option-message-status success"
                             warnClass="cms-module__option-message-status warning"
                             errorClass="cms-module__option-message-status danger" />
-    
+
                         <div class="cms-module__option-message-mark">
-                            <i class="fa fa-check" aria-hidden="true"></i>
-                            <i class="fa fa-exclamation" aria-hidden="true"></i>
+                            <i
+                                class="fa fa-check"
+                                aria-hidden="true" />
+                            <i
+                                class="fa fa-exclamation"
+                                aria-hidden="true" />
                         </div>
                     </div>
-                    
+
                     <!-- CHECKBOX -->
                     <h:selectBooleanCheckbox
-                        id="collectionExpanded" 
+                        id="collectionExpanded"
                         value="#{contentItem.collectionOpenExpanded}">
-                        <f:ajax event="change" render="@this" />
-                        <f:passThroughAttribute name="aria-label" value="#{msg.cms_collectionOpenExpanded}" />
+                        <f:ajax
+                            event="change"
+                            render="@this" />
+                        <f:passThroughAttribute
+                            name="aria-label"
+                            value="#{msg.cms_collectionOpenExpanded}" />
                     </h:selectBooleanCheckbox>
                 </h:panelGroup>
-                
+
                 <!-- INLINE HELP -->
                 <span class="cms-module__option-control-helptext inline">#{msg.inline_help__cms_page_type_collection_expanded}</span>
             </div>
-            
+
             <!-- TOGGLE INLINE HELP -->
             <div class="cms-module__option-help">
-                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+                <button
+                    type="button"
+                    class="btn btn--clean"
+                    data-toggle="helptext"
+                    aria-label="#{msg.aria_label__help}">
                     <util:icon icon="help" />
                 </button>
             </div>
-        </div>    
+        </div>
 
         <!-- DISPLAY PARENTS -->
         <div class="cms-module__option-group">
@@ -351,42 +454,55 @@
             <div class="cms-module__option-label">
                 <label for="displayParents">#{msg.cms_collectionDisplayParents}:</label>
             </div>
-            
+
             <div class="cms-module__option-control align-self-center">
                 <!-- AREA FOR AJAX REFRESH -->
                 <h:panelGroup id="displayParentsGroup">
                     <!-- VALIDATION MESSAGE -->
                     <div class="cms-module__option-message">
-                        <h:messages for="displayParents" 
-                            infoClass="cms-module__option-message-status success" 
+                        <h:messages
+                            for="displayParents"
+                            infoClass="cms-module__option-message-status success"
                             warnClass="cms-module__option-message-status warning"
                             errorClass="cms-module__option-message-status danger" />
-    
+
                         <div class="cms-module__option-message-mark">
-                            <i class="fa fa-check" aria-hidden="true"></i>
-                            <i class="fa fa-exclamation" aria-hidden="true"></i>
+                            <i
+                                class="fa fa-check"
+                                aria-hidden="true" />
+                            <i
+                                class="fa fa-exclamation"
+                                aria-hidden="true" />
                         </div>
                     </div>
-                    
+
                     <!-- CHECKBOX -->
-                    <h:selectBooleanCheckbox 
-                        id="displayParents" 
+                    <h:selectBooleanCheckbox
+                        id="displayParents"
                         value="#{contentItem.collectionDisplayParents}">
-                        <f:ajax event="change" render="@this" />
-                        <f:passThroughAttribute name="aria-label" value="#{msg.cms_collectionDisplayParents}" />
+                        <f:ajax
+                            event="change"
+                            render="@this" />
+                        <f:passThroughAttribute
+                            name="aria-label"
+                            value="#{msg.cms_collectionDisplayParents}" />
                     </h:selectBooleanCheckbox>
                 </h:panelGroup>
-                
+
                 <!-- INLINE HELP -->
                 <span class="cms-module__option-control-helptext inline">#{msg.inline_help__cms_page_type_collection_display_parents}</span>
             </div>
-            
+
             <!-- TOGGLE INLINE HELP -->
             <div class="cms-module__option-help">
-                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+                <button
+                    type="button"
+                    class="btn btn--clean"
+                    data-toggle="helptext"
+                    aria-label="#{msg.aria_label__help}">
                     <util:icon icon="help" />
                 </button>
             </div>
-        </div>    
+        </div>
     </ui:fragment>
 </ui:composition>

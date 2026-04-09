@@ -1,57 +1,84 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:util="http://goobi.io/util"
-    xmlns:c="http://java.sun.com/jsp/jstl/core" 
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
     <!-- INTERFACE OPTIONS -->
     <composite:interface>
-        <composite:attribute name="customName" required="false" default="false" />
+        <composite:attribute
+            name="customName"
+            required="false"
+            default="false" />
     </composite:interface>
     <!-- COMPONENT CONTENT -->
     <composite:implementation>
         <ui:fragment rendered="#{configurationBean.displayUserNavigation || userBean.loggedIn }">
-			<!-- USER NOT LOGGED IN -->
-			<ui:fragment rendered="#{!userBean.loggedIn}">
-			    <div data-login="false">
-			        <!-- TOGGLE LOGIN -->
-			        <button type="button" class="btn btn--clean login-navigation__toggle-button" data-toggle="modal" data-target="#userLoginModal" aria-label="#{msg.userNotLoggedIn}">
-			            <util:icon-text icon="user-circle" text="#{msg.userNotLoggedIn}" textPosition="left" />
-			        </button>
-			    </div>
-			</ui:fragment>
-                <!-- USER LOGGED IN -->
-                <ui:fragment rendered="#{userBean.loggedIn}">
-            	<ul class="login-navigation">
+            <!-- USER NOT LOGGED IN -->
+            <ui:fragment rendered="#{!userBean.loggedIn}">
+                <div data-login="false">
+                    <!-- TOGGLE LOGIN -->
+                    <button
+                        type="button"
+                        class="btn btn--clean login-navigation__toggle-button"
+                        data-toggle="modal"
+                        data-target="#userLoginModal"
+                        aria-label="#{msg.userNotLoggedIn}">
+                        <util:icon-text
+                            icon="user-circle"
+                            text="#{msg.userNotLoggedIn}"
+                            textPosition="left" />
+                    </button>
+                </div>
+            </ui:fragment>
+            <!-- USER LOGGED IN -->
+            <ui:fragment rendered="#{userBean.loggedIn}">
+                <ul class="login-navigation">
                     <li data-login="true">
                         <!-- TOGGLE USER DROPDOWN WITHOUT CUSTOM NAME -->
                         <ui:fragment rendered="#{!cc.attrs.customName}">
-                            <button type="button" class="btn btn--clean login-navigation__toggle-button" data-toggle="user-dropdown">
+                            <button
+                                type="button"
+                                class="btn btn--clean login-navigation__toggle-button"
+                                data-toggle="user-dropdown">
                                 <!-- USER NAME -->
-								<span class="login-navigation__user-name" data-toggle="tooltip" data-placement="bottom">
-								    <h:outputText escape="true">#{userBean.user.displayName}</h:outputText>
-								</span>
+                                <span
+                                    class="login-navigation__user-name"
+                                    data-toggle="tooltip"
+                                    data-placement="bottom">
+                                    <h:outputText escape="true">#{userBean.user.displayName}</h:outputText>
+                                </span>
                                 <!-- USER ICON -->
                                 <span class="login-navigation__user-icon">
-									<img class="login-navigation__mini-avatar" src="#{userBean.user.getAvatarUrl(50)}" alt="User Avatar" />
+                                    <img
+                                        class="login-navigation__mini-avatar"
+                                        src="#{userBean.user.getAvatarUrl(50)}"
+                                        alt="User Avatar" />
                                 </span>
                             </button>
                         </ui:fragment>
                         <!-- TOGGLE USER DROPDOWN WITH CUSTOM NAME -->
                         <ui:fragment rendered="#{cc.attrs.customName}">
-                            <button type="button" class="btn btn--clean" data-toggle="user-dropdown">
+                            <button
+                                type="button"
+                                class="btn btn--clean"
+                                data-toggle="user-dropdown">
                                 #{msg.login__custom_name}
                             </button>
                         </ui:fragment>
                         <!-- USER DROPDOWN -->
                         <div class="login-navigation__user-dropdown">
-                            <h:form id="userDropdownForm" prependId="false">
+                            <h:form
+                                id="userDropdownForm"
+                                prependId="false">
                                 <ul class="login-navigation__list">
                                     <!-- DASHBOARD -->
                                     <li class="login-navigation__user-dropdown-item">
-                                        <a href="#{navigationHelper.applicationUrl}user/" class="login-navigation__user-dropdown-item-link">
+                                        <a
+                                            href="#{navigationHelper.applicationUrl}user/"
+                                            class="login-navigation__user-dropdown-item-link">
                                             <util:icon-text
                                                 icon="dashboard"
                                                 text="#{msg.admin__user_profile}"
@@ -64,7 +91,8 @@
                                     <ui:fragment rendered="#{configurationBean.bookmarksEnabled and userDataBean.getNumBookmarkLists(userBean.user) > 0}">
                                         <li class="login-navigation__bookmarks-list-wrapper">
                                             <div class="login-navigation__user-dropdown-item login-navigation__bookmarks-list">
-                                                <button type="button"
+                                                <button
+                                                    type="button"
                                                     class="login-navigation__bookmarks-trigger login-navigation__user-dropdown-item-link">
                                                     <util:icon-text
                                                         icon="bookmark"
@@ -84,7 +112,9 @@
                                     <!-- SAVED SEARCHES -->
                                     <ui:fragment rendered="#{searchBean.searchSavingEnabled and userDataBean.getNumSearches(userBean.user) > 0}">
                                         <li class="login-navigation__user-dropdown-item">
-                                            <a href="#{navigationHelper.applicationUrl}user/searches/" class="login-navigation__user-dropdown-item-link">
+                                            <a
+                                                href="#{navigationHelper.applicationUrl}user/searches/"
+                                                class="login-navigation__user-dropdown-item-link">
                                                 <util:icon-text
                                                     icon="search"
                                                     text="#{msg.user_mySearches}"
@@ -97,7 +127,9 @@
                                     <!-- COMMENTS -->
                                     <ui:fragment rendered="#{userDataBean.commentCount != 0}">
                                         <li class="login-navigation__user-dropdown-item">
-                                            <a href="#{navigationHelper.applicationUrl}user/comments/" class="login-navigation__user-dropdown-item-link">
+                                            <a
+                                                href="#{navigationHelper.applicationUrl}user/comments/"
+                                                class="login-navigation__user-dropdown-item-link">
                                                 <util:icon-text
                                                     icon="message-circle"
                                                     text="#{msg.userComments}"
@@ -110,7 +142,9 @@
                                     <!-- ANNOTATIONS -->
                                     <ui:fragment rendered="#{userDataBean.annotationCount != 0}">
                                         <li class="login-navigation__user-dropdown-item">
-                                            <a href="#{navigationHelper.applicationUrl}user/annotations/" class="login-navigation__user-dropdown-item-link">
+                                            <a
+                                                href="#{navigationHelper.applicationUrl}user/annotations/"
+                                                class="login-navigation__user-dropdown-item-link">
                                                 <util:icon-text
                                                     icon="note"
                                                     text="#{msg.annotations}"
@@ -120,17 +154,23 @@
                                             </a>
                                         </li>
                                     </ui:fragment>
-									<!-- TODO: INSERT COMMENTS -->
+                                    <!-- TODO: INSERT COMMENTS -->
                                     <!-- MODULE CONTRIBUTIONS -->
-                                    <c:forEach var="module" items="#{configurationBean.modules}">
-                                        <c:forEach var="contribution" items="#{module.loginNavigationContributions}">
+                                    <c:forEach
+                                        var="module"
+                                        items="#{configurationBean.modules}">
+                                        <c:forEach
+                                            var="contribution"
+                                            items="#{module.loginNavigationContributions}">
                                             <ui:include src="/#{contribution}" />
                                         </c:forEach>
                                     </c:forEach>
                                     <!-- CONTENT UPLOAD -->
                                     <ui:fragment rendered="#{configurationBean.contentUploadEnabled}">
                                         <li class="login-navigation__user-dropdown-item">
-                                            <a href="#{navigationHelper.applicationUrl}user/upload/" class="login-navigation__user-dropdown-item-link">
+                                            <a
+                                                href="#{navigationHelper.applicationUrl}user/upload/"
+                                                class="login-navigation__user-dropdown-item-link">
                                                 <util:icon-text
                                                     icon="upload"
                                                     text="#{msg.user__upload_content}"
@@ -142,7 +182,9 @@
                                     </ui:fragment>
                                     <!-- USERDATA/PROFILE SETTINGS -->
                                     <li class="login-navigation__user-dropdown-item">
-                                        <a href="#{navigationHelper.applicationUrl}user/settings/" class="login-navigation__user-dropdown-item-link">
+                                        <a
+                                            href="#{navigationHelper.applicationUrl}user/settings/"
+                                            class="login-navigation__user-dropdown-item-link">
                                             <util:icon-text
                                                 icon="tool"
                                                 text="#{msg.accountSettings}"
@@ -154,7 +196,9 @@
                                     <!-- ADMINISTRATION -->
                                     <ui:fragment rendered="#{userBean.hasAdminBackendAccess}">
                                         <li class="login-navigation__user-dropdown-item">
-                                            <a href="#{navigationHelper.applicationUrl}admin/" class="login-navigation__user-dropdown-item-link">
+                                            <a
+                                                href="#{navigationHelper.applicationUrl}admin/"
+                                                class="login-navigation__user-dropdown-item-link">
                                                 <util:icon-text
                                                     icon="settings-cog"
                                                     text="#{msg.admin}"
@@ -164,9 +208,11 @@
                                             </a>
                                         </li>
                                     </ui:fragment>
-                                <!-- LOGOUT -->
+                                    <!-- LOGOUT -->
                                     <li class="login-navigation__user-dropdown-item">
-                                        <h:commandLink action="#{userBean.logout}" styleClass="login-navigation__user-dropdown-item-link">
+                                        <h:commandLink
+                                            action="#{userBean.logout}"
+                                            styleClass="login-navigation__user-dropdown-item-link">
                                             <util:icon-text
                                                 icon="power"
                                                 text="#{msg.logout}"
@@ -175,12 +221,12 @@
                                                 textClass="login-navigation__user-dropdown-item-text" />
                                         </h:commandLink>
                                     </li>
-                            	</ul>
+                                </ul>
                             </h:form>
                         </div>
                     </li>
-            		</ul>
-                </ui:fragment>
+                </ul>
+            </ui:fragment>
         </ui:fragment>
     </composite:implementation>
 </ui:composition>

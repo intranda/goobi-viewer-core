@@ -58,13 +58,13 @@ public final class IndexerTools {
 
     private static final Logger logger = LogManager.getLogger(IndexerTools.class);
 
-    /** Constant <code>SUFFIX_FULLTEXT_CROWDSOURCING="_txtcrowd"</code> */
+    /** Constant <code>SUFFIX_FULLTEXT_CROWDSOURCING="_txtcrowd"</code>. */
     public static final String SUFFIX_FULLTEXT_CROWDSOURCING = "_txtcrowd";
-    /** Constant <code>SUFFIX_ALTO_CROWDSOURCING="_altocrowd"</code> */
+    /** Constant <code>SUFFIX_ALTO_CROWDSOURCING="_altocrowd"</code>. */
     public static final String SUFFIX_ALTO_CROWDSOURCING = "_altocrowd";
-    /** Constant <code>SUFFIX_USER_GENERATED_CONTENT="_ugc"</code> */
+    /** Constant <code>SUFFIX_USER_GENERATED_CONTENT="_ugc"</code>. */
     public static final String SUFFIX_USER_GENERATED_CONTENT = "_ugc";
-    /** Constant <code>SUFFIX_CMS="_cms"</code> */
+    /** Constant <code>SUFFIX_CMS="_cms"</code>. */
     public static final String SUFFIX_CMS = "_cms";
 
     private IndexerTools() {
@@ -73,7 +73,7 @@ public final class IndexerTools {
     /**
      * Re-index in background thread to significantly decrease saving times.
      *
-     * @param pi a {@link java.lang.String} object.
+     * @param pi record identifier to re-index
      */
     public static void triggerReIndexRecord(String pi) {
         triggerReIndexRecord(pi, DataManager.getInstance().getModules());
@@ -97,9 +97,9 @@ public final class IndexerTools {
     }
 
     /**
-     * 
-     * @param page
-     * @param augmenters
+     *
+     * @param page CMS page to re-index in a background thread
+     * @param augmenters list of index augmenters contributing additional data
      */
     public static void triggerReIndexCMSPage(CMSPage page, List<? extends IndexAugmenter> augmenters) {
         logger.debug("Re-indexing CMS page {}", page.getId());
@@ -117,9 +117,9 @@ public final class IndexerTools {
      * Writes the record into the hotfolder for re-indexing. Modules can contribute data for re-indexing. Execution of method can take a while, so if
      * performance is of importance, use <code>triggerReIndexRecord</code> instead.
      *
-     * @param pi a {@link java.lang.String} object.
+     * @param pi record identifier to re-index
      * @should write overview page data
-     * @return a boolean.
+     * @return true if the record was successfully exported for re-indexing, false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.RecordNotFoundException if any.
      */
@@ -131,8 +131,8 @@ public final class IndexerTools {
      * Writes the record into the hotfolder for re-indexing. Modules can contribute data for re-indexing. Execution of method can take a while, so if
      * performance is of importance, use <code>triggerReIndexRecord</code> instead.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param augmenters
+     * @param pi record identifier to re-index
+     * @param augmenters list of index augmenters contributing additional data
      * @return true if export for reindexing successful; false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.RecordNotFoundException if any.
@@ -218,13 +218,11 @@ public final class IndexerTools {
     }
 
     /**
-     * <p>
      * reIndexPage.
-     * </p>
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param page a int.
-     * @return a boolean.
+     * @param pi record identifier to re-index
+     * @param page order number of the page to re-index
+     * @return true if the page was successfully exported for re-indexing, false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -236,8 +234,8 @@ public final class IndexerTools {
     }
 
     /**
-     * @param pi
-     * @param page
+     * @param pi record identifier
+     * @param page page order number, or null for record-level augmenters only
      * @return Collection<? extends IndexAugmenter>
      * @throws DAOException
      */
@@ -262,13 +260,11 @@ public final class IndexerTools {
     }
 
     /**
-     * <p>
      * reIndexPage.
-     * </p>
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param page a int.
-     * @param augmenters
+     * @param pi record identifier to re-index
+     * @param page order number of the page to re-index
+     * @param augmenters list of index augmenters contributing additional data
      * @return true if export for reindexing successful; false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -333,16 +329,14 @@ public final class IndexerTools {
     }
 
     /**
-     * <p>
      * deleteRecord.
-     * </p>
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param createTraceDocument a boolean.
+     * @param pi record identifier to delete
+     * @param createTraceDocument true to create a .delete trace document, false to purge completely
      * @should create delete file correctly
      * @should create purge file correctly
-     * @param hotfolderPath a {@link java.nio.file.Path} object.
-     * @return a boolean.
+     * @param hotfolderPath path to the indexer hotfolder
+     * @return true if the deletion trigger file was successfully created in the hotfolder, false otherwise
      * @throws java.io.IOException if any.
      */
     public static synchronized boolean deleteRecord(String pi, boolean createTraceDocument, Path hotfolderPath) throws IOException {
@@ -365,9 +359,9 @@ public final class IndexerTools {
     }
 
     /**
-     * 
-     * @param page
-     * @param augmenters
+     *
+     * @param page CMS page to export to the hotfolder for re-indexing
+     * @param augmenters list of index augmenters contributing additional data
      * @return true if export for reindexing successful; false otherwise
      */
     public static synchronized boolean reIndexCMSPage(CMSPage page, Collection<? extends IndexAugmenter> augmenters) {

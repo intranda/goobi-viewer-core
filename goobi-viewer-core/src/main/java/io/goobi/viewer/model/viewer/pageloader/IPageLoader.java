@@ -31,59 +31,48 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 
 /**
- * <p>
- * IPageLoader interface.
- * </p>
+ * Interface for loading and navigating the physical pages of a digitized record.
+ * Implementors resolve page order numbers and file names to {@link PhysicalElement} instances and
+ * populate the drop-down page navigation lists used in the viewer UI.
  */
 public interface IPageLoader extends Serializable {
 
     /**
-     * <p>
      * getNumPages.
-     * </p>
      *
      * @return a int.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public int getNumPages() throws IndexUnreachableException;
+    public int getNumPages();
 
     /**
-     * <p>
      * getFirstPageOrder.
-     * </p>
      *
      * @return a int.
      */
     public int getFirstPageOrder();
 
     /**
-     * <p>
      * getLastPageOrder.
-     * </p>
      *
      * @return a int.
      */
     public int getLastPageOrder();
 
     /**
-     * <p>
      * getPage.
-     * </p>
      *
-     * @param pageOrder a int.
-     * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @param pageOrder physical page order number (1-based)
+     * @return the PhysicalElement at the given page order, or null if not found
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public PhysicalElement getPage(int pageOrder) throws IndexUnreachableException;
 
     /**
-     * <p>
      * getPageForFileName.
-     * </p>
      *
-     * @param fileName a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @param fileName base file name of the page to look up
+     * @return the PhysicalElement with the given file name, or null if not found
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -91,27 +80,23 @@ public interface IPageLoader extends Serializable {
     public PhysicalElement getPageForFileName(String fileName) throws PresentationException, IndexUnreachableException, DAOException;
 
     /**
-     * <p>
      * getOwnerIddocForPage.
-     * </p>
      *
-     * @param pageOrder a int.
-     * @return a {@link java.lang.Long} object.
+     * @param pageOrder physical page order number to look up
+     * @return the IDDOC of the owning struct element for the given page order
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public String getOwnerIddocForPage(int pageOrder) throws IndexUnreachableException, PresentationException;
 
     /**
-     * <p>
      * generateSelectItems.
-     * </p>
      *
      * @param dropdownPages Image view drop-down item
      * @param dropdownFulltext Full-text view drop-down item list
-     * @param urlRoot a {@link java.lang.String} object.
-     * @param locale a {@link java.util.Locale} object.
-     * @param recordBelowFulltextThreshold a boolean.
+     * @param urlRoot base URL prepended to page navigation links
+     * @param locale locale used for page label translations
+     * @param recordBelowFulltextThreshold true if fulltext availability is below the configured threshold
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public void generateSelectItems(List<SelectPageItem> dropdownPages, List<SelectPageItem> dropdownFulltext, String urlRoot,

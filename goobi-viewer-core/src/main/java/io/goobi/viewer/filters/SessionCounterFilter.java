@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ConcurrentModificationException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -45,9 +46,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 
 /**
- * <p>
- * SessionCounterFilter class.
- * </p>
+ * Servlet filter that counts and tracks active HTTP sessions for monitoring purposes.
  */
 @WebFilter
 public class SessionCounterFilter implements Filter {
@@ -87,7 +86,13 @@ public class SessionCounterFilter implements Filter {
         Optional<Map<Object, Map>> logicalViews =
                 Optional.ofNullable((Map) req.getSession().getAttribute("com.sun.faces.renderkit.ServerSideStateHelper.LogicalViewMap"));
         Integer numberOfLogicalViews = logicalViews.map(map -> map.keySet().size()).orElse(0);
-        Integer numberOfTotalViews = logicalViews.map(map -> map.values().stream().mapToInt(value -> value.keySet().size()).sum()).orElse(0);
+        Integer numberOfTotalViews = logicalViews.map(map -> {
+            try {
+                return map.values().stream().mapToInt(value -> value.keySet().size()).sum();
+            } catch (ConcurrentModificationException e) {
+                return 0;
+            }
+        }).orElse(0);
         metadataMap.put("Logical Views stored in session", numberOfLogicalViews.toString());
         metadataMap.put("Total views stored in session", numberOfTotalViews.toString());
 

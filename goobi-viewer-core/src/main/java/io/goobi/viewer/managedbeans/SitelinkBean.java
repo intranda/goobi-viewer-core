@@ -46,7 +46,7 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
- * SitelinkBean
+ * SitelinkBean.
  */
 @Named
 @SessionScoped
@@ -61,9 +61,7 @@ public class SitelinkBean implements Serializable {
     private List<StringPair> hits;
 
     /**
-     * <p>
      * getAvailableValues.
-     * </p>
      *
      * @return List of facet values for the configured field and query
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -75,9 +73,7 @@ public class SitelinkBean implements Serializable {
     }
 
     /**
-     * <p>
      * searchAction.
-     * </p>
      *
      * @return Target page
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -142,11 +138,9 @@ public class SitelinkBean implements Serializable {
     }
 
     /**
-     * <p>
      * resetAction.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return an empty string after resetting the current sitelink value and hits
      */
     public String resetAction() {
         value = null;
@@ -156,33 +150,27 @@ public class SitelinkBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>value</code>.
-     * </p>
      *
-     * @return the value
+     * @return the field value used to filter or look up sitelinks
      */
     public String getValue() {
         return value;
     }
 
     /**
-     * <p>
      * Setter for the field <code>value</code>.
-     * </p>
      *
-     * @param value the value to set
+     * @param value the field value used to filter or look up sitelinks
      */
     public void setValue(String value) {
         this.value = value;
     }
 
     /**
-     * <p>
      * Getter for the field <code>hits</code>.
-     * </p>
      *
-     * @return the hits
+     * @return list of sitelink result pairs (label and URL)
      */
     public List<StringPair> getHits() {
         return hits;

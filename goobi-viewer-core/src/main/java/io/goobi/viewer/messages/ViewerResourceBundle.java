@@ -76,9 +76,7 @@ import jakarta.faces.context.FacesContext;
 import jakarta.servlet.ServletContext;
 
 /**
- * <p>
- * ViewerResourceBundle class.
- * </p>
+ * Custom ResourceBundle implementation that loads and merges viewer message files from configurable locations.
  */
 public class ViewerResourceBundle extends ResourceBundle {
 
@@ -88,44 +86,63 @@ public class ViewerResourceBundle extends ResourceBundle {
 
     private static final String BUNDLE_NAME = "messages";
 
+    private static Thread fileWatcherThread;
+
     private static Map<Locale, ResourceBundle> defaultBundles = new ConcurrentHashMap<>();
-    /** Constant <code>localBundles</code> */
+    /** Constant <code>localBundles</code>. */
     protected static Map<Locale, ResourceBundle> localBundles = new ConcurrentHashMap<>();
-    /** Constant <code>reloadNeededMap</code> */
+    /** Constant <code>reloadNeededMap</code>. */
     protected static Map<String, Boolean> reloadNeededMap = new ConcurrentHashMap<>();
-    /** Constant <code>defaultLocale</code> */
+    /** Constant <code>defaultLocale</code>. */
     protected static volatile Locale defaultLocale;
     private static List<Locale> allLocales = null;
 
     /**
-     * <p>
-     * Constructor for ViewerResourceBundle.
-     * </p>
+     * Creates a new ViewerResourceBundle instance.
      */
     public ViewerResourceBundle() {
         registerFileChangedService(Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath()));
     }
 
+    /**
+     * Creates a new ViewerResourceBundle instance with the given local config path.
+     *
+     * @param localConfigPath path to the local configuration directory containing messages files
+     */
     public ViewerResourceBundle(Path localConfigPath) {
         registerFileChangedService(localConfigPath);
+    }
+
+    public static void shutdown() {
+        if (fileWatcherThread != null) {
+            fileWatcherThread.interrupt();
+            try {
+                fileWatcherThread.join(2000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
     }
 
     /**
      * Registers a WatchService that checks for modified messages.properties files and tags them for reloading.
      *
-     * @param path
+     * @param path directory path to watch for modified message files
      * @throws IOException
      * @throws InterruptedException
      */
     private static void registerFileChangedService(Path path) {
         logger.trace("registerFileChangedService: {}", path);
-        Thread fileChangedObserver = new Thread(new Runnable() {
+        if (fileWatcherThread != null && fileWatcherThread.isAlive()) {
+            return;
+        }
+        fileWatcherThread = new Thread(new Runnable() {
 
             @Override
             public void run() {
                 try (final WatchService watchService = FileSystems.getDefault().newWatchService()) {
                     path.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
-                    while (true) {
+                    while (!Thread.currentThread().isInterrupted()) {
                         final WatchKey wk = watchService.take();
                         for (WatchEvent<?> event : wk.pollEvents()) {
                             final Path changed = (Path) event.context();
@@ -145,13 +162,13 @@ public class ViewerResourceBundle extends ResourceBundle {
                 } catch (IOException e) {
                     logger.error(e.getMessage(), e);
                 } catch (InterruptedException e) {
-                    logger.error(e.getMessage(), e);
                     Thread.currentThread().interrupt();
                 }
             }
         });
 
-        fileChangedObserver.start();
+        fileWatcherThread.setDaemon(true);
+        fileWatcherThread.start();
     }
 
     /**
@@ -173,11 +190,9 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * <p>
      * Getter for the field <code>defaultLocale</code>.
-     * </p>
      *
-     * @return a {@link java.util.Locale} object.
+     * @return the default application locale, falling back to English if not configured
      */
     public static Locale getDefaultLocale() {
         if (defaultLocale == null) {
@@ -201,7 +216,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     /**
      * Loads resource bundles for the current locale and reloads them if the locale has since changed.
      *
-     * @param inLocale
+     * @param inLocale desired locale; falls back to current or ENGLISH if null
      * @return The selected locale
      */
     private static Locale checkAndLoadResourceBundles(Locale inLocale) {
@@ -239,7 +254,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * @param inLocale
+     * @param inLocale locale to use, or null to fall back to faces context or ENGLISH
      * @return the passed inLocale if it is not null. Otherwise the current locale from the faces context, or ENGLISH if no faces context exists
      */
     private static Locale getThisOrFallback(Locale inLocale) {
@@ -256,7 +271,7 @@ public class ViewerResourceBundle extends ResourceBundle {
 
     /**
      *
-     * @param locale
+     * @param locale locale for which to load the local resource bundle
      * @return The resource bundle
      */
     private static ResourceBundle loadLocalResourceBundle(final Locale locale) {
@@ -280,7 +295,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     /**
      * {@inheritDoc}
      *
-     * This is the method that is called for HTML translations.
+     * <p>This is the method that is called for HTML translations.
      */
     @Override
     protected Object handleGetObject(final String key) {
@@ -288,28 +303,24 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * <p>
      * getTranslation.
-     * </p>
      *
-     * @param key a {@link java.lang.String} object.
-     * @param locale a {@link java.util.Locale} object.
-     * @return a {@link java.lang.String} object.
+     * @param key message key to translate
+     * @param locale desired locale for the translation
+     * @return the translated message for the given key and locale, or the key itself if no translation is found
      */
     public static String getTranslation(final String key, Locale locale) {
         return getTranslation(key, locale, true, true);
     }
 
     /**
-     * <p>
      * getTranslationWithParameters.
-     * </p>
      *
-     * @param key a {@link java.lang.String} object.
-     * @param locale a {@link java.util.Locale} object.
+     * @param key message key to translate
+     * @param locale desired locale for the translation
      * @param removeRemainingPlaceholders If true, any placeholders in the value not replaced by params are removed
      * @param params One or more parameter values to replace the placeholders
-     * @return a {@link java.lang.String} object.
+     * @return the translated message for the given key with parameters substituted
      */
     public static String getTranslationWithParameters(final String key, final Locale locale, boolean removeRemainingPlaceholders,
             final String... params) {
@@ -327,9 +338,9 @@ public class ViewerResourceBundle extends ResourceBundle {
 
     /**
      *
-     * @param msg
+     * @param msg message string containing numbered placeholders
      * @param removeRemainingPlaceholders If true, any placeholders in the value not replaced by params are removed
-     * @param params
+     * @param params replacement values for numbered placeholders in the message
      * @return msg with replaced parameters
      * @should return null if msg is null
      * @should replace parameters correctly
@@ -352,12 +363,10 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * <p>
      * getTranslation.
-     * </p>
      *
-     * @param key a {@link java.lang.String} object.
-     * @param locale a {@link java.util.Locale} object.
+     * @param key message key to translate
+     * @param locale desired locale for the translation
      * @param useFallback If true, get default locale translation if there is none for the given locale
      * @return Translated message key
      */
@@ -367,10 +376,10 @@ public class ViewerResourceBundle extends ResourceBundle {
 
     /**
      *
-     * @param key
-     * @param locale
-     * @param useFallback
-     * @param cleanup
+     * @param key message key to translate
+     * @param locale locale for which to retrieve the translation
+     * @param useFallback if true, fall back to default locale when no translation found
+     * @param cleanup if true, remove markers such as 'zzz' from the result
      * @return Translated message key
      */
     public static String getTranslation(final String key, Locale locale, boolean useFallback, boolean cleanup) {
@@ -378,9 +387,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * <p>
      * getTranslation.
-     * </p>
      *
      * @param key Message key to translate
      * @param locale Desired locale
@@ -394,9 +401,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * <p>
      * getTranslation.
-     * </p>
      *
      * @param key Message key to translate
      * @param inLocale Desired locale
@@ -471,8 +476,8 @@ public class ViewerResourceBundle extends ResourceBundle {
 
     /**
      *
-     * @param key
-     * @param bundle
+     * @param key message key to look up in the bundle
+     * @param bundle resource bundle to search for the translation
      * @return Translated message key
      */
     private static String getTranslationFromBundle(final String key, ResourceBundle bundle) {
@@ -504,8 +509,8 @@ public class ViewerResourceBundle extends ResourceBundle {
 
     /**
      *
-     * @param key
-     * @param bundle
+     * @param key message key, possibly with prefixes or suffixes stripped before lookup
+     * @param bundle resource bundle to search for the translation
      * @return Translated message key
      */
     private static String getTranslationFromBundleUsingCleanedUpKeys(String key, ResourceBundle bundle) {
@@ -564,7 +569,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     /**
      * Removes the "zzz" marker from the given string.
      *
-     * @param value a {@link java.lang.String} object.
+     * @param value translation string to clean up
      * @return Cleaned-up value
      */
     public static String cleanUpTranslation(String value) {
@@ -578,13 +583,11 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * <p>
      * getMessagesValues.
-     * </p>
      *
-     * @param locale a {@link java.util.Locale} object.
-     * @param keyPrefix a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
+     * @param locale locale of the resource bundle to search
+     * @param keyPrefix prefix that returned keys must start with
+     * @return a list of message key strings from the given locale's resource bundle that start with the given prefix
      */
     public static List<String> getMessagesValues(Locale locale, String keyPrefix) {
         ResourceBundle rb = loadLocalResourceBundle(locale);
@@ -610,7 +613,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * Returns a Multilanguage metadata value containing all found translations for the {@code key}, or the key itself if not translations were found
+     * Returns a Multilanguage metadata value containing all found translations for the {@code key}, or the key itself if not translations were found.
      *
      * @param key the message key
      * @return A Multilanguage metadata value containing all found translations for the {@code key}, or the key itself if not translations were found
@@ -641,11 +644,9 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * <p>
      * Getter for the field <code>allLocales</code>.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all locales supported by the JSF application
      * @should return English if no other locales found
      */
     public static List<Locale> getAllLocales() {
@@ -663,7 +664,7 @@ public class ViewerResourceBundle extends ResourceBundle {
 
     /**
      *
-     * @param servletContext
+     * @param servletContext servlet context used to locate the faces-config.xml
      * @return List of all configured {@link Locale}s
      */
     public static List<Locale> getAllLocales(ServletContext servletContext) {
@@ -674,8 +675,8 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * 
-     * @param servletContext
+     *
+     * @param servletContext servlet context used to locate the faces-config.xml
      * @return Default {@link Locale}
      */
     public static Locale getDefaultLocale(ServletContext servletContext) {
@@ -697,9 +698,9 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * Get locales configured in faces-config, ordered by appearance in file
+     * Gets locales configured in faces-config, ordered by appearance in file.
      *
-     * @param servletContext
+     * @param servletContext servlet context used to locate the faces-config.xml
      * @return a list of Locale objects, or null if the list could not be retrieved
      */
     public static List<Locale> getLocalesFromFacesConfig(ServletContext servletContext) {
@@ -724,8 +725,8 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * 
-     * @param servletContext
+     *
+     * @param servletContext servlet context used to locate the faces-config.xml
      * @return Default {@link Locale}
      */
     public static Locale getDefaultLocaleFromFacesConfig(ServletContext servletContext) {
@@ -756,7 +757,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     /**
      * Creates a local messages_xx.properties file for every locale in the given list, if not already present.
      *
-     * @param locales
+     * @param locales list of locales for which to create local message files
      * @should create files correctly
      */
     static void createLocalMessageFiles(List<Locale> locales) {
@@ -785,7 +786,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * @param facesConfigPath
+     * @param facesConfigPath path to the faces-config.xml file to parse
      * @return {@link Locale}s configured in given file path
      * @throws IOException
      * @throws JDOMException
@@ -801,8 +802,8 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * 
-     * @param facesConfigPath
+     *
+     * @param facesConfigPath path to the faces-config.xml file to parse
      * @return Default {@link Locale} configured in given file path
      * @throws IOException
      * @throws JDOMException
@@ -818,7 +819,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * @param servletContext
+     * @param servletContext servlet context used to initialize locales and default locale
      */
     public static void init(ServletContext servletContext) {
         getAllLocales(servletContext);

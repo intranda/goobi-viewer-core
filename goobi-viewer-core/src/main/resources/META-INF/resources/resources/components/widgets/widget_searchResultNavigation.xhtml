@@ -1,52 +1,71 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
-
-	<composite:interface />
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+    <composite:interface />
 
     <composite:implementation>
-	    <h:panelGroup rendered="#{configurationBean.displaySearchResultNavigation and searchBean.hitsCount > 1 and activeDocumentBean.prevHit != null}">
-			<div id="widgetSearchResultNavigation" class="widget widget-search-result-navigation">
-				<div class="widget__topbar widget-search-result-navigation__topbar">
-					<h2 class="widget__title widget-search-result-navigation__title">#{msg.searchHitNavigation}</h2>
-				</div>
-				
-				<div class="widget__body widget-search-result-navigation__body">
-					<div class="widget-search-result-navigation__wrapper">
-						<div class="widget-search-result-navigation__left">
-							<h:outputLink rendered="#{activeDocumentBean.prevHit != null}" disabled="#{searchBean.currentHitIndex == 0}"
-									value="#{activeDocumentBean.prevHit.sidebarPrevUrl}" title="#{activeDocumentBean.prevHit.label}">
-								<div class="searchResultNavigationBackImg" style="#{searchBean.currentHitIndex == 0 ? 'opacity: 0.4;' : ''}"></div>
-							</h:outputLink>
-						</div>
-	
-						<div class="widget-search-result-navigation__center">
-							<h:outputFormat value="#{msg.searchResultNavigation_hitIndex}"
-								rendered="#{activeDocumentBean.nextHit != null or activeDocumentBean.prevHit != null}" class="searchResultNavigationText">
-								<f:param value="#{searchBean.currentHitIndexDisplay}" />
-								<f:param value="#{searchBean.hitsCount}" />
-							</h:outputFormat>
-						</div>
-	
-						<div class="widget-search-result-navigation__right">
-								<h:outputLink rendered="#{activeDocumentBean.nextHit != null}" disabled="#{searchBean.currentHitIndex == (searchBean.hitsCount - 1)}"
-									value="#{activeDocumentBean.nextHit.sidebarNextUrl}" title="#{activeDocumentBean.nextHit.label}">
-								<div class="searchResultNavigationForwardImg" style="#{searchBean.currentHitIndex == (searchBean.hitsCount - 1) ? 'opacity: 0.4;' : ''}"></div>
-							</h:outputLink>
-						</div>
-					</div>
-	
-					<div class="widget-search-result-navigation__back-to-collection">
-							<h:outputLink rendered="#{activeDocumentBean.nextHit != null}"
-							    value="#{searchBean.lastUsedSearchUrl}">
-								<span>#{msg.returnToHitlist}</span>
-				            </h:outputLink>
-					</div>
-				</div>
-			</div>
-		</h:panelGroup>
+        <h:panelGroup rendered="#{configurationBean.displaySearchResultNavigation and searchBean.hitsCount > 1 and activeDocumentBean.prevHit != null}">
+            <div
+                id="widgetSearchResultNavigation"
+                class="widget widget-search-result-navigation">
+                <div class="widget__topbar widget-search-result-navigation__topbar">
+                    <h2 class="widget__title widget-search-result-navigation__title">#{msg.searchHitNavigation}</h2>
+                </div>
+
+                <div class="widget__body widget-search-result-navigation__body">
+                    <div class="widget-search-result-navigation__wrapper">
+                        <div class="widget-search-result-navigation__left">
+                            <h:outputLink
+                                rendered="#{activeDocumentBean.prevHit != null}"
+                                disabled="#{searchBean.currentHitIndex == 0}"
+                                value="#{activeDocumentBean.prevHit.sidebarPrevUrl}"
+                                title="#{activeDocumentBean.prevHit.label}">
+                                <div
+                                    class="searchResultNavigationBackImg"
+                                    style="#{searchBean.currentHitIndex == 0 ? 'opacity: 0.4;' : ''}" />
+                            </h:outputLink>
+                        </div>
+
+                        <div class="widget-search-result-navigation__center">
+                            <h:outputFormat
+                                value="#{msg.searchResultNavigation_hitIndex}"
+                                rendered="#{activeDocumentBean.nextHit != null or activeDocumentBean.prevHit != null}"
+                                class="searchResultNavigationText">
+                                <f:param value="#{searchBean.currentHitIndexDisplay}" />
+                                <f:param value="#{searchBean.hitsCount}" />
+                            </h:outputFormat>
+                        </div>
+
+                        <div class="widget-search-result-navigation__right">
+                            <h:outputLink
+                                rendered="#{activeDocumentBean.nextHit != null}"
+                                disabled="#{searchBean.currentHitIndex == (searchBean.hitsCount - 1)}"
+                                value="#{activeDocumentBean.nextHit.sidebarNextUrl}"
+                                title="#{activeDocumentBean.nextHit.label}">
+                                <div
+                                    class="searchResultNavigationForwardImg"
+                                    style="
+                                        # {
+                                            searchbean.currenthitindex== (searchBean.hitsCount - 1) ? 'opacity: 0.4;' : '';
+                                        }
+                                    " />
+                            </h:outputLink>
+                        </div>
+                    </div>
+
+                    <div class="widget-search-result-navigation__back-to-collection">
+                        <h:outputLink
+                            rendered="#{activeDocumentBean.nextHit != null}"
+                            value="#{searchBean.lastUsedSearchUrl}">
+                            <span>#{msg.returnToHitlist}</span>
+                        </h:outputLink>
+                    </div>
+                </div>
+            </div>
+        </h:panelGroup>
     </composite:implementation>
 </ui:composition>

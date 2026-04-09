@@ -1,185 +1,211 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:jsf="http://xmlns.jcp.org/jsf"
-	xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
-	xmlns:facelet="http://goobi.io/facelets"
-	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+    xmlns:facelet="http://goobi.io/facelets"
+    template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event
+                type="preRenderView"
+                listener="#{navigationHelper.setCurrentPageAdmin( (adminBean.currentUser.id == null) ? 'adminUserNew' : 'adminUserEdit')}" />
+            <f:viewAction
+                onPostback="false"
+                action="#{adminBean.currentUser.backupFields}"
+                if="#{adminBean.currentUser != null}" />
+            <f:viewParam
+                name="deleteData"
+                value="#{adminBean.deleteUserContributions}" />
+        </f:metadata>
+    </ui:define>
 
-	<ui:define name="metadata">
-		<f:metadata>
-			<f:event type="preRenderView"
-				listener="#{navigationHelper.setCurrentPageAdmin( (adminBean.currentUser.id == null) ? 'adminUserNew' : 'adminUserEdit')}" />
-			<f:viewAction onPostback="false"
-				action="#{adminBean.currentUser.backupFields}" if="#{adminBean.currentUser != null}" />
-			<f:viewParam name="deleteData"
-				value="#{adminBean.deleteUserContributions}" />
-		</f:metadata>
-	</ui:define>
+    <ui:define name="content">
+        <f:view
+            contentType="text/html"
+            encoding="utf-8">
+            <div id="adminUser">
+                <ui:fragment rendered="#{adminBean.currentUser == null}">
+                    <div class="admin__boxed-entry -no-actions -w33 -warning">#{msg.errLoginInactive}</div>
+                </ui:fragment>
+                <h:panelGroup
+                    id="adminUserGroup"
+                    rendered="#{userBean.admin and adminBean.currentUser != null}">
+                    <div class="admin__title-bar">
+                        <ui:fragment rendered="#{adminBean.currentUser.id == null}">
+                            <h1 class="admin__title">#{msg.admin__user_create_new}</h1>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{adminBean.currentUser.id != null}">
+                            <h1 class="admin__title">#{msg.admin__user_edit}</h1>
+                        </ui:fragment>
+                    </div>
 
-	<ui:define name="content">
-		<f:view contentType="text/html" encoding="utf-8">
-			<div id="adminUser">
-			    <ui:fragment rendered="#{adminBean.currentUser == null}">
-			        <div class="admin__boxed-entry -no-actions -w33 -warning">
-			            #{msg.errLoginInactive}
-			        </div>
-			    </ui:fragment>
-				<h:panelGroup id="adminUserGroup"
-					rendered="#{userBean.admin and adminBean.currentUser != null}">
-					<div class="admin__title-bar">
-						<ui:fragment rendered="#{adminBean.currentUser.id == null}">
-							<h1 class="admin__title">#{msg.admin__user_create_new}</h1>
-						</ui:fragment>
-						<ui:fragment rendered="#{adminBean.currentUser.id != null}">
-							<h1 class="admin__title">#{msg.admin__user_edit}</h1>
-						</ui:fragment>
-					</div>
-					
-					<viewerComponent:adminBreadcrumbs />
+                    <viewerComponent:adminBreadcrumbs />
 
-					<div class="admin__content-inner-content">
+                    <div class="admin__content-inner-content">
+                        <div class="admin__content-wrapper">
+                            <div class="admin__content-main -refreshHCsticky">
+                                <h:form
+                                    id="editUser"
+                                    styleClass="form-horizontal form-group"
+                                    role="form"
+                                    prependId="false">
+                                    <facelet:userData
+                                        user="#{adminBean.currentUser.copy}"
+                                        confirmEmailChange="false" />
+                                    <div class="admin__final-actions">
+                                        <h:commandLink
+                                            id="cancelNewUserCreationButton"
+                                            styleClass="btn admin__cancel-button"
+                                            value="#{msg.cancel}"
+                                            action="#{adminBean.resetUserAction(adminBean.currentUser, 'pretty:adminUsers')}"
+                                            immediate="true">
+                                            <f:ajax render="@all" />
+                                        </h:commandLink>
+                                        <h:commandButton
+                                            id="saveNewUserCreationButton"
+                                            styleClass="btn btn--success"
+                                            value="#{msg.save}"
+                                            action="#{adminBean.saveUserAction(adminBean.currentUser.copy, false, 'pretty:adminUsers')}">
+                                            <f:ajax
+                                                execute="@all"
+                                                render="@all" />
+                                        </h:commandButton>
+                                    </div>
+                                </h:form>
+                                <h:form
+                                    id="deleteUser"
+                                    styleClass="form-horizontal form-group"
+                                    role="form"
+                                    prependId="false">
+                                    <facelet:deleteUser user="#{adminBean.currentUser.copy}" />
+                                </h:form>
+                            </div>
 
-						<div class="admin__content-wrapper">
-							<div class="admin__content-main -refreshHCsticky">
-								<h:form id="editUser" styleClass="form-horizontal form-group" role="form" prependId="false">
-									<facelet:userData user="#{adminBean.currentUser.copy}"
-										confirmEmailChange="false" />
-									<div class="admin__final-actions">
-										<h:commandLink id="cancelNewUserCreationButton"
-											styleClass="btn admin__cancel-button" value="#{msg.cancel}"
-											action="#{adminBean.resetUserAction(adminBean.currentUser, 'pretty:adminUsers')}"
-											immediate="true">
-											<f:ajax render="@all"></f:ajax>
-										</h:commandLink>
-										<h:commandButton
-											id="saveNewUserCreationButton"
-											styleClass="btn btn--success"
-											value="#{msg.save}"
-											action="#{adminBean.saveUserAction(adminBean.currentUser.copy, false, 'pretty:adminUsers')}">
-											<f:ajax execute="@all" render="@all"></f:ajax>
-										</h:commandButton>
-									</div>
-								</h:form>
-								<h:form id="deleteUser" styleClass="form-horizontal form-group" role="form" prependId="false">
-									<facelet:deleteUser user="#{adminBean.currentUser.copy}" />
-								</h:form>
-							</div>
+                            <div class="admin__content-side -sticky">
+                                <ui:fragment rendered="#{!adminBean.currentUser.copy.active and !adminBean.currentUser.copy.anonymous}">
+                                    <!-- ACCOUNT ACTIVATION -->
+                                    <div class="admin__default-block -warning">
+                                        <div class="row">
+                                            <div class="col-12 control-label admin__form-label">
+                                                <h2>#{msg.admin__user_activation}</h2>
+                                            </div>
+                                        </div>
+                                        <div class="admin__form-help-text in mb-3">#{msg.admin__user_activation_description}</div>
 
+                                        <div class="row">
+                                            <div class="col-6">#{msg.admin__user_activation_label}:</div>
+                                            <div class="col-6 admin__form-input">
+                                                <h:form id="sidebarForm2">
+                                                    <div class="admin__radio-switch openAccessToggle">
+                                                        <h:selectOneRadio
+                                                            group="activateUserToggle"
+                                                            value="#{adminBean.currentUser.copy.active}"
+                                                            immediate="true"
+                                                            checked="true">
+                                                            <f:selectItem
+                                                                itemValue="#{false}"
+                                                                itemLabel="#{msg.no}" />
+                                                            <f:ajax
+                                                                execute="@this"
+                                                                render="@none" />
+                                                        </h:selectOneRadio>
+                                                        <h:selectOneRadio
+                                                            group="activateUserToggle"
+                                                            value="#{adminBean.currentUser.copy.active}"
+                                                            immediate="true"
+                                                            checked="null">
+                                                            <f:selectItem
+                                                                itemValue="#{true}"
+                                                                itemLabel="#{msg.yes}" />
+                                                            <f:ajax
+                                                                execute="@this"
+                                                                render="@none" />
+                                                        </h:selectOneRadio>
+                                                        <span class="toggle-outside">
+                                                            <span class="toggle-inside" />
+                                                        </span>
+                                                    </div>
+                                                </h:form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ui:fragment>
 
-							<div class="admin__content-side -sticky">
+                                <!-- USER PROFILE PICTURE -->
+                                <ui:fragment rendered="#{not empty adminBean.currentUser.id}">
+                                    <facelet:userAvatar user="#{adminBean.currentUser.copy}" />
+                                </ui:fragment>
 
+                                <!-- USER ADMIN RIGHTS -->
+                                <div class="admin__default-block">
+                                    <div class="row">
+                                        <div class="col-12 control-label admin__form-label">
+                                            <h2>#{msg.admin__user_superuser}</h2>
+                                        </div>
+                                    </div>
+                                    <div class="admin__form-help-text in mb-3">#{msg.admin__admin_rights_info}</div>
 
-							<ui:fragment rendered="#{!adminBean.currentUser.copy.active and !adminBean.currentUser.copy.anonymous}">
+                                    <div class="row">
+                                        <div class="col-6 admin__form-input">
+                                            <h:form id="sidebarForm">
+                                                <div class="admin__radio-switch openAccessToggle">
+                                                    <h:selectOneRadio
+                                                        group="superUserToggle"
+                                                        value="#{adminBean.currentUser.copy.superuser}"
+                                                        immediate="true"
+                                                        checked="#{adminBean.currentUser.copy.superuser ? null : 'false'}">
+                                                        <f:selectItem
+                                                            itemValue="#{false}"
+                                                            itemLabel="#{msg.no}" />
+                                                        <f:ajax
+                                                            execute="@this"
+                                                            render="@none" />
+                                                    </h:selectOneRadio>
+                                                    <h:selectOneRadio
+                                                        group="superUserToggle"
+                                                        value="#{adminBean.currentUser.copy.superuser}"
+                                                        immediate="true"
+                                                        checked="#{adminBean.currentUser.copy.superuser ? 'true' : null}">
+                                                        <f:selectItem
+                                                            itemValue="#{true}"
+                                                            itemLabel="#{msg.yes}" />
+                                                        <f:ajax
+                                                            execute="@this"
+                                                            render="@none" />
+                                                    </h:selectOneRadio>
+                                                    <span class="toggle-outside">
+                                                        <span class="toggle-inside" />
+                                                    </span>
+                                                </div>
+                                            </h:form>
+                                        </div>
+                                    </div>
+                                </div>
 
-			 				<!-- ACCOUNT ACTIVATION -->
-							<div class="admin__default-block -warning">
-
-								<div class="row">
-									<div class="col-12 control-label admin__form-label">
-									<h2>#{msg.admin__user_activation}</h2>
-									</div>
-								</div>
-								<div class="admin__form-help-text in mb-3">
-									#{msg.admin__user_activation_description}
-								</div>
-
-									<div class="row">
-
-									<div class="col-6">
-										#{msg.admin__user_activation_label}:
-									</div>
-										<div class="col-6 admin__form-input">
-											<h:form id="sidebarForm2">
-												<div class="admin__radio-switch openAccessToggle">
-													<h:selectOneRadio group="activateUserToggle"
-														value="#{adminBean.currentUser.copy.active}" immediate="true"
-														checked="true">
-														<f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-														<f:ajax execute="@this" render="@none"></f:ajax>
-													</h:selectOneRadio>
-													<h:selectOneRadio group="activateUserToggle"
-														value="#{adminBean.currentUser.copy.active}" immediate="true"
-														checked="null">
-														<f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-														<f:ajax execute="@this" render="@none"></f:ajax>
-													</h:selectOneRadio>
-													<span class="toggle-outside"><span
-														class="toggle-inside"></span></span>
-												</div>
-											</h:form>
-										</div>
-									</div>
-								</div>
-
-			                </ui:fragment>
-
-
-
-
-								<!-- USER PROFILE PICTURE -->
-								<ui:fragment rendered="#{not empty adminBean.currentUser.id}">
-									<facelet:userAvatar user="#{adminBean.currentUser.copy}" />
-								</ui:fragment>
-
-								<!-- USER ADMIN RIGHTS -->
-								<div class="admin__default-block">
-
-								<div class="row">
-									<div class="col-12 control-label admin__form-label">
-									<h2>#{msg.admin__user_superuser}</h2>
-									</div>
-								</div>
-								<div class="admin__form-help-text in mb-3">
-									#{msg.admin__admin_rights_info}
-								</div>
-
-									<div class="row">
-										<div class="col-6 admin__form-input">
-											<h:form id="sidebarForm">
-												<div class="admin__radio-switch openAccessToggle">
-													<h:selectOneRadio group="superUserToggle"
-														value="#{adminBean.currentUser.copy.superuser}" immediate="true"
-														checked="#{adminBean.currentUser.copy.superuser ? null : 'false'}">
-														<f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-														<f:ajax execute="@this" render="@none"></f:ajax>
-													</h:selectOneRadio>
-													<h:selectOneRadio group="superUserToggle"
-														value="#{adminBean.currentUser.copy.superuser}" immediate="true"
-														checked="#{adminBean.currentUser.copy.superuser ? 'true' : null}">
-														<f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-														<f:ajax execute="@this" render="@none"></f:ajax>
-													</h:selectOneRadio>
-													<span class="toggle-outside"><span
-														class="toggle-inside"></span></span>
-												</div>
-											</h:form>
-										</div>
-									</div>
-								</div>
-
-								<!-- CROWDSOURCING USER SETTINGS (E-MAIL NOTIFICATIONS) -->
-									<c:forEach var="module" items="#{configurationBean.modules}">
-										<div class="admin__default-block">
-										    <c:forEach var="contribution" items="#{module.getWidgets('userSettings')}">
-										        <ui:include src="/#{contribution}" />
-										    </c:forEach>
-									   </div>
-									</c:forEach>
-
-
-							</div>
-
-						</div>
-					</div>
-				</h:panelGroup>
-			</div>
-		</f:view>
-	</ui:define>
-
+                                <!-- CROWDSOURCING USER SETTINGS (E-MAIL NOTIFICATIONS) -->
+                                <c:forEach
+                                    var="module"
+                                    items="#{configurationBean.modules}">
+                                    <div class="admin__default-block">
+                                        <c:forEach
+                                            var="contribution"
+                                            items="#{module.getWidgets('userSettings')}">
+                                            <ui:include src="/#{contribution}" />
+                                        </c:forEach>
+                                    </div>
+                                </c:forEach>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+            </div>
+        </f:view>
+    </ui:define>
 </ui:composition>

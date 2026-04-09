@@ -33,7 +33,7 @@ function getSynth() {
     if (!synth) {
         synth = new Tone.PolySynth(Tone.Synth, {
             oscillator: { type: 'triangle' },
-            envelope: { attack: 0.02, decay: 0.1, sustain: 0.3, release: 0.8 }
+            envelope: { attack: 0.02, decay: 0.1, sustain: 0.3, release: 0.8 },
         }).toDestination();
     }
     return synth;
@@ -94,7 +94,7 @@ export async function playMidiWithTone(midiBuffer, onNote, onStop) {
                 console.log('Created MIDI-based sound mapping:', soundMappings);
 
                 // Create synthesizers for each track
-                trackSynths = soundMappings.tracks.map(trackMapping => {
+                trackSynths = soundMappings.tracks.map((trackMapping) => {
                     return trackMapping.synth || getSynth(); // Fallback to default synth
                 });
             } catch (error) {
@@ -110,18 +110,21 @@ export async function playMidiWithTone(midiBuffer, onNote, onStop) {
         midi.tracks.forEach((track, trackIndex) => {
             if (track.notes.length > 0) {
                 const synthInstance = trackSynths[trackIndex] || getSynth();
-                const part = new Tone.Part((time, note) => {
-                    const noteName = note.name || Tone.Frequency(note.midi, "midi").toNote();
-                    const velocity = note.velocity || 0.7;
-                    synthInstance.triggerAttackRelease(noteName, note.duration, time, velocity);
-                    if (onNote) onNote(note, time);
-                }, track.notes.map(note => ({
-                    time: note.time,
-                    name: note.name,
-                    midi: note.midi,
-                    duration: note.duration,
-                    velocity: note.velocity
-                })));
+                const part = new Tone.Part(
+                    (time, note) => {
+                        const noteName = note.name || Tone.Frequency(note.midi, 'midi').toNote();
+                        const velocity = note.velocity || 0.7;
+                        synthInstance.triggerAttackRelease(noteName, note.duration, time, velocity);
+                        if (onNote) onNote(note, time);
+                    },
+                    track.notes.map((note) => ({
+                        time: note.time,
+                        name: note.name,
+                        midi: note.midi,
+                        duration: note.duration,
+                        velocity: note.velocity,
+                    }))
+                );
                 part.loop = false;
                 part.start(0);
                 currentMidiParts.push(part);
@@ -144,12 +147,15 @@ export async function playMidiWithTone(midiBuffer, onNote, onStop) {
 
         // Set up auto-stop timeout as fallback
         if (currentMidiDuration > 0) {
-            autoStopTimeout = setTimeout(() => {
-                if (isPlaying) {
-                    handlePlaybackEnd();
-                    if (onStop) onStop();
-                }
-            }, (currentMidiDuration + 0.5) * 1000); // Add 0.5s buffer
+            autoStopTimeout = setTimeout(
+                () => {
+                    if (isPlaying) {
+                        handlePlaybackEnd();
+                        if (onStop) onStop();
+                    }
+                },
+                (currentMidiDuration + 0.5) * 1000
+            ); // Add 0.5s buffer
         }
 
         await Tone.start();
@@ -191,12 +197,15 @@ export function pauseMidi() {
         }
         const remainingTime = currentMidiDuration - pausedTime;
         if (remainingTime > 0) {
-            autoStopTimeout = setTimeout(() => {
-                if (isPlaying) {
-                    handlePlaybackEnd();
-                    if (onStopCallback) onStopCallback();
-                }
-            }, (remainingTime + 0.5) * 1000); // Add 0.5s buffer
+            autoStopTimeout = setTimeout(
+                () => {
+                    if (isPlaying) {
+                        handlePlaybackEnd();
+                        if (onStopCallback) onStopCallback();
+                    }
+                },
+                (remainingTime + 0.5) * 1000
+            ); // Add 0.5s buffer
         }
 
         console.log(`Resumed playback from ${pausedTime.toFixed(2)}s`);
@@ -240,7 +249,12 @@ function handlePlaybackEnd() {
     Tone.Transport.off('stop');
 
     // Clean up parts
-    currentMidiParts.forEach(part => { if (part) { part.stop(); part.dispose(); } });
+    currentMidiParts.forEach((part) => {
+        if (part) {
+            part.stop();
+            part.dispose();
+        }
+    });
     currentMidiParts = [];
 
     // Release synth notes
@@ -267,8 +281,12 @@ function handlePlaybackEnd() {
     }
 }
 
-export function isPlayingMidi() { return isPlaying; }
-export function isPausedMidi() { return isPaused; }
+export function isPlayingMidi() {
+    return isPlaying;
+}
+export function isPausedMidi() {
+    return isPaused;
+}
 export function getPlaybackTime() {
     let currentTime = isPaused ? pausedTime : Tone.Transport.seconds || 0;
 
@@ -290,7 +308,7 @@ export function getPlaybackTime() {
     return {
         current: currentTime,
         total: currentMidiDuration,
-        progress: currentMidiDuration > 0 ? (currentTime / currentMidiDuration) * 100 : 0
+        progress: currentMidiDuration > 0 ? (currentTime / currentMidiDuration) * 100 : 0,
     };
 }
 
@@ -309,7 +327,10 @@ export function cleanup() {
     // Clear callback
     onStopCallback = null;
 
-    if (synth) { synth.dispose(); synth = null; }
+    if (synth) {
+        synth.dispose();
+        synth = null;
+    }
     isPlaying = false;
     isPaused = false;
     pausedTime = 0;
@@ -394,12 +415,15 @@ export function seekToTime(targetTime) {
         // Set new auto-stop timeout for the remaining duration
         const remainingTime = currentMidiDuration - targetTime;
         if (remainingTime > 0) {
-            autoStopTimeout = setTimeout(() => {
-                if (isPlaying) {
-                    handlePlaybackEnd();
-                    if (onStopCallback) onStopCallback();
-                }
-            }, (remainingTime + 0.5) * 1000); // Add 0.5s buffer
+            autoStopTimeout = setTimeout(
+                () => {
+                    if (isPlaying) {
+                        handlePlaybackEnd();
+                        if (onStopCallback) onStopCallback();
+                    }
+                },
+                (remainingTime + 0.5) * 1000
+            ); // Add 0.5s buffer
         }
 
         // Resume playback if it was playing before seeking
@@ -614,7 +638,6 @@ function checkAndNavigateToElement(elementId) {
 
         // Fallback: search through pages
         findAndNavigateToElementPage(elementId);
-
     } catch (error) {
         console.warn('Error in automatic page navigation:', error);
         // Try fallback method
@@ -666,7 +689,7 @@ function findAndNavigateToElementPage(elementId) {
 function applyHighlighting(elementIds) {
     if (!currentContainer || !elementIds) return;
 
-    elementIds.forEach(id => {
+    elementIds.forEach((id) => {
         const element = currentContainer.querySelector(`#${id}`);
         if (element) {
             element.classList.add('-highlighted-note');
@@ -677,7 +700,7 @@ function applyHighlighting(elementIds) {
 function clearHighlighting() {
     if (!currentContainer || !highlightedElements) return;
 
-    highlightedElements.forEach(id => {
+    highlightedElements.forEach((id) => {
         const element = currentContainer.querySelector(`#${id}`);
         if (element) {
             // Remove all highlighting styles

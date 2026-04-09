@@ -38,11 +38,9 @@ import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
 
 /**
- * <p>
- * CmsDynamicContentBean class.
- * </p>
+ * JSF backing bean that manages dynamic content components embedded in CMS pages.
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Named
 @ViewScoped
@@ -55,11 +53,9 @@ public class CmsDynamicContentBean implements Serializable {
     private CMSPage cmsPage = null;
 
     /**
-     * <p>
      * getTopBarContent.
-     * </p>
      *
-     * @return a {@link jakarta.faces.component.html.HtmlPanelGroup} object
+     * @return the HtmlPanelGroup containing the dynamically loaded top bar content for the current CMS page
      */
     public HtmlPanelGroup getTopBarContent() {
         this.cmsPage = Optional.ofNullable(BeanUtils.getCmsBean()).map(CmsBean::getCurrentPage).orElse(null);
@@ -74,11 +70,9 @@ public class CmsDynamicContentBean implements Serializable {
     }
 
     /**
-     * <p>
      * setTopBarContent.
-     * </p>
      *
-     * @param topBarGroup the topBarGroup to set
+     * @param topBarGroup the JSF panel group component serving as the top bar content container
      */
     public void setTopBarContent(HtmlPanelGroup topBarGroup) {
         this.topBarGroup = topBarGroup;

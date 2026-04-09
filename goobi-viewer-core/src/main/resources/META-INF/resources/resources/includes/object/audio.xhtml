@@ -1,49 +1,64 @@
-<ui:composition 
-    xmlns="http://www.w3.org/1999/xhtml" 
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:h="http://xmlns.jcp.org/jsf/html" 
-    xmlns:f="http://xmlns.jcp.org/jsf/core" 
-    xmlns:jsf="http://xmlns.jcp.org/jsf" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner" 
+    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
-
     <!-- VIEW AUDIO -->
-    <div id="viewObjectContent" class="view-object-content"> 
-		    <!-- THUMBNAIL -->
-		    <div class="view-object-content__thumb">
-		        <figure>
-		            <img src="#{activeDocumentBean.viewManager.getRepresentativeImageUrl(300,300)}" alt="#{msg.thumbnail}"
-		                data-viewer-thumbnail="thumbnail"
-		                data-viewer-access-denied-url="#{activeDocumentBean.viewManager.representativePage.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />
-		        </figure>
-		    </div>
-		    <div class="view-object-content__objects">
-			    <!-- TITLE -->
-			    <div class="view-object-content__audio-title">
-			        <h3><h:outputText value="#{activeDocumentBean.viewManager.currentStructElement.label}" escape="false" /></h3>
-			    </div>
-			    
-                <!-- ACCESS DENIED DESCRIPTION TEXT -->
-				<h:panelGroup styleClass="view-object__access-denied-text"
-				    rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionAudio and activeDocumentBean.viewManager.currentPage.getAccessDeniedDescriptionTextForAudio(navigationHelper.locale) != null}">
-				    <h:outputText escape="false"
-				        value="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedDescriptionTextForAudio(navigationHelper.locale)}" />
-				</h:panelGroup>
-			    <!-- AUDIO -->          
-			    <div id="audioContainer" class="view-object-content__audio" data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}">
-			        <audio 
-			            id="audio_container" 
-			            controls="controls"
-			            controlsList="nodownload">
-			            <ui:repeat var="format" value="#{activeDocumentBean.viewManager.currentPage.getMediaFormats('audio')}">
-			               <source src="#{activeDocumentBean.viewManager.currentPage.getMediaUrl(format)}" type="audio/#{format}" />
-			            </ui:repeat>
-			        </audio>
-			    </div>
-		    </div>
-		    
-		 </div>
+    <div
+        id="viewObjectContent"
+        class="view-object-content">
+        <!-- THUMBNAIL -->
+        <div class="view-object-content__thumb">
+            <figure>
+                <img
+                    src="#{activeDocumentBean.viewManager.getRepresentativeImageUrl(300,300)}"
+                    alt="#{msg.thumbnail}"
+                    data-viewer-thumbnail="thumbnail"
+                    data-viewer-access-denied-url="#{activeDocumentBean.viewManager.representativePage.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />
+            </figure>
+        </div>
+        <div class="view-object-content__objects">
+            <!-- TITLE -->
+            <div class="view-object-content__audio-title">
+                <h3>
+                    <h:outputText
+                        value="#{activeDocumentBean.viewManager.currentStructElement.label}"
+                        escape="false" />
+                </h3>
+            </div>
+
+            <!-- ACCESS DENIED DESCRIPTION TEXT -->
+            <h:panelGroup
+                styleClass="view-object__access-denied-text"
+                rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionAudio and activeDocumentBean.viewManager.currentPage.getAccessDeniedDescriptionTextForAudio(navigationHelper.locale) != null}">
+                <h:outputText
+                    escape="false"
+                    value="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedDescriptionTextForAudio(navigationHelper.locale)}" />
+            </h:panelGroup>
+            <!-- AUDIO -->
+            <div
+                id="audioContainer"
+                class="view-object-content__audio"
+                data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}">
+                <audio
+                    id="audio_container"
+                    controls="controls"
+                    controlsList="nodownload">
+                    <ui:repeat
+                        var="format"
+                        value="#{activeDocumentBean.viewManager.currentPage.getMediaFormats('audio')}">
+                        <source
+                            src="#{activeDocumentBean.viewManager.currentPage.getMediaUrl(format)}"
+                            type="audio/#{format}" />
+                    </ui:repeat>
+                </audio>
+            </div>
+        </div>
+    </div>
 </ui:composition>

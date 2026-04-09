@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.configuration2.HierarchicalConfiguration;
 import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.logging.log4j.LogManager;
@@ -50,6 +51,7 @@ import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.controller.config.filter.IFilterConfiguration;
 import io.goobi.viewer.controller.json.JsonMetadataConfiguration;
+import io.goobi.viewer.controller.model.ViewAttributes;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
@@ -59,6 +61,8 @@ import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.maps.GeomapItemFilter;
 import io.goobi.viewer.model.metadata.Metadata;
+import io.goobi.viewer.model.metadata.MetadataListElement;
+import io.goobi.viewer.model.metadata.MetadataListSeparator;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
@@ -1416,15 +1420,6 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isSidebarViewsWidgetCalendarViewLinkVisible()
-     * @verifies return correct value
-     */
-    @Test
-    void isSidebarViewsWidgetCalendarLinkVisible_shouldReturnCorrectValue() {
-        assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarViewsWidgetCalendarViewLinkVisible());
-    }
-
-    /**
      * @see Configuration#isSidebarViewsWidgetThumbsViewLinkVisible()
      * @verifies return correct value
      */
@@ -1883,6 +1878,19 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getSidebarWidgetsForView(String)
+     * @verifies fall back to view name prefix if no exact match found
+     */
+    @Test
+    void getSidebarWidgetsForView_shouldFallBackToViewNamePrefixIfNoExactMatchFound() {
+        // "metadata_codicological" has no explicit sidebar config, should fall back to "metadata"
+        List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetsForView("metadata_codicological");
+        assertEquals(2, result.size());
+        assertEquals("views", result.get(0));
+        assertEquals("copyright", result.get(1));
+    }
+
+    /**
      * @see Configuration#isSidebarWidgetForViewCollapsible(String,String)
      * @verifies return correct value
      */
@@ -1900,14 +1908,6 @@ class ConfigurationTest extends AbstractTest {
         assertTrue(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewCollapsedByDefault("object", "copyright"));
     }
 
-    /**
-     * @see Configuration#getCalendarDocStructTypes()
-     * @verifies return all configured elements
-     */
-    @Test
-    void getCalendarDocStructTypes_shouldReturnAllConfiguredElements() {
-        assertEquals(2, DataManager.getInstance().getConfiguration().getCalendarDocStructTypes().size());
-    }
 
     /**
      * @see Configuration#getAllFacetFields()
@@ -2482,7 +2482,7 @@ class ConfigurationTest extends AbstractTest {
 
     @Test
     void getFullscreenViewZoomScalesTest() throws ViewerConfigurationException {
-        List<String> scales = DataManager.getInstance().getConfiguration().getImageViewZoomScales(PageType.viewFullscreen, null);
+        List<String> scales = DataManager.getInstance().getConfiguration().getImageViewZoomScales(new ViewAttributes(PageType.viewFullscreen));
         assertEquals("1000", scales.get(0));
         assertEquals("2000", scales.get(1));
         assertEquals("3000", scales.get(2));
@@ -2500,7 +2500,8 @@ class ConfigurationTest extends AbstractTest {
 
     @Test
     void getFullscreenTileSizesTest() throws ViewerConfigurationException {
-        Map<Integer, List<Integer>> tiles = DataManager.getInstance().getConfiguration().getTileSizes(PageType.viewFullscreen, null);
+        Map<Integer, List<Integer>> tiles =
+                DataManager.getInstance().getConfiguration().getTileSizes(new ViewAttributes(PageType.viewFullscreen));
         assertEquals(1024, tiles.keySet().iterator().next(), 0);
         assertEquals(3, tiles.get(1024).size());
         assertEquals(2, tiles.get(1024).get(0), 0);
@@ -2515,7 +2516,7 @@ class ConfigurationTest extends AbstractTest {
 
     @Test
     void getCrowdsourcingFooterHeightTest() throws ViewerConfigurationException {
-        assertEquals(0, DataManager.getInstance().getConfiguration().getFooterHeight(PageType.editContent, null));
+        assertEquals(0, DataManager.getInstance().getConfiguration().getFooterHeight(new ViewAttributes(PageType.editContent)));
     }
 
     /**
@@ -2591,7 +2592,7 @@ class ConfigurationTest extends AbstractTest {
     void getAncestorIdentifierFields_shouldReturnAllConfiguredValues() {
         List<String> list = DataManager.getInstance().getConfiguration().getAncestorIdentifierFields();
         assertNotNull(list);
-        assertEquals(2, list.size());
+        assertEquals(3, list.size());
         assertEquals(SolrConstants.PI_PARENT, list.get(0));
         assertEquals("MD_OTHERANCESTOR", list.get(1));
     }
@@ -2858,12 +2859,12 @@ class ConfigurationTest extends AbstractTest {
 
     @Test
     void isDoublePageNavigationEnabled_shouldReturnCorrectValue() throws ViewerConfigurationException {
-        assertTrue(DataManager.getInstance().getConfiguration().isDoublePageNavigationEnabled(null, null));
+        assertTrue(DataManager.getInstance().getConfiguration().isDoublePageNavigationEnabled(new ViewAttributes(null)));
     }
 
     @Test
     void isSequencePageNavigationEnabled_shouldReturnCorrectValue() throws ViewerConfigurationException {
-        assertFalse(DataManager.getInstance().getConfiguration().isSequencePageNavigationEnabled(null, null));
+        assertFalse(DataManager.getInstance().getConfiguration().isSequencePageNavigationEnabled(new ViewAttributes(null)));
     }
 
     /**
@@ -3693,6 +3694,18 @@ class ConfigurationTest extends AbstractTest {
         assertTrue(DataManager.getInstance().getConfiguration().isHostProxyWhitelisted("http://localhost:1234"));
     }
 
+    /**
+     * @see Configuration#getHttpHeaderLoginRedirectWhitelist()
+     * @verifies return configured values
+     */
+    @Test
+    void getHttpHeaderLoginRedirectWhitelist_shouldReturnConfiguredValues() {
+        List<String> whitelist = DataManager.getInstance().getConfiguration().getHttpHeaderLoginRedirectWhitelist();
+        assertEquals(2, whitelist.size());
+        assertTrue(whitelist.contains("trusted.example.org"));
+        assertTrue(whitelist.contains("sso.example.com"));
+    }
+
     @Test
     void test_getGeomapFeatureTitleOptions() {
         List<SelectItem> items = DataManager.getInstance().getConfiguration().getGeomapFeatureTitleOptions();
@@ -3774,5 +3787,24 @@ class ConfigurationTest extends AbstractTest {
         assertEquals("testinsitution", url0Header.get("accountId"));
         assertEquals("Wobblewock", url0Header.get("x-api-key"));
         assertEquals("Bearer $SYS(DNB_DOWNLOAD_KEY)", url0Header.get("Authorization"));
+    }
+
+    @Test
+    void test_getMainMetadataListItemsForTemplate() {
+        List<MetadataListElement> items = DataManager.getInstance().getConfiguration().getMainMetadataListItemsForTemplate(0, "_DEFAULT");
+        List<Metadata> metadata = DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(0, "_DEFAULT");
+
+        assertEquals(items.size() - 1, metadata.size());
+
+        List<Metadata> metadataFromItems = items.stream().filter(item -> item instanceof Metadata).map(item -> (Metadata) item).toList();
+
+        assertTrue(CollectionUtils.isEqualCollection(metadata, metadataFromItems));
+
+        MetadataListSeparator fold =
+                items.stream().filter(item -> item instanceof MetadataListSeparator).map(item -> (MetadataListSeparator) item).findAny().orElse(null);
+
+        assertNotNull(fold);
+        assertEquals(4, items.indexOf(fold));
+
     }
 }

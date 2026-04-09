@@ -8,40 +8,40 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-    template="/resources/themes/#{navigationHelper.theme}/template.html"
->
+    template="/resources/themes/#{navigationHelper.theme}/template.html">
     <ui:define name="metadata">
         <f:metadata>
             <f:event
                 type="preRenderView"
-                listener="#{navigationHelper.setCurrentPage('user__upload_content', false, true)}"
-            />
+                listener="#{navigationHelper.setCurrentPage('user__upload_content', false, true)}" />
             <f:event
                 type="preRenderView"
-                listener="#{breadcrumbBean.addStaticLinkToBreadcrumb('admin__user_profile', request.contextPath.concat('/user/'), 1)}"
-            />
+                listener="#{breadcrumbBean.addStaticLinkToBreadcrumb('admin__user_profile', request.contextPath.concat('/user/'), 1)}" />
             <f:event
                 type="preRenderView"
-                listener="#{navigationHelper.addStaticLinkToBreadcrumb('user__upload_content', 2)}"
-            />
+                listener="#{navigationHelper.addStaticLinkToBreadcrumb('user__upload_content', 2)}" />
         </f:metadata>
     </ui:define>
 
     <ui:define name="content">
         <ui:fragment rendered="#{userBean.loggedIn and configurationBean.contentUploadEnabled}">
-            <div id="userContentUploadWrap" class="user-content-upload page-wrapp">
+            <div
+                id="userContentUploadWrap"
+                class="user-content-upload page-wrapp">
                 <h1>#{msg.user__upload_content}</h1>
 
                 <p>#{msg.user__upload_content_info}</p>
 
-                <div id="userContentUpload" class="user-content-upload__table-wrapper">
-                    <h:form id="userUploadJobsForm" prependId="false">
+                <div
+                    id="userContentUpload"
+                    class="user-content-upload__table-wrapper">
+                    <h:form
+                        id="userUploadJobsForm"
+                        prependId="false">
                         <div class="admin__table-tools flex-wrap">
                             <!-- PAGINATOR -->
                             <div class="admin__table-paginator">
-                                <viewerComponent:dataTablePaginator
-                                    tableValues="#{uploadBean.lazyModelUploadJobs}"
-                                />
+                                <viewerComponent:dataTablePaginator tableValues="#{uploadBean.lazyModelUploadJobs}" />
                             </div>
                         </div>
 
@@ -52,95 +52,86 @@
                             id="userUploadJobsTable"
                             class="user-content-upload__table"
                             role="grid"
-                            aria-label="#{msg.overview}"
-                        >
+                            aria-label="#{msg.overview}">
                             <!-- TITLE ROW -->
-                            <div class="user-content-upload__table-title" role="row">
+                            <div
+                                class="user-content-upload__table-title"
+                                role="row">
                                 <!-- DATE COL -->
                                 <div
                                     class="user-content-upload__table-title-date"
-                                    role="presentation"
-                                >
+                                    role="presentation">
                                     <span class="admin__table-sorting__heading">#{msg.date}</span>
                                 </div>
 
                                 <!-- TARGET COL -->
                                 <div
                                     class="user-content-upload__table-title-target"
-                                    role="presentation"
-                                >
+                                    role="presentation">
                                     <span class="admin__table-sorting__heading">#{msg.title}</span>
                                 </div>
 
                                 <!-- TEXT COL -->
                                 <div
                                     class="user-content-upload__table-title-status"
-                                    role="presentation"
-                                >
+                                    role="presentation">
                                     <span class="admin__table-sorting__heading">#{msg.status}</span>
                                 </div>
                             </div>
 
-                            <div class="user-content-upload__table-body" role="presentation">
+                            <div
+                                class="user-content-upload__table-body"
+                                role="presentation">
                                 <!-- INDIVIDUAL JOB ROWS -->
                                 <ui:repeat
                                     var="job"
-                                    value="#{uploadBean.lazyModelUploadJobs.paginatorList}"
-                                >
+                                    value="#{uploadBean.lazyModelUploadJobs.paginatorList}">
                                     <ui:fragment rendered="#{!job.online}">
-                                        <div class="user-content-upload__table-entry" role="row">
+                                        <div
+                                            class="user-content-upload__table-entry"
+                                            role="row">
                                             <!-- DATE -->
                                             <div
                                                 class="user-content-upload__table-entry-date"
-                                                role="cell"
-                                            >
+                                                role="cell">
                                                 <h:outputText value="#{job.dateCreated}">
-                                                    <f:converter
-                                                        converterId="localDateTimeConverter"
-                                                    />
+                                                    <f:converter converterId="localDateTimeConverter" />
                                                     <f:attribute
                                                         name="pattern"
-                                                        value="#{navigationHelper.dateTimePattern}"
-                                                    />
+                                                        value="#{navigationHelper.dateTimePattern}" />
                                                 </h:outputText>
                                             </div>
                                             <!-- TITLE -->
                                             <div
                                                 class="user-content-upload__table-entry-label"
-                                                role="cell"
-                                            >
+                                                role="cell">
                                                 <h:outputText value="#{job.title}" />
                                             </div>
 
                                             <!-- STATUS -->
                                             <div
                                                 class="user-content-upload__table-entry-status"
-                                                role="cell"
-                                            >
+                                                role="cell">
                                                 <ui:fragment rendered="#{job.status eq 'WAITING'}">
                                                     <util:icon
                                                         icon="hourglass-high"
                                                         ariaLabel="#{msg.waiting}"
-														svgClass="icon icon-xxl"
-                                                    />
+                                                        svgClass="icon icon-xxl" />
                                                 </ui:fragment>
                                                 <ui:fragment rendered="#{job.status eq 'READY'}">
                                                     <util:icon
                                                         icon="check"
                                                         ariaLabel="#{msg.ready}"
-														svgClass="icon icon-xxl"
-                                                    />
+                                                        svgClass="icon icon-xxl" />
                                                 </ui:fragment>
                                                 <ui:fragment rendered="#{job.status eq 'ERROR'}">
                                                     <span
                                                         title="#{job.message}"
-                                                        data-placement="bottom"
-                                                    >
+                                                        data-placement="bottom">
                                                         <util:icon
                                                             icon="x"
                                                             ariaLabel="#{msg.error}"
-															svgClass="icon icon-xxl"
-                                                        />
+                                                            svgClass="icon icon-xxl" />
                                                     </span>
                                                 </ui:fragment>
                                             </div>
@@ -151,71 +142,53 @@
                                         <a
                                             class="user-content-upload__table-finished-job-link"
                                             href="#{navigationHelper.applicationUrl}#{job.recordUrl}"
-                                            target="_blank"
-                                        >
+                                            target="_blank">
                                             <div
                                                 class="user-content-upload__table-entry"
-                                                role="row"
-                                            >
+                                                role="row">
                                                 <!-- DATE -->
                                                 <div
                                                     class="user-content-upload__table-entry-date"
-                                                    role="cell"
-                                                >
+                                                    role="cell">
                                                     <h:outputText value="#{job.dateCreated}">
-                                                        <f:converter
-                                                            converterId="localDateTimeConverter"
-                                                        />
+                                                        <f:converter converterId="localDateTimeConverter" />
                                                         <f:attribute
                                                             name="pattern"
-                                                            value="#{navigationHelper.dateTimePattern}"
-                                                        />
+                                                            value="#{navigationHelper.dateTimePattern}" />
                                                     </h:outputText>
                                                 </div>
                                                 <!-- TITLE -->
                                                 <div
                                                     class="user-content-upload__table-entry-label"
-                                                    role="cell"
-                                                >
-                                                    <util:icon icon="external-link"/>
+                                                    role="cell">
+                                                    <util:icon icon="external-link" />
                                                     <h:outputText value=" #{job.title}" />
                                                 </div>
 
                                                 <!-- STATUS -->
                                                 <div
                                                     class="user-content-upload__table-entry-status"
-                                                    role="cell"
-                                                >
-                                                    <ui:fragment
-                                                        rendered="#{job.status eq 'WAITING'}"
-                                                    >
+                                                    role="cell">
+                                                    <ui:fragment rendered="#{job.status eq 'WAITING'}">
                                                         <util:icon
                                                             icon="hourglass-high"
                                                             ariaLabel="#{msg.waiting}"
-															svgClass="icon icon-xxl"
-                                                        />
+                                                            svgClass="icon icon-xxl" />
                                                     </ui:fragment>
-                                                    <ui:fragment
-                                                        rendered="#{job.status eq 'READY'}"
-                                                    >
+                                                    <ui:fragment rendered="#{job.status eq 'READY'}">
                                                         <util:icon
                                                             icon="check"
                                                             ariaLabel="#{msg.ready}"
-															svgClass="icon icon-xxl"
-                                                        />
+                                                            svgClass="icon icon-xxl" />
                                                     </ui:fragment>
-                                                    <ui:fragment
-                                                        rendered="#{job.status eq 'ERROR'}"
-                                                    >
+                                                    <ui:fragment rendered="#{job.status eq 'ERROR'}">
                                                         <span
                                                             title="#{job.message}"
-                                                            data-placement="bottom"
-                                                        >
+                                                            data-placement="bottom">
                                                             <util:icon
                                                                 icon="x"
                                                                 ariaLabel="#{msg.error}"
-																svgClass="icon icon-xxl"
-                                                            />
+                                                                svgClass="icon icon-xxl" />
                                                         </span>
                                                     </ui:fragment>
                                                 </div>
@@ -233,7 +206,9 @@
 
     <ui:define name="sidebar">
         <ui:fragment rendered="#{userBean.loggedIn and configurationBean.contentUploadEnabled}">
-            <div id="widgetSidebar" class="widget widget-user-content-upload">
+            <div
+                id="widgetSidebar"
+                class="widget widget-user-content-upload">
                 <div class="widget__topbar widget-user-content-upload__topbar">
                     <h2 class="widget__title widget-user-content-upload__title">#{msg.user__upload_content__sidebar_label}</h2>
                 </div>
@@ -244,8 +219,7 @@
                         <button
                             class="btn btn--full"
                             data-toggle="modal"
-                            data-target="#contentUploadModal"
-                        >
+                            data-target="#contentUploadModal">
                             #{msg.user__upload_content}
                         </button>
                     </div>

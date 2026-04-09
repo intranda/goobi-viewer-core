@@ -41,6 +41,10 @@ import io.goobi.viewer.solr.SolrConstants;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Named;
 
+/**
+ * JSF request-scoped backing bean for RSS feed generation. Provides methods to retrieve Solr-based
+ * RSS feed entries and channel information for use in Facelets templates.
+ */
 @Named("rssBean")
 @RequestScoped
 public class RSSBean {
@@ -49,10 +53,10 @@ public class RSSBean {
 
     /**
      * 
-     * @param maxHits
-     * @param query
-     * @param sortField
-     * @param sortDescending
+     * @param maxHits maximum number of feed entries to return
+     * @param query Solr query to filter feed entries
+     * @param sortField Solr field used for sorting results
+     * @param sortDescending if true, results are sorted in descending order
      * @return List<SyndEntry>
      */
     public List<SyndEntry> getRssFeed(Integer maxHits, String query, String sortField, Boolean sortDescending) {
@@ -73,10 +77,10 @@ public class RSSBean {
 
     /**
      * 
-     * @param maxHits
-     * @param query
-     * @param sortField
-     * @param sortDescending
+     * @param maxHits maximum number of feed entries to return
+     * @param query Solr query to filter feed entries
+     * @param sortField Solr field used for sorting results
+     * @param sortDescending if true, results are sorted in descending order
      * @return {@link Channel}
      */
     public Channel getRssFeedChannel(Integer maxHits, String query, String sortField, Boolean sortDescending) {

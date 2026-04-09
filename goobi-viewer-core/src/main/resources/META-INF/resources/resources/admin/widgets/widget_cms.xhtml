@@ -4,207 +4,139 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
->
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
     <composite:interface />
 
     <composite:implementation>
         <h:panelGroup rendered="#{userBean.user.isHasCmsPrivilege('CMS_PAGES')}">
-            <div id="widgetCms" class="admin-widget">
+            <div
+                id="widgetCms"
+                class="admin-widget">
                 <h:form id="widgetCmsForm">
                     <div class="admin-widget__header">#{msg.admin__cms_title}</div>
 
                     <ul>
                         <ui:fragment rendered="#{userBean.user.cmsAdmin}">
                             <li
-                                class="#{navigationHelper.currentPage == 'adminCmsOverview' ? 'active' : '' or navigationHelper.currentPage == 'adminCmsEditPage' ? 'active' : '' or navigationHelper.currentPage == 'adminCmsNewPage' ? 'active' : ''}"
-                            >
-                                <h:outputLink
-                                    value="#{navigationHelper.getPageUrl('adminCmsOverview')}/"
-                                >
+                                class="#{navigationHelper.currentPage == 'adminCmsOverview' ? 'active' : '' or navigationHelper.currentPage == 'adminCmsEditPage' ? 'active' : '' or navigationHelper.currentPage == 'adminCmsNewPage' ? 'active' : ''}">
+                                <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsOverview')}/">
                                     <util:icon-text
                                         icon="copy"
                                         text="#{msg.cms_overview}"
-                                        styleClass="icon-text--nav"
-                                    />
+                                        styleClass="icon-text--nav" />
                                 </h:outputLink>
                             </li>
                         </ui:fragment>
 
                         <!-- TO DO: ADAPT THIS -->
                         <ui:fragment rendered="#{userBean.user.cmsAdmin}">
-                            <li
-                                class="#{navigationHelper.currentPage == 'adminCmsSidebarWidgets' ? 'active' : ''}"
-                            >
-                                <h:outputLink
-                                    value="#{navigationHelper.getPageUrl('adminCmsSidebarWidgets')}/"
-                                >
+                            <li class="#{navigationHelper.currentPage == 'adminCmsSidebarWidgets' ? 'active' : ''}">
+                                <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsSidebarWidgets')}/">
                                     <util:icon-text
                                         icon="square"
                                         text="#{msg.admin__widgets}"
-                                        styleClass="icon-text--nav"
-                                    />
+                                        styleClass="icon-text--nav" />
                                 </h:outputLink>
                             </li>
                         </ui:fragment>
 
-                        <ui:fragment
-                            rendered="#{userBean.user.isHasCmsPrivilege('CMS_CATEGORIES')}"
-                        >
-                            <li
-                                class="#{navigationHelper.currentPage == 'adminCmsCategories' ? 'active' : ''}"
-                            >
-                                <h:outputLink
-                                    value="#{navigationHelper.getPageUrl('adminCmsCategories')}/"
-                                >
+                        <ui:fragment rendered="#{userBean.user.isHasCmsPrivilege('CMS_CATEGORIES')}">
+                            <li class="#{navigationHelper.currentPage == 'adminCmsCategories' ? 'active' : ''}">
+                                <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsCategories')}/">
                                     <util:icon-text
                                         icon="pinned"
                                         text="#{msg.admin__categories}"
-                                        styleClass="icon-text--nav"
-                                    />
+                                        styleClass="icon-text--nav" />
                                 </h:outputLink>
                             </li>
                         </ui:fragment>
-                        <ui:fragment
-                            rendered="#{userBean.user.isHasCmsPrivilege('CMS_STATIC_PAGES')}"
-                        >
-                            <li
-                                class="#{navigationHelper.currentPage == 'adminCmsStaticPages' ? 'active' : ''}"
-                            >
-                                <h:outputLink
-                                    value="#{navigationHelper.getPageUrl('adminCmsStaticPages')}/"
-                                >
+                        <ui:fragment rendered="#{userBean.user.isHasCmsPrivilege('CMS_STATIC_PAGES')}">
+                            <li class="#{navigationHelper.currentPage == 'adminCmsStaticPages' ? 'active' : ''}">
+                                <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsStaticPages')}/">
                                     <util:icon-text
                                         icon="settings-cog"
                                         text="#{msg.cms_staticPages}"
-                                        styleClass="icon-text--nav"
-                                    />
+                                        styleClass="icon-text--nav" />
                                 </h:outputLink>
                             </li>
                         </ui:fragment>
                         <ui:fragment rendered="#{userBean.user.cmsAdmin}">
-                            <li
-                                class="#{navigationHelper.currentPage == 'adminCmsMedia' ? 'active' : ''}"
-                            >
-                                <h:outputLink
-                                    value="#{navigationHelper.getPageUrl('adminCmsMedia')}/"
-                                >
+                            <li class="#{navigationHelper.currentPage == 'adminCmsMedia' ? 'active' : ''}">
+                                <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsMedia')}/">
                                     <util:icon-text
                                         icon="photo"
                                         text="#{msg.cms_overviewMedia}"
-                                        styleClass="icon-text--nav"
-                                    />
+                                        styleClass="icon-text--nav" />
                                 </h:outputLink>
                             </li>
                         </ui:fragment>
                         <ui:fragment rendered="#{userBean.user.isHasCmsPrivilege('CMS_MENU')}">
-                            <li
-                                class="#{navigationHelper.currentPage == 'adminCmsMenuItems' ? 'active' : ''}"
-                            >
-                                <h:outputLink
-                                    value="#{navigationHelper.getPageUrl('adminCmsMenuItems')}/"
-                                >
+                            <li class="#{navigationHelper.currentPage == 'adminCmsMenuItems' ? 'active' : ''}">
+                                <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsMenuItems')}/">
                                     <util:icon-text
                                         icon="menu-2"
                                         text="#{msg.cms_menu_items}"
-                                        styleClass="icon-text--nav"
-                                    />
+                                        styleClass="icon-text--nav" />
                                 </h:outputLink>
                             </li>
                         </ui:fragment>
-                        <ui:fragment
-                            rendered="#{userBean.user.isHasCmsPrivilege('CMS_COLLECTIONS')}"
-                        >
-                            <li
-                                class="#{navigationHelper.currentPage == 'adminCmsCollections' ? 'active' : ''}"
-                            >
-                                <h:outputLink
-                                    value="#{navigationHelper.getPageUrl('adminCmsCollections')}/"
-                                >
+                        <ui:fragment rendered="#{userBean.user.isHasCmsPrivilege('CMS_COLLECTIONS')}">
+                            <li class="#{navigationHelper.currentPage == 'adminCmsCollections' ? 'active' : ''}">
+                                <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsCollections')}/">
                                     <util:icon-text
                                         icon="library"
                                         text="#{msg.admin__cms_collections}"
-                                        styleClass="icon-text--nav"
-                                    />
+                                        styleClass="icon-text--nav" />
                                 </h:outputLink>
                             </li>
                         </ui:fragment>
                         <ui:fragment rendered="#{userBean.user.cmsAdmin}">
-                            <li
-                                class="#{navigationHelper.currentPage == 'adminCmsArchives' ? 'active' : ''}"
-                            >
-                                <h:outputLink
-                                    value="#{navigationHelper.getPageUrl('adminCmsArchives')}/"
-                                >
+                            <li class="#{navigationHelper.currentPage == 'adminCmsArchives' ? 'active' : ''}">
+                                <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsArchives')}/">
                                     <util:icon-text
                                         icon="archive"
                                         text="#{msg.admin__cms_archives}"
-                                        styleClass="icon-text--nav"
-                                    />
+                                        styleClass="icon-text--nav" />
                                 </h:outputLink>
                             </li>
                         </ui:fragment>
                         <ui:fragment rendered="#{userBean.user.isHasCmsPrivilege('CMS_GEOMAPS')}">
-                            <li
-                                class="#{navigationHelper.currentPage == 'adminCmsGeoMaps' ? 'active' : ''}"
-                            >
-                                <h:outputLink
-                                    value="#{navigationHelper.getPageUrl('adminCmsGeoMaps')}/"
-                                >
+                            <li class="#{navigationHelper.currentPage == 'adminCmsGeoMaps' ? 'active' : ''}">
+                                <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsGeoMaps')}/">
                                     <util:icon-text
                                         icon="map"
                                         text="#{msg.cms__geomaps__title}"
-                                        styleClass="icon-text--nav"
-                                    />
+                                        styleClass="icon-text--nav" />
                                 </h:outputLink>
                             </li>
                         </ui:fragment>
                         <ui:fragment rendered="#{userBean.user.isHasCmsPrivilege('CMS_SLIDERS')}">
-                            <li
-                                class="#{navigationHelper.currentPage == 'adminCmsSliders' ? 'active' : ''}"
-                            >
-                                <h:outputLink
-                                    value="#{navigationHelper.getPageUrl('adminCmsSliders')}/"
-                                >
+                            <li class="#{navigationHelper.currentPage == 'adminCmsSliders' ? 'active' : ''}">
+                                <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsSliders')}/">
                                     <util:icon-text
                                         icon="circle-caret-right"
                                         text="#{msg.cms__sliders__title}"
-                                        styleClass="icon-text--nav"
-                                    />
+                                        styleClass="icon-text--nav" />
                                 </h:outputLink>
                             </li>
                         </ui:fragment>
-                        <ui:fragment
-                            rendered="#{userBean.user.isHasCmsPrivilege('CMS_RECORD_NOTES')}"
-                        >
-                            <li
-                                class="#{navigationHelper.currentPage == 'adminCmsRecordNotes' ? 'active' : ''}"
-                            >
-                                <h:outputLink
-                                    value="#{navigationHelper.getPageUrl('adminCmsRecordNotes')}/"
-                                >
+                        <ui:fragment rendered="#{userBean.user.isHasCmsPrivilege('CMS_RECORD_NOTES')}">
+                            <li class="#{navigationHelper.currentPage == 'adminCmsRecordNotes' ? 'active' : ''}">
+                                <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsRecordNotes')}/">
                                     <util:icon-text
                                         icon="text-resize"
                                         text="#{msg.cms__record_notes__title_plural}"
-                                        styleClass="icon-text--nav"
-                                    />
+                                        styleClass="icon-text--nav" />
                                 </h:outputLink>
                             </li>
                         </ui:fragment>
-                        <ui:fragment
-                            rendered="#{userBean.user.isHasCmsPrivilege('CMS_RECORD_NOTES')}"
-                        >
-                            <li
-                                class="#{navigationHelper.currentPage == 'adminCmsHighlights' ? 'active' : ''}"
-                            >
-                                <h:outputLink
-                                    value="#{navigationHelper.getPageUrl('adminCmsHighlights')}/"
-                                >
+                        <ui:fragment rendered="#{userBean.user.isHasCmsPrivilege('CMS_RECORD_NOTES')}">
+                            <li class="#{navigationHelper.currentPage == 'adminCmsHighlights' ? 'active' : ''}">
+                                <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsHighlights')}/">
                                     <util:icon-text
                                         icon="star"
                                         text="#{msg.admin__highlights__title}"
-                                        styleClass="icon-text--nav"
-                                    />
+                                        styleClass="icon-text--nav" />
                                 </h:outputLink>
                             </li>
                         </ui:fragment>

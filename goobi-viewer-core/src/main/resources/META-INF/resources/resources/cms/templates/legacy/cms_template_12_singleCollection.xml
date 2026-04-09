@@ -1,17 +1,41 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<cms_page_template id="templateSingleCollection" version="2017-07-18">
+<cms_page_template
+    id="templateSingleCollection"
+    version="2017-07-18">
     <name>cms__template_12__title</name>
     <description>cms__template_12__description</description>
     <icon>cms_template_12_singleCollection.png</icon>
     <html>cms_template_12_singleCollection.xhtml</html>
-    <options>    
+    <options>
         <appliesToExpandedUrl>true</appliesToExpandedUrl>
         <useSorterField>true</useSorterField>
     </options>
     <content>
- 	    <item id="image01" order="1" label="cms__template_12__collection_image__label" type="MEDIA" mandatory="false" />
- 	    <item id="preview01" preview="true" order="2" label="cms__template_12__preview__label" type="HTML" mandatory="false" />
- 	    <item id="A2" order="3" label="cms__template_12__text_section__label" type="HTML" mandatory="false" />
- 	    <item id="queryList" order="4" label="cms__template_12__works__label" type="SOLRQUERY" mandatory="false" hitListOptions="true" />
+        <item
+            id="image01"
+            order="1"
+            label="cms__template_12__collection_image__label"
+            type="MEDIA"
+            mandatory="false" />
+        <item
+            id="preview01"
+            preview="true"
+            order="2"
+            label="cms__template_12__preview__label"
+            type="HTML"
+            mandatory="false" />
+        <item
+            id="A2"
+            order="3"
+            label="cms__template_12__text_section__label"
+            type="HTML"
+            mandatory="false" />
+        <item
+            id="queryList"
+            order="4"
+            label="cms__template_12__works__label"
+            type="SOLRQUERY"
+            mandatory="false"
+            hitListOptions="true" />
     </content>
 </cms_page_template>

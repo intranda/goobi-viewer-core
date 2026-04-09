@@ -22,6 +22,7 @@
 package io.goobi.viewer.api.rest.v1.authentication;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import jakarta.ws.rs.core.Response;
 
@@ -45,6 +46,24 @@ class AuthenticationEndpointTest extends AbstractRestApiTest {
                 .get()) {
             assertEquals(403, response.getStatus(), "Should return status 403");
             assertEquals(AuthenticationEndpoint.REASON_PHRASE_ILLEGAL_REDIRECT_URL, response.getStatusInfo().getReasonPhrase());
+        }
+    }
+
+    /**
+     * @see AuthenticationEndpoint#headerParameterLogin(String)
+     * @verifies not return status 403 if redirectUrl host is whitelisted
+     */
+    @Test
+    void headerParameterLogin_shouldNotReturnStatus403IfRedirectUrlHostWhitelisted() throws Exception {
+        String url = urls.path(ApiUrls.AUTH, ApiUrls.AUTH_HEADER).build();
+        try (Response response = target(url).queryParam("redirectUrl", "https://trusted.example.org/callback")
+                .request()
+                .get()) {
+            // Should not be rejected as 403 with illegal redirect URL reason - the host is whitelisted
+            if (response.getStatus() == 403) {
+                assertNotEquals(AuthenticationEndpoint.REASON_PHRASE_ILLEGAL_REDIRECT_URL, response.getStatusInfo().getReasonPhrase(),
+                        "Whitelisted host should not be rejected as illegal redirect URL");
+            }
         }
     }
 

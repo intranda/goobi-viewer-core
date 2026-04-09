@@ -26,9 +26,7 @@
             <div
                 id="mainImageData"
                 class="d-none">
-                <div data-image-data="tileSource">
-                    #{activeDocumentBean.viewManager.getImageInfosAsJson(navigationHelper.currentPageType)}
-                </div>
+                <div data-image-data="tileSource">#{activeDocumentBean.viewManager.getImageInfosAsJson(navigationHelper.currentPageType)}</div>
                 <div data-image-data="recordIdentifier">#{activeDocumentBean.viewManager.pi}</div>
                 <div data-image-data="structureIdentifier">#{activeDocumentBean.logid}</div>
                 <div data-image-data="pageType">#{navigationHelper.currentPageType}</div>
@@ -38,9 +36,7 @@
                     data-height="#{activeDocumentBean.viewManager.currentPage.getFooterHeight(navigationHelper.currentPage)}">
                     #{activeDocumentBean.viewManager.getWatermarkUrl(navigationHelper.currentPage)}
                 </div>
-                <div data-image-data="pageAreas">
-                    #{activeDocumentBean.viewManager.currentPage.containedStructElementsAsJson}
-                </div>
+                <div data-image-data="pageAreas">#{activeDocumentBean.viewManager.currentPage.containedStructElementsAsJson}</div>
                 <div
                     data-image-data="overlays"
                     data-styleclass="coords-highlighting"
@@ -61,14 +57,12 @@
             class="view-object__image-map"
             rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
             <div class="view-object__access-denied">
-                <ui:fragment
-                    rendered="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedImageUrl(navigationHelper.locale) != null}">
+                <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedImageUrl(navigationHelper.locale) != null}">
                     <img
                         src="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedImageUrl(navigationHelper.locale)}"
                         alt="access denied" />
                 </ui:fragment>
-                <ui:fragment
-                    rendered="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedImageUrl(navigationHelper.locale) == null}">
+                <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedImageUrl(navigationHelper.locale) == null}">
                     <h:outputText
                         value="#{msg.noImage_accessDenied}"
                         escape="false" />
@@ -96,7 +90,7 @@
         <!-- MOBILE IMAGE OVERLAY -->
         <div
             id="imageContainerMobileOverlay"
-            class="view-object__image-mobile-overlay"></div>
+            class="view-object__image-mobile-overlay" />
     </div>
 
     <popover id="share-image-area-popup">
@@ -145,7 +139,7 @@
     <!-- OPEN SEADRAGON -->
     <script
         type="text/javascript"
-        src="#{request.contextPath}/resources/js/dist/imageView.min.js"></script>
+        src="#{request.contextPath}/resources/js/dist/imageView.min.js" />
     <script type="text/javascript">
         //<![CDATA[
         const changeImageOrder = new rxjs.Subject(); //call next() to set image in canvas, pass image order as parameter
@@ -351,7 +345,7 @@
                 varStatus="status">
                 <div
                     id="pageAreaFrame_#{se.logid}_#{status.index}"
-                    class="page-area #{se.logid == activeDocumentBean.logid ? 'active':''}"></div>
+                    class="page-area #{se.logid == activeDocumentBean.logid ? 'active':''}" />
                 <div
                     id="pageAreaLabel_#{se.logid}_#{status.index}"
                     class="page-area-label #{se.logid == activeDocumentBean.logid ? 'active':''}">

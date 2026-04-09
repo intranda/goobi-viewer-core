@@ -10,7 +10,7 @@
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
-    <composite:interface></composite:interface>
+    <composite:interface />
 
     <composite:implementation>
         <div
@@ -30,7 +30,8 @@
 
                     <util:icon
                         icon="chevron-down"
-                        styleClass="widget__topbar-icon-collapsible icon-rot-on-open" />
+                        styleClass="widget__topbar-icon-collapsible icon-rot-on-open"
+                        svgClass="widget__topbar-icon-svg widget-downloads__topbar-icon-svg" />
                 </div>
             </div>
 
@@ -50,8 +51,7 @@
                     </p>
                 </ui:fragment>
                 <!-- INTRODUCTION TEXT DOWNLOADS GENERAL -->
-                <ui:fragment
-                    rendered="#{fn:length(msg['widget__downloads__intro_text_text_formats']) > 0 and displayConditions.matchRecord('{pageType:[viewFulltext]}') }">
+                <ui:fragment rendered="#{fn:length(msg['widget__downloads__intro_text_text_formats']) > 0 and displayConditions.matchRecord('{pageType:[viewFulltext]}') }">
                     <p
                         id="introductionText"
                         class="widget-downloads__license-text">
@@ -62,8 +62,7 @@
                 </ui:fragment>
 
                 <!-- INTRODUCTION TEXT ADDITIONAL FILES -->
-                <ui:fragment
-                    rendered="#{fn:length(msg['MASTERVALUE_INTRODUCTION_TEXT_DOWNLOAD']) > 0 and activeDocumentBean.viewManager.displayContentDownloadMenu}">
+                <ui:fragment rendered="#{fn:length(msg['MASTERVALUE_INTRODUCTION_TEXT_DOWNLOAD']) > 0 and activeDocumentBean.viewManager.displayContentDownloadMenu}">
                     <p
                         id="introductionText"
                         class="widget-downloads__additional-files-text">
@@ -340,8 +339,8 @@
                             data-trigger="hover"
                             rel="nofollow noopener"
                             target="_blank"
-                            aria-label=" #{msg.MEI}">
-                            #{msg.MEI}
+                            aria-label=" #{msg.metadata_dl_mei}">
+                            #{msg.download__label_mei}
                         </a>
                     </ui:fragment>
 
@@ -507,9 +506,7 @@
                                 value="#{activeDocumentBean.viewManager.getPageDownloadUrl(option, activeDocumentBean.viewManager.currentPage)}"
                                 pt:download="#{activeDocumentBean.viewManager.currentPage.fileNameBase}.#{option.getExtension(activeDocumentBean.viewManager.currentPage.fileName)}">
                                 <span class="widget-downloads__download-image-size-radio-label">#{msg.image}</span>
-                                <span class="widget-downloads__download-image-size-radio-label">
-                                    #{msg[option.label]}
-                                </span>
+                                <span class="widget-downloads__download-image-size-radio-label">#{msg[option.label]}</span>
                             </h:outputLink>
                         </ui:repeat>
                     </ui:fragment>
@@ -705,8 +702,7 @@
                                                     value="#{activeDocumentBean.viewManager.firstPdfPage}"
                                                     pt:data-toggle="tooltip"
                                                     pt:title="#{msg.widget__downloads__page_range_tooltip_first_page}">
-                                                    <f:selectItems
-                                                        value="#{activeDocumentBean.viewManager.dropdownPages}" />
+                                                    <f:selectItems value="#{activeDocumentBean.viewManager.dropdownPages}" />
                                                 </h:selectOneMenu>
                                             </div>
                                         </div>
@@ -717,8 +713,7 @@
                                                     value="#{activeDocumentBean.viewManager.lastPdfPage}"
                                                     pt:data-toggle="tooltip"
                                                     pt:title="#{msg.widget__downloads__page_range_tooltip_last_page}">
-                                                    <f:selectItems
-                                                        value="#{activeDocumentBean.viewManager.dropdownPages}" />
+                                                    <f:selectItems value="#{activeDocumentBean.viewManager.dropdownPages}" />
                                                 </h:selectOneMenu>
                                             </div>
                                         </div>

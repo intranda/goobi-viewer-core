@@ -50,7 +50,11 @@ public class SocketBean {
     @Push
     private PushContext backgroundTasksState;
 
-    private final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+    private static final ScheduledExecutorService SERVICE = Executors.newSingleThreadScheduledExecutor(r -> {
+        Thread t = new Thread(r, "socket-bean-scheduler");
+        t.setDaemon(true);
+        return t;
+    });
 
     /**
      * Default constructor. Instantiates a fixed schedule thread
@@ -61,17 +65,17 @@ public class SocketBean {
 
     public SocketBean(long minIdleSeconds) {
         if (minIdleSeconds < 1) {
-            service.scheduleAtFixedRate(createRunnable(), 0, 1, TimeUnit.MILLISECONDS);
+            SERVICE.scheduleAtFixedRate(createRunnable(), 0, 1, TimeUnit.MILLISECONDS);
         } else {
-            service.scheduleAtFixedRate(createRunnable(), 0, minIdleSeconds, TimeUnit.SECONDS);
+            SERVICE.scheduleAtFixedRate(createRunnable(), 0, minIdleSeconds, TimeUnit.SECONDS);
         }
     }
 
     /**
-     * Constructor for tests with custom PushContext
+     * Creates a new tests with custom PushContext instance.
      * 
-     * @param minIdleSeconds
-     * @param backgroundTasksState
+     * @param minIdleSeconds minimum idle interval in seconds between scheduler ticks
+     * @param backgroundTasksState push context used to send messages to connected clients
      */
     public SocketBean(long minIdleSeconds, PushContext backgroundTasksState) {
         this(minIdleSeconds);
@@ -79,9 +83,9 @@ public class SocketBean {
     }
 
     /**
-     * Send an "update" message to the socket channel
+     * Sends an "update" message to the socket channel.
      * 
-     * @param message
+     * @param message message text to send (currently unused; triggers an "update" push)
      */
     public void send(String message) {
         shouldSend.set(true);
@@ -100,9 +104,22 @@ public class SocketBean {
 
     }
 
+    /**
+     * Shuts down the scheduler. Should be called from the servlet context listener on undeploy
+     * to ensure the thread terminates before Tomcat checks for lingering threads.
+     */
+    public static void shutdownExecutor() {
+        SERVICE.shutdownNow();
+        try {
+            SERVICE.awaitTermination(2, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
     @PreDestroy
     public void close() {
-        service.close();
+        shutdownExecutor();
     }
 
 }

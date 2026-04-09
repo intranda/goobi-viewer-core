@@ -1,70 +1,74 @@
 .campaign-statistics {
-	width: 100%;
-	display: flex;
-	&__text {
-		width: 50%;
-		dl {
-			width: 100%;
-			margin-bottom: 0;
-			display: grid;
-			grid-template-columns: 80% 20%;
-			dt {
-				padding-right: 10px;
-				&:after {
-					content: ": ";
-				}
-			}
-			dd {
-			}
-		}
-	}
-	
-	&__bar {
-		width: 50%;
-		display:flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		progressBar {
-			width: 80%;
-		}
-		.goobi-progress-bar-wrapper {
-			border: none;
-			
-			.goobi-progress-bar {
-				background: @grayBar;
-				height: 30px;
-				&__bar {
-					display: inline-block;
-					height:100%;
-					&.finished {
-						background-color: @greenBar;
-					}
-					&.review {
-						background-color:  @yellowBar;
-					}
-				}
-			}
-		}
-	}
+    width: 100%;
+    display: flex;
+    &__text {
+        width: 50%;
+        dl {
+            width: 100%;
+            margin-bottom: 0;
+            display: grid;
+            grid-template-columns: 80% 20%;
+            dt {
+                padding-right: 10px;
+                &:after {
+                    content: ': ';
+                }
+            }
+            dd {
+            }
+        }
+    }
+
+    &__bar {
+        width: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        progressBar {
+            width: 80%;
+        }
+        .goobi-progress-bar-wrapper {
+            border: none;
+
+            .goobi-progress-bar {
+                background: @grayBar;
+                height: 30px;
+                &__bar {
+                    display: inline-block;
+                    height: 100%;
+                    &.finished {
+                        background-color: @greenBar;
+                    }
+                    &.review {
+                        background-color: @yellowBar;
+                    }
+                }
+            }
+        }
+    }
 }
 
 @{RTL} {
-	.campaign-statistics {
-		&__bar {
-			transform: rotate(180deg);
-		}
-	}
+    .campaign-statistics {
+        &__bar {
+            transform: rotate(180deg);
+        }
+    }
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+}

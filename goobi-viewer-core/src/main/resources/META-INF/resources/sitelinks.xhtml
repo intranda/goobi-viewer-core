@@ -7,30 +7,45 @@
     template="/resources/themes/#{navigationHelper.theme}/template.html"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
-
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageSitelinks}" />
-            <f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
+            <f:event
+                type="preRenderView"
+                listener="#{navigationHelper.setCurrentPageSitelinks}" />
+            <f:event
+                type="preRenderView"
+                listener="#{searchBean.resetSearchFilter}" />
         </f:metadata>
     </ui:define>
 
     <ui:define name="breadcrumbs">
-        <viewerComponent:breadcrumbs showIcon="false" showStartText="true" />
+        <viewerComponent:breadcrumbs
+            showIcon="false"
+            showStartText="true" />
     </ui:define>
 
     <ui:define name="content">
-        <f:view contentType="text/html" encoding="utf-8">
+        <f:view
+            contentType="text/html"
+            encoding="utf-8">
             <!-- SITELINKS -->
-            <div id="sitelinks" class="sitelinks">
+            <div
+                id="sitelinks"
+                class="sitelinks">
                 <h1>#{msg.sitelinksTitle}</h1>
 
-                <h:form id="sitelinksForm" prependId="false">
+                <h:form
+                    id="sitelinksForm"
+                    prependId="false">
                     <!-- TAGS -->
                     <div class="sitelinks__tags">
-                        <ui:repeat var="val" value="#{sitelinkBean.availableValues}">
+                        <ui:repeat
+                            var="val"
+                            value="#{sitelinkBean.availableValues}">
                             <a href="#{navigationHelper.applicationUrl}sitelinks/#{val}/">
-                                <h:outputText value="#{val}" escape="false" />
+                                <h:outputText
+                                    value="#{val}"
+                                    escape="false" />
                             </a>
                         </ui:repeat>
                     </div>
@@ -38,10 +53,17 @@
                     <!-- HITS -->
                     <div class="sitelinks__hits">
                         <ul>
-                            <c:forEach var="hit" items="#{sitelinkBean.hits}" varStatus="status">
+                            <c:forEach
+                                var="hit"
+                                items="#{sitelinkBean.hits}"
+                                varStatus="status">
                                 <li>
-                                    <a href="#{navigationHelper.applicationUrl}#{hit.two}" title="#{msg[hit.one]}">
-                                        <h:outputText value="#{status.count}. #{hit.one}" escape="false" />
+                                    <a
+                                        href="#{navigationHelper.applicationUrl}#{hit.two}"
+                                        title="#{msg[hit.one]}">
+                                        <h:outputText
+                                            value="#{status.count}. #{hit.one}"
+                                            escape="false" />
                                     </a>
                                 </li>
                             </c:forEach>
@@ -56,7 +78,6 @@
         <h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
             <widgetComponent:widget_browsing />
         </h:panelGroup>
-		<widgetComponent:widget_rssFeed/>
+        <widgetComponent:widget_rssFeed />
     </ui:define>
-
 </ui:composition>

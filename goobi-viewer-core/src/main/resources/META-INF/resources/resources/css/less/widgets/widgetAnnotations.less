@@ -4,14 +4,15 @@
    ==============================================================*/
 #widgetAnnotations {
     margin-top: 2rem;
-    h2 {}
+    h2 {
+    }
     ul {
-    	padding: 0;
-    	border: none; 
+        padding: 0;
+        border: none;
         li {
             .dl-horizontal {
-            	border: none;
-            	padding: 0;
+                border: none;
+                padding: 0;
                 margin: 0;
                 background: transparent;
                 dt {
@@ -20,7 +21,7 @@
                     font-weight: normal;
                 }
                 dd {
-                    margin-left: 1.875rem;                    
+                    margin-left: 1.875rem;
                 }
             }
         }
@@ -31,96 +32,100 @@
 }
 
 .widget-annotations {
-	a.widget-annotations__entry {
-		display: flex;
-	}
-	.widget__body {
-		overflow: hidden;
-		&.-scrollable {
-			max-height: 280px;
-			overflow: hidden auto;
-		}
-	}
-	&__entry {
-		display: flex;
-		align-items: center;
-		padding-left: 0.5rem;
-		cursor: pointer;
-		padding-top: 0.3rem;
-		padding-bottom: 0.3rem;
-		button {
-			display: flex;
-			align-items: center;
-		}
-		&.-onpage {
-			border: none;
-			border-left: 4px solid @blue;
-			margin-left: -4px;
-		}
-	}
-	&__type {
-		display: none;
-		flex: 23px 0 0;
-		max-width: 50px;
-	}
-	&__text {
-	}
-	&__link {}
-	&__button {
-		display: inline-block;
-	    width: 1.6rem;
-	    height: 1.6rem;
-	    line-height: 2.6rem;
-	    margin-left: .5rem;
-	    padding: 0;
-	    border: none;
-	    background: none;
-	    &:hover {
-	    	color: @blue;
-	    }
-	    &.disabled {
-	        cursor: not-allowed;
-	        opacity: 0.25;
-	    }
-	}
-	&__page {
-		margin-left: auto;
-		padding-left: 0.6rem;
-		align-self: start;
-		span {
-			background: @blue;
-			color: @white;
-			padding: 0 0.3rem;
-			display: block;
-			white-space: nowrap;
-		}
-	}
+    a.widget-annotations__entry {
+        display: flex;
+    }
+    .widget__body {
+        overflow: hidden;
+        &.-scrollable {
+            max-height: 280px;
+            overflow: hidden auto;
+        }
+    }
+    &__entry {
+        display: flex;
+        align-items: center;
+        padding-left: 0.5rem;
+        cursor: pointer;
+        padding-top: 0.3rem;
+        padding-bottom: 0.3rem;
+        button {
+            display: flex;
+            align-items: center;
+        }
+        &.-onpage {
+            border: none;
+            border-left: 4px solid @blue;
+            margin-left: -4px;
+        }
+    }
+    &__type {
+        display: none;
+        flex: 23px 0 0;
+        max-width: 50px;
+    }
+    &__text {
+    }
+    &__link {
+    }
+    &__button {
+        display: inline-block;
+        width: 1.6rem;
+        height: 1.6rem;
+        line-height: 2.6rem;
+        margin-left: 0.5rem;
+        padding: 0;
+        border: none;
+        background: none;
+        &:hover {
+            color: @blue;
+        }
+        &.disabled {
+            cursor: not-allowed;
+            opacity: 0.25;
+        }
+    }
+    &__page {
+        margin-left: auto;
+        padding-left: 0.6rem;
+        align-self: start;
+        span {
+            background: @blue;
+            color: @white;
+            padding: 0 0.3rem;
+            display: block;
+            white-space: nowrap;
+        }
+    }
 }
 
 @{RTL} .widget-annotations {
-	&__page {
-		margin-left: unset;
-		margin-right: auto;
-	}
-	&__entry {
-		padding-left: 0;
-		padding-right: 0.5rem;
-		&.-onpage {
-			border-right: 4px solid @blue;
-			border-left: none;
-		}
-	}
+    &__page {
+        margin-left: unset;
+        margin-right: auto;
+    }
+    &__entry {
+        padding-left: 0;
+        padding-right: 0.5rem;
+        &.-onpage {
+            border-right: 4px solid @blue;
+            border-left: none;
+        }
+    }
 }
 
-
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+}

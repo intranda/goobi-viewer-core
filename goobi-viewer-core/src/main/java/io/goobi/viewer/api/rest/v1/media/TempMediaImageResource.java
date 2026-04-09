@@ -46,6 +46,8 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
@@ -61,22 +63,28 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.managedbeans.CreateRecordBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 @jakarta.ws.rs.Path(TEMP_MEDIA_FILES_FILE_IMAGE)
 @CORSBinding
 @AdminLoggedInBinding
 public class TempMediaImageResource extends ImageResource {
 
+    private static final Logger logger = LogManager.getLogger(TempMediaImageResource.class);
+
     public TempMediaImageResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
-            @Parameter(description = "Temp folder name") @PathParam("folder") String folder,
-            @Parameter(description = "Filename of the image") @PathParam("filename") String filename,
+            @Parameter(description = "Temp folder name",
+                    schema = @Schema(pattern = "^[A-Za-z0-9_-]+$")) @PathParam("folder") String folder,
+            @Parameter(description = "Filename of the image",
+                    schema = @Schema(pattern = "^[A-Za-z0-9_.-]+$")) @PathParam("filename") String filename,
             @Context ContentServerCacheManager cacheManager) {
         super(context, request, response, "", getMediaFileUrl(folder, filename).toString(), cacheManager);
         AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
@@ -102,8 +110,8 @@ public class TempMediaImageResource extends ImageResource {
 
     /**
      * 
-     * @param foldername
-     * @param filename
+     * @param foldername name of the subfolder within the temp media directory
+     * @param filename name of the file within the folder
      * @return {@link URI}
      */
     private static URI getMediaFileUrl(String foldername, String filename) {
@@ -126,20 +134,34 @@ public class TempMediaImageResource extends ImageResource {
     @ContentServerImageInfoBinding
     @Operation(tags = { "iiif" },
             summary = "IIIF image identifier for the CMS image file of the given filename. Returns a IIIF 2.1.1 image information object")
+    @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 image information object")
+    @ApiResponse(responseCode = "400", description = "Invalid filename (e.g. unsupported format)")
+    @ApiResponse(responseCode = "401", description = "Not authenticated")
+    @ApiResponse(responseCode = "403", description = "Not authorized (admin login required)")
+    @ApiResponse(responseCode = "404", description = "Temporary image not found or expired")
     public Response redirectToCanonicalImageInfo() throws ContentLibException {
         return super.redirectToCanonicalImageInfo();
     }
 
     /**
-     * Delete the file with the given filename in the temp media folder for the given uuid.
+     * Deletes the file with the given filename in the temp media folder for the given uuid.
      *
-     * @param folder
-     * @param filename
+     * @param folder temp folder UUID identifying the upload session
+     * @param filename name of the file to delete
      * @return A 200 "OK" answer if deletion was successfull, 406 if the file was not found and 500 if there was an error
      */
+    @Hidden
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteUploadedFile(@PathParam("folder") String folder, @PathParam("filename") String filename) {
+    @Operation(summary = "Delete a temporary image file from the given folder", tags = { "media" })
+    @ApiResponse(responseCode = "200", description = "File deleted successfully")
+    @ApiResponse(responseCode = "401", description = "Not authenticated")
+    @ApiResponse(responseCode = "403", description = "Not authorized (admin login required)")
+    @ApiResponse(responseCode = "406", description = "File not found")
+    @ApiResponse(responseCode = "500", description = "Internal error deleting file")
+    public Response deleteUploadedFile(
+            @Parameter(description = "Temp folder name") @PathParam("folder") String folder,
+            @Parameter(description = "Filename to delete") @PathParam("filename") String filename) {
         try {
             CreateRecordBean bean = BeanUtils.getCreateRecordBean();
             if (bean == null) {
@@ -153,14 +175,16 @@ public class TempMediaImageResource extends ImageResource {
                     Files.delete(file);
                     return Response.status(Status.OK).build();
                 } catch (IOException e) {
+                    logger.error("Error deleting uploaded file {} in folder {}", filename, folder, e);
                     return Response.status(Status.INTERNAL_SERVER_ERROR)
-                            .entity(TempMediaFileResource.errorMessage("Error reading upload directory: " + e.toString()))
+                            .entity(TempMediaFileResource.errorMessage("Error deleting uploaded file"))
                             .build();
                 }
             }
             return Response.status(Status.NOT_ACCEPTABLE).entity(TempMediaFileResource.errorMessage("File doesn't exist")).build();
         } catch (IOException e) {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(TempMediaFileResource.errorMessage("Unknown error: " + e.toString())).build();
+            logger.error("Error deleting uploaded file {} in folder {}", filename, folder, e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(TempMediaFileResource.errorMessage("Unknown error")).build();
         }
     }
 

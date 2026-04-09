@@ -27,7 +27,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 
 /**
  * Sorts StructElements by anchors first, then works, then everything else within anchors and works, elements are sorted by PI, all other elements are
- * sorted by LOGID
+ * sorted by LOGID.
  *
  * @author Florian Alpers
  */

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <facelet-taglib
     version="2.2"
     xmlns="http://xmlns.jcp.org/xml/ns/javaee"
@@ -34,7 +34,10 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
-            <description>CSS classes applied to the inner &lt;svg&gt; element (e.g., Tabler icon utilities like 'icon', 'icon-pulse').</description>
+            <description>
+                CSS classes applied to the inner &lt; svg &gt; element (e.g., Tabler icon utilities
+                like 'icon', 'icon-pulse').
+            </description>
             <name>svgClass</name>
             <required>false</required>
             <type>java.lang.String</type>
@@ -98,7 +101,9 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
-            <description>CSS classes applied to the inner &lt;svg&gt; element (forwarded to util:icon as svgClass).</description>
+            <description>
+                CSS classes applied to the inner &lt; svg &gt; element (forwarded to util:icon as svgClass).
+            </description>
             <name>iconSvgClass</name>
             <required>false</required>
             <type>java.lang.String</type>

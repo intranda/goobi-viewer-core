@@ -1,42 +1,43 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
-
-<!-- Requires javascript riot.mount("progressBar") -->
-	<div class="campaign-statistics">
-		<div
-			class="campaign-statistics__text">
-			<dl>
-				<dt>#{msg.label__crowdsourcing_campaign_progress}</dt>
-				<dd>#{campaign.progress}%</dd>
-				<ui:fragment rendered="#{campaign.statisticMode == 'PAGE'}">
-					<dt>#{msg.label__crowdsourcing_campaign_total_pages}</dt>
-				</ui:fragment>
-				<ui:fragment rendered="#{campaign.statisticMode == 'RECORD'}">
-					<dt>#{msg.label__crowdsourcing_campaign_total_records}</dt>
-				</ui:fragment>
-				<dd>#{campaign.numRecords}</dd>
-				<dt>#{msg.label__crowdsourcing_campaign_finished_items}</dt>
-				<dd>#{campaign.getNumRecordsForStatus('FINISHED')}</dd>
-				<dt>#{msg.label__crowdsourcing_campaign_items_in_review}</dt>
-				<dd>#{campaign.getNumRecordsForStatus('REVIEW')}</dd>
-				<dt>#{msg.label__crowdsourcing_campaign_contributor_count}</dt>
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+    <!-- Requires javascript riot.mount("progressBar") -->
+    <div class="campaign-statistics">
+        <div class="campaign-statistics__text">
+            <dl>
+                <dt>#{msg.label__crowdsourcing_campaign_progress}</dt>
+                <dd>#{campaign.progress}%</dd>
+                <ui:fragment rendered="#{campaign.statisticMode == 'PAGE'}">
+                    <dt>#{msg.label__crowdsourcing_campaign_total_pages}</dt>
+                </ui:fragment>
+                <ui:fragment rendered="#{campaign.statisticMode == 'RECORD'}">
+                    <dt>#{msg.label__crowdsourcing_campaign_total_records}</dt>
+                </ui:fragment>
+                <dd>#{campaign.numRecords}</dd>
+                <dt>#{msg.label__crowdsourcing_campaign_finished_items}</dt>
+                <dd>#{campaign.getNumRecordsForStatus('FINISHED')}</dd>
+                <dt>#{msg.label__crowdsourcing_campaign_items_in_review}</dt>
+                <dd>#{campaign.getNumRecordsForStatus('REVIEW')}</dd>
+                <dt>#{msg.label__crowdsourcing_campaign_contributor_count}</dt>
                 <dd>#{campaign.contributorCount}</dd>
-				<ui:fragment rendered="#{campaign.daysLeft >= 0}">
-					<dt>#{msg.label__crowdsourcing_campaign_days_left}</dt>
-					<dd>#{campaign.daysLeftAsString}</dd>
-				</ui:fragment>
-			</dl>
-		</div>
-		<div
-			class="campaign-statistics__bar" role="presentation">
-			<progressBar total="#{campaign.numRecords}"
-				values="[#{campaign.getNumRecordsForStatus('FINISHED')}, #{campaign.getNumRecordsForStatus('REVIEW')}]"
-				styleclasses='["finished", "review"]'></progressBar>
-		</div>
-	</div>
+                <ui:fragment rendered="#{campaign.daysLeft >= 0}">
+                    <dt>#{msg.label__crowdsourcing_campaign_days_left}</dt>
+                    <dd>#{campaign.daysLeftAsString}</dd>
+                </ui:fragment>
+            </dl>
+        </div>
+        <div
+            class="campaign-statistics__bar"
+            role="presentation">
+            <progressBar
+                total="#{campaign.numRecords}"
+                values="[#{campaign.getNumRecordsForStatus('FINISHED')}, #{campaign.getNumRecordsForStatus('REVIEW')}]"
+                styleclasses='["finished", "review"]' />
+        </div>
+    </div>
 </ui:composition>

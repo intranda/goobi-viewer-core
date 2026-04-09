@@ -1,37 +1,43 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
-
     <composite:interface />
 
     <composite:implementation>
         <h:panelGroup rendered="#{activeDocumentBean.viewManager.hasVersionHistory and fn:length(activeDocumentBean.viewManager.versionHistory) > 1}">
-            <div id="widgetVersionHistory" class="widget widget-version-history">
-            	<div class="widget__topbar widget-version-history__topbar">
-            		<h2 class="widget__title widget-version-history__title">#{msg.versionHistory}:</h2>
-            	</div>
-                
+            <div
+                id="widgetVersionHistory"
+                class="widget widget-version-history">
+                <div class="widget__topbar widget-version-history__topbar">
+                    <h2 class="widget__title widget-version-history__title">#{msg.versionHistory}:</h2>
+                </div>
+
                 <div class="widget__body widget-version-history__body">
-	                <ul>
-	                    <ui:repeat var="version" value="#{activeDocumentBean.viewManager.versionHistory}">
-	                        <input type="hidden" value="#{version}" />
-	                    </ui:repeat>
-	                </ul>
-                </div>   
+                    <ul>
+                        <ui:repeat
+                            var="version"
+                            value="#{activeDocumentBean.viewManager.versionHistory}">
+                            <input
+                                type="hidden"
+                                value="#{version}" />
+                        </ui:repeat>
+                    </ul>
+                </div>
             </div>
 
             <script type="text/javascript">
                 var versionHistoryConfig = {
-                    imgUrl: "#{navigationHelper.imageUrl}",
-                    imgPi: "#{activeDocumentBean.viewManager.pi}",
-                    widgetInputs: "#widgetVersionHistory ul input",
-                    widgetList: "#widgetVersionHistory ul",
-                };
-                
-                viewerJS.versionHistory.init( versionHistoryConfig );
+    imgUrl: '#{navigationHelper.imageUrl}',
+    imgPi: '#{activeDocumentBean.viewManager.pi}',
+    widgetInputs: '#widgetVersionHistory ul input',
+    widgetList: '#widgetVersionHistory ul',
+};
+
+viewerJS.versionHistory.init(versionHistoryConfig);
             </script>
         </h:panelGroup>
     </composite:implementation>

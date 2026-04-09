@@ -5,66 +5,67 @@
 
 /* MAP AREA */
 #searchGeoCoords {
-	.search-geo-coords {
-		&__content-container {
-			position: relative;
-		}
-		&__buttons-wrapper {
-			position: absolute;
-			right: 15px;
-			bottom: 35px;
-			z-index: 401;
-			padding: 1rem;
-			background: rgba(0,0,0,0.75);
-		}
-		&__submit-search {
-		}
-		&__reset-search {
-			margin-right: 0.5rem;
-		}
-	}
-	.geo-map {
-		height: 30vw;
-		&__wrapper {
-			position: relative;
-		}
-	}
-	.geocoder {
-		position: absolute;
-		top: 20px;
-		right: 20px;
-		z-index: 401;
-	}
-	.mapboxgl-ctrl-geocoder--input {
-		&:focus {
-			outline: none;
-		}
-	}
-	
+    .search-geo-coords {
+        &__content-container {
+            position: relative;
+        }
+        &__buttons-wrapper {
+            position: absolute;
+            right: 15px;
+            bottom: 35px;
+            z-index: 401;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.75);
+        }
+        &__submit-search {
+        }
+        &__reset-search {
+            margin-right: 0.5rem;
+        }
+    }
+    .geo-map {
+        height: 30vw;
+        &__wrapper {
+            position: relative;
+        }
+    }
+    .geocoder {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        z-index: 401;
+    }
+    .mapboxgl-ctrl-geocoder--input {
+        &:focus {
+            outline: none;
+        }
+    }
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
-	#searchGeoCoords .geo-map {
-	    height: 60vh;
-	}	
+    #searchGeoCoords .geo-map {
+        height: 60vh;
+    }
 }
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
-	#searchGeoCoords {
-		.geocoder {
-			max-width: 200px;
-		}
-		.mapboxgl-ctrl-geocoder {
-			font-size: 1.4rem;
-			min-width: 140px;
-		}
-	}
+    #searchGeoCoords {
+        .geocoder {
+            max-width: 200px;
+        }
+        .mapboxgl-ctrl-geocoder {
+            font-size: 1.4rem;
+            min-width: 140px;
+        }
+    }
 }

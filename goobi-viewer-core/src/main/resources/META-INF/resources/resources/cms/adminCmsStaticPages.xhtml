@@ -2,65 +2,119 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
-
     <ui:define name="metadata">
-	    <f:metadata>
-	        <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsStaticPages')}" />
-	        <f:event type="preRenderView" listener="#{cmsBean.init()}" />
-	    </f:metadata>
+        <f:metadata>
+            <f:event
+                type="preRenderView"
+                listener="#{navigationHelper.setCurrentPageAdmin('adminCmsStaticPages')}" />
+            <f:event
+                type="preRenderView"
+                listener="#{cmsBean.init()}" />
+        </f:metadata>
     </ui:define>
 
     <ui:define name="content">
-        <h:panelGroup id="cmsStaticPages" rendered="#{userBean.user.isHasCmsPrivilege('CMS_STATIC_PAGES')}">
+        <h:panelGroup
+            id="cmsStaticPages"
+            rendered="#{userBean.user.isHasCmsPrivilege('CMS_STATIC_PAGES')}">
             <div class="admin__title-bar">
                 <h1 class="admin__title">#{msg.cms_staticPages}</h1>
             </div>
 
-			<viewerComponent:adminBreadcrumbs />
+            <viewerComponent:adminBreadcrumbs />
 
             <div class="admin__content-inner-content">
                 <!-- INFO TEXT -->
                 <div class="admin__info-text">
-                    <h:outputText value="#{msg.cms__static_pages__info_text}" escape="false" />
+                    <h:outputText
+                        value="#{msg.cms__static_pages__info_text}"
+                        escape="false" />
                 </div>
 
                 <!-- STATIC PAGES TABLE -->
-                <h:form id="cmsStaticPageForm" prependId="false">
-                <div class="admin__table-content" role="grid" aria-labe="#{msg.cms_staticPages}: #{msg.aria_label__table__actions}">
-                        <div class="row no-gutters admin__table-title" role="row">
-                            <div class="col-3 d-flex" role="columnheader">#{msg.cms__static_pages__name}</div>
-                            <div class="col-3 d-flex" role="columnheader">#{msg.cms__static_pages__url}</div>
-                            <div class="col-6 d-flex" role="columnheader">#{msg.cms__static_pages__overridden_cms_page}</div>
+                <h:form
+                    id="cmsStaticPageForm"
+                    prependId="false">
+                    <div
+                        class="admin__table-content"
+                        role="grid"
+                        aria-labe="#{msg.cms_staticPages}: #{msg.aria_label__table__actions}">
+                        <div
+                            class="row no-gutters admin__table-title"
+                            role="row">
+                            <div
+                                class="col-3 d-flex"
+                                role="columnheader">
+                                #{msg.cms__static_pages__name}
+                            </div>
+                            <div
+                                class="col-3 d-flex"
+                                role="columnheader">
+                                #{msg.cms__static_pages__url}
+                            </div>
+                            <div
+                                class="col-6 d-flex"
+                                role="columnheader">
+                                #{msg.cms__static_pages__overridden_cms_page}
+                            </div>
                         </div>
 
-                        <ui:repeat var="page" value="#{cmsBean.staticPages}">
-                            <div class="row no-gutters admin__table-entry" role="row">
+                        <ui:repeat
+                            var="page"
+                            value="#{cmsBean.staticPages}">
+                            <div
+                                class="row no-gutters admin__table-entry"
+                                role="row">
                                 <!-- TODO INLINE CSS -->
-                                <div class="col-3 d-flex" style="min-height:42px;" role="gridcell">
+                                <div
+                                    class="col-3 d-flex"
+                                    style="min-height: 42px"
+                                    role="gridcell">
                                     <div class="admin__table-data">
                                         <span>#{msg[page.pageType.label]}</span>
                                         <ui:fragment rendered="#{page.hasCmsPage}">
-                                        <a href="#{cmsBean.getUrl(page.cmsPage)}" class="admin__table-action-link" target="_blank" rel="noopener" aria-label="#{msg.button__preview}: #{msg[page.pageType.label]}">#{msg.button__preview}</a>
+                                            <a
+                                                href="#{cmsBean.getUrl(page.cmsPage)}"
+                                                class="admin__table-action-link"
+                                                target="_blank"
+                                                rel="noopener"
+                                                aria-label="#{msg.button__preview}: #{msg[page.pageType.label]}">
+                                                #{msg.button__preview}
+                                            </a>
                                         </ui:fragment>
                                     </div>
                                 </div>
-                                <div class="col-3 d-flex align-items-center" role="gridcell">/#{page.pageType.label}/</div>
-                                <div class="col-6 d-flex align-items-center" role="gridcell">
+                                <div
+                                    class="col-3 d-flex align-items-center"
+                                    role="gridcell">
+                                    /#{page.pageType.label}/
+                                </div>
+                                <div
+                                    class="col-6 d-flex align-items-center"
+                                    role="gridcell">
                                     <div class="custom-control custom-control--select">
-                                        <h:selectOneMenu converter="cmsPageConverter" value="#{page.cmsPage}">
-                                            <f:selectItem itemValue="#{null}" itemLabel="#{msg.none}" />
+                                        <h:selectOneMenu
+                                            converter="cmsPageConverter"
+                                            value="#{page.cmsPage}">
+                                            <f:selectItem
+                                                itemValue="#{null}"
+                                                itemLabel="#{msg.none}" />
                                             <f:selectItems
                                                 value="#{cmsBean.getAvailableCmsPages(page)}"
-                                                var="availablePage" itemValue="#{availablePage}"
+                                                var="availablePage"
+                                                itemValue="#{availablePage}"
                                                 itemLabel="#{availablePage.title}" />
-                                            <f:ajax event="change" render="@form" />
-                                            <f:passThroughAttribute name="aria-label" value="#{msg.cms__static_pages__overridden_cms_page}" />
+                                            <f:ajax
+                                                event="change"
+                                                render="@form" />
+                                            <f:passThroughAttribute
+                                                name="aria-label"
+                                                value="#{msg.cms__static_pages__overridden_cms_page}" />
                                         </h:selectOneMenu>
                                     </div>
                                 </div>
@@ -69,12 +123,14 @@
                     </div>
 
                     <div class="admin__final-actions">
-                        <h:commandButton id="saveStaticPages" styleClass="btn btn--success" value="#{msg.save}" action="#{cmsBean.saveStaticPages}" />
+                        <h:commandButton
+                            id="saveStaticPages"
+                            styleClass="btn btn--success"
+                            value="#{msg.save}"
+                            action="#{cmsBean.saveStaticPages}" />
                     </div>
                 </h:form>
             </div>
         </h:panelGroup>
     </ui:define>
-
 </ui:composition>
-

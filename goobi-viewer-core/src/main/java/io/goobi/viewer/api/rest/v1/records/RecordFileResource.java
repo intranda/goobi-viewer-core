@@ -66,6 +66,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringConstants;
+import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.AccessDeniedException;
@@ -84,8 +85,11 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -96,8 +100,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 @jakarta.ws.rs.Path(RECORDS_FILES)
 @ViewerRestServiceBinding
@@ -120,12 +123,19 @@ public class RecordFileResource {
      * @param pi the requested indentifier
      */
     public RecordFileResource(@Context HttpServletRequest request, @Context HttpServletResponse response,
-            @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) {
+            @Parameter(description = "Persistent identifier of the record",
+                    schema = @Schema(pattern = "^[A-Za-z0-9][A-Za-z0-9_.-]*$")) @PathParam("pi") String pi) {
+        // Reject PIs containing characters illegal in URI paths / Solr queries before any
+        // Solr or file-system access occurs.  BadRequestException (HTTP 400) is an unchecked
+        // WebApplicationException that Jersey maps to 400 before invoking the endpoint.
+        if (!PIValidator.validatePi(pi)) {
+            throw new BadRequestException("Invalid record identifier: " + pi);
+        }
         this.servletRequest = request;
         this.servletResponse = response;
         this.pi = pi;
         /**
-         * required to count download statistics in {@link RecordFileDownloadFilter}
+         * Required to count download statistics in {@link RecordFileDownloadFilter}
          */
         servletRequest.setAttribute("pi", pi);
     }
@@ -134,7 +144,13 @@ public class RecordFileResource {
     @jakarta.ws.rs.Path(RECORDS_FILES_ALTO)
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get Alto fulltext for a single page")
-    public String getAlto(@Parameter(description = "Filename of the alto document") @PathParam("filename") String filename)
+    @ApiResponse(responseCode = "200", description = "ALTO XML for the requested page")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier or filename")
+    @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
+    @ApiResponse(responseCode = "404", description = "ALTO file not found")
+    @ApiResponse(responseCode = "500", description = "Solr index unreachable")
+    public String getAlto(@Parameter(description = "Filename of the alto document",
+                    schema = @Schema(pattern = "^[A-Za-z0-9_.-]+$")) @PathParam("filename") String filename)
             throws PresentationException, IndexUnreachableException, ContentNotFoundException, ServiceNotAllowedException {
         checkFulltextAccessConditions(pi, filename);
         if (servletResponse != null) {
@@ -148,8 +164,14 @@ public class RecordFileResource {
     @jakarta.ws.rs.Path(RECORDS_FILES_PLAINTEXT)
     @Produces({ MediaType.TEXT_PLAIN })
     @Operation(tags = { "records" }, summary = "Get plaintext for a single page")
+    @ApiResponse(responseCode = "200", description = "Plaintext content for the requested page")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier or filename")
+    @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
+    @ApiResponse(responseCode = "404", description = "Text file not found")
+    @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public String getPlaintext(
-            @Parameter(description = "Filename containing the text") @PathParam("filename") String filename)
+            @Parameter(description = "Filename containing the text",
+                    schema = @Schema(pattern = "^[A-Za-z0-9_.-]+$")) @PathParam("filename") String filename)
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, ServiceNotAllowedException {
         logger.trace("getPlaintext: {}", filename);
         checkFulltextAccessConditions(pi, filename);
@@ -163,8 +185,14 @@ public class RecordFileResource {
     @jakarta.ws.rs.Path(RECORDS_FILES_TEI)
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get fulltext for a single page in TEI format")
+    @ApiResponse(responseCode = "200", description = "TEI XML for the requested page")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier or filename")
+    @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
+    @ApiResponse(responseCode = "404", description = "TEI file not found")
+    @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public String getTEI(
-            @Parameter(description = "Filename containing the text") @PathParam("filename") String filename)
+            @Parameter(description = "Filename containing the text",
+                    schema = @Schema(pattern = "^[A-Za-z0-9_.-]+$")) @PathParam("filename") String filename)
             throws PresentationException, IndexUnreachableException, ContentLibException {
         checkFulltextAccessConditions(pi, filename);
         if (servletResponse != null) {
@@ -177,6 +205,10 @@ public class RecordFileResource {
     @jakarta.ws.rs.Path(RECORDS_FILES_MEI)
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get MEI document for the record")
+    @ApiResponse(responseCode = "200", description = "MEI document for the record")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
+    @ApiResponse(responseCode = "404", description = "MEI file not found")
     public String getMEI() throws ContentLibException, DAOException, IOException, IndexUnreachableException, PresentationException {
         try {
             return DataFileTools.loadMei(pi, servletRequest);
@@ -190,13 +222,27 @@ public class RecordFileResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_SOURCE)
     @Operation(tags = { "records" }, summary = "Get source files of record")
+    @ApiResponse(responseCode = "200", description = "Source file content")
+    @ApiResponse(responseCode = "400", description = "Invalid filename")
+    @ApiResponse(responseCode = "403", description = "Access to this file is restricted")
+    @ApiResponse(responseCode = "404", description = "Source file not found")
+    @ApiResponse(responseCode = "500", description = "Content library error")
     public Response getSourceFile(
-            @Parameter(description = "Source file name") @PathParam("filename") String filename)
+            @Parameter(description = "Source file name",
+                    schema = @Schema(pattern = "^[A-Za-z0-9_.-]+$")) @PathParam("filename") String filename)
             throws ContentLibException, PresentationException, IndexUnreachableException, DAOException {
         if (!filename.equals(StringTools.stripJS(filename))) {
             throw new ServiceNotAllowedException("Script detected in input");
         }
-        Path path = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder(), null, filename);
+        // DataFileTools.getDataFilePath calls FileTools.sanitizeFileName which throws
+        // IllegalArgumentException for filenames with illegal characters (e.g. control chars).
+        // Wrap it as IllegalRequestException so ContentExceptionMapper returns HTTP 400.
+        Path path;
+        try {
+            path = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder(), null, filename);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalRequestException("Invalid file name: " + filename);
+        }
         if (!Files.isRegularFile(path)) {
             throw new ContentNotFoundException("Source file " + filename + " not found");
         }
@@ -224,17 +270,31 @@ public class RecordFileResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_MEDIA)
     @Operation(tags = { "records" }, summary = "Get media files of record")
+    @ApiResponse(responseCode = "200", description = "Media file content")
+    @ApiResponse(responseCode = "400", description = "Invalid filename")
+    @ApiResponse(responseCode = "403", description = "Access to this file is restricted")
+    @ApiResponse(responseCode = "404", description = "Media file not found")
+    @ApiResponse(responseCode = "500", description = "IO or content library error")
     @CORSBinding
     @MediaResourceBinding
     @RecordFileDownloadBinding
     public Response getMediaFile(
-            @Parameter(description = "Media file name") @PathParam("filename") String filename)
+            @Parameter(description = "Media file name",
+                    schema = @Schema(pattern = "^[A-Za-z0-9_.-]+$")) @PathParam("filename") String filename)
             throws ContentLibException, PresentationException, IndexUnreachableException, DAOException {
         if (!filename.equals(StringTools.stripJS(filename))) {
             throw new ServiceNotAllowedException("Script detected in input");
         }
 
-        Path path = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getMediaFolder(), null, filename);
+        // DataFileTools.getDataFilePath calls FileTools.sanitizeFileName which throws
+        // IllegalArgumentException for filenames with illegal characters (e.g. control chars).
+        // Wrap it as IllegalRequestException so ContentExceptionMapper returns HTTP 400.
+        Path path;
+        try {
+            path = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getMediaFolder(), null, filename);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalRequestException("Invalid file name: " + filename);
+        }
         if (!Files.isRegularFile(path)) {
             throw new ContentNotFoundException("Media file " + filename + " not found");
         }
@@ -307,9 +367,14 @@ public class RecordFileResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_CMDI)
     @Operation(tags = { "records" }, summary = "Get cmdi for record file")
+    @ApiResponse(responseCode = "200", description = "CMDI metadata for the requested file")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier or filename")
+    @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
+    @ApiResponse(responseCode = "404", description = "CMDI file not found")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public String getCMDI(
-            @Parameter(description = "Image file name for cmdi") @PathParam("filename") String filename,
+            @Parameter(description = "Image file name for cmdi",
+                    schema = @Schema(pattern = "^[A-Za-z0-9_.-]+$")) @PathParam("filename") String filename,
             @Parameter(description = "Language for CMDI") @QueryParam("lang") final String lang)
             throws ContentLibException, PresentationException, IndexUnreachableException, IOException {
         checkFulltextAccessConditions(pi, filename);
@@ -337,6 +402,10 @@ public class RecordFileResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD)
     @Operation(tags = { "records" }, summary = "Download an external resource previously downloaded to the viewer server")
+    @ApiResponse(responseCode = "200", description = "Downloaded external resource file")
+    @ApiResponse(responseCode = "400", description = "Invalid file path")
+    @ApiResponse(responseCode = "404", description = "Resource not found on server")
+    @ApiResponse(responseCode = "500", description = "IO error reading resource")
     @RecordFileDownloadBinding
     public Response getDownloadedResource(
             @Parameter(description = "download resource task id") @PathParam("taskId") String taskId,
@@ -370,10 +439,10 @@ public class RecordFileResource {
     }
 
     /**
-     * Throw an AccessDenied error if the request doesn't satisfy the access conditions
+     * Throw an AccessDenied error if the request doesn't satisfy the access conditions.
      * 
-     * @param pi
-     * @param filename
+     * @param pi persistent identifier of the record
+     * @param filename name of the fulltext file to check access for
      * @throws ServiceNotAllowedException
      */
     private void checkFulltextAccessConditions(String pi, String filename) throws ServiceNotAllowedException {
@@ -393,8 +462,8 @@ public class RecordFileResource {
      * Returns the first file on the given folder path that contains the requested language code in its name. ISO-3 files are preferred, with a
      * fallback to ISO-2.
      *
-     * @param folder
-     * @param language
+     * @param folder directory containing the language-versioned document files
+     * @param language requested language for the document version
      * @return Path of the requested file; null if not found
      * @throws IOException
      */

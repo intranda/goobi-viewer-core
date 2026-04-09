@@ -38,6 +38,10 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
+/**
+ * Container that groups multiple {@link ComplexMetadata} instances by their Solr field name,
+ * constructed from a collection of Solr metadata documents belonging to a single record.
+ */
 public class ComplexMetadataContainer {
 
     private static final String QUERY_FORMAT = "+DOCTYPE:METADATA +PI_TOPSTRUCT:%s";

@@ -83,7 +83,7 @@ public abstract class AbstractFilterConfiguration implements IFilterConfiguratio
     /**
      * Add a conditional filter. The main filter is only applied if all conditional filters pass
      * 
-     * @param condition
+     * @param condition conditional filter to add
      */
     public void addCondition(AbstractFilterConfiguration condition) {
         if (condition != this && !condition.getFilterConditions().contains(this)) {
@@ -92,7 +92,7 @@ public abstract class AbstractFilterConfiguration implements IFilterConfiguratio
     }
 
     /**
-     * Get the {@link FilterAction}
+     * Get the {@link FilterAction}.
      * 
      * @return {@link FilterAction}
      */
@@ -101,7 +101,7 @@ public abstract class AbstractFilterConfiguration implements IFilterConfiguratio
     }
 
     /**
-     * Get all {@link #filterConditions}
+     * Get all {@link #filterConditions}.
      * 
      * @return List<AbstractFilterConfiguration>
      */
@@ -110,7 +110,7 @@ public abstract class AbstractFilterConfiguration implements IFilterConfiguratio
     }
 
     /**
-     * check if matching this filter results in a pass or block
+     * Check if matching this filter results in a pass or block.
      * 
      * @return true if {@link #action} is {@link FilterAction#SHOW}.
      */

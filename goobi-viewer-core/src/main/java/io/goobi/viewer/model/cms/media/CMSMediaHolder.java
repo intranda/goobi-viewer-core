@@ -28,34 +28,28 @@ import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
  * a mediaItem in the selectMedia dialog, since the dialog uses
  * {@link io.goobi.viewer.managedbeans.CmsBean#fillSelectedMediaHolder(CategorizableTranslatedSelectable)} to apply the selected MediaItem
  *
- * @author florian
+ * @author Florian Alpers
  */
 public interface CMSMediaHolder {
 
     /**
-     * <p>
      * setMediaItem.
-     * </p>
      *
      * @param item a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      */
     public void setMediaItem(CMSMediaItem item);
 
     /**
-     * <p>
      * getMediaItem.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
+     * @return the associated CMS media item, or null if none is set
      */
     public CMSMediaItem getMediaItem();
 
     /**
-     * <p>
-     * A regular expression determining which filenames are shown in the media list and may be uploaded
-     * </p>
+     * A regular expression determining which filenames are shown in the media list and may be uploaded.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the regex pattern used to filter acceptable media filenames for this holder
      */
     public String getMediaFilter();
 
@@ -67,20 +61,16 @@ public interface CMSMediaHolder {
     public String getMediaTypes();
 
     /**
-     * <p>
      * hasMediaItem.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this holder has an associated CMS media item, false otherwise
      */
     public boolean hasMediaItem();
 
     /**
-     * <p>
      * getMediaItemWrapper.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.model.cms.CategorizableTranslatedSelectable} object.
+     * @return the CMS media item wrapped with category and selection state information
      */
     public CategorizableTranslatedSelectable<CMSMediaItem> getMediaItemWrapper();
 }
