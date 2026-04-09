@@ -1232,8 +1232,8 @@ public class ActiveDocumentBean implements Serializable {
 
         int number;
 
-        // Current image contains two pages
-        if (viewManager.getCurrentPage().isDoubleImage()) {
+        // Current image contains two pages - guard against null when page loader hasn't populated the current page yet
+        if (viewManager.getCurrentPage() != null && viewManager.getCurrentPage().isDoubleImage()) {
             // logger.trace("{} is double page", viewManager.getCurrentPage().getOrder()); //NOSONAR Debug
             if (step < 0) {
                 number = viewManager.getCurrentImageOrder() + 2 * step;
