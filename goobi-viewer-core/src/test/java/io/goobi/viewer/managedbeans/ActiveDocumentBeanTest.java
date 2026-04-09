@@ -438,4 +438,26 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         // Fresh bean has viewManager == null
         assertNull(adb.getToc());
     }
+
+    /**
+     * @see ActiveDocumentBean#getFullscreenImageUrl()
+     * @verifies not throw NPE when getCurrentPage returns null in double page mode
+     */
+    @Test
+    void getFullscreenImageUrl_shouldNotThrowNPEWhenCurrentPageIsNull() throws Exception {
+        // Simulate a ViewManager in double-page mode where the page loader hasn't
+        // populated the current page yet (getCurrentPage() == null).
+        ViewManager mockViewManager = Mockito.mock(ViewManager.class);
+        Mockito.when(mockViewManager.isDoublePageMode()).thenReturn(true);
+        Mockito.when(mockViewManager.getCurrentPage()).thenReturn(null);
+
+        adb.setNavigationHelper(navigationHelper);
+        // viewManager is private; inject via reflection
+        java.lang.reflect.Field vmField = ActiveDocumentBean.class.getDeclaredField("viewManager");
+        vmField.setAccessible(true);
+        vmField.set(adb, mockViewManager);
+
+        // Must not throw NullPointerException
+        Assertions.assertDoesNotThrow(() -> adb.getFullscreenImageUrl());
+    }
 }

@@ -1462,7 +1462,8 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getFullscreenImageUrl() throws IndexUnreachableException {
-        if (viewManager != null && viewManager.isDoublePageMode() && !viewManager.getCurrentPage().isDoubleImage()) {
+        // Guard against null when page loader hasn't populated the current page yet
+        if (viewManager != null && viewManager.isDoublePageMode() && viewManager.getCurrentPage() != null && !viewManager.getCurrentPage().isDoubleImage()) {
             Optional<PhysicalElement> currentLeftPage = viewManager.getCurrentLeftPage();
             Optional<PhysicalElement> currentRightPage = viewManager.getCurrentRightPage();
             if (currentLeftPage.isPresent() && currentRightPage.isPresent()) {
