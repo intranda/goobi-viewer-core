@@ -683,7 +683,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
                     // Find existing facet items that can be re-purposed for the existing facets
                     boolean skipQueryItem = false;
-                    for (IFacetItem facetItem : facets.getActiveFacetsCopy()) {
+                    for (IFacetItem facetItem : facets.getActiveFacets()) {
                         // logger.trace("checking facet item: {}", facetItem.getLink()); //NOSONAR Debug
                         if (!facetItem.getField().equals(item.getField())) {
                             continue;
@@ -848,7 +848,8 @@ public class SearchBean implements SearchInterface, Serializable {
             }
         }
         if (!toRemove.isEmpty()) {
-            facets.getActiveFacets().removeAll(toRemove);
+            // Use removeActiveFacets() to hold the correct lock used by write operations.
+            facets.removeActiveFacets(toRemove);
         }
 
         // Add this group's query part to the main query
