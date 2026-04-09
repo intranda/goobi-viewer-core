@@ -609,8 +609,10 @@ public class SearchFacets implements Serializable {
      * @return the JSF navigation outcome after updating the facet (e.g. "pretty:search6")
      */
     public String updateFacetItem(String field, boolean hierarchical) {
-        updateFacetItem(field, tempValue, activeFacets, hierarchical);
-
+        // Synchronize on lock (same as other write operations) to protect activeFacets.
+        synchronized (lock) {
+            updateFacetItem(field, tempValue, activeFacets, hierarchical);
+        }
         return "pretty:search6"; // TODO advanced search
     }
 
@@ -1122,24 +1124,45 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * Getter for the field <code>activeFacets</code>.
+     * Returns a snapshot copy of the currently active facet filters.
      *
-     * @return the list of currently active facet filters applied to the search
+     * <p>Returns a defensive copy so that callers (e.g. JSF {@code c:forEach} templates) cannot
+     * receive a {@link java.util.ConcurrentModificationException} if a concurrent request modifies
+     * the list. Uses the same {@code lock} object as all write operations so that the copy is taken
+     * atomically with respect to any concurrent {@link #setActiveFacetString} or
+     * {@link #setGeoFacetFeature} call.
+     *
+     * @return a new, mutable {@link ArrayList} snapshot of the active facet filters; never {@code null}
      */
-    public synchronized List<IFacetItem> getActiveFacets() {
-        return activeFacets;
+    public List<IFacetItem> getActiveFacets() {
+        // Use the same lock as write operations (parseFacetString, setGeoFacetting, etc.)
+        // to prevent ConcurrentModificationException when c:forEach iterates while a concurrent
+        // request modifies activeFacets. Previously this method used synchronized(this) which
+        // is a different monitor than the lock used by writes, providing no real protection.
+        synchronized (lock) {
+            return new ArrayList<>(activeFacets);
+        }
     }
 
     /**
      * Get a shallow copy of <code>activeFacets</code>.
      *
      * @return a new ArrayList containing all activeFacets
+     * @deprecated Use {@link #getActiveFacets()} which now already returns a defensive copy.
      */
+    @Deprecated(since = "26.04", forRemoval = true)
     public List<IFacetItem> getActiveFacetsCopy() {
-        // Use the same lock as write operations (parseFacetString, setGeoFacetting, etc.)
-        // to prevent a race condition where clear() nulls elements while toArray() copies them.
+        return getActiveFacets();
+    }
+
+    /**
+     * Removes all given facet items from <code>activeFacets</code> under the correct lock.
+     *
+     * @param facetsToRemove collection of facet items to remove; must not be {@code null}
+     */
+    public void removeActiveFacets(java.util.Collection<? extends IFacetItem> facetsToRemove) {
         synchronized (lock) {
-            return new ArrayList<>(activeFacets);
+            activeFacets.removeAll(facetsToRemove);
         }
     }
 

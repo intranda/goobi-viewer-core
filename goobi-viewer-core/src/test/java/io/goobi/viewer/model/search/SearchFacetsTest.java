@@ -217,9 +217,7 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     void getActiveFacetString_shouldContainQueriesFromAllFacetItems() throws Exception {
         SearchFacets facets = new SearchFacets();
-        for (int i = 0; i < 3; ++i) {
-            facets.getActiveFacets().add(new FacetItem(new StringBuilder().append("FIELD").append(i).append(":value").append(i).toString(), false));
-        }
+        facets.setActiveFacetString("FIELD0:value0;;FIELD1:value1;;FIELD2:value2;;");
         Assertions.assertEquals(3, facets.getActiveFacets().size());
         String facetString = facets.getActiveFacetString();
         try {
@@ -523,7 +521,7 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     void isHasWrongLanguageCode_shouldReturnFalseIfLanguageCodeDifferentButActiveFacetSelected() {
         SearchFacets facets = new SearchFacets();
-        facets.getActiveFacets().add(new FacetItem("MD_TITLE_LANG_DE:somevalue", false));
+        facets.setActiveFacetString("MD_TITLE_LANG_DE:somevalue;;");
         Assertions.assertFalse(facets.isHasWrongLanguageCode("MD_TITLE_LANG_DE", "en"));
     }
 
@@ -607,10 +605,8 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
         String geoJson =
                 "{\"type\":\"rectangle\",\"vertices\":[[52.27468490157105,12.831527289994273],[52.78227376368535,12.831527289994273],[52.78227376368535,13.864873763618117],[52.27468490157105,13.864873763618117],[52.27468490157105,12.831527289994273]]}";
 
-        //create SearchFacets with GeoFacetItem
-        GeoFacetItem item = new GeoFacetItem("WKT_COORDS");
+        // setGeoFacetFeature adds the GeoFacetItem to activeFacets internally
         SearchFacets facets = new SearchFacets();
-        facets.getActiveFacets().add(item);
         facets.setGeoFacetFeature(geoJson);
 
         //facet string written to url (escaped in browser)
