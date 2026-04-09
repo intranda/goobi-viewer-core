@@ -24,6 +24,9 @@ package io.goobi.viewer.dao.impl;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -42,18 +45,16 @@ import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
 
 /**
- * <p>
- * JPAClassLoader class.
- * </p>
+ * Custom class loader used to resolve JPA entity classes from the configured persistence unit.
  */
 public class JPAClassLoader extends ClassLoader {
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(JPAClassLoader.class);
 
-    /** Constant <code>PERSISTENCE_XML="META-INF/persistence.xml"</code> */
+    /** Constant <code>PERSISTENCE_XML="META-INF/persistence.xml"</code>. */
     public static final String PERSISTENCE_XML = "META-INF/persistence.xml";
-    /** Constant <code>PERSISTENCE_XML_MODULE="META-INF/persistence-module.xml"</code> */
+    /** Constant <code>PERSISTENCE_XML_MODULE="META-INF/persistence-module.xml"</code>. */
     public static final String PERSISTENCE_XML_MODULE = "META-INF/persistence-module.xml";
     //    private static final String MASTER_URL_SUFFIX = "Viewer/build/classes/" + PERSISTENCE_XML;
     //    private static final String MODULE_URL_SUFFIX = ".jar!/" + PERSISTENCE_XML;
@@ -80,11 +81,9 @@ public class JPAClassLoader extends ClassLoader {
     //    }
 
     /**
-     * <p>
-     * Constructor for JPAClassLoader.
-     * </p>
+     * Creates a new JPAClassLoader instance.
      *
-     * @param parent a {@link java.lang.ClassLoader} object.
+     * @param parent parent class loader to delegate non-persistence resources to
      */
     public JPAClassLoader(final ClassLoader parent) {
         super(parent);
@@ -130,8 +129,8 @@ public class JPAClassLoader extends ClassLoader {
 
     /**
      *
-     * @param masterFileUrl
-     * @param moduleUrls
+     * @param masterFileUrl URL of the master persistence.xml file
+     * @param moduleUrls list of module persistence.xml URLs to merge in
      * @return {@link Document containing merged and module persistence.xml
      * @throws IOException
      * @throws JDOMException
@@ -204,7 +203,21 @@ public class JPAClassLoader extends ClassLoader {
                     // The base directory must be empty since Hibernate will scan it searching for classes.
                     final File file = new File(System.getProperty("java.io.tmpdir") + "/viewer/" + PERSISTENCE_XML);
                     file.getParentFile().mkdirs();
-                    XmlTools.writeXmlFile(docMerged, file.getAbsolutePath());
+                    // Write to a temp file first, then atomically rename to prevent a race condition
+                    // where a concurrent thread reads an empty/partial file after truncation but before
+                    // the write completes.
+                    final File tempFile = File.createTempFile("persistence", ".xml.tmp", file.getParentFile());
+                    try {
+                        XmlTools.writeXmlFile(docMerged, tempFile.getAbsolutePath());
+                        Files.move(tempFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+                    } catch (IOException e) {
+                        Path tempPath = tempFile.toPath();
+                        try {
+                            Files.deleteIfExists(tempPath);
+                        } catch (IOException ignored) { //NOSONAR
+                        }
+                        throw e;
+                    }
                     newUrl = file.toURI().toURL();
                     //                    newUrl = new URL("file://" + file.getAbsolutePath());
                     logger.info("URL: {}", newUrl);

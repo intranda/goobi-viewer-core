@@ -53,9 +53,7 @@ public class EmptyPageLoader extends AbstractPageLoader implements Serializable 
     private int lastPageOrder = 1;
 
     /**
-     * <p>
      * Package private constructor for EagerPageLoader.
-     * </p>
      *
      * @param topElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.

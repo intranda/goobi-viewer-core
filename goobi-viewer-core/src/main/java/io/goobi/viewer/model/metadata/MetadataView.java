@@ -34,6 +34,9 @@ import io.goobi.viewer.model.viewer.StructElement;
  */
 public class MetadataView {
 
+    /**
+     * Enumerates the possible display locations for a metadata view, either in the main object view or in the sidebar.
+     */
     public enum MetadataViewLocation {
         OBJECTVIEW,
         SIDEBAR;
@@ -68,7 +71,7 @@ public class MetadataView {
     /**
      * Checks link visibility conditions.
      *
-     * @param se
+     * @param se structure element to check the visibility condition against
      * @return true if conditions empty or satisfied; false otherwise
      * @should return true if condition null or empty
      * @should return false if struct element null
@@ -111,15 +114,13 @@ public class MetadataView {
         return MetadataViewLocation.OBJECTVIEW.equals(location);
     }
 
-    /**
-     * @return the index
-     */
+    
     public int getIndex() {
         return index;
     }
 
     /**
-     * @param index the index to set
+     * @param index the position index of this view within the ordered list of metadata views
      * @return this
      */
     public MetadataView setIndex(int index) {
@@ -127,15 +128,13 @@ public class MetadataView {
         return this;
     }
 
-    /**
-     * @return the label
-     */
+    
     public String getLabel() {
         return label;
     }
 
     /**
-     * @param label the label to set
+     * @param label the message key used as the display label for this metadata view tab
      * @return this
      */
     public MetadataView setLabel(String label) {
@@ -143,15 +142,13 @@ public class MetadataView {
         return this;
     }
 
-    /**
-     * @return the url
-     */
+    
     public String getUrl() {
         return url;
     }
 
     /**
-     * @param url the url to set
+     * @param url the URL or navigation target linked from this metadata view tab
      * @return this
      */
     public MetadataView setUrl(String url) {
@@ -159,15 +156,13 @@ public class MetadataView {
         return this;
     }
 
-    /**
-     * @return the condition
-     */
+    
     public String getCondition() {
         return condition;
     }
 
     /**
-     * @param condition the condition to set
+     * @param condition the Solr-query-style condition that must be satisfied for this view to be shown
      * @return this
      */
     public MetadataView setCondition(String condition) {
@@ -175,15 +170,13 @@ public class MetadataView {
         return this;
     }
 
-    /**
-     * @return the location
-     */
+    
     public MetadataViewLocation getLocation() {
         return location;
     }
 
     /**
-     * @param location the location to set
+     * @param location the UI location where this metadata view is rendered (e.g. main content or sidebar)
      * @return this
      */
     public MetadataView setLocation(MetadataViewLocation location) {

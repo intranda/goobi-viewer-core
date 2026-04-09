@@ -22,9 +22,7 @@
 package io.goobi.viewer.model.security.authentication.model;
 
 /**
- * <p>
- * UserPasswordAuthenticationRequest class.
- * </p>
+ * Request DTO carrying a username and password for local authentication.
  *
  * @author Florian Alpers
  */
@@ -34,20 +32,16 @@ public class UserPasswordAuthenticationRequest {
     protected String password;
 
     /**
-     * <p>
-     * Constructor for XServiceAuthenticationRequest.
-     * </p>
+     * Creates a new XServiceAuthenticationRequest instance.
      */
     public UserPasswordAuthenticationRequest() {
     }
 
     /**
-     * <p>
-     * Constructor for XServiceAuthenticationRequest.
-     * </p>
+     * Creates a new XServiceAuthenticationRequest instance.
      *
-     * @param username a {@link java.lang.String} object.
-     * @param password a {@link java.lang.String} object.
+     * @param username login name of the user
+     * @param password plaintext password for authentication
      */
     public UserPasswordAuthenticationRequest(String username, String password) {
         super();
@@ -56,52 +50,41 @@ public class UserPasswordAuthenticationRequest {
     }
 
     /**
-     * <p>
      * Getter for the field <code>username</code>.
-     * </p>
      *
-     * @return the username
+     * @return the login name of the user
      */
     public String getUsername() {
         return username;
     }
 
     /**
-     * <p>
      * Getter for the field <code>password</code>.
-     * </p>
      *
-     * @return the password
+     * @return the password of the user
      */
     public String getPassword() {
         return password;
     }
 
     /**
-     * <p>
      * Setter for the field <code>username</code>.
-     * </p>
      *
-     * @param username the username to set
+     * @param username login name of the user to set
      */
     public void setUsername(String username) {
         this.username = username;
     }
 
     /**
-     * <p>
      * Setter for the field <code>password</code>.
-     * </p>
      *
-     * @param password the password to set
+     * @param password plaintext password for authentication to set
      */
     public void setPassword(String password) {
         this.password = password;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     /** {@inheritDoc} */
     @Override
     public String toString() {

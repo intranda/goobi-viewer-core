@@ -24,9 +24,7 @@ package io.goobi.viewer.exceptions;
 import jakarta.ws.rs.core.Response.Status;
 
 /**
- * <p>
- * RestApiException class.
- * </p>
+ * Thrown when an error occurs during REST API request processing, carrying an associated HTTP status code.
  *
  * @author Florian Alpers
  */
@@ -35,11 +33,9 @@ public class RestApiException extends Exception {
     private final int statusCode;
 
     /**
-     * <p>
-     * Constructor for RestApiException.
-     * </p>
+     * Creates a new RestApiException instance.
      *
-     * @param statusCode a int.
+     * @param statusCode HTTP status code of the failed API response
      */
     public RestApiException(int statusCode) {
         super();
@@ -47,13 +43,11 @@ public class RestApiException extends Exception {
     }
 
     /**
-     * <p>
-     * Constructor for RestApiException.
-     * </p>
+     * Creates a new RestApiException instance.
      *
-     * @param message a {@link java.lang.String} object.
-     * @param cause a {@link java.lang.Throwable} object.
-     * @param statusCode a int.
+     * @param message human-readable error description
+     * @param cause underlying exception that triggered this error
+     * @param statusCode HTTP status code of the failed API response
      */
     public RestApiException(String message, Throwable cause, int statusCode) {
         super(message, cause);
@@ -65,12 +59,10 @@ public class RestApiException extends Exception {
     }
 
     /**
-     * <p>
-     * Constructor for RestApiException.
-     * </p>
+     * Creates a new RestApiException instance.
      *
-     * @param message a {@link java.lang.String} object.
-     * @param statusCode a int.
+     * @param message human-readable error description
+     * @param statusCode HTTP status code of the failed API response
      */
     public RestApiException(String message, int statusCode) {
         super(message);
@@ -82,12 +74,10 @@ public class RestApiException extends Exception {
     }
 
     /**
-     * <p>
-     * Constructor for RestApiException.
-     * </p>
+     * Creates a new RestApiException instance.
      *
-     * @param cause a {@link java.lang.Throwable} object.
-     * @param statusCode a int.
+     * @param cause underlying exception that triggered this error
+     * @param statusCode HTTP status code of the failed API response
      */
     public RestApiException(Throwable cause, int statusCode) {
         super(cause);
@@ -99,11 +89,9 @@ public class RestApiException extends Exception {
     }
 
     /**
-     * <p>
      * Getter for the field <code>statusCode</code>.
-     * </p>
      *
-     * @return the statusCode
+     * @return the HTTP status code associated with this REST API exception
      */
     public int getStatusCode() {
         return statusCode;

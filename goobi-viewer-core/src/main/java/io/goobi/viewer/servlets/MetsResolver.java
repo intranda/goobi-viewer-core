@@ -60,7 +60,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * Servlet implementation class MetsResolver
+ * Servlet implementation class MetsResolver.
  */
 public class MetsResolver extends HttpServlet {
 
@@ -241,7 +241,7 @@ public class MetsResolver extends HttpServlet {
 
     /**
      * 
-     * @param metsDoc
+     * @param metsDoc METS XML document to filter
      * @return {@link Document} without restricted metadata elements
      */
     static Document filterRestrictedMetadata(Document metsDoc) {

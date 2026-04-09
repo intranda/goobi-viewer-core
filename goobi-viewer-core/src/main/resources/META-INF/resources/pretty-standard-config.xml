@@ -3,7 +3,9 @@
 	xsi:schemaLocation="http://ocpsoft.com/prettyfaces/3.5.0 http://ocpsoft.com/xml/ns/prettyfaces/ocpsoft-pretty-faces-3.5.0.xsd">
 
 	<rewrite match="/;jsessionid=\w+" substitute="/" />
-	<rewrite match="/(?!oai)(\w+|-)$" trailingSlash="append" />
+	<!-- Exclude /api/ paths from trailing slash redirect: API endpoints do not need
+	     trailing slashes, and a 301 redirect causes HTTP clients to switch POST to GET. -->
+	<rewrite match="^(?!/api/).*?/(?!oai)(\w+|-)$" trailingSlash="append" />
 	<rewrite match="/admin/users/edit/?$" substitute="/admin/users/"/>
 	<rewrite match="/admin/groups/edit/?$" substitute="/admin/groups/"/>
 	<rewrite match="/admin/ipranges/edit/?$" substitute="/admin/ipranges/"/>
@@ -685,30 +687,30 @@
         <action onPostback="false">#{activeDocumentBean.open}</action>
     </url-mapping>
 
-	<!-- CALENDAR -->
+	<!-- CALENDAR (DEPRECATED) -->
 	<url-mapping id="calendar1">
 		<pattern value="/calendar/#{pi:activeDocumentBean.persistentIdentifier}/" />
-		<view-id value="/viewCalendar.xhtml" />
+		<view-id value="/viewToc.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 	<url-mapping id="calendar2">
 		<pattern value="/calendar/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
-		<view-id value="/viewCalendar.xhtml" />
+		<view-id value="/viewToc.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 	<url-mapping id="calendar3">
 		<pattern value="/calendar/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
-		<view-id value="/viewCalendar.xhtml" />
+		<view-id value="/viewToc.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 	<url-mapping id="calendar3active">
 		<pattern value="/!calendar/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
-		<view-id value="/viewCalendar.xhtml" />
+		<view-id value="/viewToc.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 	<url-mapping id="calendar4">
 		<pattern value="/calendar/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
-		<view-id value="/viewCalendar.xhtml" />
+		<view-id value="/viewToc.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
     

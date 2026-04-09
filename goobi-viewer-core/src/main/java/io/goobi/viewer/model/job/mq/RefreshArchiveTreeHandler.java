@@ -42,6 +42,9 @@ import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
+/**
+ * Message handler that unloads cached archive trees for a set of record identifiers so that they are reloaded from Solr on next access.
+ */
 public class RefreshArchiveTreeHandler implements MessageHandler<MessageStatus> {
 
     public static final String PARAMETER_IDENTIFIERS = "identifiers";

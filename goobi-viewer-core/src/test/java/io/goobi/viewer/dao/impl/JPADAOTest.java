@@ -2138,7 +2138,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         String query = JPADAO.createCMSPageFilter(params, "p", templates, subThemes, categories);
 
-        String shouldQuery = "(:tpl1 = p.templateId OR :tpl2 = p.templateId) AND (:thm1 = p.subThemeDiscriminatorValue) AND "
+        String shouldQuery = "(:tpl1 = p.templateId OR :tpl2 = p.templateId) AND (:thm1 = p.subTheme) AND "
                 + "(:cat1 IN (SELECT c.id FROM p.categories c) OR :cat2 IN (SELECT c.id FROM p.categories c) OR :cat3 IN (SELECT c.id FROM p.categories c))";
         assertEquals(shouldQuery, query);
 
@@ -2161,7 +2161,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         String query = JPADAO.createCMSPageFilter(params, "p", null, subThemes, categories);
 
-        String shouldQuery = "(:thm1 = p.subThemeDiscriminatorValue) AND "
+        String shouldQuery = "(:thm1 = p.subTheme) AND "
                 + "(:cat1 IN (SELECT c.id FROM p.categories c) OR :cat2 IN (SELECT c.id FROM p.categories c) OR :cat3 IN (SELECT c.id FROM p.categories c))";
         assertEquals(shouldQuery, query);
 

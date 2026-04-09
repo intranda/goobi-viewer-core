@@ -46,6 +46,10 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrTools;
 
+/**
+ * Utility class providing static helper methods for building and resolving citation links from
+ * Solr documents, supporting record, docstruct, and image level citations.
+ */
 public final class CitationTools {
 
     /** Logger for this class. */
@@ -57,9 +61,9 @@ public final class CitationTools {
 
     /**
      * 
-     * @param allLinks
-     * @param level
-     * @param viewManager
+     * @param allLinks all configured citation links across all levels
+     * @param level the citation link level to filter and populate
+     * @param viewManager ViewManager for the current record
      * @return Subset of allLinks that corresponds given level, populated with values
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -152,8 +156,8 @@ public final class CitationTools {
 
     /**
      *
-     * @param docstruct
-     * @param topstruct
+     * @param docstruct docstruct type name of the current structure element
+     * @param topstruct docstruct type name of the top-level structure element
      * @return CLSType for the given docstruct; default value if none mapped
      * @should return correct type
      */

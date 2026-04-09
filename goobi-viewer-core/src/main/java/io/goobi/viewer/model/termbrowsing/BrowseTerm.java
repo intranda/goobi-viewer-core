@@ -31,9 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 
 /**
- * <p>
- * BrowseTerm class.
- * </p>
+ * Represents a single term in the alphabetical browsing index, with its display label and hit count.
  */
 public class BrowseTerm implements Serializable {
 
@@ -65,7 +63,6 @@ public class BrowseTerm implements Serializable {
         this.translations = translations;
     }
 
-
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -74,7 +71,6 @@ public class BrowseTerm implements Serializable {
         result = prime * result + (term == null ? 0 : term.hashCode());
         return result;
     }
-
 
     /** {@inheritDoc} */
     @Override
@@ -100,38 +96,30 @@ public class BrowseTerm implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>term</code>.
-     * </p>
      *
-     * @return the term
+     * @return the browse term value
      */
     public String getTerm() {
         return term;
     }
 
     /**
-     * <p>
      * Getter for the field <code>sortTerm</code>.
-     * </p>
      *
-     * @return the sortTerm
+     * @return the sort key for this browse term, or null if none is set
      */
     public String getSortTerm() {
         return sortTerm;
     }
 
-    /**
-     * @return the translations
-     */
+    
     public IMetadataValue getTranslations() {
         return translations;
     }
 
     /**
-     * <p>
      * addToHitCount.
-     * </p>
      *
      * @param num a int.
      * @should add to hit count correctly
@@ -141,18 +129,16 @@ public class BrowseTerm implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>hitCount</code>.
-     * </p>
      *
-     * @return the hitCount
+     * @return the number of index hits for this browse term
      */
     public long getHitCount() {
         return hitCount;
     }
 
     /**
-     * @param hitCount the hitCount to set
+     * @param hitCount the number of index hits for this browse term to set
      * @return this
      */
     public BrowseTerm setHitCount(long hitCount) {
@@ -161,11 +147,9 @@ public class BrowseTerm implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>piList</code>.
-     * </p>
      *
-     * @return the piList
+     * @return the set of persistent identifiers associated with this browse term
      */
     public Set<String> getPiList() {
         return piList;

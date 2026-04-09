@@ -25,9 +25,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
- * <p>
- * Object class.
- * </p>
+ * Represents a single 3D object with its source file, format, and associated textures.
  *
  * @author Florian Alpers
  */
@@ -40,11 +38,9 @@ public class Object {
     private double distance = 0;
 
     /**
-     * <p>
-     * Constructor for Object.
-     * </p>
+     * Creates a new Object instance.
      *
-     * @param uri a {@link java.net.URI} object.
+     * @param uri URI pointing to the 3D object resource
      */
     public Object(URI uri) {
         this.uri = uri;
@@ -53,11 +49,9 @@ public class Object {
     }
 
     /**
-     * <p>
-     * Constructor for Object.
-     * </p>
+     * Creates a new Object instance.
      *
-     * @param uri a {@link java.lang.String} object.
+     * @param uri URI string pointing to the 3D object resource
      * @throws java.net.URISyntaxException if any.
      */
     public Object(String uri) throws URISyntaxException {
@@ -67,88 +61,72 @@ public class Object {
     }
 
     /**
-     * <p>
      * Getter for the field <code>type</code>.
-     * </p>
      *
-     * @return the type
+     * @return the 3D object format type
      */
     public ObjectFormat getType() {
         return type;
     }
 
     /**
-     * <p>
      * Setter for the field <code>type</code>.
-     * </p>
      *
-     * @param type the type to set
+     * @param type the 3D object format type
      */
     public void setType(ObjectFormat type) {
         this.type = type;
     }
 
     /**
-     * <p>
      * Getter for the field <code>uri</code>.
-     * </p>
      *
-     * @return the uri
+     * @return the URI pointing to the 3D object resource
      */
     public URI getUri() {
         return uri;
     }
 
     /**
-     * <p>
      * Setter for the field <code>uri</code>.
-     * </p>
      *
-     * @param uri the uri to set
+     * @param uri the URI pointing to the 3D object resource
      */
     public void setUri(URI uri) {
         this.uri = uri;
     }
 
     /**
-     * <p>
      * Getter for the field <code>center</code>.
-     * </p>
      *
-     * @return the center
+     * @return the 3D center point of the object for viewer positioning
      */
     public Point3D getCenter() {
         return center;
     }
 
     /**
-     * <p>
      * Setter for the field <code>center</code>.
-     * </p>
      *
-     * @param center the center to set
+     * @param center the 3D center point of the object for viewer positioning
      */
     public void setCenter(Point3D center) {
         this.center = center;
     }
 
     /**
-     * <p>
      * Getter for the field <code>rotation</code>.
-     * </p>
      *
-     * @return the rotation
+     * @return the initial rotation angles of the 3D object in the viewer
      */
     public Point3D getRotation() {
         return rotation;
     }
 
     /**
-     * <p>
      * Setter for the field <code>rotation</code>.
-     * </p>
      *
-     * @param rotation the rotation to set
+     * @param rotation the initial rotation angles of the 3D object in the viewer
      */
     public void setRotation(Point3D rotation) {
         this.rotation = rotation;

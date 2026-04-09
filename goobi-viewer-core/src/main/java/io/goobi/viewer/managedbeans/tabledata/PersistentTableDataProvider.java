@@ -26,12 +26,11 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * <p>
- * PersistentTableDataProvider class.
- * </p>
+ * Table data provider that persists filter and sorting state across requests for admin data tables.
+ *
+ * @param <T>
  *
  * @author Florian Alpers
- * @param <T>
  */
 public class PersistentTableDataProvider<T> extends TableDataProvider<T> {
 
@@ -40,9 +39,7 @@ public class PersistentTableDataProvider<T> extends TableDataProvider<T> {
     private Optional<List<T>> currentList = Optional.empty();
 
     /**
-     * <p>
-     * Constructor for PersistentTableDataProvider.
-     * </p>
+     * Creates a new PersistentTableDataProvider instance.
      *
      * @param source a {@link io.goobi.viewer.managedbeans.tabledata.TableDataSource} object.
      */
@@ -60,9 +57,7 @@ public class PersistentTableDataProvider<T> extends TableDataProvider<T> {
     }
 
     /**
-     * <p>
      * resetCurrentList.
-     * </p>
      */
     @Override
     protected void resetCurrentList() {

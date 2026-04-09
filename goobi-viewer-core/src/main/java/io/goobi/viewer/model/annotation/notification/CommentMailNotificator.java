@@ -37,8 +37,7 @@ import io.goobi.viewer.model.viewer.PageType;
 import jakarta.mail.MessagingException;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class CommentMailNotificator implements ChangeNotificator {
 
@@ -49,30 +48,26 @@ public class CommentMailNotificator implements ChangeNotificator {
 
     /**
      *
-     * @param recipients
+     * @param recipients list of email addresses to receive notifications
      */
     public void setRecipients(List<String> recipients) {
         this.recipients = recipients;
     }
 
-    /**
-     * @return the bcc
-     */
+    
     public List<String> getBcc() {
         return bcc;
     }
 
-    /**
-     * @param bcc the bcc to set
-     */
+    
     public void setBcc(List<String> bcc) {
         this.bcc = bcc;
     }
 
     /**
      * 
-     * @param viewerRootUrl
-     * @param annotation
+     * @param viewerRootUrl base URL of the Goobi viewer application
+     * @param annotation annotation whose target record and page provide the URL
      * @return Hyperlink element containing the record and page URL
      * @should build element correctly
      */
@@ -157,8 +152,8 @@ public class CommentMailNotificator implements ChangeNotificator {
 
     /**
      * 
-     * @param annotation
-     * @return Creator display name; 'unknown' if none foudn
+     * @param annotation annotation whose creator is to be looked up
+     * @return Creator display name; 'unknown' if none found
      */
     private static String getCreator(PersistentAnnotation annotation) {
         try {

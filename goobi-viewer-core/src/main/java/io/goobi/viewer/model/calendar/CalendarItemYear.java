@@ -25,9 +25,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * <p>
- * CalendarItemYear class.
- * </p>
+ * Calendar browsing item representing a single year.
  */
 public class CalendarItemYear extends AbstractCalendarItem implements Serializable {
 
@@ -36,35 +34,29 @@ public class CalendarItemYear extends AbstractCalendarItem implements Serializab
     private List<CalendarItemMonth> monthsOfYear;
 
     /**
-     * <p>
-     * Constructor for CalendarItemYear.
-     * </p>
+     * Creates a new CalendarItemYear instance.
      *
-     * @param name a {@link java.lang.String} object.
-     * @param value a int.
-     * @param hits a int.
+     * @param name display label for the year
+     * @param value numeric year value
+     * @param hits number of records found for this year
      */
     public CalendarItemYear(String name, int value, int hits) {
         super(name, value, hits);
     }
 
     /**
-     * <p>
      * Getter for the field <code>monthsOfYear</code>.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of monthly calendar items for this year
      */
     public List<CalendarItemMonth> getMonthsOfYear() {
         return monthsOfYear;
     }
 
     /**
-     * <p>
      * Setter for the field <code>monthsOfYear</code>.
-     * </p>
      *
-     * @param monthsOfYear a {@link java.util.List} object.
+     * @param monthsOfYear list of monthly calendar items for this year
      */
     public void setMonthsOfYear(List<CalendarItemMonth> monthsOfYear) {
         this.monthsOfYear = monthsOfYear;

@@ -30,8 +30,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class ArchiveResource implements Serializable {
 
@@ -46,15 +45,15 @@ public class ArchiveResource implements Serializable {
     private final String resourceId;
     private final LocalDateTime modifiedDate;
     private final Long size;
-    /** Access conditions of the root element (excluding OPENACCESS) */
+    /** Access conditions of the root element (excluding OPENACCESS). */
     private final List<String> accessConditions = new ArrayList<>();
 
     /**
      * 
-     * @param resourceName
-     * @param resourceId
-     * @param modifiedDate
-     * @param size
+     * @param resourceName human-readable name of the archive resource
+     * @param resourceId unique identifier of the archive resource
+     * @param modifiedDate last modification date as string
+     * @param size file size as string
      */
     public ArchiveResource(String resourceName, String resourceId, String modifiedDate, String size) {
         this.resourceName = resourceName;
@@ -67,37 +66,27 @@ public class ArchiveResource implements Serializable {
         this.size = Long.parseLong(size);
     }
 
-    /**
-     * @return the resourceName
-     */
+    
     public String getResourceName() {
         return resourceName;
     }
 
-    /**
-     * @return the resourceId
-     */
+    
     public String getResourceId() {
         return resourceId;
     }
 
-    /**
-     * @return the modifiedDate
-     */
+    
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
     }
 
-    /**
-     * @return the size
-     */
+    
     public Long getSize() {
         return size;
     }
 
-    /**
-     * @return the accessConditions
-     */
+    
     public List<String> getAccessConditions() {
         return accessConditions;
     }

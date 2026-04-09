@@ -39,8 +39,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class SolrAnnotationSaver implements AnnotationSaver {
 
@@ -87,17 +86,11 @@ public class SolrAnnotationSaver implements AnnotationSaver {
             this.page = page;
         }
 
-        /* (non-Javadoc)
-         * @see java.lang.Object#toString()
-         */
         @Override
         public String toString() {
             return this.pi + (this.page != null ? (" / " + this.page) : "");
         }
 
-        /* (non-Javadoc)
-         * @see java.lang.Object#hashCode()
-         */
         @Override
         public int hashCode() {
             return Objects.hash(this.pi, this.page);

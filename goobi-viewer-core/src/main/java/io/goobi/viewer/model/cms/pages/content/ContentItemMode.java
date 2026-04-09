@@ -25,7 +25,8 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * Optional property of a ContentItem within a template Allows additional control about which fields are shown in the cms-backend for this item. The
- * value is set in the template xml like <content> <item type="expanded">...</item> </content> If no value is set, "simple" is assumed
+ * value is set in the template XML as an {@code item} element with {@code type="expanded"} inside a {@code content} element.
+ * If no value is set, "simple" is assumed.
  *
  * @author Florian Alpers
  */
@@ -35,12 +36,10 @@ public enum ContentItemMode {
     paginated;
 
     /**
-     * <p>
      * get.
-     * </p>
      *
-     * @param name a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.cms.pages.content.ContentItemMode} object.
+     * @param name mode name as defined in the template XML
+     * @return the ContentItemMode matching the given name, or {@link #simple} if blank or unrecognized
      */
     public static ContentItemMode get(String name) {
         if (StringUtils.isBlank(name)) {

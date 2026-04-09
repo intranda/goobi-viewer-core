@@ -169,12 +169,13 @@
 
                             <!-- SHOW LOADER AFTER BUTTON CLICK FOR REQUESTING TICKET -->
                             <script>
+                                // Guard against empty jQuery sets to prevent TypeError on undefined
                                 $.fn.isValid = function () {
-                                    return this[0].checkValidity();
+                                    return this[0] ? this[0].checkValidity() : true;
                                 };
 
                                 $('[data-target="buttonLoaderClickEvent"]').on('click', function (e) {
-                                    if ($('[data-target="mailValidatorCheck"]').isValid()) {
+                                    if ($('[data-target="emailValidatorCheck"]').isValid()) {
                                         $('[data-target="buttonLoader"]').fadeIn('fast');
                                         $('[data-target="buttonLoaderClickEvent').css('opacity', '0.5');
                                     }

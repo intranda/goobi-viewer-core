@@ -24,7 +24,7 @@ package io.goobi.viewer.model.viewer.record.views;
 import io.goobi.viewer.model.viewer.ViewManager;
 
 /**
- * An enum of different types of records pertaining to the display-conditions of page elements
+ * An enum of different types of records pertaining to the display-conditions of page elements.
  */
 public enum RecordType {
 

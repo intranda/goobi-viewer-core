@@ -37,8 +37,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.annotation.comments.Comment;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class SqlCommentLister implements AnnotationLister<Comment> {
 
@@ -51,15 +50,12 @@ public class SqlCommentLister implements AnnotationLister<Comment> {
     }
 
     /**
-     * @param dao
+     * @param dao data access object for comment queries
      */
     public SqlCommentLister(IDAO dao) {
         this.dao = dao;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAllAnnotations()
-     */
     @Override
     public List<Comment> getAllAnnotations() {
         try {
@@ -71,9 +67,6 @@ public class SqlCommentLister implements AnnotationLister<Comment> {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getTotalAnnotationCount()
-     */
     @Override
     public long getTotalAnnotationCount() {
         try {
@@ -85,10 +78,6 @@ public class SqlCommentLister implements AnnotationLister<Comment> {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAnnotations(int, int, java.lang.String, java.util.List,
-     * java.util.List, java.util.List, java.lang.String, java.lang.Integer, java.lang.String, boolean)
-     */
     @Override
     public List<Comment> getAnnotations(int firstIndex, int items, String textQuery, List<String> motivations, List<Long> generators,
             List<Long> creators, String targetPi, Integer targetPage, String sortField, boolean sortDescending) {
@@ -122,10 +111,6 @@ public class SqlCommentLister implements AnnotationLister<Comment> {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAnnotationCount(java.lang.String, java.util.List, java.util.List,
-     * java.util.List, java.lang.String, java.lang.Integer)
-     */
     @Override
     public long getAnnotationCount(String textQuery, List<String> motivations, List<Long> generators, List<Long> creators, String targetPi,
             Integer targetPage) {

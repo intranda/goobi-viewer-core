@@ -27,9 +27,8 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 /**
- * @author florian
+ * @author Florian Alpers
  * @param <T>
- *
  */
 public class RandomComparator<T> implements Comparator<T> {
     private final Map<T, Integer> map = new IdentityHashMap<>();

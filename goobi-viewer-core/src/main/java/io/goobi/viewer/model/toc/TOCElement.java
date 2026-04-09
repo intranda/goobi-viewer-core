@@ -86,24 +86,22 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     private PageType pageType = PageType.viewMetadata;
 
     /**
-     * <p>
-     * Constructor for TOCElement.
-     * </p>
+     * Creates a new TOCElement instance.
      *
-     * @param label a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
-     * @param pageNo a {@link java.lang.String} object.
-     * @param pageNoLabel a {@link java.lang.String} object.
-     * @param iddoc a {@link java.lang.String} object.
-     * @param logId a {@link java.lang.String} object.
-     * @param level a int.
-     * @param topStructPi a {@link java.lang.String} object.
-     * @param thumbnailUrl a {@link java.lang.String} object.
-     * @param accessPermissionPdf a boolean.
-     * @param anchorOrGroup a boolean.
-     * @param hasImages a boolean.
-     * @param recordMimeType a {@link java.lang.String} object.
-     * @param docStructType a {@link java.lang.String} object.
-     * @param footerId a {@link java.lang.String} object.
+     * @param label multilingual display label for this element
+     * @param pageNo physical page number as string
+     * @param pageNoLabel human-readable page label
+     * @param iddoc Solr IDDOC identifier of this element
+     * @param logId logical structure ID from METS
+     * @param level nesting depth in the TOC hierarchy
+     * @param topStructPi persistent identifier of the top-level record
+     * @param thumbnailUrl URL of the representative thumbnail image
+     * @param accessPermissionPdf true if PDF download is permitted
+     * @param anchorOrGroup true if this element is an anchor or group record
+     * @param hasImages true if the structure element has image pages
+     * @param recordMimeType MIME type of the associated record
+     * @param docStructType document structure type string from METS
+     * @param footerId identifier for the associated footer configuration
      * @should add logId to url
      * @should set correct view url for given docStructType
      */
@@ -180,9 +178,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * getContentServerPdfUrl.
-     * </p>
      *
      * @return {@link java.lang.String}
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -197,45 +193,37 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * Checks whether the current user has permissions to download a PDFs for this element.
      *
-     * @return a boolean.
+     * @return true if the current user has PDF download permission for this TOC element, false otherwise
      */
     public boolean isAccessPermissionPdf() {
         return accessPermissionPdf;
     }
 
-    /**
-     * @return the accessPermissionThumbnail
-     */
+    
     public AccessPermission getAccessPermissionThumbnail() {
         return accessPermissionThumbnail;
     }
 
-    /**
-     * @param accessPermissionThumbnail the accessPermissionThumbnail to set
-     */
+    
     public void setAccessPermissionThumbnail(AccessPermission accessPermissionThumbnail) {
         this.accessPermissionThumbnail = accessPermissionThumbnail;
     }
 
     /**
-     * <p>
      * Getter for the field <code>thumbnailUrl</code>.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the thumbnail URL for this TOC element
      */
     public String getThumbnailUrl() {
         return thumbnailUrl;
     }
 
     /**
-     * <p>
      * Getter for the field <code>thumbnailUrl</code>.
-     * </p>
      *
-     * @param width a int.
-     * @param height a int.
-     * @return a {@link java.lang.String} object.
+     * @param width desired thumbnail width in pixels
+     * @param height desired thumbnail height in pixels
+     * @return the thumbnail URL for this TOC element scaled to the given dimensions
      */
     public String getThumbnailUrl(int width, int height) {
 
@@ -270,11 +258,9 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>label</code>.
-     * </p>
      *
-     * @return the label
+     * @return the label value for the current locale, or the default value if no locale is available
      */
     public String getLabel() {
         Locale locale = BeanUtils.getLocale();
@@ -286,109 +272,91 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>label</code>.
-     * </p>
      *
-     * @return the label
-     * @param locale a {@link java.util.Locale} object.
+     * @param locale locale used to select the label value
+     * @return the label value for the given locale, or the default value if none is set for that locale
      */
     public String getLabel(Locale locale) {
         return label.getValue(locale).orElse(label.getValue().orElse(""));
     }
 
     /**
-     * <p>
      * Getter for the field <code>label</code>.
-     * </p>
      *
-     * @return the label
-     * @param locale a {@link java.lang.String} object.
+     * @param locale BCP 47 language tag for label selection
+     * @return the label value for the given language tag, or the default value if none is set for that language
      */
     public String getLabel(String locale) {
         return label.getValue(locale).orElse(label.getValue().orElse(""));
     }
 
     /**
-     * <p>
      * Getter for the field <code>metadata</code>.
-     * </p>
      *
-     * @return the metadata
+     * @return the metadata map containing additional field values for this TOC element
      */
     public Map<String, String> getMetadata() {
         return metadata;
     }
 
     /**
-     * <p>
      * getMetadataValue.
-     * </p>
      *
-     * @param key a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param key metadata field name to look up
+     * @return the metadata value for the given field name, or null if not present
      */
     public String getMetadataValue(String key) {
         return metadata.get(key);
     }
 
     /**
-     * <p>
      * Getter for the field <code>pageNo</code>.
-     * </p>
      *
-     * @return the pageNo
+     * @return the page number associated with this TOC element
      */
     public String getPageNo() {
         return pageNo;
     }
 
     /**
-     * <p>
      * Getter for the field <code>iddoc</code>.
-     * </p>
      *
-     * @return the iddoc
+     * @return the internal Solr document identifier for this TOC element
      */
     public String getIddoc() {
         return iddoc;
     }
 
     /**
-     * <p>
      * Getter for the field <code>pageNoLabel</code>.
-     * </p>
      *
-     * @return the pageNoLabel
+     * @return the human-readable page number label for this TOC element
      */
     public String getPageNoLabel() {
         return pageNoLabel;
     }
 
     /**
-     * <p>
      * Getter for the field <code>topStructPi</code>.
-     * </p>
      *
-     * @return the topStructPi
+     * @return the persistent identifier of the top-level structure this element belongs to
      */
     public String getTopStructPi() {
         return topStructPi;
     }
 
     /**
-     * gibt die logID aus der Mets Datei zurück
+     * Gibt die logID aus der Mets Datei zurück.
      *
-     * @return the logID
+     * @return the logical identifier from the METS file for this TOC element
      */
     public String getLogId() {
         return this.logId;
     }
 
     /**
-     * <p>
      * Getter for the field <code>level</code>.
-     * </p>
      *
      * @return a int.
      */
@@ -397,11 +365,9 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * getUrl.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the URL for this TOC element
      */
     public String getUrl() {
         return urlPrefix + urlSuffix;
@@ -410,10 +376,10 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     /**
      * Returns the URL for this element that links to the requested view type.
      *
-     * @param viewType a {@link java.lang.String} object.
+     * @param viewType name of the requested page view type
      * @should construct full screen url correctly
      * @should construct reading mode url correctly
-     * @return a {@link java.lang.String} object.
+     * @return the URL for this TOC element pointing to the given view type
      */
     public String getUrl(String viewType) {
         if (anchorOrGroup) {
@@ -444,42 +410,34 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * getFullscreenUrl.
-     * </p>
      *
-     * @return the fullscreenUrl
+     * @return the URL for displaying this TOC element in fullscreen view
      */
     public String getFullscreenUrl() {
         return getUrl(PageType.viewFullscreen.name());
     }
 
     /**
-     * <p>
      * isVisible.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this TOC element is currently visible, false otherwise
      */
     public boolean isVisible() {
         return visible;
     }
 
     /**
-     * <p>
      * Setter for the field <code>visible</code>.
-     * </p>
      *
-     * @param visible a boolean.
+     * @param visible true to show this element, false to hide it
      */
     public void setVisible(boolean visible) {
         this.visible = visible;
     }
 
     /**
-     * <p>
      * Getter for the field <code>parentId</code>.
-     * </p>
      *
      * @return a int.
      */
@@ -488,20 +446,16 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>parentId</code>.
-     * </p>
      *
-     * @param parentId a int.
+     * @param parentId ID of the parent TOC element
      */
     public void setParentId(int parentId) {
         this.parentId = parentId;
     }
 
     /**
-     * <p>
      * getID.
-     * </p>
      *
      * @return a int.
      */
@@ -510,97 +464,79 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * setID.
-     * </p>
      *
-     * @param iD a int.
+     * @param iD numeric ID to assign to this element
      */
     public void setID(int iD) {
         id = iD;
     }
 
     /**
-     * <p>
      * isExpanded.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this TOC element is currently shown expanded, false otherwise
      */
     public boolean isExpanded() {
         return expanded;
     }
 
     /**
-     * <p>
      * Setter for the field <code>expanded</code>.
-     * </p>
      *
-     * @param expanded a boolean.
+     * @param expanded true if this element should be shown expanded
      */
     public void setExpanded(boolean expanded) {
         this.expanded = expanded;
     }
 
     /**
-     * <p>
      * isHasChild.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this TOC element has at least one child element, false otherwise
      */
     public boolean isHasChild() {
         return hasChild;
     }
 
     /**
-     * <p>
      * Setter for the field <code>hasChild</code>.
-     * </p>
      *
-     * @param hasChild a boolean.
+     * @param hasChild true if this element has child elements
      */
     public void setHasChild(boolean hasChild) {
         this.hasChild = hasChild;
     }
 
     /**
-     * <p>
      * Getter for the field <code>groupIds</code>.
-     * </p>
      *
-     * @return the groupIds
+     * @return the list of group identifier strings associated with this TOC element
      */
     public List<String> getGroupIds() {
         return groupIds;
     }
 
     /**
-     * <p>
      * Setter for the field <code>groupIds</code>.
-     * </p>
      *
-     * @param groupIds the groupIds to set
+     * @param groupIds list of group identifier strings to assign
      */
     public void setGroupIds(List<String> groupIds) {
         this.groupIds = groupIds;
     }
 
     /**
-     * <p>
      * Getter for the field <code>recordMimeType</code>.
-     * </p>
      *
-     * @return the recordMimeType
+     * @return the MIME type of the record associated with this TOC element
      */
     public String getRecordMimeType() {
         return recordMimeType;
     }
 
     /**
-     * <p>
      * isEmpty.
-     * </p>
      *
      * @return true if label is null, empty or blank
      */

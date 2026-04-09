@@ -21,6 +21,10 @@
  */
 package io.goobi.viewer.model.export;
 
+/**
+ * Holds the configuration for a single field in a data export, combining the Solr field name
+ * with an optional human-readable display label that falls back to the field name when not set.
+ */
 public class ExportFieldConfiguration {
 
     private final String field;
@@ -30,15 +34,13 @@ public class ExportFieldConfiguration {
         this.field = field;
     }
 
-    /**
-     * @return the field
-     */
+    
     public String getField() {
         return field;
     }
 
     /**
-     * @return the label
+     * @return the display label for this field, or the field name if no label is configured
      * @should return field if label null
      */
     public String getLabel() {
@@ -50,7 +52,7 @@ public class ExportFieldConfiguration {
     }
 
     /**
-     * @param label the label to set
+     * @param label the display label to use instead of the field name; if null, the field name is used
      * @return this
      */
     public ExportFieldConfiguration setLabel(String label) {

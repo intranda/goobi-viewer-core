@@ -42,6 +42,9 @@ import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.maps.FeatureSet;
 import io.goobi.viewer.model.maps.GeoMap;
 
+/**
+ * Message handler that refreshes geo map feature sets by reloading their Solr-based data and updating the application cache.
+ */
 public class GeoMapUpdateHandler implements MessageHandler<MessageStatus> {
 
     private static final Logger logger = LogManager.getLogger(GeoMapUpdateHandler.class);

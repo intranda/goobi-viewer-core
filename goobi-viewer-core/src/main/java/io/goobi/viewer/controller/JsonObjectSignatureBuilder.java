@@ -31,6 +31,10 @@ import org.json.JSONObject;
 
 import io.goobi.viewer.websockets.DownloadTaskEndpoint.SocketMessage;
 
+/**
+ * Utility class that inspects the declared fields of a class via reflection and produces a JSON object
+ * mapping each field name to its corresponding JSON type (string, number, boolean, or object).
+ */
 public final class JsonObjectSignatureBuilder {
 
     /**

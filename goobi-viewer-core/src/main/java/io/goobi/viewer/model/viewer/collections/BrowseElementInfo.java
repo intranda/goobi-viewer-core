@@ -30,103 +30,85 @@ import org.apache.commons.lang3.StringUtils;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 
 /**
- * <p>
- * BrowseElementInfo interface.
- * </p>
+ * Interface for metadata and navigation information attached to a collection browse element.
+ * Provides multilingual name and description, navigation and icon URIs (optionally scaled to a requested size),
+ * and a flag indicating whether a description is available.
  */
 public interface BrowseElementInfo {
 
     /**
-     * <p>
      * getDescription.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the description of this browse element in the default language
      */
     public String getDescription();
 
     /**
      *
-     * @param language
-     * @return a {@link java.lang.String} object.
+     * @param language language code for the requested description
+     * @return the description of this browse element in the given language
      */
     public String getDescription(String language);
 
     /**
-     * <p>
      * getName.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the name of this browse element
      */
     public String getName();
 
     /**
-     * <p>
      * getLinkURI.
-     * </p>
      *
      * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @return a {@link java.net.URI} object.
+     * @return the link URI for this browse element, resolved relative to the given request context
      */
     public URI getLinkURI(HttpServletRequest request);
 
     /**
-     * <p>
      * getLinkURI.
-     * </p>
      *
-     * @return a {@link java.net.URI} object.
+     * @return the link URI for this browse element
      */
     public URI getLinkURI();
 
     /**
-     * <p>
      * getIconURI.
-     * </p>
      *
-     * @return a {@link java.net.URI} object.
+     * @return the icon URI for this browse element, or null if no icon is set
      */
     public URI getIconURI();
 
     /**
-     * <p>
      * getIconURI.
-     * </p>
      *
      * @param width a int.
      * @param height a int.
-     * @return a {@link java.net.URI} object.
+     * @return the icon URI scaled to the given width and height, or null if no icon is set
      */
     public URI getIconURI(int width, int height);
 
     /**
-     * <p>
      * getIconURI.
-     * </p>
      *
      * @param size a int.
-     * @return a {@link java.net.URI} object.
+     * @return the icon URI scaled to the given square size, or null if no icon is set
      */
     public URI getIconURI(int size);
 
     /**
-     * <p>
      * hasDescription.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this browse element has a non-blank description, false otherwise
      */
     default boolean hasDescription() {
         return StringUtils.isNotBlank(getDescription());
     }
 
     /**
-     * <p>
      * getTranslationsForName.
-     * </p>
      *
-     * @return a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
+     * @return the multilingual name translations for this browse element
      */
     public IMetadataValue getTranslationsForName();
 

@@ -92,10 +92,10 @@ public class ArchiveEntry implements Serializable {
     private boolean childrenLoaded = false;
 
     /**
-     * 
-     * @param order
-     * @param hierarchy
-     * @param doc
+     *
+     * @param order position of this node within its parent's children
+     * @param hierarchy depth level of this node in the tree
+     * @param doc Solr document representing this archive entry
      */
     public ArchiveEntry(Integer order, Integer hierarchy, SolrDocument doc) {
         this.orderNumber = order;
@@ -104,9 +104,9 @@ public class ArchiveEntry implements Serializable {
     }
 
     /**
-     * 
-     * @param orig
-     * @param parent
+     *
+     * @param orig the entry to copy all fields from
+     * @param parent the parent node in the cloned tree
      * @should clone entry correctly
      */
     public ArchiveEntry(ArchiveEntry orig, ArchiveEntry parent) {
@@ -156,7 +156,7 @@ public class ArchiveEntry implements Serializable {
 
     /**
      *
-     * @param ignoreDisplayChildren
+     * @param ignoreDisplayChildren if true, recurse into children regardless of their display state
      * @return List<ArchiveEntry> LinkedList containing all nodes
      */
     public List<ArchiveEntry> getAsFlatList(boolean ignoreDisplayChildren) {
@@ -235,7 +235,7 @@ public class ArchiveEntry implements Serializable {
 
     /**
      *
-     * @param offset
+     * @param offset value added to the hierarchy level of this node and all descendants
      */
     public void shiftHierarchy(int offset) {
         this.hierarchyLevel += offset;
@@ -260,165 +260,121 @@ public class ArchiveEntry implements Serializable {
         return ret;
     }
 
-    /**
-     * @return the parentNode
-     */
+    
     public ArchiveEntry getParentNode() {
         return parentNode;
     }
 
-    /**
-     * @param parentNode the parentNode to set
-     */
+    
     public void setParentNode(ArchiveEntry parentNode) {
         this.parentNode = parentNode;
     }
 
-    /**
-     * @return the subEntryList
-     */
+    
     public List<ArchiveEntry> getSubEntryList() {
         return subEntryList;
     }
 
-    /**
-     * @param subEntryList the subEntryList to set
-     */
+    
     public void setSubEntryList(List<ArchiveEntry> subEntryList) {
         this.subEntryList = subEntryList;
     }
 
-    /**
-     * @return the orderNumber
-     */
+    
     public Integer getOrderNumber() {
         return orderNumber;
     }
 
-    /**
-     * @param orderNumber the orderNumber to set
-     */
+    
     public void setOrderNumber(Integer orderNumber) {
         this.orderNumber = orderNumber;
     }
 
-    /**
-     * @return the hierarchyLevel
-     */
+    
     public Integer getHierarchyLevel() {
         return hierarchyLevel;
     }
 
-    /**
-     * @param hierarchyLevel the hierarchyLevel to set
-     */
+    
     public void setHierarchyLevel(Integer hierarchyLevel) {
         this.hierarchyLevel = hierarchyLevel;
     }
 
-    /**
-     * @return the id
-     */
+    
     public String getId() {
         // logger.trace("getId: {}", id); //NOSONAR Debug
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
+    
     public void setId(String id) {
         this.id = id;
     }
 
-    /**
-     * @return the label
-     */
+    
     public String getLabel() {
         return label;
     }
 
-    /**
-     * @param label the label to set
-     */
+    
     public void setLabel(String label) {
         this.label = label;
     }
 
-    /**
-     * @return the topstructPi
-     */
+    
     public String getTopstructPi() {
         return topstructPi;
     }
 
-    /**
-     * @param topstructPi the topstructPi to set
-     */
+    
     public void setTopstructPi(String topstructPi) {
         this.topstructPi = topstructPi;
     }
 
-    /**
-     * @return the logId
-     */
+    
     public String getLogId() {
         return logId;
     }
 
-    /**
-     * @param logId the logId to set
-     */
+    
     public void setLogId(String logId) {
         this.logId = logId;
     }
 
-    /**
-     * @return the searchHit
-     */
+    
     public boolean isSearchHit() {
         return searchHit;
     }
 
-    /**
-     * @param searchHit the searchHit to set
-     */
+    
     public void setSearchHit(boolean searchHit) {
         this.searchHit = searchHit;
     }
 
-    /**
-     * @return the nodeType
-     */
+    
     public String getNodeType() {
         return nodeType;
     }
 
-    /**
-     * @param nodeType the nodeType to set
-     */
+    
     public void setNodeType(String nodeType) {
         this.nodeType = nodeType;
     }
 
-    /**
-     * @return the displaySearch
-     */
+    
     public boolean isDisplaySearch() {
         return displaySearch;
     }
 
-    /**
-     * @param displaySearch the displaySearch to set
-     */
+    
     public void setDisplaySearch(boolean displaySearch) {
         this.setDisplaySearch(displaySearch, false);
     }
 
     /**
-     * 
-     * @param displaySearch
-     * @param recursive
+     *
+     * @param displaySearch the display-in-search-results flag to set
+     * @param recursive if true, apply the flag to all descendant nodes as well
      */
     public void setDisplaySearch(boolean displaySearch, boolean recursive) {
         this.displaySearch = displaySearch;
@@ -485,37 +441,27 @@ public class ArchiveEntry implements Serializable {
         }
     }
 
-    /**
-     * @return the valid
-     */
+    
     public boolean isValid() {
         return valid;
     }
 
-    /**
-     * @param valid the valid to set
-     */
+    
     public void setValid(boolean valid) {
         this.valid = valid;
     }
 
-    /**
-     * @return the descriptionLevel
-     */
+    
     public String getDescriptionLevel() {
         return descriptionLevel;
     }
 
-    /**
-     * @param descriptionLevel the descriptionLevel to set
-     */
+    
     public void setDescriptionLevel(String descriptionLevel) {
         this.descriptionLevel = descriptionLevel;
     }
 
-    /**
-     * @return the unitdate
-     */
+    
     public String getUnitdate() {
         return unitdate;
     }
@@ -524,46 +470,36 @@ public class ArchiveEntry implements Serializable {
         this.unitdate = unitdate;
     }
 
-    /**
-     * @return the accessConditions
-     */
+    
     public List<String> getAccessConditions() {
         return accessConditions;
     }
 
-    /**
-     * @param accessConditions the accessConditions to set
-     */
+    
     public void setAccessConditions(List<String> accessConditions) {
         this.accessConditions = accessConditions;
     }
 
-    /**
-     * @return the hasChild
-     */
+    
     public boolean isHasChild() {
         return isHasChildren();
     }
 
-    /**
-     * @return the associatedRecordPi
-     */
+    
     public String getAssociatedRecordPi() {
         return associatedRecordPi;
     }
 
-    /**
-     * @param associatedRecordPi the associatedRecordPi to set
-     */
+    
     public void setAssociatedRecordPi(String associatedRecordPi) {
         this.associatedRecordPi = associatedRecordPi;
     }
 
     /**
      * Get the parent node hierarchy of this node, optionally including the node itself The list is sorted with hightest hierarchy level first, so the
-     * node itself will always be the last element, if included
+     * node itself will always be the last element, if included.
      *
-     * @param includeSelf
+     * @param includeSelf if true, this node is appended at the end of the list
      * @return List<ArchiveEntry>
      */
     public List<ArchiveEntry> getAncestors(boolean includeSelf) {
@@ -588,37 +524,27 @@ public class ArchiveEntry implements Serializable {
         this.containsImage = containsImage;
     }
 
-    /**
-     * @return the doc
-     */
+    
     public SolrDocument getDoc() {
         return doc;
     }
 
-    /**
-     * @return the childrenFound
-     */
+    
     public boolean isChildrenFound() {
         return childrenFound;
     }
 
-    /**
-     * @param childrenFound the childrenFound to set
-     */
+    
     public void setChildrenFound(boolean childrenFound) {
         this.childrenFound = childrenFound;
     }
 
-    /**
-     * @return the childrenLoaded
-     */
+    
     public boolean isChildrenLoaded() {
         return childrenLoaded;
     }
 
-    /**
-     * @param childrenLoaded the childrenLoaded to set
-     */
+    
     public void setChildrenLoaded(boolean childrenLoaded) {
         this.childrenLoaded = childrenLoaded;
     }

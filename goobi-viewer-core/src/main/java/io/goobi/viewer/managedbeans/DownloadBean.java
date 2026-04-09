@@ -50,6 +50,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.DownloadException;
 import io.goobi.viewer.exceptions.MessageQueueException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.job.TaskType;
@@ -66,9 +67,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.WebApplicationException;
 
 /**
- * <p>
- * DownloadBean class.
- * </p>
+ * JSF backing bean for managing file download requests from the viewer, tracking download status and links.
  */
 @Named
 @ViewScoped
@@ -90,9 +89,7 @@ public class DownloadBean implements Serializable {
     private String email = BeanUtils.getUserBean().getEmail();
 
     /**
-     * <p>
      * reset.
-     * </p>
      */
     public void reset() {
         synchronized (this) {
@@ -102,15 +99,13 @@ public class DownloadBean implements Serializable {
     }
 
     /**
-     * <p>
      * openDownloadAction.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the message ID of the located download job
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws PresentationException
      */
-    public String openDownloadAction() throws DAOException, PresentationException {
+    public String openDownloadAction() throws DAOException, PresentationException, RecordNotFoundException {
 
         if (StringUtils.isNotBlank(downloadIdentifier)) {
             //get message after creating file in message queue
@@ -127,16 +122,14 @@ public class DownloadBean implements Serializable {
         if (message != null) {
             return message.getMessageId();
         } else {
-            logger.debug("No download message with id {} found", downloadIdentifier);
-            Messages.error("No download message with id " + downloadIdentifier + " found");
-            return "";
+            // No download job found for this identifier — show the record-not-found error page
+            // instead of a toast, as this is an invalid/unknown URL.
+            throw new RecordNotFoundException(downloadIdentifier);
         }
     }
 
     /**
-     * <p>
      * getQueuePosition.
-     * </p>
      *
      * @return a int
      */
@@ -149,27 +142,33 @@ public class DownloadBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>message</code>.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.controller.mq.ViewerMessage} object
+     * @return the ViewerMessage associated with the current download job
      */
     public ViewerMessage getMessage() {
         return message;
     }
 
     /**
-     * <p>
      * downloadFileAction.
-     * </p>
      *
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.DownloadException if any.
      */
     public void downloadFileAction() throws IOException, DownloadException {
-        DownloadJob job = DownloadJob.from(message);
+        DownloadJob job;
+        try {
+            job = DownloadJob.from(message);
+        } catch (IllegalArgumentException e) {
+            // Unknown task type (neither DOWNLOAD_PDF nor DOWNLOAD_EPUB) — surface as download error
+            throw new DownloadException(e.getMessage(), e);
+        }
         Path file = job.getPath();
+        if (!Files.exists(file)) {
+            // Job exists in the database but the file is gone (e.g. deleted externally or not yet created)
+            throw new DownloadException("Download file not found: " + file.getFileName());
+        }
         FacesContext fc = FacesContext.getCurrentInstance();
         ExternalContext ec = fc.getExternalContext();
         // Some JSF component library or some Filter might have set some headers in the buffer beforehand.
@@ -213,11 +212,9 @@ public class DownloadBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>downloadIdentifier</code>.
-     * </p>
      *
-     * @return the downloadIdentifier
+     * @return the identifier used to locate and serve the requested download resource
      */
     public String getDownloadIdentifier() {
         return downloadIdentifier;
@@ -232,11 +229,9 @@ public class DownloadBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>downloadIdentifier</code>.
-     * </p>
      *
-     * @param downloadIdentifier the downloadIdentifier to set
+     * @param downloadIdentifier the persistent identifier of the record whose download job is being managed
      */
     public void setDownloadIdentifier(String downloadIdentifier) {
         this.downloadIdentifier = downloadIdentifier;

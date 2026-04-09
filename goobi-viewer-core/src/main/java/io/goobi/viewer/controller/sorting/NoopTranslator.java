@@ -24,6 +24,12 @@ package io.goobi.viewer.controller.sorting;
 import java.util.Locale;
 import java.util.function.Function;
 
+/**
+ * No-operation {@link ITranslator} implementation that returns the raw string produced by the provided
+ * stringifier function without any resource-bundle lookup or locale transformation.
+ *
+ * @param <T> the type of value to translate
+ */
 public class NoopTranslator<T> implements ITranslator<T> {
 
     private final Function<T, String> stringifier;

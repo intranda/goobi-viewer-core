@@ -25,24 +25,22 @@ import java.io.Serializable;
 import java.util.Locale;
 
 /**
- * <p>
- * Language class.
- * </p>
+ * Represents a language with its ISO 639 code and localised names.
  */
 public class Language implements Comparable<Language>, Serializable {
 
     private static final long serialVersionUID = 688690972248321229L;
 
     /**
-     * language code according to iso 639-2/B (based on English names)
+     * Language code according to iso 639-2/B (based on English names).
      */
     private String isoCode6392B;
     /**
-     * language code according to iso 639-2/T (based on native names)
+     * Language code according to iso 639-2/T (based on native names).
      */
     private String isoCode6392T;
     /**
-     * language code according to iso 639_1
+     * Language code according to iso 639_1.
      */
     private String isoCode6391;
     private String englishName;
@@ -50,9 +48,7 @@ public class Language implements Comparable<Language>, Serializable {
     private String germanName;
 
     /**
-     * <p>
      * getIsoCode639_1.
-     * </p>
      *
      * @return the language code according to iso 639-1
      */
@@ -61,9 +57,7 @@ public class Language implements Comparable<Language>, Serializable {
     }
 
     /**
-     * <p>
      * getIsoCode639_2B.
-     * </p>
      *
      * @return the language code according to iso 639-2/B
      */
@@ -72,9 +66,7 @@ public class Language implements Comparable<Language>, Serializable {
     }
 
     /**
-     * <p>
      * getIsoCode639_2T.
-     * </p>
      *
      * @return the language code according to iso 639-2/T
      */
@@ -83,42 +75,34 @@ public class Language implements Comparable<Language>, Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>isoCode6391</code>.
-     * </p>
      *
-     * @param isoCode6391 the isoCode_639_1 to set
+     * @param isoCode6391 ISO 639-1 two-letter language code to set
      */
     public void setIsoCode6391(String isoCode6391) {
         this.isoCode6391 = isoCode6391;
     }
 
     /**
-     * <p>
      * setIsoCode_639_2B.
-     * </p>
      *
-     * @param isoCode6392B the isoCode_639_2_B to set
+     * @param isoCode6392B ISO 639-2/B bibliographic language code to set
      */
     public void setIsoCode6392B(String isoCode6392B) {
         this.isoCode6392B = isoCode6392B;
     }
 
     /**
-     * <p>
      * setIsoCode_639_2T.
-     * </p>
      *
-     * @param isoCode6392T the isoCode_639_2_T to set
+     * @param isoCode6392T ISO 639-2/T terminology language code to set
      */
     public void setIsoCode6392T(String isoCode6392T) {
         this.isoCode6392T = isoCode6392T;
     }
 
     /**
-     * <p>
      * getIsoCode.
-     * </p>
      *
      * @return the language code according to iso 639-2/B
      */
@@ -127,20 +111,16 @@ public class Language implements Comparable<Language>, Serializable {
     }
 
     /**
-     * <p>
      * setIsoCode.
-     * </p>
      *
-     * @param isoCode a {@link java.lang.String} object.
+     * @param isoCode ISO 639-2/B language code to set
      */
     public void setIsoCode(String isoCode) {
         this.isoCode6392B = isoCode;
     }
 
     /**
-     * <p>
      * getIsoCodeOld.
-     * </p>
      *
      * @return the language code according to iso 639-1
      */
@@ -149,77 +129,63 @@ public class Language implements Comparable<Language>, Serializable {
     }
 
     /**
-     * <p>
      * setIsoCodeOld.
-     * </p>
      *
-     * @param isoCodeOld a {@link java.lang.String} object.
+     * @param isoCodeOld ISO 639-1 language code to set
      */
     public void setIsoCodeOld(String isoCodeOld) {
         this.isoCode6391 = isoCodeOld;
     }
 
     /**
-     * <p>
      * Getter for the field <code>englishName</code>.
-     * </p>
      *
-     * @return the englishName
+     * @return the English name of this language
      */
     public String getEnglishName() {
         return englishName;
     }
 
     /**
-     * <p>
      * Setter for the field <code>englishName</code>.
-     * </p>
      *
-     * @param englishName the englishName to set
+     * @param englishName English name of this language to set
      */
     public void setEnglishName(String englishName) {
         this.englishName = englishName;
     }
 
     /**
-     * <p>
      * Getter for the field <code>frenchName</code>.
-     * </p>
      *
-     * @return the frenchName
+     * @return the French name of this language
      */
     public String getFrenchName() {
         return frenchName;
     }
 
     /**
-     * <p>
      * Setter for the field <code>frenchName</code>.
-     * </p>
      *
-     * @param frenchName the frenchName to set
+     * @param frenchName French name of this language to set
      */
     public void setFrenchName(String frenchName) {
         this.frenchName = frenchName;
     }
 
     /**
-     * <p>
      * Getter for the field <code>germanName</code>.
-     * </p>
      *
-     * @return the germanName
+     * @return the German name of this language
      */
     public String getGermanName() {
         return germanName;
     }
 
     /**
-     * <p>
      * Setter for the field <code>germanName</code>.
-     * </p>
      *
-     * @param germanName the germanName to set
+     * @param germanName German name of this language to set
      */
     public void setGermanName(String germanName) {
         this.germanName = germanName;
@@ -238,17 +204,11 @@ public class Language implements Comparable<Language>, Serializable {
         }
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
     @Override
     public int compareTo(Language other) {
         return this.getIsoCode().compareTo(other.getIsoCode());
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -257,9 +217,6 @@ public class Language implements Comparable<Language>, Serializable {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

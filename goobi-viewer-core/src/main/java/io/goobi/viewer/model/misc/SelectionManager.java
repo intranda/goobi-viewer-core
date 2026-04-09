@@ -31,9 +31,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * @param <T>
- * @author florian
+ * @author Florian Alpers
  *
+ * @param <T>
  */
 public class SelectionManager<T> implements Map<T, Boolean> {
 
@@ -42,7 +42,7 @@ public class SelectionManager<T> implements Map<T, Boolean> {
     private boolean selectAll = false;
 
     /**
-     * @param allEntries
+     * @param allEntries initial list of items to manage selection for
      */
     public SelectionManager(List<T> allEntries) {
         this.selectionMap = allEntries.stream().collect(Collectors.toMap(t -> t, t -> false));
@@ -52,16 +52,12 @@ public class SelectionManager<T> implements Map<T, Boolean> {
         this.selectionMap = new HashMap<>();
     }
 
-    /**
-     * @return the selectAll
-     */
+    
     public boolean isSelectAll() {
         return selectAll;
     }
 
-    /**
-     * @param selectAll the selectAll to set
-     */
+    
     public void setSelectAll(boolean selectAll) {
         this.selectAll = selectAll;
     }
@@ -112,58 +108,37 @@ public class SelectionManager<T> implements Map<T, Boolean> {
         return selectionMap.entrySet().stream().filter(e -> Boolean.TRUE.equals(e.getValue())).map(Entry::getKey).collect(Collectors.toList());
     }
 
-    /* (non-Javadoc)
-     * @see java.util.Map#clear()
-     */
     @Override
     public void clear() {
         this.setSelectAll(false);
         selectionMap.clear();
     }
 
-    /* (non-Javadoc)
-     * @see java.util.Map#containsKey(java.lang.Object)
-     */
     @Override
     public boolean containsKey(Object key) {
         return selectionMap.containsKey(key);
     }
 
-    /* (non-Javadoc)
-     * @see java.util.Map#containsValue(java.lang.Object)
-     */
     @Override
     public boolean containsValue(Object value) {
         return selectionMap.containsValue(value);
     }
 
-    /* (non-Javadoc)
-     * @see java.util.Map#entrySet()
-     */
     @Override
     public Set<Entry<T, Boolean>> entrySet() {
         return selectionMap.entrySet();
     }
 
-    /* (non-Javadoc)
-     * @see java.util.Map#isEmpty()
-     */
     @Override
     public boolean isEmpty() {
         return selectionMap.isEmpty();
     }
 
-    /* (non-Javadoc)
-     * @see java.util.Map#keySet()
-     */
     @Override
     public Set<T> keySet() {
         return selectionMap.keySet();
     }
 
-    /* (non-Javadoc)
-     * @see java.util.Map#putAll(java.util.Map)
-     */
     @Override
     public void putAll(Map<? extends T, ? extends Boolean> m) {
         if (m.containsValue(Boolean.FALSE)) {
@@ -172,25 +147,16 @@ public class SelectionManager<T> implements Map<T, Boolean> {
         selectionMap.putAll(m);
     }
 
-    /* (non-Javadoc)
-     * @see java.util.Map#remove(java.lang.Object)
-     */
     @Override
     public Boolean remove(Object key) {
         return selectionMap.remove(key);
     }
 
-    /* (non-Javadoc)
-     * @see java.util.Map#size()
-     */
     @Override
     public int size() {
         return selectionMap.size();
     }
 
-    /* (non-Javadoc)
-     * @see java.util.Map#values()
-     */
     @Override
     public Collection<Boolean> values() {
         return selectionMap.values();

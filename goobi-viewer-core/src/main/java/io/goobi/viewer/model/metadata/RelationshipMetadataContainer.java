@@ -44,6 +44,10 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 
+/**
+ * Extends {@link ComplexMetadataContainer} to support relationship metadata whose filter and sort
+ * fields can reference fields in externally linked Solr records, loaded on demand from the index.
+ */
 public class RelationshipMetadataContainer extends ComplexMetadataContainer {
 
     public static final String FIELD_IN_RELATED_DOCUMENT_PREFIX = "related.";

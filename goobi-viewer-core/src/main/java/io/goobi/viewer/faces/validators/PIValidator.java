@@ -38,12 +38,20 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 @FacesValidator("piValidator")
 public class PIValidator implements Validator<String> {
 
-    /** Constant <code>ILLEGAL_CHARS</code> */
-    protected static final char[] ILLEGAL_CHARS = { '!', '?', '/', '\\', ':', ';', '(', ')', '@', '"', '\'' };
+    /** Constant <code>ILLEGAL_CHARS</code>. */
+    // Blocklist of characters not permitted in persistent identifiers.
+    // Colons are excluded because they are structurally significant in Solr query syntax
+    // (FIELD:value) and must not appear unescaped in PI values used in queries.
+    // Additional characters block java.net.URI path construction failures (space, pipe,
+    // angle/square brackets, newlines, null byte) and double-encoding bypasses (percent).
+    protected static final char[] ILLEGAL_CHARS = {
+        '!', '?', '/', '\\', ':', ';', '(', ')', '@', '"', '\'',  // original set
+        '|', '<', '>', '[', ']',                                    // path-safety: invalid in java.net.URI
+        ' ', '%', '\r', '\n', '\0',                                 // encoding bypass / control chars
+        '*',                                                        // Solr wildcard abuse prevention
+        '+'                                                         // Solr syntax: unary plus is a prefix operator
+    };
 
-    /* (non-Javadoc)
-     * @see jakarta.faces.validator.Validator#validate(jakarta.faces.context.FacesContext, jakarta.faces.component.UIComponent, java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {
@@ -55,18 +63,40 @@ public class PIValidator implements Validator<String> {
     }
 
     /**
-     * <p>
      * validatePi.
-     * </p>
      *
-     * @param pi a {@link java.lang.String} object.
+     * @param pi persistent identifier string to validate for syntax
      * @should return true if pi good
      * @should return false if pi empty, blank or null
      * @should return false if pi contains illegal characters
-     * @return a boolean.
+     * @should return false if pi starts with non alphanumeric character
+     * @should return false if pi contains plus sign
+     * @return true if the given persistent identifier is non-blank and contains only valid characters, false otherwise
      */
     public static boolean validatePi(String pi) {
         if (StringUtils.isBlank(pi)) {
+            return false;
+        }
+
+        // Reject non-printable ASCII control characters (< 0x20 or = 0x7F) and any non-ASCII
+        // characters (>= 0x80). Such characters are never present in legitimate persistent
+        // identifiers but cause java.net.URI construction failures and Solr query syntax errors.
+        for (int i = 0; i < pi.length(); i++) {
+            char c = pi.charAt(i);
+            if (c < 0x20 || c >= 0x7F) {
+                return false;
+            }
+        }
+
+        // Require the first character to be alphanumeric. This prevents Solr query
+        // injection via leading '-' (negation operator) or '+' (required operator).
+        if (!Character.isLetterOrDigit(pi.charAt(0))) {
+            return false;
+        }
+
+        // Require at least one alphanumeric character so that values consisting
+        // solely of punctuation (e.g. a bare "-") are rejected.
+        if (pi.chars().noneMatch(Character::isLetterOrDigit)) {
             return false;
         }
 

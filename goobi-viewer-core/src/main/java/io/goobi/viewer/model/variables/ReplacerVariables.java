@@ -21,6 +21,10 @@
  */
 package io.goobi.viewer.model.variables;
 
+/**
+ * Constants class defining the namespace prefixes and variable key names used by the
+ * {@link VariableReplacer} to substitute placeholders in configuration strings.
+ */
 public final class ReplacerVariables {
 
     public static final String NAMESPACE_CONFIG = "config";
@@ -43,7 +47,7 @@ public final class ReplacerVariables {
     public static final String VIEWER_URL = "viewer-url";
 
     /**
-     * should not be instantiated
+     * Should not be instantiated.
      */
     private ReplacerVariables() {
     };

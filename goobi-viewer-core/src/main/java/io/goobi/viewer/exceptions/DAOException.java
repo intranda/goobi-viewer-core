@@ -24,18 +24,14 @@ package io.goobi.viewer.exceptions;
 import java.io.Serializable;
 
 /**
- * <p>
- * DAOException class.
- * </p>
+ * Thrown when a database access operation fails.
  */
 public class DAOException extends Exception implements Serializable {
 
     private static final long serialVersionUID = -5840484445206784670L;
 
     /**
-     * <p>
-     * Constructor for DAOException.
-     * </p>
+     * Creates a new DAOException instance.
      *
      * @param string {@link java.lang.String}
      */

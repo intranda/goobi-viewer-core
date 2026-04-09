@@ -40,6 +40,9 @@ import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.PdfDownloadJob;
 
+/**
+ * Message handler that scans the PDF download folder and deletes all expired, unlocked PDF download files.
+ */
 public class PurgeExpiredDownloadPdfsMessageHandler implements MessageHandler<MessageStatus> {
 
     private static final Logger logger = LogManager.getLogger(PurgeExpiredDownloadPdfsMessageHandler.class);

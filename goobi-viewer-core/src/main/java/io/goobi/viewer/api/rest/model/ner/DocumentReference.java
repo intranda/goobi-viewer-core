@@ -32,9 +32,9 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * <p>
- * DocumentReference class.
- * </p>
+ * REST API model representing a digitized document identified by its persistent identifier (PI), together with the NER tag groups
+ * found across its pages.
+ * Page ranges are kept in sorted order and are accessible both as a whole list and by individual page order number.
  */
 @JsonInclude(Include.NON_NULL)
 public class DocumentReference {
@@ -43,9 +43,7 @@ public class DocumentReference {
     private List<TagGroup> pageRanges;
 
     /**
-     * <p>
-     * Constructor for DocumentReference.
-     * </p>
+     * Creates a new DocumentReference instance.
      */
     public DocumentReference() {
         super();
@@ -54,11 +52,9 @@ public class DocumentReference {
     }
 
     /**
-     * <p>
-     * Constructor for DocumentReference.
-     * </p>
+     * Creates a new DocumentReference instance.
      *
-     * @param piTopStruct a {@link java.lang.String} object.
+     * @param piTopStruct persistent identifier of the top-level structure
      */
     public DocumentReference(String piTopStruct) {
         super();
@@ -67,22 +63,18 @@ public class DocumentReference {
     }
 
     /**
-     * <p>
      * Getter for the field <code>pi</code>.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the persistent identifier (PI) of the top-level structure element
      */
     public String getPi() {
         return pi;
     }
 
     /**
-     * <p>
      * Setter for the field <code>pageRanges</code>.
-     * </p>
      *
-     * @param ranges a {@link java.util.List} object.
+     * @param ranges sorted list of tag groups to set
      */
     public void setPageRanges(List<TagGroup> ranges) {
         this.pageRanges = ranges;
@@ -90,11 +82,9 @@ public class DocumentReference {
     }
 
     /**
-     * <p>
      * addPageRange.
-     * </p>
      *
-     * @param range a {@link io.goobi.viewer.api.rest.model.ner.TagGroup} object.
+     * @param range tag group representing a page range to add
      */
     public void addPageRange(TagGroup range) {
         this.pageRanges.add(range);
@@ -102,11 +92,9 @@ public class DocumentReference {
     }
 
     /**
-     * <p>
      * addPageRanges.
-     * </p>
      *
-     * @param ranges a {@link java.util.Collection} object.
+     * @param ranges collection of tag groups to add
      */
     public void addPageRanges(Collection<TagGroup> ranges) {
         this.pageRanges.addAll(ranges);
@@ -114,11 +102,9 @@ public class DocumentReference {
     }
 
     /**
-     * <p>
      * Getter for the field <code>pageRanges</code>.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of tag groups, one per page range in this document reference
      */
     @JsonProperty("pages")
     public List<TagGroup> getPageRanges() {
@@ -126,12 +112,10 @@ public class DocumentReference {
     }
 
     /**
-     * <p>
      * getPageRange.
-     * </p>
      *
-     * @param startPage a int.
-     * @return a {@link io.goobi.viewer.api.rest.model.ner.TagGroup} object.
+     * @param startPage page order number to look up in ranges
+     * @return the TagGroup whose range contains the given start page, or null if none found
      */
     public TagGroup getPageRange(int startPage) {
         try {
@@ -158,9 +142,7 @@ public class DocumentReference {
     }
 
     /**
-     * <p>
      * getRangeSize.
-     * </p>
      *
      * @return a int.
      */
@@ -172,9 +154,6 @@ public class DocumentReference {
         return 0;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -185,9 +164,6 @@ public class DocumentReference {
         return 0;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {

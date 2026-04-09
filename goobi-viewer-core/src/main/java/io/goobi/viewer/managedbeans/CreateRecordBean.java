@@ -50,8 +50,7 @@ import io.goobi.viewer.model.translations.language.Language;
 /**
  * Bean for uploading Dublin Core records.
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Named
 @ViewScoped
@@ -84,7 +83,7 @@ public class CreateRecordBean implements Serializable {
     }
 
     /**
-     * Get the path to a folder named <uuid>_tif within the temp_media directory
+     * Get the path to a folder named <uuid>_tif within the temp_media directory.
      *
      * @return a folder within the viewer temp_media directory
      */
@@ -94,9 +93,7 @@ public class CreateRecordBean implements Serializable {
                 .resolve(uuid + "_tif");
     }
 
-    /**
-     * @return the tempImagesFolder
-     */
+    
     public Path getTempImagesFolder() {
         return tempImagesFolder;
     }
@@ -109,121 +106,91 @@ public class CreateRecordBean implements Serializable {
         return this.uuid;
     }
 
-    /**
-     * @return the title
-     */
+    
     public String getTitle() {
         return title;
     }
 
-    /**
-     * @param title the title to set
-     */
+    
     public void setTitle(String title) {
         this.title = title;
     }
 
-    /**
-     * @return the description
-     */
+    
     public String getDescription() {
         return description;
     }
 
-    /**
-     * @param description the description to set
-     */
+    
     public void setDescription(String description) {
         this.description = description;
     }
 
-    /**
-     * @return the language
-     */
+    
     public String getLanguage() {
         return language;
     }
 
-    /**
-     * @param language the language to set
-     */
+    
     public void setLanguage(String language) {
         this.language = language;
     }
 
-    /**
-     * @return the date
-     */
+    
     public String getDate() {
         return date;
     }
 
-    /**
-     * @param date the date to set
-     */
+    
     public void setDate(String date) {
         this.date = date;
     }
 
-    /**
-     * @return the creator
-     */
+    
     public String getCreator() {
         return creator;
     }
 
-    /**
-     * @param creator the creator to set
-     */
+    
     public void setCreator(String creator) {
         this.creator = creator;
     }
 
-    /**
-     * @return the collection
-     */
+    
     public String getCollection() {
         return collection;
     }
 
-    /**
-     * @param collection the collection to set
-     */
+    
     public void setCollection(String collection) {
         this.collection = collection;
     }
 
-    /**
-     * @return the accessCondition
-     */
+    
     public String getAccessCondition() {
         return accessCondition;
     }
 
-    /**
-     * @param accessCondition the accessCondition to set
-     */
+    
     public void setAccessCondition(String accessCondition) {
         this.accessCondition = accessCondition;
     }
 
     /*
-     * @return the license
+
      */
     public String getLicense() {
         return license;
     }
 
-    /**
-     * @param license the license to set
-     */
+    
     public void setLicense(String license) {
         this.license = license;
     }
 
     /**
-     * Add any uploaded images to the record, move the images folder frm temp_media to hotfolder and write the record as Dublin Core xml to the viewer
-     * hotfolder
+     * Add any uploaded images to the record, move the images folder from temp_media to hotfolder,
+     * and write the record as Dublin Core xml to the viewer hotfolder.
      *
      * @return the url of the create record page to allow creating a new record
      */
@@ -249,10 +216,10 @@ public class CreateRecordBean implements Serializable {
     }
 
     /**
-     * Write filenames of files within mediaFolder as "dc:relation" metadata to writer
+     * Write filenames of files within mediaFolder as "dc:relation" metadata to writer.
      *
-     * @param writer
-     * @param mediaFolder
+     * @param writer DC record writer to receive file relation metadata
+     * @param mediaFolder folder whose files are added as dc:relation entries
      * @throws IOException
      */
     private static void addFiles(DCRecordWriter writer, Path mediaFolder) throws IOException {
@@ -284,7 +251,7 @@ public class CreateRecordBean implements Serializable {
     }
 
     /**
-     * Create a {@link DCRecordWriter} instance containing all metadata of the bean as dc metadata
+     * Create a {@link DCRecordWriter} instance containing all metadata of the bean as dc metadata.
      *
      * @return the{@link DCRecordWriter}
      */
@@ -311,7 +278,7 @@ public class CreateRecordBean implements Serializable {
     }
 
     /**
-     * Mark the record as not ready for indexing and delete all associated images
+     * Marks the record as not ready for indexing and delete all associated images.
      *
      * @return the url of the create record page
      */

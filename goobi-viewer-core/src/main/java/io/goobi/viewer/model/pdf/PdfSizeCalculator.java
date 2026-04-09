@@ -1,3 +1,24 @@
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package io.goobi.viewer.model.pdf;
 
 import java.io.IOException;
@@ -18,7 +39,7 @@ import io.goobi.viewer.controller.FileSizeCalculator;
 import io.goobi.viewer.model.viewer.Dataset;
 
 /**
- * Calculates and stores estimated pdf file sizes based on image file size
+ * Calculates and stores estimated pdf file sizes based on image file size.
  */
 public class PdfSizeCalculator {
 
@@ -58,7 +79,8 @@ public class PdfSizeCalculator {
             long size = new GetMetsPageCountAction(ContentServerCacheManager.getInstance()).getPdfInfo(request).getSize();
             return FileSizeCalculator.formatSize(size);
         } catch (URISyntaxException | ContentLibException | IOException | NullPointerException e) {
-            logger.error("Error getting pdf file sizes", e.toString());
+            // Log PI and full stack trace to aid debugging when folder paths are null or content server is unreachable
+            logger.error("Error getting pdf file sizes for PI '{}'", dataset.getPi(), e);
             return UNKNOWN;
         }
 

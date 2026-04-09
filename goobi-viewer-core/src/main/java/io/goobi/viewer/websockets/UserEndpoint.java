@@ -88,7 +88,7 @@ public class UserEndpoint {
 
     /**
      *
-     * @param sessionId
+     * @param sessionId HTTP session identifier whose pending clear timer should be cancelled
      */
     private static void cancelClearTimer(String sessionId) {
         if (sessionId == null) {
@@ -106,8 +106,8 @@ public class UserEndpoint {
     /**
      * Timed grace period before removing any locks for the given session ID.
      *
-     * @param sessionId
-     * @param delay
+     * @param sessionId HTTP session identifier whose locks should be removed
+     * @param delay grace period in milliseconds before removing locks
      */
     private static void delayedRemoveLocksForSessionId(String sessionId, long delay) {
         if (sessionId == null) {

@@ -63,9 +63,7 @@ import jakarta.inject.Singleton;
 import jakarta.servlet.ServletContext;
 
 /**
- * <p>
- * CMSTemplateManager class.
- * </p>
+ * Loads and provides access to available CMS page templates from the filesystem.
  */
 @Singleton
 @Startup
@@ -210,12 +208,10 @@ public class CMSTemplateManager implements Serializable {
     }
 
     /**
-     * <p>
      * toURI.
-     * </p>
      *
-     * @param url a {@link java.net.URL} object.
-     * @return a {@link java.nio.file.Path} object.
+     * @param url URL to convert to a filesystem path
+     * @return the filesystem path corresponding to the given URL, or null if conversion fails
      */
     public static Path toURI(URL url) {
         try {
@@ -226,14 +222,12 @@ public class CMSTemplateManager implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>coreTemplateFolderUrl</code>.
-     * </p>
      *
-     * @param filesystemPath a {@link java.lang.String} object.
-     * @param servletContext a {@link jakarta.servlet.ServletContext} object.
-     * @param templateFolderUrl a {@link java.lang.String} object.
-     * @return a {@link java.util.Optional} object.
+     * @param filesystemPath base filesystem path used when servlet context is absent
+     * @param servletContext servlet context for resolving web resource paths
+     * @param templateFolderUrl relative URL path of the template folder
+     * @return an Optional containing the URL to the core CMS template folder, or empty if not found
      * @throws java.net.MalformedURLException if any.
      * @throws java.io.UnsupportedEncodingException if any.
      * @throws java.net.URISyntaxException if any.
@@ -269,10 +263,10 @@ public class CMSTemplateManager implements Serializable {
     /**
      * Returns an url pointing to the cms template folder of the viewer theme.
      *
-     * @param filesystemPath
-     * @param servletContext
-     * @param templateFolderUrl
-     * @param absolutetemplateFolderUrl
+     * @param filesystemPath base filesystem path for template lookup
+     * @param servletContext servlet context for resource lookup; may be null
+     * @param templateFolderUrl relative or absolute URL of the template folder
+     * @param absolutetemplateFolderUrl true if templateFolderUrl is an absolute path
      * @return Optional<URL>
      * @throws URISyntaxException
      * @throws IOException
@@ -335,12 +329,10 @@ public class CMSTemplateManager implements Serializable {
     }
 
     /**
-     * <p>
      * updateTemplates.
-     * </p>
      *
-     * @param corePath a {@link java.util.Optional} object.
-     * @param themePath a {@link java.util.Optional} object.
+     * @param corePath optional path to the core legacy template folder
+     * @param themePath optional path to the theme legacy template folder
      */
     public synchronized void updateTemplates(Optional<Path> corePath, Optional<Path> themePath) {
         legacyTemplateComponents = new HashMap<>();
@@ -372,11 +364,9 @@ public class CMSTemplateManager implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>templates</code>.
-     * </p>
      *
-     * @return a {@link java.util.Collection} object.
+     * @return the collection of all loaded legacy CMS template components
      */
     public Collection<CMSComponent> getLegacyComponents() {
         return legacyTemplateComponents.values();
@@ -387,78 +377,64 @@ public class CMSTemplateManager implements Serializable {
     }
 
     /**
-     * <p>
      * getTemplate.
-     * </p>
      *
-     * @param templateId a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.cms.pages.CMSPageTemplate} object.
+     * @param templateId unique identifier of the legacy template
+     * @return the legacy CMS component matching the given template ID, or null if not found
      */
     public CMSComponent getLegacyComponent(String templateId) {
         return legacyTemplateComponents.get(templateId);
     }
 
     /**
-     * <p>
      * Getter for the field <code>themeFolderPath</code>.
-     * </p>
      *
-     * @return the themeFolderPath
+     * @return an Optional containing the path to the theme's CMS template folder, or empty if no theme folder is configured
      */
     public Optional<Path> getThemeFolderPath() {
         return themeFolderPath;
     }
 
     /**
-     * <p>
      * Getter for the field <code>coreFolderPath</code>.
-     * </p>
      *
-     * @return the coreFolderPath
+     * @return an Optional containing the path to the core CMS template folder, or empty if no core folder is configured
      */
     public Optional<Path> getCoreFolderPath() {
         return coreFolderPath;
     }
 
     /**
-     * <p>
      * getCoreViewFolderPath.
-     * </p>
      *
-     * @return a {@link java.util.Optional} object.
+     * @return an Optional containing the path to the core CMS template views folder, or empty if no core folder is configured
      */
     public Optional<Path> getCoreViewFolderPath() {
         return getCoreFolderPath().map(path -> path.resolve(TEMPLATE_VIEWS_PATH));
     }
 
     /**
-     * <p>
      * getThemeViewFolderPath.
-     * </p>
      *
-     * @return a {@link java.util.Optional} object.
+     * @return an Optional containing the path to the theme CMS template views folder, or empty if no theme folder is configured
      */
     public Optional<Path> getThemeViewFolderPath() {
         return getThemeFolderPath().map(path -> path.resolve(TEMPLATE_VIEWS_PATH));
     }
 
     /**
-     * <p>
      * getCoreIconFolderPath.
-     * </p>
      *
-     * @return a {@link java.util.Optional} object.
+     * @return an Optional containing the path to the core CMS template icons folder, or empty if no core folder is configured
      */
     public Optional<Path> getCoreIconFolderPath() {
         return getCoreFolderPath().map(path -> path.resolve(TEMPLATE_ICONS_PATH));
     }
 
     /**
-     * <p>
      * getThemeIconFolderPath.
-     * </p>
      *
-     * @return a {@link java.util.Optional} object.
+     * @return an Optional containing the path to the theme CMS template icons folder, or empty if no theme folder is configured
      */
     public Optional<Path> getThemeIconFolderPath() {
         return getThemeFolderPath().map(path -> path.resolve(TEMPLATE_ICONS_PATH));

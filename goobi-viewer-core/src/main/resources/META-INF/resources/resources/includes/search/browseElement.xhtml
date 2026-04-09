@@ -45,8 +45,7 @@
             </div>
 
             <!-- DOCTSTRUCT HIERACHY BREADCRUMBS -->
-            <h:panelGroup
-                rendered="#{fn:length(browseElement.structElements) > 0 and browseElement.metadataGroupType == NULL and configurationBean.displayStructType}">
+            <h:panelGroup rendered="#{fn:length(browseElement.structElements) > 0 and browseElement.metadataGroupType == NULL and configurationBean.displayStructType}">
                 <div class="search-list__hit-docstruct">
                     <ul>
                         <ui:repeat
@@ -85,13 +84,11 @@
         </div>
         <div class="search-list__thumb-wrapper">
             <!-- THUMBNAIL -->
-            <ui:fragment rendered="#{browseElement.showThumbnail}">
-                <ui:include src="/resources/includes/search/browseElementThumbnail.xhtml">
-                    <ui:param
-                        name="browseElement"
-                        value="#{browseElement}" />
-                </ui:include>
-            </ui:fragment>
+            <ui:include src="/resources/includes/search/browseElementThumbnail.xhtml">
+                <ui:param
+                    name="browseElement"
+                    value="#{browseElement}" />
+            </ui:include>
             <!-- ADD TO BOOKMARKS BUTTON (ICON) -->
             <ui:fragment rendered="#{configurationBean.bookmarksEnabled}">
                 <div class="search-list__thumb-bookmark-wrapper">

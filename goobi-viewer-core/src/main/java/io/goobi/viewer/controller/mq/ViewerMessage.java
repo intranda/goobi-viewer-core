@@ -55,6 +55,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.Table;
 
+/**
+ * JPA entity representing a message in the internal message queue. Stores the task type,
+ * a unique message identifier, arbitrary key-value properties, execution status, and
+ * timestamps for scheduling and tracking asynchronous background jobs.
+ */
 @Entity
 @Table(name = "mq_messages")
 @JsonInclude(Include.NON_EMPTY)
@@ -219,7 +224,8 @@ public class ViewerMessage {
 
     /**
      * Call this method to set the max number of allowed retries to the number of retries already done, effectively preventing any further retries.
-     * This is useful if the ticket runs into an error which it cannot reasonably recover from, so further retries are futile
+     *
+     * <p>This is useful if the ticket runs into an error which it cannot reasonably recover from, so further retries are futile
      */
     public void setDoNotRetry() {
         this.maxRetries = this.retryCount;
@@ -232,7 +238,7 @@ public class ViewerMessage {
     /**
      * Returns the latest VieweMessage of the given type that finished successfully.
      * 
-     * @param type
+     * @param type task type name to filter by
      * @return Optional<ViewerMessage>
      * @throws DAOException
      */

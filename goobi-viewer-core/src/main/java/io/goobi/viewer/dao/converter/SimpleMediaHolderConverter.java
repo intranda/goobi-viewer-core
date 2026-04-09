@@ -32,6 +32,10 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.SimpleMediaHolder;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 
+/**
+ * JPA {@link AttributeConverter} that converts a {@link SimpleMediaHolder} to and from the numeric
+ * ID of the underlying {@link CMSMediaItem} for database persistence.
+ */
 @Converter
 public class SimpleMediaHolderConverter implements AttributeConverter<SimpleMediaHolder, Long> {
 

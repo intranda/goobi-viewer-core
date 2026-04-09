@@ -97,7 +97,7 @@ class PageTypeTest extends AbstractTest {
      */
     @Test
     void getByName_shouldReturnCorrectTypeForMappedNames() throws Exception {
-        Assertions.assertEquals(PageType.viewCalendar, PageType.getByName("calendar"));
+        Assertions.assertEquals(PageType.viewToc, PageType.getByName("toc"));
         Assertions.assertEquals(PageType.viewImage, PageType.getByName("image"));
     }
 

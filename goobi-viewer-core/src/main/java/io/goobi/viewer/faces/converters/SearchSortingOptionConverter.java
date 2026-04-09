@@ -29,23 +29,16 @@ import jakarta.faces.convert.FacesConverter;
 import io.goobi.viewer.model.search.SearchSortingOption;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 @FacesConverter("searchSortingOptionConverter")
 public class SearchSortingOptionConverter implements Converter<SearchSortingOption> {
 
-    /* (non-Javadoc)
-     * @see jakarta.faces.convert.Converter#getAsObject(jakarta.faces.context.FacesContext, jakarta.faces.component.UIComponent, java.lang.String)
-     */
     @Override
     public SearchSortingOption getAsObject(FacesContext context, UIComponent component, String value) {
         return new SearchSortingOption(value);
     }
 
-    /* (non-Javadoc)
-     * @see jakarta.faces.convert.Converter#getAsString(jakarta.faces.context.FacesContext, jakarta.faces.component.UIComponent, java.lang.Object)
-     */
     @Override
     public String getAsString(FacesContext context, UIComponent component, SearchSortingOption value) {
         return value.getSortString();

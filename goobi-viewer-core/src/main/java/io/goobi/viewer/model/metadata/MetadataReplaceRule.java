@@ -24,14 +24,15 @@ package io.goobi.viewer.model.metadata;
 import java.io.Serializable;
 
 /**
- * <p>
- * MetadataReplaceRule class.
- * </p>
+ * Defines a search-and-replace rule applied to metadata values before display.
  */
 public class MetadataReplaceRule implements Serializable {
 
     private static final long serialVersionUID = 8010945394600637854L;
 
+    /**
+     * Enumerates the matching strategies for a replace rule: character-level, string-level, or regular expression.
+     */
     public enum MetadataReplaceRuleType {
         CHAR,
         STRING,
@@ -45,9 +46,9 @@ public class MetadataReplaceRule implements Serializable {
 
     /**
      *
-     * @param key
-     * @param replacement
-     * @param type
+     * @param key the string, char, or regex pattern to match
+     * @param replacement the replacement string
+     * @param type the type of matching rule (CHAR, STRING, or REGEX)
      */
     public MetadataReplaceRule(Object key, String replacement, MetadataReplaceRuleType type) {
         this(key, replacement, null, type);
@@ -55,10 +56,10 @@ public class MetadataReplaceRule implements Serializable {
 
     /**
      *
-     * @param key
-     * @param replacement
+     * @param key the string, char, or regex pattern to match
+     * @param replacement the replacement string
      * @param conditions Optional condition Solr query
-     * @param type
+     * @param type the type of matching rule (CHAR, STRING, or REGEX)
      */
     public MetadataReplaceRule(Object key, String replacement, String conditions, MetadataReplaceRuleType type) {
         this.key = key;
@@ -67,30 +68,22 @@ public class MetadataReplaceRule implements Serializable {
         this.type = type;
     }
 
-    /**
-     * @return the type
-     */
+    
     public MetadataReplaceRuleType getType() {
         return type;
     }
 
-    /**
-     * @return the key
-     */
+    
     public Object getKey() {
         return key;
     }
 
-    /**
-     * @return the replacement
-     */
+    
     public String getReplacement() {
         return replacement;
     }
 
-    /**
-     * @return the conditions
-     */
+    
     public String getConditions() {
         return conditions;
     }

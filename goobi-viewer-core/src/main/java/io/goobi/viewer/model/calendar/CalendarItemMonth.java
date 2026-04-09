@@ -25,9 +25,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * <p>
- * CalendarItemMonth class.
- * </p>
+ * Calendar browsing item representing a single month.
  */
 public class CalendarItemMonth extends AbstractCalendarItem implements Serializable {
 
@@ -38,57 +36,47 @@ public class CalendarItemMonth extends AbstractCalendarItem implements Serializa
     private List<CalendarItemDay> daysOfMonth;
 
     /**
-     * <p>
-     * Constructor for CalendarItemMonth.
-     * </p>
+     * Creates a new CalendarItemMonth instance.
      *
-     * @param name a {@link java.lang.String} object.
-     * @param value a int.
-     * @param hits a int.
+     * @param name display name of the month (e.g. "January").
+     * @param value numeric month value (1-12).
+     * @param hits number of records for this month.
      */
     public CalendarItemMonth(String name, int value, int hits) {
         super(name, value, hits);
     }
 
     /**
-     * <p>
      * Getter for the field <code>daysOfMonth</code>.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return list of calendar day items for this month.
      */
     public List<CalendarItemDay> getDaysOfMonth() {
         return daysOfMonth;
     }
 
     /**
-     * <p>
      * Setter for the field <code>daysOfMonth</code>.
-     * </p>
      *
-     * @param daysOfMonth a {@link java.util.List} object.
+     * @param daysOfMonth list of calendar day items to set.
      */
     public void setDaysOfMonth(List<CalendarItemDay> daysOfMonth) {
         this.daysOfMonth = daysOfMonth;
     }
 
     /**
-     * <p>
      * Getter for the field <code>weeksOfMonth</code>.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return list of calendar week items for this month.
      */
     public List<CalendarItemWeek> getWeeksOfMonth() {
         return weeksOfMonth;
     }
 
     /**
-     * <p>
      * Setter for the field <code>weeksOfMonth</code>.
-     * </p>
      *
-     * @param weeksOfMonth a {@link java.util.List} object.
+     * @param weeksOfMonth list of calendar week items to set.
      */
     public void setWeeksOfMonth(List<CalendarItemWeek> weeksOfMonth) {
         this.weeksOfMonth = weeksOfMonth;

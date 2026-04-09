@@ -32,6 +32,10 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
+/**
+ * Database migration step that renames the legacy {@code value} column to
+ * {@code translation_value} in all translation tables that still use the old column name.
+ */
 public class TranslationUpdate implements IModelUpdate {
 
     private static final Logger logger = LogManager.getLogger(TranslationUpdate.class);

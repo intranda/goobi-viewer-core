@@ -29,8 +29,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class BookmarksFunktionality implements Functionality {
 
@@ -41,9 +40,6 @@ public class BookmarksFunktionality implements Functionality {
         this.pageNo = pageNo;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.itemfunctionality.Functionality#getPageNo()
-     */
     @Override
     public int getPageNo() {
         return pageNo;

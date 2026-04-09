@@ -32,24 +32,16 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager.Version;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 
 /**
- * <p>
  * Handles urls to configured rest api endpoints.
- * </p>
- * <p>
- * Two endpoints are managed: one for data (solr, dao) and one for content (image, ocr, other media) An {@link AbstractApiUrlManager} is kept for
+ *
+ * <p>Two endpoints are managed: one for data (solr, dao) and one for content (image, ocr, other media) An {@link AbstractApiUrlManager} is kept for
  * both. These can either be injected directly in the constructor or resolved from a {@link Configuration}.
- * </p>
- * <p>
  * In the latter case, data resources url is taken from {@link Configuration#getRestApiUrl()}, content resources url is taken from
  * {@link Configuration#getIIIFApiUrl()}.
- * </p>
- * <p>
  * Both urls are updated if the configuration changes. Also, if the configured url contains '/rest' that part is rewritten to '/api/v1' if the
  * rewritten url points to a goobi viewer v1 rest api.
- * </p>
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class RestApiManager {
 
@@ -58,16 +50,16 @@ public class RestApiManager {
     private Configuration config = null;
 
     /**
-     * Create an instance directly using the unchanged given ApiUrlManagers.
+     * Creates an instance directly using the unchanged given ApiUrlManagers.
      */
     public RestApiManager() {
         this(DataManager.getInstance().getConfiguration());
     }
 
     /**
-     * Create an instance based on configuration. Final urls may change from configured ones
+     * Creates an instance based on configuration. Final urls may change from configured ones
      *
-     * @param config
+     * @param config the viewer configuration to read API URLs from
      */
     public RestApiManager(Configuration config) {
         this.config = config;
@@ -75,7 +67,7 @@ public class RestApiManager {
 
     /**
      * @return the dataApiManager if it is either set directly or if the configured rest endpoint points to a goobi viewer v1 rest endpoint. Otherwise
-     *         null is returned
+     *         Null is returned
      */
     public Optional<AbstractApiUrlManager> getDataApiManager() {
         return getDataApiManager(Version.v1);
@@ -94,7 +86,7 @@ public class RestApiManager {
 
     /**
      * @return The url to the data api. Either {@link AbstractApiUrlManager#getApiUrl()} of the {@link #getDataApiManager()} if it exists, or else the
-     *         configured {@link Configuration#getRestApiUrl()}
+     *         Configured {@link Configuration#getRestApiUrl()}
      */
     public String getDataApiUrl() {
         return config.getRestApiUrl();
@@ -102,7 +94,7 @@ public class RestApiManager {
 
     /**
      * @return The url to the content api. Either {@link AbstractApiUrlManager#getApiUrl()} of the {@link #getContentApiManager()} if it exists, or
-     *         else the configured {@link Configuration#getIIIFApiUrl()}
+     *         Else the configured {@link Configuration#getIIIFApiUrl()}
      */
     public String getContentApiUrl() {
         return config.getIIIFApiUrl();
@@ -140,7 +132,7 @@ public class RestApiManager {
     }
 
     /**
-     * @param restApiUrl
+     * @param restApiUrl the REST API URL to check
      * @return true if restApiUrl is legacy URL; false otherwise
      */
     public static boolean isLegacyUrl(String restApiUrl) {
@@ -164,7 +156,7 @@ public class RestApiManager {
     }
 
     /**
-     * @param version
+     * @param version the API version to use
      * @return the url to the content api to use for IIIF resources
      */
     public String getIIIFContentApiUrl(Version version) {

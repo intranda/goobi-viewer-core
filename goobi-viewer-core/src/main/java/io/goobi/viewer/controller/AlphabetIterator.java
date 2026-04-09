@@ -25,9 +25,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * <p>
- * AlphabetIterator class.
- * </p>
+ * Iterator that cycles through the letters of the configured alphabet, used for alphabetical browsing.
  *
  * @author Florian Alpers
  */
@@ -36,18 +34,14 @@ public class AlphabetIterator implements Iterator<String> {
     private char currentValue;
 
     /**
-     * <p>
-     * Constructor for AlphabetIterator.
-     * </p>
+     * Creates a new AlphabetIterator instance.
      */
     public AlphabetIterator() {
         currentValue = decrement('a');
     }
 
     /**
-     * <p>
-     * Constructor for AlphabetIterator.
-     * </p>
+     * Creates a new AlphabetIterator instance.
      *
      * @param firstLetter a char.
      */
@@ -59,18 +53,12 @@ public class AlphabetIterator implements Iterator<String> {
         }
     }
 
-    /* (non-Javadoc)
-     * @see java.util.Iterator#hasNext()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean hasNext() {
         return currentValue < 'z';
     }
 
-    /* (non-Javadoc)
-     * @see java.util.Iterator#next()
-     */
     /** {@inheritDoc} */
     @Override
     public String next() {

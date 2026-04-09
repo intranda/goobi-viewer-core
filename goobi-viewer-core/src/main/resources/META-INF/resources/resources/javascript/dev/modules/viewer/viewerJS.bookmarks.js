@@ -93,20 +93,18 @@ var viewerJS = (function (viewer) {
 
                 let added = this.contained(pi, page, logid);
                 if (_debug) console.log('set added to ' + added + ' for ', pi, page);
-                let $span = $button.find('span');
+                // Use a specific selector to avoid accidentally initializing Bootstrap
+                // tooltips (with default hover trigger) on hidden child spans like
+                // .bookmark-toggle__icon--filled, which would cause Bootstrap 4 to
+                // throw "Please use show on visible elements" when _enter fires.
+                let $span = $button.find('.bookmark-toggle');
                 if (added) {
                     $button.addClass('added');
-                    $span
-                        .tooltip('hide')
-                        .attr('title', $span.attr('data-bookmark-list-title-added'))
-                        .tooltip('_fixTitle');
+                    $span.tooltip('hide').attr('data-original-title', $span.attr('data-bookmark-list-title-added'));
                     $button.attr('aria-checked', true);
                 } else {
                     $button.removeClass('added');
-                    $span
-                        .tooltip('hide')
-                        .attr('title', $span.attr('data-bookmark-list-title-add'))
-                        .tooltip('_fixTitle');
+                    $span.tooltip('hide').attr('data-original-title', $span.attr('data-bookmark-list-title-add'));
                     $button.attr('aria-checked', false);
                 }
             });
@@ -321,13 +319,9 @@ var viewerJS = (function (viewer) {
                             // render bookmarks popup with timeout to finish handling click event first.
                             setTimeout(() => this.renderBookmarksPopup(currPi, currLogid, currPage, currBtn), 0);
                         } else if (this.contained(currPi, currPage, currLogid)) {
-                            this.removeFromBookmarkList(0, currPi, undefined, undefined, false).then(() =>
-                                this.listsNeedUpdate.next()
-                            );
+                            this.removeFromBookmarkList(0, currPi, undefined, undefined, false).then(() => this.listsNeedUpdate.next());
                         } else {
-                            this.addToBookmarkList(0, currPi, undefined, undefined, false).then(() =>
-                                this.listsNeedUpdate.next()
-                            );
+                            this.addToBookmarkList(0, currPi, undefined, undefined, false).then(() => this.listsNeedUpdate.next());
                         }
                     }.bind(this)
                 );
@@ -486,11 +480,7 @@ var viewerJS = (function (viewer) {
         getItem: function (list, pi, page, logid) {
             if (list) {
                 return list.items.find((item) => {
-                    return (
-                        item.pi == pi &&
-                        (page == undefined || page == item.order) &&
-                        (logid == undefined || logid == item.logId)
-                    );
+                    return item.pi == pi && (page == undefined || page == item.order) && (logid == undefined || logid == item.logId);
                 });
             }
             return undefined;

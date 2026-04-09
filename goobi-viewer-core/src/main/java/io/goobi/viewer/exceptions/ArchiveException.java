@@ -21,33 +21,37 @@
  */
 package io.goobi.viewer.exceptions;
 
+/**
+ * Abstract base class for all exceptions related to archive resource operations, providing a
+ * message-template mechanism that substitutes named resource placeholders.
+ */
 public abstract class ArchiveException extends PresentationException {
 
     private static final long serialVersionUID = -6999584810651228875L;
 
     /**
-     * 
-     * @param message
-     * @param resourceName
-     * @param e
+     *
+     * @param message error message template, may contain {} placeholders
+     * @param resourceName archive resource name substituted into the message
+     * @param e the cause of this exception
      */
     protected ArchiveException(String message, String resourceName, Throwable e) {
         super(createMessage(message, resourceName), e);
     }
 
     /**
-     * 
-     * @param message
-     * @param resourceName
+     *
+     * @param message error message template, may contain {} placeholders
+     * @param resourceName archive resource name substituted into the message
      */
     protected ArchiveException(String message, String resourceName) {
         super(createMessage(message, resourceName));
     }
 
     /**
-     * 
-     * @param message
-     * @param replacements
+     *
+     * @param message error message template containing {} placeholders
+     * @param replacements values substituted for {} placeholders in order
      * @return Updated message
      */
     protected static String createMessage(String message, String... replacements) {

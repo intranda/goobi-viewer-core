@@ -41,8 +41,7 @@ import io.goobi.viewer.model.jsf.DynamicContentBuilder;
 import io.goobi.viewer.model.jsf.DynamicContentType;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Named
 @ViewScoped
@@ -60,15 +59,13 @@ public class DynamicBean implements Serializable {
         this.formGroup = group;
     }
 
-    /**
-     * @param headGroup the headGroup to set
-     */
+    
     public void setHeadGroup(HtmlPanelGroup headGroup) {
         this.headGroup = headGroup;
     }
 
     /**
-     * @return the formGroup
+     * @return the JSF panel group containing the dynamically built CMS form components
      * @throws DAOException
      */
     public HtmlPanelGroup getFormGroup() {
@@ -79,7 +76,7 @@ public class DynamicBean implements Serializable {
     }
 
     /**
-     * @return the formGroup
+     * @return the JSF panel group containing the dynamically built CMS head components
      * @throws DAOException
      */
     public HtmlPanelGroup getHeadGroup() {
@@ -89,9 +86,7 @@ public class DynamicBean implements Serializable {
         return headGroup;
     }
 
-    /**
-     *
-     */
+    
     private void loadHeadGroup() {
         this.headGroup = new HtmlPanelGroup();
 
@@ -103,7 +98,6 @@ public class DynamicBean implements Serializable {
 
     /**
      * @throws DAOException
-     *
      */
     private void loadFormGroup() {
 

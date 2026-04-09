@@ -27,6 +27,10 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
+/**
+ * Database migration step that renames the legacy {@code roles} table to {@code user_roles},
+ * handling the case where EclipseLink may have already created the new table.
+ */
 public class RoleUpdate implements IModelUpdate {
 
     /** {@inheritDoc} */

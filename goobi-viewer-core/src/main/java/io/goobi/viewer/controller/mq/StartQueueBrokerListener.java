@@ -31,6 +31,11 @@ import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 
+/**
+ * Servlet context listener that starts and stops the embedded ActiveMQ message broker together
+ * with the web application lifecycle. Only initializes the broker when the configuration option
+ * {@code startInternalMessageBroker} is enabled.
+ */
 @WebListener
 public class StartQueueBrokerListener implements ServletContextListener {
 

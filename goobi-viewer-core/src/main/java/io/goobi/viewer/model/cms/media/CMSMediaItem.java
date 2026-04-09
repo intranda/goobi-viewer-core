@@ -70,9 +70,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
- * <p>
- * CMSMediaItem class.
- * </p>
+ * Represents a media file (image, video, audio, or document) managed in the CMS media library.
  */
 @Entity
 @Table(name = "cms_media_items")
@@ -83,19 +81,19 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(CMSMediaItem.class);
 
-    /** Constant <code>CONTENT_TYPE_XML="text/xml"</code> */
+    /** Constant <code>CONTENT_TYPE_XML="text/xml"</code>. */
     public static final String CONTENT_TYPE_XML = "text/xml";
-    /** Constant <code>CONTENT_TYPE_SVG="image/svg+xml"</code> */
+    /** Constant <code>CONTENT_TYPE_SVG="image/svg+xml"</code>. */
     public static final String CONTENT_TYPE_SVG = "image/svg+xml";
-    /** Constant <code>CONTENT_TYPE_SVG="image/svg+xml"</code> */
+    /** Constant <code>CONTENT_TYPE_SVG="image/svg+xml"</code>. */
     public static final String CONTENT_TYPE_ICO = "image/x-icon";
-    /** Constant <code>CONTENT_TYPE_PDF="application/pdf"</code> */
+    /** Constant <code>CONTENT_TYPE_PDF="application/pdf"</code>. */
     public static final String CONTENT_TYPE_PDF = "application/pdf";
-    /** Constant <code>CONTENT_TYPE_GIF="application/gif"</code> */
+    /** Constant <code>CONTENT_TYPE_GIF="application/gif"</code>. */
     public static final String CONTENT_TYPE_GIF = "image/gif";
-    /** Constant <code>CONTENT_TYPE_VIDEO="video"</code> */
+    /** Constant <code>CONTENT_TYPE_VIDEO="video"</code>. */
     public static final String CONTENT_TYPE_VIDEO = "video";
-    /** Constant <code>CONTENT_TYPE_AUDIO="audio"</code> */
+    /** Constant <code>CONTENT_TYPE_AUDIO="audio"</code>. */
     public static final String CONTENT_TYPE_AUDIO = "audio";
 
     @Id
@@ -133,15 +131,15 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     private transient FileTime lastModifiedTime = null;
 
     /**
-     * default constructor
+     * Default constructor.
      */
     public CMSMediaItem() {
     }
 
     /**
-     * copy constructor
+     * Copy constructor.
      *
-     * @param orig a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
+     * @param orig source media item to copy from
      */
     public CMSMediaItem(CMSMediaItem orig) {
         if (orig.id != null) {
@@ -248,44 +246,36 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
-     * @return the id
+     * @return the database primary key of this media item
      */
     public Long getId() {
         return id;
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
-     * @param id the id to set
+     * @param id the database primary key to set
      */
     public void setId(Long id) {
         this.id = id;
     }
 
     /**
-     * <p>
      * Getter for the field <code>fileName</code>.
-     * </p>
      *
-     * @return the fileName
+     * @return the file name of the media file
      */
     public String getFileName() {
         return fileName;
     }
 
     /**
-     * <p>
      * Setter for the field <code>fileName</code>.
-     * </p>
      *
-     * @param fileName the fileName to set
+     * @param fileName the file name of the media file (also resets the cached last modified time)
      */
     public void setFileName(String fileName) {
         this.fileName = fileName;
@@ -293,11 +283,9 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * Setter for the field <code>alternativeText</code>.
-     * </p>
      *
-     * @param alternativeText the alternativeText to set
+     * @param alternativeText the legacy alternative text value to store
      */
     @Deprecated(since = "2026.01")
     public void setAlternativeText(String alternativeText) {
@@ -305,11 +293,9 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * getMetadataForLocale.
-     * </p>
      *
-     * @param locale a {@link java.util.Locale} object.
+     * @param locale locale used to look up the language tag
      * @return media item metadata for the given locale; null if no locale given
      */
     public CMSMediaItemMetadata getMetadataForLocale(Locale locale) {
@@ -321,11 +307,9 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * getMetadataForLanguage.
-     * </p>
      *
-     * @param language a {@link java.lang.String} object.
+     * @param language BCP 47 language code to look up
      * @return media item metadata for the given locale
      */
     public CMSMediaItemMetadata getMetadataForLanguage(String language) {
@@ -342,22 +326,18 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * Getter for the field <code>metadata</code>.
-     * </p>
      *
-     * @return the metadata
+     * @return the list of language-specific metadata entries for this media item
      */
     public List<CMSMediaItemMetadata> getMetadata() {
         return metadata;
     }
 
     /**
-     * <p>
      * Setter for the field <code>metadata</code>.
-     * </p>
      *
-     * @param metadata the metadata to set
+     * @param metadata the list of language-specific metadata entries to assign
      */
     public void setMetadata(List<CMSMediaItemMetadata> metadata) {
         this.metadata = metadata;
@@ -366,7 +346,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /**
      * Adds a metadata item to the list of image metadata. If a metadata item with the same language string exists, it is replaced
      *
-     * @param metadata a {@link io.goobi.viewer.model.cms.media.CMSMediaItemMetadata} object.
+     * @param metadata metadata entry to add or replace for its language
      */
     public void addMetadata(CMSMediaItemMetadata metadata) {
         String language = metadata.getLanguage();
@@ -377,9 +357,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * getCurrentLanguageMetadata.
-     * </p>
      *
      * @return metadata list for the current language
      */
@@ -399,11 +377,9 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * hasCateories.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this media item has at least one assigned category, false otherwise
      */
     public boolean hasCateories() {
         return !this.categories.isEmpty();
@@ -414,35 +390,29 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * Setter for the field <code>categories</code>.
-     * </p>
      *
-     * @param categories a {@link java.util.List} object.
+     * @param categories replacement list of categories to assign
      */
     public void setCategories(List<CMSCategory> categories) {
         this.categories = categories;
     }
 
     /**
-     * <p>
      * removeCategory.
-     * </p>
      *
-     * @param cat a {@link io.goobi.viewer.model.cms.CMSCategory} object.
-     * @return a boolean.
+     * @param cat category to remove from this item
+     * @return true if the category was present and has been removed, false otherwise
      */
     public boolean removeCategory(CMSCategory cat) {
         return this.categories.remove(cat);
     }
 
     /**
-     * <p>
      * addCategory.
-     * </p>
      *
-     * @param cat a {@link io.goobi.viewer.model.cms.CMSCategory} object.
-     * @return a boolean.
+     * @param cat category to add if not already present
+     * @return true if the category was added, false if it was already present
      */
     public boolean addCategory(CMSCategory cat) {
         if (this.categories.contains(cat)) {
@@ -456,11 +426,9 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * setImportant.
-     * </p>
      *
-     * @param important a boolean.
+     * @param important true sets priority to IMPORTANT, false to DEFAULT
      */
     public void setImportant(boolean important) {
         this.priority = important ? Priority.IMPORTANT : Priority.DEFAULT;
@@ -474,22 +442,18 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * Setter for the field <code>priority</code>.
-     * </p>
      *
-     * @param priority the priority to set
+     * @param priority the display priority to assign to this media item
      */
     public void setPriority(Priority priority) {
         this.priority = priority;
     }
 
     /**
-     * <p>
      * getLinkURI.
-     * </p>
      *
-     * @return a {@link java.net.URI} object.
+     * @return the link URI for this media item, resolved using the current HTTP request
      */
     @Override
     public URI getLinkURI() {
@@ -523,9 +487,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * Getter for the field <code>link</code>.
-     * </p>
      *
      * @return the entered link url
      */
@@ -534,9 +496,9 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * set the link for this media item
+     * Set the link for this media item.
      *
-     * @param linkUrl a {@link java.lang.String} object.
+     * @param linkUrl URL string to associate with this media item
      * @throws java.net.URISyntaxException if any.
      */
     public void setLink(String linkUrl) {
@@ -625,33 +587,23 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
         return null;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.model.cms.tilegrid.ImageGalleryTile#
-     * getDisplayOrder()
-     */
     public int getDisplayOrder() {
         return this.displayOrder;
     }
 
     /**
-     * <p>
      * Setter for the field <code>displayOrder</code>.
-     * </p>
      *
-     * @param displayOrder the displayOrder to set
+     * @param displayOrder the sort order index for displaying this media item in lists
      */
     public void setDisplayOrder(int displayOrder) {
         this.displayOrder = displayOrder;
     }
 
     /**
-     * <p>
      * getImageURI.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the file URI to the CMS media image file
      */
     public String getImageURI() {
         // Path.get() adds a "C:" to Unix paths. This must be prevented when using an external API in a Windows dev environment.
@@ -682,11 +634,9 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * getTranslationsForDescription.
-     * </p>
      *
-     * @return a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
+     * @return the multilingual metadata value containing description translations for all configured languages
      */
     public IMetadataValue getTranslationsForDescription() {
         Map<String, String> names = getMetadata().stream()
@@ -696,11 +646,9 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * getTranslationsForAlternativeText.
-     * </p>
      *
-     * @return a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
+     * @return the multilingual metadata value containing alternative text translations for all configured languages
      */
     public IMetadataValue getTranslationsForAlternativeText() {
         Map<String, String> names = getMetadata().stream()
@@ -710,23 +658,19 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * isFinished.
-     * </p>
      *
-     * @param locale a {@link java.util.Locale} object.
-     * @return a boolean.
+     * @param locale locale to check for a non-blank name entry
+     * @return true if the metadata name for the given locale is non-blank, false otherwise
      */
     public boolean isFinished(Locale locale) {
         return StringUtils.isNotBlank(getMetadataForLocale(locale).getName());
     }
 
     /**
-     * <p>
      * getFinishedLocales.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of locales for which this media item has a non-blank name translation
      */
     public List<Locale> getFinishedLocales() {
         return this.getMetadata()
@@ -753,9 +697,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * Getter for the field <code>lastModifiedTime</code>.
-     * </p>
      *
      * @return the lastModifiedTime. May be null only if no file exists or last modified time cannot be read
      */
@@ -775,11 +717,9 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * getFilePath.
-     * </p>
      *
-     * @return a {@link java.nio.file.Path} object.
+     * @return the filesystem path to the CMS media file
      */
     public Path getFilePath() {
         Path folder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
@@ -788,17 +728,18 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * wrapCategories.
-     * </p>
      *
+     * @param categories all available categories to wrap with selection state
      * @return the categoryMap. Never null. If it isn't defined yet, create a map from all categories
-     * @param categories a {@link java.util.List} object.
      */
     public synchronized List<Selectable<CMSCategory>> wrapCategories(List<CMSCategory> categories) {
         return categories.stream().map(cat -> new Selectable<>(cat, this.getCategories().contains(cat))).collect(Collectors.toList());
     }
 
+    /**
+     * Enumerates the display priority levels for a CMS media item, distinguishing items that should be highlighted from those with default treatment.
+     */
     public enum Priority {
         IMPORTANT,
         DEFAULT;

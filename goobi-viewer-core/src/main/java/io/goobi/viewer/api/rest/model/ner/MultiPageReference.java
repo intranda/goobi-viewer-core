@@ -29,9 +29,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
- * <p>
- * MultiPageReference class.
- * </p>
+ * REST API model representing a contiguous range of pages (defined by a first and last page order number) that share a set of NER tag counts.
+ * Implements {@link TagGroup} to allow uniform handling alongside single-page references.
  */
 @JsonPropertyOrder({ "firstPage, lastPage, tags" })
 public class MultiPageReference implements TagGroup {
@@ -41,9 +40,7 @@ public class MultiPageReference implements TagGroup {
     private List<TagCount> tags;
 
     /**
-     * <p>
-     * Constructor for MultiPageReference.
-     * </p>
+     * Creates a new MultiPageReference instance.
      */
     public MultiPageReference() {
         super();
@@ -53,11 +50,9 @@ public class MultiPageReference implements TagGroup {
     }
 
     /**
-     * <p>
-     * Constructor for MultiPageReference.
-     * </p>
+     * Creates a new MultiPageReference instance.
      *
-     * @param order a int.
+     * @param order page order number used for both first and last page
      */
     public MultiPageReference(int order) {
         super();
@@ -67,12 +62,10 @@ public class MultiPageReference implements TagGroup {
     }
 
     /**
-     * <p>
-     * Constructor for MultiPageReference.
-     * </p>
+     * Creates a new MultiPageReference instance.
      *
-     * @param first a {@link java.lang.Integer} object.
-     * @param last a {@link java.lang.Integer} object.
+     * @param first order number of the first page in the range
+     * @param last order number of the last page in the range
      */
     public MultiPageReference(Integer first, Integer last) {
         super();
@@ -82,11 +75,9 @@ public class MultiPageReference implements TagGroup {
     }
 
     /**
-     * <p>
      * Getter for the field <code>firstPage</code>.
-     * </p>
      *
-     * @return a {@link java.lang.Integer} object.
+     * @return the page order number of the first page in this range
      */
     @JsonProperty("firstPage")
     public Integer getFirstPage() {
@@ -94,11 +85,9 @@ public class MultiPageReference implements TagGroup {
     }
 
     /**
-     * <p>
      * Getter for the field <code>lastPage</code>.
-     * </p>
      *
-     * @return a {@link java.lang.Integer} object.
+     * @return the page order number of the last page in this range
      */
     @JsonProperty("lastPage")
     public Integer getLastPage() {
@@ -118,9 +107,6 @@ public class MultiPageReference implements TagGroup {
         return this.getFirstPage().compareTo(o.getPageOrder());
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -131,9 +117,6 @@ public class MultiPageReference implements TagGroup {
         return 0;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -162,9 +145,6 @@ public class MultiPageReference implements TagGroup {
         return getLastPage() - getFirstPage() + 1;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.servlets.rest.ner.TagGroup#getPageOrder()
-     */
     /** {@inheritDoc} */
     @JsonIgnore
     @Override

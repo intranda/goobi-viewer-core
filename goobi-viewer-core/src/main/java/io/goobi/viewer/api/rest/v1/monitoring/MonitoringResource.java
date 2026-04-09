@@ -54,6 +54,9 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 
+/**
+ * REST resource providing application health checks and version information for monitoring systems.
+ */
 @Path(ApiUrls.MONITORING)
 public class MonitoringResource {
 
@@ -151,8 +154,8 @@ public class MonitoringResource {
 
     /**
      * 
-     * @param versionMap
-     * @param versionJson
+     * @param versionMap map to populate with version and hash values
+     * @param versionJson JSON string containing version information
      */
     private static void setVersionValues(Map<String, String> versionMap, String versionJson) {
         versionMap.put("version", JsonTools.getVersion(versionJson));

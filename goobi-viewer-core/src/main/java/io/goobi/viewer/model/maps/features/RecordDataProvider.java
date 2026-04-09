@@ -36,6 +36,10 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
+/**
+ * Feature data provider that retrieves top-level records (works and anchors) from Solr,
+ * optionally including their child metadata group documents for geo map feature generation.
+ */
 public class RecordDataProvider extends AbstractFeatureDataProvider {
 
     private final boolean includeMetadataGroups;

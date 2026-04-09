@@ -44,6 +44,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
+/**
+ * CMS content type that renders an alphabetical browse index for a configurable Solr field,
+ * supporting paginated navigation through indexed terms.
+ */
 @Entity
 @Table(name = "cms_content_browse")
 @DiscriminatorValue("browse")

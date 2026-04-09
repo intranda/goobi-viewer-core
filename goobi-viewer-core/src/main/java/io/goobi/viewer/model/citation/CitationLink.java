@@ -31,17 +31,23 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.viewer.ViewManager;
 
 /**
+ * Represents a configurable citation link for a digitized record.
  *
+ * <p>Each link has a {@link CitationLinkType} (internal viewer URL or external URL), a {@link CitationLinkLevel} (record, docstruct, or image page),
+ * and a {@link CitationLinkAction} (copy to clipboard, open, or download) that determines how the link is presented to the user.
  */
 public class CitationLink {
 
+    /**
+     * Defines whether a {@link CitationLink} points to an internal viewer URL or an external URL built from a Solr field value.
+     */
     public enum CitationLinkType {
         URL,
         INTERNAL;
 
         /**
          *
-         * @param name
+         * @param name case-insensitive enum constant name
          * @return {@link CitationLinkType}; null if no matching type found
          */
         protected static CitationLinkType getByName(String name) {
@@ -60,6 +66,9 @@ public class CitationLink {
 
     }
 
+    /**
+     * Defines the structural level of a digitized object to which a {@link CitationLink} refers.
+     */
     public enum CitationLinkLevel {
         RECORD,
         DOCSTRUCT,
@@ -67,7 +76,7 @@ public class CitationLink {
 
         /**
          *
-         * @param name
+         * @param name case-insensitive enum constant name
          * @return {@link CitationLinkLevel}; null if no matching level found
          */
         public static CitationLinkLevel getByName(String name) {
@@ -85,6 +94,9 @@ public class CitationLink {
         }
     }
 
+    /**
+     * Defines the user-facing action triggered when a {@link CitationLink} is activated.
+     */
     public enum CitationLinkAction {
         CLIPBOARD,
         OPEN,
@@ -92,7 +104,7 @@ public class CitationLink {
 
         /**
          *
-         * @param name
+         * @param name case-insensitive enum constant name
          * @return {@link CitationLinkLevel}; null if no matching level found
          */
         public static CitationLinkAction getByName(String name) {
@@ -123,11 +135,10 @@ public class CitationLink {
 
     /**
      *
-     * @param type
-     * @param level
-     * @param action
-     * @param label
-     * 
+     * @param type link type name (URL or INTERNAL)
+     * @param level link level name (RECORD, DOCSTRUCT, or IMAGE)
+     * @param action link action name (CLIPBOARD, OPEN, or DOWNLOAD)
+     * @param label display label shown to the user
      */
     public CitationLink(String type, String level, String action, String label) {
         this.type = CitationLinkType.getByName(type);
@@ -151,7 +162,7 @@ public class CitationLink {
 
     /**
      * 
-     * @param viewManager
+     * @param viewManager the ViewManager providing the current record context
      * @return Appropriate URL
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -183,51 +194,38 @@ public class CitationLink {
         return getValue();
     }
 
-    /**
-     * @return the type
-     */
+    
     public CitationLinkType getType() {
         return type;
     }
 
-    /**
-     * @return the level
-     */
+    
     public CitationLinkLevel getLevel() {
         return level;
     }
 
-    /**
-     * @return the label
-     */
+    
     public String getLabel() {
         return label;
     }
 
-    /**
-     * @return the field
-     */
+    
     public String getField() {
         return field;
     }
 
-    /**
-     * 
-     * @return the value
-     */
+    
     public String getValue() {
         return this.value;
     }
 
-    /**
-     * @param value the value to set
-     */
+    
     public void setValue(String value) {
         this.value = value;
     }
 
     /**
-     * @param field the field to set
+     * @param field the Solr field name from which the citation value is retrieved
      * @return this
      */
     public CitationLink setField(String field) {
@@ -235,15 +233,13 @@ public class CitationLink {
         return this;
     }
 
-    /**
-     * @return the pattern
-     */
+    
     public String getPattern() {
         return pattern;
     }
 
     /**
-     * @param pattern the pattern to set
+     * @param pattern the URL pattern template used to build the citation link, with placeholders for field values
      * @return this
      */
     public CitationLink setPattern(String pattern) {
@@ -251,15 +247,13 @@ public class CitationLink {
         return this;
     }
 
-    /**
-     * @return the topstructValueFallback
-     */
+    
     public boolean isTopstructValueFallback() {
         return topstructValueFallback;
     }
 
     /**
-     * @param topstructValueFallback the topstructValueFallback to set
+     * @param topstructValueFallback true to fall back to the top-level structure element's field value when the current element has none
      * @return this
      */
     public CitationLink setTopstructValueFallback(boolean topstructValueFallback) {

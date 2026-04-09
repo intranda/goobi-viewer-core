@@ -25,6 +25,10 @@ import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+/**
+ * Summarises usage statistics for a single request type over an optional date range,
+ * holding the total number of requests and the number of unique requests.
+ */
 public class RequestTypeSummary {
 
     private final long totalRequests;
@@ -39,10 +43,10 @@ public class RequestTypeSummary {
     }
 
     /**
-     * @param totalRequests
-     * @param uniqueRequests
-     * @param startDate
-     * @param endDate
+     * @param totalRequests total number of requests in the period
+     * @param uniqueRequests number of unique requests in the period
+     * @param startDate start of the reporting period
+     * @param endDate end of the reporting period
      */
     public RequestTypeSummary(long totalRequests, long uniqueRequests, LocalDate startDate, LocalDate endDate) {
         super();
@@ -52,16 +56,12 @@ public class RequestTypeSummary {
         this.endDate = endDate;
     }
 
-    /**
-     * @return the totalRequests
-     */
+    
     public long getTotalRequests() {
         return totalRequests;
     }
 
-    /**
-     * @return the uniqueRequests
-     */
+    
     public long getUniqueRequests() {
         return uniqueRequests;
     }

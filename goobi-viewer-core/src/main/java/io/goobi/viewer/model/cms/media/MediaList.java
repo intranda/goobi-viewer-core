@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * Contains a list of {@link MediaItem MediaItems} built from {@link CMSMediaItem CMSMediaItems}
+ * Contains a list of {@link MediaItem MediaItems} built from {@link CMSMediaItem CMSMediaItems}.
  */
 public class MediaList {
 
@@ -37,9 +37,7 @@ public class MediaList {
         this.mediaItems = items.stream().map(item -> new MediaItem(item, servletRequest)).collect(Collectors.toList());
     }
 
-    /**
-     * @return the mediaItems
-     */
+    
     public List<MediaItem> getMediaItems() {
         return mediaItems;
     }

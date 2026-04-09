@@ -32,10 +32,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 /**
- * Tools for parsing html
+ * Tools for parsing html.
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 public final class HtmlParser {
 
@@ -53,9 +52,9 @@ public final class HtmlParser {
     }
 
     /**
-     * Guess if the given text should be interpreted as html based in the existence of closing html tags or empty line break tags
+     * Guesses if the given text should be interpreted as html based on the existence of closing html tags or empty line break tags.
      *
-     * @param text
+     * @param text text to inspect for HTML markup
      * @return true if text is HTML content; false otherwise
      */
     public static boolean isHtml(String text) {
@@ -64,9 +63,9 @@ public final class HtmlParser {
     }
 
     /**
-     * Duplicate of {@link StringTools#stripJS(String)} because it seemed to fit here
+     * Duplicate of {@link StringTools#stripJS(String)} because it seemed to fit here.
      *
-     * @param s
+     * @param s string to strip of JavaScript
      * @return s stripped of any JavaScript
      */
     public static String stripJS(String s) {

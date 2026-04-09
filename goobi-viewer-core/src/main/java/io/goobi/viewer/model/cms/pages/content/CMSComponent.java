@@ -43,6 +43,10 @@ import jakarta.faces.component.UIComponent;
 import jakarta.faces.component.html.HtmlPanelGroup;
 import jakarta.faces.context.FacesContext;
 
+/**
+ * Represents a reusable UI component on a CMS page, combining a JSF component reference with
+ * ordered content items, display metadata, and optional access restrictions.
+ */
 public class CMSComponent implements Comparable<CMSComponent>, Serializable {
 
     private static final long serialVersionUID = -6820973601918866139L;
@@ -66,7 +70,7 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     private final PersistentCMSComponent persistentComponent;
 
     /**
-     * Used for sorting of component selection menu
+     * Used for sorting of component selection menu.
      */
     private final List<String> types;
 
@@ -76,9 +80,9 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     private CMSComponentScope scope = CMSComponentScope.PAGEVIEW;
 
     /**
-     * 
-     * @param template
-     * @param items
+     *
+     * @param template the component to copy structure from
+     * @param items content items to populate the new component with
      */
     public CMSComponent(CMSComponent template, List<CMSContentItem> items) {
         this(template.getJsfComponent(), template.getLabel(), template.getDescription(), template.types, template.getTemplateFilename(),
@@ -89,9 +93,9 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     }
 
     /**
-     * 
-     * @param template
-     * @param jpa
+     *
+     * @param template the component to copy structure and configuration from
+     * @param jpa optional persistentComponent to load persisted data from
      */
     public CMSComponent(CMSComponent template, Optional<PersistentCMSComponent> jpa) {
         this(template.getJsfComponent(), template.getLabel(), template.getDescription(), template.types, template.getTemplateFilename(),
@@ -108,18 +112,18 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     }
 
     /**
-     * 
-     * Constructor to create Component from template file
-     * 
-     * @param jsfComponent
-     * @param label
-     * @param description
-     * @param types
-     * @param templateFilename
-     * @param scope
-     * @param attributes
-     * @param properties
-     * @param order
+     *
+     * Constructor to create Component from template file.
+     *
+     * @param jsfComponent the JSF component used to render this CMS component
+     * @param label human-readable display label of the component
+     * @param description short description of the component's purpose
+     * @param types list of category type strings for the component selection menu
+     * @param templateFilename filename of the component template
+     * @param scope visibility scope of the component
+     * @param attributes map of configurable component attributes
+     * @param properties list of additional behaviour properties
+     * @param order display order position of the component
      */
     public CMSComponent(JsfComponent jsfComponent, String label, String description, List<String> types, String templateFilename,
             CMSComponentScope scope, Map<String, CMSComponentAttribute> attributes, List<Property> properties, Integer order) {
@@ -127,16 +131,17 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     }
 
     /**
-     * 
-     * @param jsfComponent
-     * @param label
-     * @param description
-     * @param types
-     * @param templateFilename
-     * @param scope
-     * @param attributes
-     * @param order
-     * @param jpa
+     *
+     * @param jsfComponent the JSF component used to render this CMS component
+     * @param label human-readable display label of the component
+     * @param description short description of the component's purpose
+     * @param types list of category type strings for the component selection menu
+     * @param templateFilename filename of the component template
+     * @param scope visibility scope of the component
+     * @param attributes map of configurable component attributes
+     * @param properties list of component properties
+     * @param order display order position of the component
+     * @param jpa optional persistentComponent to load persisted data from
      */
     private CMSComponent(JsfComponent jsfComponent, String label, String description, List<String> types, String templateFilename,
             CMSComponentScope scope, Map<String, CMSComponentAttribute> attributes, List<Property> properties, Integer order,
@@ -153,17 +158,14 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
         this.order = Optional.ofNullable(order).orElse(jpa.map(PersistentCMSComponent::getOrder).orElse(0));
     }
 
-    /**
-     * 
-     * @return the persistentComponent
-     */
+    
     public PersistentCMSComponent getPersistentComponent() {
         return persistentComponent;
     }
 
     /**
-     * 
-     * @param publicationState
+     *
+     * @param publicationState the publication state to set on the persistentComponent
      */
     public void setPublicationState(ContentItemPublicationState publicationState) {
         Optional.ofNullable(persistentComponent).ifPresent(p -> p.setPublicationState(publicationState));
@@ -176,8 +178,8 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     }
 
     /**
-     * 
-     * @param order
+     *
+     * @param order display order position of this component on the page
      */
     public void setOrder(int order) {
         Optional.ofNullable(persistentComponent).ifPresent(p -> p.setOrder(order));
@@ -189,8 +191,8 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     }
 
     /**
-     * 
-     * @param item
+     *
+     * @param item the content item to add to this component
      * @return true if item added successfully; false otherwise
      */
     public boolean addContentItem(CMSContentItem item) {
@@ -201,8 +203,8 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     }
 
     /**
-     * 
-     * @param item
+     *
+     * @param item the content item to remove from this component
      * @return true if item removed successfully; false otherwise
      */
     public boolean removeContentItem(CMSContentItem item) {
@@ -301,8 +303,8 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     }
 
     /**
-     * 
-     * @param uiComponent
+     *
+     * @param uiComponent the frontend JSF UI component to set
      */
     public void setUiComponent(UIComponent uiComponent) {
         this.uiComponent = uiComponent;
@@ -326,16 +328,16 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     }
 
     /**
-     * 
-     * @param backendUiComponent
+     *
+     * @param backendUiComponent the backend JSF UI component to set
      */
     public void setBackendUiComponent(UIComponent backendUiComponent) {
         this.backendUiComponent = backendUiComponent;
     }
 
     /**
-     * 
-     * @param key
+     *
+     * @param key attribute name to look up
      * @return {@link CMSComponentAttribute}
      */
     public CMSComponentAttribute getAttribute(String key) {
@@ -343,18 +345,18 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     }
 
     /**
-     * 
-     * @param key
-     * @param defaultValue
-     * @return a boolean
+     *
+     * @param key attribute name to look up
+     * @param defaultValue value returned when attribute is absent
+     * @return the boolean attribute value for the given key, or {@code defaultValue} if no such attribute is set
      */
     public boolean getBooleanAttributeValue(String key, boolean defaultValue) {
         return Optional.ofNullable(this.attributes).map(map -> map.get(key)).map(CMSComponentAttribute::getBooleanValue).orElse(defaultValue);
     }
 
     /**
-     * 
-     * @param key
+     *
+     * @param key attribute name to look up
      * @return {@link String}
      */
     public String getAttributeValue(String key) {
@@ -362,9 +364,9 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     }
 
     /**
-     * 
-     * @param key
-     * @param value
+     *
+     * @param key name of the attribute to set
+     * @param value new string value to assign to the attribute
      */
     public void setAttribute(String key, String value) {
         CMSComponentAttribute attr = this.attributes.get(key);
@@ -377,9 +379,9 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     }
 
     /**
-     * 
-     * @param key
-     * @param value
+     *
+     * @param key name of the attribute to toggle
+     * @param value value to set, or clear if already set
      */
     public void toggleAttribute(String key, String value) {
         String oldValue = getAttribute(key).getValue();
@@ -401,8 +403,8 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     }
 
     /**
-     * 
-     * @param published
+     *
+     * @param published true to publish the component; false to restrict to admins
      */
     public void setPublished(boolean published) {
         setPublicationState(published ? ContentItemPublicationState.PUBLISHED : ContentItemPublicationState.ADMINISTRATOR);
@@ -413,8 +415,8 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     }
 
     /**
-     * 
-     * @param privat
+     *
+     * @param privat true to restrict component visibility to admins
      */
     public void setPrivate(boolean privat) {
         setPublished(!privat);
@@ -430,10 +432,10 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
 
     /**
      * Create a new CMSContentItem based on the given item and populated with a CMSContent from the given contentData list with a
-     * {@link CMSContent#getItemId()} equals to the item's {@link CMSContentItem#getItemId()}
+     * {@link CMSContent#getItemId()} equals to the item's {@link CMSContentItem#getItemId()}.
      * 
-     * @param item
-     * @param contentData
+     * @param item the template content item providing structure and ID
+     * @param contentData list of persisted content objects to match against
      * @return {@link CMSContentItem}
      */
     private CMSContentItem populateContentItem(CMSContentItem item, List<CMSContent> contentData) {
@@ -467,9 +469,9 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     }
 
     /**
-     * 
-     * @param user
-     * @return a boolean
+     *
+     * @param user the user whose access rights to check; may be null
+     * @return true if the component is published, or if the given user is a CMS admin, false otherwise
      */
     public boolean hasAccess(User user) {
         if (isPublished()) {
@@ -479,8 +481,8 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     }
 
     /**
-     * 
-     * @param itemId
+     *
+     * @param itemId ID of the content item to retrieve data for
      * @return {@link String}
      */
     public String getContentData(String itemId) {
@@ -488,10 +490,10 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     }
 
     /**
-     * 
-     * @param itemId
-     * @param width
-     * @param height
+     *
+     * @param itemId ID of the content item to retrieve data for
+     * @param width optional width constraint passed to the content's getData method
+     * @param height optional height constraint passed to the content's getData method
      * @return {@link String}
      */
     public String getContentData(String itemId, Integer width, Integer height) {
@@ -504,9 +506,9 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     }
 
     /**
-     * Check whether a contentItem with the given itemId exists and is not empty
+     * Checks whether a contentItem with the given itemId exists and is not empty.
      * 
-     * @param itemId
+     * @param itemId ID of the content item to check
      * @return true if the contentItem with the given itemId exists and its {@link CMSContent#isEmpty()} method returns false
      */
     public boolean hasContent(String itemId) {
@@ -518,16 +520,16 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     }
 
     /**
-     * Set wether this component should be displayed when the owning page is embedded in another page, rather than on the owning page itself
-     * 
-     * @param preview
+     * Sets whether this component should be displayed when the owning page is embedded in another page, rather than on the owning page itself.
+     *
+     * @param preview true to set scope to preview; false for normal page view
      */
     public void setPreview(boolean preview) {
         this.scope = preview ? CMSComponentScope.PREVIEW : CMSComponentScope.PAGEVIEW;
     }
 
     /**
-     * whether this component should be displayed when the owning page is embedded in another page, rather than on the owning page itself
+     * Returns whether this component should be displayed when the owning page is embedded in another page, rather than on the owning page itself.
      * 
      * @return true if scope is CMSComponentScope.PREVIEW; false otherwise
      */
@@ -584,11 +586,11 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     }
 
     /**
-     * Additional properties that can be passed to the component to set certain behaviour
+     * Additional properties that can be passed to the component to set certain behaviour.
      */
     public static enum Property {
         /**
-         * Applicable to any search related content: Enforce faceting on page load
+         * Applicable to any search related content: Enforce faceting on page load.
          */
         FORCE_FACETING;
 

@@ -44,7 +44,7 @@ import io.goobi.viewer.model.security.user.UserTools;
  * the dao Appplies a fixed list of {@link IModelUpdate IModelUpdates} to the {@link io.goobi.viewer.dao.IDAO} which are responsible to make the
  * required changes
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class DatabaseUpdater {
 
@@ -54,12 +54,10 @@ public class DatabaseUpdater {
     private final CMSTemplateManager templateManager;
 
     /**
-     * <p>
-     * Constructor for DatabaseUpdater.
-     * </p>
+     * Creates a new DatabaseUpdater instance.
      *
      * @param dao a {@link io.goobi.viewer.dao.IDAO} object.
-     * @param templateManager
+     * @param templateManager CMS template manager used during update
      */
     public DatabaseUpdater(IDAO dao, CMSTemplateManager templateManager) {
         this.dao = dao;
@@ -67,9 +65,7 @@ public class DatabaseUpdater {
     }
 
     /**
-     * <p>
      * update.
-     * </p>
      */
     public void update() {
         List<IModelUpdate> updates = instantiateUpdater();

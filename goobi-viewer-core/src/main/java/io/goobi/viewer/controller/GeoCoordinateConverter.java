@@ -77,10 +77,9 @@ import jakarta.ws.rs.core.UriBuilder;
 import mil.nga.sf.geojson.Geometry;
 
 /**
- * Utility methods for converting geo-coordinated between different formats
+ * Utility methods for converting geo-coordinated between different formats.
  * 
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class GeoCoordinateConverter {
 
@@ -122,13 +121,13 @@ public class GeoCoordinateConverter {
     }
 
     /**
-     * Collect all point coordinate in the given coordinate fields from solr documents returned by the given solr query
+     * Collects all point coordinates in the given coordinate fields from solr documents returned by the given solr query.
      * 
      * @param query Solr query to get documents
      * @param filterQueries filter for solr query
      * @param coordinateFields fields containing the coordinate points to collect
      * @param markerTitleField solr field containing a title for the coordinates
-     * @param aggregateResults
+     * @param aggregateResults if true, group coordinates from child documents under their parent
      * @return a list of {@link GeoMapFeature}
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -278,10 +277,10 @@ public class GeoCoordinateConverter {
     }
 
     /**
-     * Collect all point coordinate in the given metadata field within the given solr document
+     * Collects all point coordinates in the given metadata field within the given solr document.
      * 
      * @param doc the document containing the coordinates
-     * @param children
+     * @param children child Solr documents associated with the parent doc
      * @param metadataField The name of the solr field to search in
      * @param titleField solr field containing a title for the coordinates
      * @return Collection<GeoMapFeature>
@@ -456,7 +455,7 @@ public class GeoCoordinateConverter {
     }
 
     /**
-     * Parse geo-coordinates from all fields of the given name fromt the given list of SOLR documents
+     * Parses geo-coordinates from all fields of the given name from the given list of SOLR documents.
      * 
      * @param solrFieldName Name of the SOLR fields to parse
      * @param results Documents to parse
@@ -487,7 +486,7 @@ public class GeoCoordinateConverter {
     }
 
     /**
-     * Parse geo-coordinates from the value of a SOLR field
+     * Parses geo-coordinates from the value of a SOLR field.
      * 
      * @param o SOLR field value
      * @return a list of {@link IArea} representing the locations from the given value
@@ -528,8 +527,8 @@ public class GeoCoordinateConverter {
 
     /**
      * 
-     * @param x
-     * @param y
+     * @param x longitude or x-coordinate value (String or Number)
+     * @param y latitude or y-coordinate value (String or Number)
      * @return Parsed point as a double[]
      */
     private static double[] parsePoint(Object x, Object y) {

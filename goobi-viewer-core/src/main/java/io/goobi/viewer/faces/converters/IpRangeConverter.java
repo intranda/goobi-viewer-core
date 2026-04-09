@@ -31,9 +31,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.security.user.IpRange;
 
 /**
- * <p>
- * UserConverter class.
- * </p>
+ * JSF converter that maps between an {@link io.goobi.viewer.model.security.user.IpRange} object and its string representation.
  */
 @FacesConverter("ipRangeConverter")
 public class IpRangeConverter implements Converter<IpRange> {

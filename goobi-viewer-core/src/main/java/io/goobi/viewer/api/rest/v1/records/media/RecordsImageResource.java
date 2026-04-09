@@ -34,6 +34,7 @@ import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -55,13 +56,18 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.faces.validators.PIValidator;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
- * @author florian
+ * REST resource providing IIIF Image API endpoints for accessing page images of digitized records.
  *
+ * @author Florian Alpers
  */
 @Path(RECORDS_RECORD)
 public class RecordsImageResource {
@@ -75,14 +81,18 @@ public class RecordsImageResource {
     private final String pi;
 
     /**
-     * @param pi
+     * @param pi persistent identifier of the record
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
     public RecordsImageResource(
-            @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) {
+            @Parameter(description = "Persistent identifier of the record",
+                    schema = @Schema(pattern = "^[A-Za-z0-9][A-Za-z0-9_.-]*$")) @PathParam("pi") String pi) {
+        // Validate PI to prevent downstream errors from control characters or special chars
+        if (!PIValidator.validatePi(pi)) {
+            throw new BadRequestException("Invalid record identifier: " + pi);
+        }
         this.pi = pi;
-
     }
 
     @GET
@@ -93,6 +103,7 @@ public class RecordsImageResource {
                     + " Returns a IIIF 2.1.1 image information object",
             tags = { "iiif", "records" })
     @ApiResponse(responseCode = "200", description = "Get the IIIF image information object as json")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "404", description = "Either the record or the file for the representative image doesn't exist")
     @ApiResponse(responseCode = "500", description = "Internal error reading image or querying index")
     public Response getImageBase() throws URISyntaxException {
@@ -102,9 +113,15 @@ public class RecordsImageResource {
                 .build();
     }
 
+    @Hidden
     @GET
     @Path(RECORDS_IMAGE_INFO)
     @Produces({ MediaType.APPLICATION_JSON, ContentServerResource.MEDIA_TYPE_APPLICATION_JSONLD })
+    @Operation(summary = "Get IIIF image information for the representative image of a record", tags = { "records", "images", "iiif" })
+    @ApiResponse(responseCode = "200", description = "IIIF image information object",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @ApiResponse(responseCode = "404", description = "Record or representative image not found")
+    @ApiResponse(responseCode = "500", description = "Internal error reading image or querying index")
     public String getImageInfo() throws PresentationException, IndexUnreachableException, ServletException, IOException, ContentNotFoundException {
         String filename = getRepresentativeFilename(pi);
         String forwardUrl = new ApiUrls(ApiUrls.API).path(ApiUrls.RECORDS_FILES_IMAGE, ApiUrls.RECORDS_FILES_IMAGE_INFO).params(pi, filename).build();
@@ -113,9 +130,14 @@ public class RecordsImageResource {
         return "";
     }
 
+    @Hidden
     @GET
     @Path(RECORDS_IMAGE_IIIF)
     @Produces({ "image/jpg", "image/png", "image/tif" })
+    @Operation(summary = "Serve IIIF image of the representative image of a record", tags = { "records", "images", "iiif" })
+    @ApiResponse(responseCode = "200", description = "Image content", content = @Content(mediaType = "image/*"))
+    @ApiResponse(responseCode = "404", description = "Record or representative image not found")
+    @ApiResponse(responseCode = "500", description = "Internal error reading image or querying index")
     public String getImage(
             @PathParam("region") String region, @PathParam("size") String size,
             @PathParam("rotation") String rotation, @PathParam("quality") String quality,
@@ -131,7 +153,7 @@ public class RecordsImageResource {
     }
 
     /**
-     * @param pi
+     * @param pi persistent identifier of the record
      * @return Representative image file name for the given record pi
      * @throws PresentationException
      * @throws IndexUnreachableException

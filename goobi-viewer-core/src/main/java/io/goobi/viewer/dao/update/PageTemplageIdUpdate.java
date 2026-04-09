@@ -28,6 +28,10 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
+/**
+ * Database migration step that renames the legacy {@code TEMPLATEID} column in {@code cms_pages}
+ * to {@code page_template_id} and clears stale template ownership references on CMS components.
+ */
 public class PageTemplageIdUpdate implements IModelUpdate {
 
     @SuppressWarnings("unchecked")

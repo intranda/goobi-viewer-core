@@ -60,6 +60,10 @@ import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
 
+/**
+ * Servlet context listener that initializes and shuts down the Quartz scheduler on application startup and shutdown.
+ * It registers all configured recurring task triggers and makes the message queue manager available to scheduled jobs.
+ */
 @WebListener
 public class QuartzListener implements ServletContextListener {
 
@@ -90,7 +94,7 @@ public class QuartzListener implements ServletContextListener {
     }
 
     /**
-     * Restarts timed Jobs
+     * Restarts timed Jobs.
      * 
      * @throws SchedulerException
      */
@@ -100,7 +104,7 @@ public class QuartzListener implements ServletContextListener {
     }
 
     /**
-     * Stops timed updates of HistoryManager
+     * Stops timed updates of HistoryManager.
      * 
      * @throws SchedulerException
      */
@@ -110,10 +114,10 @@ public class QuartzListener implements ServletContextListener {
     }
 
     /**
-     * Starts timed updates of {@link HistoryAnalyserJob}
+     * Starts timed updates of {@link HistoryAnalyserJob}.
      * 
-     * @param servletContext
-     * 
+     * @param servletContext servlet context providing deployment path information
+     *
      * @throws SchedulerException
      */
     private void startTimedJobs(ServletContext servletContext) throws SchedulerException {
@@ -210,11 +214,11 @@ public class QuartzListener implements ServletContextListener {
     }
 
     /**
-     * initializes given IViewerJob to run every minute
+     * initializes given IViewerJob to run every minute.
      *
-     * @param goobiJob
-     * @param sched
-     * @param minutes
+     * @param goobiJob job implementation to schedule
+     * @param sched Quartz scheduler to register the job with
+     * @param minutes interval in minutes between executions
      * @throws SchedulerException
      */
     public static void initializeMinutelyJob(IViewerJob goobiJob, Scheduler sched, int minutes) throws SchedulerException {
@@ -231,11 +235,11 @@ public class QuartzListener implements ServletContextListener {
     }
 
     /**
-     * initializes given IViewerJob to run every hour
+     * initializes given IViewerJob to run every hour.
      *
-     * @param goobiJob
-     * @param sched
-     * @param hours
+     * @param goobiJob job implementation to schedule
+     * @param sched Quartz scheduler to register the job with
+     * @param hours interval in hours between executions
      * @throws SchedulerException
      */
     public static void initializeHourlyJob(IViewerJob goobiJob, Scheduler sched, int hours) throws SchedulerException {
@@ -256,10 +260,10 @@ public class QuartzListener implements ServletContextListener {
     }
 
     /**
-     * initializes given IViewerJob to run every day at midnight
-     * 
-     * @param goobiJob
-     * @param sched
+     * initializes given IViewerJob to run every day at midnight.
+     *
+     * @param goobiJob job implementation to schedule
+     * @param sched Quartz scheduler to register the job with
      * @throws SchedulerException
      */
     public static void initializeDailyJob(IViewerJob goobiJob, Scheduler sched) throws SchedulerException {
@@ -274,10 +278,10 @@ public class QuartzListener implements ServletContextListener {
     }
 
     /**
-     * execute a given IViewerJob a single time
-     * 
-     * @param goobiJob
-     * @param sched
+     * execute a given IViewerJob a single time.
+     *
+     * @param goobiJob job implementation to execute once
+     * @param sched Quartz scheduler to register the job with
      * @throws SchedulerException
      */
     public static void executeJobOnce(IViewerJob goobiJob, Scheduler sched) throws SchedulerException {
@@ -289,10 +293,10 @@ public class QuartzListener implements ServletContextListener {
     }
 
     /**
-     * initializes given IViewerJob to run at specified times
-     * 
-     * @param goobiJob
-     * @param sched
+     * initializes given IViewerJob to run at specified times.
+     *
+     * @param goobiJob job implementation providing its own cron expression
+     * @param sched Quartz scheduler to register the job with
      * @return {@link JobDetail}
      * @throws SchedulerException
      */

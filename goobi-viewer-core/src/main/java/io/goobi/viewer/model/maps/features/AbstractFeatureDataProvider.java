@@ -36,6 +36,10 @@ import io.goobi.viewer.model.maps.GlobalFeatureDataProvider;
 import io.goobi.viewer.model.maps.SolrSearchScope;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
+/**
+ * Abstract base class for geo map feature data providers that execute Solr queries and convert
+ * the results into {@link MetadataDocument} instances for downstream feature generation.
+ */
 public abstract class AbstractFeatureDataProvider implements IFeatureDataProvider {
 
     private final SolrSearchIndex searchIndex;

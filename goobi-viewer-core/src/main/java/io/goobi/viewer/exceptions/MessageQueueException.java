@@ -21,6 +21,10 @@
  */
 package io.goobi.viewer.exceptions;
 
+/**
+ * Thrown when an operation on the internal message queue fails, for example when a message cannot
+ * be enqueued, dispatched, or acknowledged.
+ */
 public class MessageQueueException extends Exception {
 
     private static final long serialVersionUID = -4516634796883317517L;

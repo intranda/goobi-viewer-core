@@ -46,6 +46,10 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.mail.MessagingException;
 
+/**
+ * JSF request-scoped backing bean for the user feedback form. Collects and validates user input,
+ * then sends the feedback as an e-mail to the configured recipient address.
+ */
 @Named
 @RequestScoped
 public class FeedbackBean implements Serializable {
@@ -85,9 +89,7 @@ public class FeedbackBean implements Serializable {
     }
 
     /**
-     * <p>
      * createFeedback.
-     * </p>
      */
     public void createFeedback() {
 
@@ -111,12 +113,10 @@ public class FeedbackBean implements Serializable {
     }
 
     /**
-     * <p>
      * submitFeedbackAction.
-     * </p>
      *
-     * @param setCurrentUrl
-     * @return a {@link java.lang.String} object.
+     * @param setCurrentUrl if true, uses the current URL as feedback URL; otherwise uses the referrer
+     * @return an empty string after attempting to submit the feedback form
      */
     public String submitFeedbackAction(boolean setCurrentUrl) {
         // Check whether the security question has been answered correct, if configured
@@ -188,22 +188,18 @@ public class FeedbackBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>feedback</code>.
-     * </p>
      *
-     * @return the feedback
+     * @return the Feedback object containing the user's feedback data
      */
     public Feedback getFeedback() {
         return feedback;
     }
 
     /**
-     * <p>
      * Setter for the field <code>feedback</code>.
-     * </p>
      *
-     * @param feedback the feedback to set
+     * @param feedback the Feedback object containing the user's feedback data
      */
     public void setFeedback(Feedback feedback) {
         this.feedback = feedback;
@@ -225,58 +221,42 @@ public class FeedbackBean implements Serializable {
         return this.captchaBean;
     }
 
-    /**
-     * @param captchaBean the captchaBean to set
-     */
+    
     void setCaptchaBean(CaptchaBean captchaBean) {
         this.captchaBean = captchaBean;
     }
 
-    /**
-     * @return the userBean
-     */
+    
     UserBean getUserBean() {
         return userBean;
     }
 
-    /**
-     * @param userBean the userBean to set
-     */
+    
     void setUserBean(UserBean userBean) {
         this.userBean = userBean;
     }
 
-    /**
-     * @return the navigationHelper
-     */
+    
     NavigationHelper getNavigationHelper() {
         return navigationHelper;
     }
 
-    /**
-     * @param navigationHelper the navigationHelper to set
-     */
+    
     void setNavigationHelper(NavigationHelper navigationHelper) {
         this.navigationHelper = navigationHelper;
     }
 
-    /**
-     * @return the emailSender
-     */
+    
     EMailSender getEmailSender() {
         return emailSender;
     }
 
-    /**
-     * @param emailSender the emailSender to set
-     */
+    
     void setEmailSender(EMailSender emailSender) {
         this.emailSender = emailSender;
     }
 
-    /**
-     * @param facesContext the facesContext to set
-     */
+    
     void setFacesContext(FacesContext facesContext) {
         this.facesContext = facesContext;
     }

@@ -30,22 +30,18 @@ import org.apache.commons.lang3.StringUtils;
 import io.goobi.viewer.model.translations.Translation;
 
 /**
- * <p>
- * MessagesTranslation class.
- * </p>
+ * Represents a single translated message entry with its locale and value.
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class MessagesTranslation extends Translation {
 
     /**
-     * <p>
-     * Constructor for MessagesTranslation.
-     * </p>
+     * Creates a new MessagesTranslation instance.
      *
-     * @param key a {@link java.lang.String} object.
-     * @param value a {@link java.lang.String} object.
-     * @param language a {@link java.lang.String} object.
+     * @param key message key identifying the translation entry
+     * @param value translated text for the given language
+     * @param language ISO language code for this translation
      */
     public MessagesTranslation(String key, String value, String language) {
         super(language, key, value);
@@ -53,12 +49,10 @@ public class MessagesTranslation extends Translation {
     }
 
     /**
-     * <p>
      * getTranslations.
-     * </p>
      *
-     * @param key a {@link java.lang.String} object.
-     * @return a {@link java.util.Collection} object.
+     * @param key message key to look up across all configured locales
+     * @return the collection of translations for the given message key across all configured locales
      */
     public static Collection<Translation> getTranslations(String key) {
         Collection<Translation> translations = new ArrayList<>();

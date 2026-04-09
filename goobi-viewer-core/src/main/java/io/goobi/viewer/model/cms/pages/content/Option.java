@@ -23,6 +23,10 @@ package io.goobi.viewer.model.cms.pages.content;
 
 import java.io.Serializable;
 
+/**
+ * Immutable value/label pair used as a selectable option within a {@link CMSComponentAttribute},
+ * where {@code value} is the stored string and {@code label} is the human-readable display text.
+ */
 public class Option implements Serializable {
 
     private static final long serialVersionUID = 4905547711950322458L;
@@ -31,8 +35,8 @@ public class Option implements Serializable {
     private final String label;
 
     /**
-     * @param value
-     * @param label
+     * @param value the option value
+     * @param label the display label
      */
     public Option(String value, String label) {
         super();

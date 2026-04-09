@@ -24,6 +24,12 @@ package io.goobi.viewer.controller.sorting;
 import java.util.Comparator;
 import java.util.function.Function;
 
+/**
+ * Comparator that orders elements by the integer value of their string representation, falling back
+ * to lexicographic comparison when parsing fails, with support for ascending or descending order.
+ *
+ * @param <T> the type of elements to be compared
+ */
 public class NumericComparator<T> implements Comparator<T> {
 
     private final int reverse;

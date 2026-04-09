@@ -21,6 +21,9 @@
  */
 package io.goobi.viewer.model.security;
 
+/**
+ * Minimal interface for license type objects, requiring only a name accessor.
+ */
 public interface ILicenseType {
 
     public String getName();

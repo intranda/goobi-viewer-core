@@ -41,7 +41,7 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
- * Build a simple search String for a {@link SearchBean}
+ * Builds a simple search String for a {@link SearchBean}.
  */
 public final class SimpleQueryBuilder {
 
@@ -162,7 +162,7 @@ public final class SimpleQueryBuilder {
                 continue;
             }
 
-            if ("\\|\\|".equals(term) && it.hasNext() && !prepared.isEmpty()) {
+            if ("||".equals(term) && it.hasNext() && !prepared.isEmpty()) {
                 String prev = prepared.remove(prepared.size() - 1);
                 String next = cleanTerm(it.next());
                 prepared.add(prev + " OR " + next);

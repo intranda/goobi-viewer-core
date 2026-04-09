@@ -24,40 +24,44 @@ package io.goobi.viewer.model.job;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.modules.IModule;
 
+/**
+ * Enumerates the built-in asynchronous task types available in the Goobi viewer, each carrying
+ * a default Quartz cron expression (empty string for on-demand tasks without a fixed schedule).
+ */
 public enum TaskType implements ITaskType {
-    /** Send emails to all search owners if their searches have changed results */
+    /** Send emails to all search owners if their searches have changed results. */
     NOTIFY_SEARCH_UPDATE("0 42 8,12,17 * * ?"),
     /** Remove expired IIIF authorization bearer tokens from application scope. */
     PURGE_EXPIRED_BEARER_TOKENS("0 0 * * * ?"),
-    /** Remove expired born digital content download tickets from the DB */
+    /** Remove expired born digital content download tickets from the DB. */
     PURGE_EXPIRED_DOWNLOAD_TICKETS("0 40 0 * * ?"),
-    /** Handle asynchronous generation of excel sheets with search results */
+    /** Handle asynchronous generation of excel sheets with search results. */
     SEARCH_EXCEL_EXPORT(""),
-    /** Update the application sitemap */
+    /** Update the application sitemap. */
     UPDATE_SITEMAP("0 50 0 * * ?"),
-    /** Update data repository names of a record */
+    /** Update data repository names of a record. */
     UPDATE_DATA_REPOSITORY_NAMES(""),
     /** Update uploaded processes status. */
     UPDATE_UPLOAD_JOBS("0 42 0 * * ?"),
-    /** Move daily usage statistics to SOLR */
+    /** Move daily usage statistics to SOLR. */
     INDEX_USAGE_STATISTICS("0 45 0 * * ?"),
-    /** Create a PDF for a record or part of record to be offered as download **/
+    /** Create a PDF for a record or part of record to be offered as download. */
     DOWNLOAD_PDF(""),
-    /** Create a EPUB for a record or part of record to be offered as download **/
+    /** Create a EPUB for a record or part of record to be offered as download. */
     DOWNLOAD_EPUB(""),
-    /** Write single page pdfs to storage to be used when creating a full record pdf **/
+    /** Write single page pdfs to storage to be used when creating a full record pdf. */
     PRERENDER_PDF("0 35 0 * * ?"),
-    /** Fill all CMS-Geomaps with features from SOLR to avoid loading that data during page load */
+    /** Fill all CMS-Geomaps with features from SOLR to avoid loading that data during page load. */
     CACHE_GEOMAPS("0 0 * * * ?"),
-    /** Download a zip archive from a url and extract it so its content may be offered for download */
+    /** Download a zip archive from a url and extract it so its content may be offered for download. */
     DOWNLOAD_EXTERNAL_RESOURCE(""),
-    /** Delete a resource previously downloaded by {@link #DOWNLOAD_EXTERNAL_RESOURCE} */
+    /** Delete a resource previously downloaded by {@link #DOWNLOAD_EXTERNAL_RESOURCE}. */
     DELETE_RESOURCE(""),
-    /** Pull the git repository of the viewer theme if it exists in the configured location */
+    /** Pull the git repository of the viewer theme if it exists in the configured location. */
     PULL_THEME("0 */1 * * * ?"),
     /** Unload archive trees if any associated records have been reindexed. */
     REFRESH_ARCHIVE_TREE(""),
-    /** Check the pdf-download folder and delete all pdf files which are not locked and last accessed 15 days ago */
+    /** Check the pdf-download folder and delete all pdf files which are not locked and last accessed 15 days ago. */
     PURGE_EXPIRED_DOWNLOAD_PDFS("0 0 3 * * ?");
 
     private final String defaultCronExpression;
@@ -68,7 +72,7 @@ public enum TaskType implements ITaskType {
 
     /**
      * 
-     * @param name
+     * @param name task type name to look up
      * @return {@link ITaskType}
      */
     public static ITaskType getByName(String name) {

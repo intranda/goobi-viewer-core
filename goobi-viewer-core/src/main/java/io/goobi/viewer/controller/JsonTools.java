@@ -67,9 +67,7 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
- * <p>
- * JsonTools class.
- * </p>
+ * Utility class providing JSON serialisation and deserialisation helpers.
  */
 public final class JsonTools {
 
@@ -97,11 +95,11 @@ public final class JsonTools {
      * Returns a <code>JSONArray</code> containing JSON objects for every <code>SolrDocument</code> in the given result. Order remains the same as in
      * the result list.
      *
-     * @param result a {@link org.apache.solr.common.SolrDocumentList} object.
-     * @param expanded
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @param languageToTranslate
-     * @return a {@link org.json.JSONArray} object.
+     * @param result Solr result list to serialize as JSON
+     * @param expanded map of expanded child documents keyed by PI
+     * @param request HTTP request used for access permission checks
+     * @param languageToTranslate BCP 47 language tag for translating field names and values
+     * @return a JSON array of record objects built from the Solr result list
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -156,8 +154,8 @@ public final class JsonTools {
     }
 
     /**
-     * @param doc
-     * @param locale
+     * @param doc Solr document to serialize
+     * @param locale locale for translating field names and values, or null for no translation
      * @return Given Solr doc as {@link JSONObject}
      * @throws JsonProcessingException
      */
@@ -175,10 +173,10 @@ public final class JsonTools {
     }
 
     /**
-     * 
-     * @param <T>
-     * @param json
-     * @param clazz
+     *
+     * @param <T> target type to deserialize into
+     * @param json JSON string to deserialize
+     * @param clazz target class to deserialize into
      * @return T
      * @throws IOException
      */
@@ -189,8 +187,8 @@ public final class JsonTools {
     }
 
     /**
-     * 
-     * @param value
+     *
+     * @param value object to convert to a JSON-compatible type
      * @return {@link Object}
      */
     public static Object getAsObjectForJson(final Object value) {
@@ -233,8 +231,8 @@ public final class JsonTools {
     }
 
     /**
-     * @param locale
-     * @param object
+     * @param locale locale to translate field names and string values to
+     * @param object JSON object whose keys and string values to translate
      * @return object translated to locale
      */
     public static JSONObject translateJSONObject(Locale locale, final JSONObject object) {
@@ -258,9 +256,9 @@ public final class JsonTools {
     /**
      * JSON array of records grouped by their import date.
      *
-     * @param result a {@link org.apache.solr.common.SolrDocumentList} object.
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @return a {@link org.json.JSONArray} object.
+     * @param result Solr result list to group by import date
+     * @param request HTTP request used for access permission checks
+     * @return a JSON array of record objects grouped by import date
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -322,10 +320,10 @@ public final class JsonTools {
     /**
      * Creates a single <code>JSONObject</code> with metadata for the given record <code>SolrDocument</code>.
      *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
-     * @param rootUrl a {@link java.lang.String} object.
-     * @param thumbs
-     * @return a {@link org.json.JSONObject} object.
+     * @param doc Solr document containing record metadata
+     * @param rootUrl base URL used to construct the record page URL
+     * @param thumbs handler for generating thumbnail URLs
+     * @return a JSON object containing metadata for the given Solr document
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @should add all metadata
      */
@@ -336,11 +334,11 @@ public final class JsonTools {
     /**
      * Creates a single <code>JSONObject</code> with metadata for the given record <code>SolrDocument</code>.
      *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
-     * @param rootUrl a {@link java.lang.String} object.
-     * @param language a {@link java.lang.String} object.
-     * @param thumbs
-     * @return a {@link org.json.JSONObject} object.
+     * @param doc Solr document containing record metadata
+     * @param rootUrl base URL used to construct the record page URL
+     * @param language language code for title field selection
+     * @param thumbs handler for generating thumbnail URLs
+     * @return a JSON object containing metadata for the given Solr document
      * @should add all metadata
      */
     public static JSONObject getRecordJsonObject(SolrDocument doc, String rootUrl, String language, ThumbnailHandler thumbs) {
@@ -459,8 +457,8 @@ public final class JsonTools {
     }
 
     /**
-     * 
-     * @param json
+     *
+     * @param json JSON version string from a component endpoint
      * @return {@link String} containing value of "version" from json
      */
     public static String getVersion(String json) {
@@ -468,8 +466,8 @@ public final class JsonTools {
     }
 
     /**
-     * 
-     * @param json
+     *
+     * @param json JSON version string from a component endpoint
      * @return {@link String} containing value of "git-revision" from json
      */
     public static String getGitRevision(String json) {
@@ -477,9 +475,9 @@ public final class JsonTools {
     }
 
     /**
-     * 
-     * @param json
-     * @param field
+     *
+     * @param json JSON version string from a component endpoint
+     * @param field key to look up in the JSON object
      * @return {@link String} containg value of field form json
      */
     static String getValue(String json, String field) {
@@ -499,7 +497,7 @@ public final class JsonTools {
     }
 
     /**
-     * Return the string value of the given key in the json object or within another json object nested somewhere within the original object. If the
+     * Returns the string value of the given key in the json object or within another json object nested somewhere within the original object. If the
      * key is not found anywhere within the object, an empty string is returned. If the value to the key is anything other than a string, a
      * stringified version of the object is returned. This method cannot parse arrays within array. If the key is within that, an empty string is also
      * returned

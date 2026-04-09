@@ -41,8 +41,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "theme_configuration")
@@ -77,7 +76,7 @@ public class ThemeConfiguration {
     private List<ThemeLink> footerLinks = new ArrayList<>();
 
     /**
-     * Creates the internal lists for theme links
+     * Creates the internal lists for theme links.
      */
     public ThemeConfiguration() {
         this.socialMediaUrls = Arrays.stream(ThemeLink.SocialMediaService.values()).map(ThemeLink::new).collect(Collectors.toList());
@@ -88,9 +87,9 @@ public class ThemeConfiguration {
     }
 
     /**
-     * sets the name and calls default constructor
+     * Sets the name and calls default constructor.
      * 
-     * @param themeName
+     * @param themeName the name of the theme
      */
     public ThemeConfiguration(String themeName) {
         this();
@@ -99,7 +98,7 @@ public class ThemeConfiguration {
 
     /**
      * 
-     * @param orig
+     * @param orig the theme configuration to copy from
      */
     public ThemeConfiguration(ThemeConfiguration orig) {
         this.id = orig.id;
@@ -114,72 +113,52 @@ public class ThemeConfiguration {
         this.footerLinks = orig.footerLinks.stream().map(l -> new ThemeLink(l.getService(), l.getLinkUrl())).collect(Collectors.toList());
     }
 
-    /**
-     * @return the label
-     */
+    
     public String getLabel() {
         return label;
     }
 
-    /**
-     * @param label the label to set
-     */
+    
     public void setLabel(String label) {
         this.label = label;
     }
 
-    /**
-     * @return the styleSheet
-     */
+    
     public String getStyleSheet() {
         return styleSheet;
     }
 
-    /**
-     * @param styleSheet the styleSheet to set
-     */
+    
     public void setStyleSheet(String styleSheet) {
         this.styleSheet = styleSheet;
     }
 
-    /**
-     * @return the socialMediaUrls
-     */
+    
     public List<ThemeLink> getSocialMediaUrls() {
         return socialMediaUrls;
     }
 
-    /**
-     * @param socialMediaUrls the socialMediaUrls to set
-     */
+    
     public void setSocialMediaUrls(List<ThemeLink> socialMediaUrls) {
         this.socialMediaUrls = socialMediaUrls;
     }
 
-    /**
-     * @return the footerLinks
-     */
+    
     public List<ThemeLink> getFooterLinks() {
         return footerLinks;
     }
 
-    /**
-     * @param footerLinks the footerLinks to set
-     */
+    
     public void setFooterLinks(List<ThemeLink> footerLinks) {
         this.footerLinks = footerLinks;
     }
 
-    /**
-     * @return the name
-     */
+    
     public String getName() {
         return name;
     }
 
-    /**
-     * @return the id
-     */
+    
     public Long getId() {
         return id;
     }

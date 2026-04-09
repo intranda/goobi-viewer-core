@@ -37,6 +37,10 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
+/**
+ * Feature data provider that retrieves structural document elements (DOCTYPE:DOCSTRCT) from Solr
+ * for use in geo map feature generation, supporting large result sets via query expansion.
+ */
 public class DocStructDataProvider extends AbstractFeatureDataProvider {
 
     private static final int MAX_DOCSTRUCTS_PER_RECORD = 5000;

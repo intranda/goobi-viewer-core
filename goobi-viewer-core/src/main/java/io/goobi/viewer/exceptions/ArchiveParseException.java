@@ -21,6 +21,10 @@
  */
 package io.goobi.viewer.exceptions;
 
+/**
+ * Thrown when the content of an archive resource cannot be parsed, for example due to malformed
+ * EAD/XML data.
+ */
 public class ArchiveParseException extends ArchiveException {
 
     private static final long serialVersionUID = -8622251494945435687L;

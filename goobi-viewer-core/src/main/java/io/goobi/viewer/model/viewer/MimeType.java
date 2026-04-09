@@ -32,7 +32,7 @@ import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
- * Class to determine uses of various media mimetypes
+ * Class to determine uses of various media mimetypes.
  */
 public class MimeType {
 

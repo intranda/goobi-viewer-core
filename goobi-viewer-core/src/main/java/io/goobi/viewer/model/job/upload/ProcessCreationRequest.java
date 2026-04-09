@@ -25,6 +25,11 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Request payload sent to the Goobi workflow REST API to create a new digitisation process,
+ * carrying the record identifier, process title, logical docstruct type, workflow template
+ * reference, and optional metadata and property maps.
+ */
 public class ProcessCreationRequest {
 
     private String identifier;
@@ -39,100 +44,72 @@ public class ProcessCreationRequest {
     @JsonProperty("properties")
     private Map<String, String> properties;
 
-    /**
-     * @return the identifier
-     */
+    
     public String getIdentifier() {
         return identifier;
     }
 
-    /**
-     * @param identifier the identifier to set
-     */
+    
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }
 
-    /**
-     * @return the processtitle
-     */
+    
     public String getProcesstitle() {
         return processtitle;
     }
 
-    /**
-     * @param processtitle the processtitle to set
-     */
+    
     public void setProcesstitle(String processtitle) {
         this.processtitle = processtitle;
     }
 
-    /**
-     * @return the logicalDSType
-     */
+    
     public String getLogicalDSType() {
         return logicalDSType;
     }
 
-    /**
-     * @param logicalDSType the logicalDSType to set
-     */
+    
     public void setLogicalDSType(String logicalDSType) {
         this.logicalDSType = logicalDSType;
     }
 
-    /**
-     * @return the templateId
-     */
+    
     public Integer getTemplateId() {
         return templateId;
     }
 
-    /**
-     * @param templateId the templateId to set
-     */
+    
     public void setTemplateId(Integer templateId) {
         this.templateId = templateId;
     }
 
-    /**
-     * @return the templateName
-     */
+    
     public String getTemplateName() {
         return templateName;
     }
 
-    /**
-     * @param templateName the templateName to set
-     */
+    
     public void setTemplateName(String templateName) {
         this.templateName = templateName;
     }
 
-    /**
-     * @return the metadata
-     */
+    
     public Map<String, String> getMetadata() {
         return metadata;
     }
 
-    /**
-     * @param metadata the metadata to set
-     */
+    
     public void setMetadata(Map<String, String> metadata) {
         this.metadata = metadata;
     }
 
-    /**
-     * @return the properties
-     */
+    
     public Map<String, String> getProperties() {
         return properties;
     }
 
-    /**
-     * @param properties the properties to set
-     */
+    
     public void setProperties(Map<String, String> properties) {
         this.properties = properties;
     }

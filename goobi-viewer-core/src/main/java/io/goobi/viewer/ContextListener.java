@@ -50,9 +50,7 @@ import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
 
 /**
- * <p>
- * ContextListener class.
- * </p>
+ * Servlet context listener that initialises and tears down application-wide resources and services on deployment and undeployment.
  */
 @WebListener
 public class ContextListener implements ServletContextListener {
@@ -127,12 +125,22 @@ public class ContextListener implements ServletContextListener {
 
         try {
             DataManager.getInstance().getDao().shutdown();
-            ContentServerCacheManager.getInstance().close();
-            // EhCache's disk-store scheduler (MappedByteBufferSource Async Flush Thread) may
-            // not terminate synchronously on close(). Wait briefly so Tomcat does not report it
-            // as a memory leak.
+            logger.info("Successfully stopped DAO");
+        } catch (DAOException e) {
+            logger.error("Error stopping DAO", e);
+        }
+        // Close EhCache. ContentServerCacheManager.close() also shuts down EhCache's static
+        // async-flush executor (MappedPageSource.ASYNC_FLUSH_EXECUTOR) so the
+        // "MappedByteBufferSource Async Flush Thread" terminates cleanly on undeploy.
+        ContentServerCacheManager.getInstance().close();
+        try {
+            DataManager.getInstance().closeSearchIndex();
+            logger.info("Successfully closed Solr client");
+            // Http2SolrClient uses Jetty threads (h2sc-*) and HttpClient scheduler threads
+            // that do not terminate synchronously on close(). Wait briefly so Tomcat does not
+            // report them as memory leaks.
             Thread.getAllStackTraces().keySet().stream()
-                    .filter(t -> t.getName().contains("MappedByteBufferSource") || t.getName().contains("Async Flush"))
+                    .filter(t -> t.getName().matches("h2sc-.*|HttpClient@[0-9a-f]+-scheduler-.*"))
                     .forEach(t -> {
                         try {
                             t.join(5000);
@@ -140,13 +148,6 @@ public class ContextListener implements ServletContextListener {
                             Thread.currentThread().interrupt();
                         }
                     });
-            logger.info("Successfully stopped DAO");
-        } catch (DAOException e) {
-            logger.error("Error stopping DAO", e);
-        }
-        try {
-            DataManager.getInstance().closeSearchIndex();
-            logger.info("Successfully closed Solr client");
         } catch (IOException e) {
             logger.error("Error closing Solr client", e);
         }

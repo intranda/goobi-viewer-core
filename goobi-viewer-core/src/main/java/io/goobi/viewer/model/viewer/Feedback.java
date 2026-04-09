@@ -45,24 +45,20 @@ public class Feedback implements Serializable {
     private String recipientAddress;
 
     /**
-     * <p>
      * getEmailSubject.
-     * </p>
      *
-     * @param key a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param key message key to resolve as email subject
+     * @return the translated email subject text for the given message key
      */
     public String getEmailSubject(String key) {
         return ViewerResourceBundle.getTranslation(key, null);
     }
 
     /**
-     * <p>
      * getEmailBody.
-     * </p>
      *
-     * @param key a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param key message key to resolve as email body template
+     * @return the translated and placeholder-substituted email body text for the given message key
      */
     public String getEmailBody(String key) {
         String body = ViewerResourceBundle.getTranslation(key, null);
@@ -82,125 +78,101 @@ public class Feedback implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>name</code>.
-     * </p>
      *
-     * @return the name
+     * @return the sender's name
      */
     public String getName() {
         return name;
     }
 
     /**
-     * <p>
      * Setter for the field <code>name</code>.
-     * </p>
      *
-     * @param name the name to set
+     * @param name the sender's name to set
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * <p>
      * Getter for the field <code>senderAddress</code>.
-     * </p>
      *
-     * @return the senderAddress
+     * @return the sender's email address
      */
     public String getSenderAddress() {
         return senderAddress;
     }
 
     /**
-     * <p>
      * Setter for the field <code>senderAddress</code>.
-     * </p>
      *
-     * @param senderAddress the senderAddress to set
+     * @param senderAddress the sender's email address to set
      */
     public void setSenderAddress(String senderAddress) {
         this.senderAddress = senderAddress;
     }
 
     /**
-     * <p>
      * Getter for the field <code>url</code>.
-     * </p>
      *
-     * @return the url
+     * @return the page URL from which the feedback was submitted
      */
     public String getUrl() {
         return url;
     }
 
     /**
-     * <p>
      * Setter for the field <code>url</code>.
-     * </p>
      *
-     * @param url the url to set
+     * @param url the page URL from which the feedback was submitted
      */
     public void setUrl(String url) {
         this.url = url;
     }
 
     /**
-     * <p>
      * Getter for the field <code>type</code>.
-     * </p>
      *
-     * @return the type
+     * @return the feedback type or category
      */
     public String getType() {
         return type;
     }
 
     /**
-     * <p>
      * Setter for the field <code>type</code>.
-     * </p>
      *
-     * @param type the type to set
+     * @param type the feedback type or category to set
      */
     public void setType(String type) {
         this.type = type;
     }
 
     /**
-     * <p>
      * Getter for the field <code>message</code>.
-     * </p>
      *
-     * @return the message
+     * @return the feedback message text
      */
     public String getMessage() {
         return message;
     }
 
     /**
-     * <p>
      * Setter for the field <code>message</code>.
-     * </p>
      *
-     * @param message the message to set
+     * @param message the feedback message text to set
      */
     public void setMessage(String message) {
         this.message = message;
     }
 
-    /**
-     * @return the recipientAddress
-     */
+    
     public String getRecipientAddress() {
         return recipientAddress;
     }
 
-    /**
-     * @param recipientAddress the recipientAddress to set
-     */
+    
     public void setRecipientAddress(String recipientAddress) {
         this.recipientAddress = recipientAddress;
     }

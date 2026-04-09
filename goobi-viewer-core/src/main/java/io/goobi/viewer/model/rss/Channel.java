@@ -30,9 +30,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * <p>
- * Channel class.
- * </p>
+ * Represents an RSS channel with its metadata and collection of feed items.
  *
  * @author Florian Alpers
  */
@@ -50,152 +48,124 @@ public class Channel {
     private List<RssItem> items = new ArrayList<>();
 
     /**
-     * <p>
      * Getter for the field <code>title</code>.
-     * </p>
      *
-     * @return the title
+     * @return the RSS channel title
      */
     public String getTitle() {
         return title;
     }
 
     /**
-     * <p>
      * Setter for the field <code>title</code>.
-     * </p>
      *
-     * @param title the title to set
+     * @param title the RSS channel title
      */
     public void setTitle(String title) {
         this.title = title;
     }
 
     /**
-     * <p>
      * Getter for the field <code>link</code>.
-     * </p>
      *
-     * @return the link
+     * @return the URL of the website associated with this RSS channel
      */
     public String getLink() {
         return link;
     }
 
     /**
-     * <p>
      * Setter for the field <code>link</code>.
-     * </p>
      *
-     * @param link the link to set
+     * @param link the URL of the website associated with this RSS channel
      */
     public void setLink(String link) {
         this.link = link;
     }
 
     /**
-     * <p>
      * Getter for the field <code>description</code>.
-     * </p>
      *
-     * @return the description
+     * @return the human-readable description of this RSS channel
      */
     public String getDescription() {
         return description;
     }
 
     /**
-     * <p>
      * Setter for the field <code>description</code>.
-     * </p>
      *
-     * @param description the description to set
+     * @param description the human-readable description of this RSS channel
      */
     public void setDescription(String description) {
         this.description = description;
     }
 
     /**
-     * <p>
      * Getter for the field <code>language</code>.
-     * </p>
      *
-     * @return the language
+     * @return the BCP 47 language code of the channel content (e.g. "de", "en")
      */
     public String getLanguage() {
         return language;
     }
 
     /**
-     * <p>
      * Setter for the field <code>language</code>.
-     * </p>
      *
-     * @param language the language to set
+     * @param language the BCP 47 language code of the channel content (e.g. "de", "en")
      */
     public void setLanguage(String language) {
         this.language = language;
     }
 
     /**
-     * <p>
      * Getter for the field <code>copyright</code>.
-     * </p>
      *
-     * @return the copyright
+     * @return the copyright notice for the channel content
      */
     public String getCopyright() {
         return copyright;
     }
 
     /**
-     * <p>
      * Setter for the field <code>copyright</code>.
-     * </p>
      *
-     * @param copyright the copyright to set
+     * @param copyright the copyright notice for the channel content
      */
     public void setCopyright(String copyright) {
         this.copyright = copyright;
     }
 
     /**
-     * <p>
      * Getter for the field <code>pubDate</code>.
-     * </p>
      *
-     * @return the pubDate
+     * @return the publication date of this RSS channel
      */
     public Date getPubDate() {
         return pubDate;
     }
 
     /**
-     * <p>
      * Setter for the field <code>pubDate</code>.
-     * </p>
      *
-     * @param pubDate the pubDate to set
+     * @param pubDate the publication date of this RSS channel
      */
     public void setPubDate(Date pubDate) {
         this.pubDate = pubDate;
     }
 
     /**
-     * <p>
      * Getter for the field <code>items</code>.
-     * </p>
      *
-     * @return the items
+     * @return the list of RSS items contained in this channel
      */
     public List<RssItem> getItems() {
         return items;
     }
 
     /**
-     * <p>
      * addItem.
-     * </p>
      *
      * @param item a {@link io.goobi.viewer.model.rss.RssItem} object.
      */

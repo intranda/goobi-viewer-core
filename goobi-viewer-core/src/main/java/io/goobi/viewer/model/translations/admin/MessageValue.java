@@ -43,8 +43,8 @@ public class MessageValue {
     /**
      *
      * @param language Language code
-     * @param value
-     * @param globalValue
+     * @param value the translation value for this language
+     * @param globalValue the global/fallback translation value
      */
     public MessageValue(String language, String value, String globalValue) {
         this.language = language;
@@ -101,37 +101,27 @@ public class MessageValue {
         return TranslationStatus.FULL;
     }
 
-    /**
-     * @return the language
-     */
+    
     public String getLanguage() {
         return language;
     }
 
-    /**
-     * @return the globalValue
-     */
+    
     public String getGlobalValue() {
         return globalValue;
     }
 
-    /**
-     * @return the value
-     */
+    
     public String getValue() {
         return value;
     }
 
-    /**
-     * @param value the value to set
-     */
+    
     public void setValue(String value) {
         this.value = value;
     }
 
-    /**
-     * @return the loadedValue
-     */
+    
     public String getLoadedValue() {
         return loadedValue;
     }

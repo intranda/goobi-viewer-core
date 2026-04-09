@@ -48,7 +48,7 @@
                         <util:icon
                             icon="chevron-down"
                             styleClass="widget__topbar-icon-collapsible icon-rot-on-open"
-                            svgClass="icon" />
+                            svgClass="icon widget__topbar-icon-svg widget-views__topbar-icon-svg" />
                     </div>
                 </div>
             </ui:fragment>
@@ -64,13 +64,12 @@
                         <util:icon
                             icon="chevron-down"
                             styleClass="widget__topbar-icon-collapsible icon-rot-on-open"
-                            svgClass="icon" />
+                            svgClass="icon widget__topbar-icon-svg widget-views__topbar-icon-svg" />
                     </div>
                 </div>
             </ui:fragment>
 
-            <div
-                class="widget__body widget-views__body #{configurationBean.isSidebarWidgetForViewCollapsedByDefault(navigationHelper.currentView,'views') ? '-collapsed' : ''}">
+            <div class="widget__body widget-views__body #{configurationBean.isSidebarWidgetForViewCollapsedByDefault(navigationHelper.currentView,'views') ? '-collapsed' : ''}">
                 <h:form
                     prependId="false"
                     id="widgetViewsForm"
@@ -91,10 +90,10 @@
                             </li>
                         </h:panelGroup>
 
-                        <!-- Calendar -->
+                        <!-- Calendar (hidden when integrated into TOC for anchors) -->
                         <h:panelGroup
                             visibility-class="widget-element"
-                            rendered="#{configurationBean.sidebarCalendarLinkVisible and activeDocumentBean.viewManager.calendarView.display}">
+                            rendered="#{configurationBean.sidebarCalendarLinkVisible and activeDocumentBean.viewManager.calendarView.display and !activeDocumentBean.anchor}">
                             <li class="#{navigationHelper.currentPage == 'calendar' ? 'active' : ''}">
                                 <h:outputLink
                                     value="#{navigationHelper.calendarActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/#{activeDocumentBean.logid}/">
@@ -187,8 +186,7 @@
                             visibility-class="widget-element"
                             rendered="#{configurationBean.sidebarFulltextLinkVisible and displayConditions.matchPage('{contentType:[TEXT, ALTO], accessCondition: VIEW_FULLTEXT}')}">
                             <li class="#{navigationHelper.currentPage == 'fulltext' ? 'active' : ''}">
-                                <h:outputLink
-                                    value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/">
+                                <h:outputLink value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/">
                                     <h:outputText value="#{msg.fulltext}" />
                                     <f:passThroughAttribute
                                         name="aria-label"
@@ -204,8 +202,7 @@
                             visibility-class="widget-element"
                             value="#{textBean.getRecordLanguages(activeDocumentBean.viewManager.topStructElement)}">
                             <li class="#{navigationHelper.currentPage == 'fulltext' and activeDocumentBean.selectedRecordLanguage3 == lang ? 'active' : ''}">
-                                <h:outputLink
-                                    value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/#{lang}/">
+                                <h:outputLink value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/#{lang}/">
                                     <h:outputText value="#{msg.fulltext}: #{msg[lang]}" />
                                     <f:passThroughAttribute
                                         name="aria-label"

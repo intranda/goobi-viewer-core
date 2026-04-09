@@ -50,10 +50,10 @@ var viewerJS = (function (viewer) {
 
             $.extend(true, _defaults, config);
 
-            // init bs tooltips
-            $('[data-toggle="tooltip"]').tooltip({
-                trigger: 'hover',
-            });
+            // init bs tooltips via central helper to avoid re-initializing with 'hover'
+            // trigger on hidden elements (e.g. image controls), which causes Bootstrap to
+            // throw "Please use show on visible elements" in its internal _enter handler
+            viewerJS.helper.initBsFeatures();
 
             sessionStorage.setItem('advSearchValues', JSON.stringify(_advSearchValues));
 
@@ -67,10 +67,8 @@ var viewerJS = (function (viewer) {
                 $(_defaults.loaderSelector).show();
             });
             viewerJS.jsfAjax.success.subscribe((e) => {
-                // init bs tooltips
-                $('[data-toggle="tooltip"]').tooltip({
-                    trigger: 'hover',
-                });
+                // re-init bs tooltips after AJAX; use central helper (manual trigger)
+                viewerJS.helper.initBsFeatures();
 
                 // set search values
                 _setAdvSearchValues();

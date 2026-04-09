@@ -31,6 +31,10 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.model.metadata.MetadataContainer;
 import io.goobi.viewer.solr.SolrConstants;
 
+/**
+ * Generates Solr search filter queries for geo map features based on coordinate and label
+ * metadata extracted from a given {@link io.goobi.viewer.model.metadata.MetadataContainer}.
+ */
 public class FeatureQueryGenerator {
 
     public String createSearchFilterQuery(MetadataContainer metadata, String template, LabelCreator labelCreator) {

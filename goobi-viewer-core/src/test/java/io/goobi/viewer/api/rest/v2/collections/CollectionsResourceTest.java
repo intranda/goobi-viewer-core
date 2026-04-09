@@ -89,6 +89,22 @@ class CollectionsResourceTest extends AbstractRestApiTest {
     }
 
     /**
+     * Test that a field name starting with a digit is rejected with 400 Bad Request.
+     * The constructor validates the field against [A-Za-z_][A-Za-z0-9_]* to prevent
+     * invalid Solr field names from reaching the index.
+     */
+    @Test
+    void testGetAllCollections_invalidField_returns400() {
+        String url = urls.path(COLLECTIONS).params("0invalid").build();
+        try (Response response = target(url)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(400, response.getStatus(), "Field starting with digit should return 400");
+        }
+    }
+
+    /**
      * Test method for {@link io.goobi.viewer.api.rest.v1.collections.CollectionsResource#getCollection(java.lang.String, java.lang.String)}.
      */
     @Test

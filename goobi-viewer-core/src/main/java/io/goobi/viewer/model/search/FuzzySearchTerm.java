@@ -30,21 +30,20 @@ import io.goobi.viewer.controller.StringTools;
  * Class for extracting the actual search term from a fuzzy search. For creating a fuzzy search term see
  * {@link SearchHelper#addFuzzySearchToken(String, String, String)}
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class FuzzySearchTerm {
 
     /**
-     * Don't use fuzzy search on search terms matching this pattern
+     * Don't use fuzzy search on search terms matching this pattern.
      */
     private static final String IGNORE_FUZZY_PATTERN = "\\d+";
     /**
-     * For search terms below this length, don't use fuzzy search
+     * For search terms below this length, don't use fuzzy search.
      */
     private static final int FUZZY_THRESHOLD_DISTANCE_1 = 4;
     /**
-     * For search terms of at least this length, use fuzzy distance 2
+     * For search terms of at least this length, use fuzzy distance 2.
      */
     private static final int FUZZY_THRESHOLD_DISTANCE_2 = 9;
     /**
@@ -52,7 +51,7 @@ public class FuzzySearchTerm {
      */
     public static final String WORD_PATTERN = "[\\p{L}=-_\\d⸗¬]+";
     /**
-     * Regex matching anything not matching {@link #WORD_PATTERN}, including an empty string
+     * Regex matching anything not matching {@link #WORD_PATTERN}, including an empty string.
      */
     public static final String NOT_WORD_PATTERN = "[^\\p{L}=-_\\d⸗¬]*";
     /**
@@ -109,9 +108,9 @@ public class FuzzySearchTerm {
     }
 
     /**
-     * Test if a given text containing a single word
+     * Tests if a given text containing a single word.
      * 
-     * @param text
+     * @param text single word to test against this fuzzy search term
      * @return boolean
      */
     public boolean matches(final String text) {
@@ -139,7 +138,7 @@ public class FuzzySearchTerm {
 
     /**
      * 
-     * @param text
+     * @param text text to normalize for fuzzy matching
      * @return Cleaned-up text
      */
     private static String cleanup(final String text) {
@@ -158,7 +157,7 @@ public class FuzzySearchTerm {
 
     /**
      * 
-     * @param text
+     * @param text text from which to remove hyphenation characters
      * @return Cleaned-up text
      */
     private static String cleanHyphenations(String text) {

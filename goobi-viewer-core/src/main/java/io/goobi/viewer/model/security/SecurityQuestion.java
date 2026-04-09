@@ -25,6 +25,10 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * Represents a security question with a message-key for the question text and a set of
+ * accepted answers, tracking whether the question has already been answered.
+ */
 public class SecurityQuestion {
 
     private final String questionKey;
@@ -34,8 +38,8 @@ public class SecurityQuestion {
     /**
      * Constructor.
      *
-     * @param questionKey
-     * @param correctAnswers
+     * @param questionKey message key for the question text to display
+     * @param correctAnswers set of accepted answer strings (case-insensitive)
      */
     public SecurityQuestion(String questionKey, Set<String> correctAnswers) {
         this.questionKey = questionKey;
@@ -44,7 +48,7 @@ public class SecurityQuestion {
 
     /**
      *
-     * @param answer
+     * @param answer user-provided answer to validate
      * @return true if given answer is among correct answers; false otherwise
      * @should return true on correct answer
      * @should return true on correct answer and ignore case
@@ -61,23 +65,17 @@ public class SecurityQuestion {
         return correctAnswers.contains(answer.toLowerCase());
     }
 
-    /**
-     * @return the questionKey
-     */
+    
     public String getQuestionKey() {
         return questionKey;
     }
 
-    /**
-     * @return the correctAnswers
-     */
+    
     public Set<String> getCorrectAnswers() {
         return correctAnswers;
     }
 
-    /**
-     * @return the answered
-     */
+    
     public boolean isAnswered() {
         return answered;
     }

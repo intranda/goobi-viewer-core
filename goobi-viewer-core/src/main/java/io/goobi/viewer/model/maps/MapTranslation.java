@@ -31,8 +31,7 @@ import java.io.Serializable;
 import io.goobi.viewer.model.translations.Translation;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "cms_geomap_translation")
@@ -46,18 +45,18 @@ public class MapTranslation extends Translation implements Serializable {
     private GeoMap owner;
 
     /**
-     * Empty Constructor
+     * Empty Constructor.
      */
     public MapTranslation() {
         super();
     }
 
     /**
-     * Constructor without value
+     * Constructor without value.
      *
-     * @param language
-     * @param tag
-     * @param owner
+     * @param language language code for this translation
+     * @param tag translation tag identifying the text field
+     * @param owner the owning GeoMap
      */
     public MapTranslation(String language, String tag, GeoMap owner) {
         super();
@@ -67,23 +66,19 @@ public class MapTranslation extends Translation implements Serializable {
     }
 
     /**
-     * @param t
+     * @param t the MapTranslation to copy
      */
     public MapTranslation(MapTranslation t) {
         super(t);
         this.owner = t.owner;
     }
 
-    /**
-     * @return the owner
-     */
+    
     public GeoMap getOwner() {
         return owner;
     }
 
-    /**
-     * @param owner the owner to set
-     */
+    
     public void setOwner(GeoMap owner) {
         this.owner = owner;
     }

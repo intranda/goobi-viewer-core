@@ -33,16 +33,11 @@ import org.apache.commons.lang3.StringUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
- * <p>
- * CMSTitleValidator class.
- * </p>
+ * JSF validator that checks CMS page titles for uniqueness and validity constraints.
  */
 @FacesValidator("cmsTitleValidator")
 public class CMSTitleValidator implements Validator<String> {
 
-    /* (non-Javadoc)
-     * @see jakarta.faces.validator.Validator#validate(jakarta.faces.context.FacesContext, jakarta.faces.component.UIComponent, java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {
@@ -54,12 +49,10 @@ public class CMSTitleValidator implements Validator<String> {
     }
 
     /**
-     * <p>
      * validate.
-     * </p>
      *
-     * @param s a {@link java.lang.String} object.
-     * @return a boolean.
+     * @param s CMS page title string to check for non-blank content
+     * @return true if the given string is not blank and thus valid as a CMS page title, false otherwise
      */
     protected static boolean validate(String s) {
         return StringUtils.isNotBlank(s);

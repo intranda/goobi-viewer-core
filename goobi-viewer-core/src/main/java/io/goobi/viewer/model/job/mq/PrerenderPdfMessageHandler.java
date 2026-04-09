@@ -50,6 +50,9 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.job.TaskType;
 
+/**
+ * Message handler that pre-renders PDF files for individual pages of a digitized record and stores them on disk for faster subsequent delivery.
+ */
 public class PrerenderPdfMessageHandler implements MessageHandler<MessageStatus> {
 
     private static final Logger logger = LogManager.getLogger(PrerenderPdfMessageHandler.class);

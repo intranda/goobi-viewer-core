@@ -38,6 +38,10 @@ import io.goobi.viewer.model.metadata.MetadataBuilder;
 import io.goobi.viewer.model.metadata.MetadataContainer;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 
+/**
+ * Creates localised label values for geo map features by applying configured metadata templates
+ * to a given {@link io.goobi.viewer.model.metadata.MetadataContainer}.
+ */
 public class LabelCreator {
 
     private final Map<String, List<Metadata>> metadataTemplates;

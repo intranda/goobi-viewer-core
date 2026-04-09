@@ -25,16 +25,14 @@ import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.viewer.PageType;
 
 /**
- * Interface for creating module-specific urls for viewer pages
+ * Interface for creating module-specific urls for viewer pages.
  *
  * @author Florian Alpers
  */
 public interface IURLBuilder {
 
     /**
-     * <p>
      * generateURL.
-     * </p>
      *
      * @param browseElement The browseElement for which we want to build a url
      * @return The url the the given BrowseElement should link to
@@ -42,9 +40,7 @@ public interface IURLBuilder {
     public String generateURL(BrowseElement browseElement);
 
     /**
-     * <p>
      * buildPageUrl.
-     * </p>
      *
      * @param pi The record persistent identifier
      * @param imageNo the page number (1-based)
@@ -57,10 +53,10 @@ public interface IURLBuilder {
 
     /**
      * 
-     * @param pi
-     * @param imageNo
-     * @param logId
-     * @param pageType
+     * @param pi persistent identifier of the record
+     * @param imageNo physical image order number
+     * @param logId logical structure ID
+     * @param pageType viewer page type for the URL
      * @return Generated URL
      */
     public default String buildPageUrl(String pi, int imageNo, String logId, PageType pageType) {

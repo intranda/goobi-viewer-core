@@ -24,17 +24,27 @@ package io.goobi.viewer.dao.impl;
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.XMLOutputter;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
@@ -43,6 +53,18 @@ import io.goobi.viewer.AbstractTest;
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(JPAClassLoaderTest.class);
+
+    private File persistenceXmlFile;
+
+    @BeforeEach
+    public void setUp() {
+        persistenceXmlFile = new File(System.getProperty("java.io.tmpdir") + "/viewer/" + JPAClassLoader.PERSISTENCE_XML);
+    }
+
+    @AfterEach
+    public void tearDown() throws Exception {
+        Files.deleteIfExists(persistenceXmlFile.toPath());
+    }
 
     /**
      * @see JPAClassLoader#scanPersistenceXML(String,List)
@@ -98,6 +120,66 @@ import io.goobi.viewer.AbstractTest;
             Assertions.assertTrue(classes.contains("io.goobi.viewer.model.dummymodule.DummyClass3"));
             Assertions.assertTrue(classes.contains("io.goobi.viewer.model.dummymodule.DummyClass4"));
         }
+    }
+
+    /**
+     * @see JPAClassLoader#getResources(String)
+     * @verifies write non-empty persistence xml to temp directory
+     */
+    @Test
+    void getResources_shouldWriteNonEmptyPersistenceXmlToTempDirectory() throws Exception {
+        JPAClassLoader loader = new JPAClassLoader(Thread.currentThread().getContextClassLoader());
+        Enumeration<URL> resources = loader.getResources(JPAClassLoader.PERSISTENCE_XML);
+
+        Assertions.assertTrue(resources.hasMoreElements(), "Should return at least one URL");
+        URL url = resources.nextElement();
+        Assertions.assertNotNull(url);
+
+        File written = new File(url.toURI());
+        Assertions.assertTrue(written.exists(), "persistence.xml should exist at " + written.getAbsolutePath());
+        Assertions.assertTrue(written.length() > 0, "persistence.xml must not be empty (was 0 bytes — race condition bug)");
+    }
+
+    /**
+     * @see JPAClassLoader#getResources(String)
+     * @verifies not produce empty file under concurrent access
+     */
+    @Test
+    void getResources_shouldNotProduceEmptyFileUnderConcurrentAccess() throws Exception {
+        int threadCount = 8;
+        CountDownLatch startLatch = new CountDownLatch(1);
+        AtomicInteger emptyFileCount = new AtomicInteger(0);
+        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+
+        List<Future<?>> futures = new ArrayList<>();
+        for (int i = 0; i < threadCount; i++) {
+            futures.add(executor.submit(() -> {
+                try {
+                    // All threads start simultaneously to maximize race condition probability
+                    startLatch.await();
+                    JPAClassLoader loader = new JPAClassLoader(Thread.currentThread().getContextClassLoader());
+                    Enumeration<URL> resources = loader.getResources(JPAClassLoader.PERSISTENCE_XML);
+                    if (resources.hasMoreElements()) {
+                        File written = new File(resources.nextElement().toURI());
+                        if (written.length() == 0) {
+                            emptyFileCount.incrementAndGet();
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                }
+                return null;
+            }));
+        }
+
+        startLatch.countDown();
+        for (Future<?> f : futures) {
+            f.get();
+        }
+        executor.shutdown();
+
+        Assertions.assertEquals(0, emptyFileCount.get(),
+                "persistence.xml was empty in " + emptyFileCount.get() + " thread(s) — atomic write failed");
     }
 
 }

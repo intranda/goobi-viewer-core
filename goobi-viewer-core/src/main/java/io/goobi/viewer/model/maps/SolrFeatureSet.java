@@ -60,6 +60,10 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Transient;
 
+/**
+ * A {@link FeatureSet} implementation that generates geo map features by executing a configurable
+ * Solr query and converting the matching documents into GeoJSON features.
+ */
 @Entity
 @DiscriminatorValue("solr")
 public class SolrFeatureSet extends FeatureSet {
@@ -76,13 +80,13 @@ public class SolrFeatureSet extends FeatureSet {
     private SolrSearchScope searchScope = SolrSearchScope.ALL;
 
     /**
-     * SOLR-Field to create the marker title from if the features are generated from a SOLR query
+     * SOLR-Field to create the marker title from if the features are generated from a SOLR query.
      */
     @Column(name = "marker_title_field")
     private String markerTitleField = "MD_VALUE";
 
     /**
-     * type of a metadata list configuration to use to construct the marker labels
+     * Type of a metadata list configuration to use to construct the marker labels.
      */
     @Column(name = "metadata_list_marker")
     private String markerMetadataList = "";
@@ -90,7 +94,7 @@ public class SolrFeatureSet extends FeatureSet {
     @Column(name = "item_filter_field")
     private String itemFilterName = "";
     /**
-     * type of a metadata list configuration to use to construct labels for items for a marker displayed as a list next to the map
+     * Type of a metadata list configuration to use to construct labels for items for a marker displayed as a list next to the map.
      */
     @Column(name = "metadata_list_item")
     private String itemMetadataList = "";
@@ -272,9 +276,7 @@ public class SolrFeatureSet extends FeatureSet {
     }
 
     /**
-     * <p>
      * getCoordinateSearchQueryTemplate.
-     * </p>
      *
      * @return String
      * @throws URISyntaxException

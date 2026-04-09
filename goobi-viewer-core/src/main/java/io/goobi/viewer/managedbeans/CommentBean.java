@@ -55,19 +55,15 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
- * <p>
- * CommentBean class.
- * </p>
+ * JSF backing bean for user comment display and submission on record detail pages.
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Named
 @SessionScoped
 public class CommentBean implements Serializable {
 
-    /**
-     *
-     */
+    
     private static final String REQUIRES_COMMENT_RIGHTS = "REQUIRES_COMMENT_RIGHTS";
     private static final long serialVersionUID = -3653100353345867739L;
 
@@ -84,9 +80,7 @@ public class CommentBean implements Serializable {
     private Map<String, Boolean> deleteCommentPermissionMap = new HashMap<>();
 
     /**
-     * <p>
-     * Constructor for CommentBean.
-     * </p>
+     * Creates a new CommentBean instance.
      *
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @throws io.goobi.viewer.exceptions.DAOException
@@ -101,12 +95,10 @@ public class CommentBean implements Serializable {
     }
 
     /**
-     * <p>
      * createComment.
-     * </p>
      *
-     * @param text a {@link java.lang.String} object
-     * @param restricted a boolean
+     * @param text comment body text
+     * @param restricted if true, apply restricted license requiring comment privileges
      * @throws io.goobi.viewer.exceptions.AjaxResponseException
      */
     public void createComment(String text, boolean restricted) throws AjaxResponseException {
@@ -119,9 +111,7 @@ public class CommentBean implements Serializable {
     }
 
     /**
-     * <p>
      * editComment.
-     * </p>
      *
      * @throws io.goobi.viewer.exceptions.PresentationException
      */
@@ -140,13 +130,11 @@ public class CommentBean implements Serializable {
     }
 
     /**
-     * <p>
      * editComment.
-     * </p>
      *
-     * @param original a {@link io.goobi.viewer.model.annotation.comments.Comment} object
-     * @param text a {@link java.lang.String} object
-     * @param restricted a boolean
+     * @param original existing comment to be updated
+     * @param text new comment body text
+     * @param restricted if true, apply restricted license requiring comment privileges
      * @throws io.goobi.viewer.exceptions.DAOException
      * @throws io.goobi.viewer.exceptions.PresentationException
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
@@ -164,9 +152,7 @@ public class CommentBean implements Serializable {
     }
 
     /**
-     * <p>
      * deleteComment.
-     * </p>
      *
      * @throws io.goobi.viewer.exceptions.PresentationException
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
@@ -185,11 +171,9 @@ public class CommentBean implements Serializable {
     }
 
     /**
-     * <p>
      * deleteComment.
-     * </p>
      *
-     * @param annotation a {@link io.goobi.viewer.model.annotation.comments.Comment} object
+     * @param annotation comment to be deleted
      * @throws io.goobi.viewer.exceptions.DAOException
      * @throws io.goobi.viewer.exceptions.PresentationException
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
@@ -207,16 +191,14 @@ public class CommentBean implements Serializable {
     }
 
     /**
-     * <p>
      * getComments.
-     * </p>
      *
-     * @param startIndex a int
-     * @param numItems a int
-     * @param filter a {@link java.lang.String} object
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object
-     * @param sortField a {@link java.lang.String} object
-     * @param descending a boolean
+     * @param startIndex zero-based index of the first result to return
+     * @param numItems maximum number of comments to return
+     * @param filter text filter applied to comment content
+     * @param user user whose comments are listed
+     * @param sortField name of the field to sort results by
+     * @param descending if true, sort in descending order
      * @return List of comments that match the search criteria
      */
     public List<Comment> getComments(int startIndex, int numItems, String filter, User user, String sortField, boolean descending) {
@@ -225,9 +207,7 @@ public class CommentBean implements Serializable {
     }
 
     /**
-     * <p>
      * getCommentsForCurrentPage.
-     * </p>
      *
      * @return List of comments for the current page of the loaded record
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
@@ -258,11 +238,9 @@ public class CommentBean implements Serializable {
     }
 
     /**
-     * <p>
      * isRestricted.
-     * </p>
      *
-     * @param anno a {@link io.goobi.viewer.model.annotation.CrowdsourcingAnnotation} object
+     * @param anno annotation whose access condition is checked
      * @return true if given annotation requires special privileges for commenting; false otherwise
      */
     public boolean isRestricted(CrowdsourcingAnnotation anno) {
@@ -271,7 +249,7 @@ public class CommentBean implements Serializable {
 
     /**
      *
-     * @param restricted
+     * @param restricted true to return the restricted license; false for public
      * @return {@link String}
      */
     private static String getLicense(boolean restricted) {
@@ -304,11 +282,9 @@ public class CommentBean implements Serializable {
     }
 
     /**
-     * <p>
      * isUserCommentsEnabled.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the user comments feature is globally enabled, false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException
      */
     public boolean isUserCommentsEnabled() throws DAOException {
@@ -373,7 +349,7 @@ public class CommentBean implements Serializable {
     /**
      * Enables edit/delete privileges for the current session for the given record identifier, based on admin status or {@link CommentGroup} settings.
      *
-     * @param pi
+     * @param pi persistent identifier of the record
      * @throws DAOException
      * @throws PresentationException
      * @throws IndexUnreachableException

@@ -33,6 +33,10 @@ import io.goobi.viewer.model.maps.features.MetadataDocument;
 import io.goobi.viewer.model.maps.features.RecordDataProvider;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
+/**
+ * Composite feature data provider that aggregates results from record, docstruct, and metadata
+ * Solr queries to supply geo map features across all document types.
+ */
 public class GlobalFeatureDataProvider implements IFeatureDataProvider {
 
     private final DocStructDataProvider docStructProvider;

@@ -26,6 +26,10 @@ import java.util.Map;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 
+/**
+ * Represents a single item associated with a geo-map feature, carrying a multilingual label,
+ * a navigation link, and a map of additional metadata fields.
+ */
 public class GeoMapFeatureItem {
 
     private final IMetadataValue label;

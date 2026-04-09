@@ -26,6 +26,10 @@ import jakarta.persistence.Converter;
 
 import io.goobi.viewer.model.cms.widgets.type.WidgetContentType;
 
+/**
+ * JPA {@link AttributeConverter} that maps {@link WidgetContentType} enum values to and from their
+ * string name for database storage.
+ */
 @Converter
 public class WidgetContentTypeConverter implements AttributeConverter<WidgetContentType, String> {
 

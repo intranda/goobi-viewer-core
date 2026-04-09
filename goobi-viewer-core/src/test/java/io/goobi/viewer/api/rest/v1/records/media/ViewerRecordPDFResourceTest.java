@@ -23,6 +23,7 @@ package io.goobi.viewer.api.rest.v1.records.media;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PDF;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
@@ -40,6 +41,7 @@ import org.mockito.Mockito;
 
 import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import jakarta.ws.rs.BadRequestException;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
 import io.goobi.viewer.controller.Configuration;
@@ -83,6 +85,15 @@ class ViewerRecordPDFResourceTest extends AbstractRestApiTest {
     @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
+    }
+
+    @Test
+    void testRequireValidPi_rejectsIllegalChars() {
+        // Illegal chars used in fuzz tests that caused MetsPdfResource to throw HTTP 500
+        assertThrows(BadRequestException.class, () -> ViewerRecordPDFResource.requireValidPi(" "));
+        assertThrows(BadRequestException.class, () -> ViewerRecordPDFResource.requireValidPi("|"));
+        assertThrows(BadRequestException.class, () -> ViewerRecordPDFResource.requireValidPi("<xml>"));
+        assertThrows(BadRequestException.class, () -> ViewerRecordPDFResource.requireValidPi("%00"));
     }
 
     @Test

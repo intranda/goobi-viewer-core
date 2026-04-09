@@ -87,6 +87,8 @@ import io.goobi.viewer.model.maps.GeoMapMarker.MarkerType;
 import io.goobi.viewer.model.maps.GeomapItemFilter;
 import io.goobi.viewer.model.maps.View;
 import io.goobi.viewer.model.metadata.Metadata;
+import io.goobi.viewer.model.metadata.MetadataListElement;
+import io.goobi.viewer.model.metadata.MetadataListSeparator;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.metadata.MetadataView.MetadataViewLocation;
@@ -121,9 +123,7 @@ import io.goobi.viewer.solr.SolrConstants;
 import jakarta.faces.model.SelectItem;
 
 /**
- * <p>
- * Configuration class.
- * </p>
+ * Central configuration holder that reads and provides access to all viewer configuration settings from the config XML file.
  */
 public class Configuration extends AbstractConfiguration {
 
@@ -153,11 +153,9 @@ public class Configuration extends AbstractConfiguration {
     private Set<String> stopwords;
 
     /**
-     * <p>
-     * Constructor for Configuration.
-     * </p>
+     * Creates a new Configuration instance.
      *
-     * @param configFilePath a {@link java.lang.String} object.
+     * @param configFilePath path to the default configuration XML file
      */
     public Configuration(String configFilePath) {
         // Load default config file
@@ -224,12 +222,10 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * loadStopwords.
-     * </p>
      *
-     * @param stopwordsFilePath a {@link java.lang.String} object.
-     * @return a {@link java.util.Set} object.
+     * @param stopwordsFilePath path to the stopwords file to read
+     * @return the set of stopwords loaded from the file
      * @throws java.io.IOException if any.
      * @should load all stopwords
      * @should remove parts starting with pipe
@@ -267,7 +263,7 @@ public class Configuration extends AbstractConfiguration {
      * Returns the stopwords loading during initialization.
      *
      * @should return all stopwords
-     * @return a {@link java.util.Set} object.
+     * @return the set of stopwords loaded during initialization
      */
     public Set<String> getStopwords() {
         return stopwords;
@@ -276,9 +272,7 @@ public class Configuration extends AbstractConfiguration {
     /*********************************** direct config results ***************************************/
 
     /**
-     * <p>
      * getConfigLocalPath.
-     * </p>
      *
      * @return the path to the local config_viewer.xml file.
      * @should return environment variable value if available
@@ -297,20 +291,16 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getLocalRessourceBundleFile.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the absolute path to the local German message properties file
      */
     public String getLocalRessourceBundleFile() {
         return getConfigLocalPath() + "messages_de.properties";
     }
 
     /**
-     * <p>
      * getViewerThumbnailsPerPage.
-     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -320,9 +310,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getViewerMaxImageWidth.
-     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -332,9 +320,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getViewerMaxImageHeight.
-     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -344,9 +330,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getViewerMaxImageScale.
-     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -356,11 +340,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * isRememberImageZoom.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the image zoom level is remembered between page navigation, false otherwise
      * @should return correct value
      */
     public boolean isRememberImageZoom() {
@@ -368,11 +350,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * isRememberImageRotation.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the image rotation is remembered between page navigation, false otherwise
      * @should return correct value
      */
     public boolean isRememberImageRotation() {
@@ -380,11 +360,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getDfgViewerUrl.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the configured DFG Viewer base URL
      * @should return correct value
      */
     public String getDfgViewerUrl() {
@@ -393,7 +371,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return Configured value
+     * @return the configured Solr field used as the DFG Viewer source file field
      * @should return correct value
      */
     public String getDfgViewerSourcefileField() {
@@ -428,10 +406,10 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @param type
-     * @param template
-     * @param fallbackToDefaultTemplate
-     * @param topstructValueFallbackDefaultValue
+     * @param type metadata list type attribute value
+     * @param template template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
+     * @param topstructValueFallbackDefaultValue default value for topstructValueFallback attribute
      * @return List of metadata configurations
      * @should throw IllegalArgumentException if type null
      * @should return empty list if no metadata lists configured
@@ -439,6 +417,26 @@ public class Configuration extends AbstractConfiguration {
      * @should return empty list if list type not found
      */
     public List<Metadata> getMetadataConfigurationForTemplate(String type, String template, boolean fallbackToDefaultTemplate,
+            boolean topstructValueFallbackDefaultValue) {
+        return getMetadataListItemsForTemplate(type, template, fallbackToDefaultTemplate, topstructValueFallbackDefaultValue).stream()
+                .filter(item -> item instanceof Metadata)
+                .map(item -> (Metadata) item)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 
+     * @param type metadata list type attribute value
+     * @param template template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
+     * @param topstructValueFallbackDefaultValue default value for topstructValueFallback attribute
+     * @return List of metadata configurations
+     * @should throw IllegalArgumentException if type null
+     * @should return empty list if no metadata lists configured
+     * @should return empty list if metadataList contains no templates
+     * @should return empty list if list type not found
+     */
+    public List<MetadataListElement> getMetadataListItemsForTemplate(String type, String template, boolean fallbackToDefaultTemplate,
             boolean topstructValueFallbackDefaultValue) {
         // logger.trace("getMetadataConfigurationForTemplate: {}/{}", type, template); //NOSONAR Debug
         if (type == null) {
@@ -471,7 +469,7 @@ public class Configuration extends AbstractConfiguration {
                     return new ArrayList<>(); // must be a mutable list!
                 }
 
-                return getMetadataForTemplate(template, templateList, fallbackToDefaultTemplate, topstructValueFallbackDefaultValue);
+                return getMetadataListItemsForTemplate(template, templateList, fallbackToDefaultTemplate, topstructValueFallbackDefaultValue);
             }
         }
 
@@ -480,7 +478,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @param type
+     * @param type metadata list type attribute value
      * @return Map&lt;String, List&lt;Metadata&gt;&gt;
      * @should return empty map if type null
      * @should return correct config
@@ -495,9 +493,9 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @param type
-     * @param fallbackToDefaultTemplate
-     * @param topstructValueFallbackDefaultValue
+     * @param type metadata list type attribute value
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
+     * @param topstructValueFallbackDefaultValue default value for topstructValueFallback attribute
      * @return Map&lt;String, List&lt;Metadata&gt;&gt;
      */
     public Map<String, List<Metadata>> getMetadataTemplates(String type, boolean fallbackToDefaultTemplate,
@@ -541,11 +539,11 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Returns the list of configured metadata for search hit elements.
      *
-     * @param template a {@link java.lang.String} object.
+     * @param template template name to look up
      * @should return correct template configuration
      * @should return default template configuration if requested not found
      * @should return default template if template is null
-     * @return a {@link java.util.List} object.
+     * @return a list of configured Metadata definitions for search hit elements of the given template
      */
     public List<Metadata> getSearchHitMetadataForTemplate(String template) {
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("metadata.searchHitMetadataList.template");
@@ -560,11 +558,11 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Returns the list of configured metadata for pages.
      *
-     * @param template a {@link java.lang.String} object.
+     * @param template template name to look up
      * @should return correct template configuration
      * @should return default template configuration if requested not found
      * @should return default template if template is null
-     * @return a {@link java.util.List} object.
+     * @return a list of configured Metadata definitions for page elements of the given template
      */
     public List<Metadata> getPageMetadataForTemplate(String template) {
         return getMetadataConfigurationForTemplate(METADATA_LIST_TYPE_PAGE, template, true, true);
@@ -573,9 +571,9 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Returns the list of configured metadata for {@link Highlight}s which reference a record.
      *
-     * @param template a {@link java.lang.String} object.
+     * @param template template name to look up
      * @should return default template configuration if requested not found
-     * @return a {@link java.util.List} object.
+     * @return a list of configured Metadata definitions for highlighted record references of the given template
      */
     public List<Metadata> getHighlightMetadataForTemplate(String template) {
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("metadata.highlightMetadataList.template");
@@ -589,7 +587,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return Configured values
+     * @return the list of configured metadata view configurations
      * @should return all configured values
      */
     public List<MetadataView> getMetadataViews() {
@@ -619,14 +617,30 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @param index
-     * @param template
+     * @param index zero-based index of the metadataView element to use
+     * @param template template name to look up
      * @return List of configured <code>Metadata</code> fields for the given template
      * @should return correct template configuration
      * @should return default template configuration if template not found
      * @should return default template if template is null
      */
     public List<Metadata> getMainMetadataForTemplate(int index, String template) {
+        return getMainMetadataListItemsForTemplate(index, template).stream()
+                .filter(item -> item instanceof Metadata)
+                .map(item -> (Metadata) item)
+                .toList();
+    }
+
+    /**
+     *
+     * @param index zero-based index of the metadataView element to use
+     * @param template template name to look up
+     * @return List of configured <code>Metadata</code> fields for the given template
+     * @should return correct template configuration
+     * @should return default template configuration if template not found
+     * @should return default template if template is null
+     */
+    public List<MetadataListElement> getMainMetadataListItemsForTemplate(int index, String template) {
         logger.trace("getMainMetadataForTemplate: {}", template);
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("metadata.metadataView(" + index + ").template");
         if (templateList == null) {
@@ -642,7 +656,7 @@ public class Configuration extends AbstractConfiguration {
             }
         }
 
-        return getMetadataForTemplate(template, templateList, true, false);
+        return getMetadataListItemsForTemplate(template, templateList, true, false);
     }
 
     /**
@@ -675,16 +689,18 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Reads metadata configuration for the given template name if it's contained in the given template list.
+     * Reads metadata configuration for the given template name if it's contained in the given template list. Includes non-metadata elements in the
+     * list
      *
      * @param template Requested template name
      * @param templateList List of templates in which to look
      * @param fallbackToDefaultTemplate If true, the _DEFAULT template will be loaded if the given template is not found
      * @param topstructValueFallbackDefaultValue If true, the default value for the parameter attribute "topstructValueFallback" will be the value
      *            passed here
-     * @return Configured values
+     * @return the list of configured metadata list elements for the resolved template
      */
-    private static List<Metadata> getMetadataForTemplate(String template, List<HierarchicalConfiguration<ImmutableNode>> templateList,
+    private static List<MetadataListElement> getMetadataListItemsForTemplate(String template,
+            List<HierarchicalConfiguration<ImmutableNode>> templateList,
             boolean fallbackToDefaultTemplate, boolean topstructValueFallbackDefaultValue) {
         if (templateList == null) {
             return new ArrayList<>();
@@ -694,32 +710,54 @@ public class Configuration extends AbstractConfiguration {
             return new ArrayList<>();
         }
 
-        return getMetadataForTemplate(usingTemplate, topstructValueFallbackDefaultValue);
+        return getMetadataListItemsForTemplate(usingTemplate, topstructValueFallbackDefaultValue);
+    }
+
+    /**
+     * Reads metadata configuration for the given template name if it's contained in the given template list.
+     *
+     * @param template Requested template name
+     * @param templateList List of templates in which to look
+     * @param fallbackToDefaultTemplate If true, the _DEFAULT template will be loaded if the given template is not found
+     * @param topstructValueFallbackDefaultValue If true, the default value for the parameter attribute "topstructValueFallback" will be the value
+     *            passed here
+     * @return the list of configured Metadata objects for the resolved template
+     */
+    private static List<Metadata> getMetadataForTemplate(String template, List<HierarchicalConfiguration<ImmutableNode>> templateList,
+            boolean fallbackToDefaultTemplate, boolean topstructValueFallbackDefaultValue) {
+        return getMetadataListItemsForTemplate(template, templateList, fallbackToDefaultTemplate, topstructValueFallbackDefaultValue).stream()
+                .filter(item -> item instanceof Metadata)
+                .map(item -> (Metadata) item)
+                .toList();
     }
 
     /**
      * Reads metadata configuration for the given template configuration item. Returns empty list if template is null.
      *
-     * @param usingTemplate
+     * @param usingTemplate the template configuration node to read metadata from
      * @param topstructValueFallbackDefaultValue Default value for topstructValueFallback, if not explicitly configured
-     * @return Configured values
+     * @return the list of configured metadata list elements for the given template configuration node
      */
-    private static List<Metadata> getMetadataForTemplate(HierarchicalConfiguration<ImmutableNode> usingTemplate,
+    private static List<MetadataListElement> getMetadataListItemsForTemplate(HierarchicalConfiguration<ImmutableNode> usingTemplate,
             boolean topstructValueFallbackDefaultValue) {
         if (usingTemplate == null) {
             return new ArrayList<>();
         }
-        List<HierarchicalConfiguration<ImmutableNode>> elements = usingTemplate.configurationsAt("metadata");
+        List<HierarchicalConfiguration<ImmutableNode>> elements = usingTemplate.childConfigurationsAt(".");
         if (elements == null) {
             logger.warn("Template '{}' contains no metadata elements.", usingTemplate.getRootElementName());
             return new ArrayList<>();
         }
 
-        List<Metadata> ret = new ArrayList<>(elements.size());
+        List<MetadataListElement> ret = new ArrayList<>(elements.size());
         for (HierarchicalConfiguration<ImmutableNode> sub : elements) {
-            Metadata md = getMetadataFromSubnodeConfig(sub, topstructValueFallbackDefaultValue, 0);
-            if (md != null) {
-                ret.add(md);
+            if ("fold".equals(sub.getRootElementName())) {
+                ret.add(new MetadataListSeparator());
+            } else if ("metadata".equals(sub.getRootElementName())) {
+                Metadata md = getMetadataFromSubnodeConfig(sub, topstructValueFallbackDefaultValue, 0);
+                if (md != null) {
+                    ret.add(md);
+                }
             }
         }
 
@@ -729,10 +767,10 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Selects template from given list and optionally returns default template configuration.
      * 
-     * @param templateList
-     * @param template
-     * @param fallbackToDefaultTemplate
-     * @return Configured values
+     * @param templateList list of template configuration nodes to search
+     * @param template template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
+     * @return the matching template configuration node, or the default template if fallback is enabled; null if not found
      */
     static HierarchicalConfiguration<ImmutableNode> selectTemplate(List<HierarchicalConfiguration<ImmutableNode>> templateList, String template,
             boolean fallbackToDefaultTemplate) {
@@ -760,11 +798,11 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Creates a {@link Metadata} instance from the given subnode configuration
+     * Creates a {@link Metadata} instance from the given subnode configuration.
      *
      * @param sub The subnode configuration
-     * @param topstructValueFallbackDefaultValue
-     * @param indentation
+     * @param topstructValueFallbackDefaultValue default value for topstructValueFallback attribute
+     * @param indentation indentation level for nested metadata
      * @return the resulting {@link Metadata} instance
      * @should load metadata config attributes correctly
      * @should load parameters correctly
@@ -828,9 +866,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getNormdataFieldsForTemplate.
-     * </p>
      *
      * @param template Template name
      * @return List of normdata fields configured for the given template name
@@ -857,14 +893,12 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getTocLabelConfiguration.
-     * </p>
      *
      * @should return correct template configuration
      * @should return default template configuration if template not found
-     * @param template a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
+     * @param template template name to look up
+     * @return a list of Metadata definitions used for generating TOC entry labels for the given template
      */
     public List<Metadata> getTocLabelConfiguration(String template) {
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("toc.labelConfig.template");
@@ -892,7 +926,7 @@ public class Configuration extends AbstractConfiguration {
         }
     }
 
-    public Metadata getGeoMapFeatureConfiguration(String option, String template) {
+    public MetadataListElement getGeoMapFeatureConfiguration(String option, String template) {
         return getGeomapFeatureConfigurations(option).getOrDefault(template, new Metadata());
     }
 
@@ -969,7 +1003,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @return Configured values
+     * @return the list of configured geo map feature title options as select items
      */
     public List<SelectItem> getGeomapFeatureTitleOptions() {
         List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("maps.metadata.option");
@@ -1035,14 +1069,14 @@ public class Configuration extends AbstractConfiguration {
         return List.of(config);
     }
 
-    private static Map<String, Metadata> loadGeomapLabelConfigurations(List<HierarchicalConfiguration<ImmutableNode>> templateList) {
+    private static Map<String, MetadataListElement> loadGeomapLabelConfigurations(List<HierarchicalConfiguration<ImmutableNode>> templateList) {
         if (templateList == null) {
             return Collections.emptyMap();
         }
-        Map<String, Metadata> map = new HashMap<>();
+        Map<String, MetadataListElement> map = new HashMap<>();
         for (HierarchicalConfiguration<ImmutableNode> template : templateList) {
             String name = template.getString("[@name]", "_DEFAULT");
-            Metadata md = getMetadataForTemplate(name, templateList, true, false).stream().findAny().orElse(null);
+            MetadataListElement md = getMetadataForTemplate(name, templateList, true, false).stream().findAny().orElse(null);
             if (md != null) {
                 map.put(name, md);
             }
@@ -1062,19 +1096,17 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Return the layout type for TOCs of anchor records. Dafaults to 'list'
-     * 
-     * @return a string
+     * Return the layout type for TOCs of anchor records. Defaults to 'list'
+     *
+     * @return the configured TOC anchor layout type; defaults to {@code "list"}
      */
     public String getTocAnchorLayout() {
         return getLocalString("toc.tocAnchorLayout", "list");
     }
 
     /**
-     * <p>
      * Returns a regex such that all download files which filenames fit this regex should not be visible in the downloads widget. If an empty string
      * is returned, all downloads should remain visible
-     * </p>
      *
      * @return a regex or an empty string if no downloads should be hidden
      */
@@ -1127,7 +1159,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return Configured values
+     * @return the configured citation recommendation source metadata
      * @should return correct configuration
      */
     public Metadata getSidebarWidgetCitationCitationRecommendationSource() {
@@ -1175,7 +1207,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return Configured values
+     * @return the list of configured citation links for the citation widget
      * @should return all configured values
      */
     public List<CitationLink> getSidebarWidgetCitationCitationLinks() {
@@ -1234,7 +1266,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return Configured value
+     * @return true if the page download options are enabled in the downloads widget, false otherwise
      * @should return correct value
      */
     public boolean isDisplayWidgetDownloadsDownloadOptions() {
@@ -1243,7 +1275,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return Configured value; otherwise false
+     * @return true if the PDF page range selector is enabled in the downloads widget, false otherwise
      */
     public boolean isDisplaySidebarWidgetDownloadsPdfPageRange() {
         return getSidebarWidgetBooleanValue("downloads", "pdfPageRange[@enabled]", false);
@@ -1254,6 +1286,7 @@ public class Configuration extends AbstractConfiguration {
      * @param view Record view name
      * @return List of sidebar widget names to display in the given view (in the intended order)
      * @should return correct values
+     * @should fall back to view name prefix if no exact match found
      */
     public List<String> getSidebarWidgetsForView(String view) {
         logger.trace("getSidebarWidgetsForView: {}", view);
@@ -1321,31 +1354,17 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Returns the list of structure elements allowed to be shown in calendar view
-     *
-     * @should return all configured elements
-     * @return a {@link java.util.List} object.
-     */
-    public List<String> getCalendarDocStructTypes() {
-        return getLocalList("metadata.calendarDocstructTypes.docStruct");
-    }
-
-    /**
-     * <p>
      * isBrowsingMenuEnabled.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the browsing menu is enabled, false otherwise
      */
     public boolean isBrowsingMenuEnabled() {
         return getLocalBoolean("metadata.browsingMenu[@enabled]", false);
     }
 
     /**
-     * <p>
      * getBrowsingMenuIndexSizeThreshold.
-     * </p>
      *
      * @return Solr doc count threshold for browsing term calculation
      * @should return correct value
@@ -1355,9 +1374,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getBrowsingMenuHitsPerPage.
-     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -1369,7 +1386,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Returns the list of index fields to be used for term browsing.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of configured index fields to be used for term browsing in the browsing menu
      * @should return all configured elements
      */
     public List<BrowsingMenuFieldConfig> getBrowsingMenuFields() {
@@ -1406,7 +1423,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return Configured value
+     * @return the configured leading characters to ignore when sorting the browsing menu
      * @should return correct value
      */
     public String getBrowsingMenuSortingIgnoreLeadingChars() {
@@ -1414,25 +1431,21 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getDocstrctWhitelistFilterQuery.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured Solr filter query restricting indexed document structure types
      */
     public String getDocstrctWhitelistFilterQuery() {
         return getLocalString("search.docstrctWhitelistFilterQuery", SearchHelper.DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY);
     }
 
     /**
-     * <p>
      * getCollectionSplittingChar.
-     * </p>
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field collection Solr field name to look up
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured hierarchy splitting character for the given collection field
      */
     public String getCollectionSplittingChar(String field) {
         HierarchicalConfiguration<ImmutableNode> subConfig = getCollectionConfiguration(field);
@@ -1446,8 +1459,8 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Returns the config block for the given field.
      *
-     * @param field
-     * @return Configured values
+     * @param field collection Solr field name
+     * @return the configuration block for the given collection Solr field, or null if not found
      */
     private HierarchicalConfiguration<ImmutableNode> getCollectionConfiguration(String field) {
         List<HierarchicalConfiguration<ImmutableNode>> collectionList = getLocalConfigurationsAt("collections.collection");
@@ -1467,7 +1480,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return Configured values
+     * @return the list of configured collection Solr field names
      */
     public List<String> getConfiguredCollectionFields() {
         List<String> list = getLocalList("collections.collection[@field]");
@@ -1479,8 +1492,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Get all configured sortOrders for collections in the given field, mapped against regex which should match the collection(s) which
-     * subcollections should be sorted according the sortOrder
+     * Gets all configured sortOrders for collections in the given field, mapped against a regex matching the collection(s).
+     *
+     * <p>Whether subcollections should be sorted according to the sortOrder.
      * 
      * @param field the solr fild on which the collection is based
      * @return a map of regular expressions matching collection names and associated sortOrders
@@ -1497,12 +1511,10 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getCollectionSorting.
-     * </p>
      *
-     * @param field a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
+     * @param field collection Solr field name to look up
+     * @return a list of DcSortingList objects defining the configured collection sort order for the given field
      * @should return all configured elements
      */
     public List<DcSortingList> getCollectionSorting(String field) {
@@ -1526,8 +1538,8 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Returns collection names to be omitted from search results, listings etc.
      *
-     * @param field a {@link java.lang.String} object
-     * @return a {@link java.util.List} object.
+     * @param field collection Solr field name to look up
+     * @return a list of collection names to be omitted from search results and listings for the given field
      * @should return all configured elements
      */
     public List<String> getCollectionBlacklist(String field) {
@@ -1541,8 +1553,8 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Returns the index field by which records in the collection with the given name are to be sorted in a listing.
      *
-     * @param field a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param field collection Solr field name to look up
+     * @return a map of collection name patterns to their configured default sort fields for the given collection field
      * @should return correct field for collection
      * @should give priority to exact matches
      * @should return hyphen if collection not found
@@ -1568,11 +1580,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getCollectionDisplayNumberOfVolumesLevel.
-     * </p>
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field collection Solr field name to look up
      * @should return correct value
      * @return a int.
      */
@@ -1585,11 +1595,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getCollectionDisplayDepthForSearch.
-     * </p>
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field collection Solr field name to look up
      * @should return correct value
      * @should return -1 if no collection config was found
      * @return a int.
@@ -1604,11 +1612,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getCollectionHierarchyField.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the first configured collection Solr field for which hierarchy breadcrumbs are enabled, or null if none
      * @should return first field where hierarchy enabled
      */
     public String getCollectionHierarchyField() {
@@ -1623,14 +1629,12 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * isAddCollectionHierarchyToBreadcrumbs.
-     * </p>
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field collection Solr field name to look up
      * @should return correct value
      * @should return false if no collection config was found
-     * @return a boolean.
+     * @return true if the collection hierarchy is added to the breadcrumb trail for the given field, false otherwise
      */
     public boolean isAddCollectionHierarchyToBreadcrumbs(String field) {
         HierarchicalConfiguration<ImmutableNode> collection = getCollectionConfiguration(field);
@@ -1641,12 +1645,10 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getSolrUrl.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured Solr base URL without a trailing slash
      */
     public String getSolrUrl() {
         String value = getLocalString("urls.solr", "http://localhost:8089/solr");
@@ -1657,12 +1659,10 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getDownloadUrl.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured download base URL with a trailing slash
      * @deprecated because download uri is now built from request in {@link DownloadBean}
      */
     @Deprecated(since = "25.11")
@@ -1693,9 +1693,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getRestApiUrl.
-     * </p>
      *
      * @return The url to the viewer REST API as configured in the config_viewer. The url always ends with "/"
      */
@@ -1715,7 +1713,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * url to rest api url for record media files. Always ends with a slash
      *
-     * @return Configured value
+     * @return the configured IIIF API base URL, always ending with a slash
      */
     public String getIIIFApiUrl() {
         String urlString = getLocalString("urls.iiif", getRestApiUrl());
@@ -1727,64 +1725,54 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return Configured value
+     * @return true if the IIIF API URL is used for CMS media file URLs instead of the default URL, false otherwise
      */
     public boolean isUseIIIFApiUrlForCmsMediaUrls() {
         return getLocalBoolean("urls.iiif[@useForCmsMedia]", true);
     }
 
     /**
-     * <p>
      * getSourceFileUrl.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured URL for accessing source (METS/LIDO) metadata files
      */
     public String getSourceFileUrl() {
         return getLocalString("urls.metadata.sourcefile");
     }
 
     /**
-     * <p>
      * getMarcUrl.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured URL for accessing MARC metadata records
      */
     public String getMarcUrl() {
         return getLocalString("urls.metadata.marc");
     }
 
     /**
-     * <p>
      * getDcUrl.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured URL for accessing Dublin Core metadata records
      */
     public String getDcUrl() {
         return getLocalString("urls.metadata.dc");
     }
 
     /**
-     * <p>
      * getEseUrl.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured URL for accessing ESE metadata records
      */
     public String getEseUrl() {
         return getLocalString("urls.metadata.ese");
     }
 
     /**
-     * <p>
      * getSearchHitsPerPageValues.
-     * </p>
      *
      * @should return all values
      * @return List of configured values
@@ -1809,7 +1797,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return Configured value; default value if none found
+     * @return true if search hit numbers are displayed next to each result, false otherwise
      * @should return correct value
      */
     public boolean isDisplaySearchHitNumbers() {
@@ -1825,9 +1813,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getSearchHitsPerPageDefaultValue.
-     * </p>
      *
      * @should return correct value
      * @return value element that is marked as default value; 10 if none found
@@ -1847,9 +1833,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getFulltextFragmentLength.
-     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -1859,12 +1843,10 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * isAdvancedSearchEnabled.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the advanced search is enabled, false otherwise
      */
     public boolean isAdvancedSearchEnabled() {
         return getLocalBoolean("search.advanced[@enabled]", true);
@@ -1909,7 +1891,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @param template
+     * @param template advanced search template name to look up
      * @return Value of the query attribute; empty string if none found
      * @should return correct value
      */
@@ -1927,14 +1909,12 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getAdvancedSearchFields.
-     * </p>
      *
-     * @param template
-     * @param fallbackToDefaultTemplate
-     * @param language
-     * @return a {@link java.util.List} object.
+     * @param template advanced search template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
+     * @param language language code used to filter language-specific fields
+     * @return a list of configured advanced search field configurations for the given template and language
      * @should return all values
      * @should return skip fields that don't match given language
      */
@@ -1967,6 +1947,7 @@ public class Configuration extends AbstractConfiguration {
             String label = subElement.getString(XML_PATH_ATTRIBUTE_LABEL, field);
             boolean hierarchical = subElement.getBoolean("[@hierarchical]", false);
             boolean range = subElement.getBoolean("[@range]", false);
+            boolean datepicker = subElement.getBoolean("[@datepicker]", false);
             boolean untokenizeForPhraseSearch = subElement.getBoolean("[@untokenizeForPhraseSearch]", false);
             boolean visible = subElement.getBoolean("[@visible]", false);
             boolean allowMultipleItems = subElement.getBoolean("[@allowMultipleItems]", false);
@@ -1980,6 +1961,7 @@ public class Configuration extends AbstractConfiguration {
                     .setLabel(label)
                     .setHierarchical(hierarchical)
                     .setRange(range)
+                    .setDatepicker(datepicker)
                     .setUntokenizeForPhraseSearch(untokenizeForPhraseSearch)
                     .setDisabled(field.charAt(0) == '#' && field.charAt(field.length() - 1) == '#')
                     .setVisible(visible)
@@ -1995,21 +1977,17 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * isDisplayAdditionalMetadataEnabled.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if displaying additional metadata in search hits is enabled, false otherwise
      */
     public boolean isDisplayAdditionalMetadataEnabled() {
         return getLocalBoolean("search.displayAdditionalMetadata[@enabled]", true);
     }
 
     /**
-     * <p>
      * getDisplayAdditionalMetadataIgnoreFields.
-     * </p>
      *
      * @return List of configured fields; empty list if none found.
      * @should return correct values
@@ -2019,10 +1997,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * Returns a list of additional metadata fields thats are configured to have their values translated. Field names are normalized (i.e. things like
      * _UNTOKENIZED are removed).
-     * </p>
      *
      * @return List of configured fields; empty list if none found.
      * @should return correct values
@@ -2032,9 +2008,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getDisplayAdditionalMetadataIgnoreFields.
-     * </p>
      *
      * @return List of configured fields; empty list if none found.
      * @should return correct values
@@ -2044,9 +2018,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getDisplayAdditionalMetadataSnippetFields.
-     * </p>
      *
      * @return List of configured fields; empty list if none found.
      * @should return correct values
@@ -2056,9 +2028,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getDisplayAdditionalMetadataNoHighlightFields.
-     * </p>
      *
      * @return List of configured fields; empty list if none found.
      * @should return correct values
@@ -2100,14 +2070,12 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * isAdvancedSearchFieldHierarchical.
-     * </p>
      *
-     * @param field a {@link java.lang.String} object.
-     * @param template
-     * @param fallbackToDefaultTemplate
-     * @return a boolean.
+     * @param field advanced search field name to check
+     * @param template advanced search template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
+     * @return true if the given advanced search field is configured as hierarchical, false otherwise
      * @should return correct value
      */
     public boolean isAdvancedSearchFieldHierarchical(String field, String template, boolean fallbackToDefaultTemplate) {
@@ -2115,14 +2083,12 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * isAdvancedSearchFieldRange.
-     * </p>
      *
-     * @param field a {@link java.lang.String} object.
-     * @param template
-     * @param fallbackToDefaultTemplate
-     * @return a boolean.
+     * @param field advanced search field name to check
+     * @param template advanced search template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
+     * @return true if the given advanced search field is configured as a range field, false otherwise
      * @should return correct value
      */
     public boolean isAdvancedSearchFieldRange(String field, String template, boolean fallbackToDefaultTemplate) {
@@ -2130,14 +2096,22 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
+     * @param field advanced search field name to check
+     * @param template advanced search template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
+     * @return true if the given advanced search field is configured to use a date picker, false otherwise
+     */
+    public boolean isAdvancedSearchFieldDatepicker(String field, String template, boolean fallbackToDefaultTemplate) {
+        return isAdvancedSearchFieldHasAttribute(field, "datepicker", template, fallbackToDefaultTemplate);
+    }
+
+    /**
      * isAdvancedSearchFieldAllowMultipleItems.
-     * </p>
      *
-     * @param field a {@link java.lang.String} object.
-     * @param template
-     * @param fallbackToDefaultTemplate
-     * @return a boolean.
+     * @param field advanced search field name to check
+     * @param template advanced search template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
+     * @return true if the advanced search field is configured to allow multiple items, false otherwise
      * @should return correct value
      */
     public boolean isAdvancedSearchFieldAllowMultipleItems(String field, String template, boolean fallbackToDefaultTemplate) {
@@ -2146,14 +2120,12 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * isAdvancedSearchFieldUntokenizeForPhraseSearch.
-     * </p>
      *
-     * @param field a {@link java.lang.String} object.
-     * @param template
-     * @param fallbackToDefaultTemplate
-     * @return a boolean.
+     * @param field advanced search field name to check
+     * @param template advanced search template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
+     * @return true if the advanced search field is configured to untokenize values for phrase search, false otherwise
      * @should return correct value
      */
     public boolean isAdvancedSearchFieldUntokenizeForPhraseSearch(String field, String template, boolean fallbackToDefaultTemplate) {
@@ -2162,10 +2134,10 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @param field
-     * @param template
-     * @param fallbackToDefaultTemplate
-     * @return Configured value
+     * @param field advanced search field name
+     * @param template advanced search template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
+     * @return the configured threshold for displaying select items in the advanced search field for the given field and template
      * @should return correct value
      */
     public int getAdvancedSearchFieldDisplaySelectItemsThreshold(String field, String template, boolean fallbackToDefaultTemplate) {
@@ -2193,10 +2165,10 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @param field
-     * @param template
-     * @param fallbackToDefaultTemplate
-     * @return Configured value
+     * @param field advanced search field name
+     * @param template advanced search template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
+     * @return the configured select type for the advanced search field, defaulting to dropdown if not set
      * @should return correct value
      */
     public String getAdvancedSearchFieldSelectType(String field, String template, boolean fallbackToDefaultTemplate) {
@@ -2209,13 +2181,11 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * isAdvancedSearchFieldHierarchical.
-     * </p>
      *
-     * @param field a {@link java.lang.String} object.
-     * @param template
-     * @param fallbackToDefaultTemplate
+     * @param field advanced search field name to check
+     * @param template advanced search template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
      * @return Label attribute value for the given field name
      * @should return correct value
      */
@@ -2224,11 +2194,11 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param field
-     * @param template
-     * @param fallbackToDefaultTemplate
-     * @return Configured value; null if none found
+     *
+     * @param field advanced search field name
+     * @param template advanced search template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
+     * @return the configured regex pattern to replace in the advanced search field value for the given field and template, or null if not configured
      * @should return correct value
      */
     public String getAdvancedSearchFieldReplaceRegex(String field, String template, boolean fallbackToDefaultTemplate) {
@@ -2236,11 +2206,11 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param field
-     * @param template
-     * @param fallbackToDefaultTemplate
-     * @return Configured value; null if none found
+     *
+     * @param field advanced search field name
+     * @param template advanced search template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
+     * @return the configured replacement string for the advanced search field value for the given field and template, or null if not configured
      * @should return correct value
      */
     public String getAdvancedSearchFieldReplaceWith(String field, String template, boolean fallbackToDefaultTemplate) {
@@ -2248,11 +2218,11 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param field
-     * @param template
-     * @param fallbackToDefaultTemplate
-     * @return Configured value; null if none found
+     *
+     * @param field advanced search field name
+     * @param template advanced search template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
+     * @return the configured default boolean operator for the given advanced search field and template, or null if not configured
      * @should return correct value
      */
     public String getAdvancedSearchFieldDefaultOperator(String field, String template, boolean fallbackToDefaultTemplate) {
@@ -2260,9 +2230,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param template
-     * @return Configured value; null if none found
+     *
+     * @param template advanced search template name to look up
+     * @return the configured default operator for the first line of the given advanced search template, or null if not configured
      * @should return correct value
      */
     public String getAdvancedSearchTemplateFirstLineDefaultOperator(String template) {
@@ -2279,12 +2249,12 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param field
-     * @param attribute
-     * @param template
-     * @param fallbackToDefaultTemplate
-     * @return Configured value; null if none found
+     *
+     * @param field advanced search field name
+     * @param attribute XML attribute name to read
+     * @param template advanced search template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
+     * @return the configured attribute value for the given advanced search field and attribute, or null if not configured
      */
     String getAdvancedSearchFieldGetAttributeValue(String field, String attribute, String template, boolean fallbackToDefaultTemplate) {
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
@@ -2313,9 +2283,9 @@ public class Configuration extends AbstractConfiguration {
      *
      * @param field Advanced search field name
      * @param attribute Attribute name
-     * @param template
-     * @param fallbackToDefaultTemplate
-     * @return Configured value; false if none found
+     * @param template advanced search template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
+     * @return true if the given advanced search field has the specified attribute configured, false otherwise
      */
     boolean isAdvancedSearchFieldHasAttribute(String field, String attribute, String template, boolean fallbackToDefaultTemplate) {
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
@@ -2341,335 +2311,279 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * isTimelineSearchEnabled.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the timeline search is enabled, false otherwise
      */
     public boolean isTimelineSearchEnabled() {
         return getLocalBoolean("search.timeline[@enabled]", true);
     }
 
     /**
-     * <p>
      * isCalendarSearchEnabled.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the calendar search is enabled, false otherwise
      */
     public boolean isCalendarSearchEnabled() {
         return getLocalBoolean("search.calendar[@enabled]", true);
     }
 
     /**
-     * <p>
      * getStaticQuerySuffix.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured static Solr query suffix appended to all search queries
      */
     public String getStaticQuerySuffix() {
         return getLocalString("search.staticQuerySuffix");
     }
 
     /**
-     * <p>
      * getPreviousVersionIdentifierField.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured Solr field name holding the previous version identifier
      */
     public String getPreviousVersionIdentifierField() {
         return getLocalString("search.versioning.previousVersionIdentifierField");
     }
 
     /**
-     * <p>
      * getNextVersionIdentifierField.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured Solr field name holding the next version identifier
      */
     public String getNextVersionIdentifierField() {
         return getLocalString("search.versioning.nextVersionIdentifierField");
     }
 
     /**
-     * <p>
      * getVersionLabelField.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured Solr field name holding the version label
      */
     public String getVersionLabelField() {
         return getLocalString("search.versioning.versionLabelField");
     }
 
     /**
-     * <p>
      * getIndexedMetsFolder.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for indexed METS files
      */
     public String getIndexedMetsFolder() {
         return getLocalString("indexedMetsFolder", "indexed_mets");
     }
 
     /**
-     * <p>
      * getIndexedLidoFolder.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for indexed LIDO files
      */
     public String getIndexedLidoFolder() {
         return getLocalString("indexedLidoFolder", "indexed_lido");
     }
 
     /**
-     * <p>
      * getIndexedEadFolder.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for indexed EAD files
      */
     public String getIndexedEadFolder() {
         return getLocalString("indexedEadFolder", "indexed_ead");
     }
 
     /**
-     * <p>
      * getIndexedDenkxwebFolder.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for indexed DenkXweb files
      */
     public String getIndexedDenkxwebFolder() {
         return getLocalString("indexedDenkxwebFolder", "indexed_denkxweb");
     }
 
     /**
-     * <p>
      * getIndexedDublinCoreFolder.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for indexed Dublin Core files
      */
     public String getIndexedDublinCoreFolder() {
         return getLocalString("indexedDublinCoreFolder", "indexed_dublincore");
     }
 
     /**
-     * <p>
      * getPageSelectionFormat.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured format string for page selection display
      */
     public String getPageSelectionFormat() {
         return getLocalString("viewer.pageSelectionFormat", "{pageno}:{pagenolabel}");
     }
 
     /**
-     * <p>
      * getMediaFolder.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured path to the media folder
      */
     public String getMediaFolder() {
         return getLocalString("mediaFolder");
     }
 
     /**
-     * <p>
      * getPdfFolder.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for generated PDF files
      */
     public String getPdfFolder() {
         return getLocalString("pdfFolder", "pdf");
     }
 
     /**
-     * <p>
      * getVocabulariesFolder.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for vocabulary files
      */
     public String getVocabulariesFolder() {
         return getLocalString("vocabularies", "vocabularies");
     }
 
     /**
-     * <p>
      * getOrigContentFolder.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for original source content files
      */
     public String getOrigContentFolder() {
         return getLocalString("origContentFolder", "source");
     }
 
     /**
-     * <p>
      * getCmsMediaFolder.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for CMS media files
      */
     public String getCmsMediaFolder() {
         return getLocalString("cmsMediaFolder", "cms_media");
     }
 
     /**
-     * <p>
      * getCmsTextFolder.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for CMS text content files
      */
     public String getCmsTextFolder() {
         return getLocalString("cmsTextFolder");
     }
 
     /**
-     * <p>
      * getAltoFolder.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for ALTO OCR files
      */
     public String getAltoFolder() {
         return getLocalString("altoFolder", "alto");
     }
 
     /**
-     * <p>
      * getAltoCrowdsourcingFolder.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for crowdsourced ALTO OCR files
      */
     public String getAltoCrowdsourcingFolder() {
         return getLocalString("altoCrowdsourcingFolder", "alto_crowd");
     }
 
     /**
-     * <p>
      * getAbbyyFolder.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for ABBYY recognition result files
      */
     public String getAbbyyFolder() {
         return getLocalString("abbyyFolder", "abbyy");
     }
 
     /**
-     * <p>
      * getFulltextFolder.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for plain full-text files
      */
     public String getFulltextFolder() {
         return getLocalString("fulltextFolder", "fulltext");
     }
 
     /**
-     * <p>
      * getFulltextCrowdsourcingFolder.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for crowdsourced plain full-text files
      */
     public String getFulltextCrowdsourcingFolder() {
         return getLocalString("fulltextCrowdsourcingFolder", "fulltext_crowd");
     }
 
     /**
-     * <p>
      * getTeiFolder.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for TEI document files
      */
     public String getTeiFolder() {
         return getLocalString("teiFolder", "tei");
     }
 
     /**
-     * <p>
      * getCmdiFolder.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for CMDI metadata files
      */
     public String getCmdiFolder() {
         return getLocalString("cmdiFolder", "cmdi");
     }
 
     /**
-     * <p>
      * getAnnotationFolder.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured folder name for annotation files
      */
     public String getAnnotationFolder() {
         return getLocalString("annotationFolder");
     }
 
     /**
-     * <p>
      * getHotfolder.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured path to the Goobi indexer hotfolder
      */
     public String getHotfolder() {
         return getLocalString("hotfolder");
     }
 
     /**
-     * <p>
      * getTempFolder.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the path to the temporary viewer working directory within the system temp directory
      */
     public String getTempFolder() {
         return Paths.get(System.getProperty("java.io.tmpdir"), "viewer").toString();
@@ -2677,7 +2591,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return Configured values
+     * @return the list of configured Solr field names used for URN resolver lookups
      * @should return all configured elements
      */
     public List<String> getUrnResolverFields() {
@@ -2685,24 +2599,20 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * isUrnDoRedirect.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if URN resolver should redirect instead of forward, false otherwise
      */
     public boolean isUrnDoRedirect() {
         return getLocalBoolean("urnresolver.doRedirectInsteadofForward", false);
     }
 
     /**
-     * <p>
      * isUserRegistrationEnabled.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if user self-registration is enabled, false otherwise
      */
     public boolean isUserRegistrationEnabled() {
         return getLocalBoolean("user.registration[@enabled]", true);
@@ -2710,7 +2620,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return Configured values
+     * @return the list of configured security questions for user registration
      * @should return all configured elements
      */
     public List<SecurityQuestion> getSecurityQuestions() {
@@ -2742,25 +2652,21 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * isShowOpenIdConnect.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if at least one OpenID Connect authentication provider is configured and enabled, false otherwise
      */
     public boolean isShowOpenIdConnect() {
         return getAuthenticationProviders().stream().anyMatch(provider -> OpenIdProvider.TYPE_OPENID.equalsIgnoreCase(provider.getType()));
     }
 
     /**
-     * <p>
      * getAuthenticationProviders.
-     * </p>
      *
      * @should return all properly configured elements
      * @should load user group names correctly
-     * @return a {@link java.util.List} object.
+     * @return a list of all configured authentication providers
      */
     public List<IAuthenticationProvider> getAuthenticationProviders() {
         XMLConfiguration myConfigToUse = getConfig();
@@ -2860,72 +2766,60 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getSmtpServer.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured SMTP server hostname or IP address
      */
     public String getSmtpServer() {
         return getLocalString("user.smtpServer");
     }
 
     /**
-     * <p>
      * getSmtpUser.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured SMTP authentication username
      */
     public String getSmtpUser() {
         return getLocalString("user.smtpUser");
     }
 
     /**
-     * <p>
      * getSmtpPassword.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured SMTP authentication password
      */
     public String getSmtpPassword() {
         return getLocalString("user.smtpPassword");
     }
 
     /**
-     * <p>
      * getSmtpSenderAddress.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured SMTP sender email address
      */
     public String getSmtpSenderAddress() {
         return getLocalString("user.smtpSenderAddress");
     }
 
     /**
-     * <p>
      * getSmtpSenderName.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured SMTP sender display name
      */
     public String getSmtpSenderName() {
         return getLocalString("user.smtpSenderName");
     }
 
     /**
-     * <p>
      * getSmtpSecurity.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured SMTP connection security mode (e.g. none, ssl, tls)
      */
     public String getSmtpSecurity() {
         return getLocalString("user.smtpSecurity", "none");
@@ -2941,120 +2835,99 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * isDisplayCollectionBrowsing.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the collection browsing navigation is enabled, false otherwise
      */
     public boolean isDisplayCollectionBrowsing() {
         return this.getLocalBoolean("webGuiDisplay.collectionBrowsing", true);
     }
 
     /**
-     * <p>
      * isDisplayUserNavigation.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the user account navigation is enabled, false otherwise
      */
     public boolean isDisplayUserNavigation() {
         return this.getLocalBoolean("webGuiDisplay.userAccountNavigation", true);
     }
 
     /**
-     * <p>
      * isDisplayTagCloudNavigation.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the tag cloud navigation is enabled, false otherwise
      */
     public boolean isDisplayTagCloudNavigation() {
         return this.getLocalBoolean("webGuiDisplay.displayTagCloudNavigation", true);
     }
 
     /**
-     * <p>
      * isDisplayStatistics.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the statistics display is enabled, false otherwise
      */
     public boolean isDisplayStatistics() {
         return this.getLocalBoolean("webGuiDisplay.displayStatistics", true);
     }
 
     /**
-     * <p>
      * isDisplayTimeMatrix.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the time matrix display is enabled, false otherwise
      */
     public boolean isDisplayTimeMatrix() {
         return this.getLocalBoolean("webGuiDisplay.displayTimeMatrix", false);
     }
 
     /**
-     * <p>
      * isDisplayCrowdsourcingModuleLinks.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if links to the crowdsourcing module are displayed, false otherwise
      */
     public boolean isDisplayCrowdsourcingModuleLinks() {
         return this.getLocalBoolean("webGuiDisplay.displayCrowdsourcingModuleLinks", false);
     }
 
     /**
-     * <p>
      * getTheme.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured main theme name
      */
     public String getTheme() {
         return getSubthemeMainTheme();
     }
 
     /**
-     * <p>
      * getThemeRootPath.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
-     * 
+     * @return the configured root path for theme resources
      */
     public String getThemeRootPath() {
         return getLocalString("viewer.theme.rootPath");
     }
 
     /**
-     * <p>
      * getName.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured viewer application name
      */
     public String getName() {
         return getLocalString("viewer.name", "Goobi viewer");
     }
 
     /**
-     * <p>
      * getDescription.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured viewer application description
      */
     public String getDescription() {
         return getLocalString("viewer.description", "Goobi viewer");
@@ -3063,19 +2936,17 @@ public class Configuration extends AbstractConfiguration {
     /**
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the tag cloud is displayed on the start page, false otherwise
      */
     public boolean isDisplayTagCloudStartpage() {
         return this.getLocalBoolean("webGuiDisplay.displayTagCloudStartpage", true);
     }
 
     /**
-     * <p>
      * isDisplaySearchResultNavigation.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the search result navigation is displayed, false otherwise
      */
     public boolean isDisplaySearchResultNavigation() {
         return this.getLocalBoolean("webGuiDisplay.displaySearchResultNavigation", true);
@@ -3083,9 +2954,9 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * Returns the config block for the given path and name attribute value.
-     * 
-     * @param path
-     * @param name
+     *
+     * @param path XPath expression for the config elements
+     * @param name value of the name attribute to match
      * @param globalFallback If true, search in global config if desired name not found in local
      * @return HierarchicalConfiguration<ImmutableNode>; null if none found
      */
@@ -3116,18 +2987,32 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * Returns the sidebar view configuration for the given view name.
      *
-     * @param field
-     * @return Configured values
+     * <p>If no exact match is found, falls back to the prefix before the last underscore
+     * (e.g. "metadata_codicological" → "metadata"), allowing dynamically created metadata
+     * subpages to inherit the sidebar configuration of their base view.
+     *
+     * @param name View name
+     * @return HierarchicalConfiguration or null if neither the name nor any prefix matches
      */
     private HierarchicalConfiguration<ImmutableNode> getSidebarViewConfiguration(String name) {
-        return getSubConfigurationByNameAttribute("sidebar.views.view", name, true);
+        HierarchicalConfiguration<ImmutableNode> config = getSubConfigurationByNameAttribute("sidebar.views.view", name, true);
+        if (config != null) {
+            return config;
+        }
+        // Fall back to base view name by stripping suffix after last underscore
+        int underscoreIndex = name.lastIndexOf('_');
+        if (underscoreIndex > 0) {
+            return getSidebarViewConfiguration(name.substring(0, underscoreIndex));
+        }
+        return null;
     }
 
     /**
      *
-     * @param field
-     * @return Configured values
+     * @param name sidebar widget field name
+     * @return the configuration node for the given sidebar widget, or null if not found
      */
     private HierarchicalConfiguration<ImmutableNode> getSidebarWidgetConfiguration(String name) {
         return getSubConfigurationByNameAttribute("sidebar.widgets.widget", name, true);
@@ -3137,8 +3022,8 @@ public class Configuration extends AbstractConfiguration {
      * 
      * @param widgetName Widget name
      * @param valuePath Path to the wanted value
-     * @param defaultValue
-     * @return a boolean
+     * @param defaultValue value to return if none configured
+     * @return the configured boolean value for the given sidebar widget attribute path, or {@code defaultValue} if the widget is not found
      */
     private boolean getSidebarWidgetBooleanValue(String widgetName, String valuePath, boolean defaultValue) {
         HierarchicalConfiguration<ImmutableNode> widget = getSidebarWidgetConfiguration(widgetName);
@@ -3153,8 +3038,8 @@ public class Configuration extends AbstractConfiguration {
      * 
      * @param widgetName Widget name
      * @param valuePath Path to the wanted value
-     * @param defaultValue
-     * @return an int
+     * @param defaultValue value to return if none configured
+     * @return the configured integer value for the given sidebar widget attribute path, or {@code defaultValue} if the widget is not found
      */
     private int getSidebarWidgetIntValue(String widgetName, String valuePath, int defaultValue) {
         HierarchicalConfiguration<ImmutableNode> widget = getSidebarWidgetConfiguration(widgetName);
@@ -3169,7 +3054,7 @@ public class Configuration extends AbstractConfiguration {
      * 
      * @param widgetName Widget name
      * @param valuePath Path to the wanted value
-     * @param defaultValue
+     * @param defaultValue value to return if none configured
      * @return a {@link String}
      */
     private String getSidebarWidgetStringValue(String widgetName, String valuePath, String defaultValue) {
@@ -3182,143 +3067,109 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * isFoldout.
-     * </p>
      *
-     * @param sidebarElement a {@link java.lang.String} object.
-     * @return a boolean.
+     * @param sidebarElement sidebar widget name to check
+     * @return true if the given sidebar element is configured as foldout, false otherwise
      */
     public boolean isFoldout(String sidebarElement) {
         return getLocalBoolean("sidebar." + sidebarElement + ".foldout", false);
     }
 
     /**
-     * <p>
      * isSidebarViewsWidgetObjectViewLinkVisible.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the object view link in the sidebar views widget is visible, false otherwise
      */
     public boolean isSidebarViewsWidgetObjectViewLinkVisible() {
         return getSidebarWidgetBooleanValue("views", "object[@enabled]", true);
     }
 
     /**
-     * <p>
-     * isSidebarViewsWidgetCalendarViewLinkVisible.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isSidebarViewsWidgetCalendarViewLinkVisible() {
-        return getSidebarWidgetBooleanValue("views", "calendar[@enabled]", true);
-    }
-
-    /**
-     * <p>
-     * This method checks whether the TOC <strong>link</strong> in the sidebar views widget is enabled. To check whether the sidebar TOC
+     * Checks whether the TOC <strong>link</strong> in the sidebar views widget is enabled. To check whether the sidebar TOC
      * <strong>widget</strong> is enabled, use <code>isSidebarTocVisible()</code>.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the TOC view link in the sidebar views widget is visible, false otherwise
      */
     public boolean isSidebarViewsWidgetTocViewLinkVisible() {
         return getSidebarWidgetBooleanValue("views", "toc[@enabled]", true);
     }
 
     /**
-     * <p>
      * isSidebarViewsWidgetThumbsViewLinkVisible.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the thumbnails view link in the sidebar views widget is visible, false otherwise
      */
     public boolean isSidebarViewsWidgetThumbsViewLinkVisible() {
         return getSidebarWidgetBooleanValue("views", "thumbs[@enabled]", true);
     }
 
     /**
-     * <p>
      * isSidebarViewsWidgetMetadataViewLinkVisible.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the metadata view link in the sidebar views widget is visible, false otherwise
      */
     public boolean isSidebarViewsWidgetMetadataViewLinkVisible() {
         return getSidebarWidgetBooleanValue("views", "metadata[@enabled]", true);
     }
 
     /**
-     * <p>
      * isSidebarViewsWidgetFulltextLinkVisible.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the fulltext view link in the sidebar views widget is visible, false otherwise
      */
     public boolean isSidebarViewsWidgetFulltextLinkVisible() {
         return getSidebarWidgetBooleanValue("views", "fulltext[@enabled]", true);
     }
 
     /**
-     * <p>
      * isSidebarViewsWidgetOpacLinkVisible.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the OPAC view link in the sidebar views widget is visible, false otherwise
      */
     public boolean isSidebarViewsWidgetOpacLinkVisible() {
         return getSidebarWidgetBooleanValue("views", "opac[@enabled]", false);
     }
 
     /**
-     * <p>
      * isSearchInItemOnlyIfFullTextAvailable.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if search-in-item is only active when full text is available, false otherwise
      */
     public boolean isSearchInItemOnlyIfFullTextAvailable() {
         return getSidebarWidgetBooleanValue("search-in-current-item", "[@onlyIfFullTextAvailable]", false);
     }
 
     /**
-     * <p>
-     * This method checks whether the TOC <strong>widget</strong> is enabled. To check whether the sidebar TOC <strong>link</strong> in the views
+     * Checks whether the TOC <strong>widget</strong> is enabled. To check whether the sidebar TOC <strong>link</strong> in the views
      * widget is enabled, use <code>isSidebarTocVisible()</code>.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the sidebar TOC widget is visible in fullscreen mode, false otherwise
      */
     public boolean isSidebarTocWidgetVisibleInFullscreen() {
         return getSidebarWidgetBooleanValue("toc", "visibleInFullscreen", true);
     }
 
     /**
-     * <p>
      * getSidebarTocPageNumbersVisible.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if page numbers are visible in the sidebar TOC, false otherwise
      */
     public boolean getSidebarTocPageNumbersVisible() {
         return getSidebarWidgetBooleanValue("toc", "pageNumbersVisible", false);
     }
 
     /**
-     * <p>
      * getSidebarTocLengthBeforeCut.
-     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -3328,9 +3179,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getSidebarTocInitialCollapseLevel.
-     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -3340,9 +3189,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getSidebarTocCollapseLengthThreshold.
-     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -3352,9 +3199,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getSidebarTocLowestLevelToCollapseForLength.
-     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -3364,26 +3209,22 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * isSidebarTocTreeView.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the sidebar TOC uses tree view, false otherwise
      */
     public boolean isSidebarTocTreeView() {
         return getSidebarWidgetBooleanValue("toc", "useTreeView", true);
     }
 
     /**
-     * <p>
      * isTocTreeView.
-     * </p>
      *
      * @should return true for allowed docstructs
      * @should return false for other docstructs
-     * @param docStructType a {@link java.lang.String} object.
-     * @return a boolean.
+     * @param docStructType document structure type to check against configured allowlist
+     * @return true if tree view is enabled for the given document structure type, false otherwise
      */
     public boolean isTocTreeView(String docStructType) {
         List<HierarchicalConfiguration<ImmutableNode>> hcList = getLocalConfigurationsAt("toc.useTreeView");
@@ -3415,11 +3256,9 @@ public class Configuration extends AbstractConfiguration {
     //
 
     /**
-     * <p>
      * isDisplaySidebarBrowsingTerms.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the browsing terms sidebar widget is enabled, false otherwise
      * @should return correct value
      */
     public boolean isDisplaySidebarBrowsingTerms() {
@@ -3427,11 +3266,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * isSidebarRssFeedWidgetEnabled.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the RSS feed sidebar widget is enabled, false otherwise
      * @should return correct value
      */
     public boolean isSidebarRssFeedWidgetEnabled() {
@@ -3439,12 +3276,10 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * Returns a list containing all simple facet fields.
-     * </p>
      *
      * @should return correct order
-     * @return a {@link java.util.List} object.
+     * @return a list of all configured facet field names
      */
     public List<String> getAllFacetFields() {
         return getLocalList("search.facets.field");
@@ -3452,7 +3287,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return Configured values
+     * @return the list of configured regular (non-range, non-hierarchical) facet field names
      */
     public List<String> getRegularFacetFields() {
         List<String> ret = new ArrayList<>();
@@ -3467,11 +3302,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getBooleanFacetFields.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of configured boolean-type facet field names
      * @should return all values
      */
     public List<String> getBooleanFacetFields() {
@@ -3487,11 +3320,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getHierarchicalFacetFields.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of configured hierarchical-type facet field names
      * @should return all values
      */
     public List<String> getHierarchicalFacetFields() {
@@ -3507,9 +3338,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getRangeFacetFields.
-     * </p>
      *
      * @return List of facet fields to be used as range values
      * @should return all values
@@ -3527,9 +3356,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param facetField
-     * @return Configured value
+     *
+     * @param facetField facet field name
+     * @return the configured minimum value for the range facet field, or Integer.MIN_VALUE if not configured
      * @should return correct value
      * @should return INT_MIN if no value configured
      */
@@ -3543,9 +3372,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param facetField
-     * @return Configured value
+     *
+     * @param facetField facet field name
+     * @return the configured maximum value for the range facet field, or Integer.MAX_VALUE if not configured
      * @should return correct value
      * @should return INT_MAX if no value configured
      */
@@ -3559,9 +3388,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param facetField
-     * @return Configured value
+     *
+     * @param facetField facet field name
+     * @return the configured display style for the facet field, or an empty string if not configured
      * @should return correct value
      */
     public String getFacetFieldStyle(String facetField) {
@@ -3569,11 +3398,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getGeoFacetFields.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of configured geo-type facet field names
      * @should return all values
      */
     public List<String> getGeoFacetFields() {
@@ -3589,8 +3416,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @param facetField
-     * @return Configured value
+     * @param facetField facet field name
+     * @return the configured spatial predicate for the geo facet field, defaulting to ISWITHIN
      * @should return correct value
      */
     public String getGeoFacetFieldPredicate(String facetField) {
@@ -3599,8 +3426,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @param facetField
-     * @return Configured value
+     * @param facetField facet field name
+     * @return the configured value indicating whether search hits should be shown in the geo facet map
      * @should return correct value
      */
     public boolean isShowSearchHitsInGeoFacetMap(String facetField) {
@@ -3609,11 +3436,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getInitialFacetElementNumber.
-     * </p>
      *
-     * @param facetField a {@link java.lang.String} object.
+     * @param facetField facet field name to look up
      * @return Number of initial facet values
      * @should return correct value
      * @should return default value if field not found
@@ -3628,11 +3453,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getFacetFieldDescriptionKey.
-     * </p>
      *
-     * @param facetField a {@link java.lang.String} object.
+     * @param facetField facet field name to look up
      * @return Optional description message key
      * @should return correct value
      */
@@ -3641,12 +3464,10 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getSortOrder.
-     * </p>
      *
-     * @param facetField a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param facetField facet field name to look up
+     * @return the configured sort order for the given facet field (e.g. "default", "asc", "desc")
      */
     public String getSortOrder(String facetField) {
         return getPropertyForFacetField(facetField, "[@sortOrder]", "default");
@@ -3655,7 +3476,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Returns a list of values to prioritize for the given facet field.
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field facet field name to look up
      * @return List of priority values; empty list if none found for the given field
      * @should return return all configured elements for regular fields
      * @should return return all configured elements for hierarchical fields
@@ -3676,8 +3497,8 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @param facetField
-     * @return Configured value
+     * @param facetField facet field name
+     * @return the configured label field name for the facet field, or null if not configured
      * @should return correct value
      * @should return null if no value found
      */
@@ -3687,8 +3508,8 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @param facetField
-     * @return Configured value
+     * @param facetField facet field name
+     * @return the configured value indicating whether facet field labels should be translated
      * @should return correct value
      */
     public boolean isTranslateFacetFieldLabels(String facetField) {
@@ -3697,9 +3518,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param facetField
-     * @return Configured value
+     *
+     * @param facetField facet field name
+     * @return the configured grouping length for the facet field, or -1 if not configured
      * @should return correct value
      */
     public int getGroupToLengthForFacetField(String facetField) {
@@ -3709,8 +3530,8 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @param facetField
-     * @return Configured value
+     * @param facetField facet field name
+     * @return the configured value indicating whether the facet field should always be applied to unfiltered hits
      * @should return correct value
      */
     public boolean isAlwaysApplyFacetFieldToUnfilteredHits(String facetField) {
@@ -3720,8 +3541,8 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @param facetField
-     * @return Configured value
+     * @param facetField facet field name
+     * @return the configured value indicating whether the facet field should be skipped in the widget
      * @should return correct value
      */
     public boolean isFacetFieldSkipInWidget(String facetField) {
@@ -3730,9 +3551,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param facetField
-     * @return Configured value
+     *
+     * @param facetField facet field name
+     * @return the configured value indicating whether a value filter should be displayed for the facet field
      * @should return correct value
      */
     public boolean isFacetFieldDisplayValueFilter(String facetField) {
@@ -3741,17 +3562,17 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param facetField
-     * @return Configured value
+     *
+     * @param facetField facet field name
+     * @return the configured type of the facet field, or an empty string if not configured
      */
     public String getFacetFieldType(String facetField) {
         return getPropertyForFacetField(facetField, XML_PATH_ATTRIBUTE_TYPE, "");
     }
 
     /**
-     * @param facetField
-     * @return Configured value
+     * @param facetField facet field name
+     * @return the configured multi-value operator for the facet field, defaulting to AND
      * @should return correct value
      */
     public String getMultiValueOperatorForField(String facetField) {
@@ -3807,24 +3628,20 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * isSortingEnabled.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if search result sorting is enabled, false otherwise
      */
     public boolean isSortingEnabled() {
         return getLocalBoolean("search.sorting[@enabled]", true);
     }
 
     /**
-     * <p>
      * getDefaultSortField.
-     * </p>
      *
-     * @param language
-     * @return a {@link java.lang.String} object.
+     * @param language language code for selecting language-specific sort fields
+     * @return the configured default sort field for the given language, or the relevance sort constant if not configured
      * @should return correct value
      * @should return correct language value
      */
@@ -3848,20 +3665,18 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getSortFields.
-     * </p>
      *
      * @should return return all configured elements
-     * @return a {@link java.util.List} object.
+     * @return a list of configured sort field names for search results
      */
     public List<String> getSortFields() {
         return getLocalList(XML_PATH_SEARCH_SORTING_FIELD);
     }
 
     /**
-     * 
-     * @param language
+     *
+     * @param language language code for filtering language-specific sort fields
      * @return List of {@link SearchSortingOption}s from configured sorting fields
      * @should place default sorting field on top
      * @should handle descending configurations correctly
@@ -3905,20 +3720,18 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getStaticSortFields.
-     * </p>
      *
      * @should return return all configured elements
-     * @return a {@link java.util.List} object.
+     * @return a list of configured static sort field names that are always applied to search results
      */
     public List<String> getStaticSortFields() {
         return getLocalList("search.sorting.static.field");
     }
 
     /**
-     * @param field
-     * @return Configured value
+     * @param field sort field name
+     * @return an Optional containing the configured message key for ascending sort label, or empty if not configured
      */
     public Optional<String> getSearchSortingKeyAscending(String field) {
         List<HierarchicalConfiguration<ImmutableNode>> fieldConfigs = getLocalConfigurationsAt(XML_PATH_SEARCH_SORTING_FIELD);
@@ -3932,9 +3745,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param field
-     * @return Configured value
+     *
+     * @param field sort field name
+     * @return an Optional containing the configured message key for descending sort label, or empty if not configured
      */
     public Optional<String> getSearchSortingKeyDescending(String field) {
         List<HierarchicalConfiguration<ImmutableNode>> fieldConfigs = getLocalConfigurationsAt(XML_PATH_SEARCH_SORTING_FIELD);
@@ -3948,12 +3761,10 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getUrnResolverUrl.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured URN resolver base URL
      */
     public String getUrnResolverUrl() {
         return getLocalString("urls.urnResolver",
@@ -3961,7 +3772,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * The maximal image size retrievable with only the permission to view thumbnails
+     * The maximal image size retrievable with only the permission to view thumbnails.
      *
      * @should return correct value
      * @return the maximal image width
@@ -3971,7 +3782,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * The maximal image size retrievable with the permission to view images but without the permission to zoom images
+     * The maximal image size retrievable with the permission to view images but without the permission to zoom images.
      *
      * @should return correct value
      * @return the maximal image width, default ist 600
@@ -3981,147 +3792,123 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * isFullAccessForLocalhost.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if full access is granted to requests from localhost, false otherwise
      */
     public boolean isFullAccessForLocalhost() {
         return getLocalBoolean("accessConditions.fullAccessForLocalhost", false);
     }
 
     /**
-     * <p>
      * isGeneratePdfInMessageQueue.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if PDF generation is handled via the message queue, false otherwise
      */
     public boolean isGeneratePdfInMessageQueue() {
         return getLocalBoolean("pdf.generateInMessageQueue", getLocalBoolean("pdf.externalPdfGeneration", false));
     }
 
     /**
-     * <p>
      * isPdfApiDisabled.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the PDF API is disabled, false otherwise
      */
     public boolean isPdfApiDisabled() {
         return getLocalBoolean("pdf.pdfApiDisabled", false);
     }
 
     /**
-     * <p>
      * isTitlePdfEnabled.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if PDF download for the title page is enabled, false otherwise
      */
     public boolean isTitlePdfEnabled() {
         return getLocalBoolean("pdf.titlePdfEnabled", true);
     }
 
     /**
-     * <p>
      * isTocPdfEnabled.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if PDF download for the table of contents is enabled, false otherwise
      */
     public boolean isTocPdfEnabled() {
         return getLocalBoolean("pdf.tocPdfEnabled", true);
     }
 
     /**
-     * <p>
      * isMetadataPdfEnabled.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if PDF download including metadata is enabled, false otherwise
      */
     public boolean isMetadataPdfEnabled() {
         return getLocalBoolean("pdf.metadataPdfEnabled", true);
     }
 
     /**
-     * <p>
      * isPagePdfEnabled.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if PDF download for individual pages is enabled, false otherwise
      */
     public boolean isPagePdfEnabled() {
         return getLocalBoolean("pdf.pagePdfEnabled", false);
     }
 
     /**
-     * <p>
      * isDocHierarchyPdfEnabled.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if PDF download for the full document hierarchy is enabled, false otherwise
      */
     public boolean isDocHierarchyPdfEnabled() {
         return getLocalBoolean("pdf.docHierarchyPdfEnabled", false);
     }
 
     /**
-     * <p>
      * isTitleEpubEnabled.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if EPUB download for the title is enabled, false otherwise
      */
     public boolean isTitleEpubEnabled() {
         return getLocalBoolean("epub.titleEpubEnabled", false);
     }
 
     /**
-     * <p>
      * isTocEpubEnabled.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if EPUB download for the table of contents is enabled, false otherwise
      */
     public boolean isTocEpubEnabled() {
         return getLocalBoolean("epub.tocEpubEnabled", false);
     }
 
     /**
-     * <p>
      * isMetadataEpubEnabled.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if EPUB download including metadata is enabled, false otherwise
      */
     public boolean isMetadataEpubEnabled() {
         return getLocalBoolean("epub.metadataEpubEnabled", false);
     }
 
     /**
-     * <p>
      * getDownloadFolder.
-     * </p>
      *
      * @should return correct value for pdf
      * @should return correct value for epub
      * @should return empty string if type unknown
-     * @param type a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param type download type (pdf, epub, or resource)
+     * @return the configured download folder path for the given type, or an empty string for unknown types
      */
     public String getDownloadFolder(String type) {
         switch (type.toLowerCase()) {
@@ -4194,9 +3981,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getRssFeedItems.
-     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -4206,45 +3991,37 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getRssTitle.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured RSS feed title
      */
     public String getRssTitle() {
         return getLocalString("rss.title", "viewer-rss");
     }
 
     /**
-     * <p>
      * getRssDescription.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured RSS feed description
      */
     public String getRssDescription() {
         return getLocalString("rss.description", "latest imports");
     }
 
     /**
-     * <p>
      * getRssCopyrightText.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured RSS feed copyright text
      */
     public String getRssCopyrightText() {
         return getLocalString("rss.copyright");
     }
 
     /**
-     * <p>
      * getThumbnailsWidth.
-     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -4254,9 +4031,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getThumbnailsHeight.
-     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -4266,48 +4041,40 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getAnchorThumbnailMode.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured thumbnail display mode for anchor records
      */
     public String getAnchorThumbnailMode() {
         return getLocalString("viewer.anchorThumbnailMode", StringConstants.ANCHOR_THUMBNAIL_MODE_GENERIC);
     }
 
     /**
-     * <p>
      * getDisplayBreadcrumbs.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if breadcrumb navigation is displayed, false otherwise
      */
     public boolean getDisplayBreadcrumbs() {
         return this.getLocalBoolean("webGuiDisplay.displayBreadcrumbs", true);
     }
 
     /**
-     * <p>
      * getDisplayMetadataPageLinkBlock.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the metadata page link block is displayed, false otherwise
      */
     public boolean getDisplayMetadataPageLinkBlock() {
         return this.getLocalBoolean("webGuiDisplay.displayMetadataPageLinkBlock", true);
     }
 
     /**
-     * <p>
      * useTiles.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if tiled image loading is used in the standard image view, false otherwise
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public boolean useTiles() throws ViewerConfigurationException {
@@ -4315,12 +4082,10 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * useTilesFullscreen.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if tiled image loading is used in fullscreen view, false otherwise
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public boolean useTilesFullscreen() throws ViewerConfigurationException {
@@ -4328,12 +4093,10 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * useTiles.
-     * </p>
      *
-     * @param viewAttributes a {@link ViewAttributes} object
-     * @return a boolean.
+     * @param viewAttributes view context attributes selecting the zoom config
+     * @return true if tiled image loading is used in the standard image view, false otherwise
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public boolean useTiles(ViewAttributes viewAttributes) throws ViewerConfigurationException {
@@ -4341,9 +4104,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * whether to show a navigator element in the openseadragon viewe
-     * 
-     * @param viewAttributes a {@link ViewAttributes} object
+     * Returns whether a navigator element should be shown in the OpenSeadragon viewer.
+     *
+     * @param viewAttributes view context attributes selecting the zoom config
      * @return true if navigator should be shown
      * @throws ViewerConfigurationException
      */
@@ -4352,9 +4115,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * whether to show thumbnail gallery in image view
-     * 
-     * @param viewAttributes a {@link ViewAttributes} object
+     * Returns whether the thumbnail gallery should be shown in image view.
+     *
+     * @param viewAttributes view context attributes selecting the zoom config
      * @return true if thumbnail gallery should be visible
      * @throws ViewerConfigurationException
      */
@@ -4363,9 +4126,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getFooterHeight.
-     * </p>
      *
      * @return a int.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -4375,9 +4136,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getFullscreenFooterHeight.
-     * </p>
      *
      * @return a int.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -4387,11 +4146,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getFooterHeight.
-     * </p>
      *
-     * @param viewAttributes a {@link ViewAttributes} object
+     * @param viewAttributes view context attributes selecting the zoom config
      * @return a int.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -4400,11 +4157,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getImageViewZoomScales.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of configured zoom scale values for the default image view
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public List<String> getImageViewZoomScales() throws ViewerConfigurationException {
@@ -4412,12 +4167,10 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getImageViewZoomScales.
-     * </p>
      *
-     * @param view a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
+     * @param view page type name used to construct the ViewAttributes
+     * @return a list of configured zoom scale values for the given view
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public List<String> getImageViewZoomScales(String view) throws ViewerConfigurationException {
@@ -4425,12 +4178,10 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getImageViewZoomScales.
-     * </p>
      *
-     * @param viewAttributes a {@link ViewAttributes} object
-     * @return a {@link java.util.List} object.
+     * @param viewAttributes view context attributes selecting the zoom config
+     * @return a list of configured zoom scale values for the given view context
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public List<String> getImageViewZoomScales(ViewAttributes viewAttributes) throws ViewerConfigurationException {
@@ -4446,9 +4197,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getTileSizes.
-     * </p>
      *
      * @return the configured tile sizes for imageView as a hashmap linking each tile size to the list of resolutions to use with that size
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -4458,12 +4207,10 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getTileSizes.
-     * </p>
      *
-     * @param viewAttributes a {@link ViewAttributes} object
-     * @return a {@link java.util.Map} object.
+     * @param viewAttributes view context attributes selecting the zoom config
+     * @return a map of tile sizes (resolution) to lists of scale factors for the given view context
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public Map<Integer, List<Integer>> getTileSizes(ViewAttributes viewAttributes) throws ViewerConfigurationException {
@@ -4492,12 +4239,10 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getZoomImageViewConfig.
-     * </p>
      *
-     * @param viewAttributes a {@link ViewAttributes} object
-     * @return a {@link org.apache.commons.configuration2.SubnodeConfiguration} object.
+     * @param viewAttributes view context attributes selecting the matching zoom config block
+     * @return the zoom image view configuration block matching the given view context
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public BaseHierarchicalConfiguration getZoomImageViewConfig(ViewAttributes viewAttributes) throws ViewerConfigurationException {
@@ -4527,9 +4272,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getBreadcrumbsClipping.
-     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -4539,21 +4282,17 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getDisplayStructType.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the structure type should be displayed in search hit metadata, false otherwise
      */
     public boolean getDisplayStructType() {
         return this.getLocalBoolean("search.metadata.displayStructType", true);
     }
 
     /**
-     * <p>
      * getSearchHitMetadataValueNumber.
-     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -4563,9 +4302,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getSearchHitMetadataValueLength.
-     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -4587,30 +4324,26 @@ public class Configuration extends AbstractConfiguration {
      * Returns the preference order of data to be used as an image footer text.
      *
      * @should return all configured elements in the correct order
-     * @return a {@link java.util.List} object.
+     * @return a list of data source names defining the preference order for image footer text
      */
     public List<String> getWatermarkTextConfiguration() {
         return getLocalList("viewer.watermarkTextConfiguration.text");
     }
 
     /**
-     * <p>
      * getWatermarkFormat.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the configured image format for watermarked images (e.g. "jpg")
      */
     public String getWatermarkFormat() {
         return getLocalString("viewer.watermarkFormat", "jpg");
     }
 
     /**
-     * <p>
      * getStopwordsFilePath.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured path to the stopwords file
      */
     public String getStopwordsFilePath() {
         return getLocalString("stopwordsFile");
@@ -4619,24 +4352,22 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Returns the locally configured page type name for URLs (e.g. "bild" instead of default "image").
      *
-     * @param type a {@link io.goobi.viewer.model.viewer.PageType} object.
+     * @param type page type whose configured URL name is returned
      * @should return the correct value for the given type
      * @should return null for non configured type
-     * @return a {@link java.lang.String} object.
+     * @return the locally configured URL name for the given page type, or null if not configured
      */
     public String getPageType(PageType type) {
         return getLocalString("viewer.pageTypes." + type.name());
     }
 
     /**
-     * <p>
      * getRecordTargetPageType.
-     * </p>
      *
-     * @param publicationType a {@link java.lang.String} object.
+     * @param publicationType publication type name to look up
      * @should return correct value
      * @should return null if docstruct not found
-     * @return a {@link java.lang.String} object.
+     * @return the configured target page type name for the given publication type, or null if not configured
      */
     public String getRecordTargetPageType(String publicationType) {
         return getLocalString("viewer.recordTargetPageTypes." + publicationType);
@@ -4647,9 +4378,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getFulltextPercentageWarningThreshold.
-     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -4660,7 +4389,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return Configured value
+     * @return the configured fallback default language code, e.g. "en"
      * @should return correct value
      */
     public String getFallbackDefaultLanguage() {
@@ -4668,12 +4397,10 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getFeedbackEmailAddresses.
-     * </p>
      *
      * @should return correct values
-     * @return a {@link java.lang.String} object.
+     * @return the list of configured feedback email recipients
      */
     public List<EmailRecipient> getFeedbackEmailRecipients() {
         List<EmailRecipient> ret = new ArrayList<>();
@@ -4694,7 +4421,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return Configured value
+     * @return the email address of the default feedback recipient, or a placeholder string if none is configured
      */
     public String getDefaultFeedbackEmailAddress() {
         for (EmailRecipient recipient : getFeedbackEmailRecipients()) {
@@ -4707,21 +4434,17 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * isBookmarksEnabled.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the bookmarks feature is enabled, false otherwise
      */
     public boolean isBookmarksEnabled() {
         return getLocalBoolean("bookmarks[@enabled]", true);
     }
 
     /**
-     * <p>
      * getPageLoaderThreshold.
-     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -4731,21 +4454,17 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * isPreventProxyCaching.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if proxy caching should be prevented, false otherwise
      */
     public boolean isPreventProxyCaching() {
         return getLocalBoolean(("performance.preventProxyCaching"), false);
     }
 
     /**
-     * <p>
      * getDatabaseConnectionAttempts.
-     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -4755,19 +4474,17 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @return Configured value
+     * @return true if review mode is enabled for comments, false otherwise
      */
     public boolean reviewEnabledForComments() {
         return getLocalBoolean("comments.review[@enabled]", false);
     }
 
     /**
-     * <p>
      * getViewerHome.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured viewer home directory path
      */
     public String getViewerHome() {
         return getLocalString("viewerHome");
@@ -4775,7 +4492,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return Configured value
+     * @return the configured path to the data repositories home directory
      * @should return correct value
      */
     String getDataRepositoriesHome() {
@@ -4783,12 +4500,10 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getWatermarkIdField.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.util.List} object.
+     * @return a list of Solr field names used to select the watermark image for a record
      */
     public List<String> getWatermarkIdField() {
         return getLocalList("viewer.watermarkIdField", Collections.singletonList(SolrConstants.DC));
@@ -4797,7 +4512,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return Configured value
+     * @return true if docstruct navigation is enabled, false otherwise
      * @should return correct value
      */
     public boolean isDocstructNavigationEnabled() {
@@ -4806,9 +4521,9 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @param template
-     * @param fallbackToDefaultTemplate
-     * @return Configured value
+     * @param template template name to look up
+     * @param fallbackToDefaultTemplate if true, fall back to the default template when not found
+     * @return the list of configured docstruct type names for the given template
      * @should return all configured values
      */
     public List<String> getDocstructNavigationTypes(String template, boolean fallbackToDefaultTemplate) {
@@ -4831,12 +4546,10 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getSubthemeMainTheme.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured main theme name used as the base theme for subthemes
      */
     public String getSubthemeMainTheme() {
         String theme = getLocalString("viewer.theme[@mainTheme]");
@@ -4847,25 +4560,21 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getSubthemeDiscriminatorField.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured Solr field name used to discriminate between subthemes
      */
     public String getSubthemeDiscriminatorField() {
         return getLocalString("viewer.theme[@discriminatorField]", "");
     }
 
     /**
-     * <p>
      * getTagCloudSampleSize.
-     * </p>
      *
      * @should return correct value for existing fields
      * @should return INT_MAX for other fields
-     * @param fieldName a {@link java.lang.String} object.
+     * @param fieldName Solr field name to look up the sample size for
      * @return a int.
      */
     public int getTagCloudSampleSize(String fieldName) {
@@ -4873,12 +4582,10 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getTocVolumeSortFieldsForTemplate.
-     * </p>
      *
-     * @param template a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
+     * @param template template name to look up
+     * @return a list of sort field name/order pairs configured for TOC volume sorting for the given template
      * @should return correct template configuration
      * @should return default template configuration if template not found
      * @should return default template configuration if template is null
@@ -4929,8 +4636,8 @@ public class Configuration extends AbstractConfiguration {
      * Returns the grouping Solr field for the given anchor TOC sort configuration.
      *
      * @should return correct value
-     * @param template a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param template template name to look up
+     * @return the configured grouping Solr field for the given anchor TOC sort configuration
      */
     public String getTocVolumeGroupFieldForTemplate(String template) {
         HierarchicalConfiguration<ImmutableNode> usingTemplate = null;
@@ -4967,33 +4674,27 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getDisplayTitleBreadcrumbs.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if title breadcrumbs should be displayed, false otherwise
      */
     public boolean getDisplayTitleBreadcrumbs() {
         return getLocalBoolean("webGuiDisplay.displayTitleBreadcrumbs", false);
     }
 
     /**
-     * <p>
      * isDisplayTitlePURL.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the persistent URL should be displayed in the title bar, false otherwise
      */
     public boolean isDisplayTitlePURL() {
         return this.getLocalBoolean("webGuiDisplay.displayTitlePURL", true);
     }
 
     /**
-     * <p>
      * getTitleBreadcrumbsMaxTitleLength.
-     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -5003,143 +4704,119 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getIncludeAnchorInTitleBreadcrumbs.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the anchor record should be included in title breadcrumbs, false otherwise
      */
     public boolean getIncludeAnchorInTitleBreadcrumbs() {
         return this.getLocalBoolean("webGuiDisplay.displayTitleBreadcrumbs[@includeAnchor]", false);
     }
 
     /**
-     * <p>
      * isDisplaySearchRssLinks.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if RSS links should be displayed in search results, false otherwise
      */
     public boolean isDisplaySearchRssLinks() {
         return getLocalBoolean("rss.displaySearchRssLinks", true);
     }
 
     /**
-     * <p>
      * getStartYearForTimeline.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured start year for the timeline view
      */
     public String getStartYearForTimeline() {
         return this.getLocalString("search.timeline.startyear", "1750");
     }
 
     /**
-     * <p>
      * getEndYearForTimeline.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured end year for the timeline view
      */
     public String getEndYearForTimeline() {
         return this.getLocalString("search.timeline.endyear", "2014");
     }
 
     /**
-     * <p>
      * getTimelineHits.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured maximum number of timeline hits to display
      */
     public String getTimelineHits() {
         return this.getLocalString("search.timeline.hits", "108");
     }
 
     /**
-     * <p>
      * isPiwikTrackingEnabled.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if Piwik/Matomo tracking is enabled, false otherwise
      */
     public boolean isPiwikTrackingEnabled() {
         return getLocalBoolean("piwik[@enabled]", false);
     }
 
     /**
-     * <p>
      * getPiwikBaseURL.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured Piwik/Matomo tracking base URL
      */
     public String getPiwikBaseURL() {
         return this.getLocalString("piwik.baseURL", "");
     }
 
     /**
-     * <p>
      * getPiwikSiteID.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured Piwik/Matomo site ID
      */
     public String getPiwikSiteID() {
         return this.getLocalString("piwik.siteID", "1");
     }
 
     /**
-     * <p>
      * isSearchSavingEnabled.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if saving searches is enabled, false otherwise
      */
     public boolean isSearchSavingEnabled() {
         return getLocalBoolean("search.searchSaving[@enabled]", true);
     }
 
     /**
-     * <p>
      * getRecordGroupIdentifierFields.
-     * </p>
      *
      * @should return all configured values
-     * @return a {@link java.util.List} object.
+     * @return a list of configured Solr field names used to identify record groups
      */
     public List<String> getRecordGroupIdentifierFields() {
         return getLocalList("toc.recordGroupIdentifierFields.field");
     }
 
     /**
-     * <p>
      * getAncestorIdentifierFields.
-     * </p>
      *
      * @should return all configured values
-     * @return a {@link java.util.List} object.
+     * @return a list of configured Solr field names used to identify ancestor records
      */
     public List<String> getAncestorIdentifierFields() {
         return getLocalList("toc.ancestorIdentifierFields.field");
     }
 
     /**
-     * <p>
      * isTocListSiblingRecords.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if sibling records should be listed in the table of contents, false otherwise
      * @should return correctValue
      */
     public boolean isTocListSiblingRecords() {
@@ -5147,11 +4824,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getAncestorIdentifierFieldFilterQuery(String).
-     * </p>
-     * 
-     * @param field
+     *
+     * @param field ancestor identifier field name
      * @return Configured filter query for the given field; empty string is none found
      * @should return empty string if field config not found
      * @should return correctValue
@@ -5172,12 +4847,10 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getSearchFilters.
-     * </p>
      *
      * @should return all configured elements
-     * @return a {@link java.util.List} object.
+     * @return a list of configured search filter definitions
      */
     public List<SearchFilter> getSearchFilters() {
         List<HierarchicalConfiguration<ImmutableNode>> elements = getLocalConfigurationsAt("search.filters.filter");
@@ -5199,8 +4872,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return the configured default search filter, or the global "all" filter if none is marked as default
      */
     public SearchFilter getDefaultSearchFilter() {
         for (SearchFilter filter : getSearchFilters()) {
@@ -5213,11 +4886,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getWebApiFields.
-     * </p>
      *
-     * @param template
+     * @param template template name to look up
      * @return {@link JsonMetadataConfiguration}
      * @should return all configured elements
      */
@@ -5248,12 +4919,10 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getDbPersistenceUnit.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured JPA persistence unit name, or null if not configured
      */
     public String getDbPersistenceUnit() {
         return getLocalString("dbPersistenceUnit", null);
@@ -5273,9 +4942,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getCmsMediaDisplayWidth.
-     * </p>
      *
      * @return a int.
      */
@@ -5284,9 +4951,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getCmsMediaDisplayHeight. If not configured, return 100.000. In this case the actual image size always depends on the requested width
-     * </p>
      *
      * @return a int.
      */
@@ -5295,81 +4960,67 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * isTranskribusEnabled.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if Transkribus integration is enabled, false otherwise
      */
     public boolean isTranskribusEnabled() {
         return getLocalBoolean("transkribus[@enabled]", false);
     }
 
     /**
-     * <p>
      * getTranskribusUserName.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured Transkribus login username
      */
     public String getTranskribusUserName() {
         return getLocalString("transkribus.userName");
     }
 
     /**
-     * <p>
      * getTranskribusPassword.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured Transkribus login password
      */
     public String getTranskribusPassword() {
         return getLocalString("transkribus.password");
     }
 
     /**
-     * <p>
      * getTranskribusDefaultCollection.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured default Transkribus collection name
      */
     public String getTranskribusDefaultCollection() {
         return getLocalString("transkribus.defaultCollection");
     }
 
     /**
-     * <p>
      * getTranskribusRestApiUrl.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured Transkribus REST API base URL
      */
     public String getTranskribusRestApiUrl() {
         return getLocalString("transkribus.restApiUrl", TranskribusUtils.TRANSRIBUS_REST_URL);
     }
 
     /**
-     * <p>
      * getTranskribusAllowedDocumentTypes.
-     * </p>
      *
      * @should return all configured elements
-     * @return a {@link java.util.List} object.
+     * @return a list of configured document type names (docstructs) allowed for Transkribus integration
      */
     public List<String> getTranskribusAllowedDocumentTypes() {
         return getLocalList("transkribus.allowedDocumentTypes.docstruct");
     }
 
     /**
-     * <p>
      * getTocIndentation.
-     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -5379,11 +5030,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * isPageBrowseEnabled.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if page-by-page browsing is enabled, false otherwise
      * @should return correct value
      */
     public boolean isPageBrowseEnabled() {
@@ -5391,11 +5040,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getPageBrowseSteps.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of configured page step sizes for page-by-page browsing navigation
      */
     public List<Integer> getPageBrowseSteps() {
         List<String> defaultList = Collections.singletonList("1");
@@ -5413,7 +5060,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return Configured value
+     * @return the configured minimum number of pages required to display the page select dropdown
      * @should return correct value
      */
     public int getPageSelectDropdownDisplayMinPages() {
@@ -5421,9 +5068,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getWorkflowRestUrl.
-     * </p>
      *
      * @return The url to the Goobi workflow REST API as configured in the config_viewer. The url always ends with "/"
      * @should return correct value
@@ -5438,60 +5083,50 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getReCaptchaSiteKey.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured reCAPTCHA site key for the frontend widget
      */
     public String getReCaptchaSiteKey() {
         return getLocalString("reCaptcha.provider[@siteKey]");
     }
 
     /**
-     * <p>
      * isUseReCaptcha.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if reCAPTCHA verification is enabled, false otherwise
      */
     public boolean isUseReCaptcha() {
         return getLocalBoolean("reCaptcha[@enabled]", true);
     }
 
     /**
-     * <p>
      * isSearchRisExportEnabled.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if RIS export of search results is enabled, false otherwise
      */
     public boolean isSearchRisExportEnabled() {
         return getLocalBoolean("search.export.ris[@enabled]", false);
     }
 
     /**
-     * <p>
      * isSearchExcelExportEnabled.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if Excel export of search results is enabled, false otherwise
      */
     public boolean isSearchExcelExportEnabled() {
         return getLocalBoolean("search.export.excel[@enabled]", false);
     }
 
     /**
-     * <p>
      * getSearchExcelExportFields.
-     * </p>
      *
      * @should return all values
-     * @return a {@link java.util.List} object.
+     * @return a list of configured export field definitions for the Excel search export
      */
     public List<ExportFieldConfiguration> getSearchExcelExportFields() {
         return getExportConfigurations("search.export.excel.field");
@@ -5499,8 +5134,8 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @param path
-     * @return Configured values
+     * @param path XPath expression for the config elements
+     * @return the list of configured export field configurations at the given path
      */
     List<ExportFieldConfiguration> getExportConfigurations(String path) {
         if (path == null) {
@@ -5521,9 +5156,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getExcelDownloadTimeout.
-     * </p>
      *
      * @return a int.
      */
@@ -5535,8 +5168,8 @@ public class Configuration extends AbstractConfiguration {
      * Return true if double page navigation is enabled for the given {@link PageType} and {@link ImageType}. Default is false
      *
      * @should return correct value
-     * @param viewAttributes a {@link ViewAttributes} object
-     * @return a boolean.
+     * @param viewAttributes view context attributes selecting the zoom config
+     * @return true if double page navigation is enabled for the given view attributes, false otherwise
      * @throws ViewerConfigurationException
      */
     public boolean isDoublePageNavigationEnabled(ViewAttributes viewAttributes) throws ViewerConfigurationException {
@@ -5548,8 +5181,8 @@ public class Configuration extends AbstractConfiguration {
      * Return true if double page navigation should be used per default for the given {@link PageType} and {@link ImageType}. Default is false
      *
      * @should return correct value
-     * @param viewAttributes a {@link ViewAttributes} object
-     * @return a boolean.
+     * @param viewAttributes view context attributes selecting the zoom config
+     * @return true if double page navigation is enabled and set as the default mode for the given view attributes, false otherwise
      * @throws ViewerConfigurationException
      */
     public boolean isDoublePageNavigationDefault(ViewAttributes viewAttributes) throws ViewerConfigurationException {
@@ -5561,8 +5194,8 @@ public class Configuration extends AbstractConfiguration {
      * Return true if sequence page navigation is enabled for the given {@link PageType} and {@link ImageType}. Default is false
      *
      * @should return correct value
-     * @param viewAttributes a {@link ViewAttributes} object
-     * @return a boolean.
+     * @param viewAttributes view context attributes selecting the zoom config
+     * @return true if sequence page navigation is enabled for the given view attributes, false otherwise
      * @throws ViewerConfigurationException
      */
     public boolean isSequencePageNavigationEnabled(ViewAttributes viewAttributes) throws ViewerConfigurationException {
@@ -5570,11 +5203,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getRestrictedImageUrls.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of URL patterns for external image content that requires access restriction
      */
     public List<String> getRestrictedImageUrls() {
         return getLocalList("viewer.externalContent.restrictedUrls.url", new ArrayList<>());
@@ -5593,20 +5224,16 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getIIIFMetadataFields.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of configured Solr field names to be included as metadata in IIIF manifests
      */
     public List<String> getIIIFMetadataFields() {
         return getLocalList("webapi.iiif.metadataFields.field", new ArrayList<>());
     }
 
     /**
-     * <p>
      * getIIIFEventFields.
-     * </p>
      *
      * @return the list of all configured event fields for IIIF manifests All fields must contain a "/" to separate the event type and the actual
      *         field name If no "/" is present in the configured field it is prepended to the entry to indicate that this field should be taken from
@@ -5619,9 +5246,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getIIIFMetadataLabel.
-     * </p>
      *
      * @param field the value of the field
      * @return The attribute "label" of any children of webapi.iiif.metadataFields
@@ -5653,44 +5278,36 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getIIIFLogo.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the list of configured IIIF logo URLs
      */
     public List<String> getIIIFLogo() {
         return getLocalList("webapi.iiif.logo", new ArrayList<>());
     }
 
     /**
-     * <p>
      * getIIIFNavDateField.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the configured Solr field name used as the IIIF navigation date field, or null if not configured
      */
     public String getIIIFNavDateField() {
         return getLocalString("webapi.iiif.navDateField", null);
     }
 
     /**
-     * <p>
      * getIIIFAttribution.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the list of configured IIIF attribution strings
      */
     public List<String> getIIIFAttribution() {
         return getLocalList("webapi.iiif.attribution", new ArrayList<>());
     }
 
     /**
-     * <p>
      * getIIIFDescriptionFields.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of configured Solr field names used as description in IIIF manifests
      */
     public List<String> getIIIFDescriptionFields() {
         return getLocalList("webapi.iiif.descriptionFields.field", new ArrayList<>());
@@ -5723,7 +5340,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Uses {@link #getIIIFAttribution()} as fallback;
+     * Uses {@link #getIIIFAttribution()} as fallback.
      *
      * @return the message key to use for the IIIF3 requiredStatement value if the statement should be added to manifests.
      */
@@ -5771,7 +5388,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return Configured value
+     * @return true if the PDF rendering link is visible in IIIF manifests, false otherwise
      * @should return correct value
      */
     public boolean isVisibleIIIFRenderingPDF() {
@@ -5780,7 +5397,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return Configured value
+     * @return true if the viewer rendering link is visible in IIIF manifests, false otherwise
      * @should return correct value
      */
     public boolean isVisibleIIIFRenderingViewer() {
@@ -5797,7 +5414,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return Configured value
+     * @return true if the plain text rendering link is visible in IIIF manifests, false otherwise
      * @should return correct value
      */
     public boolean isVisibleIIIFRenderingPlaintext() {
@@ -5806,7 +5423,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return Configured value
+     * @return true if the ALTO rendering link is visible in IIIF manifests, false otherwise
      * @should return correct value
      */
     public boolean isVisibleIIIFRenderingAlto() {
@@ -5851,20 +5468,18 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getSitelinksField.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured Solr field name used as the sitelinks field
      */
     public String getSitelinksField() {
         return getLocalString("sitelinks.sitelinksField");
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return true if sitelinks are enabled, false otherwise
      * @should return correct value
      */
     public boolean isSitelinksEnabled() {
@@ -5872,23 +5487,19 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getSitelinksFilterQuery.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured Solr filter query for sitelinks
      */
     public String getSitelinksFilterQuery() {
         return getLocalString("sitelinks.sitelinksFilterQuery");
     }
 
     /**
-     * <p>
      * getConfiguredCollections.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of configured collection Solr field names
      */
     public List<String> getConfiguredCollections() {
         return getLocalList("collections.collection[@field]", new ArrayList<>());
@@ -5896,21 +5507,17 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getWebApiToken.
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured web API authorization token
      */
     public String getWebApiToken() {
         return getLocalString("webapi.authorization.token", "");
     }
 
     /**
-     * <p>
      * isAllowRedirectCollectionToWork.
-     * </p>
      *
      * @return true if opening a collection containing only a single work should redirect to that work
      * @should return correct value
@@ -5920,11 +5527,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getTwitterUserName.
-     * </p>
      *
-     * @return Configured value; null if none configured
+     * @return the configured Twitter username for embedding, or null if not configured
      * @should return correct value
      */
     public String getTwitterUserName() {
@@ -5932,9 +5537,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getLimitImageHeightUpperRatioThreshold.
-     * </p>
      *
      * @should return correct value
      * @return a float.
@@ -5944,9 +5547,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getLimitImageHeightLowerRatioThreshold.
-     * </p>
      *
      * @should return correct value
      * @return a float.
@@ -5956,51 +5557,45 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
      * isLimitImageHeight.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if image height should be limited based on the configured ratio thresholds, false otherwise
      */
     public boolean isLimitImageHeight() {
         return getLocalBoolean("viewer.limitImageHeight", true);
     }
 
     /**
-     * <p>
      * isAddCORSHeader.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if CORS headers should be added to API responses, false otherwise
      */
     public boolean isAddCORSHeader() {
         return getLocalBoolean("webapi.cors[@enabled]", false);
     }
 
     /**
-     * <p>
      * Gets the value configured in webapi.cors. Default is "*"
-     * </p>
      *
      * @should return correct value
-     * @return a {@link java.lang.String} object.
+     * @return the configured CORS header value for API responses
      */
     public String getCORSHeaderValue() {
         return getLocalString("webapi.cors", "*");
     }
 
     /**
-     * @return Configured value
+     * @return true if the IIIF image content location should be disclosed in responses, false otherwise
      */
     public boolean isDiscloseImageContentLocation() {
         return getLocalBoolean("webapi.iiif.discloseContentLocation", true);
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return the configured display style of the copyright indicator widget
      * @should return correct value
      */
     public String getCopyrightIndicatorStyle() {
@@ -6008,8 +5603,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return the configured Solr field name used for the copyright indicator status
      * @should return correct value
      */
     public String getCopyrightIndicatorStatusField() {
@@ -6017,9 +5612,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param value
-     * @return Configured value
+     *
+     * @param value field value to match against configured entries
+     * @return the configured copyright indicator status matching the given field value, or null if not found
      * @should return correct value
      */
     public CopyrightIndicatorStatus getCopyrightIndicatorStatusForValue(String value) {
@@ -6049,9 +5644,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param value
-     * @return Configured value
+     *
+     * @param value field value to match against configured entries
+     * @return the configured copyright indicator license matching the given field value, or null if not found
      * @should return correct value
      */
     public CopyrightIndicatorLicense getCopyrightIndicatorLicenseForValue(String value) {
@@ -6067,7 +5662,11 @@ public class Configuration extends AbstractConfiguration {
                 if (value.equals(content)) {
                     String description = config.getString(XML_PATH_ATTRIBUTE_DESCRIPTION);
                     String[] icons = config.getStringArray("icon");
-                    return new CopyrightIndicatorLicense(description, icons != null ? Arrays.asList(icons) : new ArrayList<>());
+                    // Filter out empty strings that Apache Commons Configuration may return when no <icon> elements are present
+                    List<String> iconList = icons != null
+                            ? Arrays.stream(icons).filter(s -> s != null && !s.isBlank()).collect(Collectors.toList())
+                            : new ArrayList<>();
+                    return new CopyrightIndicatorLicense(description, iconList);
                 }
             }
         }
@@ -6076,8 +5675,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return the configured Solr field name used for the copyright indicator license
      * @should return correct value
      */
     public String getCopyrightIndicatorLicenseField() {
@@ -6135,8 +5734,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @param name
-     * @return Configured value
+     * @param name geo map marker name to look up
+     * @return the configured GeoMapMarker with the given name, or null if not found
      */
     public GeoMapMarker getGeoMapMarker(String name) {
         return getGeoMapMarkers().stream().filter(m -> name.equalsIgnoreCase(m.getName())).findAny().orElse(null);
@@ -6208,8 +5807,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @param config
-     * @return Configured value
+     * @param config configuration node for the marker element
+     * @return the GeoMapMarker parsed from the given configuration node, or an empty default marker if config is null
      */
     public static GeoMapMarker readGeoMapMarker(HierarchicalConfiguration<ImmutableNode> config) {
         GeoMapMarker marker = null;
@@ -6241,9 +5840,9 @@ public class Configuration extends AbstractConfiguration {
      * Find the template with the given name in the templateList. If no such template exists, find the template with name _DEFAULT. Failing that,
      * return null;
      *
-     * @param templateList
-     * @param name
-     * @return Configured value
+     * @param templateList list of template configuration nodes to search
+     * @param name template name to match
+     * @return the matching template configuration node, falling back to _DEFAULT, or null if neither is found
      */
     private static HierarchicalConfiguration<ImmutableNode> getMatchingConfig(List<HierarchicalConfiguration<ImmutableNode>> templateList,
             String name) {
@@ -6270,7 +5869,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return Configured values
+     * @return the list of configured license descriptions
      */
     public List<LicenseDescription> getLicenseDescriptions() {
         List<LicenseDescription> licenses = new ArrayList<>();
@@ -6289,8 +5888,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return the configured lazy loading threshold for archive tree nodes
      * @should return correct value
      */
     public int getArchivesLazyLoadingThreshold() {
@@ -6318,17 +5917,17 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return a boolean
+     *
+     * @return true if user-generated content annotations should be displayed below the image, false otherwise
      */
     public boolean isDisplayUserGeneratedContentBelowImage() {
         return getLocalBoolean("webGuiDisplay.displayUserGeneratedContentBelowImage", false);
     }
 
     /**
-     * config: <code>&#60;iiif use-version="3.0"&#62;&#60;/iiif&#62;</code>
+     * config: <code>&#60;iiif use-version="3.0"&#62;&#60;/iiif&#62;</code>.
      *
-     * @return Configured value
+     * @return the configured IIIF API version to use for manifests
      */
     public String getIIIFVersionToUse() {
         return getLocalString("webapi.iiif[@use-version]", "2.1.1");
@@ -6336,7 +5935,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return Configured value
+     * @return the list of configured translation groups
      * @should read config items correctly
      */
     public List<TranslationGroup> getTranslationGroups() {
@@ -6380,7 +5979,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return Configured value
+     * @return true if crowdsourcing annotation text should be displayed in the image view, false otherwise
      */
     public boolean isDisplayAnnotationTextInImage() {
         return getLocalBoolean("webGuiDisplay.displayAnnotationTextInImage", true);
@@ -6388,7 +5987,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return Configured value
+     * @return true if active facets should be used as expand queries in search, false otherwise
      * @should return correct value
      */
     public boolean isUseFacetsAsExpandQuery() {
@@ -6396,8 +5995,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return Configured values
+     *
+     * @return the list of configured facet query values allowed as expand queries
      * @should return all configured elements
      */
     public List<String> getAllowedFacetsForExpandQuery() {
@@ -6406,7 +6005,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return Configured value
+     * @return true if search result groups are enabled, false otherwise
      * @should return correct value
      */
     public boolean isSearchResultGroupsEnabled() {
@@ -6414,8 +6013,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return Configured values
+     *
+     * @return the list of configured search result groups
      * @should return all configured elements
      */
     public List<SearchResultGroup> getSearchResultGroups() {
@@ -6441,8 +6040,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return true if content upload is enabled, false otherwise
      * @should return correct value
      */
     public boolean isContentUploadEnabled() {
@@ -6450,8 +6049,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return the configured authentication token for content upload
      * @should return correct value
      */
     public String getContentUploadToken() {
@@ -6459,8 +6058,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return the configured docstruct type used for newly uploaded content records
      * @should return correct value
      */
     public String getContentUploadDocstruct() {
@@ -6468,8 +6067,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return the configured Goobi workflow process template name used for content upload
      * @should return correct value
      */
     public String getContentUploadTemplateName() {
@@ -6477,8 +6076,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return the configured Goobi workflow process property name indicating that an upload was rejected
      * @should return correct value
      */
     public String getContentUploadRejectionPropertyName() {
@@ -6486,8 +6085,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return the configured Goobi workflow process property name containing the rejection reason for an upload
      * @should return correct value
      */
     public String getContentUploadRejectionReasonPropertyName() {
@@ -6525,8 +6124,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return true if the in-application configuration file editor is enabled, false otherwise
      * @should return correct value
      */
     public boolean isConfigEditorEnabled() {
@@ -6534,8 +6133,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return the configured number of backup files to keep for edited configuration files
      * @should return correct value
      */
     public int getConfigEditorBackupFiles() {
@@ -6543,8 +6142,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return Configured values
+     *
+     * @return the list of configured directories accessible through the configuration file editor
      * @should return all configured elements
      */
     public List<String> getConfigEditorDirectories() {
@@ -6561,8 +6160,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return the configured HTTP proxy URL
      * @should return correct value
      */
     public String getProxyUrl() {
@@ -6579,9 +6178,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param url
-     * @return Configured value
+     *
+     * @param url URL whose host is checked against the proxy whitelist
+     * @return true if the host of the given URL is on the configured proxy whitelist, false otherwise
      * @throws MalformedURLException
      * @throws URISyntaxException
      * @should return true if host whitelisted
@@ -6592,11 +6191,19 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return Configured values
+     *
+     * @return the list of configured host names that bypass the proxy
      */
     public List<String> getProxyWhitelist() {
         return getLocalList("proxy.whitelist.host");
+    }
+
+    /**
+     *
+     * @return the list of configured host names allowed as redirect targets after HTTP header login
+     */
+    public List<String> getHttpHeaderLoginRedirectWhitelist() {
+        return getLocalList("user.authenticationProviders.redirectWhitelist.host");
     }
 
     // active mq configuration //
@@ -6641,9 +6248,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @param field
-     * @param language
-     * @return Configured value
+     * @param field Solr field name to check for language suffix
+     * @param language language code to compare against the field suffix
+     * @return true if the field has a language suffix (_LANG_XX) that does not match the given language, false otherwise
      */
     public static boolean isLanguageVersionOtherThan(String field, String language) {
         return field.matches(".*_LANG_[A-Z][A-Z]") && !field.matches(".*_LANG_" + language.toUpperCase());

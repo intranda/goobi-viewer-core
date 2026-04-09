@@ -40,11 +40,9 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
- * <p>
- * SolrSearchParser class.
- * </p>
+ * IIIF Search API parser that queries the Solr index to find text matches within indexed records.
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class SolrSearchParser extends AbstractSearchParser {
 
@@ -55,13 +53,11 @@ public class SolrSearchParser extends AbstractSearchParser {
     private Map<Integer, Dimension> pageSizes = new HashMap<>();
 
     /**
-     * <p>
      * getPageSize.
-     * </p>
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param pageNo a {@link java.lang.Integer} object.
-     * @return a {@link java.awt.Dimension} object.
+     * @param pi persistent identifier of the record
+     * @param pageNo physical page order number to look up
+     * @return the width and height of the page image in pixels, or null if not found
      */
     public Dimension getPageSize(String pi, Integer pageNo) {
         if (!pageSizes.containsKey(pageNo)) {

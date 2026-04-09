@@ -69,12 +69,13 @@ public class ContentBean implements Serializable {
     private static final Logger logger = LogManager.getLogger(ContentBean.class);
 
     /**
-     * PI for which {@link #userGeneratedContentsForDisplay} is loaded
+     * PI for which {@link #userGeneratedContentsForDisplay} is loaded.
      */
     private volatile String pi;
     /**
      * User generated contents to display on this page.
-     * Uses AtomicReference for thread-safe access to the list reference,
+     *
+     * <p>Uses AtomicReference for thread-safe access to the list reference,
      * since volatile alone is insufficient for compound check-then-act operations.
      */
     private final AtomicReference<List<DisplayUserGeneratedContent>> userGeneratedContentsForDisplay = new AtomicReference<>();
@@ -87,9 +88,7 @@ public class ContentBean implements Serializable {
     }
 
     /**
-     * <p>
      * init.
-     * </p>
      */
     @PostConstruct
     public void init() {
@@ -105,9 +104,7 @@ public class ContentBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>userGeneratedContentsForDisplay</code>.
-     * </p>
      *
      * @param pi Record identifier
      * @return User-generated contents for the given record identifier
@@ -130,7 +127,7 @@ public class ContentBean implements Serializable {
     }
 
     /**
-     * @param page
+     * @param page physical page element to retrieve contents for
      * @return User-generated contents for the given page element
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -146,12 +143,10 @@ public class ContentBean implements Serializable {
     }
 
     /**
-     * <p>
      * loadUserGeneratedContentsForDisplay.
-     * </p>
      *
      * @param pi Record identifier
-     * @param request
+     * @param request HTTP servlet request for access condition checks
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws DAOException
@@ -198,8 +193,8 @@ public class ContentBean implements Serializable {
 
     /**
      * 
-     * @param content
-     * @param request
+     * @param content the user-generated content item to check access for
+     * @param request HTTP servlet request for access condition checks
      * @return true if request has access rights to content; false otherwise
      */
     public static boolean isAccessible(DisplayUserGeneratedContent content, HttpServletRequest request) {
@@ -221,12 +216,10 @@ public class ContentBean implements Serializable {
     }
 
     /**
-     * <p>
      * getCurrentUGCCoords.
-     * </p>
      *
-     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
-     * @return a {@link java.util.List} object.
+     * @param page physical page whose UGC coordinates are retrieved
+     * @return a list of coordinate string lists, one entry per user-generated content area on the given page
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws DAOException
@@ -257,7 +250,7 @@ public class ContentBean implements Serializable {
     /**
      * Removes script tags from the given string.
      *
-     * @param value a {@link java.lang.String} object.
+     * @param value raw string to strip JavaScript from
      * @return value sans any script tags
      */
     public String cleanUpValue(String value) {
@@ -274,7 +267,7 @@ public class ContentBean implements Serializable {
     }
 
     /**
-     * @param persistentIdentifier
+     * @param persistentIdentifier persistent identifier of the record to check
      * @return true if record with given identifier has any geo-location type annotations; false otherwise
      * @throws IndexUnreachableException
      * @throws PresentationException

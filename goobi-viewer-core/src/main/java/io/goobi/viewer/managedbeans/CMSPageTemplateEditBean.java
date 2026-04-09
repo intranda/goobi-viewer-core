@@ -57,6 +57,11 @@ import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
+/**
+ * JSF view-scoped backing bean for the CMS page template editor. Allows administrators to create,
+ * edit, and delete CMS page templates, including managing their components and associated sidebar
+ * widgets.
+ */
 @Named("cmsPageTemplateEditBean")
 @ViewScoped
 public class CMSPageTemplateEditBean implements Serializable {
@@ -279,7 +284,7 @@ public class CMSPageTemplateEditBean implements Serializable {
     /**
      * Deletes given CMS page from the database.
      *
-     * @param template
+     * @param template CMS page template to delete
      * @return true if template deleted successfully; false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -298,44 +303,32 @@ public class CMSPageTemplateEditBean implements Serializable {
         return false;
     }
 
-    /**
-     * @return the dao
-     */
+    
     public IDAO getDao() {
         return dao;
     }
 
-    /**
-     * @param dao the dao to set
-     */
+    
     public void setDao(IDAO dao) {
         this.dao = dao;
     }
 
-    /**
-     * @param templateManager the templateManager to set
-     */
+    
     public void setTemplateManager(CMSTemplateManager templateManager) {
         this.templateManager = templateManager;
     }
 
-    /**
-     * @param userBean the userBean to set
-     */
+    
     public void setUserBean(UserBean userBean) {
         this.userBean = userBean;
     }
 
-    /**
-     * @param widgetsBean the widgetsBean to set
-     */
+    
     public void setWidgetsBean(CMSSidebarWidgetsBean widgetsBean) {
         this.widgetsBean = widgetsBean;
     }
 
-    /**
-     * @param facesContext the facesContext to set
-     */
+    
     public void setFacesContext(FacesContext facesContext) {
         this.facesContext = facesContext;
     }

@@ -75,10 +75,10 @@ class PpnResolverTest extends AbstractDatabaseAndSolrEnabledTest {
         request.setParameter("id", "a:b");
         MockHttpServletResponse response = new MockHttpServletResponse();
 
-        MetsResolver resolver = new MetsResolver();
+        PpnResolver resolver = new PpnResolver();
         resolver.doGet(request, response);
         Assertions.assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
-        Assertions.assertEquals(MetsResolver.ERRTXT_ILLEGAL_IDENTIFIER + ": a:b", response.getErrorMessage());
+        Assertions.assertEquals(PpnResolver.ERRTXT_ILLEGAL_IDENTIFIER + ": a:b", response.getErrorMessage());
 
     }
 }

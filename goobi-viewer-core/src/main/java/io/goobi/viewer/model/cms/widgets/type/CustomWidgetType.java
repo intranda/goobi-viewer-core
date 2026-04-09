@@ -25,10 +25,9 @@ import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 
 /**
- * Types of sidebar widgets that contain individual configuration and must be created by a user
+ * Types of sidebar widgets that contain individual configuration and must be created by a user.
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 public enum CustomWidgetType implements WidgetContentType {
 
@@ -45,7 +44,7 @@ public enum CustomWidgetType implements WidgetContentType {
      */
     WIDGET_CMSPAGES("cms__add_widget__select_pages_title", "cms__add_widget__select_pages_desc", "files", "widget_cmsPageLinks.xhtml"),
     /**
-     * Display an html text
+     * Display an html text.
      */
     WIDGET_HTML("cms__add_widget__select_html_title", "cms__add_widget__select_html_desc", "code", "widget_custom.xhtml");
 
@@ -71,9 +70,9 @@ public enum CustomWidgetType implements WidgetContentType {
     }
 
     /**
-     * A message key for a description of ths widget type
-     * 
-     * @return the description
+     * A message key for a description of ths widget type.
+     *
+     * @return the message key for the description of this widget type
      */
     public String getDescription() {
         return description;

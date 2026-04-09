@@ -34,6 +34,9 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
  */
 public class MessageEntry implements Comparable<MessageEntry> {
 
+    /**
+     * Represents the completeness of translations for a {@link MessageEntry} across all configured locales.
+     */
     public enum TranslationStatus {
         NONE,
         PARTIAL,
@@ -51,9 +54,9 @@ public class MessageEntry implements Comparable<MessageEntry> {
      * @param keyPrefix Message key prefix (optional)
      * @param keySuffix Message key suffix (or entire key if no prefix)
      * @param allLocales List of locales
-     * @throws IllegalArgumentException if keySuffix or allLocales is null
      * @return new <code>MessageEntry</code>
      * @should create MessageEntry correctly
+     * @throws IllegalArgumentException if keySuffix or allLocales is null
      */
     public static MessageEntry create(final String keyPrefix, String keySuffix, List<Locale> allLocales) throws IllegalArgumentException {
         if (keySuffix == null) {
@@ -80,8 +83,8 @@ public class MessageEntry implements Comparable<MessageEntry> {
 
     /**
      *
-     * @param key
-     * @param values
+     * @param key the full message key
+     * @param values list of translated values for this entry
      */
     public MessageEntry(String key, List<MessageValue> values) {
         this.keyPrefix = "";
@@ -92,9 +95,9 @@ public class MessageEntry implements Comparable<MessageEntry> {
     /**
      * Constructor with a composite key.
      *
-     * @param keyPrefix
-     * @param keySuffix
-     * @param values
+     * @param keyPrefix prefix part of the composite message key
+     * @param keySuffix suffix part of the composite message key
+     * @param values list of translated values for this entry
      */
     public MessageEntry(String keyPrefix, String keySuffix, List<MessageValue> values) {
         this.keyPrefix = keyPrefix != null ? keyPrefix : "";
@@ -102,9 +105,6 @@ public class MessageEntry implements Comparable<MessageEntry> {
         this.values = values;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -113,9 +113,6 @@ public class MessageEntry implements Comparable<MessageEntry> {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -205,37 +202,29 @@ public class MessageEntry implements Comparable<MessageEntry> {
     }
 
     /**
-     * @return the key
+     * @return the full message key composed of prefix and trimmed suffix
      * @should trim suffix
      */
     public String getKey() {
         return keyPrefix + (keySuffix != null ? keySuffix.trim() : "");
     }
 
-    /**
-     * @return the keyPrefix
-     */
+    
     public String getKeyPrefix() {
         return keyPrefix;
     }
 
-    /**
-     * @param keyPrefix the keyPrefix to set
-     */
+    
     public void setKeyPrefix(String keyPrefix) {
         this.keyPrefix = keyPrefix;
     }
 
-    /**
-     * @return the keySuffix
-     */
+    
     public String getKeySuffix() {
         return keySuffix;
     }
 
-    /**
-     * @param keySuffix the keySuffix to set
-     */
+    
     public void setKeySuffix(String keySuffix) {
         this.keySuffix = keySuffix;
     }
@@ -248,23 +237,17 @@ public class MessageEntry implements Comparable<MessageEntry> {
         return StringUtils.isBlank(keySuffix);
     }
 
-    /**
-     * @return the values
-     */
+    
     public List<MessageValue> getValues() {
         return values;
     }
 
-    /**
-     * @return the newEntryMode
-     */
+    
     public boolean isNewEntryMode() {
         return newEntryMode;
     }
 
-    /**
-     * @param newEntryMode the newEntryMode to set
-     */
+    
     public void setNewEntryMode(boolean newEntryMode) {
         this.newEntryMode = newEntryMode;
     }

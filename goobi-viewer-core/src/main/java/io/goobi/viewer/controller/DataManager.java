@@ -58,9 +58,7 @@ import jakarta.faces.context.FacesContext;
 import jakarta.servlet.ServletContext;
 
 /**
- * <p>
- * DataManager class.
- * </p>
+ * Application-scoped singleton that acts as the central access point for the DAO, configuration, and other core services.
  */
 public final class DataManager {
 
@@ -117,11 +115,9 @@ public final class DataManager {
     private BearerTokenManager bearerTokenManager = null;
 
     /**
-     * <p>
      * Getter for the field <code>instance</code>.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.controller.DataManager} object.
+     * @return the singleton DataManager instance
      */
     public static DataManager getInstance() {
         DataManager dm = instance;
@@ -144,22 +140,18 @@ public final class DataManager {
     }
 
     /**
-     * <p>
      * Getter for the field <code>modules</code>.
-     * </p>
      *
-     * @return the modules
+     * @return the list of all registered viewer modules
      */
     public List<IModule> getModules() {
         return modules;
     }
 
     /**
-     * <p>
      * getUrlBuilder.
-     * </p>
      *
-     * @return the urlBuilder
+     * @return the URL builder provided by a registered module, or the default URL builder if no module provides one
      */
     public IURLBuilder getUrlBuilder() {
         return getModules().stream()
@@ -171,12 +163,10 @@ public final class DataManager {
     }
 
     /**
-     * <p>
      * getModule.
-     * </p>
      *
-     * @param id a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.modules.IModule} object.
+     * @param id unique identifier of the module to look up
+     * @return the registered IModule with the given ID
      * @throws io.goobi.viewer.exceptions.ModuleMissingException if any.
      */
     public IModule getModule(String id) throws ModuleMissingException {
@@ -194,12 +184,10 @@ public final class DataManager {
     }
 
     /**
-     * <p>
      * isModuleLoaded.
-     * </p>
      *
-     * @param id a {@link java.lang.String} object.
-     * @return a boolean.
+     * @param id unique identifier of the module to check
+     * @return true if a module with the given ID is currently registered, false otherwise
      */
     public boolean isModuleLoaded(String id) {
         if (StringUtils.isEmpty(id)) {
@@ -216,13 +204,11 @@ public final class DataManager {
     }
 
     /**
-     * <p>
      * registerModule.
-     * </p>
      *
-     * @param module a {@link io.goobi.viewer.modules.IModule} object.
+     * @param module module instance to register
      * @should not add module if it's already registered
-     * @return a boolean.
+     * @return true if the module was successfully registered, false if a module with the same ID is already registered
      */
     public boolean registerModule(IModule module) {
         if (module == null) {
@@ -245,9 +231,7 @@ public final class DataManager {
     }
 
     /**
-     * <p>
      * getSessionCount.
-     * </p>
      *
      * @return a int.
      */
@@ -256,22 +240,18 @@ public final class DataManager {
     }
 
     /**
-     * <p>
      * Getter for the field <code>sessionMap</code>.
-     * </p>
      *
-     * @return the sessionMap
+     * @return the map of active HTTP session data, keyed by session ID
      */
     public Map<String, Map<String, String>> getSessionMap() {
         return sessionMap;
     }
 
     /**
-     * <p>
      * Getter for the field <code>configuration</code>.
-     * </p>
      *
-     * @return the configuration
+     * @return the global viewer configuration instance, initialised lazily on first access
      */
     public Configuration getConfiguration() {
         if (configuration == null) {
@@ -284,11 +264,9 @@ public final class DataManager {
     }
 
     /**
-     * <p>
      * Getter for the field <code>languageHelper</code>.
-     * </p>
      *
-     * @return the languageHelper
+     * @return the language helper instance for ISO language code lookups, initialised lazily on first access
      */
     public LanguageHelper getLanguageHelper() {
         if (languageHelper == null) {
@@ -301,11 +279,9 @@ public final class DataManager {
     }
 
     /**
-     * <p>
      * Getter for the field <code>searchIndex</code>.
-     * </p>
      *
-     * @return the searchIndex
+     * @return the Solr search index instance, initialised lazily on first access
      */
     public SolrSearchIndex getSearchIndex() {
         if (searchIndex == null) {
@@ -320,7 +296,8 @@ public final class DataManager {
 
     /**
      * Closes the Solr search index client directly, without triggering {@link SolrSearchIndex#checkReloadNeeded()}.
-     * Use this during application shutdown instead of {@code getSearchIndex().close()} to prevent
+     *
+     * <p>Use this during application shutdown instead of {@code getSearchIndex().close()} to prevent
      * a closed client from being silently replaced by a new one.
      *
      * @throws IOException if closing the client fails
@@ -332,11 +309,9 @@ public final class DataManager {
     }
 
     /**
-     * <p>
      * Getter for the field <code>dao</code>.
-     * </p>
      *
-     * @return the dao
+     * @return the data access object for database operations, initialised lazily on first access
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public IDAO getDao() throws DAOException {
@@ -352,7 +327,7 @@ public final class DataManager {
     /**
      * Sets custom Configuration object (used for unit testing).
      *
-     * @param configuration a {@link io.goobi.viewer.controller.Configuration} object.
+     * @param configuration configuration instance to inject
      */
     public void injectConfiguration(Configuration configuration) {
         if (configuration != null) {
@@ -363,7 +338,7 @@ public final class DataManager {
     /**
      * Sets custom SolrSearchIndex object (used for unit testing).
      *
-     * @param searchIndex a {@link io.goobi.viewer.solr.SolrSearchIndex} object.
+     * @param searchIndex Solr search index instance to inject
      */
     public void injectSearchIndex(SolrSearchIndex searchIndex) {
         if (searchIndex != null) {
@@ -374,18 +349,16 @@ public final class DataManager {
     /**
      * Sets custom IDAO object (used for unit testing).
      *
-     * @param dao a {@link io.goobi.viewer.dao.IDAO} object.
+     * @param dao DAO instance to inject
      */
     public void injectDao(IDAO dao) {
         this.dao = dao;
     }
 
     /**
-     * <p>
      * Getter for the field <code>bookmarkManager</code>.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager} object.
+     * @return the session-scoped bookmark manager, creating one if not yet initialized
      */
     public SessionStoreBookmarkManager getBookmarkManager() {
         if (this.bookmarkManager == null) {
@@ -397,22 +370,18 @@ public final class DataManager {
     }
 
     /**
-     * <p>
      * injectBookmarkManager.
-     * </p>
      *
-     * @param bookmarkManager a {@link io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager} object.
+     * @param bookmarkManager bookmark manager instance to inject
      */
     public void injectBookmarkManager(SessionStoreBookmarkManager bookmarkManager) {
         this.bookmarkManager = bookmarkManager;
     }
 
     /**
-     * <p>
      * injectAuthResponseListener.
-     * </p>
      *
-     * @param listener a {@link io.goobi.viewer.model.security.authentication.AuthResponseListener} object.
+     * @param listener authentication response listener to inject
      */
     public void injectAuthResponseListener(AuthResponseListener<HttpAuthenticationProvider> listener) {
         if (listener != null) {
@@ -421,11 +390,9 @@ public final class DataManager {
     }
 
     /**
-     * <p>
      * Getter for the field <code>authResponseListener</code>.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.model.security.authentication.AuthResponseListener} object.
+     * @return the authentication response listener, creating one if not yet initialized
      */
     public AuthResponseListener<HttpAuthenticationProvider> getAuthResponseListener() {
         if (authResponseListener == null) {
@@ -438,72 +405,60 @@ public final class DataManager {
     }
 
     /**
-     * <p>
      * Getter for the field <code>recordCampaignMap</code>.
-     * </p>
      *
-     * @return the recordCampaignMap
+     * @return the map of persistent identifiers (PI) to associated crowdsourcing campaigns
      */
     public Map<String, List<Campaign>> getRecordCampaignMap() {
         return recordCampaignMap;
     }
 
     /**
-     * <p>
      * Setter for the field <code>recordCampaignMap</code>.
-     * </p>
      *
-     * @param recordCampaignMap the recordCampaignMap to set
+     * @param recordCampaignMap map of PI to associated crowdsourcing campaigns
      */
     public void setRecordCampaignMap(Map<String, List<Campaign>> recordCampaignMap) {
         this.recordCampaignMap = recordCampaignMap;
     }
 
-    /**
-     * @return the indexerVersion
-     */
+    
     public String getIndexerVersion() {
         return indexerVersion;
     }
 
     /**
-     * @param indexerVersion the indexerVersion to set
+     * @param indexerVersion version string of the Goobi viewer indexer
      */
     public void setIndexerVersion(String indexerVersion) {
         this.indexerVersion = indexerVersion;
     }
 
-    /**
-     * @return the connectorVersion
-     */
+    
     public String getConnectorVersion() {
         return connectorVersion;
     }
 
     /**
-     * @param connectorVersion the connectorVersion to set
+     * @param connectorVersion version string of the Goobi viewer connector
      */
     public void setConnectorVersion(String connectorVersion) {
         this.connectorVersion = connectorVersion;
     }
 
-    /**
-     * @return the hotfolderFileCount
-     */
+    
     public int getHotfolderFileCount() {
         return hotfolderFileCount;
     }
 
     /**
-     * @param hotfolderFileCount the hotfolderFileCount to set
+     * @param hotfolderFileCount number of files currently in the hotfolder
      */
     public void setHotfolderFileCount(int hotfolderFileCount) {
         this.hotfolderFileCount = hotfolderFileCount;
     }
 
-    /**
-     * @return the restApiManager
-     */
+    
     public RestApiManager getRestApiManager() {
         if (this.restApiManager == null) {
             this.restApiManager = new RestApiManager(getConfiguration());
@@ -512,29 +467,23 @@ public final class DataManager {
     }
 
     /**
-     * @param restApiManager the restApiManager to set
+     * @param restApiManager REST API manager instance to set
      */
     public void setRestApiManager(RestApiManager restApiManager) {
         this.restApiManager = restApiManager;
     }
 
-    /**
-     * @return the recordLockManager
-     */
+    
     public RecordLockManager getRecordLockManager() {
         return recordLockManager;
     }
 
-    /**
-     * @return the timing
-     */
+    
     public TimeAnalysis getTiming() {
         return timing;
     }
 
-    /**
-     *
-     */
+    
     public void resetTiming() {
         this.timing = new TimeAnalysis();
 
@@ -561,9 +510,7 @@ public final class DataManager {
         throw new IllegalStateException("Must be called from within faces context");
     }
 
-    /**
-     * @return the restApiJobManager
-     */
+    
     public TaskManager getRestApiJobManager() {
         return restApiJobManager;
     }
@@ -586,10 +533,7 @@ public final class DataManager {
         return this.clientManager;
     }
 
-    /**
-     * 
-     * @return the securityManager
-     */
+    
     public SecurityManager getSecurityManager() {
         if (securityManager == null) {
             synchronized (LOCK) {
@@ -618,9 +562,7 @@ public final class DataManager {
         this.usageStatisticsRecorder = usageStatisticsRecorder;
     }
 
-    /**
-     * @return the bearerTokenManager
-     */
+    
     public BearerTokenManager getBearerTokenManager() {
         if (bearerTokenManager == null) {
             synchronized (LOCK) {

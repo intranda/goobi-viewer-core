@@ -21,6 +21,10 @@
  */
 package io.goobi.viewer.model.search;
 
+/**
+ * Enumerates the available display modes for a search result list:
+ * {@code DETAILS} shows full detail cards, {@code TILES} shows a tile/grid layout, and {@code LIST} shows a compact list.
+ */
 public enum HitListView {
 
     DETAILS("searchListDetailView", "details"),

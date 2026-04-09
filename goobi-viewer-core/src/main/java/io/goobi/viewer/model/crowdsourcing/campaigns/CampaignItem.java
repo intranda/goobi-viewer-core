@@ -41,7 +41,7 @@ import io.goobi.viewer.model.log.LogMessage;
  * An item containing a campaign and a source to be annotated. Used to set up a frontend annotation view in javascript as well as process status
  * changes created by that view
  *
- * @author florian
+ * @author Florian Alpers
  */
 @JsonInclude(Include.NON_NULL)
 public class CampaignItem {
@@ -60,47 +60,41 @@ public class CampaignItem {
     /**
      * URI to a iiif manifest or other collection of iiif canvases. All generated annotations target either the source itself or one of its canvases
      *
-     * @return the source
+     * @return the URI identifying the IIIF resource to be annotated in this campaign item
      */
     public URI getSource() {
         return source;
     }
 
     /**
-     * <p>
      * Setter for the field <code>source</code>.
-     * </p>
      *
-     * @param source the source to set
+     * @param source the URI identifying the resource to be annotated in this campaign item
      */
     public void setSource(URI source) {
         this.source = source;
     }
 
     /**
-     * The {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} to create the annotations
+     * The {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} to create the annotations.
      *
-     * @return the campaign
+     * @return the campaign this item belongs to
      */
     public Campaign getCampaign() {
         return campaign;
     }
 
     /**
-     * <p>
      * Setter for the field <code>campaign</code>.
-     * </p>
      *
-     * @param campaign the campaign to set
+     * @param campaign the campaign this item belongs to
      */
     public void setCampaign(Campaign campaign) {
         this.campaign = campaign;
     }
 
     /**
-     * <p>
      * getQuestions.
-     * </p>
      *
      * @return a new list containing all queries
      */
@@ -110,29 +104,25 @@ public class CampaignItem {
     }
 
     /**
-     * The {@link CrowdsourcingStatus status} of the resource within the {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign}
+     * The {@link CrowdsourcingStatus status} of the resource within the {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign}.
      *
-     * @return the recordStatus
+     * @return the crowdsourcing processing status of the record in this campaign
      */
     public CrowdsourcingStatus getRecordStatus() {
         return recordStatus;
     }
 
     /**
-     * <p>
      * Setter for the field <code>recordStatus</code>.
-     * </p>
      *
-     * @param recordStatus the recordStatus to set
+     * @param recordStatus the crowdsourcing processing status of the record in this campaign
      */
     public void setRecordStatus(CrowdsourcingStatus recordStatus) {
         this.recordStatus = recordStatus;
     }
 
     /**
-     * <p>
      * isFinished.
-     * </p>
      *
      * @return true exactly if {@link #getRecordStatus()} is
      *         {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus#FINISHED}
@@ -142,9 +132,7 @@ public class CampaignItem {
     }
 
     /**
-     * <p>
      * isInReview.
-     * </p>
      *
      * @return true exactly if {@link #getRecordStatus()} is
      *         {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus#REVIEW}
@@ -157,89 +145,67 @@ public class CampaignItem {
      * URI for a user who edited the status of this item in the crowdsourcing frontend. The actual {@link io.goobi.viewer.model.security.user.User}-Id
      * may be determined by calling {@link io.goobi.viewer.model.security.user.User#getId(URI)}
      *
-     * @return the creatorURI
+     * @return the URI identifying the user who last edited the status of this campaign item
      */
     public URI getCreatorURI() {
         return creatorURI;
     }
 
     /**
-     * <p>
      * Setter for the field <code>creatorURI</code>.
-     * </p>
      *
-     * @param creatorURI the creatorURI to set
+     * @param creatorURI the URI identifying the user who last edited the status of this campaign item
      */
     public void setCreatorURI(URI creatorURI) {
         this.creatorURI = creatorURI;
     }
 
-    /**
-     * @param log the log to set
-     */
+    
     public void setLog(List<LogMessage> log) {
         this.log = log;
     }
 
-    /**
-     * @return the log
-     */
+    
     public List<LogMessage> getLog() {
         return log;
     }
 
-    /**
-     * @return the metadata
-     */
+    
     public Map<String, List<String>> getMetadata() {
         return Collections.unmodifiableMap(this.metadata);
     }
 
-    /**
-     * @param metadata the metadata to set
-     */
+    
     public void setMetadata(Map<String, List<String>> metadata) {
         this.metadata = metadata;
     }
 
-    /**
-     * @return the pageStatisticMode
-     */
+    
     public boolean isPageStatisticMode() {
         return pageStatisticMode;
     }
 
-    /**
-     * @param pageStatisticMode the pageStatisticMode to set
-     */
+    
     public void setPageStatisticMode(boolean pageStatisticMode) {
         this.pageStatisticMode = pageStatisticMode;
     }
 
-    /**
-     * @return the pageStatusMap
-     */
+    
     public Map<Integer, String> getPageStatusMap() {
         return pageStatusMap;
     }
 
-    /**
-     * @param pageStatusMap the pageStatusMap to set
-     */
+    
     public void setPageStatusMap(Map<Integer, String> pageStatusMap) {
         this.pageStatusMap = pageStatusMap;
     }
 
-    /**
-     * @return the recordIdentifier
-     */
+    
     public String getRecordIdentifier() {
         return recordIdentifier;
     }
 
-    /**
-     * @param recordIdentifier the recordIdentifier to set
-     */
+    
     public void setRecordIdentifier(String recordIdentifier) {
         this.recordIdentifier = recordIdentifier;
     }

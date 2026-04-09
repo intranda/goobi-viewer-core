@@ -30,44 +30,47 @@ import jakarta.faces.convert.Converter;
 import jakarta.faces.convert.FacesConverter;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 @FacesConverter("localDateConverter")
 public class LocalDateConverter implements Converter<LocalDate> {
 
+    private static final Logger logger = LogManager.getLogger(LocalDateConverter.class);
+
     private static final String ATTRIBUTE_DATA_FORMAT = "data-format";
 
-    /* (non-Javadoc)
-     * @see jakarta.faces.convert.Converter#getAsObject(jakarta.faces.context.FacesContext, jakarta.faces.component.UIComponent, java.lang.String)
-     */
     @Override
     public LocalDate getAsObject(FacesContext context, UIComponent component, String value) {
         if (StringUtils.isNotBlank(value)) {
             if (component != null && component.getAttributes().get(ATTRIBUTE_DATA_FORMAT) != null) {
                 String format = (String) component.getAttributes().get(ATTRIBUTE_DATA_FORMAT);
+                logger.debug("getAsObject: value='{}', data-format='{}', componentId='{}'",
+                        value, format, component.getClientId(context));
                 DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(format);
                 return LocalDate.parse(value, dateTimeFormatter);
             }
+            logger.debug("getAsObject: value='{}', no data-format, ISO fallback", value);
             return LocalDate.parse(value);
         }
 
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see jakarta.faces.convert.Converter#getAsString(jakarta.faces.context.FacesContext, jakarta.faces.component.UIComponent, java.lang.Object)
-     */
     @Override
     public String getAsString(FacesContext context, UIComponent component, LocalDate value) {
         if (value != null) {
             if (component != null && component.getAttributes().get(ATTRIBUTE_DATA_FORMAT) != null) {
                 String format = (String) component.getAttributes().get(ATTRIBUTE_DATA_FORMAT);
-                DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(format);
-                return value.format(dateTimeFormatter);
+                String result = value.format(DateTimeFormatter.ofPattern(format));
+                logger.debug("getAsString: value='{}', data-format='{}', result='{}'",
+                        value, format, result);
+                return result;
             }
+            logger.debug("getAsString: value='{}', no data-format, ISO fallback '{}'", value, value.toString());
             return value.toString();
         }
 

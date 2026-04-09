@@ -24,9 +24,9 @@ package io.goobi.viewer.model.cms;
 import java.io.Serializable;
 
 /**
- * An entity holding an object which can be selected or unselected
+ * An entity holding an object which can be selected or unselected.
  *
- * @author florian
+ * @author Florian Alpers
  * @param <T>
  */
 public class Selectable<T> implements Comparable<Selectable<T>>, Serializable {
@@ -37,12 +37,10 @@ public class Selectable<T> implements Comparable<Selectable<T>>, Serializable {
     private boolean selected;
 
     /**
-     * <p>
-     * Constructor for Selectable.
-     * </p>
+     * Creates a new Selectable instance.
      *
-     * @param value a T object.
-     * @param selected a boolean.
+     * @param value the wrapped item
+     * @param selected initial selection state
      */
     public Selectable(T value, boolean selected) {
         this.value = value;
@@ -50,41 +48,32 @@ public class Selectable<T> implements Comparable<Selectable<T>>, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>value</code>.
-     * </p>
      *
-     * @return the value
+     * @return the wrapped item held by this selectable
      */
     public T getValue() {
         return value;
     }
 
     /**
-     * <p>
      * isSelected.
-     * </p>
      *
-     * @return the selected
+     * @return true if this item is currently selected; false otherwise
      */
     public boolean isSelected() {
         return selected;
     }
 
     /**
-     * <p>
      * Setter for the field <code>selected</code>.
-     * </p>
      *
-     * @param selected the selected to set
+     * @param selected true if this item should be marked as selected
      */
     public void setSelected(boolean selected) {
         this.selected = selected;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
@@ -110,9 +99,6 @@ public class Selectable<T> implements Comparable<Selectable<T>>, Serializable {
         return this.value == null ? 0 : this.value.hashCode();
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     /** {@inheritDoc} */
     @Override
     public String toString() {

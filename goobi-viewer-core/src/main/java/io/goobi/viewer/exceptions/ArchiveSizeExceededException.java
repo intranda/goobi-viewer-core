@@ -21,6 +21,10 @@
  */
 package io.goobi.viewer.exceptions;
 
+/**
+ * Thrown when an operation on an archive resource is rejected because the resource exceeds a
+ * configured size limit.
+ */
 public class ArchiveSizeExceededException extends PresentationException {
 
     private static final long serialVersionUID = -8493147783169699313L;

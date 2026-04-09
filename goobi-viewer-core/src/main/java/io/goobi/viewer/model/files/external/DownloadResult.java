@@ -25,6 +25,11 @@ import java.nio.file.Path;
 import java.util.concurrent.Future;
 import java.util.function.Supplier;
 
+/**
+ * Represents an asynchronous file download in progress, holding a {@link Future} for the
+ * resulting {@link java.nio.file.Path}, the total expected file size, and a progress monitor
+ * that reports how many bytes have been written so far.
+ */
 public class DownloadResult {
 
     private final Supplier<Long> progressMonitor;

@@ -32,6 +32,10 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import it.burning.cron.CronExpressionDescriptor;
 import it.burning.cron.CronExpressionParser.Options;
 
+/**
+ * Data transfer object that carries runtime details of a Quartz scheduler job, including its
+ * name, group, previous and next fire times, cron expression, and paused state.
+ */
 public class QuartzJobDetails {
 
     private String jobName;

@@ -28,14 +28,9 @@ import java.util.regex.Pattern;
  * Enrich strings with sensitive data which is in some way encrypted or stored as environment variable by the system. Currently only replacing Strings
  * with environment variables is suppoerted. To include the value "VALUE" of a variable "VARIABLE" in a string, the input must be passed to the static
  * method {@link #decrypt(String)} as
- * <p>
  * <code>Some Text $SYS(VARIABLE) and some more</code>
- * </p>
  * which returns
- * <p>
  * <code>Some Text VALUE and some more</code>
- * </p>
- * 
  */
 public final class Decrypter {
 
@@ -65,7 +60,7 @@ public final class Decrypter {
     }
 
     /**
-     * Returns the given string with all encryption variable expressions <code>$SYS(...)</code> replaced by the encrypted value
+     * Returns the given string with all encryption variable expressions <code>$SYS(...)</code> replaced by the encrypted value.
      * 
      * @param string the input string
      * @return the input string with replacements

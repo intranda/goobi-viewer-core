@@ -60,6 +60,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
+/**
+ * CMS content type that displays a paginated list of digitized records matching a configurable
+ * Solr query on a CMS page, supporting custom sort fields and items-per-page settings.
+ */
 @Entity
 @Table(name = "cms_content_record_list")
 @DiscriminatorValue("recordlist")
@@ -138,16 +142,12 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
         this.groupingField = groupingField;
     }
 
-    /**
-     * @return the resultGroupName
-     */
+    
     public String getResultGroupName() {
         return resultGroupName;
     }
 
-    /**
-     * @param resultGroupName the resultGroupName to set
-     */
+    
     public void setResultGroupName(String resultGroupName) {
         this.resultGroupName = resultGroupName;
     }
@@ -202,16 +202,12 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
         this.view = view;
     }
 
-    /**
-     * @return the metadataListType
-     */
+    
     public String getMetadataListType() {
         return metadataListType;
     }
 
-    /**
-     * @param metadataListType the metadataListType to set
-     */
+    
     public void setMetadataListType(String metadataListType) {
         this.metadataListType = metadataListType;
     }

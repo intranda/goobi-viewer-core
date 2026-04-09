@@ -51,6 +51,7 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
 import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.filters.FilterTools;
+import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.api.rest.v2.ApiUrls;
 import io.goobi.viewer.exceptions.DAOException;
@@ -61,9 +62,11 @@ import io.goobi.viewer.model.iiif.presentation.v3.builder.ManifestBuilder;
 import io.goobi.viewer.model.iiif.search.IIIFSearchBuilder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -72,8 +75,9 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 
 /**
- * @author florian
+ * REST resource providing IIIF Presentation v3 manifests and annotations for digitized records.
  *
+ * @author Florian Alpers
  */
 @jakarta.ws.rs.Path(RECORDS_RECORD)
 @ViewerRestServiceBinding
@@ -92,8 +96,29 @@ public class RecordResource {
 
     public RecordResource(@Context HttpServletRequest request,
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) {
+        // Reject PIs that contain characters illegal in file-system URI paths before any
+        // file-system access occurs, to prevent ContentLib path injection (e.g. space, pipe,
+        // null byte via double-encoding). BadRequestException (HTTP 400, unchecked
+        // WebApplicationException) is used so that Jersey maps it to 400 before invoking the endpoint.
+        validatePi(pi);
         this.pi = pi;
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
+    }
+
+    /**
+     * Validates the PI path parameter using {@link PIValidator#validatePi(String)}.
+     *
+     * <p>Delegates to the central PI validator to keep validation logic in one place.
+     * Throws BadRequestException (HTTP 400, unchecked WebApplicationException) so that
+     * Jersey maps it to a 400 response regardless of where it is thrown (constructor or method).
+     *
+     * @param pi the persistent identifier to validate; null or blank is rejected
+     * @throws BadRequestException if the PI is null, blank, or contains illegal characters
+     */
+    static void validatePi(String pi) {
+        if (!PIValidator.validatePi(pi)) {
+            throw new BadRequestException("Invalid record identifier: " + pi);
+        }
     }
 
     @GET
@@ -198,6 +223,9 @@ public class RecordResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_MANIFEST_SEARCH)
     @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "records", "iiif" }, summary = "IIIF Search API: search within the manifest of the given record")
+    @ApiResponse(responseCode = "200", description = "IIIF Search result containing matching annotations")
+    @ApiResponse(responseCode = "404", description = "Record not found")
     public SearchResult searchInManifest(@PathParam("pi") String pi, @QueryParam("q") String query, @QueryParam("motivation") String motivation,
             @QueryParam("date") String date, @QueryParam("user") String user, @QueryParam("page") Integer page)
             throws IndexUnreachableException, PresentationException {
@@ -205,23 +233,24 @@ public class RecordResource {
     }
 
     /**
-     * <p>
      * autoCompleteInManifest.
-     * </p>
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param query a {@link java.lang.String} object.
-     * @param motivation a {@link java.lang.String} object.
-     * @param date a {@link java.lang.String} object.
-     * @param user a {@link java.lang.String} object.
-     * @param page a {@link java.lang.Integer} object.
-     * @return a {@link de.intranda.api.iiif.search.AutoSuggestResult} object.
+     * @param pi persistent identifier of the record to search
+     * @param query partial query string for auto-completion
+     * @param motivation space-separated list of annotation motivations to filter
+     * @param date date filter (not supported; passed to 'ignored' property)
+     * @param user user filter (not supported; passed to 'ignored' property)
+     * @param page result page number; defaults to 1 if absent
+     * @return the IIIF AutoSuggest result containing auto-completion candidates for the given query
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     @GET
     @jakarta.ws.rs.Path(RECORDS_MANIFEST_AUTOCOMPLETE)
     @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "records", "iiif" }, summary = "IIIF Search API: autocomplete search within the manifest of the given record")
+    @ApiResponse(responseCode = "200", description = "IIIF AutoSuggest result containing matching terms")
+    @ApiResponse(responseCode = "404", description = "Record not found")
     public AutoSuggestResult autoCompleteInManifest(@PathParam("pi") String pi, @QueryParam("q") String query,
             @QueryParam("motivation") String motivation, @QueryParam("date") String date, @QueryParam("user") String user,
             @QueryParam("page") Integer page) throws IndexUnreachableException, PresentationException {

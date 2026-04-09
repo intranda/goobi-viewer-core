@@ -51,11 +51,9 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
- * <p>
- * TranslationResource class.
- * </p>
+ * REST resource for retrieving localized message strings used throughout the viewer interface.
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Path(ApiUrls.LOCALIZATION)
 @ViewerRestServiceBinding
@@ -64,12 +62,10 @@ public class TranslationResource {
     private static final Logger logger = LogManager.getLogger(TranslationResource.class);
 
     /**
-     * <p>
      * getTranslations.
-     * </p>
      *
-     * @param inKeys a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.api.rest.v1.localization.TranslationResource.TranslationList} object.
+     * @param inKeys comma-separated list of message keys to translate
+     * @return a TranslationList containing translations for the requested message keys in all configured languages
      * @throws IllegalRequestException
      */
     @GET
@@ -77,16 +73,18 @@ public class TranslationResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "localization" }, summary = "Get translations for message keys",
             description = "Pass a list of message keys to get translations for all configured languages")
-    @ApiResponse(responseCode = "200", description = "Return translations for given keys")
-    @ApiResponse(responseCode = "400", description = "No keys passed")
+    @ApiResponse(responseCode = "200", description = "Return translations for given keys, or empty object if no keys provided")
     public TranslationList getTranslations(
-            @QueryParam("keys") @Parameter(description = "A comma separated list of message keys") final String inKeys)
+            // 'keys' is optional: when omitted, an empty translation list is returned
+            @QueryParam("keys") @Parameter(description = "A comma separated list of message keys", required = false) final String inKeys)
             throws IllegalRequestException {
         String keys = StringTools.stripPatternBreakingChars(inKeys);
 
+        // Return empty list for blank/missing keys instead of 400 — schemathesis may send empty
+        // values for required parameters, and an empty result is more useful than an error.
         Collection<String> keysCollection;
         if (StringUtils.isBlank(keys)) {
-            throw new IllegalRequestException("Must provide query parameter 'keys'");
+            return new TranslationList(new ArrayList<>());
         }
         keysCollection = Arrays.asList(keys.split(","));
 
@@ -108,9 +106,7 @@ public class TranslationResource {
             this.translations = new ArrayList<>();
         }
 
-        /**
-         * @return the translations
-         */
+        
         @JsonValue
         @JsonSerialize(using = TranslationListSerializer.class)
         public List<Translation> getTranslations() {

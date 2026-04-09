@@ -27,15 +27,14 @@ import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 
 /**
- * Types of widgets that are always available for CMS pages and cannot be configured
+ * Types of widgets that are always available for CMS pages and cannot be configured.
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 public enum DefaultWidgetType implements WidgetContentType {
 
     /**
-     * Browsing or "Stöbern" widget, containing all browse terms which are configured in the viewer-config
+     * Browsing or "Stöbern" widget, containing all browse terms which are configured in the viewer-config.
      */
     WIDGET_BROWSING("browseTitle", "cms_widget__browse__description", "news", "widget_browsing.xhtml"),
     /**
@@ -44,11 +43,11 @@ public enum DefaultWidgetType implements WidgetContentType {
      */
     WIDGET_FACETTING("faceting", "cms_widget__faceting__description", "list", "widget_searchFacets.xhtml", CMSPage::hasSearchFunctionality),
     /**
-     * Displays a search input field and link to advanced search
+     * Displays a search input field and link to advanced search.
      */
     WIDGET_SEARCH("navigationSearch", "cms_widget__search__description", "search", "widget_searchField.xhtml"),
     /**
-     * Display the total number of records available in the viewer
+     * Display the total number of records available in the viewer.
      */
     WIDGET_WORKCOUNT("totalNumberOfVolumes", "cms_widget__total_number_of_volumes__description", "circle", "widget_workCount.xhtml"),
 
@@ -82,9 +81,9 @@ public enum DefaultWidgetType implements WidgetContentType {
     }
 
     /**
-     * A message key for a description of this widget type
-     * 
-     * @return the description
+     * A message key for a description of this widget type.
+     *
+     * @return the message key for the description of this widget type
      */
     public String getDescription() {
         return description;

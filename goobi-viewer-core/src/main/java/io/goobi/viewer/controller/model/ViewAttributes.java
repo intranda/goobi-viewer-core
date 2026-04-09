@@ -41,7 +41,7 @@ import io.goobi.viewer.solr.SolrConstants;
 /**
  * Used to check whether a zoomImageView configuration block should be applied to the image view represented by the given viewManager and pageType
  * Stores {@link PageType} (the type of view, like fullscreen or viewImage), {@link MimeType} of the current page, the number of pages in the record,
- * the main DocStructType of the record and the collections (based on {@link SolrConstants#DC}) of the record
+ * the main DocStructType of the record and the collections (based on {@link SolrConstants#DC}) of the record.
  */
 public class ViewAttributes {
 
@@ -85,7 +85,7 @@ public class ViewAttributes {
     }
 
     /**
-     * Create an instance from a {@link ViewManager} All values may be null if they can be ignored for the check
+     * Creates an instance from a {@link ViewManager} All values may be null if they can be ignored for the check.
      * 
      * @param viewManager the {@link ViewManager}
      * @param pageType the type of view, one of the values of {@link PageType}

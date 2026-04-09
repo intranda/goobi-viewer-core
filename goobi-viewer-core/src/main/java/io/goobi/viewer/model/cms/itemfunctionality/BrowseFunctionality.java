@@ -30,8 +30,7 @@ import io.goobi.viewer.managedbeans.BrowseBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class BrowseFunctionality implements Functionality {
 
@@ -40,51 +39,45 @@ public class BrowseFunctionality implements Functionality {
     private String browseField = "";
 
     /**
-     * @param field
+     * @param field Solr field to browse
      */
     public BrowseFunctionality(String field) {
         setBrowseField(field);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.itemfunctionality.Functionality#setPageNo(int)
-     */
     @Override
     public void setPageNo(int pageNo) {
         bean.setCurrentPage(pageNo);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.itemfunctionality.Functionality#getPageNo()
-     */
     @Override
     public int getPageNo() {
         return bean.getCurrentPage();
     }
 
     /**
-     * Set the SOLR field which to browse to create the list
+     * Sets the SOLR field which to browse to create the list.
      *
-     * @param field
+     * @param field Solr field to browse for list creation
      */
     public void setBrowseField(String field) {
         this.browseField = field;
     }
 
     /**
-     * Get the SOLR field which to browse to create the list
+     * Gets the SOLR field which to browse to create the list.
      *
-     * @return the browseField
+     * @return the Solr field name used to browse and generate the list
      */
     public String getBrowseField() {
         return this.browseField;
     }
 
     /**
-     * Set an additional filter to restrict the list to a subset of all records
+     * Sets an additional filter to restrict the list to a subset of all records.
      *
-     * @param field
-     * @param value
+     * @param field Solr field name to filter by
+     * @param value field value to restrict results to
      */
     public void setFilter(String field, String value) {
         if (StringUtils.isNoneBlank(field, value)) {
@@ -95,16 +88,16 @@ public class BrowseFunctionality implements Functionality {
     }
 
     /**
-     * Set the start character for which results should be displayed
+     * Sets the start character for which results should be displayed.
      *
-     * @param start
+     * @param start starting character to filter browse results by
      */
     public void setStartingCharacter(String start) {
         bean.setCurrentStringFilter(start);
     }
 
     /**
-     * Get the start character for which results should be displayed
+     * Gets the start character for which results should be displayed.
      *
      * @return String
      */
@@ -124,7 +117,7 @@ public class BrowseFunctionality implements Functionality {
     }
 
     /**
-     * Resets the current browse page and the current string filter
+     * Resets the current browse page and the current string filter.
      */
     public void reset() {
         bean.setCurrentStringFilter("");

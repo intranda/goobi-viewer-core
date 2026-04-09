@@ -29,9 +29,7 @@ import jakarta.ws.rs.NameBinding;
 import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
 
 /**
- * <p>
  * Binding for resources which use an {@link AuthorizationFilter}.
- * </p>
  */
 @NameBinding
 @Retention(RetentionPolicy.RUNTIME)

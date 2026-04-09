@@ -305,4 +305,37 @@ class SearchQueryItemTest extends AbstractSolrEnabledTest {
         item.setField("MD_FIELD");
         Assertions.assertEquals("MD_FIELD", item.getLabel());
     }
+
+    /**
+     * @see SearchQueryItem#convertDatepickerValueToSolrDate(String)
+     * @verifies convert german dates correctly
+     */
+    @Test
+    void convertDatepickerValueToSolrDate_shouldConvertGermanDatesCorrectly() {
+        Assertions.assertEquals("20240315", SearchQueryItem.convertDatepickerValueToSolrDate("15.3.2024"));
+        Assertions.assertEquals("20240315", SearchQueryItem.convertDatepickerValueToSolrDate("15.03.2024"));
+        Assertions.assertEquals("20240101", SearchQueryItem.convertDatepickerValueToSolrDate("1.1.2024"));
+    }
+
+    /**
+     * @see SearchQueryItem#convertDatepickerValueToSolrDate(String)
+     * @verifies convert english dates correctly
+     */
+    @Test
+    void convertDatepickerValueToSolrDate_shouldConvertEnglishDatesCorrectly() {
+        Assertions.assertEquals("20240315", SearchQueryItem.convertDatepickerValueToSolrDate("3/15/2024"));
+        Assertions.assertEquals("20240315", SearchQueryItem.convertDatepickerValueToSolrDate("03/15/2024"));
+        Assertions.assertEquals("20240101", SearchQueryItem.convertDatepickerValueToSolrDate("1/1/2024"));
+    }
+
+    /**
+     * @see SearchQueryItem#convertDatepickerValueToSolrDate(String)
+     * @verifies return value if it could not be parsed
+     */
+    @Test
+    void convertDatepickerValueToSolrDate_shouldReturnValueIfItCouldNotBeParsed() {
+        Assertions.assertEquals("not-a-date", SearchQueryItem.convertDatepickerValueToSolrDate("not-a-date"));
+        Assertions.assertEquals("", SearchQueryItem.convertDatepickerValueToSolrDate(""));
+        Assertions.assertNull(SearchQueryItem.convertDatepickerValueToSolrDate(null));
+    }
 }

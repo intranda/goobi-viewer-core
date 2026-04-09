@@ -24,21 +24,15 @@ package io.goobi.viewer.exceptions;
 import java.io.Serializable;
 
 /**
- * <p>
- * PresentationException class.
- * </p>
+ * Thrown when an error occurs while loading or presenting a digitized record.
  */
 public class PresentationException extends Exception implements Serializable {
 
-    /**
-     *
-     */
+    
     private static final long serialVersionUID = -6158638123863313562L;
 
     /**
-     * <p>
-     * Constructor for PresentationException.
-     * </p>
+     * Creates a new PresentationException instance.
      *
      * @param string {@link java.lang.String}
      */
@@ -47,24 +41,20 @@ public class PresentationException extends Exception implements Serializable {
     }
 
     /**
-     * <p>
-     * Constructor for PresentationException.
-     * </p>
+     * Creates a new PresentationException instance.
      *
-     * @param string a {@link java.lang.String} object.
-     * @param e a {@link java.lang.Throwable} object.
+     * @param string human-readable error description
+     * @param e underlying exception that triggered this error
      */
     public PresentationException(String string, Throwable e) {
         super(string, e);
     }
 
     /**
-     * <p>
-     * Constructor for PresentationException.
-     * </p>
+     * Creates a new PresentationException instance.
      *
-     * @param string a {@link java.lang.String} object.
-     * @param e a {@link java.lang.Throwable} object.
+     * @param e underlying exception that triggered this error
+     * @param string message template with '{}' placeholders
      * @param args strings to replace placeholders ('{}') in the string
      */
     public PresentationException(Throwable e, String string, Object... args) {

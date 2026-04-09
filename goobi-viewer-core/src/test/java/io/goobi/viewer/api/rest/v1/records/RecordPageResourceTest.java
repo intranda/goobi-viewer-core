@@ -218,4 +218,21 @@ class RecordPageResourceTest extends AbstractRestApiTest {
             Assertions.assertTrue(id.contains("IMG+20200322+144253.jpg"), "Wrong filename in " + id);
         }
     }
+
+    /**
+     * A PI containing illegal characters (e.g. carriage return %0D, unicode garbage) must return
+     * HTTP 400, not 500. Before the fix, RecordPageResource did not validate the PI in its
+     * constructor, so invalid PIs could reach Solr and cause NPEs or unexpected exceptions.
+     */
+    @Test
+    void testInvalidPi_returnsHttp400() {
+        // Use a PI that contains a colon, which is blocked by PIValidator
+        String url = urls.path(RECORDS_PAGES, RECORDS_PAGES_ANNOTATIONS).params("invalid:pi", 1).build();
+        try (Response response = target(url)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(400, response.getStatus(), "PI with illegal characters should return HTTP 400");
+        }
+    }
 }

@@ -25,6 +25,10 @@ import java.util.List;
 
 import io.goobi.viewer.model.cms.CMSCategory;
 
+/**
+ * Marks a CMS content object that can be associated with one or more {@link io.goobi.viewer.model.cms.CMSCategory}
+ * instances, providing methods to retrieve, add, and remove categories.
+ */
 public interface CMSCategoryHolder {
 
     public List<CMSCategory> getCategories();

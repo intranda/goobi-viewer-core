@@ -30,9 +30,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
- * <p>
- * VuAuthenticationResponse class.
- * </p>
+ * Response DTO for the VuFind authentication service, carrying user data on successful login.
  *
  * @author Florian Alpers
  */
@@ -45,88 +43,72 @@ public class VuAuthenticationResponse {
     private Request request;
 
     /**
-     * <p>
      * Getter for the field <code>user</code>.
-     * </p>
      *
-     * @return the user
+     * @return the authenticated user data returned by the VU service
      */
     public User getUser() {
         return user;
     }
 
     /**
-     * <p>
      * Setter for the field <code>user</code>.
-     * </p>
      *
-     * @param user the user to set
+     * @param user the authenticated user data to set
      */
     public void setUser(User user) {
         this.user = user;
     }
 
     /**
-     * <p>
      * Getter for the field <code>expired</code>.
-     * </p>
      *
-     * @return the expired
+     * @return the expiry information for the user account
      */
     public Expired getExpired() {
         return expired;
     }
 
     /**
-     * <p>
      * Setter for the field <code>expired</code>.
-     * </p>
      *
-     * @param expired the expired to set
+     * @param expired the expiry information for the user account to set
      */
     public void setExpired(Expired expired) {
         this.expired = expired;
     }
 
     /**
-     * <p>
      * Getter for the field <code>blocks</code>.
-     * </p>
      *
-     * @return the blocks
+     * @return the blocking information for the user account
      */
     public Blocks getBlocks() {
         return blocks;
     }
 
     /**
-     * <p>
      * Setter for the field <code>blocks</code>.
-     * </p>
      *
-     * @param blocks the blocks to set
+     * @param blocks the blocking information for the user account to set
      */
     public void setBlocks(Blocks blocks) {
         this.blocks = blocks;
     }
 
     /**
-     * <p>
      * Getter for the field <code>request</code>.
-     * </p>
      *
-     * @return the request
+     * @return the original authentication request details
      */
     public Request getRequest() {
         return request;
     }
 
     /**
-     * <p>
      * Setter for the field <code>request</code>.
-     * </p>
      *
-     * @param request the request to set
+     * @param request the original authentication request details to set
      */
     public void setRequest(Request request) {
         this.request = request;
@@ -167,9 +149,6 @@ public class VuAuthenticationResponse {
             return group;
         }
 
-        /* (non-Javadoc)
-         * @see java.lang.Object#toString()
-         */
         @Override
         public String toString() {
             return "valid: " + getIsValid() + ", exists: " + getExists() + ", group: " + getGroup();
@@ -314,9 +293,6 @@ public class VuAuthenticationResponse {
         }
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     /** {@inheritDoc} */
     @Override
     public String toString() {

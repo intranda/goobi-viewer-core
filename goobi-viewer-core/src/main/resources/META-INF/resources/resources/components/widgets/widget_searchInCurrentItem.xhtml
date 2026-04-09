@@ -13,7 +13,7 @@
 
     <composite:implementation>
         <h:panelGroup
-            rendered="#{activeDocumentBean.recordLoaded and (!configurationBean.showSearchInItemOnlyIfFullTextAvailable || activeDocumentBean.viewManager.fulltextAvailableForWork)}">
+            rendered="#{activeDocumentBean.recordLoaded and (!configurationBean.showSearchInItemOnlyIfFullTextAvailable || activeDocumentBean.viewManager.fulltextAvailableForWork) and !(activeDocumentBean.anchor and activeDocumentBean.viewManager.calendarView.display and navigationHelper.currentView == 'toc')}">
             <div
                 id="widgetSearchInCurrentItem"
                 class="widget widget-search-in-current-item">

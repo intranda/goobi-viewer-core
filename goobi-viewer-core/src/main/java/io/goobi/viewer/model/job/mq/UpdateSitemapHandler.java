@@ -35,6 +35,9 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.sitemap.SitemapBuilder;
 
+/**
+ * Message handler that regenerates the XML sitemap files for the viewer instance at the configured output path.
+ */
 public class UpdateSitemapHandler implements MessageHandler<MessageStatus> {
 
     private static final Logger logger = LogManager.getLogger(UpdateSitemapHandler.class);

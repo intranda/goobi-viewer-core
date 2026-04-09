@@ -58,8 +58,7 @@ import io.goobi.viewer.solr.SolrTools;
 /**
  * Loads and holds archive tree models. This class should have an application wide scope
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class ArchiveManager implements Serializable {
 
@@ -77,26 +76,24 @@ public class ArchiveManager implements Serializable {
 
     public enum DatabaseState {
         /**
-         * State before the first query to the server
+         * State before the first query to the server.
          */
         NOT_INITIALIZED,
         /**
-         * Archive names are queried from the server
+         * Archive names are queried from the server.
          */
         ARCHIVES_LOADED,
         /**
-         * State only applicable to a single database if it was successfully loaded into memory
+         * State only applicable to a single database if it was successfully loaded into memory.
          */
         ARCHIVE_TREE_LOADED,
         /**
-         * url call not returned
+         * Url call not returned.
          */
         ERROR_NOT_REACHABLE;
     }
 
-    /**
-     * 
-     */
+    
     public ArchiveManager() {
         ArchiveParser parser = null;
         try {
@@ -113,9 +110,9 @@ public class ArchiveManager implements Serializable {
     }
 
     /**
-     * Constructor for unit tests.
+     * Creates a new unit tests instance.
      * 
-     * @param eadParser
+     * @param eadParser archive parser used for loading and querying EAD data
      */
     ArchiveManager(ArchiveParser eadParser) {
         try {
@@ -132,7 +129,7 @@ public class ArchiveManager implements Serializable {
     /**
      * Queries the list of databases from the server and updated the internal database list from it.
      *
-     * @param eadParser
+     * @param eadParser archive parser used to retrieve the list of available databases
      * @return true if the internal list of databases was updated, either because a database was outdated, didn't exist before or doesn't exist
      *         anymore
      * @throws ClientProtocolException
@@ -198,7 +195,7 @@ public class ArchiveManager implements Serializable {
 
     /**
      * 
-     * @param resourceId
+     * @param resourceId identifier of the archive resource to load
      * @return {@link ArchiveTree}
      * @throws IllegalStateException
      * @throws PresentationException
@@ -214,7 +211,7 @@ public class ArchiveManager implements Serializable {
 
     /**
      * 
-     * @param archiveName
+     * @param archiveName name of the archive resource to look up
      * @return ArchiveResource
      */
     public ArchiveResource getArchiveResource(String archiveName) {
@@ -225,7 +222,7 @@ public class ArchiveManager implements Serializable {
      * Returns the node type configured for the given name. If no node type is configured for the name, then the default node type - indicated by the
      * <code>default="true"</code> attribute - is used
      * 
-     * @param name
+     * @param name node type name to look up in the configuration
      * @return {@link NodeType}
      */
     public NodeType getNodeType(String name) {
@@ -250,7 +247,7 @@ public class ArchiveManager implements Serializable {
 
     /**
      * 
-     * @param identifier
+     * @param identifier EAD node ID used to locate the containing archive
      * @return ArchiveResource
      * @throws IllegalStateException
      * @throws PresentationException
@@ -264,8 +261,8 @@ public class ArchiveManager implements Serializable {
 
     /**
      * 
-     * @param resource
-     * @param entryIdentifier
+     * @param resource archive resource the entry belongs to
+     * @param entryIdentifier identifier of the selected archive entry
      * @return Constructed URL
      */
     public String getArchiveUrl(ArchiveResource resource, String entryIdentifier) {
@@ -293,9 +290,9 @@ public class ArchiveManager implements Serializable {
     }
 
     /**
-     * In the list of archive document search hits, find the id of the entry just before the given one
+     * In the list of archive document search hits, find the id of the entry just before the given one.
      *
-     * @param entryId
+     * @param entryId EAD node ID for which neighbours are to be found
      * @return the neighboring entry id if it exists
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -364,7 +361,7 @@ public class ArchiveManager implements Serializable {
     /**
      * Returns the entry hierarchy from the root down to the entry with the given identifier.
      *
-     * @param resource
+     * @param resource archive resource whose tree is searched
      * @param identifier Entry identifier
      * @return List of entries An empty list if the identified node has no ancestors or doesn't exist
      */
@@ -395,6 +392,12 @@ public class ArchiveManager implements Serializable {
         return Collections.emptyList();
     }
 
+    /**
+     * Returns the loaded archive with the given resource ID.
+     *
+     * @param resourceId the resource identifier of the archive to look up
+     * @return the matching {@link ArchiveResource}, or null if not found or resourceId is blank
+     */
     public ArchiveResource getArchive(String resourceId) {
         logger.trace("getArchive: {}", resourceId);
         if (StringUtils.isNotBlank(resourceId)) {
@@ -430,7 +433,7 @@ public class ArchiveManager implements Serializable {
     }
 
     /**
-     * @param tree
+     * @param tree archive tree from which the root element is retrieved
      * @return actual root element of the document, even if it's not in the displayed tree
      */
     private static ArchiveEntry getTrueRoot(ArchiveTree tree) {
@@ -484,9 +487,9 @@ public class ArchiveManager implements Serializable {
     }
 
     /**
-     * Check if the given resource is outdated compared to the last updated date from the server
+     * Check if the given resource is outdated compared to the last updated date from the server.
      *
-     * @param resource
+     * @param resource currently cached archive resource to check for staleness
      * @return Updated resource, if newer than given; null otherwise
      * @throws IOException if the the database server is not reachable
      * @throws IndexUnreachableException
@@ -512,8 +515,8 @@ public class ArchiveManager implements Serializable {
 
     /**
      * 
-     * @param eadParser
-     * @param archive
+     * @param eadParser archive parser used to load the EAD data
+     * @param archive archive resource to load into a tree
      * @return {@link ArchiveTree}
      * @throws IllegalStateException
      * @throws IOException
@@ -535,7 +538,7 @@ public class ArchiveManager implements Serializable {
 
     /**
      * 
-     * @param rootElement
+     * @param rootElement root archive entry used to initialise the tree
      * @return {@link ArchiveTree}
      * @should load tree correctly
      */
@@ -559,7 +562,7 @@ public class ArchiveManager implements Serializable {
 
     /**
      * 
-     * @param archiveNodeTypes
+     * @param archiveNodeTypes map of node type names to icon values from the configuration
      * @return Map<String, NodeType>
      */
     private static Map<String, NodeType> loadNodeTypes(Map<String, String> archiveNodeTypes) {
@@ -621,9 +624,7 @@ public class ArchiveManager implements Serializable {
         return this.databaseState == DatabaseState.ERROR_NOT_REACHABLE;
     }
 
-    /**
-     * @return the eadParser
-     */
+    
     public ArchiveParser getEadParser() {
         return eadParser;
     }

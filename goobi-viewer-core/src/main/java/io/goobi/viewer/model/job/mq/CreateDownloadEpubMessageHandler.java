@@ -54,6 +54,10 @@ import io.goobi.viewer.model.viewer.Dataset;
 import jakarta.mail.MessagingException;
 import jakarta.ws.rs.core.UriBuilder;
 
+/**
+ * Message handler that processes requests to generate EPUB download files for digitized records.
+ * It delegates the actual conversion to an external EPUB converter and notifies the requester by e-mail upon completion.
+ */
 public class CreateDownloadEpubMessageHandler implements MessageHandler<MessageStatus> {
 
     private static final int DELAY_IF_EPUB_IS_BEING_CREATED_MILLIS = 300_000;
@@ -128,7 +132,7 @@ public class CreateDownloadEpubMessageHandler implements MessageHandler<MessageS
     }
 
     /**
-     * remove all creating.lock files so epub generation can be picked up after restart
+     * remove all creating.lock files so epub generation can be picked up after restart.
      */
     @Override
     public void onStartup() {

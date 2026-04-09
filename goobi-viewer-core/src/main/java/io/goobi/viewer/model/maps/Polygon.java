@@ -28,8 +28,7 @@ import java.util.List;
 import org.json.JSONObject;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class Polygon implements IArea {
 
@@ -47,9 +46,6 @@ public class Polygon implements IArea {
         this.vertices = Collections.unmodifiableList(v);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.maps.IArea#getVertices()
-     */
     @Override
     public double[][] getVertices() {
         double[][] points = new double[this.vertices.size()][2];
@@ -59,9 +55,6 @@ public class Polygon implements IArea {
         return points;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.maps.IArea#getGeoJson()
-     */
     @Override
     public String getGeoJson() {
         double[][][] coords = { getVertices() };
@@ -71,9 +64,6 @@ public class Polygon implements IArea {
         return geometry.toString();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.maps.IArea#getDiameter()
-     */
     @Override
     public double getDiameter() {
         double minLng = Double.MAX_VALUE;
@@ -89,17 +79,11 @@ public class Polygon implements IArea {
         return Math.sqrt((maxLng - minLng) * (maxLng - minLng) + (maxLat - minLat) * (maxLat - minLat));
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         return this.vertices.size();
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (obj != null && obj.getClass().equals(this.getClass())) {

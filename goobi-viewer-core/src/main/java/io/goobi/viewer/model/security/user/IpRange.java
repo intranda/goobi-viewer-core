@@ -52,9 +52,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 /**
- * <p>
- * IpRange class.
- * </p>
+ * Represents an IP address range used for IP-based access control and licence assignment.
  */
 @Entity
 @Table(name = "ip_ranges")
@@ -116,12 +114,10 @@ public class IpRange extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * <p>
      * matchIp.
-     * </p>
      *
-     * @param inIp a {@link java.lang.String} object.
-     * @return a boolean.
+     * @param inIp client IP address to test against this range
+     * @return true if the given IP address falls within the subnet mask of this IP range, false otherwise
      * @should match IPv6 localhost to IPv4 mask
      * @should match edge addresses
      */
@@ -154,14 +150,12 @@ public class IpRange extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * <p>
      * canSatisfyAllAccessConditions.
-     * </p>
      *
-     * @param requiredAccessConditions a {@link java.util.Set} object.
-     * @param privilegeName a {@link java.lang.String} object.
-     * @param pi a {@link java.lang.String} object.
-     * @return a boolean.
+     * @param requiredAccessConditions set of access condition values that must all be satisfied
+     * @param privilegeName privilege name to check against each access condition
+     * @param pi persistent identifier of the record being accessed
+     * @return true if this IP range satisfies all given access conditions for the specified privilege, false otherwise
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -188,22 +182,18 @@ public class IpRange extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
-     * @return the id
+     * @return the database identifier of this IP range
      */
     public Long getId() {
         return id;
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
-     * @param id the id to set
+     * @param id the database identifier to set
      */
     public void setId(Long id) {
         this.id = id;
@@ -216,55 +206,45 @@ public class IpRange extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>name</code>.
-     * </p>
      *
-     * @param name the name to set
+     * @param name the display name of this IP range to set
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * <p>
      * Getter for the field <code>subnetMask</code>.
-     * </p>
      *
-     * @return the subnetMask
+     * @return the CIDR subnet mask defining the IP range
      */
     public String getSubnetMask() {
         return subnetMask;
     }
 
     /**
-     * <p>
      * Setter for the field <code>subnetMask</code>.
-     * </p>
      *
-     * @param subnetMask the subnetMask to set
+     * @param subnetMask the CIDR subnet mask defining the IP range to set
      */
     public void setSubnetMask(String subnetMask) {
         this.subnetMask = subnetMask;
     }
 
     /**
-     * <p>
      * Getter for the field <code>description</code>.
-     * </p>
      *
-     * @return the description
+     * @return a human-readable description of this IP range
      */
     public String getDescription() {
         return description;
     }
 
     /**
-     * <p>
      * Setter for the field <code>description</code>.
-     * </p>
      *
-     * @param description the description to set
+     * @param description a human-readable description of this IP range to set
      */
     public void setDescription(String description) {
         this.description = description;
@@ -276,11 +256,9 @@ public class IpRange extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * <p>
      * main.
-     * </p>
      *
-     * @param args an array of {@link java.lang.String} objects.
+     * @param args command-line arguments (unused)
      */
     public static void main(String[] args) {
         try {

@@ -21,6 +21,10 @@
  */
 package io.goobi.viewer.model.security;
 
+/**
+ * Abstract base implementation of {@link IPrivilegeHolder} that defines the constant arrays
+ * of record-level and CMS-level privilege names shared by all concrete privilege holders.
+ */
 public abstract class AbstractPrivilegeHolder implements IPrivilegeHolder {
 
     protected AbstractPrivilegeHolder() {

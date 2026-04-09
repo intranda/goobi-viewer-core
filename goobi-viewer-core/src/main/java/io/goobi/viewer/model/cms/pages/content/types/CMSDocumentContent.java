@@ -27,6 +27,10 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
+/**
+ * CMS content type that embeds a downloadable document file from the CMS media library into a
+ * CMS page, restricting selectable media to document file types.
+ */
 @Entity
 @Table(name = "cms_content_document")
 @DiscriminatorValue("document")

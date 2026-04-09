@@ -52,8 +52,7 @@ import jakarta.faces.view.facelets.FaceletContext;
 import jakarta.faces.view.facelets.FaceletException;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class DynamicContentBuilder {
 
@@ -78,9 +77,9 @@ public class DynamicContentBuilder {
     }
 
     /**
-     * 
-     * @param content
-     * @param parent
+     *
+     * @param content dynamic content descriptor specifying type and attributes
+     * @param parent parent UI component to attach the built component to
      * @return {@link UIComponent}
      */
     public UIComponent build(DynamicContent content, UIComponent parent) {
@@ -160,9 +159,10 @@ public class DynamicContentBuilder {
     }
 
     /**
-     * @param parent
-     * @param name
-     * @param library
+     * @param parent parent UI component to attach the composite to
+     * @param name resource file name of the composite component
+     * @param library JSF resource library containing the component
+     * @param attributes map of component attribute names to their values
      * @return {@link UIComponent}
      */
     private UIComponent loadCompositeComponent(UIComponent parent, String name, String library, Map<String, Object> attributes)
@@ -178,6 +178,15 @@ public class DynamicContentBuilder {
         implementation.setRendererType("jakarta.faces.Group");
         composite.getFacets().put(UIComponent.COMPOSITE_FACET_NAME, implementation);
         parent.getChildren().add(composite);
+
+        // Snapshot the EL component stack top *before* our push so the finally block
+        // can drain the stack back to exactly this state. When includeFacelet is
+        // interrupted by an exception, Mojarra may leave extra pushComponentToEL
+        // entries on the stack that its own cleanup code never popped. If those stale
+        // entries remain, #{cc} resolves to a broken composite for every subsequent
+        // widget load in the same request, eventually causing the
+        // ContextualCompositeValueExpression → AttributesMap infinite loop (SOE).
+        UIComponent elStackTopBeforePush = UIComponent.getCurrentComponent(context);
         parent.pushComponentToEL(context, composite); // This makes #{cc} available.
 
         if (composite != null && attributes != null) {
@@ -189,20 +198,54 @@ public class DynamicContentBuilder {
         try {
             faceletContext.includeFacelet(implementation, componentResource.getURL());
         } catch (IOException | NullPointerException e) {
+            parent.getChildren().remove(composite);
             throw new FacesException(e);
-        } catch (ELException e) {
+        } catch (FacesException | ELException e) {
+            // FaceletException (a FacesException subclass) is thrown when Facelets tag
+            // processing fails for non-EL reasons (e.g. Solr unreachable wrapped in a
+            // PresentationException propagating through a composite's tag handler).
+            // ELException covers failures that occur directly during EL evaluation.
+            // In both cases the composite is partially initialised and must be removed;
+            // returning it would cause Mojarra's CompositeComponentAttributesELResolver
+            // to enter an infinite loop (StackOverflowError) during the render phase.
             logger.error("Error rendering composite", e);
-            return composite;
+            parent.getChildren().remove(composite);
+            return null;
         } finally {
-            parent.popComponentFromEL(context);
+            // Restore the EL component stack to its pre-push state regardless of
+            // whether includeFacelet succeeded or was interrupted. On the normal
+            // success path this removes exactly the one entry we pushed; on failure
+            // it also drains any additional entries leaked by the aborted processing.
+            restoreELComponentStack(elStackTopBeforePush);
         }
         return composite;
     }
 
     /**
-     * 
-     * @param name
-     * @param attributes
+     * Drains the JSF EL component stack until the component at the top equals
+     * {@code targetTop}. Called from the finally block of
+     * {@link #loadCompositeComponent} to recover from an interrupted
+     * {@link FaceletContext#includeFacelet} call that may have left stale
+     * composite component references on the stack.
+     *
+     * @param targetTop the component that should be at the top after draining;
+     *                  {@code null} means the stack should be empty
+     */
+    private void restoreELComponentStack(UIComponent targetTop) {
+        UIComponent current;
+        int safetyLimit = 1000;
+        while ((current = UIComponent.getCurrentComponent(context)) != targetTop && safetyLimit-- > 0) {
+            if (current == null) {
+                break;
+            }
+            current.popComponentFromEL(context);
+        }
+    }
+
+    /**
+     *
+     * @param name HTML element tag name to render
+     * @param attributes map of HTML attributes to write on the element
      * @return {@link UIComponent}
      */
     public UIComponent createTag(String name, Map<String, String> attributes) {
@@ -232,8 +275,8 @@ public class DynamicContentBuilder {
     }
 
     /**
-     * @param content
-     * @param parent
+     * @param content dynamic content descriptor specifying type and attributes
+     * @param parent parent panel group to attach head elements to
      * @return Optional<UIComponent>
      */
     public Optional<UIComponent> buildHead(DynamicContent content, HtmlPanelGroup parent) {
@@ -272,10 +315,10 @@ public class DynamicContentBuilder {
     }
 
     /**
-     * 
-     * @param id
-     * @param type
-     * @param attributes
+     *
+     * @param id unique component ID to assign to the content
+     * @param type content type determining the component template
+     * @param attributes map of content-specific configuration attributes
      * @return {@link DynamicContent}
      */
     public DynamicContent createContent(String id, DynamicContentType type, Map<String, Object> attributes) {
@@ -286,8 +329,8 @@ public class DynamicContentBuilder {
     }
 
     /**
-     * 
-     * @param type
+     *
+     * @param type content type to resolve a filename for
      * @return File name
      */
     public static String getFilenameForType(DynamicContentType type) {

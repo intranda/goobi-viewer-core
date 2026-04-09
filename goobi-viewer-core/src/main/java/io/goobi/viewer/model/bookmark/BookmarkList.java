@@ -49,6 +49,8 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -67,18 +69,21 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
 /**
- * <p>
- * BookmarkList class.
- * </p>
+ * Represents a named list of bookmarks owned by a user, optionally shareable with others.
  */
 @Entity
 @Table(name = "bookshelves")
 @JsonInclude(Include.NON_NULL)
+// Ignore unknown fields during deserialization so that read-only/computed properties
+// present in the OpenAPI schema (e.g. filterQuery, escapedName) do not cause 400 errors
+// when clients include them in PATCH/POST request bodies.
+@JsonIgnoreProperties(ignoreUnknown = true)
+// Explicitly declare type=object so OpenAPI/schemathesis won't treat this schema
+// as accepting primitive values (e.g. 0) as valid request bodies.
+@Schema(type = "object")
 public class BookmarkList implements Serializable, Comparable<BookmarkList> {
 
-    /**
-     *
-     */
+    
     public static final String MIRADOR_LIB_PATH = "/resources/javascript/libs/mirador/";
 
     private static final long serialVersionUID = -3040539541804852903L;
@@ -123,11 +128,6 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     @JsonIgnore
     private List<UserGroup> groupShares = new ArrayList<>();
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -139,11 +139,6 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -183,6 +178,9 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
 
     /**
      * Descending order by dateUpdated.
+     *
+     * @param o the other bookmark list to compare to
+     * @return a negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the specified object
      */
     @Override
     public int compareTo(BookmarkList o) {
@@ -197,9 +195,9 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * add bookshelf to list and save
+     * Add bookshelf to list and save.
      *
-     * @param item a {@link io.goobi.viewer.model.bookmark.Bookmark} object.
+     * @param item bookmark to add to this list
      * @return boolean if list changed
      */
     public boolean addItem(Bookmark item) {
@@ -215,9 +213,9 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * remove bookshelf from list and save
+     * Remove bookshelf from list and save.
      *
-     * @param item a {@link io.goobi.viewer.model.bookmark.Bookmark} object.
+     * @param item bookmark to remove from this list
      * @return boolean if list changed
      */
     public boolean removeItem(Bookmark item) {
@@ -228,9 +226,9 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * add user group to list and save
+     * Add user group to list and save.
      *
-     * @param group a {@link io.goobi.viewer.model.security.user.UserGroup} object.
+     * @param group user group to grant shared access
      * @return boolean if list changed
      */
     public boolean addGroupShare(UserGroup group) {
@@ -238,9 +236,9 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * remove user group from list and save
+     * Remove user group from list and save.
      *
-     * @param group a {@link io.goobi.viewer.model.security.user.UserGroup} object.
+     * @param group user group to revoke shared access from
      * @return boolean if list changed
      */
     public boolean removeGroupShare(UserGroup group) {
@@ -251,7 +249,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
      * Returns a Solr query that would retrieve the Solr documents representing the items listed on this bookshelf.
      *
      * @should return correct query
-     * @return a {@link java.lang.String} object.
+     * @return the Solr query string matching all records in this bookmark list
      */
     public String generateSolrQueryForItems() {
         StringBuilder sb = new StringBuilder();
@@ -300,12 +298,10 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * <p>
      * isMayView.
-     * </p>
      *
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
-     * @return a boolean.
+     * @param user user requesting view access; may be null for anonymous
+     * @return true if the list is public, if the user is the owner, or if the list has been shared with the user, false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isMayView(User user) {
@@ -332,12 +328,10 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * <p>
      * isMayEdit.
-     * </p>
      *
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
-     * @return a boolean.
+     * @param user user requesting edit access; may be null
+     * @return true if the user is the owner or a member/owner of a group with which this list is shared, false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isMayEdit(User user) throws DAOException {
@@ -360,44 +354,36 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /*********************************** Getter and Setter ***************************************/
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
-     * @return the id
+     * @return the database primary key of this bookmark list
      */
     public Long getId() {
         return id;
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
-     * @param id the id to set
+     * @param id the database ID to set
      */
     public void setId(Long id) {
         this.id = id;
     }
 
     /**
-     * <p>
      * Getter for the field <code>name</code>.
-     * </p>
      *
-     * @return the name
+     * @return the display name of this bookmark list
      */
     public String getName() {
         return name;
     }
 
     /**
-     * <p>
      * Setter for the field <code>name</code>.
-     * </p>
      *
-     * @param name the name to set
+     * @param name the display name of this bookmark list; leading and trailing whitespace is trimmed
      */
     public void setName(String name) {
         if (name != null) {
@@ -408,75 +394,61 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>description</code>.
-     * </p>
      *
-     * @return the description
+     * @return an optional description of this bookmark list
      */
     public String getDescription() {
         return description;
     }
 
     /**
-     * <p>
      * Setter for the field <code>description</code>.
-     * </p>
      *
-     * @param description the description to set
+     * @param description an optional description of this bookmark list
      */
     public void setDescription(String description) {
         this.description = description;
     }
 
     /**
-     * <p>
      * hasDescription.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this bookmark list has a non-blank description, false otherwise
      */
     public boolean hasDescription() {
         return StringUtils.isNotBlank(getDescription());
     }
 
     /**
-     * <p>
      * Getter for the field <code>owner</code>.
-     * </p>
      *
-     * @return the owner
+     * @return the user who owns this bookmark list
      */
     public User getOwner() {
         return owner;
     }
 
     /**
-     * <p>
      * Setter for the field <code>owner</code>.
-     * </p>
      *
-     * @param owner the owner to set
+     * @param owner the user who owns this bookmark list
      */
     public void setOwner(User owner) {
         this.owner = owner;
     }
 
     /**
-     * <p>
      * isIsPublic.
-     * </p>
      *
-     * @return the isPublic
+     * @return true if this bookmark list is publicly visible without authentication, false otherwise
      */
     public boolean isIsPublic() {
         return isPublic;
     }
 
     /**
-     * <p>
      * getPublicString.
-     * </p>
      *
      * @return the isPublic Value as a String <br>
      *         surrounded with ()
@@ -493,33 +465,27 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * <p>
      * Setter for the field <code>isPublic</code>.
-     * </p>
      *
-     * @param isPublic the isPublic to set
+     * @param isPublic true to make this list publicly visible without authentication
      */
     public void setIsPublic(boolean isPublic) {
         this.isPublic = isPublic;
     }
 
     /**
-     * <p>
      * Getter for the field <code>shareKey</code>.
-     * </p>
      *
-     * @return the shareKey
+     * @return the unique key used to share this list via a public URL, or null if sharing is disabled
      */
     public String getShareKey() {
         return shareKey;
     }
 
     /**
-     * <p>
      * Setter for the field <code>shareKey</code>.
-     * </p>
      *
-     * @param shareKey the shareKey to set
+     * @param shareKey the unique key used to share this list via a public URL; null removes sharing
      */
     public void setShareKey(String shareKey) {
         this.shareKey = shareKey;
@@ -543,59 +509,49 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
         setShareKey(null);
     }
 
-    /**
-     * @return the dateUpdated
-     */
+    
     public LocalDateTime getDateUpdated() {
         return dateUpdated;
     }
 
-    /**
-     * @param dateUpdated the dateUpdated to set
-     */
+    
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
 
     /**
-     * <p>
      * getNumItems.
-     * </p>
      *
      * @return Number of items
      */
+    // Computed field — read-only in OpenAPI schema so clients do not send it in request bodies
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     public int getNumItems() {
         return items.size();
     }
 
     /**
-     * <p>
      * Getter for the field <code>items</code>.
-     * </p>
      *
-     * @return the items
+     * @return the list of bookmarks contained in this bookmark list
      */
     public List<Bookmark> getItems() {
         return items;
     }
 
     /**
-     * <p>
      * Setter for the field <code>items</code>.
-     * </p>
      *
-     * @param items the items to set
+     * @param items the list of bookmarks contained in this bookmark list
      */
     public void setItems(List<Bookmark> items) {
         this.items = items;
     }
 
     /**
-     * <p>
      * Getter for the field <code>groupShares</code>.
-     * </p>
      *
-     * @return the groupShares
+     * @return the list of user groups with whom this bookmark list is shared
      */
     public List<UserGroup> getGroupShares() {
         if (groupShares == null) {
@@ -605,23 +561,21 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * <p>
      * Setter for the field <code>groupShares</code>.
-     * </p>
      *
-     * @param groupShares the groupShares to set
+     * @param groupShares the user groups that have shared access to this bookmark list
      */
     public void setGroupShares(List<UserGroup> groupShares) {
         this.groupShares = groupShares;
     }
 
     /**
-     * <p>
      * getOwnerName.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the display name of the owner of this bookmark list, or null if no owner is set
      */
+    // Computed field — read-only in OpenAPI schema so clients do not send it in request bodies
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     public String getOwnerName() {
         if (getOwner() != null) {
             return getOwner().getDisplayName();
@@ -630,13 +584,11 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * <p>
      * getMiradorJsonObject.
-     * </p>
      *
      * @param applicationRoot a {@link java.lang.String} object.
-     * @param restApiUrl
-     * @return a {@link java.lang.String} object.
+     * @param restApiUrl base URL of the REST API for manifest links
+     * @return the Mirador viewer JSON configuration object for this bookmark list
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -698,7 +650,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * @param pi
+     * @param pi persistent identifier of the record
      * @return Generated URL
      */
     public String getLegacyManifestUrl(String pi) {
@@ -709,13 +661,13 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * <p>
      * getFilterQuery.
-     * </p>
      *
      * @should construct query correctly
-     * @return a {@link java.lang.String} object.
+     * @return the Solr filter query string matching all PI values in this bookmark list
      */
+    // Computed field — read-only in OpenAPI schema so clients do not send it in request bodies
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     public String getFilterQuery() {
         if (items.isEmpty()) {
             return "";
@@ -731,12 +683,12 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * <p>
      * getIIIFCollectionURI.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the IIIF Collection URI for this shared bookmark list, or null if the list has no share key
      */
+    // Computed field — read-only in OpenAPI schema so clients do not send it in request bodies
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     public String getIIIFCollectionURI() {
         if (StringUtils.isBlank(getShareKey())) {
             return null;
@@ -753,6 +705,8 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
      *
      * @return the URL encoded name
      */
+    // Computed field — read-only in OpenAPI schema so clients do not send it in request bodies
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     public String getEscapedName() {
         if (name != null) {
             return StringEscapeUtils.escapeHtml4(name);
@@ -771,7 +725,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
 
     /**
      *
-     * @param bookmarkLists
+     * @param bookmarkLists list of bookmark lists to sort in place
      * @should sort lists correctly
      */
     public static void sortBookmarkLists(List<BookmarkList> bookmarkLists) {

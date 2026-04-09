@@ -45,6 +45,9 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.variables.VariableReplacer;
 
+/**
+ * Message handler that pulls the latest version of the configured viewer theme from its version control repository via a shell command.
+ */
 public class PullThemeHandler implements MessageHandler<MessageStatus> {
 
     private static final Logger logger = LogManager.getLogger(PullThemeHandler.class);
@@ -92,7 +95,7 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
 
     /**
      * 
-     * @param message
+     * @param message the error message to send
      */
     private void sendProgressError(String message) {
         developerBean = (AdminDeveloperBean) BeanUtils.getBeanByName("adminDeveloperBean", AdminDeveloperBean.class);
@@ -110,7 +113,7 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
 
     /**
      * 
-     * @param f
+     * @param f progress value between 0.0 and 1.0
      */
     private void updateProgress(float f) {
         developerBean = (AdminDeveloperBean) BeanUtils.getBeanByName("adminDeveloperBean", AdminDeveloperBean.class);

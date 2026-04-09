@@ -1,3 +1,24 @@
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package io.goobi.viewer.model.administration;
 
 import java.util.ArrayList;
@@ -27,6 +48,10 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
+/**
+ * JPA entity that stores the maintenance mode configuration, including its enabled state and
+ * multilingual message text displayed to visitors during scheduled downtime.
+ */
 @Entity
 @Table(name = "maintenance_mode")
 public class MaintenanceMode implements IPolyglott {
@@ -56,45 +81,33 @@ public class MaintenanceMode implements IPolyglott {
         this.selectedLocale = BeanUtils.getLocale();
     }
 
-    /**
-     * @return the id
-     */
+    
     public Long getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
+    
     public void setId(Long id) {
         this.id = id;
     }
 
-    /**
-     * @return the enabled
-     */
+    
     public boolean isEnabled() {
         return enabled;
     }
 
-    /**
-     * @param enabled the enabled to set
-     */
+    
     public void setEnabled(boolean enabled) {
         logger.trace("setEnabled: {}", enabled);
         this.enabled = enabled;
     }
 
-    /**
-     * @return the translations
-     */
+    
     public List<MaintenanceModeTranslation> getTranslations() {
         return translations;
     }
 
-    /**
-     * @param translations the translations to set
-     */
+    
     public void setTranslations(List<MaintenanceModeTranslation> translations) {
         this.translations = translations;
     }
@@ -108,7 +121,7 @@ public class MaintenanceMode implements IPolyglott {
     }
 
     /**
-     * @param language
+     * @param language locale for the text translation to retrieve
      * @return Text value in the given language
      */
     public String getText(String language) {
@@ -116,7 +129,7 @@ public class MaintenanceMode implements IPolyglott {
     }
 
     /**
-     * @param language
+     * @param language locale for the text translation to retrieve, with fallback to default
      * @return Text value in the given language
      * @should return translation correctly
      */
@@ -125,11 +138,9 @@ public class MaintenanceMode implements IPolyglott {
     }
 
     /**
-     * <p>
      * setText.
-     * </p>
      *
-     * @param text a {@link java.lang.String} object.
+     * @param text maintenance message text for the current locale
      */
     public void setText(String text) {
         setText(text, selectedLocale.getLanguage());
@@ -137,8 +148,8 @@ public class MaintenanceMode implements IPolyglott {
 
     /**
      * 
-     * @param text
-     * @param language
+     * @param text maintenance message text to store
+     * @param language locale for which to set the text
      */
     public void setText(String text, String language) {
         MaintenanceModeTranslation.setTranslation(translations, language, text, "text", this);

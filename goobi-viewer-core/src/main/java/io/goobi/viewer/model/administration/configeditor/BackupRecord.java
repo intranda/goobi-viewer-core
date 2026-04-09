@@ -26,19 +26,23 @@ import java.time.LocalDateTime;
 
 import io.goobi.viewer.controller.DateTools;
 
+/**
+ * Represents a single backup file entry in the configuration editor, holding the timestamp-derived
+ * name and position index of the backup within the backup list.
+ */
 public class BackupRecord implements Serializable {
 
     private static final long serialVersionUID = -7935008140086500081L;
 
-    /** Date/time part of file name */
+    /** Date/time part of file name. */
     private String name;
-    /** Index in list */
+    /** Index in list. */
     private int number;
 
     /**
      * 
-     * @param name
-     * @param i
+     * @param name date/time part of the backup file name
+     * @param i index in the backup list
      */
     public BackupRecord(String name, int i) {
         this.name = name;
@@ -53,18 +57,12 @@ public class BackupRecord implements Serializable {
         return LocalDateTime.parse(name, DateTools.FORMATTERFILENAME);
     }
 
-    /**
-     * 
-     * @return the name
-     */
+    
     public String getName() {
         return name;
     }
 
-    /**
-     * 
-     * @return the number
-     */
+    
     public int getNumber() {
         return number;
     }

@@ -28,7 +28,7 @@ import java.nio.file.Path;
 import jakarta.servlet.http.Part;
 
 /**
- * This file capsules file uploading via jsf h:inputFile
+ * Encapsulates file uploading via JSF h:inputFile.
  */
 public class FileUploader {
 

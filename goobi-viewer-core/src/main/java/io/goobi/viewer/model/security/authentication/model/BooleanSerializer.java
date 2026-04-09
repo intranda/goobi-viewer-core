@@ -29,9 +29,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
 /**
- * <p>
- * BooleanSerializer class.
- * </p>
+ * Jackson serialiser that converts a Boolean value to the string representation expected by the Bibliotheca API.
  *
  * @author Florian Alpers
  */

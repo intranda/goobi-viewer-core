@@ -63,8 +63,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "cms_geomap")
@@ -75,13 +74,17 @@ public class GeoMap implements Serializable {
     private static final Logger logger = LogManager.getLogger(GeoMap.class);
 
     /**
-     * Placeholder User if the actual creator could not be determined
+     * Placeholder User if the actual creator could not be determined.
      */
     private static final User CREATOR_UNKNOWN = new User("Unknown");
 
     private static final String METADATA_TAG_TITLE = "Title";
     private static final String METADATA_TAG_DESCRIPTION = "Description";
 
+    /**
+     * Enumerates the strategies used to populate a {@link GeoMap} with geographic features: either by evaluating a Solr query or by using manually
+     * entered feature sets.
+     */
     public enum GeoMapType {
         SOLR_QUERY,
         MANUAL
@@ -127,16 +130,16 @@ public class GeoMap implements Serializable {
     private boolean showPopover = true;
 
     /**
-     * Empty Constructor
+     * Empty Constructor.
      */
     public GeoMap() {
         //
     }
 
     /**
-     * Clone constructor
+     * Clones constructor.
      *
-     * @param blueprint
+     * @param blueprint the GeoMap to copy from
      */
     public GeoMap(GeoMap blueprint) {
         this.creatorId = blueprint.creatorId;
@@ -150,30 +153,22 @@ public class GeoMap implements Serializable {
 
     }
 
-    /**
-     * @param id the id to set
-     */
+    
     public void setId(Long id) {
         this.id = id;
     }
 
-    /**
-     * @return the id
-     */
+    
     public Long getId() {
         return id;
     }
 
-    /**
-     * @return the creatorId
-     */
+    
     public Long getCreatorId() {
         return creatorId;
     }
 
-    /**
-     * @param creatorId the creatorId to set
-     */
+    
     public void setCreatorId(Long creatorId) {
         this.creatorId = creatorId;
         this.creator = null;
@@ -200,30 +195,22 @@ public class GeoMap implements Serializable {
         }
     }
 
-    /**
-     * @return the dateCreated
-     */
+    
     public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
-    /**
-     * @return the dateUpdated
-     */
+    
     public LocalDateTime getDateUpdated() {
         return dateUpdated;
     }
 
-    /**
-     * @param dateCreated the dateCreated to set
-     */
+    
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
 
-    /**
-     * @param dateUpdated the dateUpdated to set
-     */
+    
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
@@ -274,9 +261,7 @@ public class GeoMap implements Serializable {
         }
     }
 
-    /**
-     * @param initialView the initialView to set
-     */
+    
     public void setInitialView(String initialView) {
         this.initialView = initialView;
     }
@@ -292,7 +277,7 @@ public class GeoMap implements Serializable {
     }
 
     /**
-     * Link to the html page to render for oembed
+     * Link to the html page to render for oembed.
      *
      * @return {@link URI}
      */
@@ -310,7 +295,7 @@ public class GeoMap implements Serializable {
 
     /**
      * 
-     * @param linkTarget
+     * @param linkTarget optional link target parameter appended to the URL
      * @return {@link URI}
      */
     public URI getOEmbedURI(String linkTarget) {
@@ -328,16 +313,12 @@ public class GeoMap implements Serializable {
         return null;
     }
 
-    /**
-     * @param showPopover the showPopover to set
-     */
+    
     public void setShowPopover(boolean showPopover) {
         this.showPopover = showPopover;
     }
 
-    /**
-     * @return the showPopover
-     */
+    
     public boolean isShowPopover() {
         return showPopover;
     }

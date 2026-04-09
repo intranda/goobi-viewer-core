@@ -40,8 +40,7 @@ import io.goobi.viewer.modules.interfaces.IURLBuilder;
 /**
  * A location on a map. Contains a long/lat points, a label and a link
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class Location implements Serializable {
 
@@ -55,9 +54,9 @@ public class Location implements Serializable {
 
     /**
      *
-     * @param area
-     * @param label
-     * @param uri
+     * @param area geographic area of the location
+     * @param label display label for the location
+     * @param uri URI linking to the associated record or resource
      */
     public Location(IArea area, String label, URI uri) {
         this.area = area;
@@ -67,8 +66,8 @@ public class Location implements Serializable {
 
     /**
      *
-     * @param pi
-     * @param pageType
+     * @param pi persistent identifier of the record
+     * @param pageType viewer page type for the generated URI
      * @param urlBuilder If not null, the URL will be build using the URL builder, otherwise manually
      * @return {@link URI}
      */
@@ -100,23 +99,17 @@ public class Location implements Serializable {
         return URI.create(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + mappedUrl.toString());
     }
 
-    /**
-     * @return the area
-     */
+    
     public IArea getArea() {
         return area;
     }
 
-    /**
-     * @return the label
-     */
+    
     public String getLabel() {
         return label;
     }
 
-    /**
-     * @return the uri
-     */
+    
     public URI getLink() {
         return uri;
     }
@@ -134,9 +127,6 @@ public class Location implements Serializable {
         return feature.toString();
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (obj != null && obj.getClass().equals(this.getClass())) {
@@ -149,9 +139,6 @@ public class Location implements Serializable {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         return this.label == null ? 0 : this.label.hashCode();

@@ -38,6 +38,10 @@ import org.json.JSONObject;
 
 import io.goobi.viewer.model.search.Search;
 
+/**
+ * Parses geographic location data from Solr field values (WKT polygon, point, and GeoJSON
+ * formats) and converts them into {@link IArea} instances for use in geo map rendering.
+ */
 public class LocationBuilder {
 
     private static final Logger logger = LogManager.getLogger(Search.class);
@@ -75,7 +79,7 @@ public class LocationBuilder {
 
     /**
      * 
-     * @param value
+     * @param value string containing coordinate pairs to parse
      * @return double[][]
      */
     private double[][] getPoints(String value) {
@@ -89,8 +93,8 @@ public class LocationBuilder {
 
     /**
      * 
-     * @param x
-     * @param y
+     * @param x longitude or x-coordinate value (String or Number)
+     * @param y latitude or y-coordinate value (String or Number)
      * @return double[][]
      */
     private double[] parsePoint(Object x, Object y) {

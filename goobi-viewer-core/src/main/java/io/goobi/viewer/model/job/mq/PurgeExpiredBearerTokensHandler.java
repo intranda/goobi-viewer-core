@@ -31,6 +31,9 @@ import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.model.job.TaskType;
 
+/**
+ * Message handler that removes all expired bearer tokens from the in-memory token manager.
+ */
 public class PurgeExpiredBearerTokensHandler implements MessageHandler<MessageStatus> {
 
     private static final Logger logger = LogManager.getLogger(PurgeExpiredBearerTokensHandler.class);

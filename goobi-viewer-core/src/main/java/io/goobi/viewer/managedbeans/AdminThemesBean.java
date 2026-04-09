@@ -43,8 +43,7 @@ import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Named
 @ViewScoped

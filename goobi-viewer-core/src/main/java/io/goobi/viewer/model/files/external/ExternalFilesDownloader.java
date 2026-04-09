@@ -57,6 +57,10 @@ import io.goobi.viewer.model.security.encryption.Decrypter;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.core.Response.Status;
 
+/**
+ * Downloads files or ZIP archives from remote URIs to a local target directory, with optional decryption and progress tracking.
+ * Supports plain files as well as ZIP archives that are automatically extracted after download.
+ */
 public class ExternalFilesDownloader {
 
     private static final Logger logger = LogManager.getLogger(ExternalFilesDownloader.class);

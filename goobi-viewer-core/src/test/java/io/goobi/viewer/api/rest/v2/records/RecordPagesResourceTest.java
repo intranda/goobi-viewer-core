@@ -79,6 +79,21 @@ class RecordPagesResourceTest extends AbstractRestApiTest {
         DataManager.getInstance().injectSearchIndex(mockedIndex);
     }
 
+    /**
+     * Jersey returns 400 Bad Request when it cannot convert a path parameter to the
+     * declared type (Integer). Verifies the documented @ApiResponse(400) is reachable.
+     */
+    @Test
+    void testGetCanvas_invalidPageNo_returns400() {
+        String url = urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).params(PI, "not-a-number").build();
+        try (Response response = target(url)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(400, response.getStatus(), "Non-integer pageNo should return 400");
+        }
+    }
+
     @Test
     void testGetCanvas() {
         String url = urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).params(PI, PAGENO).build();

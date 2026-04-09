@@ -23,6 +23,9 @@ package io.goobi.viewer.model.maps.coordinates;
 
 import mil.nga.sf.geojson.Geometry;
 
+/**
+ * Strategy interface for reading a coordinate string and converting it into a GeoJSON {@link mil.nga.sf.geojson.Geometry}.
+ */
 public interface ICoordinateReader {
 
     public boolean canRead(String value);

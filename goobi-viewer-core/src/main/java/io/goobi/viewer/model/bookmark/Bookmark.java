@@ -63,14 +63,17 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 /**
- * <p>
- * Bookmark class.
- * </p>
+ * Represents a single bookmark entry linking a user to a specific record or page.
  */
 @Entity
 @Table(name = "bookshelf_items")
 @JsonInclude(Include.NON_NULL)
+// Explicitly declare type=object so OpenAPI/schemathesis won't treat this schema
+// as accepting primitive values (e.g. 0) as valid request bodies.
+@Schema(type = "object")
 public class Bookmark implements Serializable {
 
     private static final long serialVersionUID = 9047168382986927374L;
@@ -127,13 +130,11 @@ public class Bookmark implements Serializable {
     }
 
     /**
-     * <p>
-     * Constructor for Bookmark.
-     * </p>
+     * Creates a new Bookmark instance.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param mainTitle a {@link java.lang.String} object.
-     * @param name a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record
+     * @param mainTitle main title of the bookmarked record
+     * @param name display name for this bookmark
      */
     public Bookmark(String pi, String mainTitle, String name) {
         this.pi = pi;
@@ -146,9 +147,9 @@ public class Bookmark implements Serializable {
      * references. PI must be non-empty, otherwise a NullPointerException is thrown The item name will be inferred from the book/section title from
      * Solr. If that fails, an IndexUnreachableException or PresentationException is thrown
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param logId a {@link java.lang.String} object.
-     * @param order a {@link java.lang.Integer} object.
+     * @param pi persistent identifier of the record
+     * @param logId structural element log ID, may be null or empty
+     * @param order page order number, may be null
      * @throws java.lang.NullPointerException if pi is null or blank
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -166,9 +167,9 @@ public class Bookmark implements Serializable {
      * references. PI must be non-empty, otherwise a NullPointerException is thrown The item name will be inferred from the book/section title from
      * Solr. If that fails, an IndexUnreachableException or PresentationException is thrown
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param logId a {@link java.lang.String} object.
-     * @param order a {@link java.lang.Integer} object.
+     * @param pi persistent identifier of the record
+     * @param logId structural element log ID, may be null or empty
+     * @param order page order number, may be null
      * @param ignoreMissingSolrDoc should be false, unless arbitrary pi/logid values should be allowed (e.g. for testing)
      * @throws java.lang.NullPointerException if pi is null or blank
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -190,9 +191,6 @@ public class Bookmark implements Serializable {
         this.dateAdded = LocalDateTime.now();
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -202,9 +200,6 @@ public class Bookmark implements Serializable {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -222,13 +217,11 @@ public class Bookmark implements Serializable {
     }
 
     /**
-     * <p>
      * bothEqualOrNull.
-     * </p>
      *
-     * @param o1 a {@link java.lang.Object} object.
-     * @param o2 a {@link java.lang.Object} object.
-     * @return a boolean.
+     * @param o1 first object to compare
+     * @param o2 second object to compare
+     * @return true if both objects are null or if o1 equals o2, false otherwise
      */
     public boolean bothEqualOrNull(Object o1, Object o2) {
         if (o1 == null) {
@@ -238,13 +231,11 @@ public class Bookmark implements Serializable {
     }
 
     /**
-     * <p>
      * bothEqualOrBlank.
-     * </p>
      *
-     * @param o1 a {@link java.lang.String} object.
-     * @param o2 a {@link java.lang.String} object.
-     * @return a boolean.
+     * @param o1 first string to compare
+     * @param o2 second string to compare
+     * @return true if both strings are blank or if they are equal after trimming, false otherwise
      */
     public boolean bothEqualOrBlank(String o1, String o2) {
         if (StringUtils.isBlank(o1)) {
@@ -286,7 +277,7 @@ public class Bookmark implements Serializable {
     /**
      * Returns the URL to the representative image thumbnail for the record represented by this item.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the thumbnail URL for the representative image of this bookmarked record at default dimensions
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -301,9 +292,9 @@ public class Bookmark implements Serializable {
     /**
      * Returns the URL to the representative image thumbnail for the record represented by this item.
      *
-     * @param width a int.
-     * @param height a int.
-     * @return a {@link java.lang.String} object.
+     * @param width desired thumbnail width in pixels
+     * @param height desired thumbnail height in pixels
+     * @return the thumbnail URL for the representative image of this bookmarked record scaled to the given dimensions
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -320,9 +311,9 @@ public class Bookmark implements Serializable {
     }
 
     /**
-     * Retrieves the documents title from the Solr index using the stored pi and - if nonempty - the logId
+     * Retrieves the documents title from the Solr index using the stored pi and - if nonempty - the logId.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the title of the bookmarked document as retrieved from the Solr index
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
@@ -352,198 +343,167 @@ public class Bookmark implements Serializable {
     /*********************************** Getter and Setter ***************************************/
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
-     * @return the id
+     * @return the database primary key of this bookmark
      */
     public Long getId() {
         return id;
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
-     * @param id the id to set
+     * @param id the database ID to set
      */
     public void setId(Long id) {
         this.id = id;
     }
 
     /**
-     * <p>
      * Getter for the field <code>bookmarkList</code>.
-     * </p>
      *
-     * @return the bookmarkList
+     * @return the parent bookmark list this item belongs to
      */
     public BookmarkList getBookmarkList() {
         return bookmarkList;
     }
 
     /**
-     * <p>
      * Setter for the field <code>bookmarkList</code>.
-     * </p>
      *
-     * @param bookmarkList the bookmarkList to set
+     * @param bookmarkList the parent bookmark list this item belongs to
      */
     public void setBookmarkList(BookmarkList bookmarkList) {
         this.bookmarkList = bookmarkList;
     }
 
     /**
-     * <p>
      * Getter for the field <code>pi</code>.
-     * </p>
      *
-     * @return the pi
+     * @return the persistent identifier of the bookmarked record
      */
+    // pi is required to identify the record; mark as required with minLength:1 so empty strings are rejected
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, minLength = 1)
     public String getPi() {
         return pi;
     }
 
     /**
-     * <p>
      * Setter for the field <code>pi</code>.
-     * </p>
      *
-     * @param pi the pi to set
+     * @param pi the persistent identifier of the bookmarked record
      */
     public void setPi(String pi) {
         this.pi = pi;
     }
 
     /**
-     * <p>
      * Getter for the field <code>logId</code>.
-     * </p>
      *
-     * @return the logId
+     * @return the METS logical structure ID identifying a specific section within the record
      */
     public String getLogId() {
         return logId;
     }
 
     /**
-     * <p>
      * Setter for the field <code>logId</code>.
-     * </p>
      *
-     * @param logId the logId to set
+     * @param logId the METS logical structure ID identifying a specific section within the record
      */
     public void setLogId(String logId) {
         this.logId = logId;
     }
 
     /**
-     * <p>
      * Getter for the field <code>urn</code>.
-     * </p>
      *
-     * @return the urn
+     * @return the URN identifying the bookmarked resource
      */
     public String getUrn() {
         return urn;
     }
 
     /**
-     * <p>
      * Setter for the field <code>urn</code>.
-     * </p>
      *
-     * @param urn the urn to set
+     * @param urn the URN identifying the bookmarked resource
      */
     public void setUrn(String urn) {
         this.urn = urn;
     }
 
     /**
-     * <p>
      * Getter for the field <code>name</code>.
-     * </p>
      *
-     * @return the name
+     * @return the display name for this bookmark entry
      */
     public String getName() {
         return name;
     }
 
     /**
-     * <p>
      * Setter for the field <code>name</code>.
-     * </p>
      *
-     * @param name the name to set
+     * @param name the display name for this bookmark entry
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * <p>
      * Getter for the field <code>description</code>.
-     * </p>
      *
-     * @return the description
+     * @return an optional description or note for this bookmark entry
      */
     public String getDescription() {
         return description;
     }
 
     /**
-     * <p>
      * Setter for the field <code>description</code>.
-     * </p>
      *
-     * @param description the description to set
+     * @param description an optional description or note for this bookmark entry
      */
     public void setDescription(String description) {
         this.description = description;
     }
 
     /**
-     * <p>
      * Getter for the field <code>dateAdded</code>.
-     * </p>
      *
-     * @return the dateAdded
+     * @return the timestamp when this bookmark was added
      */
+    // dateAdded is set server-side; mark as read-only so clients do not send it in request bodies
+    // (LocalDateTime cannot deserialize ISO 8601 strings with timezone suffix like "2000-01-01T00:00:00Z")
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     public LocalDateTime getDateAdded() {
         return dateAdded;
     }
 
     /**
-     * <p>
      * Setter for the field <code>dateAdded</code>.
-     * </p>
      *
-     * @param dateAdded the dateAdded to set
+     * @param dateAdded the timestamp when this bookmark was added
      */
     public void setDateAdded(LocalDateTime dateAdded) {
         this.dateAdded = dateAdded;
     }
 
     /**
-     * <p>
      * Getter for the field <code>order</code>.
-     * </p>
      *
-     * @return the order
+     * @return the sort position of this bookmark within its list
      */
     public Integer getOrder() {
         return order;
     }
 
     /**
-     * <p>
      * Setter for the field <code>order</code>.
-     * </p>
      *
-     * @param order the order to set
+     * @param order the sort position of this bookmark within its list
      */
     public void setOrder(Integer order) {
         this.order = order;
@@ -578,7 +538,7 @@ public class Bookmark implements Serializable {
     }
 
     /**
-     * 0
+     * 0.
      * 
      * @return Generated Solr query
      */

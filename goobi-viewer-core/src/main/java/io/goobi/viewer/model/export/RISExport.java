@@ -53,7 +53,9 @@ import io.goobi.viewer.model.search.SearchHit;
 import io.goobi.viewer.model.viewer.StringPair;
 
 /**
+ * Exports search results in RIS (Research Information Systems) format.
  *
+ * <p>Executes a paged Solr query and writes the collected search hits as a RIS file to an output stream via a temporary file.
  */
 public class RISExport {
 
@@ -74,13 +76,13 @@ public class RISExport {
 
     /**
      * 
-     * @param finalQuery
-     * @param sortFields
-     * @param filterQueries
-     * @param params
-     * @param searchTerms
-     * @param locale
-     * @param proximitySearchDistance
+     * @param finalQuery the final Solr query string
+     * @param sortFields list of field/order pairs for result sorting
+     * @param filterQueries additional Solr filter queries to apply
+     * @param params additional Solr query parameters
+     * @param searchTerms search terms grouped by field, used for highlighting
+     * @param locale locale for label and metadata translation
+     * @param proximitySearchDistance maximum word distance for proximity searches
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws PresentationException
@@ -112,7 +114,7 @@ public class RISExport {
     }
 
     /**
-     * @param os
+     * @param os the output stream to write the RIS file content to
      * @return True if successful; false otherwise
      * @throws IOException
      */
@@ -159,16 +161,12 @@ public class RISExport {
         return searchHits != null && !searchHits.isEmpty();
     }
 
-    /**
-     * @return the fileName
-     */
+    
     public String getFileName() {
         return fileName;
     }
 
-    /**
-     * @return the searchHits
-     */
+    
     public List<SearchHit> getSearchHits() {
         return searchHits;
     }

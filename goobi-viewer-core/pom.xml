@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
-	<version>26.03-SNAPSHOT</version>
+	<version>26.04-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>Goobi viewer - Core</name>
 	<description>The Goobi viewer is an open source solution for the presentation of digitized cultural assets.</description>
@@ -79,14 +79,14 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.7.0</alto.version>
-		<ics.version>4.1.2</ics.version>
+		<ics.version>4.2.2</ics.version>
 		<tei-conversion.version>1.3.4</tei-conversion.version>
 		<intranda-content-view.version>0.4.5</intranda-content-view.version>
 		<iiif-api-model.version>3.2.0</iiif-api-model.version>
 		<normdataimporter.version>2.1.3</normdataimporter.version>
 
 		<!-- other libraries -->
-		<activemq.version>6.2.2</activemq.version>
+		<activemq.version>6.2.3</activemq.version>
 		<angus-mail.version>2.0.5</angus-mail.version>
 		<citationstyles.version>26.2</citationstyles.version>
 		<citeproc-java.version>3.5.0</citeproc-java.version>
@@ -130,12 +130,13 @@
 		<json.version>20251224</json.version>
 		<jsoup.version>1.22.1</jsoup.version>
 		<junit.version>6.0.3</junit.version>
-		<log4j.version>2.25.3</log4j.version>
-		<mariadb-java-client.version>3.5.7</mariadb-java-client.version>
+		<log4j.version>2.25.4</log4j.version>
+		<netty.version>4.1.119.Final</netty.version>
+		<mariadb-java-client.version>3.5.8</mariadb-java-client.version>
 		<mockito.version>5.23.0</mockito.version>
 		<mockito.agent.jar>${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar</mockito.agent.jar>
 		<mockserver.version>5.15.0</mockserver.version>
-		<omnifaces.version>4.7.2</omnifaces.version>
+		<omnifaces.version>4.7.3</omnifaces.version>
 		<openpdf.version>2.2.4</openpdf.version>
 		<poi.version>5.5.1</poi.version>
 		<prettyfaces.version>10.0.2.Final</prettyfaces.version>
@@ -145,7 +146,7 @@
 		<spring.version>6.2.17</spring.version>
 		<slf4j.version>2.0.17</slf4j.version>
 		<solr.version>9.10.1</solr.version>
-		<swagger.version>2.2.45</swagger.version>
+		<swagger.version>2.2.46</swagger.version>
 		<tomcat.version>10.1.31</tomcat.version>
 		<weld-servlet-shaded.version>5.1.7.Final</weld-servlet-shaded.version>
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
@@ -162,6 +163,59 @@
 				<version>${junit.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+			<!-- Force log4j-core to the same version as log4j-api to avoid transitive downgrades (CVE-2025-68161) -->
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-core</artifactId>
+				<version>${log4j.version}</version>
+			</dependency>
+			<!-- Force netty to a consistent version across all transitive sources (mockserver pulls in older 4.1.86,
+			     AWS SDK and ZooKeeper need newer versions; nearest-wins would otherwise downgrade them - CVE-2023-44487 etc.) -->
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-buffer</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-codec</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-codec-http</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-codec-http2</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-common</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-handler</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-resolver</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-transport</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-transport-native-unix-common</artifactId>
+				<version>${netty.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -576,6 +630,11 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-params</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -1139,6 +1198,15 @@
 				<configuration>
 					<doclint>none</doclint>
 					<failOnWarnings>true</failOnWarnings>
+					<source>21</source>
+					<windowtitle>Goobi viewer core ${project.version} API</windowtitle>
+					<doctitle>Goobi viewer core ${project.version} API</doctitle>
+					<notimestamp>true</notimestamp>
+					<splitindex>true</splitindex>
+					<links>
+						<link>https://docs.oracle.com/en/java/javase/21/docs/api/</link>
+						<link>https://jakarta.ee/specifications/platform/10/apidocs/</link>
+					</links>
 					<tags>
 						<tag>
 							<!-- Disables custom @should tag in Javadoc see:
@@ -1220,7 +1288,7 @@
 					<dependency>
 						<groupId>com.puppycrawl.tools</groupId>
 						<artifactId>checkstyle</artifactId>
-						<version>13.3.0</version>
+						<version>13.4.0</version>
 					</dependency>
 				</dependencies>
 				<executions>
@@ -1253,10 +1321,19 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.10.1</version>
+				<version>3.12.0</version>
 				<configuration>
 					<doclint>none</doclint>
 					<failOnWarnings>true</failOnWarnings>
+					<source>21</source>
+					<windowtitle>Goobi viewer core ${project.version} API</windowtitle>
+					<doctitle>Goobi viewer core ${project.version} API</doctitle>
+					<notimestamp>true</notimestamp>
+					<splitindex>true</splitindex>
+					<links>
+						<link>https://docs.oracle.com/en/java/javase/21/docs/api/</link>
+						<link>https://jakarta.ee/specifications/platform/10/apidocs/</link>
+					</links>
 					<tags>
 						<tag>
 							<name>should</name>

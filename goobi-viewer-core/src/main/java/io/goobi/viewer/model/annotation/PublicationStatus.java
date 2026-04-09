@@ -22,8 +22,7 @@
 package io.goobi.viewer.model.annotation;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public enum PublicationStatus {
     CREATING, //The annotation has been created but is not ready for review or publication yet

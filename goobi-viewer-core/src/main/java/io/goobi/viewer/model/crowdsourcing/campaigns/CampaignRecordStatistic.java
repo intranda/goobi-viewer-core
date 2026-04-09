@@ -116,9 +116,6 @@ public class CampaignRecordStatistic implements Serializable {
     @Column(name = "total_pages", nullable = true)
     private Integer totalPages = null;
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -129,9 +126,6 @@ public class CampaignRecordStatistic implements Serializable {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -163,199 +157,161 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
-     * @return the id
+     * @return the database primary key of this record statistic entry
      */
     public Long getId() {
         return id;
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
-     * @param id the id to set
+     * @param id the database primary key to set
      */
     public void setId(Long id) {
         this.id = id;
     }
 
     /**
-     * <p>
      * Getter for the field <code>dateCreated</code>.
-     * </p>
      *
-     * @return the dateCreated
+     * @return the date and time when this record statistic entry was created
      */
     public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
     /**
-     * <p>
      * Setter for the field <code>dateCreated</code>.
-     * </p>
      *
-     * @param dateCreated the dateCreated to set
+     * @param dateCreated the date and time when this record statistic entry was created
      */
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
 
     /**
-     * <p>
      * Getter for the field <code>dateUpdated</code>.
-     * </p>
      *
-     * @return the dateUpdated
+     * @return the date and time when this record statistic entry was last updated
      */
     public LocalDateTime getDateUpdated() {
         return dateUpdated;
     }
 
     /**
-     * <p>
      * Setter for the field <code>dateUpdated</code>.
-     * </p>
      *
-     * @param dateUpdated the dateUpdated to set
+     * @param dateUpdated the date and time when this record statistic entry was last updated
      */
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
 
     /**
-     * <p>
      * Getter for the field <code>owner</code>.
-     * </p>
      *
-     * @return the owner
+     * @return the campaign this record statistic belongs to
      */
     public Campaign getOwner() {
         return owner;
     }
 
     /**
-     * <p>
      * Setter for the field <code>owner</code>.
-     * </p>
      *
-     * @param owner the owner to set
+     * @param owner the campaign this record statistic belongs to
      */
     public void setOwner(Campaign owner) {
         this.owner = owner;
     }
 
     /**
-     * <p>
      * Getter for the field <code>pi</code>.
-     * </p>
      *
-     * @return the pi
+     * @return the persistent identifier of the record this statistic tracks
      */
     public String getPi() {
         return pi;
     }
 
     /**
-     * <p>
      * Setter for the field <code>pi</code>.
-     * </p>
      *
-     * @param pi the pi to set
+     * @param pi the persistent identifier of the record this statistic tracks
      */
     public void setPi(String pi) {
         this.pi = pi;
     }
 
-    /**
-     * @return the pageStatistics
-     */
+    
     public Map<String, CampaignRecordPageStatistic> getPageStatistics() {
         return pageStatistics;
     }
 
-    /**
-     * @param pageStatistics the pageStatistics to set
-     */
+    
     public void setPageStatistics(Map<String, CampaignRecordPageStatistic> pageStatistics) {
         this.pageStatistics = pageStatistics;
     }
 
     /**
-     * <p>
      * Getter for the field <code>status</code>.
-     * </p>
      *
-     * @return the status
+     * @return the crowdsourcing processing status for this record within the campaign
      */
     public CrowdsourcingStatus getStatus() {
         return status;
     }
 
     /**
-     * <p>
      * Setter for the field <code>status</code>.
-     * </p>
      *
-     * @param status the status to set
+     * @param status the crowdsourcing processing status for this record within the campaign
      */
     public void setStatus(CrowdsourcingStatus status) {
         this.status = status;
     }
 
     /**
-     * <p>
      * Getter for the field <code>annotators</code>.
-     * </p>
      *
-     * @return the annotators
+     * @return the list of users who have contributed annotations for this record
      */
     public List<User> getAnnotators() {
         return annotators;
     }
 
     /**
-     * <p>
      * Setter for the field <code>annotators</code>.
-     * </p>
      *
-     * @param annotators the annotators to set
+     * @param annotators the list of users who have contributed annotations for this record
      */
     public void setAnnotators(List<User> annotators) {
         this.annotators = annotators;
     }
 
     /**
-     * <p>
      * Getter for the field <code>reviewers</code>.
-     * </p>
      *
-     * @return the reviewers
+     * @return the list of users who have reviewed annotations for this record
      */
     public List<User> getReviewers() {
         return reviewers;
     }
 
     /**
-     * <p>
      * Setter for the field <code>reviewers</code>.
-     * </p>
      *
-     * @param reviewers the reviewers to set
+     * @param reviewers the list of users who have reviewed annotations for this record
      */
     public void setReviewers(List<User> reviewers) {
         this.reviewers = reviewers;
     }
 
     /**
-     * <p>
      * addAnnotater.
-     * </p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      */
@@ -366,9 +322,7 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
-     * <p>
      * addReviewer.
-     * </p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      */
@@ -379,9 +333,9 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
-     * Check both record status and all page status to check if any matches the given status
+     * Checks both record status and all page status to check if any matches the given status.
      *
-     * @param status
+     * @param status crowdsourcing status to check for
      * @return false if status is null, otherwise true exactly if {@link #getStatus()} equals status or if any
      *         {@link CampaignRecordPageStatistic#getStatus()} of {@link #pageStatistics} returns true
      */
@@ -396,9 +350,7 @@ public class CampaignRecordStatistic implements Serializable {
         }
     }
 
-    /**
-     * @return the totalPages
-     */
+    
     public Integer getTotalPages() {
         if (totalPages == null) {
             this.totalPages = calculateTotalPages();
@@ -406,15 +358,15 @@ public class CampaignRecordStatistic implements Serializable {
         return totalPages;
     }
 
-    /**
-     * @param totalPages the totalPages to set
-     */
+    
     public void setTotalPages(Integer totalPages) {
         this.totalPages = totalPages;
     }
 
     /**
-     * @return
+     * Retrieves the total number of pages for this record from the Solr index.
+     *
+     * @return the number of pages, 0 if no document was found, or null if an index error occurred
      */
     private Integer calculateTotalPages() {
         String query = String.format("PI:\"%s\"", pi);

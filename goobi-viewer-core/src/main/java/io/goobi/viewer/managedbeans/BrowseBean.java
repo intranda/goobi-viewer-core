@@ -108,7 +108,7 @@ public class BrowseBean implements Serializable {
     private Map<String, List<String>> availableStringFilters = new HashMap<>();
     /** This is used for filtering term browsing by the starting letter. */
     private String currentStringFilter = "";
-    /** Optional filter query */
+    /** Optional filter query. */
     private String filterQuery;
     private int hitsCount = 0;
     private int currentPage = -1;
@@ -124,9 +124,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * Required setter for ManagedProperty injection
+     * Required setter for ManagedProperty injection.
      *
-     * @param breadcrumbBean the breadcrumbBean to set
+     * @param breadcrumbBean the BreadcrumbBean instance to inject for testing
      */
     public void setBreadcrumbBean(BreadcrumbBean breadcrumbBean) {
         this.breadcrumbBean = breadcrumbBean;
@@ -151,9 +151,7 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>
      * resetAllLists.
-     * </p>
      */
     public void resetAllLists() {
         for (Entry<String, CollectionView> entry : collections.entrySet()) {
@@ -162,9 +160,7 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>
      * resetDcList.
-     * </p>
      */
     public void resetDcList() {
         logger.trace("resetDcList");
@@ -172,11 +168,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>
      * resetList.
-     * </p>
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field Solr field name identifying the collection to reset
      */
     public void resetList(String field) {
         if (field == null) {
@@ -188,9 +182,7 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>
      * getDcList.
-     * </p>
      *
      * @return the dcList (Collections)
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -200,12 +192,10 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>
      * getList.
-     * </p>
      *
-     * @param field a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
+     * @param field Solr field name identifying the collection
+     * @return a list of BrowseDcElement objects for all collections in the given Solr field, expanded to unlimited depth
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public List<BrowseDcElement> getList(String field) throws IndexUnreachableException {
@@ -213,13 +203,11 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>
      * getList.
-     * </p>
      *
-     * @param field a {@link java.lang.String} object.
-     * @param depth a int.
-     * @return a {@link java.util.List} object.
+     * @param field Solr field name identifying the collection
+     * @param depth maximum hierarchy depth to expand; -1 for unlimited
+     * @return a list of BrowseDcElement objects for all visible collections in the given Solr field up to the specified depth
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws IllegalRequestException
      */
@@ -245,11 +233,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>
      * populateCollection.
-     * </p>
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field Solr field name identifying the collection to populate
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws IllegalRequestException
      */
@@ -260,11 +246,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>collectionToExpand</code>.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the name of the collection currently marked for expansion in the view
      */
     public String getCollectionToExpand() {
         synchronized (this) {
@@ -273,11 +257,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>collectionToExpand</code>.
-     * </p>
      *
-     * @param collectionToExpand a {@link java.lang.String} object.
+     * @param collectionToExpand name of the collection to expand in the view
      */
     public void setCollectionToExpand(String collectionToExpand) {
         synchronized (this) {
@@ -287,11 +269,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>topVisibleCollection</code>.
-     * </p>
      *
-     * @return the topVisibleCollecion
+     * @return the name of the top-level collection currently visible in the collection view, or the collection to expand if not yet set
      */
     public String getTopVisibleCollection() {
         if (topVisibleCollection == null && collectionToExpand != null) {
@@ -301,11 +281,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>topVisibleCollection</code>.
-     * </p>
      *
-     * @param topVisibleCollecion the topVisibleCollecion to set
+     * @param topVisibleCollecion name of the top-level collection currently visible in the collection view
      */
     public void setTopVisibleCollection(String topVisibleCollecion) {
         this.topVisibleCollection = topVisibleCollecion;
@@ -322,12 +300,10 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>
      * expandCollection.
-     * </p>
      *
-     * @param collectionField a {@link java.lang.String} object.
-     * @param facetField a {@link java.lang.String} object.
+     * @param collectionField Solr field name identifying the collection to expand
+     * @param facetField Solr field used for grouping or faceting within the collection
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws IllegalRequestException
      */
@@ -359,11 +335,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>
      * searchTerms.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the navigation outcome after executing the term browse search
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws RedirectException
@@ -484,7 +458,7 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * @param resultGroups
+     * @param resultGroups Search result groups used to build group sub-queries
      * @return Generated filter query or empty string
      * @should return empty string if no filterQuery or result groups available
      * @should generate filter query correctly
@@ -572,11 +546,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>browsingMenuField</code>.
-     * </p>
      *
-     * @return the browsingMenuField
+     * @return the Solr field name used for term browsing, or "-" if none is set
      */
     public String getBrowsingMenuField() {
         synchronized (this) {
@@ -589,11 +561,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>browsingMenuField</code>.
-     * </p>
      *
-     * @param browsingMenuField the browsingMenuField to set
+     * @param browsingMenuField Solr field name to use for term browsing, or "-" / null for none
      */
     public void setBrowsingMenuField(final String browsingMenuField) {
         synchronized (this) {
@@ -629,44 +599,36 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>browseTermList</code>.
-     * </p>
      *
-     * @return the browseTermList
+     * @return list of browse terms for the current page and field, or null if not yet loaded
      */
     public List<String> getBrowseTermList() {
         return browseTermList;
     }
 
     /**
-     * <p>
      * Getter for the field <code>browseTermListEscaped</code>.
-     * </p>
      *
-     * @return the browseTermListEscaped
+     * @return list of URL-escaped browse terms for the current page and field, or null if not yet loaded
      */
     public List<String> getBrowseTermListEscaped() {
         return browseTermListEscaped;
     }
 
     /**
-     * <p>
      * Getter for the field <code>browseTermHitCountList</code>.
-     * </p>
      *
-     * @return the browseTermHitCountList
+     * @return list of hit counts corresponding to each browse term in the current browse term list
      */
     public List<Long> getBrowseTermHitCountList() {
         return browseTermHitCountList;
     }
 
     /**
-     * <p>
      * getPrevTermUrl.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the relative URL to the previous page of the current term browse listing
      */
     public String getPrevTermUrl() {
         int page = 1;
@@ -683,11 +645,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>
      * getNextTermUrl.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the relative URL to the next page of the current term browse listing
      */
     public String getNextTermUrl() {
         int page = getLastPage();
@@ -704,11 +664,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>availableStringFilters</code>.
-     * </p>
      *
-     * @return the availableStringFilters
+     * @return list of available alphabetical filter characters for the current browse field, or null if not yet loaded
      */
     public List<String> getAvailableStringFilters() {
         String field = getBrowsingMenuFieldForLanguage(navigationHelper != null ? navigationHelper.getLocaleString() : null);
@@ -725,18 +683,16 @@ public class BrowseBean implements Serializable {
     /**
      * Getter for unit tests.
      * 
-     * @return the availableStringFilters
+
      */
     Map<String, List<String>> getAvailableStringFiltersMap() {
         return availableStringFilters;
     }
 
     /**
-     * <p>
      * Getter for the field <code>currentStringFilter</code>.
-     * </p>
      *
-     * @return the currentStringFilter
+     * @return the active alphabetical filter character(s) for the browse term list, or "-" if none is set
      */
     public String getCurrentStringFilter() {
         synchronized (this) {
@@ -748,11 +704,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>currentStringFilter</code>.
-     * </p>
      *
-     * @param currentStringFilter the currentStringFilter to set
+     * @param currentStringFilter the alphabetical filter character(s) to apply to the browse term list
      */
     public void setCurrentStringFilter(final String currentStringFilter) {
         synchronized (this) {
@@ -769,11 +723,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>filterQuery</code>.
-     * </p>
      *
-     * @return the filterQuery
+     * @return the Solr filter query restricting the browse results, or "-" if none is set
      */
     public String getFilterQuery() {
         if (StringUtils.isEmpty(filterQuery)) {
@@ -783,22 +735,18 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>filterQuery</code>.
-     * </p>
      *
-     * @param filterQuery the filterQuery to set
+     * @param filterQuery Solr filter query to restrict the browse results, or "-" for none
      */
     public void setFilterQuery(String filterQuery) {
         this.filterQuery = "-".equals(filterQuery) ? null : filterQuery;
     }
 
     /**
-     * <p>
      * Getter for the field <code>currentPage</code>.
-     * </p>
      *
-     * @return the currentPage
+     * @return the 1-based current page number in the browse term list
      */
     public int getCurrentPage() {
         synchronized (this) {
@@ -807,11 +755,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>currentPage</code>.
-     * </p>
      *
-     * @param currentPage the currentPage to set
+     * @param currentPage the 1-based page number to display in the browse term list
      */
     public void setCurrentPage(int currentPage) {
         synchronized (this) {
@@ -820,9 +766,7 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>
      * getLastPage.
-     * </p>
      *
      * @return a int.
      */
@@ -838,22 +782,18 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>
      * isBrowsingMenuEnabled.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the browsing menu is enabled in the configuration, false otherwise
      */
     public boolean isBrowsingMenuEnabled() {
         return DataManager.getInstance().getConfiguration().isBrowsingMenuEnabled();
     }
 
     /**
-     * <p>
      * Returns the list of fields configured for term browsing to be listed in term browsing widgets.
-     * </p>
      *
-     * @param language a {@link java.lang.String} object.
+     * @param language BCP-47 language code to filter language-specific fields
      * @return List of browsing menu items
      * @should skip items that have skipInWidget true
      * @should skip items for language-specific fields if no language was given
@@ -897,33 +837,27 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>targetCollection</code>.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the name of the target collection whose first record should be opened
      */
     public String getTargetCollection() {
         return targetCollection;
     }
 
     /**
-     * <p>
      * Setter for the field <code>targetCollection</code>.
-     * </p>
      *
-     * @param targetCollection a {@link java.lang.String} object.
+     * @param targetCollection collection name whose first record should be opened
      */
     public void setTargetCollection(String targetCollection) {
         this.targetCollection = targetCollection;
     }
 
     /**
-     * <p>
      * openWorkInTargetCollection.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the navigation URL to the first record in the target collection, or null if none found
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws ViewerConfigurationException
@@ -969,31 +903,27 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>
      * getDcCollection.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object.
+     * @return the CollectionView for the DC (Dublin Core) collection field
      */
     public CollectionView getDcCollection() {
         return getCollection(SolrConstants.DC);
     }
 
     /**
-     * <p>
      * getCollection.
-     * </p>
      *
-     * @param field a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object.
+     * @param field Solr field name identifying the collection
+     * @return the CollectionView for the given Solr field, or null if not initialized
      */
     public CollectionView getCollection(String field) {
         return collections.get(field);
     }
 
     /**
-     * 
-     * @param field
+     *
+     * @param field Solr field name identifying the collection
      * @return {@link CollectionView}
      */
     public CollectionView getOrCreateCollection(String field) {
@@ -1006,9 +936,7 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>
      * initializeDCCollection.
-     * </p>
      */
     public void initializeDCCollection() {
         initializeCollection(SolrConstants.DC, null);
@@ -1021,8 +949,8 @@ public class BrowseBean implements Serializable {
     /**
      * Adds a CollectionView object for the given field to the map and populates its values.
      *
-     * @param collectionField a {@link java.lang.String} object.
-     * @param groupingField a {@link java.lang.String} object. Used for grouping results
+     * @param collectionField Solr field name identifying the collection
+     * @param groupingField Solr field used to group collection results; may be null
      */
     public void initializeCollection(final String collectionField, final String groupingField) {
         logger.trace("initializeCollection: {}", collectionField);
@@ -1037,32 +965,28 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>collectionField</code>.
-     * </p>
      *
-     * @return the collectionField
+     * @return the Solr field name used to identify the collection hierarchy
      */
     public String getCollectionField() {
         return collectionField;
     }
 
     /**
-     * <p>
      * Setter for the field <code>collectionField</code>.
-     * </p>
      *
-     * @param collectionField the collectionField to set
+     * @param collectionField Solr field name used to identify the collection hierarchy
      */
     public void setCollectionField(String collectionField) {
         this.collectionField = collectionField;
     }
 
     /**
-     * TODO translation from DB
+     * TODO translation from DB.
      *
-     * @param collectionField
-     * @param collectionValue
+     * @param collectionField Solr field name of the collection
+     * @param collectionValue Raw collection value (may be hierarchical)
      * @return {@link String}
      * @should return hierarchy correctly
      */

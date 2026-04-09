@@ -30,8 +30,7 @@ import jakarta.persistence.Entity;
  * A subtype of {@link CustomSidebarWidget} to display a RSS feed of selected records. The default settings show a list of the five last imported
  * records
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Entity
 @DiscriminatorValue("RssFeedSidebarWidget")
@@ -49,16 +48,16 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
     private int numEntries = 5;
 
     /**
-     * Empty default constructor
+     * Empty default constructor.
      */
     public RssFeedSidebarWidget() {
 
     }
 
     /**
-     * Cloning constructor
-     * 
-     * @param o
+     * Cloning constructor.
+     *
+     * @param o widget instance to clone
      */
     public RssFeedSidebarWidget(RssFeedSidebarWidget o) {
         super(o);
@@ -69,18 +68,18 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
     }
 
     /**
-     * If this query is not empty only records matching this SOLR query are listed
-     * 
-     * @return the filterQuery
+     * If this query is not empty only records matching this SOLR query are listed.
+     *
+     * @return the Solr filter query restricting which RSS feed entries are shown, or an empty string if no filter is set
      */
     public String getFilterQuery() {
         return filterQuery;
     }
 
     /**
-     * Set the {@link #getFilterQuery() filter query}
-     * 
-     * @param filterQuery the filterQuery to set
+     * Set the {@link #getFilterQuery() filter query}.
+     *
+     * @param filterQuery the Solr filter query to restrict which RSS feed entries are shown
      */
     public void setFilterQuery(String filterQuery) {
         this.filterQuery = filterQuery;
@@ -88,42 +87,42 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
 
     /**
      * A SOLR field to select and sort the listed entries by.
-     * 
-     * @return the sortField
+     *
+     * @return the Solr field name used for sorting RSS feed entries
      */
     public String getSortField() {
         return sortField;
     }
 
     /**
-     * Set the {@link #getSortField() sort field}
-     * 
-     * @param sortField the sortField to set
+     * Set the {@link #getSortField() sort field}.
+     *
+     * @param sortField the Solr field name to sort the RSS feed entries by
      */
     public void setSortField(String sortField) {
         this.sortField = sortField;
     }
 
     /**
-     * Whether the records are selected and sorted ins descending order
-     * 
-     * @return the descendingSorting
+     * Returns whether records are sorted in descending order.
+     *
+     * @return true if entries are sorted in descending order, false otherwise
      */
     public boolean isDescendingSorting() {
         return descendingSorting;
     }
 
     /**
-     * Set the {@link #isDescendingSorting() descending sorting}
-     * 
-     * @param descendingSorting the descendingSorting to set
+     * Set the {@link #isDescendingSorting() descending sorting}.
+     *
+     * @param descendingSorting true to sort entries in descending order, false for ascending
      */
     public void setDescendingSorting(boolean descendingSorting) {
         this.descendingSorting = descendingSorting;
     }
 
     /**
-     * The number of entries to display
+     * The number of entries to display.
      * 
      * @return The number of entries to display
      */
@@ -132,9 +131,9 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
     }
 
     /**
-     * Set the number of entries to display
-     * 
-     * @param numEntries the numEntries to set
+     * Sets the number of entries to display.
+     *
+     * @param numEntries the maximum number of RSS feed entries to show in the widget
      */
     public void setNumEntries(int numEntries) {
         this.numEntries = numEntries;

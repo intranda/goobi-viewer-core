@@ -65,7 +65,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
- * This class describes license types for record access conditions and also system user roles (not to be confused with the class Role, however), also
+ * Describes license types for record access conditions and also system user roles (not to be confused with the class Role, however), also
  * known as core license types.
  */
 @Entity
@@ -78,13 +78,13 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     private static final Logger logger = LogManager.getLogger(LicenseType.class);
 
     // When adding a new static license type name, update isStaticLicenseType()!
-    /** Constant <code>LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE="licenseType_setRepresentativeImage"</code> */
+    /** Constant <code>LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE="licenseType_setRepresentativeImage"</code>. */
     public static final String LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE = "licenseType_setRepresentativeImage";
-    /** Constant <code>LICENSE_TYPE_DELETE_OCR_PAGE="licenseType_deleteOcrPage"</code> */
+    /** Constant <code>LICENSE_TYPE_DELETE_OCR_PAGE="licenseType_deleteOcrPage"</code>. */
     public static final String LICENSE_TYPE_DELETE_OCR_PAGE = "licenseType_deleteOcrPage";
     private static final String LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE_DESCRIPTION = "licenseType_setRepresentativeImage_desc";
     private static final String LICENSE_TYPE_DELETE_OCR_PAGE_DESCRIPTION = "licenseType_deleteOcrPage_desc";
-    /** Constant <code>LICENSE_TYPE_CMS="licenseType_cms"</code> */
+    /** Constant <code>LICENSE_TYPE_CMS="licenseType_cms"</code>. */
     public static final String LICENSE_TYPE_CMS = "licenseType_cms";
     private static final String LICENSE_TYPE_DESC_CMS = "licenseType_cms_desc";
     public static final String LICENSE_TYPE_LEGAL_DISCLAIMER = "licenseType_disclaimer";
@@ -208,33 +208,27 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
-     * @return the id
+     * @return the database primary key for this license type
      */
     public Long getId() {
         return id;
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
-     * @param id the id to set
+     * @param id the database primary key for this license type
      */
     public void setId(Long id) {
         this.id = id;
     }
 
     /**
-     * <p>
      * Getter for the field <code>name</code>.
-     * </p>
      *
-     * @return the name
+     * @return the unique name of this license type, typically matching an access condition in Solr
      */
     @Override
     public String getName() {
@@ -242,46 +236,38 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * <p>
      * Setter for the field <code>name</code>.
-     * </p>
      *
-     * @param name the name to set
+     * @param name the unique name of this license type, typically matching an access condition in Solr
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * <p>
      * Getter for the field <code>description</code>.
-     * </p>
      *
-     * @return the description
+     * @return the human-readable description of this license type
      */
     public String getDescription() {
         return description;
     }
 
     /**
-     * <p>
      * Setter for the field <code>description</code>.
-     * </p>
      *
-     * @param description the description to set
+     * @param description the human-readable description of this license type
      */
     public void setDescription(String description) {
         this.description = description;
     }
 
     /**
-     * <p>
      * getMatch.
-     * </p>
      *
-     * @param conditions a {@link java.lang.String} object.
-     * @param pattern a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param conditions condition string to search in
+     * @param pattern regex pattern with a capture group to apply
+     * @return the first captured group from the regex match, or an empty string if no match is found
      */
     public String getMatch(String conditions, String pattern) {
         if (StringUtils.isBlank(conditions)) {
@@ -295,9 +281,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * <p>
      * isCmsType.
-     * </p>
      *
      * @return true if this license type has one of the static CMS type names; false otherwise
      */
@@ -310,9 +294,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * <p>
      * isCmsType.
-     * </p>
      *
      * @return true if this license type has one of the static CMS type names; false otherwise
      */
@@ -327,7 +309,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Checks whether only Solr documents of the UGC type have the access condition upon which this license type is based.
      *
-     * @return the ugcType
+     * @return true if only UGC documents carry this license type's access condition, false otherwise
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -366,128 +348,98 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * <p>
      * isOpenAccess.
-     * </p>
      *
-     * @return the openAccess
+     * @return true if this license type grants open/unrestricted access, false otherwise
      */
     public boolean isOpenAccess() {
         return openAccess;
     }
 
     /**
-     * <p>
      * Setter for the field <code>openAccess</code>.
-     * </p>
      *
-     * @param openAccess the openAccess to set
+     * @param openAccess true if this license type grants open/unrestricted access; false otherwise
      */
     public void setOpenAccess(boolean openAccess) {
         this.openAccess = openAccess;
     }
 
     /**
-     * <p>
      * isCore.
-     * </p>
      *
-     * @return the core
+     * @return true if this is a built-in core license type that cannot be deleted, false otherwise
      */
     public boolean isCore() {
         return core;
     }
 
     /**
-     * <p>
      * Setter for the field <code>core</code>.
-     * </p>
      *
-     * @param core the core to set
+     * @param core true if this is a built-in core license type that cannot be deleted; false otherwise
      */
     public void setCore(boolean core) {
         this.core = core;
     }
 
-    /**
-     * @return the movingWall
-     */
+    
     public boolean isMovingWall() {
         return movingWall;
     }
 
-    /**
-     * @param movingWall the movingWall to set
-     */
+    
     public void setMovingWall(boolean movingWall) {
         this.movingWall = movingWall;
     }
 
-    /**
-     * @return the pdfDownloadQuota
-     */
+    
     public boolean isPdfDownloadQuota() {
         return pdfDownloadQuota;
     }
 
-    /**
-     * @param pdfDownloadQuota the pdfDownloadQuota to set
-     */
+    
     public void setPdfDownloadQuota(boolean pdfDownloadQuota) {
         this.pdfDownloadQuota = pdfDownloadQuota;
     }
 
-    /**
-     * @return the concurrentViewsLimit
-     */
+    
     public boolean isConcurrentViewsLimit() {
         return concurrentViewsLimit;
     }
 
-    /**
-     * @param concurrentViewsLimit the concurrentViewsLimit to set
-     */
+    
     public void setConcurrentViewsLimit(boolean concurrentViewsLimit) {
         this.concurrentViewsLimit = concurrentViewsLimit;
     }
 
-    /**
-     * @return the redirect
-     */
+    
     public boolean isRedirect() {
         return redirect;
     }
 
-    /**
-     * @param redirect the redirect to set
-     */
+    
     public void setRedirect(boolean redirect) {
         this.redirect = redirect;
     }
 
-    /**
-     * @return the redirectUrl
-     */
+    
     public String getRedirectUrl() {
         return redirectUrl;
     }
 
-    /**
-     * @param redirectUrl the redirectUrl to set
-     */
+    
     public void setRedirectUrl(String redirectUrl) {
         this.redirectUrl = redirectUrl;
     }
 
-    /**
-     * @return the accessTicketRequired
-     */
+    
     public boolean isAccessTicketRequired() {
         return accessTicketRequired;
     }
 
     /**
-     * @param accessTicketRequired the accessTicketRequired to set
+     * @param accessTicketRequired true if an access ticket is required; also adds/removes the LIST privilege accordingly
      * @should add or remove list privilege
      */
     public void setAccessTicketRequired(boolean accessTicketRequired) {
@@ -508,11 +460,9 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * <p>
      * Getter for the field <code>privileges</code>.
-     * </p>
      *
-     * @return the privileges
+     * @return the set of privilege names granted by this license type
      */
     public Set<String> getPrivileges() {
         return privileges;
@@ -552,6 +502,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Returns a sorted list (according to PRIVS_RECORD) based on the given set of privileges.
      *
+     * @param privileges the set of privilege names to sort and filter
      * @return Sorted list of privileges contained in <code>privileges</code>
      */
     @Override
@@ -568,11 +519,9 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * <p>
      * Setter for the field <code>privileges</code>.
-     * </p>
      *
-     * @param privileges the privileges to set
+     * @param privileges the set of privilege names defined for this license type
      */
     public void setPrivileges(Set<String> privileges) {
         this.privileges = privileges;
@@ -581,7 +530,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Adds the given privilege to the working set.
      *
-     * @param privilege
+     * @param privilege Privilege name to add to working set
      * @return true if successful; false otherwise
      */
     @Override
@@ -593,7 +542,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * Removes the given privilege from the working set.
      *
-     * @param privilege
+     * @param privilege Privilege name to remove from working set
      * @return true if successful; false otherwise
      */
     @Override
@@ -809,22 +758,18 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * <p>
      * Getter for the field <code>overridingLicenseTypes</code>.
-     * </p>
      *
-     * @return the overridsenLicenseTypes
+     * @return the set of license types that this license type overrides
      */
     public Set<LicenseType> getOverriddenLicenseTypes() {
         return overriddenLicenseTypes;
     }
 
     /**
-     * <p>
      * Setter for the field <code>overriddenLicenseTypes</code>.
-     * </p>
      *
-     * @param overriddenLicenseTypes the overriddenLicenseTypes to set
+     * @param overriddenLicenseTypes the set of license types that this license type overrides
      */
     public void setOverriddenLicenseTypes(Set<LicenseType> overriddenLicenseTypes) {
         this.overriddenLicenseTypes = overriddenLicenseTypes;
@@ -840,17 +785,15 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
         return DataManager.getInstance().getDao().getOverridingLicenseType(this);
     }
 
-    /**
-     * @return the imagePlaceholders
-     */
+    
     public Set<LicenseTypePlaceholderInfo> getImagePlaceholders() {
         return imagePlaceholders;
     }
 
     /**
      * Used to access individual language info when editing this LicenseType.
-     * 
-     * @param language
+     *
+     * @param language Language code for the placeholder info
      * @return {@link LicenseTypePlaceholderInfo}
      */
     public LicenseTypePlaceholderInfo getPlaceholderInfo(String language) {
@@ -882,9 +825,9 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * 
-     * @param tag
-     * @param language
+     *
+     * @param tag Translation tag identifier
+     * @param language Language code for the translation
      * @return {@link LicenseTypeTranslation}
      */
     private LicenseTypePlaceholderInfo getTranslation(String tag, String language) {
@@ -912,8 +855,8 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
 
     /**
      * Returns configurations as a map for further usage.
-     * 
-     * @return the imagePlaceholders
+     *
+     * @return a map from language code to {@link AccessDeniedInfoConfig} for each image placeholder
      */
     public Map<String, AccessDeniedInfoConfig> getImagePlaceholdersAsMap() {
         Map<String, AccessDeniedInfoConfig> ret = HashMap.newHashMap(imagePlaceholders.size());
@@ -925,23 +868,19 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
         return ret;
     }
 
-    /**
-     * @return the privilegesCopy
-     */
+    
     public Set<String> getPrivilegesCopy() {
         return privilegesCopy;
     }
 
-    /**
-     * @param privilegesCopy the privilegesCopy to set
-     */
+    
     public void setPrivilegesCopy(Set<String> privilegesCopy) {
         this.privilegesCopy = privilegesCopy;
     }
 
     /**
      *
-     * @param query
+     * @param query Solr restriction query to check
      * @return true if the configured restriction query is expired; false otherwise
      */
     public boolean isRestrictionsExpired(String query) {
@@ -951,16 +890,12 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
         return restrictionsExpired.get(query) != null && restrictionsExpired.get(query);
     }
 
-    /**
-     * @return the restrictionsExpired
-     */
+    
     public Map<String, Boolean> getRestrictionsExpired() {
         return restrictionsExpired;
     }
 
-    /**
-     * @param restrictionsExpired the restrictionsExpired to set
-     */
+    
     public void setRestrictionsExpired(Map<String, Boolean> restrictionsExpired) {
         this.restrictionsExpired = restrictionsExpired;
     }
@@ -968,44 +903,34 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * For unit tests.
      * 
-     * @param ugcType the ugcType to set
+
      */
     void setUgcType(Boolean ugcType) {
         this.ugcType = ugcType;
     }
 
-    /**
-     * @return the recordCount
-     */
+    
     public Long getRecordCount() {
         return recordCount;
     }
 
-    /**
-     * @param recordCount the recordCount to set
-     */
+    
     public void setRecordCount(Long recordCount) {
         this.recordCount = recordCount;
     }
 
-    /**
-     * @return the displayRecordSearchLink
-     */
+    
     public boolean isDisplayRecordSearchLink() {
         return displayRecordSearchLink;
     }
 
-    /**
-     * @param displayRecordSearchLink the displayRecordSearchLink to set
-     */
+    
     public void setDisplayRecordLink(boolean displayRecordSearchLink) {
         this.displayRecordSearchLink = displayRecordSearchLink;
     }
 
     /**
-     * <p>
      * addCoreLicenseTypesToDB.
-     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1023,9 +948,9 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
 
     /**
      *
-     * @param licenseTypeName
-     * @param licenseTypeDesc
-     * @param privNames
+     * @param licenseTypeName Name of the core license type to add
+     * @param licenseTypeDesc Description key of the core license type
+     * @param privNames Privilege names to assign to the license type
      * @throws DAOException
      */
     private static void addCoreLicenseType(String licenseTypeName, String licenseTypeDesc, String... privNames) throws DAOException {

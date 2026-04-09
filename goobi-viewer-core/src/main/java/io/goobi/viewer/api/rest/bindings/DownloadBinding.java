@@ -27,9 +27,7 @@ import java.lang.annotation.RetentionPolicy;
 import jakarta.ws.rs.NameBinding;
 
 /**
- * <p>
  * Binding for all requests to io.goobi.viewer.api.rest.v1.downloads.DownloadResource.
- * </p>
  */
 @NameBinding
 @Retention(RetentionPolicy.RUNTIME)

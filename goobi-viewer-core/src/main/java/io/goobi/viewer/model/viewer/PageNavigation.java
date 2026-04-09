@@ -24,16 +24,16 @@ package io.goobi.viewer.model.viewer;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Describes different ways in which the sequence of images within a record is presented
+ * Describes different ways in which the sequence of images within a record is presented.
  */
 public enum PageNavigation {
 
     /**
-     * Display a single image at a time, navigating to other images means loading a new page for that image
+     * Display a single image at a time, navigating to other images means loading a new page for that image.
      */
     SINGLE,
     /**
-     * Display two neighbouring images within the same page, navigation the different pairs of images means means loading a new page
+     * Display two neighbouring images within the same page, navigation the different pairs of images means means loading a new page.
      */
     DOUBLE,
     /**

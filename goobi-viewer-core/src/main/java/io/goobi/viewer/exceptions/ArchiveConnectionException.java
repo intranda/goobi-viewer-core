@@ -21,6 +21,10 @@
  */
 package io.goobi.viewer.exceptions;
 
+/**
+ * Thrown when a connection to an archive backend resource cannot be established or is unexpectedly
+ * interrupted.
+ */
 public class ArchiveConnectionException extends ArchiveException {
 
     private static final long serialVersionUID = -5274764438841967758L;

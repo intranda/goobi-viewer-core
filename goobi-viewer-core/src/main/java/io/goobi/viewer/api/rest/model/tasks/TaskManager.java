@@ -66,8 +66,7 @@ import jakarta.servlet.http.HttpServletRequest;
  * Manages (possibly timeconsuming) {@link Task tasks} within the viewer which can be triggered and monitored via the {@link TasksResource}. The tasks
  * are not executed sequentially or queued in any way, except through the limit of the internal thread pool (5 parallel tasks)
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class TaskManager {
 
@@ -80,7 +79,7 @@ public class TaskManager {
     private final Duration timeToLive;
 
     /**
-     * Create new JobManager.
+     * Creates new JobManager.
      *
      * @param jobLiveTime The guaranteed live time of jobs in the jobManager
      */
@@ -124,7 +123,7 @@ public class TaskManager {
     }
 
     /**
-     * @param pool
+     * @param pool executor service to query
      * @return Number of active threads
      */
     private static int getActiveThreads(ExecutorService pool) {
@@ -166,7 +165,7 @@ public class TaskManager {
     }
 
     /**
-     * @param type
+     * @param type task type for which to create the handler
      * @return BiConsumer&lt;HttpServletRequest, Task&gt;
      */
     public static BiConsumer<HttpServletRequest, Task> createTask(TaskType type) {

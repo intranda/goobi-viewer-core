@@ -31,8 +31,7 @@ import org.apache.commons.lang3.StringUtils;
  * 'session'. This type determines if a consent is stored in the local or session storage of a browser. If it is stored in session storage, the time
  * to live of that scope is determined by the duration of the session.
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class ConsentScope implements Serializable {
 
@@ -41,12 +40,12 @@ public class ConsentScope implements Serializable {
     private StorageMode storageMode = StorageMode.LOCAL;
 
     /**
-     * The number of days after which the consent must be renewed at the latest
+     * The number of days after which the consent must be renewed at the latest.
      */
     private int daysToLive = 14;
 
     /**
-     * empty default constructor
+     * Empty default constructor.
      */
     public ConsentScope() {
 
@@ -54,7 +53,7 @@ public class ConsentScope implements Serializable {
 
     /**
      * Create a new consent scope from a string which is created by the {@link ConsentScope#toString()} method of another ConsentScope, making this
-     * effectively a cloning constructor Used when deserializing a consent scope from database
+     * effectively a cloning constructor Used when deserializing a consent scope from database.
      * 
      * @param string representing a consent scope
      */
@@ -81,54 +80,53 @@ public class ConsentScope implements Serializable {
     }
 
     /**
-     * Get the storage mode, determining if the scope is limited to a http session or a span of time
-     * 
-     * @return the storageMode
+     * Gets the storage mode, determining if the scope is limited to a http session or a span of time.
+     *
+     * @return the storage mode of this consent scope
      */
     public StorageMode getStorageMode() {
         return storageMode;
     }
 
     /**
-     * Set the storageMode
-     * 
-     * @param storageMode the storageMode to set
+     * Sets the storageMode.
+     *
+     * @param storageMode the storage mode determining where and how long the consent is persisted
      */
     public void setStorageMode(StorageMode storageMode) {
         this.storageMode = storageMode;
     }
 
     /**
-     * get the number of days the consent is valid for
-     * 
-     * @return the daysToLive
+     * Get the number of days the consent is valid for.
+     *
+     * @return the number of days before the stored consent expires
      */
     public int getDaysToLive() {
         return daysToLive;
     }
 
     /**
-     * set the number of days the consent is valid for
-     * 
-     * @param daysToLive the daysToLive to set
+     * Set the number of days the consent is valid for.
+     *
+     * @param daysToLive the number of days before the stored consent expires
      */
     public void setDaysToLive(int daysToLive) {
         this.daysToLive = daysToLive;
     }
 
     /**
-     * The scope within which the consent is valid
+     * The scope within which the consent is valid.
      * 
-     * @author florian
-     *
+     * @author Florian Alpers
      */
     public enum StorageMode {
         /**
-         * Consent is valid for a single browser and stored it its local storage
+         * Consent is valid for a single browser and stored it its local storage.
          */
         LOCAL,
         /**
-         * Consent is valid for a single browser session and stored in the browser's session storage
+         * Consent is valid for a single browser session and stored in the browser's session storage.
          */
         SESSION;
     }
@@ -139,7 +137,10 @@ public class ConsentScope implements Serializable {
     }
 
     /**
-     * An object is equals to a consentScope if it is also a consentScope and has the same string representation
+     * An object is equals to a consentScope if it is also a consentScope and has the same string representation.
+     *
+     * @param obj the object to compare with this ConsentScope
+     * @return true if the given object is equal to this instance, false otherwise
      */
     @Override
     public boolean equals(Object obj) {

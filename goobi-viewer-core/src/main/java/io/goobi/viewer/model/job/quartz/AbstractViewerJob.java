@@ -35,6 +35,10 @@ import org.quartz.SchedulerException;
 
 import io.goobi.viewer.controller.mq.MessageQueueManager;
 
+/**
+ * Abstract base class for Quartz-scheduled viewer jobs that dispatches work as messages to the message queue.
+ * Ensures that only one instance of each job runs at a time by tracking running state per job key.
+ */
 public abstract class AbstractViewerJob implements Job, IViewerJob {
     private static Map<String, Boolean> running = new HashMap<>();
 

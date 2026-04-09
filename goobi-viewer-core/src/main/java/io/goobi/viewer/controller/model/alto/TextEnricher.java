@@ -24,6 +24,11 @@ package io.goobi.viewer.controller.model.alto;
 
 import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.LineElement;
 
+/**
+ * Strategy interface for enriching the text content of individual ALTO word elements. Implementations
+ * may wrap or replace the raw word string with additional markup such as named-entity highlighting
+ * or hyperlinks.
+ */
 public interface TextEnricher {
 
     public String enrich(String content, LineElement element);

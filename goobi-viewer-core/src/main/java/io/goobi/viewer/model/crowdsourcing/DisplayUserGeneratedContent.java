@@ -65,6 +65,9 @@ import io.goobi.viewer.solr.SolrTools;
  */
 public class DisplayUserGeneratedContent {
 
+    /**
+     * Enumerates the semantic content types for user-generated annotations, such as person, address, comment, geolocation, or normdata.
+     */
     public enum ContentType {
 
         PERSON,
@@ -93,7 +96,7 @@ public class DisplayUserGeneratedContent {
     }
 
     private static final Logger logger = LogManager.getLogger(DisplayUserGeneratedContent.class);
-    /** Constant <code>format</code> */
+    /** Constant <code>format</code>. */
     public static final NumberFormat FORMAT = new DecimalFormat("00000000");
 
     private Long id;
@@ -167,110 +170,90 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
-     * @return a {@link java.lang.Long} object.
+     * @return the database primary key of this user-generated content entry, or null if not persisted
      */
     public Long getId() {
         return id;
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
-     * @param id a {@link java.lang.Long} object.
+     * @param id database primary key to set
      */
     public void setId(Long id) {
         this.id = id;
     }
 
     /**
-     * <p>
      * Getter for the field <code>type</code>.
-     * </p>
      *
-     * @return the type
+     * @return the content type of this user-generated content entry
      */
     public ContentType getType() {
         return type;
     }
 
     /**
-     * <p>
      * Setter for the field <code>type</code>.
-     * </p>
      *
-     * @param type the type to set
+     * @param type the content type of this user-generated content entry
      */
     public void setType(ContentType type) {
         this.type = type;
     }
 
     /**
-     * <p>
      * Getter for the field <code>pi</code>.
-     * </p>
      *
-     * @return the pi
+     * @return the persistent identifier of the associated record
      */
     public String getPi() {
         return pi;
     }
 
     /**
-     * <p>
      * Setter for the field <code>pi</code>.
-     * </p>
      *
-     * @param pi the pi to set
+     * @param pi the persistent identifier of the associated record
      */
     public void setPi(String pi) {
         this.pi = pi;
     }
 
     /**
-     * <p>
      * Getter for the field <code>page</code>.
-     * </p>
      *
-     * @return the page
+     * @return the page number within the record where the content is located
      */
     public Integer getPage() {
         return page;
     }
 
     /**
-     * <p>
      * Setter for the field <code>page</code>.
-     * </p>
      *
-     * @param page the page to set
+     * @param page the page number within the record where the content is located
      */
     public void setPage(Integer page) {
         this.page = page;
     }
 
     /**
-     * <p>
      * Getter for the field <code>label</code>.
-     * </p>
      *
-     * @return the label
+     * @return the display label for this user-generated content entry
      */
     public String getLabel() {
         return label;
     }
 
     /**
-     * <p>
      * Setter for the field <code>label</code>.
-     * </p>
      *
-     * @param label the label to set
+     * @param label the display label for this user-generated content entry
      */
     public void setLabel(String label) {
         this.label = label;
@@ -279,15 +262,13 @@ public class DisplayUserGeneratedContent {
     /**
      * Returns the <code>label</code>, if set, otherwise <code>pi</code>.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the display label for this user-generated content item, falling back to the PI if no label is set
      */
     public String getDisplayLabel() {
         return StringUtils.isNotEmpty(label) ? label : pi;
     }
 
-    /**
-     * @return the extendendLabel
-     */
+    
     public String getExtendendLabel() {
         if (StringUtils.isNotBlank(this.extendendLabel)) {
             return extendendLabel;
@@ -295,52 +276,42 @@ public class DisplayUserGeneratedContent {
         return label;
     }
 
-    /**
-     * @param extendendLabel the extendendLabel to set
-     */
+    
     public void setExtendendLabel(String extendendLabel) {
         this.extendendLabel = extendendLabel;
     }
 
     /**
-     * <p>
      * Getter for the field <code>updatedBy</code>.
-     * </p>
      *
-     * @return the updatedBy
+     * @return the user who last updated this content entry
      */
     public User getUpdatedBy() {
         return updatedBy;
     }
 
     /**
-     * <p>
      * Setter for the field <code>updatedBy</code>.
-     * </p>
      *
-     * @param updatedBy the updatedBy to set
+     * @param updatedBy the user who last updated this content entry
      */
     public void setUpdatedBy(User updatedBy) {
         this.updatedBy = updatedBy;
     }
 
     /**
-     * <p>
      * Getter for the field <code>dateUpdated</code>.
-     * </p>
      *
-     * @return the dateUpdated
+     * @return the date and time when this content entry was last updated
      */
     public LocalDateTime getDateUpdated() {
         return dateUpdated;
     }
 
     /**
-     * <p>
      * getDateUpdatedAsString.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the last-updated date formatted as a German date string, or null if not set
      */
     public String getDateUpdatedAsString() {
         if (dateUpdated != null) {
@@ -350,11 +321,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>
      * getTimeUpdatedAsString.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the last-updated time formatted as an ISO 8601 time string, or null if not set
      */
     public String getTimeUpdatedAsString() {
         if (dateUpdated != null) {
@@ -364,78 +333,62 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>
      * Setter for the field <code>dateUpdated</code>.
-     * </p>
      *
-     * @param dateUpdated the dateUpdated to set
+     * @param dateUpdated the date and time when this content entry was last updated
      */
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
 
-    /**
-     * @return the accessCondition
-     */
+    
     public String getAccessCondition() {
         return accessCondition;
     }
 
-    /**
-     * @param accessCondition the accessCondition to set
-     */
+    
     public void setAccessCondition(String accessCondition) {
         this.accessCondition = accessCondition;
     }
 
     /**
-     * <p>
      * Getter for the field <code>areaString</code>.
-     * </p>
      *
-     * @return the areaString
+     * @return the string representation of the geographic or image area coordinates
      */
     public String getAreaString() {
         return areaString;
     }
 
     /**
-     * <p>
      * Setter for the field <code>areaString</code>.
-     * </p>
      *
-     * @param areaString the areaString to set
+     * @param areaString the string representation of the geographic or image area coordinates
      */
     public void setAreaString(String areaString) {
         this.areaString = areaString;
     }
 
     /**
-     * <p>
      * hasArea.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this user-generated content item has a non-null, non-empty area string, false otherwise
      */
     public boolean hasArea() {
         return getAreaString() != null && !getAreaString().isEmpty();
     }
 
     /**
-     * <p>
      * mayHaveArea.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this type of user-generated content may potentially have an area annotation, false otherwise
      */
     public boolean mayHaveArea() {
         return true;
     }
 
     /**
-     * <p>
      * convertToIntArray.
-     * </p>
      *
      * @param coordinates int[]
      * @return int[]
@@ -450,9 +403,7 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>
      * convertToDoubleArray.
-     * </p>
      *
      * @param coordinates int[]
      * @return double[]
@@ -467,34 +418,27 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>
      * Getter for the field <code>displayCoordinates</code>.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the coordinate string used for UI rendering of this content's region
      */
     public String getDisplayCoordinates() {
         return displayCoordinates;
     }
 
     /**
-     * <p>
      * Setter for the field <code>displayCoordinates</code>.
-     * </p>
      *
-     * @param displayCoordinates a {@link java.lang.String} object.
+     * @param displayCoordinates coordinate string for UI rendering
      */
     public void setDisplayCoordinates(String displayCoordinates) {
         this.displayCoordinates = displayCoordinates;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.crowdsourcing.AbstractCrowdsourcingUpdate#getDisplayPage()
-     */
     /**
-     * Alias for {@link #getPage()}
+     * Alias for {@link #getPage()}.
      *
-     * @return a {@link java.lang.Integer} object.
+     * @return the physical page order number on which this content is displayed, or null if not set
      */
     public Integer getDisplayPage() {
         return getPage();
@@ -502,9 +446,6 @@ public class DisplayUserGeneratedContent {
 
     public static class DateComparator implements Comparator<DisplayUserGeneratedContent> {
 
-        /* (non-Javadoc)
-         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-         */
         @Override
         public int compare(DisplayUserGeneratedContent o1, DisplayUserGeneratedContent o2) {
             return o1.dateUpdated.compareTo(o2.dateUpdated);
@@ -512,7 +453,7 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * Check if the resource has either a label or an annotation body with a type
+     * Checks if the resource has either a label or an annotation body with a type.
      *
      * @return true if neither label nor annotation body exist
      */
@@ -522,26 +463,20 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>
      * getTypeAsString.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the name of the content type as a string
      */
     public String getTypeAsString() {
         return getType().getName();
     }
 
-    /**
-     * @return the annotationBody
-     */
+    
     public ITypedResource getAnnotationBody() {
         return annotationBody;
     }
 
-    /**
-     * @param annotationBody the annotationBody to set
-     */
+    
     public void setAnnotationBody(ITypedResource annotationBody) {
         this.annotationBody = annotationBody;
     }
@@ -592,11 +527,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>
      * buildFromSolrDoc.
-     * </p>
      *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param doc Solr document containing UGC field values
      * @return UserGeneratedContent generated from the given Solr document
      * @should construct content correctly
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -649,8 +582,8 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * @param type
-     * @param body
+     * @param type content type of the annotation
+     * @param body annotation body resource to extract text from
      * @return the text if the body is a TextualResource. Otherwise return null
      */
     private static String createExtendedLabelFromBody(ContentType type, ITypedResource body) {
@@ -662,8 +595,8 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * @param type
-     * @param body
+     * @param type content type of the annotation
+     * @param body annotation body resource to extract the label from
      * @return {@link String}
      */
     private static String createLabelFromBody(ContentType type, ITypedResource body) {
@@ -687,7 +620,7 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * @param body
+     * @param body annotation body resource containing the dataset JSON
      * @return {@link String}
      */
     private static String getDataSetForDisplay(ITypedResource body) {
@@ -706,8 +639,8 @@ public class DisplayUserGeneratedContent {
 
     /**
      * If the annotation body has a type property of one of "Feature", "AuthorityResource" or "TextualBody" then the {@link #type} is set accordingly.
-     * 
-     * @param body
+     *
+     * @param body annotation body resource whose type property is inspected
      * @return {@link ContentType}
      */
     private static ContentType getTypeFromBody(ITypedResource body) {
@@ -731,7 +664,7 @@ public class DisplayUserGeneratedContent {
     /**
      * Builds label out of user-generated content metadata.
      *
-     * @param se a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param se struct element containing UGC type and metadata fields
      * @return the generated label
      * @should generate person label correctly
      * @should generate corporation label correctly
@@ -765,9 +698,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * 
-     * @param se
-     * @param text
+     *
+     * @param se struct element containing address metadata fields
+     * @param text fallback text used when no address fields are present
      * @return {@link String}
      */
     public static String generateAddressLabel(StructElement se, String text) {
@@ -790,9 +723,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * 
-     * @param sb
-     * @param value
+     *
+     * @param sb the string builder to append to
+     * @param value the value to append if non-empty, preceded by a comma separator
      */
     private static void appendIfNotEmpty(StringBuilder sb, String value) {
         if (StringUtils.isNotEmpty(value)) {
@@ -804,8 +737,8 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * 
-     * @param se
+     *
+     * @param se struct element containing corporation metadata fields
      * @return {@link String}
      */
     public static String generateCorporationLabel(StructElement se) {
@@ -879,8 +812,8 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * 
-     * @param pageType
+     *
+     * @param pageType the viewer page type used to build the URL prefix
      * @return Generated URL
      */
     public String getPageUrl(PageType pageType) {

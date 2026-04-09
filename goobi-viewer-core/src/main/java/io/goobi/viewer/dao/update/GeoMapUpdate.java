@@ -40,6 +40,10 @@ import io.goobi.viewer.model.maps.ManualFeatureSet;
 import io.goobi.viewer.model.maps.SolrFeatureSet;
 import io.goobi.viewer.model.maps.SolrSearchScope;
 
+/**
+ * Database migration step that converts the legacy flat GeoMap structure into the feature-set
+ * model and migrates the {@code aggregate_results} column to the {@code search_scope} field.
+ */
 public class GeoMapUpdate implements IModelUpdate {
 
     @Override
@@ -115,8 +119,8 @@ public class GeoMapUpdate implements IModelUpdate {
 
     /**
      * 
-     * @param featureSets
-     * @param dao
+     * @param featureSets the map of GeoMap ID to feature set to add
+     * @param dao data access object
      * @return List<GeoMap>
      * @throws DAOException
      */
@@ -141,7 +145,7 @@ public class GeoMapUpdate implements IModelUpdate {
 
     /**
      * 
-     * @param dao
+     * @param dao data access object
      * @return Map<Long, FeatureSet>
      * @throws DAOException
      */

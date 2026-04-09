@@ -48,9 +48,8 @@ import io.goobi.viewer.model.administration.legal.CookieBanner;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 
 /**
- * This this the java backend class for enabling and configuring the cookie banner feature. This bean is view scoped, i.e. created fresh for each new
- * page loaded
- **/
+ * JSF backing bean for enabling and configuring the cookie banner feature. This bean is view-scoped, i.e. created fresh for each new page loaded.
+ */
 @Named
 @ViewScoped
 public class CookieBannerBean implements Serializable {
@@ -71,7 +70,7 @@ public class CookieBannerBean implements Serializable {
     }
 
     /**
-     * Default constructor using the IDAO from the {@link DataManager} class
+     * Default constructor using the IDAO from the {@link DataManager} class.
      */
     public CookieBannerBean() {
         dao = retrieveDAO();
@@ -84,7 +83,7 @@ public class CookieBannerBean implements Serializable {
     }
 
     /**
-     * Constructor for testing purposes
+     * Creates a new testing purposes instance.
      * 
      * @param dao the IDAO implementation to use
      */
@@ -189,7 +188,7 @@ public class CookieBannerBean implements Serializable {
     /**
      * Activate/deactivate the cookie banner. Applies directly to the persisted object
      * 
-     * @param active
+     * @param active true to activate the banner; false to deactivate it
      * @throws DAOException
      */
     public void setBannerActive(boolean active) throws DAOException {
@@ -214,7 +213,7 @@ public class CookieBannerBean implements Serializable {
     }
 
     /**
-     * Return a json object to use a configuration object to the viewerJS.cookieBanner.js javascript
+     * Returns a json object to use a configuration object to the viewerJS.cookieBanner.js javascript.
      * 
      * @return a json config object
      */

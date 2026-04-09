@@ -30,7 +30,8 @@
 
                     <util:icon
                         icon="chevron-down"
-                        styleClass="widget__topbar-icon-collapsible icon-rot-on-open" />
+                        styleClass="widget__topbar-icon-collapsible icon-rot-on-open"
+                        svgClass="widget__topbar-icon-svg widget-downloads__topbar-icon-svg" />
                 </div>
             </div>
 
@@ -50,8 +51,7 @@
                     </p>
                 </ui:fragment>
                 <!-- INTRODUCTION TEXT DOWNLOADS GENERAL -->
-                <ui:fragment
-                    rendered="#{fn:length(msg['widget__downloads__intro_text_text_formats']) > 0 and displayConditions.matchRecord('{pageType:[viewFulltext]}') }">
+                <ui:fragment rendered="#{fn:length(msg['widget__downloads__intro_text_text_formats']) > 0 and displayConditions.matchRecord('{pageType:[viewFulltext]}') }">
                     <p
                         id="introductionText"
                         class="widget-downloads__license-text">
@@ -62,8 +62,7 @@
                 </ui:fragment>
 
                 <!-- INTRODUCTION TEXT ADDITIONAL FILES -->
-                <ui:fragment
-                    rendered="#{fn:length(msg['MASTERVALUE_INTRODUCTION_TEXT_DOWNLOAD']) > 0 and activeDocumentBean.viewManager.displayContentDownloadMenu}">
+                <ui:fragment rendered="#{fn:length(msg['MASTERVALUE_INTRODUCTION_TEXT_DOWNLOAD']) > 0 and activeDocumentBean.viewManager.displayContentDownloadMenu}">
                     <p
                         id="introductionText"
                         class="widget-downloads__additional-files-text">

@@ -36,9 +36,8 @@ import io.goobi.viewer.api.rest.model.ErrorMessage;
 import io.goobi.viewer.exceptions.RestApiException;
 
 /**
- * <p>
- * RestApiExceptionMapper class.
- * </p>
+ * JAX-RS exception mapper that converts {@link io.goobi.viewer.exceptions.RestApiException} instances to JSON error responses with appropriate HTTP
+ * status codes.
  *
  * @author Florian Alpers
  */

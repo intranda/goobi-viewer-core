@@ -62,11 +62,9 @@ public class TagCloudBean implements Serializable {
     }
 
     /**
-     * <p>
-     * getTagsAutor.
-     * </p>
+     * Returns up to 50 publication-year tags from the {@code YEARPUBLISH} Solr field, shuffled.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of tags derived from the YEARPUBLISH field for use in a tag cloud
      */
     public List<Tag> getTagsAutor() {
         try {
@@ -78,11 +76,9 @@ public class TagCloudBean implements Serializable {
     }
 
     /**
-     * <p>
-     * getTags.
-     * </p>
+     * Returns up to 50 tags from the {@code DEFAULT} Solr field, shuffled.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of tags derived from the DEFAULT field for use in a tag cloud
      */
     public List<Tag> getTags() {
         try {
@@ -94,22 +90,18 @@ public class TagCloudBean implements Serializable {
     }
 
     /**
-     * <p>
-     * getTagsSize.
-     * </p>
+     * Returns the number of tags in the DEFAULT field tag list.
      *
-     * @return a int.
+     * @return number of DEFAULT field tags
      */
     public int getTagsSize() {
         return getTags().size();
     }
 
     /**
-     * <p>
-     * getTagsTitles.
-     * </p>
+     * Returns up to 100 title tags from the {@code TITLE} Solr field, shuffled.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of tags derived from the TITLE field for use in a tag cloud
      */
     public List<Tag> getTagsTitles() {
         try {
@@ -121,11 +113,9 @@ public class TagCloudBean implements Serializable {
     }
 
     /**
-     * <p>
-     * getTagsPlaces.
-     * </p>
+     * Returns up to 100 publication-place tags from the {@code PLACEPUBLISH} Solr field, shuffled.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of tags derived from the PLACEPUBLISH field for use in a tag cloud
      */
     public List<Tag> getTagsPlaces() {
         try {
@@ -137,11 +127,9 @@ public class TagCloudBean implements Serializable {
     }
 
     /**
-     * <p>
-     * getTagsYears.
-     * </p>
+     * Returns up to 100 publication-year tags from the {@code YEARPUBLISH} Solr field, shuffled.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of tags derived from the YEARPUBLISH field for use in a year tag cloud
      */
     public List<Tag> getTagsYears() {
         try {
@@ -153,11 +141,9 @@ public class TagCloudBean implements Serializable {
     }
 
     /**
-     * <p>
-     * getTagsPersons.
-     * </p>
+     * Returns up to 100 person-name tags from the {@code PERSON_ONEFIELD} Solr field, shuffled.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of tags derived from the PERSON_ONEFIELD field for use in a persons tag cloud
      */
     public List<Tag> getTagsPersons() {
         try {
@@ -169,15 +155,13 @@ public class TagCloudBean implements Serializable {
     }
 
     /**
-     * <p>
      * getTags.
-     * </p>
      *
-     * @param luceneField a {@link java.lang.String} object.
-     * @param shuffle a boolean.
-     * @param topCount a int.
-     * @param query a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
+     * @param luceneField Solr field to collect tag values from.
+     * @param shuffle if true, randomizes the returned tag list order.
+     * @param topCount maximum number of tags to return; 0 means unlimited.
+     * @param query optional Solr filter query; null or empty for all records.
+     * @return a list of Tag objects for the given Solr field, optionally shuffled and limited in count
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public List<Tag> getTags(String luceneField, boolean shuffle, int topCount, String query) throws IndexUnreachableException {

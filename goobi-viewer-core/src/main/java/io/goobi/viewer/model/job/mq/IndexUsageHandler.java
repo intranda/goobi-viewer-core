@@ -35,6 +35,9 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.statistics.usage.StatisticsIndexTask;
 
+/**
+ * Message handler that triggers indexing of usage statistics collected from the database into the Solr search index.
+ */
 public class IndexUsageHandler implements MessageHandler<MessageStatus> {
 
     private static final Logger logger = LogManager.getLogger(IndexUsageHandler.class);

@@ -36,6 +36,11 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.viewer.themes.ThemeConfiguration;
 import io.goobi.viewer.model.viewer.themes.ThemeLink;
 
+/**
+ * JSF view-scoped backing bean for the theme configuration editor. Allows administrators to
+ * load, edit, and persist {@link io.goobi.viewer.model.viewer.themes.ThemeConfiguration} settings
+ * including social media and footer links.
+ */
 @Named
 @ViewScoped
 public class AdminThemeEditBean implements Serializable {

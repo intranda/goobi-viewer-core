@@ -25,6 +25,11 @@ import java.util.Comparator;
 import java.util.Locale;
 import java.util.function.Function;
 
+/**
+ * Factory class that creates {@link java.util.Comparator} instances based on a sort order
+ * descriptor string. Supports alphabetical, numerical, natural, and HTML-aware orderings in
+ * both ascending and descending directions, with optional locale-aware translation.
+ */
 public final class ObjectComparatorBuilder {
 
     private ObjectComparatorBuilder() {

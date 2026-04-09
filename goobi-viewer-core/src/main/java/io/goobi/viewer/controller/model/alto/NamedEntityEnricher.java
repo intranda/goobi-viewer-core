@@ -35,6 +35,11 @@ import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.Tag;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.PrettyUrlTools;
 
+/**
+ * {@link TextEnricher} implementation that wraps ALTO word tokens referenced by named-entity
+ * tags in interactive HTML buttons. Each button carries data attributes for the entity type,
+ * authority URI, and a pre-built search URL for further lookup.
+ */
 public class NamedEntityEnricher implements TextEnricher {
 
     private static final int MAX_ENRICHMENTS = 1;

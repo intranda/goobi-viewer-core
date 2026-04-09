@@ -72,10 +72,10 @@ public class SocketBean {
     }
 
     /**
-     * Constructor for tests with custom PushContext
+     * Creates a new tests with custom PushContext instance.
      * 
-     * @param minIdleSeconds
-     * @param backgroundTasksState
+     * @param minIdleSeconds minimum idle interval in seconds between scheduler ticks
+     * @param backgroundTasksState push context used to send messages to connected clients
      */
     public SocketBean(long minIdleSeconds, PushContext backgroundTasksState) {
         this(minIdleSeconds);
@@ -83,9 +83,9 @@ public class SocketBean {
     }
 
     /**
-     * Send an "update" message to the socket channel
+     * Sends an "update" message to the socket channel.
      * 
-     * @param message
+     * @param message message text to send (currently unused; triggers an "update" push)
      */
     public void send(String message) {
         shouldSend.set(true);

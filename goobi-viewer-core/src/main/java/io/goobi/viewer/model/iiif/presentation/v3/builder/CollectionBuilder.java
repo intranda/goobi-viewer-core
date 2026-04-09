@@ -53,9 +53,7 @@ import io.goobi.viewer.solr.SolrConstants;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * <p>
- * CollectionBuilder class.
- * </p>
+ * Builds IIIF Presentation API v3 Collection resources from Solr index data.
  *
  * @author Florian Alpers
  */
@@ -64,7 +62,7 @@ public class CollectionBuilder extends AbstractBuilder {
     private static final Logger logger = LogManager.getLogger(CollectionBuilder.class);
 
     /**
-     * Required field to create manifest stubs for works in collection
+     * Required field to create manifest stubs for works in collection.
      */
     public static final String[] CONTAINED_WORKS_QUERY_FIELDS =
             { SolrConstants.PI, SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT,
@@ -82,8 +80,8 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * 
-     * @param collectionField
+     *
+     * @param collectionField Solr field containing the collection hierarchy
      * @return {@link Collection3}
      * @throws IndexUnreachableException
      */
@@ -105,9 +103,9 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * 
-     * @param collectionField
-     * @param collectionName
+     *
+     * @param collectionField Solr field containing the collection hierarchy
+     * @param collectionName name of the collection to build
      * @return {@link Collection3}
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -149,9 +147,9 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * 
-     * @param collectionField
-     * @param collectionName
+     *
+     * @param collectionField Solr field containing the collection hierarchy
+     * @param collectionName name of the collection to create
      * @return {@link Collection3}
      */
     private Collection3 createCollection(String collectionField, String collectionName) {
@@ -181,9 +179,9 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * 
-     * @param collectionName
-     * @param cmsCollection
+     *
+     * @param collectionName name of the collection, used for error logging
+     * @param cmsCollection CMS collection providing media item and representative work data
      * @return {@link ImageResource}
      */
     private ImageResource createThumbnail(String collectionName, CMSCollection cmsCollection) {

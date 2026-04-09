@@ -24,6 +24,10 @@ package io.goobi.viewer.controller.model;
 import org.apache.commons.configuration2.HierarchicalConfiguration;
 import org.apache.commons.configuration2.tree.ImmutableNode;
 
+/**
+ * Configuration for a map feature set, describing the type, name, marker icon, Solr query, filter,
+ * and metadata lists used to render a group of map features.
+ */
 public class FeatureSetConfiguration {
 
     private final String type;

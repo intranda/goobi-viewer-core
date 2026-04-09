@@ -29,8 +29,7 @@ import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class SolrAndSqlAnnotationSaver implements AnnotationSaver {
 

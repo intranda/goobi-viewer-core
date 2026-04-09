@@ -22,20 +22,15 @@
 package io.goobi.viewer.model.security.authentication.model;
 
 /**
- * <p>
- * XServiceAuthenticationRequest class.
- * </p>
- *
+ * Request DTO for sending user credentials to the Bibliotheca authentication service.
  */
 public class BibliothecaAuthenticationRequest extends UserPasswordAuthenticationRequest {
 
     /**
-     * <p>
-     * Constructor for BibliothecaAuthenticationRequest.
-     * </p>
+     * Creates a new BibliothecaAuthenticationRequest instance.
      *
-     * @param username a {@link java.lang.String} object.
-     * @param password a {@link java.lang.String} object.
+     * @param username raw login name, zero-padded to 11 digits if shorter
+     * @param password plaintext password for authentication
      */
     public BibliothecaAuthenticationRequest(String username, String password) {
         super(normalizeUsername(username), password);
@@ -43,7 +38,7 @@ public class BibliothecaAuthenticationRequest extends UserPasswordAuthentication
 
     /**
      *
-     * @param username
+     * @param username raw user name to normalize
      * @return 11-digit representation of the given user name.
      * @should normalize value correctly
      */
@@ -64,9 +59,6 @@ public class BibliothecaAuthenticationRequest extends UserPasswordAuthentication
         return username;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     /** {@inheritDoc} */
     @Override
     public String toString() {

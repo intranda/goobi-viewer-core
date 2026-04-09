@@ -47,23 +47,19 @@ public class CampaignTranslation extends Translation implements Serializable {
     private Campaign owner;
 
     /**
-     * <p>
-     * Constructor for CampaignTranslation.
-     * </p>
+     * Creates a new CampaignTranslation instance.
      */
     public CampaignTranslation() {
         super();
     }
 
     /**
-     * <p>
-     * Constructor for CampaignTranslation.
-     * </p>
+     * Creates a new CampaignTranslation instance.
      *
-     * @param language a {@link java.lang.String} object.
-     * @param tag a {@link java.lang.String} object.
-     * @param value a {@link java.lang.String} object.
-     * @param owner a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
+     * @param language BCP 47 language code for this translation
+     * @param tag key identifying the translated field
+     * @param value translated text value
+     * @param owner campaign this translation belongs to
      */
     public CampaignTranslation(String language, String tag, String value, Campaign owner) {
         super(language, tag, value);
@@ -82,15 +78,13 @@ public class CampaignTranslation extends Translation implements Serializable {
     }
 
     /**
-     * <p>
      * setTranslation.
-     * </p>
      *
-     * @param translations a {@link java.util.List} object.
-     * @param lang a {@link java.lang.String} object.
-     * @param value a {@link java.lang.String} object.
-     * @param tag a {@link java.lang.String} object.
-     * @param owner a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
+     * @param translations mutable list of existing translations to update
+     * @param lang BCP 47 language code to set or add
+     * @param value translated text to assign
+     * @param tag key identifying the translated field
+     * @param owner campaign to assign when creating a new translation
      */
     public static void setTranslation(List<CampaignTranslation> translations, String lang, String value, String tag, Campaign owner) {
         if (lang == null) {
@@ -110,22 +104,18 @@ public class CampaignTranslation extends Translation implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>owner</code>.
-     * </p>
      *
-     * @return the owner
+     * @return the campaign this translation belongs to
      */
     public Campaign getOwner() {
         return owner;
     }
 
     /**
-     * <p>
      * Setter for the field <code>owner</code>.
-     * </p>
      *
-     * @param owner the owner to set
+     * @param owner the campaign this translation belongs to
      */
     public void setOwner(Campaign owner) {
         this.owner = owner;

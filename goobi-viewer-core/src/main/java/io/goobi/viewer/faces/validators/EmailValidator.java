@@ -46,9 +46,6 @@ public class EmailValidator implements Validator<String> {
 
     private static final Pattern PATTERN = Pattern.compile(REGEX);
 
-    /* (non-Javadoc)
-     * @see jakarta.faces.validator.Validator#validate(jakarta.faces.context.FacesContext, jakarta.faces.component.UIComponent, java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {
@@ -61,16 +58,14 @@ public class EmailValidator implements Validator<String> {
     }
 
     /**
-     * <p>
      * validateEmailAddress.
-     * </p>
      *
-     * @param email a {@link java.lang.String} object.
+     * @param email e-mail address string to validate against the RFC pattern
      * @param allowEmptyString use `true` if an empty email address is allowed
      * @should match correct email addresses
      * @should match entire email address only
      * @should not match invalid addresses
-     * @return a boolean.
+     * @return true if the given email address is syntactically valid (or empty and allowed), false otherwise
      */
     public static boolean validateEmailAddress(String email, boolean allowEmptyString) {
         if (allowEmptyString && StringUtils.isBlank(email)) {

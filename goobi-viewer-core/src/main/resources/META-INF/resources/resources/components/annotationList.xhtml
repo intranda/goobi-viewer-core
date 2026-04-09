@@ -139,17 +139,15 @@
                         	const id = "#{content.id}";
                                      		    if(window.selectedUgcId !== id) {
                         		image?.overlayGroups?.forEach(group => {
-                                        		   const overlayGroup = group.overlayGroup;
-                                        		   overlayGroup.removeHighlight();
-                                     			   	   overlayGroup.setHighlight(id);
+                                        		   group.overlayGroup?.removeHighlight();
+                                     			   group.overlayGroup?.setHighlight(id);
                         		});
                                       		    window.selectedUgcId = id;
                         		highlightCurrentSelection($(this));
                                      		    } else {
                                      		    	//click on active ugc
                                      		    	image?.overlayGroups?.forEach(group => {
-                                         		   const overlayGroup = group.overlayGroup;
-                                         		   overlayGroup.removeHighlight();
+                                         		   group.overlayGroup?.removeHighlight();
                         			});
                                        		    window.selectedUgcId = undefined;
                                        		    highlightCurrentSelection(undefined);
@@ -194,10 +192,9 @@
                                            	coordinates:  #{contentBean.getCurrentUGCCoords(activeDocumentBean.viewManager.currentPage)}
                                            };
 
-                                           if( typeof image !== "undefined" ) {
+                                           if( typeof image !== "undefined" && image.viewer ) {
                                         	   image.viewer.onOpened.subscribe( viewer => {
                                          	   image.overlayGroups.forEach(group => {
-                                         		   const overlayGroup = group.overlayGroup;
                                          		   group.overlays.forEach(overlay => {
                                          			   const id = overlay.id;
                                          			   if(id) {
@@ -205,12 +202,12 @@
                                          				   if(annoElement) {
                                          					   annoElement.addEventListener("mouseenter", e => {
                                          						   if(window.selectedUgcId !== id) {
-                                          						   overlayGroup.setHighlight(id, false);
+                                          						   group.overlayGroup?.setHighlight(id, false);
                                          						   }
                                          					   });
                                          					   annoElement.addEventListener("mouseleave", e => {
                                          						   if(window.selectedUgcId !== id) {
-                                          						   overlayGroup.removeHighlight(id, false);
+                                          						   group.overlayGroup?.removeHighlight(id, false);
                                          						   }
                                          					   });
                                          				   }

@@ -54,9 +54,6 @@ public class RelatedPIValidator extends PIValidator {
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(RelatedPIValidator.class);
 
-    /* (non-Javadoc)
-     * @see jakarta.faces.validator.Validator#validate(jakarta.faces.context.FacesContext, jakarta.faces.component.UIComponent, java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {
@@ -86,17 +83,15 @@ public class RelatedPIValidator extends PIValidator {
     }
 
     /**
-     * <p>
      * validatePi.
-     * </p>
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     * @param pi persistent identifier to validate
+     * @param user currently logged-in user; must be a CMS admin
      * @should return true if pi good
      * @should return false if pi empty, blank or null
      * @should return false if user is null
      * @should return true if user is superuser
-     * @return a {@link java.lang.String} object.
+     * @return null if the PI is valid, or a message key string describing the validation failure
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */

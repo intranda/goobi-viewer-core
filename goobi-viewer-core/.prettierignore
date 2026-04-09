@@ -43,3 +43,7 @@ Gulpfile.js
 **/*config*
 **/*conf*
 /*.xml
+
+# CMS component templates — Prettier breaks JSF EL value interpolation
+# by adding whitespace around <value>...</value> text content
+**/cms/templates/*.xml

@@ -27,6 +27,11 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.media.CMSMediaHolder;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 
+/**
+ * A lightweight, non-persistent {@link CMSMediaHolder} implementation that wraps a single
+ * {@link CMSMediaItem} together with an optional filename filter, suitable for transient use
+ * outside of the regular CMS page/content persistence hierarchy.
+ */
 public class SimpleMediaHolder implements CMSMediaHolder {
 
     private CMSMediaItem mediaItem = null;

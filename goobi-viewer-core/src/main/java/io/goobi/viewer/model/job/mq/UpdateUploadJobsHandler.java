@@ -37,6 +37,9 @@ import io.goobi.viewer.model.job.JobStatus;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.upload.UploadJob;
 
+/**
+ * Message handler that polls all waiting user upload jobs and updates their status based on the current indexing state in Solr.
+ */
 public class UpdateUploadJobsHandler implements MessageHandler<MessageStatus> {
 
     private static final Logger logger = LogManager.getLogger(UpdateUploadJobsHandler.class);

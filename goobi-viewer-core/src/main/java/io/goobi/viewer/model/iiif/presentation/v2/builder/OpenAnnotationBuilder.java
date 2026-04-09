@@ -63,27 +63,26 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
 
     private static final String OA_MOTAVATION_REGEX = "(sc|oa):\\w+";
 
     /**
-     * @param apiUrlManager
+     * @param apiUrlManager the URL manager for building API paths
      */
     public OpenAnnotationBuilder(AbstractApiUrlManager apiUrlManager) {
         super(apiUrlManager);
     }
 
     /**
-     * Get all annotations for the given PI from the SOLR index, sorted by page number. The annotations are stored as DOCTYPE:UGC in the SOLR and are
+     * Gets all annotations for the given PI from the SOLR index, sorted by page number. The annotations are stored as DOCTYPE:UGC in the SOLR and are
      * converted to OpenAnnotations here
      *
      * @param pi The persistent identifier of the work to query
-     * @param urlOnlyTarget a boolean.
-     * @param request
+     * @param urlOnlyTarget if true, use URI-only annotation targets
+     * @param request the current HTTP servlet request
      * @return A map of page numbers (1-based) mapped to a list of associated annotations
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -104,12 +103,12 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
     }
 
     /**
-     * Get all annotations for the given PI from the DAO, sorted by page number. The annotations are stored as DOCTYPE:UGC in the SOLR and are
+     * Gets all annotations for the given PI from the DAO, sorted by page number. The annotations are stored as DOCTYPE:UGC in the SOLR and are
      * converted to OpenAnnotations here
      *
      * @param pi The persistent identifier of the work to query
-     * @param urlOnlyTarget a boolean.
-     * @param request
+     * @param urlOnlyTarget if true, use URI-only annotation targets
+     * @param request the current HTTP servlet request
      * @return A map of page numbers (1-based) mapped to a list of associated annotations
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -149,13 +148,11 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
     }
 
     /**
-     * <p>
      * createOpenAnnotation.
-     * </p>
      *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
-     * @param urlOnlyTarget a boolean.
-     * @return a {@link de.intranda.api.annotation.oa.OpenAnnotation} object.
+     * @param doc Solr document of type UGC containing the annotation data
+     * @param urlOnlyTarget if true, use URI-only annotation targets
+     * @return the OpenAnnotation created from the given UGC Solr document
      */
     public OpenAnnotation createUGCOpenAnnotation(SolrDocument doc, boolean urlOnlyTarget) {
         String pi = Optional.ofNullable(doc.getFieldValue(SolrConstants.PI_TOPSTRUCT)).map(SolrTools::getAsString).orElse("");
@@ -164,14 +161,12 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
     }
 
     /**
-     * <p>
      * createOpenAnnotation.
-     * </p>
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
-     * @param urlOnlyTarget a boolean.
-     * @return a {@link de.intranda.api.annotation.oa.OpenAnnotation} object.
+     * @param pi persistent identifier of the annotated record
+     * @param doc Solr document of type UGC containing the annotation data
+     * @param urlOnlyTarget if true, use URI-only annotation targets
+     * @return the OpenAnnotation created from the given UGC Solr document for the specified record
      */
     public OpenAnnotation createUGCOpenAnnotation(String pi, SolrDocument doc, boolean urlOnlyTarget) {
         String id = Optional.ofNullable(doc.getFieldValue(SolrConstants.MD_ANNOTATION_ID))
@@ -200,10 +195,10 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
     }
 
     /**
-     * @param pi
-     * @param pageOrder
-     * @param coordString
-     * @param urlOnlyTarget
+     * @param pi persistent identifier of the work
+     * @param pageOrder physical page number (1-based)
+     * @param coordString coordinate string encoding the fragment region
+     * @param urlOnlyTarget if true, return a URI-only specific resource
      * @return {@link IResource}
      */
     public IResource createFragmentTarget(String pi, int pageOrder, String coordString, boolean urlOnlyTarget) {
@@ -234,7 +229,7 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
     }
 
     /**
-     * @param doc
+     * @param doc the Solr document containing the UGC annotation body fields
      * @return {@link IResource}
      */
     public IResource createAnnnotationBodyFromUGCDocument(SolrDocument doc) {
@@ -255,10 +250,10 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
     }
 
     /**
-     * @param uri
-     * @param pi
-     * @param urlsOnly
-     * @param request
+     * @param uri the URI to assign to the annotation collection
+     * @param pi persistent identifier of the work
+     * @param urlsOnly if true, annotation targets are URL-only resources
+     * @param request the current HTTP servlet request
      * @return {@link IAnnotationCollection}
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -271,12 +266,12 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
     }
 
     /**
-     * 
-     * @param uri
-     * @param pi
-     * @param page
-     * @param urlsOnly
-     * @param request
+     *
+     * @param uri the URI to assign to the annotation collection
+     * @param pi persistent identifier of the work
+     * @param page physical page number to filter annotations by
+     * @param urlsOnly if true, annotation targets are URL-only resources
+     * @param request the current HTTP servlet request
      * @return {@link IAnnotationCollection}
      * @throws DAOException
      */

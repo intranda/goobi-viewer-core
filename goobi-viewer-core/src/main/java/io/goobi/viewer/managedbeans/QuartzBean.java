@@ -48,6 +48,11 @@ import io.goobi.viewer.model.job.quartz.TaskTriggerStatus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Named;
 
+/**
+ * JSF application-scoped backing bean for the Quartz scheduler administration view. Exposes
+ * operations to inspect, pause, resume, and trigger recurring scheduled jobs, and tracks their
+ * execution state and schedule details.
+ */
 @Named
 @ApplicationScoped
 public class QuartzBean implements Serializable {

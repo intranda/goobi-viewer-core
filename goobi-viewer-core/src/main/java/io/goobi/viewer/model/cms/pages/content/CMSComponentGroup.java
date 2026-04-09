@@ -24,6 +24,10 @@ package io.goobi.viewer.model.cms.pages.content;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Groups a named set of {@link CMSComponent} instances together, typically used to organise
+ * available CMS components into logical sections in the editor UI.
+ */
 public class CMSComponentGroup {
 
     private final String name;

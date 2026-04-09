@@ -24,18 +24,14 @@ package io.goobi.viewer.exceptions;
 import java.io.Serializable;
 
 /**
- * <p>
- * ThemeException class.
- * </p>
+ * Thrown when a viewer theme cannot be found, loaded, or applied.
  */
 public class ThemeException extends Exception implements Serializable {
 
     private static final long serialVersionUID = 7603440377069980303L;
 
     /**
-     * <p>
-     * Constructor for ThemeException.
-     * </p>
+     * Creates a new ThemeException instance.
      *
      * @param string {@link java.lang.String}
      */

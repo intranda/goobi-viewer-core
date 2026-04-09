@@ -43,6 +43,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 
+/**
+ * JPA entity storing the persistent configuration for a highlighted content item, including its
+ * name, display date range, enabled state, target type, and associated media.
+ */
 @Entity
 @Table(name = "cms_highlights")
 public class HighlightData implements Serializable {
@@ -86,11 +90,18 @@ public class HighlightData implements Serializable {
     @Column(name = "target_type")
     private TargetType targetType = TargetType.RECORD;
 
+    /**
+     * Enumerates the possible targets of a highlight entry, either a catalogued record identified by a persistent identifier or an arbitrary URL.
+     */
     public enum TargetType {
         RECORD,
         URL;
     }
 
+    /**
+     * Enumerates the strategies for selecting the image displayed alongside a highlight entry: no image, an explicitly uploaded image, or the
+     * representative thumbnail of the associated record.
+     */
     public enum ImageMode {
         NO_IMAGE,
         UPLOADED_IMAGE,

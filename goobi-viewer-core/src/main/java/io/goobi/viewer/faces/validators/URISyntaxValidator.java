@@ -34,18 +34,13 @@ import jakarta.faces.validator.ValidatorException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
- * <p>
- * URISyntaxValidator class.
- * </p>
+ * JSF validator that checks whether a string input is a well-formed URI.
  *
  * @author Florian Alpers
  */
 @FacesValidator("URISyntaxValidator")
 public class URISyntaxValidator implements Validator<String> {
 
-    /* (non-Javadoc)
-     * @see jakarta.faces.validator.Validator#validate(jakarta.faces.context.FacesContext, jakarta.faces.component.UIComponent, java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {

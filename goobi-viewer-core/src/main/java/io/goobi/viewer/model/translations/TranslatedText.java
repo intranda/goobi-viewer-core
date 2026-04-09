@@ -45,8 +45,7 @@ import io.goobi.viewer.controller.JsonTools;
  * which represent text that has not actual locale, whether it is text that has no translations or is an internal representation of the text. This
  * default language only exists if the text is initiated giving only a single text without locale or if it is explicitly added
  * 
- * @author florian
- *
+ * @author Florian Alpers
  */
 @JsonSerialize(using = TranslatedTextSerializer.class)
 public class TranslatedText extends MultiLanguageMetadataValue implements IPolyglott, Serializable {
@@ -54,31 +53,31 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     private static final long serialVersionUID = -3725829912057184396L;
 
     /**
-     * The locale that should be used when getting/setting text witout passing a particular locale
+     * The locale that should be used when getting/setting text witout passing a particular locale.
      */
     private Locale selectedLocale;
 
     /**
-     * Create a text with the locales from {@link IPolyglott#getLocalesStatic()}
+     * Create a text with the locales from {@link IPolyglott#getLocalesStatic()}.
      */
     public TranslatedText() {
         this(IPolyglott.getLocalesStatic());
     }
 
     /**
-     * Create a text with the given locales
-     * 
-     * @param locales
+     * Creates a text with the given locales.
+     *
+     * @param locales collection of locales to initialize the text with
      */
     public TranslatedText(Collection<Locale> locales) {
         this(locales, IPolyglott.getDefaultLocale());
     }
 
     /**
-     * Create a text with the given locales, setting the selected locale to the given initialLocale
-     * 
-     * @param locales
-     * @param initalLocale
+     * Creates a text with the given locales, setting the selected locale to the given initialLocale.
+     *
+     * @param locales collection of locales to initialize the text with
+     * @param initalLocale locale to select as the active locale
      */
     public TranslatedText(Collection<Locale> locales, Locale initalLocale) {
         super(locales.stream().collect(Collectors.toMap(Locale::getLanguage, l -> "")));
@@ -90,9 +89,9 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
      * given TranslatedText "orig". If a Locale contained in locales is not included in orig, its value remains blank. If a locale is contained in
      * orig, but not in locales, the value is set anyway
      * 
-     * @param orig
-     * @param locales
-     * @param initialLocale
+     * @param orig source translated text to copy values from
+     * @param locales collection of locales to initialize the text with
+     * @param initialLocale locale to select as the active locale
      */
     public TranslatedText(TranslatedText orig, Collection<Locale> locales, Locale initialLocale) {
         this(locales, initialLocale);
@@ -106,18 +105,18 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     }
 
     /**
-     * Create a copy of the given Translated text "orig"
-     * 
-     * @param orig
+     * Creates a copy of the given Translated text "orig".
+     *
+     * @param orig source translated text to copy
      */
     public TranslatedText(TranslatedText orig) {
         this(orig, IPolyglott.getLocalesStatic(), IPolyglott.getDefaultLocale());
     }
 
     /**
-     * Create a text with the default language set to the given value
-     * 
-     * @param text
+     * Creates a text with the default language set to the given value.
+     *
+     * @param text initial text value for the default language
      */
     public TranslatedText(String text) {
         super();
@@ -128,8 +127,8 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     /**
      * Create a text using the values of the given IMetadataValue orig. If orig is a {@link SimpleMetadataValue}, its value is written to the default
      * locale. The selected locale is set to {@link IPolyglott#getCurrentLocale()}
-     * 
-     * @param orig
+     *
+     * @param orig source metadata value to copy translations from
      */
     public TranslatedText(IMetadataValue orig) {
         this(orig, IPolyglott.getCurrentLocale());
@@ -138,9 +137,9 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     /**
      * Create a text using the values of the given IMetadataValue orig. If orig is a {@link SimpleMetadataValue}, its value is written to the default
      * locale. The selected locale is set to the given initialLocale
-     * 
-     * @param orig
-     * @param initialLocale
+     *
+     * @param orig source metadata value to copy translations from
+     * @param initialLocale locale to select as the active locale
      */
     public TranslatedText(IMetadataValue orig, Locale initialLocale) {
         super(orig.getLanguages()
@@ -158,9 +157,9 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     }
 
     /**
-     * Set the {@link #selectedLocale}
-     * 
-     * @param locale
+     * Set the {@link #selectedLocale}.
+     *
+     * @param locale locale to set as the selected locale
      */
     public void setSelectedLocale(Locale locale) {
         this.selectedLocale = locale;
@@ -168,8 +167,8 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
 
     /**
      * Get the text for the given locale. If that does not exist, get the value for the default language and if that doesn't exist, an empty string
-     * 
-     * @param locale
+     *
+     * @param locale locale for which to retrieve the text
      * @return Text for the given locale
      */
     public String getText(Locale locale) {
@@ -178,7 +177,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
 
     /**
      * Get the text for {@link IPolyglott#getCurrentLocale()}, or, failing that, for {@link IPolyglott#getDefaultLocale()}, the internal default
-     * language or finally an empty string
+     * language or finally an empty string.
      * 
      * @return {@link String}
      */
@@ -187,7 +186,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     }
 
     /**
-     * Get the text for the given language, or, failing that, for the given defaultLocale, the internal default language or finally an empty string
+     * Gets the text for the given language, or, failing that, for the given defaultLocale, the internal default language or finally an empty string.
      * 
      * @param locale The locale to return the text for
      * @param defaultLocale The fallback locale to use if no text exists for the given locale
@@ -201,10 +200,10 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     }
 
     /**
-     * Set the text for the given locale
-     * 
-     * @param text
-     * @param locale
+     * Sets the text for the given locale.
+     *
+     * @param text text value to set
+     * @param locale locale for which to set the text
      */
     public void setText(String text, Locale locale) {
         if (locale != null && StringUtils.isNotBlank(locale.getLanguage())) {
@@ -215,7 +214,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     }
 
     /**
-     * get the text for the current {@link #selectedLocale}
+     * get the text for the current {@link #selectedLocale}.
      * 
      * @return Text for selected locale
      */
@@ -224,9 +223,9 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     }
 
     /**
-     * set the text for the current {@link #selectedLocale}
-     * 
-     * @param text
+     * set the text for the current {@link #selectedLocale}.
+     *
+     * @param text text value to set for the selected locale
      */
     public void setText(String text) {
         this.setText(text, this.selectedLocale);
@@ -244,7 +243,10 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     }
 
     /**
-     * Alias for {@link #isValid(Locale)}
+     * Alias for {@link #isValid(Locale)}.
+     *
+     * @param locale the locale to check for completeness
+     * @return true if a non-empty text is set for the given locale; false otherwise
      */
     @Override
     public boolean isComplete(Locale locale) {
@@ -252,6 +254,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     }
 
     /**
+     * @param locale the locale to check for a non-empty value
      * @return true if at least one locale has a non empty text set
      */
     @Override
@@ -260,6 +263,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     }
 
     /**
+     * @param locale the locale for which to retrieve the text value
      * @return an optional containing the text for the given locale if one exists, or an empty optional otherwise
      */
     @Override
@@ -268,7 +272,9 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     }
 
     /**
-     * get the values of {@link IPolyglott#getLocalesStatic()}
+     * get the values of {@link IPolyglott#getLocalesStatic()}.
+     *
+     * @return the collection of locales for which a text value may be set
      */
     @Override
     public Collection<Locale> getLocales() {
@@ -276,7 +282,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     }
 
     /**
-     * @param locale
+     * @param locale locale to check for presence in the supported locale list
      * @return true if the given locale is in the list of locales for which a text may be set, whether or not a text exists for that locale
      */
     public boolean hasLocale(Locale locale) {
@@ -284,7 +290,9 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     }
 
     /**
-     * Alias for {@link #getText()}
+     * Alias for {@link #getText()}.
+     *
+     * @return a string representation of this object
      */
     @Override
     public String toString() {
@@ -297,7 +305,10 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     }
 
     /**
-     * two TranslatedTexts are considered equal if the have the same locales and the same texts for each locale
+     * Two TranslatedTexts are considered equal if the have the same locales and the same texts for each locale.
+     *
+     * @param obj the object to compare to this translated text
+     * @return true if the given object is equal to this instance, false otherwise
      */
     @Override
     public boolean equals(Object obj) {
@@ -332,9 +343,9 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
      * If required is true, true is returned if a non-empty value exists for the given locale. Otherwise return true unless defaultLocale has a
      * non-empty value while locale has not.
      * 
-     * @param locale
-     * @param defaultLocale
-     * @param required
+     * @param locale locale to check for completeness
+     * @param defaultLocale fallback locale used to determine if a value exists
+     * @param required whether a non-empty value for the given locale is strictly required
      * @return true if completeness not required or text not empty; false otherwise
      */
     public boolean isComplete(Locale locale, Locale defaultLocale, boolean required) {

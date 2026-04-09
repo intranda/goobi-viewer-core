@@ -27,6 +27,12 @@ import java.util.function.Function;
 
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
+/**
+ * {@link ITranslator} implementation that looks up the string representation of a value in the
+ * viewer's resource bundle, using a configurable list of available locales and a default locale fallback.
+ *
+ * @param <T> the type of value to translate
+ */
 public class ResourceBundleTranslator<T> implements ITranslator<T> {
 
     private final List<Locale> allLocales;

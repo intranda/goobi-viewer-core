@@ -558,12 +558,6 @@
 			<docStruct>museum_object</docStruct>
 		</museumDocstructTypes>
 
-		<!-- calendarDocstructTypes: the list of structure elements allowed to 
-			be shown in calendar view -->
-		<calendarDocstructTypes>
-			<docStruct>Calendaria</docStruct>
-			<docStruct>PeriodicalVolume</docStruct>
-		</calendarDocstructTypes>
 
 		<!-- browsingMenu: configuration of the browsing section (Stoebern) -->
 		<browsingMenu>

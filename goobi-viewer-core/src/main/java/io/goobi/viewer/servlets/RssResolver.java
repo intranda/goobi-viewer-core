@@ -54,7 +54,7 @@ import io.goobi.viewer.solr.SolrConstants;
 /**
  * Servlet implementation class RssResolver
  *
- * TODO: Removed deprecation marker because this servlet is still required for delivering RSS feeds for sidebar widget. The alternative, the rss
+ * <p>TODO: Removed deprecation marker because this servlet is still required for delivering RSS feeds for sidebar widget. The alternative, the rss
  * REST-resource delivers a json which need to be parsed and turned into html
  */
 public class RssResolver extends HttpServlet {

@@ -31,9 +31,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 
 /**
- * <p>
- * BookshelfConverter class.
- * </p>
+ * JSF converter that maps between a {@link io.goobi.viewer.model.bookmark.BookmarkList} object and its string representation.
  */
 @FacesConverter("bookshelfConverter")
 public class BookshelfConverter implements Converter<BookmarkList> {

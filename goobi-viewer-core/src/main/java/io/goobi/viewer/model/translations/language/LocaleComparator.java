@@ -25,9 +25,7 @@ import java.util.Comparator;
 import java.util.Locale;
 
 /**
- * <p>
- * LocaleComparator class.
- * </p>
+ * Comparator that orders {@link java.util.Locale} instances by their display name in a given language.
  */
 public class LocaleComparator implements Comparator<Locale> {
 
@@ -35,20 +33,15 @@ public class LocaleComparator implements Comparator<Locale> {
     private final Locale secondaryLocale;
 
     /**
-     * <p>
-     * Constructor for LocaleComparator.
-     * </p>
+     * Creates a new LocaleComparator instance.
      *
-     * @param locale a {@link java.util.Locale} object.
+     * @param locale preferred primary locale for ordering
      */
     public LocaleComparator(Locale locale) {
         this.primaryLocale = locale;
         this.secondaryLocale = Locale.ENGLISH;
     }
 
-    /* (non-Javadoc)
-     * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public int compare(Locale l1, Locale l2) {

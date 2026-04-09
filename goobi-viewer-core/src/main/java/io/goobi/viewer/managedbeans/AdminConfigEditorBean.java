@@ -75,9 +75,7 @@ import io.goobi.viewer.model.files.upload.FileUploader;
 import io.goobi.viewer.model.xml.XMLError;
 
 /**
- * <p>
- * AdminConfigEditorBean class.
- * </p>
+ * JSF backing bean for the admin configuration editor, allowing administrators to view and modify the viewer config file.
  */
 @Named
 @SessionScoped
@@ -122,18 +120,14 @@ public class AdminConfigEditorBean implements Serializable {
     private FileUploader fileUploader = new FileUploader();
 
     /**
-     * <p>
-     * Constructor for AdminConfigEditorBean.
-     * </p>
+     * Creates a new AdminConfigEditorBean instance.
      */
     public AdminConfigEditorBean() {
         //
     }
 
     /**
-     * <p>
      * init.
-     * </p>
      */
     @PostConstruct
     public void init() {
@@ -158,20 +152,16 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>
      * isRenderBackend.
-     * </p>
      *
-     * @return a boolean
+     * @return true if the admin backend is rendered for the current user, false otherwise
      */
     public boolean isRenderBackend() {
         return DataManager.getInstance().getConfiguration().isConfigEditorEnabled();
     }
 
     /**
-     * <p>
      * refresh.
-     * </p>
      */
     public void refresh() {
         filesListing.refresh();
@@ -214,20 +204,16 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>
      * getFileRecordsModel.
-     * </p>
      *
-     * @return a {@link jakarta.faces.model.DataModel} object
+     * @return the data model wrapping the current list of config file records
      */
     public DataModel<FileRecord> getFileRecordsModel() {
         return filesListing.getFileRecordsModel();
     }
 
     /**
-     * <p>
      * Getter for the field <code>fileInEditionNumber</code>.
-     * </p>
      *
      * @return a int
      */
@@ -236,110 +222,90 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>fileInEditionNumber</code>.
-     * </p>
      *
-     * @param fileInEditionNumber a int
+     * @param fileInEditionNumber zero-based index of the file in the file list
      */
     public void setFileInEditionNumber(int fileInEditionNumber) {
         this.fileInEditionNumber = fileInEditionNumber;
     }
 
     /**
-     * <p>
      * Getter for the field <code>currentFileRecord</code>.
-     * </p>
      *
-     * @return the currentFileRecord
+     * @return the {@link io.goobi.viewer.model.administration.configeditor.FileRecord} currently open in the config editor, or null if none selected
      */
     public FileRecord getCurrentFileRecord() {
         return currentFileRecord;
     }
 
     /**
-     * <p>
      * Getter for the field <code>fileContent</code>.
-     * </p>
      *
-     * @return a {@link java.lang.String} object
+     * @return the text content of the currently open configuration file
      */
     public String getFileContent() {
         return fileContent;
     }
 
     /**
-     * <p>
      * Setter for the field <code>fileContent</code>.
-     * </p>
      *
-     * @param fileContent a {@link java.lang.String} object
+     * @param fileContent text content of the currently open config file
      */
     public void setFileContent(String fileContent) {
         this.fileContent = fileContent;
     }
 
     /**
-     * <p>
      * Getter for the field <code>backupRecords</code>.
-     * </p>
      *
-     * @return a {@link java.util.List} object
+     * @return a list of backup file records for configuration files
      */
     public List<BackupRecord> getBackupRecords() {
         return backupRecords;
     }
 
     /**
-     * <p>
      * Getter for the field <code>backupRecordsModel</code>.
-     * </p>
      *
-     * @return a {@link jakarta.faces.model.DataModel} object
+     * @return the data model wrapping the list of backup file records
      */
     public DataModel<BackupRecord> getBackupRecordsModel() {
         return backupRecordsModel;
     }
 
     /**
-     * <p>
      * isEditable.
-     * </p>
      *
-     * @return a boolean
+     * @return true if the currently open config file is in write mode, false if it is read-only
      */
     public boolean isEditable() {
         return editable;
     }
 
     /**
-     * <p>
      * Setter for the field <code>editable</code>.
-     * </p>
      *
-     * @param editable a boolean
+     * @param editable true to open the file in write mode; false for read-only
      */
     public void setEditable(boolean editable) {
         this.editable = editable;
     }
 
     /**
-     * <p>
      * isBackupsAvailable.
-     * </p>
      *
-     * @return a boolean
+     * @return true if at least one backup record exists for the current config file, false otherwise
      */
     public boolean isBackupsAvailable() {
         return !backupRecords.isEmpty();
     }
 
     /**
-     * <p>
      * getCurrentConfigFileType.
-     * </p>
      *
-     * @return a {@link java.lang.String} object
+     * @return the file type of the currently open config file, or an empty string if none is selected
      */
     public String getCurrentConfigFileType() {
         if (currentFileRecord != null) {
@@ -352,7 +318,7 @@ public class AdminConfigEditorBean implements Serializable {
     /**
      * Determines whether the given fileRecord is locked by a different user session.
      *
-     * @param fileRecord a {@link io.goobi.viewer.model.administration.configeditor.FileRecord} object
+     * @param fileRecord file record whose lock status is to be checked
      * @return true if file path locked by other session id; false otherwise
      */
     public boolean isFileLocked(FileRecord fileRecord) {
@@ -364,29 +330,23 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>
      * isNightMode.
-     * </p>
      *
-     * @return a boolean
+     * @return true if the editor is in night mode, false otherwise
      */
     public boolean isNightMode() {
         return nightMode;
     }
 
     /**
-     * <p>
      * changeNightMode.
-     * </p>
      */
     public void changeNightMode() {
         nightMode = !nightMode;
     }
 
     /**
-     * <p>
      * openFile.
-     * </p>
      *
      * @throws java.io.IOException
      */
@@ -435,9 +395,7 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>
      * closeCurrentFileAction.
-     * </p>
      *
      * @return Navigation outcome
      */
@@ -455,10 +413,10 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * Unlock the given file for the given session id in the static (global) fileLocks object
+     * Unlocks the given file for the given session id in the static (global) fileLocks object.
      *
-     * @param file a {@link java.nio.file.Path} object
-     * @param sessionId a {@link java.lang.String} object
+     * @param file path of the config file to unlock
+     * @param sessionId HTTP session ID that holds the lock to release
      */
     public static void unlockFile(Path file, String sessionId) {
         logger.trace("Unlocking file {} for session {}", file, sessionId);
@@ -468,12 +426,10 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>
      * editFile.
-     * </p>
      *
-     * @param writable a boolean
-     * @return a {@link java.lang.String} object
+     * @param writable true to open the file for editing; false for read-only view
+     * @return the navigation outcome redirecting to the config editor file view
      */
     public String editFile(boolean writable) {
         selectFileAndShowBackups(writable);
@@ -633,11 +589,9 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>
      * refreshBackups.
-     * </p>
      *
-     * @param backupFolder a {@link java.io.File} object
+     * @param backupFolder directory containing timestamped backup files to list
      */
     public void refreshBackups(File backupFolder) {
         backupRecords.clear();
@@ -688,7 +642,7 @@ public class AdminConfigEditorBean implements Serializable {
 
     /**
      * 
-     * @param backupFiles
+     * @param backupFiles array of backup files to sort by last modification date
      */
     static void sortFilesByDateModified(File[] backupFiles) {
         if (backupFiles == null || backupFiles.length == 0) {
@@ -706,9 +660,7 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>
      * isConfigViewer.
-     * </p>
      *
      * @return true if currently editing config_viewer.xml; false otherwise
      */
@@ -717,11 +669,9 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>
      * selectFileAndShowBackups.
-     * </p>
      *
-     * @param writable a boolean
+     * @param writable true to open the file for editing; false for read-only view
      */
     public void selectFileAndShowBackups(boolean writable) {
 
@@ -742,18 +692,14 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>
      * showBackups.
-     * </p>
      */
     public void showBackups() {
         selectFileAndShowBackups(false);
     }
 
     /**
-     * <p>
      * downloadFile.
-     * </p>
      *
      * @param rec {@link io.goobi.viewer.model.administration.configeditor.BackupRecord} for which to download the file
      * @return Navigation outcome
@@ -797,16 +743,14 @@ public class AdminConfigEditorBean implements Serializable {
     /**
      * Removes file locks for the given session id.
      *
-     * @param sessionId a {@link java.lang.String} object
+     * @param sessionId HTTP session ID whose locks are to be released
      */
     public static void clearLocksForSessionId(String sessionId) {
         fileLocks.clearLocksForSessionId(sessionId);
     }
 
     /**
-     * <p>
      * getCurrentFileName.
-     * </p>
      *
      * @return File name of the currently selected file record row
      */
@@ -821,7 +765,7 @@ public class AdminConfigEditorBean implements Serializable {
     /**
      * Getter for the URL pattern.
      *
-     * @param fileName a {@link java.lang.String} object
+     * @param fileName decoded URL-encoded filename to select from the file list
      * @throws java.io.FileNotFoundException
      */
     public void setCurrentFileName(String fileName) throws FileNotFoundException {
@@ -863,11 +807,9 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>
      * getCurrentFilePath.
-     * </p>
      *
-     * @return a {@link java.nio.file.Path} object
+     * @return the file system path of the currently open config file, or null if none is selected
      */
     public Path getCurrentFilePath() {
         return Optional.ofNullable(currentFileRecord).map(FileRecord::getFile).orElse(null);

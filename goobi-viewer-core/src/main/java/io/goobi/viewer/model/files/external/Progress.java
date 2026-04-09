@@ -21,6 +21,10 @@
  */
 package io.goobi.viewer.model.files.external;
 
+/**
+ * Immutable snapshot of a transfer's progress, holding the number of bytes already processed
+ * and the total expected size, with convenience methods for relative and percentage values.
+ */
 public class Progress {
 
     private final long totalSize;

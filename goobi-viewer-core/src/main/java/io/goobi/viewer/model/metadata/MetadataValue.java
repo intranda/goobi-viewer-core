@@ -75,7 +75,7 @@ public class MetadataValue implements Serializable {
     /** Local copies of child metadata configurations containing only values for this particular instance. */
     private final List<Metadata> childMetadata = new ArrayList<>();
     private final Set<String> accessConditions = new HashSet<>();
-    /** Unique ID for citation item generation */
+    /** Unique ID for citation item generation. */
     private String id;
     /** IDDOC of the grouped metadata Solr doc. */
     private String iddoc;
@@ -93,9 +93,9 @@ public class MetadataValue implements Serializable {
     /**
      * Package-private constructor.
      *
-     * @param id
-     * @param masterValue
-     * @param label
+     * @param id unique identifier for citation item generation
+     * @param masterValue master value template string for display formatting
+     * @param label metadata field label key
      */
     MetadataValue(String id, String masterValue, String label) {
         this.id = id;
@@ -105,7 +105,7 @@ public class MetadataValue implements Serializable {
 
     /**
      *
-     * @param index
+     * @param index zero-based parameter index to check
      * @return true if value at index blank; false otherwise
      */
     public boolean isParamValueBlank(int index) {
@@ -133,11 +133,9 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * <p>
      * getComboValueShort.
-     * </p>
      *
-     * @param index a int.
+     * @param index zero-based parameter index to retrieve
      * @should construct param correctly
      * @should construct multivalued param correctly
      * @should not add prefix if first param
@@ -147,9 +145,9 @@ public class MetadataValue implements Serializable {
      * @should not add empty suffix
      * @should add separator between values if no prefix used
      * @should use master value fragment correctly
-     * @return a {@link java.lang.String} object.
+     * @return the formatted combined metadata value for the given parameter index
      */
-    String getComboValueShort(int index) {
+    public String getComboValueShort(int index) {
         if (paramValues.size() <= index || paramValues.get(index) == null || paramValues.get(index).isEmpty()) {
             return "";
         }
@@ -213,12 +211,10 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * <p>
      * getParamLabelWithColon.
-     * </p>
      *
-     * @return the paramLabels
-     * @param index a int.
+     * @param index zero-based parameter index to look up
+     * @return the translated label for the given parameter index with an appended colon, or an empty string if the index is out of range
      */
     public String getParamLabelWithColon(int index) {
         // logger.trace("getParamLabelWithColon: {}", index); //NOSONAR Debug
@@ -230,88 +226,72 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>paramLabels</code>.
-     * </p>
      *
-     * @return the paramLabels
+     * @return the list of label keys for each metadata parameter
      */
     public List<String> getParamLabels() {
         return paramLabels;
     }
 
     /**
-     * <p>
      * Getter for the field <code>paramValues</code>.
-     * </p>
      *
-     * @return the paramValues
+     * @return the list of value lists for each metadata parameter
      */
     public List<List<String>> getParamValues() {
         return paramValues;
     }
 
     /**
-     * <p>
      * Getter for the field <code>paramMasterValueFragments</code>.
-     * </p>
      *
-     * @return the paramMasterValueFragments
+     * @return the list of master value template fragments associated with each metadata parameter
      */
     public List<String> getParamMasterValueFragments() {
         return paramMasterValueFragments;
     }
 
     /**
-     * <p>
      * Getter for the field <code>paramPrefixes</code>.
-     * </p>
      *
-     * @return the paramPrefixes
+     * @return the list of prefix strings prepended to each parameter value during rendering
      */
     public List<String> getParamPrefixes() {
         return paramPrefixes;
     }
 
     /**
-     * <p>
      * Getter for the field <code>paramSuffixes</code>.
-     * </p>
      *
-     * @return the paramSuffixes
+     * @return the list of suffix strings appended to each parameter value during rendering
      */
     public List<String> getParamSuffixes() {
         return paramSuffixes;
     }
 
     /**
-     * <p>
      * Getter for the field <code>paramUrls</code>.
-     * </p>
      *
-     * @return the paramUrls
+     * @return the list of URLs associated with each metadata parameter value
      */
     public List<String> getParamUrls() {
         return paramUrls;
     }
 
     /**
-     * <p>
      * Getter for the field <code>normDataUrls</code>.
-     * </p>
      *
-     * @return the normDataUrls
+     * @return the map of norm data type keys to their resolved URLs
      */
     public Map<String, String> getNormDataUrls() {
         return normDataUrls;
     }
 
     /**
-     * <p>
      * getNormDataUrlKeys.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of norm data URL keys stored in this metadata value
      */
     public List<String> getNormDataUrlKeys() {
         if (!normDataUrls.isEmpty()) {
@@ -322,11 +302,9 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * <p>
      * getNormDataUrl.
-     * </p>
      *
-     * @param key a {@link java.lang.String} object.
+     * @param key norm data type identifier key
      * @return Not URL-encoded norm data URL
      */
     public String getNormDataUrl(String key) {
@@ -334,12 +312,10 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * <p>
      * getNormDataUrl.
-     * </p>
      *
-     * @param key a {@link java.lang.String} object.
-     * @param urlEncode a boolean.
+     * @param key norm data type identifier key
+     * @param urlEncode true to return a URL-encoded value
      * @return if urlEncode=true, then URL-encoded norm data URL; otherwise not encoded norm data URL
      */
     public String getNormDataUrl(String key, boolean urlEncode) {
@@ -350,16 +326,12 @@ public class MetadataValue implements Serializable {
         return normDataUrls.get(key);
     }
 
-    /**
-     * @return the citationValues
-     */
+    
     public Map<String, List<String>> getCitationValues() {
         return citationValues;
     }
 
-    /**
-     * @return the childMetadata
-     */
+    
     public List<Metadata> getChildMetadata() {
         return childMetadata;
     }
@@ -377,20 +349,16 @@ public class MetadataValue implements Serializable {
         return this.accessConditions.contains(StringConstants.ACCESSCONDITION_METADATA_ACCESS_RESTRICTED);
     }
 
-    /**
-     * @return the accessConditions
-     */
+    
     public Set<String> getAccessConditions() {
         return accessConditions;
     }
 
     /**
-     * <p>
      * hasParamValue.
-     * </p>
      *
-     * @param paramLabel a {@link java.lang.String} object.
-     * @return a boolean.
+     * @param paramLabel label key identifying the parameter
+     * @return true if this metadata value has a value for the parameter identified by the given label, false otherwise
      */
     public boolean hasParamValue(String paramLabel) {
         int index = paramLabels.indexOf(paramLabel);
@@ -398,12 +366,10 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * <p>
      * getParamValue.
-     * </p>
      *
-     * @param paramLabel a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param paramLabel label key identifying the parameter
+     * @return the first value for the parameter identified by the given label, or an empty string if not found
      */
     public String getParamValue(String paramLabel) {
         List<String> values = getParamValues(paramLabel);
@@ -416,7 +382,7 @@ public class MetadataValue implements Serializable {
 
     /**
      * 
-     * @param paramLabel
+     * @param paramLabel label key identifying the parameter
      * @return List of parameter values for the given paramLabel
      */
     public List<String> getParamValues(String paramLabel) {
@@ -454,30 +420,22 @@ public class MetadataValue implements Serializable {
         }
     }
 
-    /**
-     * @return the iddoc
-     */
+    
     public String getIddoc() {
         return iddoc;
     }
 
-    /**
-     * @param iddoc the iddoc to set
-     */
+    
     public void setIddoc(String iddoc) {
         this.iddoc = iddoc;
     }
 
-    /**
-     * @return the ownerIddoc
-     */
+    
     public String getOwnerIddoc() {
         return ownerIddoc;
     }
 
-    /**
-     * @param ownerIddoc the ownerIddoc to set
-     */
+    
     public void setOwnerIddoc(String ownerIddoc) {
         this.ownerIddoc = ownerIddoc;
     }
@@ -491,8 +449,8 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * 
-     * @param includeLabels
+     *
+     * @param includeLabels if true, prepend parameter labels to each value
      * @return Display value for the current locale
      */
     public String getDisplayValue(boolean includeLabels) {
@@ -500,8 +458,8 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * 
-     * @param locale
+     *
+     * @param locale locale for translation lookup
      * @return Display value for the given locale
      */
     public String getDisplayValue(Locale locale) {
@@ -509,9 +467,9 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * 
-     * @param locale
-     * @param includeLabels
+     *
+     * @param locale locale for translation lookup
+     * @param includeLabels if true, prepend parameter labels to each value
      * @return Display value for the given locale
      */
     public String getDisplayValue(Locale locale, boolean includeLabels) {
@@ -529,11 +487,9 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>masterValue</code>.
-     * </p>
      *
-     * @return the masterValue
+     * @return the template string into which parameter values are substituted during rendering, defaulting to "{0}" if empty
      */
     public String getMasterValue() {
         if (StringUtils.isEmpty(masterValue)) {
@@ -544,22 +500,18 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>masterValue</code>.
-     * </p>
      *
-     * @param masterValue the masterValue to set
+     * @param masterValue the template string into which parameter values are substituted during rendering
      */
     public void setMasterValue(String masterValue) {
         this.masterValue = masterValue;
     }
 
     /**
-     * <p>
      * getGroupTypeForUrl.
-     * </p>
      *
-     * @return the groupType
+     * @return the METADATATYPE value of the owning grouped metadata structure element, or "-" if not set
      */
     public String getGroupTypeForUrl() {
         if (StringUtils.isEmpty(groupType)) {
@@ -569,11 +521,9 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>groupType</code>.
-     * </p>
      *
-     * @param groupType the groupType to set
+     * @param groupType the METADATATYPE value of the owning grouped metadata structure element
      * @return this
      */
     public MetadataValue setGroupType(String groupType) {
@@ -581,15 +531,13 @@ public class MetadataValue implements Serializable {
         return this;
     }
 
-    /**
-     * @return the docstrct
-     */
+    
     public String getDocstrct() {
         return docstrct;
     }
 
     /**
-     * @param docstrct the docstrct to set
+     * @param docstrct the document structure type of the owning structure element
      * @return this
      */
     public MetadataValue setDocstrct(String docstrct) {
@@ -597,29 +545,23 @@ public class MetadataValue implements Serializable {
         return this;
     }
 
-    /**
-     * @return the topstruct
-     */
+    
     public String getTopstruct() {
         return topstruct;
     }
 
-    /**
-     * @param topstruct the topstruct to set
-     */
+    
     public void setTopstruct(String topstruct) {
         this.topstruct = topstruct;
     }
 
-    /**
-     * @return the label
-     */
+    
     public String getLabel() {
         return label;
     }
 
     /**
-     * @param label the label to set
+     * @param label the display label for this metadata value
      * @return this
      */
     public MetadataValue setLabel(String label) {
@@ -628,7 +570,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * @param citationProcessor the citationProcessor to set
+     * @param citationProcessor the configured CSL citation processor used to format this value as a citation
      * @return this
      */
     public MetadataValue setCitationProcessor(CSL citationProcessor) {
@@ -637,7 +579,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * @param citationItemDataProvider the citationItemDataProvider to set
+     * @param citationItemDataProvider the data provider that supplies citation item data to the CSL processor
      * @return this
      */
     public MetadataValue setCitationItemDataProvider(CitationDataProvider citationItemDataProvider) {

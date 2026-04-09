@@ -25,8 +25,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class NodeType implements Serializable {
 

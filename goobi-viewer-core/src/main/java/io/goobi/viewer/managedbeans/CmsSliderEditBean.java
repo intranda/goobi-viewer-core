@@ -55,8 +55,7 @@ import io.goobi.viewer.model.cms.Selectable;
 import io.goobi.viewer.model.cms.collections.CMSCollection;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Named
 @ViewScoped
@@ -74,9 +73,7 @@ public class CmsSliderEditBean implements Serializable {
 
     private String collectionField;
 
-    /**
-     *
-     */
+    
     public CmsSliderEditBean() {
         try {
             selectableCategories = BeanUtils.getCmsBean()
@@ -91,9 +88,7 @@ public class CmsSliderEditBean implements Serializable {
         }
     }
 
-    /**
-     * @param selectedSlider the selectedSlider to set
-     */
+    
     public void setSelectedSlider(CMSSlider selectedSlider) {
         this.selectedSlider = selectedSlider;
         readCategories();
@@ -113,9 +108,9 @@ public class CmsSliderEditBean implements Serializable {
     }
 
     /**
-     * Set the selected slider via id string
+     * Sets the selected slider via id string.
      * 
-     * @param idString
+     * @param idString string representation of the slider's database ID
      * @throws DAOException
      */
     public void setSliderId(String idString) throws DAOException {
@@ -124,18 +119,16 @@ public class CmsSliderEditBean implements Serializable {
     }
 
     /**
-     * Set the selected slider via id
+     * Sets the selected slider via id.
      * 
-     * @param id
+     * @param id database ID of the slider to select
      * @throws DAOException
      */
     public void setSliderId(long id) throws DAOException {
         setSelectedSlider(DataManager.getInstance().getDao().getSlider(id));
     }
 
-    /**
-     * @return the selectedSlider
-     */
+    
     public CMSSlider getSelectedSlider() {
         return selectedSlider;
     }
@@ -211,7 +204,7 @@ public class CmsSliderEditBean implements Serializable {
     }
 
     /**
-     * Writes all selected categories of {@link #selectableCategories} to the {@link #selectedSlider} if both exist
+     * Writes all selected categories of {@link #selectableCategories} to the {@link #selectedSlider} if both exist.
      */
     public void writeCategories() {
         if (this.selectableCategories != null && this.selectedSlider != null) {
@@ -233,9 +226,7 @@ public class CmsSliderEditBean implements Serializable {
         }
     }
 
-    /**
-     * @return the selectableCategories
-     */
+    
     public List<Selectable<CMSCategory>> getSelectableCategories() {
         return selectableCategories;
     }
@@ -262,16 +253,12 @@ public class CmsSliderEditBean implements Serializable {
         return "";
     }
 
-    /**
-     * @return the collectionField
-     */
+    
     public String getCollectionField() {
         return collectionField;
     }
 
-    /**
-     * @param collectionField the collectionField to set
-     */
+    
     public void setCollectionField(String collectionField) {
         this.collectionField = collectionField;
         this.cmsCollections = null;

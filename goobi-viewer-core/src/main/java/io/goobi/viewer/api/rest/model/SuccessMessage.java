@@ -22,9 +22,8 @@
 package io.goobi.viewer.api.rest.model;
 
 /**
- * <p>
- * SuccessMessage class.
- * </p>
+ * REST API response model indicating whether an operation succeeded, together with an optional human-readable result description.
+ * Implements {@link IResponseMessage} and is serialized as JSON for operation-result responses.
  *
  * @author Florian Alpers
  */
@@ -34,12 +33,10 @@ public class SuccessMessage implements IResponseMessage {
     private final String message;
 
     /**
-     * <p>
-     * Constructor for SuccessMessage.
-     * </p>
+     * Creates a new SuccessMessage instance.
      *
-     * @param success a boolean.
-     * @param message a {@link java.lang.String} object.
+     * @param success true if the operation succeeded
+     * @param message human-readable result description
      */
     public SuccessMessage(boolean success, String message) {
         super();
@@ -48,11 +45,9 @@ public class SuccessMessage implements IResponseMessage {
     }
 
     /**
-     * <p>
-     * Constructor for SuccessMessage.
-     * </p>
+     * Creates a new SuccessMessage instance.
      *
-     * @param success a boolean.
+     * @param success true if the operation succeeded
      */
     public SuccessMessage(boolean success) {
         super();
@@ -61,31 +56,24 @@ public class SuccessMessage implements IResponseMessage {
     }
 
     /**
-     * <p>
      * isSuccess.
-     * </p>
      *
-     * @return the success
+     * @return true if the operation succeeded, false otherwise
      */
     public boolean isSuccess() {
         return success;
     }
 
     /**
-     * <p>
      * Getter for the field <code>message</code>.
-     * </p>
      *
-     * @return the message
+     * @return the human-readable result description
      */
     @Override
     public String getMessage() {
         return message;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -94,9 +82,6 @@ public class SuccessMessage implements IResponseMessage {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

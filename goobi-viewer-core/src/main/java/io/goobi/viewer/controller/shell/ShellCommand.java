@@ -30,6 +30,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Executes an external shell command and captures its standard output and error streams.
+ * Supports configurable execution timeouts and optionally discards captured output to reduce
+ * memory usage for fire-and-forget invocations.
+ */
 public class ShellCommand {
 
     private static final Logger logger = LogManager.getLogger(ShellCommand.class);

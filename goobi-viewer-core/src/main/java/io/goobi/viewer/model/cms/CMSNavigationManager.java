@@ -41,9 +41,7 @@ import io.goobi.viewer.model.viewer.PageType;
 import jakarta.persistence.EntityNotFoundException;
 
 /**
- * <p>
- * CMSNavigationManager class.
- * </p>
+ * Manages loading, persisting, and reordering of CMS navigation menu items.
  */
 public class CMSNavigationManager implements Serializable {
 
@@ -58,11 +56,9 @@ public class CMSNavigationManager implements Serializable {
     private List<CMSNavigationItem> visibleItems;
 
     /**
-     * <p>
-     * Constructor for CMSNavigationManager.
-     * </p>
+     * Creates a new CMSNavigationManager instance.
      *
-     * @param associatedTheme a {@link java.lang.String} object.
+     * @param associatedTheme theme name whose navigation items are managed.
      */
     public CMSNavigationManager(String associatedTheme) {
         this.associatedTheme = associatedTheme;
@@ -74,9 +70,7 @@ public class CMSNavigationManager implements Serializable {
     }
 
     /**
-     * <p>
      * loadItems.
-     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -118,9 +112,7 @@ public class CMSNavigationManager implements Serializable {
     }
 
     /**
-     * <p>
      * addCMSPageItems.
-     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -136,9 +128,7 @@ public class CMSNavigationManager implements Serializable {
         }
     }
 
-    /**
-     *
-     */
+    
     private void addModuleItems() {
         DataManager.getInstance()
                 .getModules()
@@ -150,11 +140,9 @@ public class CMSNavigationManager implements Serializable {
     }
 
     /**
-     * <p>
      * addAvailableItem.
-     * </p>
      *
-     * @param item a {@link io.goobi.viewer.model.cms.SelectableNavigationItem} object.
+     * @param item navigation item to add if not already present.
      */
     public void addAvailableItem(SelectableNavigationItem item) {
         if (!availableItems.contains(item)) {
@@ -163,11 +151,9 @@ public class CMSNavigationManager implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>availableItems</code>.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return list of all items selectable for the navigation menu.
      */
     public List<SelectableNavigationItem> getAvailableItems() {
         return availableItems;
@@ -187,9 +173,7 @@ public class CMSNavigationManager implements Serializable {
     }
 
     /**
-     * <p>
      * loadVisibleItems.
-     * </p>
      *
      * @return the sublist of available menu items matching the navigationMenuItem-list from the database (in label and url)
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -203,7 +187,7 @@ public class CMSNavigationManager implements Serializable {
     }
 
     /**
-     * @param items
+     * @param items navigation items to clone including their children
      * @return List<CMSNavigationItem>
      */
     private List<CMSNavigationItem> cloneItemHierarchy(List<CMSNavigationItem> items) {
@@ -220,11 +204,9 @@ public class CMSNavigationManager implements Serializable {
     }
 
     /**
-     * <p>
      * loadItemsFromDatabase.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return list of top-level navigation items for the associated theme.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<CMSNavigationItem> loadItemsFromDatabase() throws DAOException {
@@ -238,20 +220,18 @@ public class CMSNavigationManager implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>visibleItems</code>.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return ordered list of navigation items currently in the menu.
      */
     public List<CMSNavigationItem> getVisibleItems() {
         return visibleItems;
     }
 
     /**
-     * Adds the given item, along with all their descendants to the visible item list
+     * Adds the given item, along with all their descendants to the visible item list.
      *
-     * @param items a {@link java.util.List} object.
+     * @param items navigation items (and their descendants) to set as visible.
      */
     public void setVisibleItems(List<CMSNavigationItem> items) {
         this.visibleItems = new ArrayList<>();
@@ -259,9 +239,9 @@ public class CMSNavigationManager implements Serializable {
     }
 
     /**
-     * Replaces the complete navigation-item database table with the elements of 'visibleItems'
+     * Replaces the complete navigation-item database table with the elements of 'visibleItems'.
      *
-     * @param theme a {@link java.lang.String} object.
+     * @param theme theme name whose navigation table is replaced.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void saveVisibleItems(String theme) throws DAOException {
@@ -280,7 +260,7 @@ public class CMSNavigationManager implements Serializable {
 
     /**
      * 
-     * @param item
+     * @param item navigation item to add or update in the database
      * @throws DAOException
      */
     private static void addItem(CMSNavigationItem item) throws DAOException {
@@ -292,9 +272,9 @@ public class CMSNavigationManager implements Serializable {
     }
 
     /**
-     * Deletes a navigationitem and all its children from the database
+     * Deletes a navigationitem and all its children from the database.
      *
-     * @param oldItem
+     * @param oldItem navigation item to delete along with its children
      * @throws DAOException
      */
     private void deleteItem(CMSNavigationItem oldItem) throws ConcurrentModificationException, DAOException {
@@ -328,11 +308,9 @@ public class CMSNavigationManager implements Serializable {
     }
 
     /**
-     * <p>
      * addVisibleItem.
-     * </p>
      *
-     * @param navigationItem a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
+     * @param navigationItem item to append to the visible navigation list.
      */
     public void addVisibleItem(CMSNavigationItem navigationItem) {
         if (navigationItem.getItemLabel() == null || navigationItem.getPageUrl() == null) {
@@ -346,9 +324,7 @@ public class CMSNavigationManager implements Serializable {
     }
 
     /**
-     * <p>
      * reload.
-     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -357,9 +333,7 @@ public class CMSNavigationManager implements Serializable {
     }
 
     /**
-     * <p>
      * getItem.
-     * </p>
      *
      * @param id the item's {@link io.goobi.viewer.model.cms.CMSNavigationItem#getSortingListId()}
      * @return The first matching item from all visible items as optional. Empty optional if no matching item was found
@@ -369,11 +343,9 @@ public class CMSNavigationManager implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>associatedTheme</code>.
-     * </p>
      *
-     * @return the associatedTheme
+     * @return the theme name whose navigation items are managed by this instance
      */
     public String getAssociatedTheme() {
         return associatedTheme;

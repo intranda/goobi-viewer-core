@@ -32,17 +32,13 @@ import jakarta.persistence.Converter;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Store simple strings in single database field
+ * Store simple strings in single database field.
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Converter
 public class StringListConverter implements AttributeConverter<List<String>, String> {
 
-    /* (non-Javadoc)
-     * @see jakarta.persistence.AttributeConverter#convertToDatabaseColumn(java.lang.Object)
-     */
     @Override
     public String convertToDatabaseColumn(List<String> attribute) {
         if (attribute == null || attribute.isEmpty()) {
@@ -52,9 +48,6 @@ public class StringListConverter implements AttributeConverter<List<String>, Str
         }
     }
 
-    /* (non-Javadoc)
-     * @see jakarta.persistence.AttributeConverter#convertToEntityAttribute(java.lang.Object)
-     */
     @Override
     public List<String> convertToEntityAttribute(String dbData) {
         if (StringUtils.isBlank(dbData)) {

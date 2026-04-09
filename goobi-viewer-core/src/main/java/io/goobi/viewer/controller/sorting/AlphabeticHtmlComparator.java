@@ -33,6 +33,12 @@ import java.util.function.Function;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+/**
+ * Comparator that orders elements alphabetically by the plain text extracted from their HTML string
+ * representation using Jsoup, with support for ascending or descending order.
+ *
+ * @param <T> the type of elements to be compared
+ */
 public class AlphabeticHtmlComparator<T> implements Comparator<T> {
 
     private final int reverse;

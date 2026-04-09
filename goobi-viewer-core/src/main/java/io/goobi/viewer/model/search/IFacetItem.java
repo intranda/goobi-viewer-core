@@ -24,123 +24,53 @@ package io.goobi.viewer.model.search;
 import io.goobi.viewer.model.search.FacetItem.FacetType;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public interface IFacetItem {
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getQueryEscapedLink()
-     */
     String getQueryEscapedLink();
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getEscapedLink()
-     */
     String getEscapedLink();
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getUrlEscapedLink()
-     */
     String getUrlEscapedLink();
     
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getType()
-     */
     FacetType getType();
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getField()
-     */
     String getField();
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#setField(java.lang.String)
-     */
     void setField(String field);
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getFullValue()
-     */
     String getFullValue();
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getValue()
-     */
     String getValue();
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#setValue(java.lang.String)
-     */
     void setValue(String value);
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getValue2()
-     */
     String getValue2();
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#setValue2(java.lang.String)
-     */
     void setValue2(String value2);
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getLink()
-     */
     String getLink();
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#setLink(java.lang.String)
-     */
     void setLink(String link);
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getLabel()
-     */
     String getLabel();
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#setLabel(java.lang.String)
-     */
     IFacetItem setLabel(String label);
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getTranslatedLabel()
-     */
     String getTranslatedLabel();
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#setTranslatedLabel(java.lang.String)
-     */
     void setTranslatedLabel(String translatedLabel);
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getCount()
-     */
     long getCount();
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#setCount(long)
-     */
     IFacetItem setCount(long count);
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getCount()
-     */
     boolean isGroup();
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#setCount(boolean)
-     */
     IFacetItem setGroup(boolean group);
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#isHierarchial()
-     */
     boolean isHierarchial();
     
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#isBoolean()
-     */
     boolean isBooleanType();
 }

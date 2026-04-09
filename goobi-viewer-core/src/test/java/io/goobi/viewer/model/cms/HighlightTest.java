@@ -24,12 +24,18 @@ package io.goobi.viewer.model.cms;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
@@ -38,8 +44,12 @@ import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.HighlightData.ImageMode;
+import io.goobi.viewer.model.cms.HighlightData.TargetType;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
+import io.goobi.viewer.model.metadata.Metadata;
+import io.goobi.viewer.solr.SolrSearchIndex;
 
 class HighlightTest extends AbstractSolrEnabledTest {
 
@@ -72,6 +82,37 @@ class HighlightTest extends AbstractSolrEnabledTest {
         URI uri = object.getImageURI(1200, 1400);
         String uriPath = uri.getPath();
         assertEquals("/viewer.goobi.io/api/v2/records/PPN12345/representative/full/!1200,1400/0/default.jpg", uriPath);
+    }
+
+    /**
+     * When Solr is unreachable, getMetadataList() must return an empty list instead of
+     * propagating IndexUnreachableException through JSF EL — which would corrupt
+     * Mojarra's CompositeComponentStackManager and cause a StackOverflowError.
+     */
+    @Test
+    void getMetadataList_solrUnreachable_returnsEmptyList() throws Exception {
+        ThumbnailHandler thumbs = new ThumbnailHandler(URI.create("https://viewer.goobi.io/api/v2/"), "/viewer/static/");
+        Configuration mockConfig = mock(Configuration.class);
+
+        HighlightData data = new HighlightData();
+        data.setTargetType(TargetType.RECORD);
+        data.setRecordIdentifier("PPN123");
+        Highlight highlight = new Highlight(data, thumbs, mockConfig);
+
+        SolrSearchIndex mockIndex = mock(SolrSearchIndex.class);
+        when(mockIndex.getDocumentByPI("PPN123")).thenThrow(new IndexUnreachableException("Solr unreachable"));
+
+        DataManager mockDm = mock(DataManager.class);
+        when(mockDm.getSearchIndex()).thenReturn(mockIndex);
+
+        try (MockedStatic<DataManager> dmStatic = mockStatic(DataManager.class);
+                MockedStatic<BeanUtils> buStatic = mockStatic(BeanUtils.class)) {
+            dmStatic.when(DataManager::getInstance).thenReturn(mockDm);
+            buStatic.when(BeanUtils::getLocale).thenReturn(Locale.GERMAN);
+
+            List<Metadata> result = highlight.getMetadataList();
+            assertTrue(result.isEmpty(), "getMetadataList() must return empty list when Solr is unreachable");
+        }
     }
 
     @Test

@@ -48,9 +48,7 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
- * <p>
- * Abstract HttpAuthenticationProvider class.
- * </p>
+ * Authentication provider that delegates credential validation to an external HTTP endpoint.
  *
  * @author Florian Alpers
  */
@@ -58,12 +56,12 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
 
     private static final Logger logger = LogManager.getLogger(HttpAuthenticationProvider.class);
 
-    /** Constant <code>DEFAULT_EMAIL="{username}@nomail.com"</code> */
+    /** Constant <code>DEFAULT_EMAIL="{username}@nomail.com"</code>. */
     protected static final String DEFAULT_EMAIL = "{username}@nomail.com";
-    /** Constant <code>TYPE_USER_PASSWORD="userPassword"</code> */
+    /** Constant <code>TYPE_USER_PASSWORD="userPassword"</code>. */
     protected static final String TYPE_USER_PASSWORD = "userPassword";
 
-    /** Constant <code>connectionManager</code> */
+    /** Constant <code>connectionManager</code>. */
     protected static PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
 
     protected final String name;
@@ -77,16 +75,14 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     protected String redirectUrl;
 
     /**
-     * <p>
-     * Constructor for HttpAuthenticationProvider.
-     * </p>
+     * Creates a new HttpAuthenticationProvider instance.
      *
-     * @param name a {@link java.lang.String} object.
-     * @param label a {@link java.lang.String} object.
-     * @param url a {@link java.lang.String} object.
-     * @param image a {@link java.lang.String} object.
-     * @param type a {@link java.lang.String} object.
-     * @param timeoutMillis a long.
+     * @param name unique identifier for this provider
+     * @param label display label shown to the user
+     * @param type provider type, e.g. userPassword
+     * @param url remote authentication endpoint URL
+     * @param image relative or absolute path to the provider logo
+     * @param timeoutMillis HTTP connection and socket timeout in milliseconds
      */
     protected HttpAuthenticationProvider(String name, String label, String type, String url, String image, long timeoutMillis) {
         super();
@@ -99,11 +95,9 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     }
 
     /**
-     * <p>
      * Getter for the field <code>timeoutMillis</code>.
-     * </p>
      *
-     * @return the timeoutMillis
+     * @return the timeout in milliseconds used for HTTP authentication requests
      */
     public long getTimeoutMillis() {
         return timeoutMillis;
@@ -116,44 +110,36 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     }
 
     /**
-     * <p>
      * Getter for the field <code>label</code>.
-     * </p>
      *
-     * @return the label
+     * @return the display label for this provider, falling back to the name if no label is set
      */
     public String getLabel() {
         return (this.label == null || this.label.isEmpty()) ? this.name : this.label;
     }
 
     /**
-     * <p>
      * Getter for the field <code>url</code>.
-     * </p>
      *
-     * @return the url
+     * @return the endpoint URL used for authentication requests
      */
     public String getUrl() {
         return url;
     }
 
     /**
-     * <p>
      * Getter for the field <code>image</code>.
-     * </p>
      *
-     * @return the image
+     * @return the image URL or path representing this authentication provider
      */
     public String getImage() {
         return image;
     }
 
     /**
-     * <p>
      * getImageUrl.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the absolute URL to the authentication provider's image
      */
     public String getImageUrl() {
         try {
@@ -188,29 +174,23 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
         this.addUserToGroups = addUserToGroups;
     }
 
-    /**
-     * @return the redirectUrl
-     */
+    
     public String getRedirectUrl() {
         return redirectUrl;
     }
 
-    /**
-     * @param redirectUrl the redirectUrl to set
-     */
+    
     public void setRedirectUrl(String redirectUrl) {
         logger.trace("setRedirectUrl: {}", redirectUrl);
         this.redirectUrl = redirectUrl;
     }
 
     /**
-     * <p>
      * post.
-     * </p>
      *
-     * @param url a {@link java.net.URI} object.
-     * @param requestEntity a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param url target endpoint URI for the POST request
+     * @param requestEntity JSON body to send in the POST request
+     * @return the HTTP response body as string
      * @throws jakarta.ws.rs.WebApplicationException if any.
      */
     protected String post(URI url, String requestEntity) throws WebApplicationException {
@@ -237,12 +217,10 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     }
 
     /**
-     * <p>
      * get.
-     * </p>
      *
-     * @param url a {@link java.net.URI} object.
-     * @return a {@link java.lang.String} object.
+     * @param url target endpoint URI for the GET request
+     * @return the HTTP response body as string
      * @throws jakarta.ws.rs.WebApplicationException if any.
      */
     protected String get(URI url) throws WebApplicationException {

@@ -27,8 +27,10 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * @author florian
+ * Represents a configurable map marker used in geo maps, holding visual properties such as icon,
+ * colors, shape, and marker type (default, ExtraMarkers, or DivIcon) for rendering on a Leaflet map.
  *
+ * @author Florian Alpers
  */
 public class GeoMapMarker {
 
@@ -49,6 +51,10 @@ public class GeoMapMarker {
     private MarkerType type = MarkerType.EXTRA_MARKERS;
     private String className = "";
 
+    /**
+     * Enumerates the supported Leaflet marker rendering strategies: default Leaflet markers,
+     * ExtraMarkers plugin markers, and DivIcon-based markers.
+     */
     public enum MarkerType {
         DEFAULT("default"),
         EXTRA_MARKERS("ExtraMarkers"),
@@ -83,170 +89,122 @@ public class GeoMapMarker {
     public GeoMapMarker() {
     }
 
-    /**
-     * @return the icon
-     */
+    
     public String getIcon() {
         return icon;
     }
 
-    /**
-     * @param icon the icon to set
-     */
+    
     public void setIcon(String icon) {
         this.icon = icon;
     }
 
-    /**
-     * @return the markerColor
-     */
+    
     public String getMarkerColor() {
         return markerColor;
     }
 
-    /**
-     * @param markerColor the markerColor to set
-     */
+    
     public void setMarkerColor(String markerColor) {
         this.markerColor = markerColor;
     }
 
-    /**
-     * @return the shape
-     */
+    
     public String getShape() {
         return shape;
     }
 
-    /**
-     * @param shape the shape to set
-     */
+    
     public void setShape(String shape) {
         this.shape = shape;
     }
 
-    /**
-     * @return the extraClasses
-     */
+    
     public String getExtraClasses() {
         return extraClasses;
     }
 
-    /**
-     * @param extraClasses the extraClasses to set
-     */
+    
     public void setExtraClasses(String extraClasses) {
         this.extraClasses = extraClasses;
     }
 
-    /**
-     * @return the prefix
-     */
+    
     public String getPrefix() {
         return prefix;
     }
 
-    /**
-     * @param prefix the prefix to set
-     */
+    
     public void setPrefix(String prefix) {
         this.prefix = prefix;
     }
 
-    /**
-     * @return the iconColor
-     */
+    
     public String getIconColor() {
         return iconColor;
     }
 
-    /**
-     * @param iconColor the iconColor to set
-     */
+    
     public void setIconColor(String iconColor) {
         this.iconColor = iconColor;
     }
 
-    /**
-     * @return the iconRotation
-     */
+    
     public int getIconRotate() {
         return iconRotate;
     }
 
-    /**
-     * @param iconRotation the iconRotation to set
-     */
+    
     public void setIconRotate(int iconRotation) {
         this.iconRotate = iconRotation;
     }
 
-    /**
-     * @return the number
-     */
+    
     public String getNumber() {
         return number;
     }
 
-    /**
-     * @param number the number to set
-     */
+    
     public void setNumber(String number) {
         this.number = number;
     }
 
-    /**
-     * @return the svg
-     */
+    
     public boolean isSvg() {
         return svg;
     }
 
-    /**
-     * @param svg the svg to set
-     */
+    
     public void setSvg(boolean svg) {
         this.svg = svg;
     }
 
-    /**
-     * @return the name
-     */
+    
     public String getName() {
         return name;
     }
 
-    /**
-     * @param name the name to set
-     */
+    
     public void setName(String name) {
         this.name = name;
     }
 
-    /**
-     * @return the shadow
-     */
+    
     public boolean isShadow() {
         return shadow;
     }
 
-    /**
-     * @param shadow the shadow to set
-     */
+    
     public void setShadow(boolean shadow) {
         this.shadow = shadow;
     }
 
-    /**
-     * @return the highlightColor
-     */
+    
     public String getHighlightColor() {
         return highlightColor;
     }
 
-    /**
-     * @param highlightColor the highlightColor to set
-     */
+    
     public void setHighlightColor(String highlightColor) {
         this.highlightColor = highlightColor;
     }
@@ -261,30 +219,22 @@ public class GeoMapMarker {
         return mapper.readValue(json, GeoMapMarker.class);
     }
 
-    /**
-     * @param useDefault the useDefault to set
-     */
+    
     public void setUseDefault(boolean useDefault) {
         this.useDefault = useDefault;
     }
 
-    /**
-     * @return the useDefault
-     */
+    
     public boolean isUseDefault() {
         return useDefault;
     }
 
-    /**
-     * @param highlightIcon the highlightIcon to set
-     */
+    
     public void setHighlightIcon(String highlightIcon) {
         this.highlightIcon = highlightIcon;
     }
 
-    /**
-     * @return the highlightIcon
-     */
+    
     public String getHighlightIcon() {
         return highlightIcon;
     }

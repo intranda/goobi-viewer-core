@@ -37,7 +37,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 
 /**
- * @author florian
+ * @author Florian Alpers
  */
 public class SqlAnnotationLister implements AnnotationLister<CrowdsourcingAnnotation> {
 
@@ -50,15 +50,12 @@ public class SqlAnnotationLister implements AnnotationLister<CrowdsourcingAnnota
     }
 
     /**
-     * @param dao
+     * @param dao data access object for annotation queries
      */
     public SqlAnnotationLister(IDAO dao) {
         this.dao = dao;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAllAnnotations()
-     */
     @Override
     public List<CrowdsourcingAnnotation> getAllAnnotations() {
         try {
@@ -69,9 +66,6 @@ public class SqlAnnotationLister implements AnnotationLister<CrowdsourcingAnnota
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getTotalAnnotationCount()
-     */
     @Override
     public long getTotalAnnotationCount() {
         try {
@@ -82,10 +76,6 @@ public class SqlAnnotationLister implements AnnotationLister<CrowdsourcingAnnota
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAnnotations(int, int, java.lang.String, java.util.List,
-     * java.util.List, java.util.List, java.lang.String, java.lang.Integer, java.lang.String, boolean)
-     */
     @Override
     public List<CrowdsourcingAnnotation> getAnnotations(int firstIndex, int items, String textQuery, List<String> motivations, List<Long> generators,
             List<Long> creators, String targetPi, Integer targetPage, String sortField, boolean sortDescending) {
@@ -119,19 +109,12 @@ public class SqlAnnotationLister implements AnnotationLister<CrowdsourcingAnnota
 
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAnnotationCount(java.lang.String, java.util.List, java.util.List, 
-     * java.util.List, java.lang.String, java.lang.Integer, java.lang.String, boolean)
-     */
     @Override
     public long getAnnotationCount(String textQuery, List<String> motivations, List<Long> generators, List<Long> creators, String targetPi,
             Integer targetPage) {
         return getAnnotations(0, Integer.MAX_VALUE, textQuery, motivations, generators, creators, targetPi, targetPage, "id", false).size();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAnnotation(java.lang.Long)
-     */
     @Override
     public Optional<CrowdsourcingAnnotation> getAnnotation(Long id) {
         try {

@@ -26,9 +26,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 /**
- * <p>
- * CompareYearSolrDocWrapper class.
- * </p>
+ * Wraps a Solr document to provide year-based comparison and sorting for calendar display.
  */
 public class CompareYearSolrDocWrapper implements Comparable<CompareYearSolrDocWrapper> {
 
@@ -38,9 +36,7 @@ public class CompareYearSolrDocWrapper implements Comparable<CompareYearSolrDocW
     private long year = 0;
 
     /**
-     * <p>
-     * Constructor for CompareYearSolrDocWrapper.
-     * </p>
+     * Creates a new CompareYearSolrDocWrapper instance.
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      */
@@ -69,11 +65,6 @@ public class CompareYearSolrDocWrapper implements Comparable<CompareYearSolrDocW
         return ret;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -83,11 +74,6 @@ public class CompareYearSolrDocWrapper implements Comparable<CompareYearSolrDocW
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -106,20 +92,16 @@ public class CompareYearSolrDocWrapper implements Comparable<CompareYearSolrDocW
     }
 
     /**
-     * <p>
      * Getter for the field <code>solrDocument</code>.
-     * </p>
      *
-     * @return a {@link org.apache.solr.common.SolrDocument} object.
+     * @return the Solr document wrapped by this comparator
      */
     public SolrDocument getSolrDocument() {
         return solrDocument;
     }
 
     /**
-     * <p>
      * Setter for the field <code>solrDocument</code>.
-     * </p>
      *
      * @param solrDocument a {@link org.apache.solr.common.SolrDocument} object.
      */
@@ -128,9 +110,7 @@ public class CompareYearSolrDocWrapper implements Comparable<CompareYearSolrDocW
     }
 
     /**
-     * <p>
      * Getter for the field <code>year</code>.
-     * </p>
      *
      * @return a long.
      */
@@ -139,9 +119,7 @@ public class CompareYearSolrDocWrapper implements Comparable<CompareYearSolrDocW
     }
 
     /**
-     * <p>
      * Setter for the field <code>year</code>.
-     * </p>
      *
      * @param year a long.
      */

@@ -32,9 +32,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * <p>
- * SimpleBrowseElementInfo class.
- * </p>
+ * Lightweight browse element info carrying only a label and URI for simple collection entries.
  */
 public class SimpleBrowseElementInfo implements BrowseElementInfo, Serializable {
 
@@ -48,24 +46,20 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo, Serializable 
     private String collectionName;
 
     /**
-     * <p>
-     * Constructor for SimpleBrowseElementInfo.
-     * </p>
+     * Creates a new SimpleBrowseElementInfo instance.
      *
-     * @param collectionName a {@link java.lang.String} object.
+     * @param collectionName identifier of the collection to represent
      */
     public SimpleBrowseElementInfo(String collectionName) {
         this.collectionName = collectionName;
     }
 
     /**
-     * <p>
-     * Constructor for SimpleBrowseElementInfo.
-     * </p>
+     * Creates a new SimpleBrowseElementInfo instance.
      *
-     * @param collectionName a {@link java.lang.String} object.
-     * @param linkURI a {@link java.net.URI} object.
-     * @param iconURI a {@link java.net.URI} object.
+     * @param collectionName identifier of the collection to represent
+     * @param linkURI optional URI the element links to, may be null
+     * @param iconURI optional URI of the element's icon, may be null
      */
     public SimpleBrowseElementInfo(String collectionName, URI linkURI, URI iconURI) {
         this.collectionName = collectionName;
@@ -79,20 +73,15 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo, Serializable 
         return description;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.viewer.BrowseElementInfo#getDescription(java.lang.String)
-     */
     @Override
     public String getDescription(String language) {
         return description;
     }
 
     /**
-     * <p>
      * Setter for the field <code>description</code>.
-     * </p>
      *
-     * @param description a {@link java.lang.String} object.
+     * @param description plain text description to assign
      */
     public void setDescription(String description) {
         this.description = description;
@@ -111,11 +100,9 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo, Serializable 
     }
 
     /**
-     * <p>
      * Setter for the field <code>linkURI</code>.
-     * </p>
      *
-     * @param linkURI a {@link java.net.URI} object.
+     * @param linkURI URI the element should link to
      */
     public void setLinkURI(URI linkURI) {
         this.linkURI = linkURI;
@@ -128,11 +115,9 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo, Serializable 
     }
 
     /**
-     * <p>
      * Setter for the field <code>iconURI</code>.
-     * </p>
      *
-     * @param iconURI a {@link java.net.URI} object.
+     * @param iconURI URI of the icon to display for this element
      */
     public void setIconURI(URI iconURI) {
         this.iconURI = iconURI;
@@ -150,27 +135,18 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo, Serializable 
         return getIconURI();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.viewer.BrowseElementInfo#getName()
-     */
     /** {@inheritDoc} */
     @Override
     public String getName() {
         return collectionName;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.viewer.BrowseElementInfo#getTranslationsForName()
-     */
     /** {@inheritDoc} */
     @Override
     public IMetadataValue getTranslationsForName() {
         return ViewerResourceBundle.getTranslations(getName(), false);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.viewer.BrowseElementInfo#getTranslationsForDescription()
-     */
     @Override
     public IMetadataValue getTranslationsForDescription() {
         return null;

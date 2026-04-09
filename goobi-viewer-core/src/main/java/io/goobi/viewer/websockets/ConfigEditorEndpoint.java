@@ -42,7 +42,7 @@ import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
 
 /**
- * Endpoint for unlocking files opened in {@link AdminConfigEditorBean} when leaving a page
+ * Endpoint for unlocking files opened in {@link AdminConfigEditorBean} when leaving a page.
  */
 @ServerEndpoint(value = "/admin/config/edit.socket", configurator = GetHttpSessionConfigurator.class)
 public class ConfigEditorEndpoint {
@@ -53,10 +53,10 @@ public class ConfigEditorEndpoint {
     private Optional<String> httpSessionId = Optional.empty();
 
     /**
-     * Store id of http session
+     * Store id of http session.
      * 
-     * @param session
-     * @param config
+     * @param session WebSocket session being opened
+     * @param config endpoint configuration providing HTTP session properties
      */
     @OnOpen
     public void onOpen(Session session, EndpointConfig config) {
@@ -65,7 +65,7 @@ public class ConfigEditorEndpoint {
     }
 
     /**
-     * Accept messages containing a file path which is locked by the curren page and needs to be unlocked upon leaving the page
+     * Accept messages containing a file path which is locked by the curren page and needs to be unlocked upon leaving the page.
      * 
      * @param message a json object string in the form "{'fileToLock' : '/path/to/config/file'}"
      */
@@ -85,7 +85,7 @@ public class ConfigEditorEndpoint {
      * Called when leaving a adminConfigEditor page. Unlocks the file set by {@link #onMessage(String)} for the session set by
      * {@link #onOpen(Session, EndpointConfig)} using {@link AdminConfigEditorBean#unlockFile(Path, String)}
      * 
-     * @param session
+     * @param session WebSocket session being closed
      */
     @OnClose
     public void onClose(Session session) {

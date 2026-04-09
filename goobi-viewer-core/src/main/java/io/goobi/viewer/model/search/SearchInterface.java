@@ -29,42 +29,42 @@ import io.goobi.viewer.model.maps.GeoMap;
 
 /**
  * Interface that all classes must implement that may be used in jsf search masks {@link io.goobi.viewer.managedbeans.SearchBean} is the default
- * implementation
+ * implementation.
  *
  * @author Florian Alpers
  */
 public interface SearchInterface {
 
     /**
-     * Perform a simple Search
+     * Perform a simple Search.
      *
      * @return the url to navigate to, or an empty string if naviation is handled internally
      */
     public String searchSimple();
 
     /**
-     * Perform an advanced Search
+     * Perform an advanced Search.
      *
      * @return the url to navigate to, or an empty string if naviation is handled internally
      */
     public String searchAdvanced();
 
     /**
-     * Reset the current search including all results and search parameters
+     * Resets the current search including all results and search parameters.
      *
      * @return the url to navigate to, or an empty string if naviation is handled internally
      */
     public String resetSearch();
 
     /**
-     * Return the current result list page number
+     * Returns the current result list page number.
      *
      * @return the current result list page number
      */
     public int getCurrentPage();
 
     /**
-     * Return the last result list page number
+     * Returns the last result list page number.
      *
      * @return the last result list page number
      */
@@ -76,94 +76,94 @@ public interface SearchInterface {
     public String getActiveContext();
 
     /**
-     * @param activeContext a {@link java.lang.String} object.
+     * @param activeContext result group name or advanced search template to activate
      */
     public void setActiveContext(String activeContext);
 
     /**
-     * Return the search string for the selected sort option
+     * Returns the search string for the selected sort option.
      *
      * @return the search string for the selected sort option
      */
     public String getSortString();
 
     /**
-     * Set the sorting search string
+     * Sets the sorting search string.
      *
-     * @param sortString a {@link java.lang.String} object.
+     * @param sortString sort field and direction encoded as search string
      */
     public void setSortString(String sortString);
 
     /**
-     * Return if search is performed only within a DC
+     * Returns if search is performed only within a DC.
      *
-     * @return a boolean.
+     * @return true if the search is restricted to a specific DC (collection) field, false otherwise
      */
     public boolean isSearchInDcFlag();
 
     /**
-     * Return if search is performed only within a certain facet field
+     * Returns if search is performed only within a certain facet field.
      *
-     * @param fieldName
-     * @return a boolean.
+     * @param fieldName Solr facet field name to check
+     * @return true if the search is restricted to the given facet field, false otherwise
      */
     public boolean isSearchInFacetFieldFlag(String fieldName);
 
     /**
-     * List all current {@link io.goobi.viewer.model.search.SearchFacets}
+     * List all current {@link io.goobi.viewer.model.search.SearchFacets}.
      *
      * @return all current {@link io.goobi.viewer.model.search.SearchFacets}
      */
     public SearchFacets getFacets();
 
     /**
-     * Return suggestions for autocomplete
+     * Returns suggestions for autocomplete.
      *
-     * @param suggestion a {@link java.lang.String} object.
+     * @param suggestion partial input string to complete
      * @return suggestions for autocomplete
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public List<String> autocomplete(String suggestion) throws IndexUnreachableException;
 
     /**
-     * Get the current search string for display
+     * Gets the current search string for display.
      *
      * @return the current search string for display
      */
     public String getSearchString();
 
     /**
-     * Get the actual search string
+     * Gets the actual search string.
      *
      * @return the actual search string
      */
     public String getExactSearchString();
 
     /**
-     * Set the actual search string
+     * Sets the actual search string.
      *
-     * @param searchString a {@link java.lang.String} object.
+     * @param searchString raw search query to set
      */
     public void setSearchString(String searchString);
 
     /**
-     * Get a list of all available search filters
+     * Gets a list of all available search filters.
      *
      * @return a list of all available search filters
      */
     public List<SearchFilter> getSearchFilters();
 
     /**
-     * Return the current search filter as string
+     * Returns the current search filter as string.
      *
      * @return the current search filter as string
      */
     public String getCurrentSearchFilterString();
 
     /**
-     * Set the current search filter as string
+     * Sets the current search filter as string.
      *
-     * @param filter a {@link java.lang.String} object.
+     * @param filter search filter identifier string to activate
      */
     public void setCurrentSearchFilterString(String filter);
 
@@ -177,33 +177,33 @@ public interface SearchInterface {
     /**
      * Set the search type to use. The possible types are defined in {@link io.goobi.viewer.model.search.SearchHelper}
      *
-     * @param type a int.
+     * @param type search type constant as defined in SearchHelper
      */
     public void setActiveSearchType(int type);
 
     /**
-     * Check if a search has been performed and any results are to be excepted (provided the search yielded any)
+     * Checks if a search has been performed and any results are to be excepted (provided the search yielded any).
      *
      * @return whether a search has been performed after the last reset
      */
     public boolean isSearchPerformed();
 
     /**
-     * Check if a search has been triggered by the user and not yet been reset
+     * Checks if a search has been triggered by the user and not yet been reset.
      *
      * @return if a search has been triggered by the user and not yet been reset
      */
     public boolean isExplicitSearchPerformed();
 
     /**
-     * get total number of hits of the last search
+     * Get total number of hits of the last search.
      *
      * @return the total number of hits of the last search
      */
     public long getHitsCount();
 
     /**
-     * action to execute to change sort sort order of hits
+     * Action to execute to change the sort order of hits.
      * 
      * @return Navigation outcome
      * @throws IOException
@@ -211,7 +211,7 @@ public interface SearchInterface {
     public String changeSorting() throws IOException;
 
     /**
-     * Return the base url of the current search page, without any search parameters
+     * Returns the base url of the current search page, without any search parameters.
      *
      * @return the base url of the current search page, without any search parameters
      */

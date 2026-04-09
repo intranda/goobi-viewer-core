@@ -31,9 +31,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * <p>
- * GeoLocationInfo class.
- * </p>
+ * Aggregates geographic location data for a record, including multiple coordinate points and their display properties.
  *
  * @author Florian Alpers
  */
@@ -48,18 +46,14 @@ public class GeoLocationInfo {
     private List<GeoLocation> locationList = new ArrayList<>();
 
     /**
-     * <p>
-     * Constructor for GeoLocationInfo.
-     * </p>
+     * Creates a new GeoLocationInfo instance.
      */
     public GeoLocationInfo() {
 
     }
 
     /**
-     * <p>
-     * Constructor for GeoLocationInfo.
-     * </p>
+     * Creates a new GeoLocationInfo instance.
      *
      * @param json a {@link org.json.JSONObject} object.
      * @throws org.json.JSONException if any.
@@ -77,11 +71,9 @@ public class GeoLocationInfo {
     }
 
     /**
-     * <p>
      * getAsJson.
-     * </p>
      *
-     * @return a {@link org.json.JSONObject} object.
+     * @return the center location and all geo-location points as a JSON object
      */
     public JSONObject getAsJson() {
         Map<String, Object> map = new HashMap<>();
@@ -99,44 +91,36 @@ public class GeoLocationInfo {
     }
 
     /**
-     * <p>
      * Getter for the field <code>centerLocation</code>.
-     * </p>
      *
-     * @return the centerLocation
+     * @return the geographic coordinates used as the initial center of the map view
      */
     public GeoLocation getCenterLocation() {
         return centerLocation;
     }
 
     /**
-     * <p>
      * Setter for the field <code>centerLocation</code>.
-     * </p>
      *
-     * @param centerLocation the centerLocation to set
+     * @param centerLocation the geographic coordinates used as the initial center of the map view
      */
     public void setCenterLocation(GeoLocation centerLocation) {
         this.centerLocation = centerLocation;
     }
 
     /**
-     * <p>
      * Getter for the field <code>locationList</code>.
-     * </p>
      *
-     * @return the locationList
+     * @return the list of geographic locations to display as markers on the map
      */
     public List<GeoLocation> getLocationList() {
         return locationList;
     }
 
     /**
-     * <p>
      * Setter for the field <code>locationList</code>.
-     * </p>
      *
-     * @param locationList the locationList to set
+     * @param locationList the list of geographic locations to display as markers on the map
      */
     public void setLocationList(List<GeoLocation> locationList) {
         this.locationList = locationList;

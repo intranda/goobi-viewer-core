@@ -22,10 +22,9 @@
 package io.goobi.viewer.controller;
 
 /**
- * @author florian
+ * @author Florian Alpers
  *
  *         Contains descriptive information, like a label and an icon toa license type url
- *
  */
 public class LicenseDescription {
 
@@ -33,29 +32,23 @@ public class LicenseDescription {
     private String label;
 
     /**
-     * @param url
+     * @param url URL of the license type
      */
     public LicenseDescription(String url) {
         this.url = url;
     }
 
-    /**
-     * @return the label
-     */
+    
     public String getLabel() {
         return label;
     }
 
-    /**
-     * @param label the label to set
-     */
+    
     public void setLabel(String label) {
         this.label = label;
     }
 
-    /**
-     * @return the url
-     */
+    
     public String getUrl() {
         return url;
     }

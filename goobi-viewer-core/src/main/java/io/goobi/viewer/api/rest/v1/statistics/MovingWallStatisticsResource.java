@@ -39,6 +39,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
+/**
+ * REST resource providing statistics about moving wall access restrictions and record availability by publication year.
+ */
 @jakarta.ws.rs.Path(ApiUrls.STATISTICS_MOVING_WALL)
 public class MovingWallStatisticsResource {
 
@@ -50,10 +53,15 @@ public class MovingWallStatisticsResource {
     @jakarta.ws.rs.Path(ApiUrls.STATISTICS_MOVING_WALL_YEAR)
     @Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN, "text/csv" })
     @AuthorizationBinding
-    @ApiResponse(responseCode = "200", description = "CSV list of record identifiers unlocked by the moving wall for the given year")
-    @ApiResponse(responseCode = "401", description = "No authorization token provided or token is invalid")
     @Operation(summary = "Requires an authentication token. Get moving wall unlocked record identifiers for the given year", tags = { "statistics" })
-    public Response getStatisticsForYear(@Parameter(description = "statistics year") @PathParam("year") int year)
+    @ApiResponse(responseCode = "200", description = "CSV list of record identifiers unlocked by the moving wall for the given year")
+    @ApiResponse(responseCode = "400", description = "Invalid year value (not an integer)")
+    // Added 404 response: JAX-RS returns 404 when the {year} path parameter cannot be parsed as an integer (non-integer input)
+    @ApiResponse(responseCode = "404", description = "Year parameter could not be parsed as an integer")
+    @ApiResponse(responseCode = "401", description = "No authorization token provided or token is invalid")
+    @ApiResponse(responseCode = "500", description = "Solr index unreachable or internal error")
+    public Response getStatisticsForYear(
+            @Parameter(description = "The year for which to retrieve moving wall statistics") @PathParam("year") int year)
             throws PresentationException, IndexUnreachableException {
         logger.trace("getStatisticsForYear: {}", year);
         return Response.status(Response.Status.OK)

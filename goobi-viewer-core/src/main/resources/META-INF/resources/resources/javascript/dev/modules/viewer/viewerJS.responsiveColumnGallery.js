@@ -107,31 +107,19 @@ var viewerJS = (function (viewer) {
 
                     // render columns
                     if (_defaults.maxColumnCount > 4) {
-                        _defaults.galleryObject.append(
-                            viewer.helper.renderAlert(
-                                'alert-danger',
-                                'Die maximale Spaltenanzahl für die Galerie beträgt 4!',
-                                true
-                            )
-                        );
+                        _defaults.galleryObject.append(viewer.helper.renderAlert('alert-danger', 'Die maximale Spaltenanzahl für die Galerie beträgt 4!', true));
 
                         return false;
                     } else {
                         for (var i = 0; i < _defaults.maxColumnCount; i++) {
-                            _defaults.galleryObject.append(
-                                viewer.responsiveColumnGallery.renderColumns(_defaults.maxColumnCount)
-                            );
+                            _defaults.galleryObject.append(viewer.responsiveColumnGallery.renderColumns(_defaults.maxColumnCount));
                         }
                     }
 
                     // render images
                     while (_imageData.length) {
                         $.each($('.rcg-col'), function () {
-                            $(this).append(
-                                viewer.responsiveColumnGallery.renderImages(
-                                    _imageData.splice(0, _defaults.maxImagesPerColumn)
-                                )
-                            );
+                            $(this).append(viewer.responsiveColumnGallery.renderImages(_imageData.splice(0, _defaults.maxImagesPerColumn)));
                         });
                     }
 
@@ -183,13 +171,7 @@ var viewerJS = (function (viewer) {
                     }
                 })
                 .then(null, function (error) {
-                    _defaults.galleryObject.append(
-                        viewer.helper.renderAlert(
-                            'alert-danger',
-                            '<strong>Status: </strong>' + error.status + ' ' + error.statusText,
-                            false
-                        )
-                    );
+                    _defaults.galleryObject.append(viewer.helper.renderAlert('alert-danger', '<strong>Status: </strong>' + error.status + ' ' + error.statusText, false));
                     console.error('ERROR: viewer.responsiveColumnGallery.init - ', error);
                 });
         },
@@ -230,21 +212,16 @@ var viewerJS = (function (viewer) {
                     image += '<div class="rcg-image-container">';
                     image += '<div class="rcg-image-body">';
                     image += '<a href="' + n.url + '">';
-                    image +=
-                        '<div class="rcg-image-overlay" style="background-color:' + _defaults.overlayColor + '"></div>';
+                    image += '<div class="rcg-image-overlay" style="background-color:' + _defaults.overlayColor + '"></div>';
                     image += '</a>';
                     image += '<div class="rcg-image-title">';
                     image += '<h3>' + n.title + '</h3>';
                     image += '</div>';
-                    image +=
-                        '<img src="' + _defaults.themePath + _defaults.imagePath + n.name + '" alt="' + n.alt + '" />';
+                    image += '<img src="' + _defaults.themePath + _defaults.imagePath + n.name + '" alt="' + n.alt + '" />';
                     if (_defaults.lightbox.active) {
                         image += '<div class="lightbox-toggle" title="' + _defaults.lang.showLightbox + '">';
                         image += '<span class="icon-wrapper lightbox-toggle__icon" aria-hidden="true">';
-                        image +=
-                            '<svg class="icon" focusable="false"><use href="' +
-                            _defaults.themePath +
-                            'resources/icons/outline/arrow-move.svg#icon"></use></svg>';
+                        image += '<svg class="icon-svg" focusable="false"><use href="' + _defaults.themePath + 'resources/icons/outline/arrow-move.svg#icon"></use></svg>';
                         image += '</span>';
                         image += '</div>';
                     }
@@ -252,13 +229,8 @@ var viewerJS = (function (viewer) {
                     if (_defaults.caption) {
                         image += '<div class="rcg-image-footer">';
                         image += '<p>' + n.caption + '<a href="' + n.url + '" title="' + n.title + '">';
-                        image +=
-                            _defaults.lang.goToWork +
-                            ' <span class="icon-wrapper rcg-image-footer__icon" aria-hidden="true">';
-                        image +=
-                            '<svg class="icon" focusable="false"><use href="' +
-                            _defaults.themePath +
-                            'resources/icons/outline/photo.svg#icon"></use></svg>';
+                        image += _defaults.lang.goToWork + ' <span class="icon-wrapper rcg-image-footer__icon" aria-hidden="true">';
+                        image += '<svg class="icon-svg" focusable="false"><use href="' + _defaults.themePath + 'resources/icons/outline/photo.svg#icon"></use></svg>';
                         image += '</span></a></p>';
                         image += '</div>';
                     }
@@ -340,14 +312,8 @@ var viewerJS = (function (viewer) {
 
             lightbox += '<div class="rcg-lightbox-overlay">';
             lightbox += '<div class="rcg-lightbox-body">';
-            lightbox +=
-                '<div class="rcg-lightbox-close" title="' +
-                _defaults.lang.close +
-                '"><span class="icon-wrapper rcg-lightbox-close__icon" aria-hidden="true">';
-            lightbox +=
-                '<svg class="icon" focusable="false"><use href="' +
-                _defaults.themePath +
-                'resources/icons/outline/x.svg#icon"></use></svg>';
+            lightbox += '<div class="rcg-lightbox-close" title="' + _defaults.lang.close + '"><span class="icon-wrapper rcg-lightbox-close__icon" aria-hidden="true">';
+            lightbox += '<svg class="icon-svg" focusable="false"><use href="' + _defaults.themePath + 'resources/icons/outline/x.svg#icon"></use></svg>';
             lightbox += '</span></div>';
             lightbox += '<div class="rcg-lightbox-image">';
             lightbox += '<img src="' + data.src + '" alt="' + data.alt + '" />';

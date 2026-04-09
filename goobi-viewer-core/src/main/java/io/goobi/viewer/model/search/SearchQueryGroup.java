@@ -36,7 +36,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 
 /**
- * Search query group for the advanced search.
+ * Searches query group for the advanced search.
  */
 public class SearchQueryGroup implements Serializable {
 
@@ -44,6 +44,9 @@ public class SearchQueryGroup implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(SearchQueryGroup.class);
 
+    /**
+     * Enumerates the logical operators used to combine multiple {@link SearchQueryItem}s within a group.
+     */
     public enum SearchQueryGroupOperator {
         AND,
         OR;
@@ -60,12 +63,10 @@ public class SearchQueryGroup implements Serializable {
     private SearchQueryGroupOperator operator = SearchQueryGroupOperator.AND;
 
     /**
-     * <p>
-     * Constructor for SearchQueryGroup.
-     * </p>
+     * Creates a new SearchQueryGroup instance.
      *
-     * @param fieldConfigs
-     * @param template
+     * @param fieldConfigs list of advanced search field configurations
+     * @param template search template name to use for initialization
      */
     public SearchQueryGroup(List<AdvancedSearchFieldConfiguration> fieldConfigs, String template) {
         this.template = template;
@@ -74,8 +75,8 @@ public class SearchQueryGroup implements Serializable {
 
     /**
      * 
-     * @param fieldConfigs
-     * @param template
+     * @param fieldConfigs list of advanced search field configurations
+     * @param template search template name to determine available fields
      * @should create and preselect visible fields
      * @should only create allfields item if fieldConfigs null
      */
@@ -124,7 +125,7 @@ public class SearchQueryGroup implements Serializable {
     /**
      * Replaces query items in this group with the given list.
      * 
-     * @param items
+     * @param items list of search query items to inject
      * @should replace existing items with given
      */
     public void injectItems(List<SearchQueryItem> items) {
@@ -157,11 +158,9 @@ public class SearchQueryGroup implements Serializable {
     }
 
     /**
-     * <p>
      * getAvailableOperators.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all available search query group operators
      * @should return all enum values
      */
     public List<SearchQueryGroupOperator> getAvailableOperators() {
@@ -169,21 +168,17 @@ public class SearchQueryGroup implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>queryItems</code>.
-     * </p>
      *
-     * @return the queryItems
+     * @return the list of individual search query items within this group
      */
     public List<SearchQueryItem> getQueryItems() {
         return queryItems;
     }
 
     /**
-     * <p>
      * addNewQueryItem.
-     * </p>
-     * 
+     *
      * @param field Index field for the new item
      * @param afterIndex Item index after which to place new new item
      * @return true if operation successful; false otherwise
@@ -202,14 +197,12 @@ public class SearchQueryGroup implements Serializable {
     }
 
     /**
-     * <p>
      * removeQueryItem.
-     * </p>
      *
      * @param item a {@link io.goobi.viewer.model.search.SearchQueryItem} object.
      * @should remove item correctly
      * @should not remove last remaining item
-     * @return a boolean.
+     * @return true if the item was removed successfully, false if it could not be removed (e.g. it is the last remaining item)
      */
     public boolean removeQueryItem(SearchQueryItem item) {
         if (queryItems.size() > 1) {
@@ -220,22 +213,18 @@ public class SearchQueryGroup implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>operator</code>.
-     * </p>
      *
-     * @return the operator
+     * @return the logical operator (AND/OR) used to combine items within this query group
      */
     public SearchQueryGroupOperator getOperator() {
         return operator;
     }
 
     /**
-     * <p>
      * Setter for the field <code>operator</code>.
-     * </p>
      *
-     * @param operator the operator to set
+     * @param operator the logical operator (AND/OR) used to combine items within this query group
      */
     public void setOperator(SearchQueryGroupOperator operator) {
         this.operator = operator;

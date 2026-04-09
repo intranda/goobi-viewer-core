@@ -135,6 +135,10 @@
             <provider type="httpHeader" name="HTTP Header" enabled="false" parameterType="header" parameterName="id"
                  endpoint="https://localhost:8080/api/v1/auth/header" image="saml.png" />
             <provider type="local" name="Goobi viewer"/>
+            <redirectWhitelist>
+                <host>trusted.example.org</host>
+                <host>sso.example.com</host>
+            </redirectWhitelist>
         </authenticationProviders>
 		<!-- SMTP configuration. 'smtpSenderName' (defaults to the value of 'smtpSenderAddress') 
 			and 'smtpSecurity' (defaults to NONE) are optional, all others are mandatory 
@@ -663,6 +667,7 @@
 				<metadata label="MD_CREATOR" value="">
 					<param type="field" key="MD_CREATOR" />
 				</metadata>
+				<fold/>
 				<metadata label="MD_CATALOGIDSOURCE" value="LINK_CATALOGIDSOURCE" separator="; " topstructOnly="true">
 					<param type="field" key="MD_CATALOGIDSOURCE" />
 					<param type="field" key="MD_CATALOGIDSOURCE" />
@@ -885,12 +890,6 @@
             </template>
         </normdataList>
 
-		<!-- calendarDocstructTypes: the list of structure elements allowed to 
-			be shown in calendar view -->
-		<calendarDocstructTypes>
-			<docStruct>Calendaria</docStruct>
-			<docStruct>PeriodicalVolume</docStruct>
-		</calendarDocstructTypes>
 
 		<!-- browsingMenu: configuration of the browsing section (Stoebern) -->
         <!-- @enabled: if false, the browsing section is hidden -->
@@ -982,6 +981,7 @@
 		<ancestorIdentifierFields listSiblingRecords="true">
 			<field filterQuery="-DOCSTRCT:year">PI_PARENT</field>
             <field>MD_OTHERANCESTOR</field>
+            <field>GROUPID_1</field>
 		</ancestorIdentifierFields>
 
 		<!-- display as interactive tree view -->
@@ -1036,6 +1036,10 @@
                 <displayWidget name="views" />
                 <displayWidget name="copyright" />
             </view>
+            <view name="metadata">
+                <displayWidget name="views" />
+                <displayWidget name="copyright" />
+            </view>
         </views>
     
         <widgets>
@@ -1044,7 +1048,6 @@
         
             <widget name="views">
                 <fulltext enabled="false" />
-                <calendar enabled="falsE" />
                 <metadata enabled="false" />
                 <object enabled="false" />
                 <opac enabled="true" />

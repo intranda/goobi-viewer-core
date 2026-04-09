@@ -53,9 +53,7 @@ import io.goobi.viewer.model.viewer.PageType;
 import jakarta.ws.rs.core.UriBuilder;
 
 /**
- * <p>
- * CollectionView class.
- * </p>
+ * Manages the hierarchical collection browsing state, including tree structure, sorting, and Solr queries.
  */
 public class CollectionView implements Serializable {
 
@@ -79,12 +77,10 @@ public class CollectionView implements Serializable {
     private List<String> ignoreList = new ArrayList<>();
 
     /**
-     * <p>
-     * Constructor for CollectionView.
-     * </p>
+     * Creates a new CollectionView instance.
      *
-     * @param field a {@link java.lang.String} object.
-     * @param dataProvider a {@link io.goobi.viewer.model.viewer.collections.CollectionView.BrowseDataProvider} object.
+     * @param field Solr field name for this collection
+     * @param dataProvider supplier of raw collection data from the index
      */
     public CollectionView(String field, BrowseDataProvider dataProvider) {
         super();
@@ -95,9 +91,9 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * Creates a new CollectionView from an already existing one, keeping only the list of all collections without any display information
+     * Creates a new CollectionView from an already existing one, keeping only the list of all collections without any display information.
      *
-     * @param blueprint a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object.
+     * @param blueprint existing CollectionView to copy structure from
      */
     public CollectionView(CollectionView blueprint) {
         this.completeCollectionList =
@@ -110,9 +106,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * populateCollectionList.
-     * </p>
      *
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws IllegalRequestException
@@ -179,7 +173,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * @param collectionName
+     * @param collectionName collection identifier to test
      * @return boolean
      */
     private boolean shouldOpenInOwnWindow(String collectionName) {
@@ -187,18 +181,14 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * calculateVisibleDcElements.
-     * </p>
      */
     public void calculateVisibleDcElements() {
         calculateVisibleDcElements(true);
     }
 
     /**
-     * <p>
      * calculateVisibleDcElements.
-     * </p>
      *
      * @param loadDescriptions If true, associated CMS collection configurations will be loaded
      */
@@ -253,9 +243,9 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * 
-     * @param elementName
-     * @param includeSelf
+     *
+     * @param elementName name of the collection element to find ancestors for
+     * @param includeSelf if true, include the element itself in the result
      * @return List<HierarchicalBrowseDcElement>
      */
     public List<HierarchicalBrowseDcElement> getAncestors(String elementName, boolean includeSelf) {
@@ -281,9 +271,7 @@ public class CollectionView implements Serializable {
 
     /**
      * 
-     * <p>
      * associateElementsWithCMSData.
-     * </p>
      */
     public void associateElementsWithCMSData() {
         try {
@@ -295,10 +283,8 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * associateElementsWithCMSData.
-     * </p>
-     * 
+     *
      * @param cmsCollections collection data with which to enricht the browse elements
      */
     public void associateElementsWithCMSData(List<CMSCollection> cmsCollections) {
@@ -312,13 +298,12 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * associateWithCMSCollections.
-     * </p>
-     * returns the 'collection' parameter
      *
-     * @param collections a {@link java.util.List} object.
-     * @param cmsCollections
+     * <p>returns the 'collection' parameter
+     *
+     * @param collections browse elements to enrich with CMS data
+     * @param cmsCollections list of CMS collection configurations to associate
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
@@ -341,11 +326,9 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * getVisibleDcElements.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of hierarchical collection elements currently visible in this collection view
      */
     public List<HierarchicalBrowseDcElement> getVisibleDcElements() {
         // logger.trace("getVisibleDcElements"); //NOSONAR Debug
@@ -353,8 +336,8 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * @param elementName
-     * @param collections
+     * @param elementName name of the collection element to find
+     * @param collections list of collection elements to search
      * @return {@link HierarchicalBrowseDcElement}
      */
     private HierarchicalBrowseDcElement getElement(String elementName, List<HierarchicalBrowseDcElement> collections) {
@@ -375,10 +358,10 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * Count the hierarchy level of the given collection name
-     * 
-     * @param collectionName
-     * @param splittingChar
+     * Counts the hierarchy level of the given collection name.
+     *
+     * @param collectionName collection identifier whose depth to count
+     * @param splittingChar character used to separate hierarchy levels
      * @return -1 if collection is emtpy, otherwise the number of occurrences of the splitting char
      */
     public static int getLevel(String collectionName, String splittingChar) {
@@ -389,9 +372,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * resetCollectionList.
-     * </p>
      */
     public void resetCollectionList() {
         synchronized (this) {
@@ -400,11 +381,9 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * showChildren.
-     * </p>
      *
-     * @param element a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
+     * @param element collection element whose children to make visible
      */
     public void showChildren(HierarchicalBrowseDcElement element) {
         int elementIndex = visibleCollectionList.indexOf(element);
@@ -435,11 +414,9 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * hideChildren.
-     * </p>
      *
-     * @param element a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
+     * @param element collection element whose children to hide
      */
     public void hideChildren(HierarchicalBrowseDcElement element) {
         int elementIndex = visibleCollectionList.indexOf(element);
@@ -451,12 +428,10 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * toggleChildren.
-     * </p>
      *
-     * @param element a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
-     * @return a {@link java.lang.String} object.
+     * @param element collection element whose children to toggle
+     * @return null (sub-elements are shown or hidden as a side effect)
      */
     public String toggleChildren(HierarchicalBrowseDcElement element) {
         logger.trace("toggleChildren: {}", element.getName());
@@ -476,10 +451,10 @@ public class CollectionView implements Serializable {
     /**
      * Sorts the given <code>BrowseDcElement</code> list as defined in the configuration. All other elements are moved to the end of the list.
      *
-     * @param inDcList The list to sort.
-     * @param sortCriteriaSuperList a {@link java.util.List} object.
-     * @param topElement a {@link java.lang.String} object.
-     * @param splittingChar a {@link java.lang.String} object.
+     * @param inDcList list of collection elements to sort
+     * @param sortCriteriaSuperList configured sort criteria lists defining the desired order
+     * @param topElement name of the current root collection element, or null for top level
+     * @param splittingChar character used to separate hierarchy levels
      * @return A sorted list.
      */
     protected static List<HierarchicalBrowseDcElement> sortDcList(final List<HierarchicalBrowseDcElement> inDcList,
@@ -535,10 +510,9 @@ public class CollectionView implements Serializable {
     /**
      * Add all collections within the second list into the first list as they fit in the hierarchy.
      *
-     *
-     * @param collections
-     * @param unsortedSubCollections
-     * @param splittingChar
+     * @param collections ordered list into which sub-collections are inserted
+     * @param unsortedSubCollections sub-collections to insert at their correct hierarchy position
+     * @param splittingChar character used to separate hierarchy levels
      * @return the first collection list
      */
     private static List<HierarchicalBrowseDcElement> addUnsortedSubcollections(List<HierarchicalBrowseDcElement> collections,
@@ -557,8 +531,8 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * @param collections
-     * @param splittingChar
+     * @param collections list of collection names to inspect
+     * @param splittingChar character used to separate hierarchy levels
      * @return The hierarchy level of the first collection within collections (1-based), or 0 if the list is empty
      */
     private static int getLevelOfFirstElement(List<String> collections, String splittingChar) {
@@ -571,8 +545,8 @@ public class CollectionView implements Serializable {
 
     /**
      *
-     * @param collection
-     * @param splittingChar
+     * @param collection collection name whose nesting depth to compute
+     * @param splittingChar character used to separate hierarchy levels
      * @return Level of the given collection
      */
     private static int getCollectionLevel(String collection, String splittingChar) {
@@ -591,10 +565,10 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * @param elementList
-     * @param sortAfter
-     * @param sortingLevel
-     * @param splittingChar
+     * @param elementList list of collection elements to search for the insertion index
+     * @param sortAfter name of the element after which sorted collections are inserted
+     * @param sortingLevel hierarchy level of the sorted collection group
+     * @param splittingChar character used to separate hierarchy levels
      * @return inz
      */
     private static int getIndexOfElementWithName(List<HierarchicalBrowseDcElement> elementList, String sortAfter, int sortingLevel,
@@ -625,9 +599,6 @@ public class CollectionView implements Serializable {
         Map<String, CollectionResult> getData() throws IndexUnreachableException;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     /** {@inheritDoc} */
     @Override
     public String toString() {
@@ -639,20 +610,20 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * Sets all descendants of this element to visible
+     * Sets all descendants of this element to visible.
      *
-     * @param element a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
+     * @param element collection element whose descendants to expand
      */
     public void expandAll(HierarchicalBrowseDcElement element) {
         expandAll(element, -1, true);
     }
 
     /**
-     * Sets all descendants of this element to visible, but not beyond level 'depth'
+     * Sets all descendants of this element to visible, but not beyond level 'depth'.
      *
-     * @param depth a int.
-     * @param element a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
-     * @param loadDescriptions
+     * @param depth maximum hierarchy level to expand; negative means unlimited
+     * @param element collection element whose descendants to expand
+     * @param loadDescriptions if true, load CMS collection descriptions after expanding
      */
     public void expandAll(HierarchicalBrowseDcElement element, int depth, boolean loadDescriptions) {
         if (depth < 0 || element.getLevel() < depth) {
@@ -664,17 +635,17 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * Sets all collection elements visible
+     * Sets all collection elements visible.
      */
     public void expandAll() {
         expandAll(-1, true);
     }
 
     /**
-     * Sets all collection elements visible up to 'depth' levels into the hierarchy
+     * Sets all collection elements visible up to 'depth' levels into the hierarchy.
      *
-     * @param depth a int.
-     * @param loadDescriptions
+     * @param depth maximum hierarchy level to expand; negative means unlimited
+     * @param loadDescriptions if true, load CMS collection descriptions after expanding
      */
     public void expandAll(int depth, boolean loadDescriptions) {
         if (completeCollectionList != null) {
@@ -690,42 +661,34 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * getCompleteList.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return the complete unfiltered list of all hierarchical collection elements
      */
     public List<HierarchicalBrowseDcElement> getCompleteList() {
         return completeCollectionList;
     }
 
     /**
-     * <p>
      * Getter for the field <code>baseElementName</code>.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the name of the base collection element used as the root of this view
      */
     public String getBaseElementName() {
         return baseElementName;
     }
 
     /**
-     * <p>
      * Setter for the field <code>baseElementName</code>.
-     * </p>
      *
-     * @param baseElementName a {@link java.lang.String} object.
+     * @param baseElementName name of the collection to use as root element
      */
     public void setBaseElementName(String baseElementName) {
         this.baseElementName = baseElementName;
     }
 
     /**
-     * <p>
      * showAll.
-     * </p>
      *
      * @throws IllegalRequestException
      */
@@ -739,9 +702,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * hideAll.
-     * </p>
      *
      * @throws IllegalRequestException
      */
@@ -755,7 +716,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * @param collection
+     * @param collection collection element whose descendants are all made visible
      */
     private void displayAllDescendents(HierarchicalBrowseDcElement collection) {
         if (!collection.isOpensInNewWindow()) {
@@ -776,9 +737,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * getBaseElementLevel.
-     * </p>
      *
      * @return a int.
      */
@@ -787,34 +746,28 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>showAllHierarchyLevels</code>.
-     * </p>
      *
-     * @param showAllHierarchyLevels the showAllHierarchyLevels to set
+     * @param showAllHierarchyLevels true to expand and display all collection hierarchy levels
      */
     public void setShowAllHierarchyLevels(boolean showAllHierarchyLevels) {
         this.showAllHierarchyLevels = showAllHierarchyLevels;
     }
 
     /**
-     * <p>
      * isShowAllHierarchyLevels.
-     * </p>
      *
-     * @return the showAllHierarchyLevels
+     * @return true if all hierarchy levels are shown expanded, false otherwise
      */
     public boolean isShowAllHierarchyLevels() {
         return showAllHierarchyLevels;
     }
 
     /**
-     * <p>
      * getCollectionUrl.
-     * </p>
      *
-     * @param collection a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param collection collection name to look up in the complete list
+     * @return the viewer URL for the given collection name, or an empty string if not found
      */
     public String getCollectionUrl(String collection) {
         return getCompleteList().stream()
@@ -825,12 +778,10 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * loadCollection.
-     * </p>
      *
      * @param element a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
-     * @return a {@link java.lang.String} object.
+     * @return the relative URL for navigating to the given collection element
      */
     public String loadCollection(HierarchicalBrowseDcElement element) {
         logger.trace("Set current collection to {}", element);
@@ -840,12 +791,10 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * getCollectionUrl.
-     * </p>
      *
      * @param collection a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
-     * @return a {@link java.lang.String} object.
+     * @return the viewer URL for the given collection element using the default search URL and field
      * @throws URISyntaxException
      */
     public String getCollectionUrl(HierarchicalBrowseDcElement collection) {
@@ -857,16 +806,14 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * getCollectionUrl.
-     * </p>
      *
      * @param collection a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
-     * @param field a {@link java.lang.String} object.
-     * @param baseSearchUrl
+     * @param field Solr collection field name
+     * @param baseSearchUrl base URL of the search page
      * @param openInSearch if true, return a search url if no cms page is associated with the collection. In case of single record in collection, the
      *            record may be opened directly
-     * @return a {@link java.lang.String} object.
+     * @return the viewer URL for the given collection element, directing to a CMS page, search, or single record as applicable
      * @throws URISyntaxException
      * @should return identifier resolver url if single record and pi known
      * @should escape critical url chars in collection name
@@ -906,9 +853,9 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * 
-     * @param collection
-     * @param field
+     *
+     * @param collection collection element whose first record URL to build
+     * @param field Solr collection field name
      * @return URL of the first record in the given collection field/name combo
      * @should escape url encode collection name
      */
@@ -961,31 +908,25 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * setIgnore.
-     * </p>
      *
-     * @param collectionName a {@link java.lang.String} object.
+     * @param collectionName collection name to exclude from the visible list
      */
     public void setIgnore(String collectionName) {
         this.ignoreList.add(collectionName);
     }
 
     /**
-     * <p>
      * setIgnore.
-     * </p>
      *
-     * @param collectionNames a {@link java.util.Collection} object.
+     * @param collectionNames collection names to exclude from the visible list
      */
     public void setIgnore(Collection<String> collectionNames) {
         this.ignoreList = new ArrayList<>(collectionNames);
     }
 
     /**
-     * <p>
      * resetIgnore.
-     * </p>
      */
     public void resetIgnore() {
         this.ignoreList = new ArrayList<>();
@@ -993,7 +934,7 @@ public class CollectionView implements Serializable {
 
     /**
      * Set the {@link io.goobi.viewer.model.viewer.collections.BrowseElementInfo} of the
-     * {@link io.goobi.viewer.model.viewer.collections.BrowseDcElement} with the given name to the given info object
+     * {@link io.goobi.viewer.model.viewer.collections.BrowseDcElement} with the given name to the given info object.
      *
      * @param name The collection name
      * @param info The info to apply
@@ -1045,40 +986,30 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>field</code>.
-     * </p>
      *
-     * @return the field
+     * @return the Solr field name that provides the collection hierarchy for this view
      */
     public String getField() {
         return field;
     }
 
-    /**
-     * @return the searchUrl
-     */
+    
     public String getSearchUrl() {
         return searchUrl;
     }
 
-    /**
-     * @param searchUrl the searchUrl to set
-     */
+    
     public void setSearchUrl(String searchUrl) {
         this.searchUrl = searchUrl;
     }
 
-    /**
-     * @return the ignoreHierarchy
-     */
+    
     public boolean isIgnoreHierarchy() {
         return ignoreHierarchy;
     }
 
-    /**
-     * @param ignoreHierarchy the ignoreHierarchy to set
-     */
+    
     public void setIgnoreHierarchy(boolean ignoreHierarchy) {
         this.ignoreHierarchy = ignoreHierarchy;
     }
@@ -1104,16 +1035,12 @@ public class CollectionView implements Serializable {
         return "-";
     }
 
-    /**
-     * @return the splittingChar
-     */
+    
     public String getSplittingChar() {
         return splittingChar;
     }
 
-    /**
-     * @return the displayNumberOfVolumesLevel
-     */
+    
     public int getDisplayNumberOfVolumesLevel() {
         return displayNumberOfVolumesLevel;
     }

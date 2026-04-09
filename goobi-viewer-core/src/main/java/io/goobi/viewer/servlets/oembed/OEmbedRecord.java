@@ -29,9 +29,7 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
- * <p>
- * OEmbedRecord class.
- * </p>
+ * Represents a record available for oEmbed discovery, carrying the endpoint URL and format.
  */
 public class OEmbedRecord {
 
@@ -40,9 +38,9 @@ public class OEmbedRecord {
     private URI uri = null;
 
     /**
-     * <p>Constructor for OEmbedRecord.</p>
+     * <p>Constructor for OEmbedRecord.
      *
-     * @param uri a {@link java.lang.String} object
+     * @param uri URL string to parse into a URI
      * @throws java.net.URISyntaxException
      */
     public OEmbedRecord(String uri) throws URISyntaxException {
@@ -50,78 +48,70 @@ public class OEmbedRecord {
     }
 
     /**
-     * <p>Constructor for OEmbedRecord.</p>
+     * <p>Constructor for OEmbedRecord.
      */
     public OEmbedRecord() {
 
     }
 
     /**
-     * <p>
      * Getter for the field <code>structElement</code>.
-     * </p>
      *
-     * @return the structElement
+     * @return the top-level structure element of the record to embed
      */
     public StructElement getStructElement() {
         return structElement;
     }
 
     /**
-     * <p>
      * Setter for the field <code>structElement</code>.
-     * </p>
      *
-     * @param structElement the structElement to set
+     * @param structElement the top-level structure element of the record to embed
      */
     public void setStructElement(StructElement structElement) {
         this.structElement = structElement;
     }
 
     /**
-     * <p>
      * Getter for the field <code>physicalElement</code>.
-     * </p>
      *
-     * @return the physicalElement
+     * @return the physical page element used for the oEmbed response
      */
     public PhysicalElement getPhysicalElement() {
         return physicalElement;
     }
 
     /**
-     * <p>
      * Setter for the field <code>physicalElement</code>.
-     * </p>
      *
-     * @param physicalElement the physicalElement to set
+     * @param physicalElement the physical page element to use for the oEmbed response
      */
     public void setPhysicalElement(PhysicalElement physicalElement) {
         this.physicalElement = physicalElement;
     }
 
     /**
-     * <p>isRichResponse.</p>
+     * <p>isRichResponse.
      *
-     * @return a boolean
+     * @return true if this record has a URI set and thus constitutes a rich oEmbed response, false otherwise
      */
     public boolean isRichResponse() {
         return this.uri != null;
     }
 
     /**
-     * <p>Getter for the field <code>uri</code>.</p>
+     * <p>Getter for the field <code>uri</code>.
      *
-     * @return the uri
+     * @return the URI of the resource to embed
      */
     public URI getUri() {
         return uri;
     }
 
     /**
-     * <p>Setter for the field <code>uri</code>.</p>
+     * <p>Setter for the field <code>uri</code>.
      *
-     * @param uri the uri to set
+     * @param uri the URI of the resource to embed
      */
     public void setUri(URI uri) {
         this.uri = uri;

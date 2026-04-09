@@ -27,8 +27,7 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class ApiUrls extends AbstractApiUrlManager {
 

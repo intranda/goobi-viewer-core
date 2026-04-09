@@ -28,6 +28,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import de.undercouch.citeproc.CSL;
 
+/**
+ * Session-scoped wrapper that manages lazily created {@link CSL} citation processors, keyed by
+ * CSL style name, and provides shared access to the underlying {@link CitationDataProvider}.
+ */
 public class CitationProcessorWrapper implements Serializable {
 
     private static final long serialVersionUID = 1599943007739055358L;
@@ -39,9 +43,9 @@ public class CitationProcessorWrapper implements Serializable {
     private final CitationDataProvider citationItemDataProvider = new CitationDataProvider();
 
     /**
-     * 
-     * @param style
-     * @return the citationProcessor
+     *
+     * @param style CSL citation style name (e.g. "apa", "chicago-notes")
+     * @return the CSL citation processor for the given style, creating it if it does not yet exist
      * @throws IOException
      * @should create citation processor correctly
      */
@@ -58,9 +62,7 @@ public class CitationProcessorWrapper implements Serializable {
         return citationProcessors.get(style);
     }
 
-    /**
-     * @return the citationItemDataProvider
-     */
+    
     public CitationDataProvider getCitationItemDataProvider() {
         return citationItemDataProvider;
     }

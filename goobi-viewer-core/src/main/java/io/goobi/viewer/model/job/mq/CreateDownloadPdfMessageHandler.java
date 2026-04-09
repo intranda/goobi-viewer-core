@@ -55,6 +55,10 @@ import io.goobi.viewer.model.viewer.Dataset;
 import jakarta.mail.MessagingException;
 import jakarta.ws.rs.core.UriBuilder;
 
+/**
+ * Message handler that processes requests to generate PDF download files for digitized records.
+ * It delegates PDF creation to the content server and notifies the requester by e-mail upon completion.
+ */
 public class CreateDownloadPdfMessageHandler implements MessageHandler<MessageStatus> {
 
     private static final int DELAY_IF_PDF_IS_BEING_CREATED_MILLIS = 300_000;
@@ -123,7 +127,7 @@ public class CreateDownloadPdfMessageHandler implements MessageHandler<MessageSt
     }
 
     /**
-     * remove all creating.lock files so pdf generation can be picked up after restart
+     * remove all creating.lock files so pdf generation can be picked up after restart.
      */
     @Override
     public void onStartup() {

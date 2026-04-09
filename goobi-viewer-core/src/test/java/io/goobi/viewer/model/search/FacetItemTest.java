@@ -194,6 +194,16 @@ class FacetItemTest extends AbstractTest {
     }
 
     /**
+     * @see FacetItem#getEscapedValue(String)
+     * @verifies not throw StringIndexOutOfBoundsException for wildcard only value
+     */
+    @Test
+    void getEscapedValue_shouldNotThrowForWildcardOnlyValue() {
+        Assertions.assertEquals("*", FacetItem.getEscapedValue("*"));
+        Assertions.assertEquals("**", FacetItem.getEscapedValue("**"));
+    }
+
+    /**
      * @see FacetItem#generateFilterLinkList(String,Map,boolean,Locale,Map)
      * @verifies set label from separate field if configured and found
      */

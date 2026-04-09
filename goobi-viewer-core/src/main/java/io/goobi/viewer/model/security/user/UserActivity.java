@@ -32,8 +32,13 @@ import io.goobi.viewer.model.bookmark.Bookmark;
 import io.goobi.viewer.model.search.Search;
 
 /**
- * @author florian
+ * Represents a single recorded activity of a user, such as creating a comment, bookmark, search, or annotation.
  *
+ * <p>Each instance captures the activity type, a human-readable label, the timestamp, and whether it is an update
+ * to an existing item. Factory methods are provided for constructing instances from domain objects such as
+ * {@link io.goobi.viewer.model.annotation.comments.Comment} or {@link io.goobi.viewer.model.search.Search}.
+ *
+ * @author Florian Alpers
  */
 public class UserActivity {
 
@@ -72,10 +77,10 @@ public class UserActivity {
 
     /**
      * 
-     * @param type
-     * @param label
-     * @param date
-     * @param update
+     * @param type type of user activity
+     * @param label display label describing the activity
+     * @param date date and time of the activity
+     * @param update true if this represents an update to an existing item
      */
     public UserActivity(ActivityType type, String label, LocalDateTime date, boolean update) {
         this.type = type;
@@ -111,36 +116,28 @@ public class UserActivity {
         return new UserActivity(ActivityType.SEARCH, truncate(search.getName()), search.getDateUpdated(), false);
     }
 
-    /**
-     * @return the type
-     */
+    
     public ActivityType getType() {
         return type;
     }
 
-    /**
-     * @return the label
-     */
+    
     public String getLabel() {
         return label;
     }
 
-    /**
-     * @return the date
-     */
+    
     public LocalDateTime getDate() {
         return date;
     }
 
-    /**
-     * @return the update
-     */
+    
     public boolean isUpdate() {
         return update;
     }
 
     /**
-     * @param text
+     * @param text the text to truncate
      * @return text truncated to MAX_LABEL_LENGTH
      */
     private static String truncate(String text) {
@@ -155,7 +152,10 @@ public class UserActivity {
     }
 
     /**
-     * Equals if label and type are equal
+     * Equals if label and type are equal.
+     *
+     * @param obj the object to compare to this user activity
+     * @return true if the given object is equal to this instance, false otherwise
      */
     @Override
     public boolean equals(Object obj) {
@@ -167,7 +167,9 @@ public class UserActivity {
     }
 
     /**
-     * Build from label and type
+     * Builds from label and type.
+     *
+     * @return the hash code value for this object
      */
     @Override
     public int hashCode() {

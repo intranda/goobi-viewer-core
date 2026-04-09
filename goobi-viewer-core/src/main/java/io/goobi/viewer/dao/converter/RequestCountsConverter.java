@@ -1,4 +1,4 @@
-/**
+/*
  * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
  *
  * Visit these websites for more information.
@@ -20,8 +20,7 @@ import jakarta.persistence.AttributeConverter;
 import io.goobi.viewer.model.statistics.usage.SessionRequestCounts;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class RequestCountsConverter implements AttributeConverter<SessionRequestCounts, String> {
 

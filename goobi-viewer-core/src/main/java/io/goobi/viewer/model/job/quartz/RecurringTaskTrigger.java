@@ -34,6 +34,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+/**
+ * JPA entity representing a persistent schedule configuration for a recurring background task.
+ * Stores the task type, cron/interval expression, and current execution status.
+ */
 @Entity
 @Table(name = "recurring_task_trigger")
 public class RecurringTaskTrigger {

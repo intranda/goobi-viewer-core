@@ -29,7 +29,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * Description for an RSS feed object
+ * Description for an RSS feed object.
  *
  * @author Florian Alpers
  */
@@ -42,73 +42,59 @@ public class Description {
     private List<RssMetadata> metadata = new ArrayList<>();
 
     /**
-     * <p>
-     * Constructor for Description.
-     * </p>
+     * Creates a new Description instance.
      */
     public Description() {
         text = null;
     }
 
     /**
-     * <p>
-     * Constructor for Description.
-     * </p>
+     * Creates a new Description instance.
      *
-     * @param value a {@link java.lang.String} object.
+     * @param value initial text content of the description
      */
     public Description(String value) {
         text = value;
     }
 
     /**
-     * <p>
      * Getter for the field <code>image</code>.
-     * </p>
      *
-     * @return the image
+     * @return the URL of the thumbnail image for this RSS item description
      */
     public String getImage() {
         return image;
     }
 
     /**
-     * <p>
      * Setter for the field <code>image</code>.
-     * </p>
      *
-     * @param image the image to set
+     * @param image the URL of the thumbnail image for this RSS item description
      */
     public void setImage(String image) {
         this.image = image;
     }
 
     /**
-     * <p>
      * Getter for the field <code>text</code>.
-     * </p>
      *
-     * @return the description
+     * @return the HTML or plain-text body of this RSS item description
      */
     public String getText() {
         return text;
     }
 
     /**
-     * <p>
      * Setter for the field <code>text</code>.
-     * </p>
      *
-     * @param description the description to set
+     * @param description the HTML or plain-text body of this RSS item description
      */
     public void setText(String description) {
         this.text = description;
     }
 
     /**
-     * <p>
      * Getter for the field <code>metadata</code>.
-     * </p>
      *
      * @return all rss metadata of this object
      */
@@ -117,9 +103,9 @@ public class Description {
     }
 
     /**
-     * Add rss metadata to this object
+     * Adds rss metadata to this object.
      *
-     * @param metadata a {@link io.goobi.viewer.model.rss.RssMetadata} object.
+     * @param metadata RSS metadata entry to append
      */
     public void addMetadata(RssMetadata metadata) {
         this.metadata.add(metadata);

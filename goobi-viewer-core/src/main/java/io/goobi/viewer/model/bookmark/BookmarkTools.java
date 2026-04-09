@@ -34,28 +34,24 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 
 /**
- * <p>
- * BookmarkTools class.
- * </p>
+ * Utility class providing helper methods for bookmark list operations and IIIF collection export.
  */
 public final class BookmarkTools {
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(BookmarkTools.class);
 
-    /** Private constructor */
+    /** Private constructor. */
     private BookmarkTools() {
         //
     }
 
     /**
-     * <p>
      * getBookmarkListsSharedWithUser.
-     * </p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @should return shared bookmark lists
-     * @return a {@link java.util.List} object.
+     * @return a list of bookmark lists that have been shared with the given user via their group memberships
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public static List<BookmarkList> getBookmarkListsSharedWithUser(User user) throws DAOException {

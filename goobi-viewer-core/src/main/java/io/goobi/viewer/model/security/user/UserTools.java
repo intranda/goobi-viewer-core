@@ -36,6 +36,9 @@ import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.modules.IModule;
 
+/**
+ * Utility class providing static helper methods for user account management operations such as deleting a user and all associated data.
+ */
 public final class UserTools {
 
     /** Logger for this class. */
@@ -122,7 +125,7 @@ public final class UserTools {
 
     /**
      *
-     * @param owner
+     * @param owner the user whose bookmark lists should be deleted
      * @return Number of deleted bookmark lists
      * @throws DAOException
      * @should delete all bookmark lists owned by user
@@ -145,7 +148,7 @@ public final class UserTools {
 
     /**
      *
-     * @param owner
+     * @param owner the user whose saved searches should be deleted
      * @return Number of deleted searches
      * @throws DAOException
      * @should delete all searches owned by user
@@ -170,7 +173,7 @@ public final class UserTools {
     /**
      * Deletes all public content created by this the given user.
      *
-     * @param user
+     * @param user the user whose public contributions should be deleted
      * @throws DAOException
      * @should delete all user public content correctly
      */
@@ -199,7 +202,7 @@ public final class UserTools {
     /**
      * Moves all public content from the given user to an anonymous user.
      *
-     * @param user
+     * @param user the user whose public contributions should be anonymized
      * @return true if successful; false otherwise
      * @throws DAOException
      * @should anonymize all user public content correctly
@@ -260,8 +263,8 @@ public final class UserTools {
 
     /**
      *
-     * @param nickname
-     * @param userId
+     * @param nickname the nickname to check for uniqueness
+     * @param userId the database ID of the user to exclude from the check
      * @return true if given nickname already in use by different user; false otherwise
      * @throws DAOException
      */

@@ -60,6 +60,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 
+/**
+ * CMS content type that holds a reference to a single CMS media item (image or file) and renders
+ * it on a CMS page; serves as the base class for more specific media content types.
+ */
 @Entity
 @Table(name = "cms_content_media")
 @DiscriminatorValue("media")
@@ -210,11 +214,9 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder, Compa
     }
 
     /**
-     * <p>
      * getMediaName.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the name of the associated media item in the current language, or an empty string if no media is set
      */
     public String getMediaName() {
         CMSMediaItemMetadata metadata = getMediaMetadata();
@@ -222,11 +224,9 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder, Compa
     }
 
     /**
-     * <p>
      * getMediaDescription.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the description of the associated media item in the current language, or an empty string if no media is set
      */
     public String getMediaDescription() {
         CMSMediaItemMetadata metadata = getMediaMetadata();
@@ -234,9 +234,7 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder, Compa
     }
 
     /**
-     * <p>
      * getMediaMetadata.
-     * </p>
      *
      * @return The media item metadata object of the current language associated with the contentItem with the given itemId. May return null if no
      *         such item exists

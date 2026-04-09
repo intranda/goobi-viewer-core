@@ -39,9 +39,7 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
- * <p>
- * PdfHandler class.
- * </p>
+ * Handles PDF generation and delivery requests, coordinating with the ContentServer PDF service.
  *
  * @author Florian Alpers
  */
@@ -52,12 +50,10 @@ public class PdfHandler {
     private final AbstractApiUrlManager urls;
 
     /**
-     * <p>
-     * Constructor for PdfHandler.
-     * </p>
+     * Creates a new PdfHandler instance.
      *
-     * @param watermarkHandler a {@link io.goobi.viewer.controller.imaging.WatermarkHandler} object.
-     * @param configuration a {@link io.goobi.viewer.controller.Configuration} object.
+     * @param watermarkHandler handler used to add footer/watermark parameters
+     * @param configuration viewer configuration supplying the IIIF API base URL
      */
     public PdfHandler(WatermarkHandler watermarkHandler, Configuration configuration) {
         this.watermarkHandler = watermarkHandler;
@@ -66,12 +62,10 @@ public class PdfHandler {
     }
 
     /**
-     * <p>
-     * Constructor for PdfHandler.
-     * </p>
+     * Creates a new PdfHandler instance.
      *
-     * @param watermarkHandler a {@link io.goobi.viewer.controller.imaging.WatermarkHandler} object.
-     * @param urls
+     * @param watermarkHandler handler used to add footer/watermark parameters
+     * @param urls API URL manager used to build PDF download URLs
      */
     public PdfHandler(WatermarkHandler watermarkHandler, AbstractApiUrlManager urls) {
         this.watermarkHandler = watermarkHandler;
@@ -81,11 +75,11 @@ public class PdfHandler {
 
     /**
      * Return the pdf-download url for the given {@link io.goobi.viewer.model.viewer.StructElement} and
-     * {@link io.goobi.viewer.model.viewer.PhysicalElement}
+     * {@link io.goobi.viewer.model.viewer.PhysicalElement}.
      *
-     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
-     * @return a {@link java.lang.String} object.
+     * @param doc struct element providing the logical section identifier
+     * @param page physical page whose image file is included in the PDF
+     * @return the PDF download URL for the given struct element and single page
      */
     public String getPdfUrl(StructElement doc, PhysicalElement page) {
         return getPdfUrl(doc, new PhysicalElement[] { page });
@@ -93,11 +87,11 @@ public class PdfHandler {
 
     /**
      * Return the pdf-download url for the given {@link io.goobi.viewer.model.viewer.StructElement} and a number of
-     * {@link io.goobi.viewer.model.viewer.PhysicalElement}s
+     * {@link io.goobi.viewer.model.viewer.PhysicalElement}s.
      *
-     * @param se a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @param pages an array of {@link io.goobi.viewer.model.viewer.PhysicalElement} objects.
-     * @return a {@link java.lang.String} object.
+     * @param se struct element providing the logical section identifier
+     * @param pages array of physical pages whose image files are included in the PDF
+     * @return the PDF download URL for the given struct element and set of pages
      */
     public String getPdfUrl(StructElement se, PhysicalElement[] pages) {
         final UrlParameterSeparator paramSep = new UrlParameterSeparator();
@@ -142,11 +136,11 @@ public class PdfHandler {
     }
 
     /**
-     * Returns an existing pdf file from the media folder
+     * Returns an existing pdf file from the media folder.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param filename a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record
+     * @param filename name of the existing PDF file in the media folder
+     * @return the URL to the existing PDF file in the media folder
      */
     public String getPdfUrl(String pi, String filename) {
         if (this.urls != null) {
@@ -162,8 +156,8 @@ public class PdfHandler {
      * given StructElement
      *
      * @param label The name for the output file (.pdf-extension excluded). If this is null or empty, the label will be generated from pi and divId
-     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @return a {@link java.lang.String} object.
+     * @param doc struct element determining the scope and PI of the PDF
+     * @return the PDF download URL for the given struct element
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -173,12 +167,12 @@ public class PdfHandler {
     }
 
     /**
-     * Gets the url to the pdf for the given pi and divId
+     * Gets the url to the pdf for the given pi and divId.
      *
      * @param pi PI of the process from which to build pdf. Must be provided
      * @param label The name for the output file (.pdf-extension excluded). If this is null or empty, the label will be generated from pi and divId
-     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @return a {@link java.lang.String} object.
+     * @param doc struct element used to determine if a divID should be appended
+     * @return the PDF download URL for the given PI, struct element, and label
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -190,12 +184,12 @@ public class PdfHandler {
     }
 
     /**
-     * Returns the url to a PDF build from the mets file for the given {@code pi}
+     * Returns the url to a PDF build from the mets file for the given {@code pi}.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param divID a {@link java.util.Optional} object.
-     * @param label a {@link java.util.Optional} object.
-     * @return a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record
+     * @param divID optional logical section ID to restrict the PDF to a struct element
+     * @param label optional output filename without the .pdf extension
+     * @return the PDF download URL built from the METS file for the given PI
      */
     public String getPdfUrl(String pi, final Optional<String> divID, Optional<String> label) {
 
@@ -223,9 +217,7 @@ public class PdfHandler {
         return sb.toString();
     }
 
-    /**
-     * @return the watermarkHandler
-     */
+    
     public WatermarkHandler getWatermarkHandler() {
         return watermarkHandler;
     }

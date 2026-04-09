@@ -21,6 +21,10 @@
  */
 package io.goobi.viewer.exceptions;
 
+/**
+ * Thrown when an archive resource cannot be used due to a configuration error, such as a missing
+ * or invalid configuration value.
+ */
 public class ArchiveConfigurationException extends ArchiveException {
 
     private static final long serialVersionUID = -3620709090979144147L;

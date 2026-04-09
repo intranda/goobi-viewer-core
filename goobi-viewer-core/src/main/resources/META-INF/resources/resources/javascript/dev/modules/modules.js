@@ -62,11 +62,7 @@
                 borderColor: styles['borderTopColor'],
                 fillColor: styles['background-color'],
             });
-            let activeStyles = viewerJS.helper.getCss('page-area focus', [
-                'borderTopColor',
-                'borderTopWidth',
-                'background-color',
-            ]);
+            let activeStyles = viewerJS.helper.getCss('page-area focus', ['borderTopColor', 'borderTopWidth', 'background-color']);
             ({
                 borderWidth: parseInt(activeStyles['borderTopWidth']),
                 borderColor: activeStyles['borderTopColor'],
@@ -126,11 +122,7 @@
             let areasOnCanvas = [];
             activeAreas.forEach((activeArea, index) => {
                 let rect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(activeArea.coords);
-                rect = ImageView.CoordinateConversion.scaleToOpenSeadragon(
-                    rect,
-                    imageView.viewer.openseadragon,
-                    imageView.viewer.getOriginalImageSize()
-                );
+                rect = ImageView.CoordinateConversion.scaleToOpenSeadragon(rect, imageView.viewer.openseadragon, imageView.viewer.getOriginalImageSize());
                 areasOnCanvas.push(rect);
                 this.drawArea(activeArea, index, imageView);
                 let scrollPosition = window.sessionStorage.getItem('scrollPosition');
@@ -168,11 +160,7 @@
 
         drawArea(area, shapeIndex, image, clickToLeave) {
             let rect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(area.coords);
-            rect = ImageView.CoordinateConversion.scaleToOpenSeadragon(
-                rect,
-                image.viewer.openseadragon,
-                image.viewer.getOriginalImageSize()
-            );
+            rect = ImageView.CoordinateConversion.scaleToOpenSeadragon(rect, image.viewer.openseadragon, image.viewer.getOriginalImageSize());
             let $area = $('#pageAreaFrame_' + area.logId + '_' + shapeIndex);
             let $label = $('#pageAreaLabel_' + area.logId + '_' + shapeIndex);
             let overlayId = area.logId + '_' + shapeIndex;
@@ -245,15 +233,9 @@
                 this.pageType = document.querySelector(_config.elementSelectors.data.pageType).textContent;
                 this.viewMode = imageElement.dataset[_config.datasets.image.viewMode];
 
-                this.topMarginElement = document.querySelector(
-                    _config.elementSelectors.data.topMarginElement
-                )?.textContent;
-                this.leftMarginElement = document.querySelector(
-                    _config.elementSelectors.data.leftMarginElement
-                )?.textContent;
-                this.rightMarginElement = document.querySelector(
-                    _config.elementSelectors.data.rightMarginElement
-                )?.textContent;
+                this.topMarginElement = document.querySelector(_config.elementSelectors.data.topMarginElement)?.textContent;
+                this.leftMarginElement = document.querySelector(_config.elementSelectors.data.leftMarginElement)?.textContent;
+                this.rightMarginElement = document.querySelector(_config.elementSelectors.data.rightMarginElement)?.textContent;
 
                 const imageViewConfig = createZoomableImageConfig(imageElement);
                 this.viewer = new ImageView.Image(imageViewConfig);
@@ -266,9 +248,7 @@
 
                 this.tileSources = createTileSource();
 
-                this.tileSourceIdToOrder = Object.fromEntries(
-                    Object.entries(this.tileSources).map(([order, obj]) => [viewerJS.iiif.getId(obj), order])
-                );
+                this.tileSourceIdToOrder = Object.fromEntries(Object.entries(this.tileSources).map(([order, obj]) => [viewerJS.iiif.getId(obj), order]));
 
                 if (this.viewMode == 'sequence') {
                     this.sequence = new ImageView.Sequence(this.viewer, this.zoom);
@@ -308,9 +288,7 @@
                 const viewerRight = this.viewer.element.offsetLeft + this.viewer.element.offsetWidth;
                 const sidebarRightLeft = document.querySelector(this.rightMarginElement)?.offsetLeft;
                 const margins = {
-                    left:
-                        (document.querySelector(this.leftMarginElement)?.offsetWidth ?? 0) +
-                        (document.querySelector(this.leftMarginElement)?.offsetLeft ?? 0),
+                    left: (document.querySelector(this.leftMarginElement)?.offsetWidth ?? 0) + (document.querySelector(this.leftMarginElement)?.offsetLeft ?? 0),
                     right: sidebarRightLeft ? viewerRight - sidebarRightLeft : 0,
                     top: document.querySelector(this.topMarginElement)?.offsetHeight ?? 0,
                 };
@@ -320,14 +298,12 @@
 
         load() {
             if (this.viewer) {
-                return this.viewer
-                    .load(Object.values(this.tileSources), this.getCurrentTileSourceIndex())
-                    .then((image) => {
-                        this.sequence?.initialize(this.getCurrentTileSourceId());
-                        this.overlayGroups.forEach((group) => group.show());
-                        this.initWindowResize();
-                        return this;
-                    });
+                return this.viewer.load(Object.values(this.tileSources), this.getCurrentTileSourceIndex()).then((image) => {
+                    this.sequence?.initialize(this.getCurrentTileSourceId());
+                    this.overlayGroups.forEach((group) => group.show());
+                    this.initWindowResize();
+                    return this;
+                });
             } else {
                 return new Promise((resolve, reject) => {
                     reject('no image found');
@@ -431,12 +407,8 @@
         if (document.querySelector(_config.elementSelectors.controls.zoomSlider)) {
             zoom.setSlider(_config.elementSelectors.controls.zoomSlider, 3);
         }
-        document
-            .querySelectorAll(_config.elementSelectors.controls.rotateLeft)
-            .forEach((button) => button.addEventListener('click', (e) => rotation.rotateLeft()));
-        document
-            .querySelectorAll(_config.elementSelectors.controls.rotateRight)
-            .forEach((button) => button.addEventListener('click', (e) => rotation.rotateRight()));
+        document.querySelectorAll(_config.elementSelectors.controls.rotateLeft).forEach((button) => button.addEventListener('click', (e) => rotation.rotateLeft()));
+        document.querySelectorAll(_config.elementSelectors.controls.rotateRight).forEach((button) => button.addEventListener('click', (e) => rotation.rotateRight()));
         document.querySelectorAll(_config.elementSelectors.controls.reset).forEach((button) =>
             button.addEventListener('click', (e) => {
                 rotation.rotateTo(0);
@@ -450,11 +422,7 @@
             element: imageElement,
             fittingMode: getFittingMode(document.querySelector(_config.elementSelectors.data.pageType)?.textContent),
             margins: {
-                bottom: Number(
-                    document.querySelector(_config.elementSelectors.data.footer)?.dataset[
-                        _config.datasets.data.footerHeight
-                    ]
-                ),
+                bottom: Number(document.querySelector(_config.elementSelectors.data.footer)?.dataset[_config.datasets.data.footerHeight]),
             },
             zoom: {
                 enabled: imageElement.dataset[_config.datasets.image.allowZoom] !== 'false',
@@ -547,11 +515,7 @@
 
             // init area select
             try {
-                let styles = viewerJS.helper.getCss('image-fragment', [
-                    'borderTopColor',
-                    'borderTopWidth',
-                    'background-color',
-                ]);
+                let styles = viewerJS.helper.getCss('image-fragment', ['borderTopColor', 'borderTopWidth', 'background-color']);
                 var fragmentSelectConfig = {
                     removeOldAreas: true,
                     drawCondition: (event) => this.active && this.fragmentSelect?.currentOverlay == undefined,
@@ -580,12 +544,7 @@
             if (this.fragmentSelect) {
                 this.fragmentSelect.finishedHook.subscribe((area) => {
                     var areaString = this.getAreaString(area);
-                    var pageUrl =
-                        window.location.origin +
-                        window.location.pathname +
-                        window.location.search +
-                        '#xywh=' +
-                        areaString;
+                    var pageUrl = window.location.origin + window.location.pathname + window.location.search + '#xywh=' + areaString;
                     var imageUrl = this.getRegionUrl(area);
                     console.log('set area data ', pageUrl, imageUrl);
                     $('[data-fragment-link="page"]').attr('data-copy-share-image', pageUrl);
@@ -599,21 +558,8 @@
         }
 
         getAreaString(area) {
-            if (
-                area &&
-                area.x != undefined &&
-                area.y != undefined &&
-                area.width != undefined &&
-                area.height != undefined
-            ) {
-                var areaString =
-                    area.x.toFixed(0) +
-                    ',' +
-                    area.y.toFixed(0) +
-                    ',' +
-                    area.width.toFixed(0) +
-                    ',' +
-                    area.height.toFixed(0);
+            if (area && area.x != undefined && area.y != undefined && area.width != undefined && area.height != undefined) {
+                var areaString = area.x.toFixed(0) + ',' + area.y.toFixed(0) + ',' + area.width.toFixed(0) + ',' + area.height.toFixed(0);
                 return areaString;
             } else {
                 return 'full';
@@ -694,10 +640,7 @@
         }
 
         toggleImageShare($panel) {
-            if (
-                $panel.closest('.fullscreen__view-sidebar-accordeon-panel').hasClass('share-image-area') &&
-                $panel.hasClass('in')
-            ) {
+            if ($panel.closest('.fullscreen__view-sidebar-accordeon-panel').hasClass('share-image-area') && $panel.hasClass('in')) {
                 this.startFragmentSelect();
             }
         }

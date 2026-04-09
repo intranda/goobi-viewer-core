@@ -26,9 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * <p>
- * CalendarRow class.
- * </p>
+ * Represents a row of calendar items (e.g. a week row within a month view) for display in the calendar widget.
  */
 public class CalendarRow implements Serializable {
 
@@ -39,55 +37,45 @@ public class CalendarRow implements Serializable {
     private boolean selected = false;
 
     /**
-     * <p>
      * Getter for the field <code>itemList</code>.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of calendar items contained in this row
      */
     public List<ICalendarItem> getItemList() {
         return itemList;
     }
 
     /**
-     * <p>
      * Setter for the field <code>itemList</code>.
-     * </p>
      *
-     * @param itemList a {@link java.util.List} object.
+     * @param itemList calendar items to set for this row
      */
     public void setItemList(List<ICalendarItem> itemList) {
         this.itemList = itemList;
     }
 
     /**
-     * <p>
      * addItem.
-     * </p>
      *
-     * @param item a {@link io.goobi.viewer.model.calendar.ICalendarItem} object.
+     * @param item calendar item to append to this row
      */
     public void addItem(ICalendarItem item) {
         itemList.add(item);
     }
 
     /**
-     * <p>
      * isSelected.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this calendar row is currently selected, false otherwise
      */
     public boolean isSelected() {
         return selected;
     }
 
     /**
-     * <p>
      * Setter for the field <code>selected</code>.
-     * </p>
      *
-     * @param selected a boolean.
+     * @param selected true to mark this row as selected
      */
     public void setSelected(boolean selected) {
         this.selected = selected;

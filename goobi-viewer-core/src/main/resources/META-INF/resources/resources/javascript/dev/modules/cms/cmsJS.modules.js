@@ -40,7 +40,10 @@ var cmsJS = (function (cms) {
             }
 
             this.initEventListeners();
-            this.cleanUp();
+
+            // Apply validation state for any messages already rendered after a full-page submit
+            // (cleanUp must not run on page load as it would erase these fresh JSF messages)
+            this.applyExistingValidationStates();
 
             // jsf ajax event
             viewerJS.jsfAjax.success.subscribe((data) => {
@@ -107,6 +110,25 @@ var cmsJS = (function (cms) {
                 $('.cms-module__option-message ul').empty();
             }
         },
+        /**
+         * @description Applies validation state for any messages already rendered in the DOM,
+         * e.g. after a full-page form submit where JSF re-renders the page with validation errors.
+         * Must be called before cleanUp so that the rendered messages are still present.
+         * @method applyExistingValidationStates
+         */
+        applyExistingValidationStates: function () {
+            if (_debug) {
+                console.log('EXECUTE: applyExistingValidationStates');
+            }
+
+            // Iterate over every input inside a validation-aware option-control container and
+            // apply the visual state if JSF already placed a message there.
+            $('.cms-module__option-control input, .input_form__option_control input').each(function () {
+                if (this.id) {
+                    cmsJS.modules.setValidationStatus(this.id);
+                }
+            });
+        },
 
         /**
          * @description Method to initialize all event listeners.
@@ -125,9 +147,7 @@ var cmsJS = (function (cms) {
                         $input = $('#' + forId);
                         $input.toggleClass('in');
                     } else {
-                        $input = $(this)
-                            .closest('.cms-module__option-group')
-                            .find('.cms-module__option-control, .cms-module__option-dropdown');
+                        $input = $(this).closest('.cms-module__option-group').find('.cms-module__option-control, .cms-module__option-dropdown');
                         $input.toggleClass('in');
                         $input.find('.cms-module__option-control-helptext').toggleClass('in');
                     }
@@ -158,10 +178,7 @@ var cmsJS = (function (cms) {
                             .find('.cms-menu__available-items-toggle')
                             .slideToggle('fast', function () {
                                 // focus first input if available
-                                $('.cms-menu__available-items-toggle .cms-module__option-group')
-                                    .first()
-                                    .find('.form-control')
-                                    .focus();
+                                $('.cms-menu__available-items-toggle .cms-module__option-group').first().find('.form-control').focus();
                             });
                     }
                 });

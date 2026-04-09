@@ -65,9 +65,7 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
     private int lastPageOrder = 1;
 
     /**
-     * <p>
      * Package private constructor for EagerPageLoader.
-     * </p>
      *
      * @param topElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -149,9 +147,7 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
     }
 
     /**
-     * <p>
      * setFirstAndLastPageOrder.
-     * </p>
      *
      * @should set first page order correctly
      * @should set last page order correctly
@@ -168,7 +164,7 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
     /**
      * Generates a list of PhysicalElement objects that belong to this structure element.
      * 
-     * @param topElement
+     * @param topElement top-level structure element of the record
      * @return Map<Integer, PhysicalElement> containing all pages
      * @throws PresentationException
      * @throws IndexUnreachableException

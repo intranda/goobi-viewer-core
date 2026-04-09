@@ -101,18 +101,14 @@ public class AdminLicenseBean implements Serializable {
     private Locale selectedLanguage;
 
     /**
-     * <p>
-     * Constructor for AdminBean.
-     * </p>
+     * Creates a new AdminBean instance.
      */
     public AdminLicenseBean() {
         // the emptiness inside
     }
 
     /**
-     * <p>
      * init.
-     * </p>
      */
     @PostConstruct
     public void init() {
@@ -212,7 +208,7 @@ public class AdminLicenseBean implements Serializable {
 
     /**
      *
-     * @param core
+     * @param core true to return core license types; false for regular ones
      * @return all license types in the database where this.core=core
      * @throws DAOException
      */
@@ -233,9 +229,7 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * <p>
      * getAllCoreLicenseTypes.
-     * </p>
      *
      * @return all license types in the database where core=true
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -245,9 +239,7 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * <p>
      * getAllRecordLicenseTypes.
-     * </p>
      *
      * @return all license types in the database where core=false
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -259,7 +251,7 @@ public class AdminLicenseBean implements Serializable {
     /**
      * Returns all existing non-core license types minus <code>currentLicenseType</code>. Used for overriding license type selection.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all non-core license types excluding the currently selected one
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<LicenseType> getOtherLicenseTypes() throws DAOException {
@@ -280,11 +272,9 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * <p>
      * saveLicenseTypeAction.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the navigation outcome after saving the current license type to the database
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String saveCurrentLicenseTypeAction() throws DAOException {
@@ -332,9 +322,7 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * <p>
      * deleteLicenseTypeAction.
-     * </p>
      *
      * @param licenseType a {@link io.goobi.viewer.model.security.LicenseType} object.
      * @return Navigation outcome
@@ -356,11 +344,9 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * <p>
      * newCurrentLicenseTypeAction.
-     * </p>
-     * 
-     * @param name
+     *
+     * @param name name to assign to the new license type
      */
     public void newCurrentLicenseTypeAction(String name) {
         logger.trace("newCurrentLicenseTypeAction({})", name);
@@ -368,9 +354,7 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * <p>
      * resetCurrentRoleLicenseAction.
-     * </p>
      */
     public void resetCurrentRoleLicenseAction() {
         currentLicenseType = new LicenseType();
@@ -385,7 +369,7 @@ public class AdminLicenseBean implements Serializable {
 
     /**
      *
-     * @param licenseType
+     * @param licenseType the license type to check for usage
      * @return true if at least one license uses the given license type; false otherwise
      * @throws DAOException
      */
@@ -399,7 +383,7 @@ public class AdminLicenseBean implements Serializable {
 
     /**
      *
-     * @param licenseTypeName
+     * @param licenseTypeName name of the license type to query records for
      * @return Number of records with the given licenseTypeName that have the ACCESSCONDITION_CONCURRENTUSE field
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -413,7 +397,7 @@ public class AdminLicenseBean implements Serializable {
 
     /**
      *
-     * @param licenseTypeName
+     * @param licenseTypeName name of the license type to query records for
      * @return Number of records with the given licenseTypeName that have the ACCESSCONDITION_PDF_PERCENTAGE_QUOTA field
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -427,7 +411,7 @@ public class AdminLicenseBean implements Serializable {
 
     /**
      *
-     * @param licenseType
+     * @param licenseType the license type to retrieve licenses for
      * @return Number of licenses with of given {@link LicenseType}
      * @throws DAOException
      */
@@ -436,9 +420,7 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * <p>
      * Creates <code>currentLicense</code> to a new instance.
-     * </p>
      */
     public void newCurrentLicenseAction() {
         logger.trace("newCurrentLicenseAction");
@@ -523,12 +505,10 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * <p>
      * deleteLicenseAction.
-     * </p>
      *
      * @param license a {@link io.goobi.viewer.model.security.License} object.
-     * @return a {@link java.lang.String} object.
+     * @return the navigation outcome after deleting the given license from the database
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String deleteLicenseAction(License license) throws DAOException {
@@ -547,22 +527,18 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>lazyModelTickets</code>.
-     * </p>
      *
-     * @return the lazyModelTickets
+     * @return the {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider} used for paginated access ticket listing in the admin interface
      */
     public TableDataProvider<AccessTicket> getLazyModelTickets() {
         return lazyModelTickets;
     }
 
     /**
-     * <p>
      * getPageTickets.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of access tickets for the current page in the paginated ticket list
      */
     public List<AccessTicket> getPageTickets() {
         return lazyModelTickets.getPaginatorList();
@@ -578,8 +554,8 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * 
-     * @param ticket
+     *
+     * @param ticket the access ticket to persist
      * @throws DAOException
      */
     private static void saveTicket(AccessTicket ticket) throws DAOException {
@@ -597,11 +573,11 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * 
-     * @param ticket
-     * @param emailSubjectKey
-     * @param emailBodyKey
-     * @param emailBodyParams
+     *
+     * @param ticket the access ticket whose owner should be notified
+     * @param emailSubjectKey message key for the email subject line
+     * @param emailBodyKey message key for the email body text
+     * @param emailBodyParams parameter values substituted into the email body
      * @return Navigation outcome
      */
     private static String notifyOwner(AccessTicket ticket, String emailSubjectKey, String emailBodyKey, List<String> emailBodyParams) {
@@ -638,8 +614,8 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * 
-     * @param ticket
+     *
+     * @param ticket the access ticket to activate
      * @return Navigation outcome
      * @throws DAOException
      */
@@ -660,8 +636,8 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * 
-     * @param ticket
+     *
+     * @param ticket the access ticket to extend
      * @return Navigation outcome
      * @throws DAOException
      */
@@ -681,8 +657,8 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * 
-     * @param ticket
+     *
+     * @param ticket the access ticket to renew with a new password
      * @return Navigation outcome
      * @throws DAOException
      */
@@ -703,8 +679,8 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * 
-     * @param ticket
+     *
+     * @param ticket the access ticket request to reject and delete
      * @return Navigation outcome
      * @throws DAOException
      */
@@ -726,8 +702,8 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * 
-     * @param ticket
+     *
+     * @param ticket the access ticket to delete
      * @return Navigation outcome
      * @throws DAOException
      */
@@ -749,44 +725,36 @@ public class AdminLicenseBean implements Serializable {
     /*********************************** Getter and Setter ***************************************/
 
     /**
-     * <p>
      * Getter for the field <code>currentRole</code>.
-     * </p>
      *
-     * @return the currentRole
+     * @return the {@link io.goobi.viewer.model.security.Role} currently being edited in the license admin interface, or null if none selected
      */
     public Role getCurrentRole() {
         return currentRole;
     }
 
     /**
-     * <p>
      * Setter for the field <code>currentRole</code>.
-     * </p>
      *
-     * @param currentRole the currentRole to set
+     * @param currentRole the role currently being edited in the license admin interface
      */
     public void setCurrentRole(Role currentRole) {
         this.currentRole = currentRole;
     }
 
     /**
-     * <p>
      * Getter for the field <code>currentLicenseType</code>.
-     * </p>
      *
-     * @return the currentLicenseType
+     * @return the {@link io.goobi.viewer.model.security.LicenseType} currently being edited in the admin interface, or null if none selected
      */
     public LicenseType getCurrentLicenseType() {
         return currentLicenseType;
     }
 
     /**
-     * <p>
      * Setter for the field <code>currentLicenseType</code>.
-     * </p>
      *
-     * @param currentLicenseType the currentLicenseType to set
+     * @param currentLicenseType the license type currently being edited in the admin interface
      */
     public void setCurrentLicenseType(LicenseType currentLicenseType) {
         if (currentLicenseType != null) {
@@ -815,7 +783,7 @@ public class AdminLicenseBean implements Serializable {
     /**
      * Sets <code>currentUserGroup</code> by loading it from the DB via the given ID.
      *
-     * @param id
+     * @param id database ID of the license type to load
      * @throws DAOException
      */
     public void setCurrentLicenseTypeId(Long id) throws DAOException {
@@ -823,22 +791,18 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>currentLicense</code>.
-     * </p>
      *
-     * @return the currentLicense
+     * @return the {@link io.goobi.viewer.model.security.License} currently being edited in the admin interface, or null if none selected
      */
     public License getCurrentLicense() {
         return currentLicense;
     }
 
     /**
-     * <p>
      * Setter for the field <code>currentLicense</code>.
-     * </p>
      *
-     * @param currentLicense the currentLicense to set
+     * @param currentLicense the license currently being edited in the admin interface
      */
     public void setCurrentLicense(License currentLicense) {
         if (currentLicense != null) {
@@ -868,7 +832,7 @@ public class AdminLicenseBean implements Serializable {
     /**
      * Sets <code>currentLicense</code> by loading it from the DB via the given ID.
      *
-     * @param id
+     * @param id database ID of the license to load
      * @throws DAOException
      */
     public void setCurrentLicenseId(Long id) throws DAOException {
@@ -877,22 +841,18 @@ public class AdminLicenseBean implements Serializable {
         }
     }
 
-    /**
-     * @return the selectedLanguage
-     */
+    
     public Locale getSelectedLanguage() {
         return selectedLanguage;
     }
 
-    /**
-     * @param selectedLanguage the selectedLanguage to set
-     */
+    
     public void setSelectedLanguage(Locale selectedLanguage) {
         this.selectedLanguage = selectedLanguage;
     }
 
     /**
-     * Queries Solr for a list of all values of the set ACCESSCONDITION
+     * Queries Solr for a list of all values of the set ACCESSCONDITION.
      *
      * @return Combined List of access condition values from the index and CMS pages
      * @throws DAOException
@@ -963,8 +923,8 @@ public class AdminLicenseBean implements Serializable {
 
     /**
      * Record count for non-configured access conditions.
-     * 
-     * @param accessCondition
+     *
+     * @param accessCondition access condition value to count records for
      * @return Number of records containing the given access condition value
      * @throws DAOException
      * @throws PresentationException
@@ -991,8 +951,8 @@ public class AdminLicenseBean implements Serializable {
 
     /**
      * Record count for configured access conditions.
-     * 
-     * @param licenseType
+     *
+     * @param licenseType the license type whose record count to retrieve
      * @return Number of records containing the given access condition value
      * @throws DAOException
      * @throws IndexUnreachableException
@@ -1026,7 +986,7 @@ public class AdminLicenseBean implements Serializable {
 
     /**
      *
-     * @param accessCondition
+     * @param accessCondition access condition value to generate a query for
      * @return Generated query for given accessCondition
      */
     public String getUrlQueryForAccessCondition(String accessCondition) {
@@ -1043,8 +1003,8 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * 
-     * @param licenseType
+     *
+     * @param licenseType the license type whose access condition to search for in CMS pages
      * @return List of CMSPages that have the access condition of the given LicenseType assigned
      * @throws DAOException
      */
@@ -1058,7 +1018,7 @@ public class AdminLicenseBean implements Serializable {
 
     /**
      *
-     * @param privilege
+     * @param privilege privilege name to build a message key for
      * @return Composite message key for the given privilege name
      */
     public String getMessageKeyForPrivilege(String privilege) {

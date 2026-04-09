@@ -57,6 +57,11 @@ import io.goobi.viewer.model.jsf.DynamicContentBuilder;
 import io.goobi.viewer.model.jsf.DynamicContentType;
 import io.goobi.viewer.model.viewer.PageType;
 
+/**
+ * JSF view-scoped backing bean for the custom sidebar widget editor. Manages creation and editing
+ * of {@link io.goobi.viewer.model.cms.widgets.CustomSidebarWidget} instances of various types,
+ * and handles the assignment of widgets to published CMS pages.
+ */
 @Named
 @ViewScoped
 public class CustomWidgetEditBean implements Serializable {

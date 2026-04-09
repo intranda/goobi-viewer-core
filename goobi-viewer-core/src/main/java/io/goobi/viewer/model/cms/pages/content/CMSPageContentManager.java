@@ -40,10 +40,9 @@ import org.jdom2.JDOMException;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 
 /**
- * Loads {@link CMSComponent components} to include in a {@link CMSPage}
+ * Loads {@link CMSComponent components} to include in a {@link CMSPage}.
  * 
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class CMSPageContentManager implements Serializable {
 

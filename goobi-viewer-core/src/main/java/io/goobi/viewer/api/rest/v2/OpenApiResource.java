@@ -56,8 +56,7 @@ import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.servers.Server;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Path("/openapi.json")
 public class OpenApiResource {

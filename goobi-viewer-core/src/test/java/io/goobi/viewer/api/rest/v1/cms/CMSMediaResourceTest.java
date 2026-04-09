@@ -22,6 +22,7 @@
 package io.goobi.viewer.api.rest.v1.cms;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -33,6 +34,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -215,5 +217,38 @@ class CMSMediaResourceTest extends AbstractDatabaseEnabledTest {
      */
     private static String getLabel(MediaList list, int index) {
         return list.getMediaItems().get(index).getLabel().getValue("en").orElse("");
+    }
+
+    /**
+     * Negative maxItems must be rejected with IllegalRequestException (HTTP 400).
+     * Before the fix, a negative value was passed to Stream.limit() which throws
+     * IllegalArgumentException, ultimately causing HTTP 500.
+     */
+    @Test
+    void testGetMediaOfCategories_negativeMaxItems_throwsIllegalRequest() {
+        assertThrows(IllegalRequestException.class,
+                () -> resource.getMediaOfCategories(category.getName(), -1, null, false),
+                "Negative maxItems should throw IllegalRequestException");
+    }
+
+    /**
+     * Negative prioritySlots must be rejected with IllegalRequestException (HTTP 400).
+     * Before the fix, a negative value led to undefined PriorityComparator behaviour.
+     */
+    @Test
+    void testGetMediaOfCategories_negativePrioritySlots_throwsIllegalRequest() {
+        assertThrows(IllegalRequestException.class,
+                () -> resource.getMediaOfCategories(category.getName(), null, -1, false),
+                "Negative prioritySlots should throw IllegalRequestException");
+    }
+
+    /**
+     * Zero and positive values must be accepted without throwing.
+     */
+    @Test
+    void testGetMediaOfCategories_validParameters_noException() throws DAOException, IllegalRequestException {
+        // zero values are valid and should simply return an empty or minimal result
+        MediaList list = resource.getMediaOfCategories(category.getName(), 0, 0, false);
+        assertEquals(0, list.getMediaItems().size(), "max=0 should return empty list");
     }
 }

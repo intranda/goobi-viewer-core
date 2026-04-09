@@ -28,11 +28,14 @@ import de.intranda.api.iiif.presentation.v3.LabeledResource;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class LinkingProperty {
 
+    /**
+     * Enumerates the supported linked resource formats for IIIF Presentation API v3, each carrying a resource type label, MIME format, and optional
+     * profile URI.
+     */
     public enum LinkingTarget {
         PLAINTEXT("Text", Format.TEXT_PLAIN, null),
         ALTO("Dataset", Format.TEXT_XML, "https://www.loc.gov/alto/"),
@@ -57,8 +60,8 @@ public class LinkingProperty {
     private final IMetadataValue label;
 
     /**
-     * @param target
-     * @param label
+     * @param target linking target specifying MIME type and resource type
+     * @param label human-readable label for this link
      */
     public LinkingProperty(LinkingTarget target, IMetadataValue label) {
         super();
@@ -68,23 +71,19 @@ public class LinkingProperty {
 
     /**
      * 
-     * @param id
+     * @param id URI of the linked resource
      * @return {@link LabeledResource}
      */
     public LabeledResource getResource(URI id) {
         return new LabeledResource(id, target.type, target.mimeType.getLabel(), target.profile, label);
     }
 
-    /**
-     * @return the target
-     */
+    
     public LinkingTarget getTarget() {
         return target;
     }
 
-    /**
-     * @return the label
-     */
+    
     public IMetadataValue getLabel() {
         return label;
     }

@@ -54,6 +54,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
+/**
+ * CMS content type that embeds the standard search results view into a CMS page, managing
+ * search state, pagination, hit list layout, and search facets configuration.
+ */
 @Entity
 @Table(name = "cms_content_search")
 @DiscriminatorValue("search")
@@ -197,7 +201,7 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
      * Uses SearchBean to execute a search.
      *
      * @param item a {@link io.goobi.viewer.model.cms.CMSContentItem} object.
-     * @return a {@link java.lang.String} object.
+     * @return empty string (navigation outcome; search is executed as a side effect)
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.

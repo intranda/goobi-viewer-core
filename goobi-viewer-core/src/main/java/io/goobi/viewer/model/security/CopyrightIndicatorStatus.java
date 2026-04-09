@@ -24,12 +24,15 @@ package io.goobi.viewer.model.security;
 import java.io.Serializable;
 
 /**
- * 
+ * Represents the aggregated copyright indicator status for a digitized record, pairing a {@link Status} value with a human-readable description.
  */
 public class CopyrightIndicatorStatus implements Serializable {
 
     private static final long serialVersionUID = -9046091644794397616L;
 
+    /**
+     * Enumerates the three possible access levels for a copyright indicator: fully open, partially restricted, or fully locked.
+     */
     public enum Status {
         OPEN,
         PARTIAL,
@@ -60,16 +63,12 @@ public class CopyrightIndicatorStatus implements Serializable {
         this.description = description;
     }
 
-    /**
-     * @return the status
-     */
+    
     public Status getStatus() {
         return status;
     }
 
-    /**
-     * @return the description
-     */
+    
     public String getDescription() {
         return description;
     }

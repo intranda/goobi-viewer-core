@@ -34,8 +34,7 @@ import jakarta.persistence.JoinColumn;
 /**
  * Wrapper element for custom (user created) sidebar widgets. Linked to an instance of {@link CustomSidebarWidget} providing the data to display
  * 
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Entity
 @DiscriminatorValue("CUSTOM")
@@ -47,16 +46,16 @@ public class CMSSidebarElementCustom extends CMSSidebarElement {
     private CustomSidebarWidget widget;
 
     /**
-     * Empty contructor for the DAO
+     * Empty contructor for the DAO.
      */
     public CMSSidebarElementCustom() {
     }
 
     /**
-     * Default constructor for a {@link CustomSidebarWidget} providing the data and an owning {@link CMSPage}
+     * Default constructor for a {@link CustomSidebarWidget} providing the data and an owning {@link CMSPage}.
      * 
-     * @param widget
-     * @param owner
+     * @param widget the custom sidebar widget providing the data
+     * @param owner the owning CMS page
      */
     public CMSSidebarElementCustom(CustomSidebarWidget widget, CMSPage owner) {
         super(widget.getType(), owner);
@@ -69,10 +68,10 @@ public class CMSSidebarElementCustom extends CMSSidebarElement {
     }
 
     /**
-     * Cloning constructor with a CMSPage to set as owner
+     * Cloning constructor with a CMSPage to set as owner.
      * 
-     * @param orig
-     * @param owner
+     * @param orig original sidebar element to clone
+     * @param owner the owning CMS page
      */
     public CMSSidebarElementCustom(CMSSidebarElementCustom orig, CMSPage owner) {
         super(orig, owner);
@@ -85,9 +84,9 @@ public class CMSSidebarElementCustom extends CMSSidebarElement {
     }
 
     /**
-     * Get the {@link CustomSidebarWidget} providing the data
-     * 
-     * @return the widget
+     * Gets the {@link CustomSidebarWidget} providing the data.
+     *
+     * @return the {@link CustomSidebarWidget} backing this sidebar element
      */
     public CustomSidebarWidget getWidget() {
         return widget;
@@ -95,16 +94,16 @@ public class CMSSidebarElementCustom extends CMSSidebarElement {
 
     /**
      *
-     * @param widget
+     * @param widget the custom sidebar widget to set
      */
     public void setWidget(CustomSidebarWidget widget) {
         this.widget = widget;
     }
 
     /**
-     * Get the title of the underlying widget
-     * 
-     * @return the title
+     * Gets the title of the underlying widget.
+     *
+     * @return the title of the underlying {@link CustomSidebarWidget} as a {@link TranslatedText}
      */
     @Override
     public TranslatedText getTitle() {

@@ -195,6 +195,22 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchFacets#parseFacetString(String,List,Map)
+     * @verifies skip facet links with leading semicolon caused by triple separators in URL
+     */
+    @Test
+    void parseFacetString_shouldSkipFacetLinksWithLeadingSemicolonCausedByTripleSeparatorsInUrl() {
+        // A triple semicolon ;;; in the facet string (e.g. from a bot-crawled URL generated
+        // with a trailing ';' in one facet value) produces a leading ';' in the next field
+        // after splitting on ';;'. That entry must be silently skipped.
+        List<IFacetItem> facetItems = new ArrayList<>();
+        SearchFacets.parseFacetString("MD_FIELD1:value1;;;MD_FIELD2:value2;;", facetItems, null);
+        Assertions.assertEquals(1, facetItems.size());
+        Assertions.assertEquals("MD_FIELD1", facetItems.get(0).getField());
+        Assertions.assertEquals("value1", facetItems.get(0).getValue());
+    }
+
+    /**
      * @see SearchFacets#getActiveFacetString()
      * @verifies contain queries from all FacetItems
      */
@@ -257,6 +273,22 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
         facets.removeFacetAction("MD_TITLE:{[b]}", null);
         Assertions.assertEquals(2, facets.getActiveFacets().size());
         Assertions.assertEquals("DOCSTRCT%3Aa%3B%3BMD_TITLE%3Abob%3B%3B", facets.getActiveFacetString());
+    }
+
+    /**
+     * @see SearchFacets#removeFacetAction(String,String)
+     * @verifies sanitize triple semicolons to double after removal
+     */
+    @Test
+    void removeFacetAction_shouldSanitizeTripleSemicolonsToDoubleAfterRemoval() throws Exception {
+        // A facet value ending with ';' causes ';;;' in the regenerated prefix string.
+        // After removing another facet, the result must not contain ';;;'.
+        SearchFacets facets = new SearchFacets();
+        facets.setActiveFacetString("MD_FIELD1:normal;;MD_FIELD2:trailing_semicolon;");
+        Assertions.assertEquals(2, facets.getActiveFacets().size());
+        facets.removeFacetAction("MD_FIELD1:normal", null);
+        String decoded = URLDecoder.decode(facets.getActiveFacetString(), SearchBean.URL_ENCODING);
+        Assertions.assertFalse(decoded.contains(";;;"), "Facet string must not contain triple semicolons after removal");
     }
 
     /**
@@ -485,6 +517,17 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchFacets#isHasWrongLanguageCode(String,String)
+     * @verifies return false if language code different but active facet selected
+     */
+    @Test
+    void isHasWrongLanguageCode_shouldReturnFalseIfLanguageCodeDifferentButActiveFacetSelected() {
+        SearchFacets facets = new SearchFacets();
+        facets.getActiveFacets().add(new FacetItem("MD_TITLE_LANG_DE:somevalue", false));
+        Assertions.assertFalse(facets.isHasWrongLanguageCode("MD_TITLE_LANG_DE", "en"));
+    }
+
+    /**
      * @see SearchFacets#updateFacetItem(String,String,List,boolean)
      * @verifies update facet item correctly
      */
@@ -638,6 +681,59 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
 
         facets.setActiveFacetString("FIELD:foo;;FIELD:bar;;");
         Assertions.assertFalse(facets.isUnselectedValuesAvailable());
+    }
+
+    /**
+     * @see SearchFacets#getAvailableFacetsListSizeForField(String)
+     * @verifies return zero for unknown field
+     */
+    @Test
+    void getAvailableFacetsListSizeForField_shouldReturnZeroForUnknownField() {
+        SearchFacets facets = new SearchFacets();
+        Assertions.assertEquals(0, facets.getAvailableFacetsListSizeForField("NONEXISTENT"));
+    }
+
+    /**
+     * @see SearchFacets#getAvailableFacetsListSizeForField(String)
+     * @verifies return correct size
+     */
+    @Test
+    void getAvailableFacetsListSizeForField_shouldReturnCorrectSize() {
+        SearchFacets facets = new SearchFacets();
+        facets.getAvailableFacets().put("DC", new ArrayList<>(List.of(new FacetItem("DC:a", false), new FacetItem("DC:b", false))));
+        Assertions.assertEquals(2, facets.getAvailableFacetsListSizeForField("DC"));
+    }
+
+    /**
+     * @see SearchFacets#isFacetListSizeSufficient(String)
+     * @verifies return false for unknown field
+     */
+    @Test
+    void isFacetListSizeSufficient_shouldReturnFalseForUnknownField() {
+        SearchFacets facets = new SearchFacets();
+        Assertions.assertFalse(facets.isFacetListSizeSufficient("NONEXISTENT"));
+    }
+
+    /**
+     * @see SearchFacets#isFacetListSizeSufficient(String)
+     * @verifies return false for single item field
+     */
+    @Test
+    void isFacetListSizeSufficient_shouldReturnFalseForSingleItemField() {
+        SearchFacets facets = new SearchFacets();
+        facets.getAvailableFacets().put("DC", new ArrayList<>(Collections.singletonList(new FacetItem("DC:a", false))));
+        Assertions.assertFalse(facets.isFacetListSizeSufficient("DC"));
+    }
+
+    /**
+     * @see SearchFacets#isFacetListSizeSufficient(String)
+     * @verifies return true for field with two or more items
+     */
+    @Test
+    void isFacetListSizeSufficient_shouldReturnTrueForFieldWithTwoOrMoreItems() {
+        SearchFacets facets = new SearchFacets();
+        facets.getAvailableFacets().put("DC", new ArrayList<>(List.of(new FacetItem("DC:a", false), new FacetItem("DC:b", false))));
+        Assertions.assertTrue(facets.isFacetListSizeSufficient("DC"));
     }
 
     /**

@@ -26,7 +26,7 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 
 /**
- * Resolves urls audio or video files
+ * Resolves urls audio or video files.
  *
  * @author Florian Alpers
  */
@@ -38,9 +38,7 @@ public class Object3DHandler {
     private final AbstractApiUrlManager urls;
 
     /**
-     * <p>
-     * Constructor for Object3DHandler.
-     * </p>
+     * Creates a new Object3DHandler instance.
      *
      * @param config a {@link io.goobi.viewer.controller.Configuration} object.
      */
@@ -55,7 +53,7 @@ public class Object3DHandler {
     }
 
     /**
-     * Returns the url to the media object for the given pi and filename
+     * Returns the url to the media object for the given pi and filename.
      *
      * @param pi The pi of the requested work
      * @param filename The media filename

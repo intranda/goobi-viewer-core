@@ -249,7 +249,7 @@ public class Sitemap {
     /**
      * Index counter for items per XML file.
      *
-     * @param timestamp
+     * @param timestamp millisecond timestamp for the lastmod element
      */
     private void increment(long timestamp) {
         index++;
@@ -290,10 +290,10 @@ public class Sitemap {
      *
      * @param pi Record identifier
      * @param order Page number
-     * @param dateModified
+     * @param dateModified ISO date string for the lastmod element
      * @param type Target page type
-     * @param changefreq
-     * @param priority
+     * @param changefreq sitemap change frequency value
+     * @param priority sitemap priority value
      * @return Created {@link Element}
      * @should create url correctly
      */
@@ -305,9 +305,9 @@ public class Sitemap {
      * Creates an XML element containing a sitemap item.
      *
      * @param url Final URL
-     * @param dateModified
-     * @param changefreq
-     * @param priority
+     * @param dateModified ISO date string for the lastmod element
+     * @param changefreq sitemap change frequency value
+     * @param priority sitemap priority value
      * @should create loc element correctly
      * @should create lastmod element correctly
      * @return Created {@link Element}
@@ -343,12 +343,12 @@ public class Sitemap {
     /**
      * Writes givent sitemap XML documents into the file system.
      *
-     * @param outputDirPath a {@link java.lang.String} object.
-     * @param docIndex a {@link org.jdom2.Document} object.
-     * @param docListSitemap a {@link java.util.List} object.
+     * @param outputDirPath destination directory path for all sitemap files
+     * @param docIndex sitemap index XML document to write
+     * @param docListSitemap list of sitemap XML documents to compress and write
      * @should write index file correctly
      * @should write gzip files correctly
-     * @return a {@link java.util.List} object.
+     * @return a list of written sitemap files (index file plus compressed sitemap files)
      * @throws java.io.IOException if any.
      */
     protected List<File> writeFiles(String outputDirPath, Document docIndex, List<Document> docListSitemap) throws IOException {
@@ -385,9 +385,7 @@ public class Sitemap {
         return ret;
     }
 
-    /**
-     * @param viewerRootUrl the viewerRootUrl to set
-     */
+    
     void setViewerRootUrl(String viewerRootUrl) {
         this.viewerRootUrl = viewerRootUrl;
         if (this.viewerRootUrl != null && !this.viewerRootUrl.endsWith("/")) {

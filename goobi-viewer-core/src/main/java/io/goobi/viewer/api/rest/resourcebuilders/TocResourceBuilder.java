@@ -41,8 +41,7 @@ import io.goobi.viewer.model.toc.export.pdf.TocWriter;
 import io.goobi.viewer.model.viewer.ViewManager;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class TocResourceBuilder {
 
@@ -53,8 +52,8 @@ public class TocResourceBuilder {
 
     /**
      * 
-     * @param request
-     * @param response
+     * @param request the HTTP servlet request
+     * @param response the HTTP servlet response
      */
     public TocResourceBuilder(HttpServletRequest request, HttpServletResponse response) {
         this.request = request;
@@ -63,7 +62,7 @@ public class TocResourceBuilder {
 
     /**
      * 
-     * @param pi
+     * @param pi persistent identifier of the record
      * @return TOC as {@link String}
      * @throws ContentNotFoundException
      * @throws PresentationException

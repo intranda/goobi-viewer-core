@@ -110,7 +110,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /** Metadata for Excel export. */
     private final Map<String, String> exportMetadata = new HashMap<>();
     private String url;
-    /** Secondary URL */
+    /** Secondary URL. */
     private String altUrl;
     /** Secondary label. */
     private String altLabel;
@@ -119,13 +119,13 @@ public class SearchHit implements Comparable<SearchHit> {
     private final List<SearchHit> children = new ArrayList<>();
     private final Map<HitType, Integer> hitTypeCounts = new EnumMap<>(HitType.class);
     /**
-     * Hits generated from {@link #childDocs} in {@link #populateChildren(int, int, Locale, HttpServletRequest)}
+     * Hits generated from {@link #childDocs} in {@link #populateChildren(int, int, Locale, HttpServletRequest)}.
      */
     private int hitsPopulated = 0;
     /**
      * Hits generated when hit is created in
      * {@link SearchHelper#searchWithAggregation(String, int, int, List, List, List, Map, Map, List, String, Locale, boolean, int)} This hits are part
-     * of the total hit count returned by {@link #getHitCount()} but don't count towards {@link #hitsPopulated}
+     * of the total hit count returned by {@link #getHitCount()} but don't count towards {@link #hitsPopulated}.
      */
     private int hitsPreloaded = 0;
     private SolrDocument solrDoc = null;
@@ -138,12 +138,12 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Package-private constructor. Clients should use SearchHitFactory to create SearchHit instances.
      *
-     * @param type
-     * @param browseElement
-     * @param doc
-     * @param searchTerms
-     * @param locale
-     * @param factory
+     * @param type the hit type (page, metadata, UGC, etc.)
+     * @param browseElement the browse element representing this hit
+     * @param doc the Solr document backing this hit
+     * @param searchTerms map of Solr field names to matched search term sets
+     * @param locale locale used for label translations
+     * @param factory factory used to create child search hits
      * @should set authorityDataIdentifier correctly
      */
     SearchHit(HitType type, BrowseElement browseElement, SolrDocument doc, Map<String, Set<String>> searchTerms, Locale locale,
@@ -181,9 +181,6 @@ public class SearchHit implements Comparable<SearchHit> {
         }
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public int compareTo(SearchHit other) {
@@ -240,10 +237,10 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Creates child hit elements for each hit matching a CMS page text, if CMS page texts were also searched.
      *
+     * @return the number of child hits added
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @should do nothing if searchTerms do not contain key
      * @should do nothing if no cms pages for record found
-     * @return the number of child hits added
      */
     public int addCMSPageChildren() throws DAOException {
         if (searchTerms == null || !searchTerms.containsKey(SolrConstants.CMS_TEXT_ALL)) {
@@ -325,14 +322,14 @@ public class SearchHit implements Comparable<SearchHit> {
      * Creates a child hit element for TEI full-texts, with child hits of its own for each truncated fragment containing search terms.
      *
      * @param doc Solr page doc
-     * @param language a {@link java.lang.String} object.
+     * @param language BCP 47 language code for TEI file lookup
+     * @return the number of child hits added
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @should throw IllegalArgumentException if doc null
      * @should do nothing if searchTerms does not contain fulltext
      * @should do nothing if tei file name not found
-     * @return the number of child hits added
      */
     public int addFulltextChild(SolrDocument doc, final String language)
             throws IndexUnreachableException, DAOException, ViewerConfigurationException {
@@ -404,14 +401,12 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * populateChildren.
-     * </p>
      *
-     * @param number a int.
-     * @param skip a int.
-     * @param locale a {@link java.util.Locale} object.
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param number maximum number of child hits to populate
+     * @param skip number of child hits to skip before populating
+     * @param locale locale used for label translations
+     * @param request current HTTP request used for access checks
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -520,11 +515,11 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * 
-     * @param childDoc
-     * @param fulltext
-     * @param docType
-     * @param acccessDeniedType
+     *
+     * @param childDoc the child Solr document to process
+     * @param fulltext full-text content for page hits, may be null
+     * @param docType document type of the child document
+     * @param acccessDeniedType true if access to this document was denied
      * @throws DAOException
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -578,11 +573,11 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * 
-     * @param request
-     * @param pi
-     * @param authorityIdentifier
-     * @param childDoc
+     *
+     * @param request the current HTTP request, used for access checks
+     * @param pi persistent identifier of the record
+     * @param authorityIdentifier authority data identifier used to highlight named entity tags; may be null
+     * @param childDoc Solr page document providing fulltext filename fields
      * @return Full-text for this search hit
      * @throws FileNotFoundException If the fulltext resource is not found or not accessible
      * @throws AccessDeniedException If the request is missing access rights to the fulltext resource
@@ -656,22 +651,18 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>type</code>.
-     * </p>
      *
-     * @return the type
+     * @return the hit type classifying the kind of content this search hit represents
      */
     public HitType getType() {
         return type;
     }
 
     /**
-     * <p>
      * Getter for the field <code>translatedType</code>.
-     * </p>
      *
-     * @return the translatedType
+     * @return the message key for the translated hit type label, or an empty string if no type is set
      */
     public String getTranslatedType() {
         return type != null ? SEARCH_HIT_TYPE_PREFIX + type.name() : "";
@@ -710,58 +701,46 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>browseElement</code>.
-     * </p>
      *
-     * @return the browseElement
+     * @return the browse element containing the display metadata for this search hit
      */
     public BrowseElement getBrowseElement() {
         return browseElement;
     }
 
-    /**
-     * @return the hitNumber
-     */
+    
     public long getHitNumber() {
         return hitNumber;
     }
 
-    /**
-     * @param hitNumber the hitNumber to set
-     */
+    
     public void setHitNumber(long hitNumber) {
         this.hitNumber = hitNumber;
     }
 
     /**
-     * <p>
      * Getter for the field <code>childDocs</code>.
-     * </p>
      *
-     * @return the childDocs
+     * @return the list of unpopulated child Solr documents to be lazily expanded for this hit
      */
     public List<SolrDocument> getChildDocs() {
         return childDocs;
     }
 
     /**
-     * <p>
      * Getter for the field <code>hitsPopulated</code>.
-     * </p>
      *
-     * @return the hitsPopulated
+     * @return the number of child hits that have already been populated for display
      */
     public int getHitsPopulated() {
         return hitsPopulated;
     }
 
     /**
-     * <p>
      * Setter for the field <code>childDocs</code>.
-     * </p>
      *
-     * @param childDocs the childDocs to set
+     * @param childDocs the list of unpopulated child Solr documents to be lazily expanded for this hit
      */
     public void setChildDocs(SolrDocumentList childDocs) {
         this.childDocs = childDocs;
@@ -770,7 +749,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Returns true if this hit has populated child elements.
      *
-     * @return a boolean.
+     * @return true if this hit has at least one populated child search hit, false otherwise
      */
     public boolean isHasChildren() {
         return !children.isEmpty();
@@ -779,51 +758,43 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Returns true if this hit has any unpopulated child hits left.
      *
-     * @return a boolean.
+     * @return true if there are more child hits available beyond those already populated, false otherwise
      */
     public boolean isHasMoreChildren() {
         return childDocs != null && !childDocs.isEmpty() && getHitsPopulated() < childDocs.size();
     }
 
     /**
-     * <p>
      * Getter for the field <code>ugcDocIddocs</code>.
-     * </p>
      *
-     * @return the ugcDocIddocs
+     * @return the set of IDDOC values for user-generated content documents associated with this hit
      */
     public Set<String> getUgcDocIddocs() {
         return ugcDocIddocs;
     }
 
     /**
-     * <p>
      * Getter for the field <code>children</code>.
-     * </p>
      *
-     * @return the children
+     * @return the list of populated child search hits for this result
      */
     public List<SearchHit> getChildren() {
         return children;
     }
 
     /**
-     * <p>
      * Getter for the field <code>hitTypeCounts</code>.
-     * </p>
      *
-     * @return the hitTypeCounts
+     * @return the map of hit type to count of child hits of that type
      */
     public Map<HitType, Integer> getHitTypeCounts() {
         return hitTypeCounts;
     }
 
     /**
-     * <p>
      * isHasHitCount.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if at least one hit type has a count greater than zero, false otherwise
      */
     public boolean isHasHitCount() {
         for (Entry<HitType, Integer> entry : hitTypeCounts.entrySet()) {
@@ -844,9 +815,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * getCmsPageHitCount.
-     * </p>
      *
      * @return a int.
      */
@@ -859,9 +828,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * getDocstructHitCount.
-     * </p>
      *
      * @return a int.
      */
@@ -878,9 +845,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * getPageHitCount.
-     * </p>
      *
      * @return a int.
      */
@@ -893,9 +858,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * getMetadataHitCount.
-     * </p>
      *
      * @return a int.
      */
@@ -908,9 +871,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * getEventHitCount.
-     * </p>
      *
      * @return a int.
      */
@@ -923,9 +884,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * getUgcHitCount.
-     * </p>
      *
      * @return a int.
      */
@@ -938,9 +897,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * getArchiveHitCount.
-     * </p>
      *
      * @return a int.
      */
@@ -953,11 +910,9 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>foundMetadata</code>.
-     * </p>
      *
-     * @return the foundMetadata
+     * @return an unmodifiable list of label-value pairs for metadata fields that matched the search query
      */
     public List<StringPair> getFoundMetadata() {
         return Collections.unmodifiableList(foundMetadata);
@@ -968,50 +923,38 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>url</code>.
-     * </p>
      *
-     * @return the url
+     * @return the URL for this search hit's detail page
      */
     public String getUrl() {
         return url;
     }
 
-    /**
-     * @return the altUrl
-     */
+    
     public String getAltUrl() {
         return altUrl;
     }
 
-    /**
-     * @param altUrl the altUrl to set
-     */
+    
     public void setAltUrl(String altUrl) {
         this.altUrl = altUrl;
     }
 
-    /**
-     * @return the altLabel
-     */
+    
     public String getAltLabel() {
         return altLabel;
     }
 
-    /**
-     * @param altLabel the altLabel to set
-     */
+    
     public void setAltLabel(String altLabel) {
         this.altLabel = altLabel;
     }
 
     /**
-     * <p>
      * Getter for the field <code>exportMetadata</code>.
-     * </p>
      *
-     * @return the exportMetadata
+     * @return the map of metadata field names to values used for exporting this search hit
      */
     public Map<String, String> getExportMetadata() {
         return exportMetadata;
@@ -1020,8 +963,8 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Generates HTML fragment for this search hit for notification mails.
      *
-     * @param count a int.
-     * @return a {@link java.lang.String} object.
+     * @param count sequential position of this hit in the notification list
+     * @return the HTML table row fragment for this search hit in a notification email
      * @should generate fragment correctly
      */
     public String generateNotificationFragment(int count) {
@@ -1031,7 +974,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * @param doc
+     * @param doc the Solr document to set
      */
     public void setSolrDoc(SolrDocument doc) {
         this.solrDoc = doc;
@@ -1051,9 +994,6 @@ public class SearchHit implements Comparable<SearchHit> {
         return value;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return getBrowseElement().getLabelShort();
@@ -1112,7 +1052,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Getter for unit tests.
      * 
-     * @return the authorityDataIdentifier
+
      */
     String getAuthorityDataIdentifier() {
         return authorityDataIdentifier;

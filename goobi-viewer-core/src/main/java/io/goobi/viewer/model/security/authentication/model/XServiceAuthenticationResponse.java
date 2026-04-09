@@ -51,8 +51,8 @@ public class XServiceAuthenticationResponse {
     /**
      * Parses and evaluates the given XML response from X-Service.
      *
-     * @param xml a {@link java.lang.String} object.
-     * @param encoding a {@link java.lang.String} object.
+     * @param xml XML response string from X-Service to parse
+     * @param encoding character encoding of the XML string
      * @throws org.jdom2.JDOMException if any.
      * @throws java.io.IOException if any.
      */
@@ -85,9 +85,7 @@ public class XServiceAuthenticationResponse {
     }
 
     /**
-     * <p>
      * isValid.
-     * </p>
      *
      * @return true if all relevant data indicates the account is valid; false otherwise
      */
@@ -96,66 +94,54 @@ public class XServiceAuthenticationResponse {
     }
 
     /**
-     * <p>
      * Getter for the field <code>errorMsg</code>.
-     * </p>
      *
-     * @return the errorMsg
+     * @return the error message returned by X-Service, or null if no error occurred
      */
     public String getErrorMsg() {
         return errorMsg;
     }
 
     /**
-     * <p>
      * Setter for the field <code>errorMsg</code>.
-     * </p>
      *
-     * @param errorMsg the errorMsg to set
+     * @param errorMsg the error message returned by X-Service to set
      */
     public void setErrorMsg(String errorMsg) {
         this.errorMsg = errorMsg;
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
-     * @return the id
+     * @return the user identifier returned by X-Service
      */
     public String getId() {
         return id;
     }
 
     /**
-     * <p>
      * isExpired.
-     * </p>
      *
-     * @return the expired
+     * @return true if the X-Service session has expired, false otherwise
      */
     public boolean isExpired() {
         return expired;
     }
 
     /**
-     * <p>
      * Getter for the field <code>request</code>.
-     * </p>
      *
-     * @return the request
+     * @return the original authentication request details
      */
     public Request getRequest() {
         return request;
     }
 
     /**
-     * <p>
      * Setter for the field <code>request</code>.
-     * </p>
      *
-     * @param request the request to set
+     * @param request the original authentication request details to set
      */
     public void setRequest(Request request) {
         this.request = request;

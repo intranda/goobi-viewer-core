@@ -18,7 +18,7 @@
             <!-- SINGLEVOLUME -->
             <h:outputLink
                 value="#{navigationHelper.applicationUrl}#{browseElement.url}"
-                rendered="#{browseElement.thumbnailUrl != null and !browseElement.anchor}"
+                rendered="#{browseElement.thumbnailUrl != null and !browseElement.anchor and !browseElement.group}"
                 title="#{browseElement.label}">
                 <img
                     src="#{browseElement.thumbnailUrl}"
@@ -30,7 +30,7 @@
             <!-- SINGLEVOLUME WITHOUT IMAGE -->
             <h:outputLink
                 value="#{navigationHelper.applicationUrl}#{browseElement.url}"
-                rendered="#{browseElement.thumbnailUrl == null and !browseElement.anchor}"
+                rendered="#{browseElement.thumbnailUrl == null and !browseElement.anchor and !browseElement.group}"
                 title="#{browseElement.label}">
                 <img
                     src="/resources/themes/#{navigationHelper.theme}/images/image_not_found.png"
@@ -41,7 +41,7 @@
             <!-- MULTIVOLUME -->
             <h:outputLink
                 value="#{navigationHelper.applicationUrl}#{browseElement.url}"
-                rendered="#{browseElement.anchor}"
+                rendered="#{browseElement.anchor or browseElement.group}"
                 styleClass="stackedThumbEffect">
                 <div class="stackedThumbEffect-inner">
                     <h:panelGroup rendered="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME'}">

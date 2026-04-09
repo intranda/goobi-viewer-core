@@ -45,9 +45,9 @@ import org.apache.commons.lang3.StringUtils;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 
 /**
- * <p>
- * MediaDeliveryService class.
- * </p>
+ * Service class that handles HTTP file delivery with support for byte-range requests, conditional caching headers (ETag, If-Modified-Since), and
+ * optional GZIP encoding for text content.
+ * Processes full-file as well as single- and multi-part partial-content (HTTP 206) responses.
  *
  * @author Florian Alpers
  */
@@ -59,12 +59,12 @@ public class MediaDeliveryService {
     private static final String MULTIPART_BOUNDARY = "MULTIPART_BYTERANGES";
 
     /**
-     * Process the actual request.
+     * Processes the actual request.
      *
      * @param request The request to be processed.
      * @param response The response to be created.
-     * @param filePath a {@link java.lang.String} object.
-     * @param mimeType a {@link java.lang.String} object.
+     * @param filePath absolute path to the file to serve
+     * @param mimeType MIME type for the Content-Type header
      * @throws java.io.IOException if any.
      */
     public void processRequest(HttpServletRequest request, HttpServletResponse response, String filePath, String mimeType) throws IOException {
@@ -198,9 +198,9 @@ public class MediaDeliveryService {
     }
 
     /**
-     * @param input
-     * @param output
-     * @param sec
+     * @param input file channel to read bytes from
+     * @param output writable channel to write bytes to
+     * @param sec byte range section defining start position and length
      * @throws IOException
      */
     private static void copy(FileChannel input, WritableByteChannel output, Section sec) throws IOException {
@@ -208,11 +208,11 @@ public class MediaDeliveryService {
     }
 
     /**
-     * @param response
-     * @param fileName
-     * @param lastModified
-     * @param eTag
-     * @param disposition
+     * @param response HTTP response to initialize with caching and content headers
+     * @param fileName name of the file being served, used in Content-Disposition header
+     * @param lastModified last-modified timestamp of the file in milliseconds
+     * @param eTag unique entity tag string for cache validation
+     * @param disposition content disposition value, either "inline" or "attachment"
      */
     private static void initResponse(HttpServletResponse response, String fileName, long lastModified, String eTag, String disposition) {
         response.reset();
@@ -225,10 +225,10 @@ public class MediaDeliveryService {
     }
 
     /**
-     * @param request
-     * @param length
-     * @param lastModified
-     * @param eTag
+     * @param request incoming HTTP request containing optional Range and If-Range headers
+     * @param length total byte length of the file being served
+     * @param lastModified last-modified timestamp of the file in milliseconds
+     * @param eTag unique entity tag string for conditional range validation
      * @return List<Section>
      * @throws IOException
      * @throws IllegalRequestException
@@ -290,8 +290,8 @@ public class MediaDeliveryService {
     }
 
     /**
-     * 
-     * @param range
+     *
+     * @param range raw value of the HTTP Range header to validate
      * @return true if range matches pattern; false otherwise
      */
     protected static boolean matchesRangeHeaderPattern(String range) {
@@ -313,11 +313,11 @@ public class MediaDeliveryService {
 
     /**
      * Returns a status code for a response indicating cached content If the return value is empty, the no caching can be achieved and the request
-     * needs to continue
+     * needs to continue.
      *
-     * @param request
-     * @param lastModified
-     * @param eTag
+     * @param request incoming HTTP request containing conditional cache headers
+     * @param lastModified last-modified timestamp of the file in milliseconds
+     * @param eTag unique entity tag string for cache validation
      * @return Optional<Integer>
      * @throws IOException
      */
@@ -355,8 +355,8 @@ public class MediaDeliveryService {
     /**
      * Returns true if the given match header matches the given value.
      *
-     * @param matchHeader The match header.
-     * @param toMatch The value to be matched.
+     * @param matchHeader comma-separated If-Match or If-None-Match header value
+     * @param toMatch ETag value to look up in the header
      * @return True if the given match header matches the given value.
      */
     private static boolean matches(String matchHeader, String toMatch) {
@@ -373,9 +373,9 @@ public class MediaDeliveryService {
      * Returns a substring of the given string value from the given begin index to the given end index as a long. If the substring is empty, then -1
      * will be returned
      *
-     * @param value The string value to return a substring as long for.
-     * @param beginIndex The begin index of the substring to be returned as long.
-     * @param endIndex The end index of the substring to be returned as long.
+     * @param value string to extract the number from
+     * @param beginIndex start index of the substring (inclusive)
+     * @param endIndex end index of the substring (exclusive)
      * @return A substring of the given string value as long or -1 if substring is empty.
      */
     private static long sublong(String value, int beginIndex, int endIndex) {
@@ -386,8 +386,8 @@ public class MediaDeliveryService {
     /**
      * Returns true if the given accept header accepts the given value.
      *
-     * @param acceptHeader The accept header.
-     * @param toAccept The value to be accepted.
+     * @param acceptHeader comma-separated Accept header value from the request
+     * @param toAccept MIME type to check for acceptance
      * @return True if the given accept header accepts the given value.
      */
     private static boolean accepts(String acceptHeader, String toAccept) {
@@ -402,7 +402,7 @@ public class MediaDeliveryService {
     }
 
     /**
-     * A section within a byte array
+     * A section within a byte array.
      */
     private static class Section {
         private long start;
@@ -411,7 +411,7 @@ public class MediaDeliveryService {
         private long total;
 
         /**
-         * Construct a byte range.
+         * Constructs a byte range.
          *
          * @param start Start of the byte range.
          * @param end End of the byte range.
@@ -425,9 +425,9 @@ public class MediaDeliveryService {
         }
 
         /**
-         * Creates a "full" section spanning the entire content
+         * Creates a "full" section spanning the entire content.
          *
-         * @param total
+         * @param total total byte length of the content to serve
          */
         public Section(long total) {
             this.start = 0;
@@ -440,58 +440,42 @@ public class MediaDeliveryService {
             return this.length == this.total;
         }
 
-        /**
-         * @return the start
-         */
+        
         public long getStart() {
             return start;
         }
 
-        /**
-         * @param start the start to set
-         */
+        
         public void setStart(long start) {
             this.start = start;
         }
 
-        /**
-         * @return the end
-         */
+        
         public long getEnd() {
             return end;
         }
 
-        /**
-         * @param end the end to set
-         */
+        
         public void setEnd(long end) {
             this.end = end;
         }
 
-        /**
-         * @return the length
-         */
+        
         public long getLength() {
             return length;
         }
 
-        /**
-         * @param length the length to set
-         */
+        
         public void setLength(long length) {
             this.length = length;
         }
 
-        /**
-         * @return the total
-         */
+        
         public long getTotal() {
             return total;
         }
 
-        /**
-         * @param total the total to set
-         */
+        
         public void setTotal(long total) {
             this.total = total;
         }

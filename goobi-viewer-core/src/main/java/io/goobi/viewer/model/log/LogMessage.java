@@ -44,8 +44,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 @MappedSuperclass
 public class LogMessage implements Serializable, Comparable<LogMessage> {
@@ -53,11 +52,11 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
     private static final Logger logger = LogManager.getLogger(LogMessage.class);
     private static final long serialVersionUID = -7884550362212875027L;
     /**
-     * Constant for creator meaning that no creator was set
+     * Constant for creator meaning that no creator was set.
      */
     private static final UserJsonFacade UNASSIGNED = new UserJsonFacade("unknown");
     /**
-     * Constant for creator meaning the creator could not be found in the database
+     * Constant for creator meaning the creator could not be found in the database.
      */
     private static final UserJsonFacade ANONYMOUS = new UserJsonFacade("anonymous");
 
@@ -79,10 +78,10 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
     private UserJsonFacade creator = UNASSIGNED;
 
     /**
-     * 
-     * @param message
-     * @param creatorId
-     * @param request
+     *
+     * @param message log message text
+     * @param creatorId database ID of the creating user
+     * @param request HTTP request used to resolve the creator avatar URL
      */
     public LogMessage(String message, Long creatorId, HttpServletRequest request) {
         this.message = message;
@@ -92,11 +91,11 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
     }
 
     /**
-     * 
-     * @param message
-     * @param creatorId
-     * @param dateCreated
-     * @param request
+     *
+     * @param message log message text
+     * @param creatorId database ID of the creating user
+     * @param dateCreated explicit creation timestamp to use
+     * @param request HTTP request used to resolve the creator avatar URL
      */
     public LogMessage(String message, Long creatorId, LocalDateTime dateCreated, HttpServletRequest request) {
         this(message, creatorId, request);
@@ -104,9 +103,9 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
     }
 
     /**
-     * 
-     * @param source
-     * @param request
+     *
+     * @param source existing log message to copy fields from
+     * @param request HTTP request used to resolve the creator avatar URL
      */
     public LogMessage(LogMessage source, HttpServletRequest request) {
         this.message = source.message;
@@ -123,8 +122,8 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
     }
 
     /**
-     * 
-     * @param source
+     *
+     * @param source existing log message to copy fields from
      */
     public LogMessage(LogMessage source) {
         this(source, null);
@@ -133,49 +132,39 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
     public LogMessage() {
     }
 
-    /**
-     * @return the id
-     */
+    
     public Long getId() {
         return id;
     }
 
-    /**
-     * @return the creatorId
-     */
+    
     @JsonIgnore
     public Long getCreatorId() {
         return creatorId;
     }
 
-    /**
-     * @return the dateCreated
-     */
+    
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
-    /**
-     * @return the message
-     */
+    
     public String getMessage() {
         return message;
     }
 
-    /**
-     * @return the creator
-     */
+    
     public UserJsonFacade getCreator() {
         return creator;
     }
 
     /**
-     * Set the value of {@link #creator} from the value of {@link #creatorId}. If creatorId is null or an exception occurs while retrieving the user
+     * Sets the value of {@link #creator} from the value of {@link #creatorId}. If creatorId is null or an exception occurs while retrieving the user
      * data, the creator is set to {@link #UNASSIGNED}. If no creator could be found by the given id, the creator is set to {@link #ANONYMOUS} A
      * {@link HttpServletRequest request} may be passed to create an absolute URL for the creator avatar.
      * 
-     * @param request
+     * @param request HTTP request used to build the creator avatar URL; may be null
      */
     private void loadCreator(HttpServletRequest request) {
         if (this.creatorId == null) {
@@ -195,17 +184,11 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
         }
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
     @Override
     public int compareTo(LogMessage o) {
         return this.dateCreated.compareTo(o.dateCreated);
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return this.message + " (" + (this.creator == null ? ("ID:" + this.creatorId) : this.creator.getName()) + " - " + this.dateCreated;

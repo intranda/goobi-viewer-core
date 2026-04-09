@@ -32,13 +32,12 @@ import io.goobi.viewer.model.variables.VariableReplacer;
 
 /**
  * A configurable filter allowing passage to document entities (record, docStruct, page) which satisfy certain conditions The filter itself may
- * contain condition filters which determine if the filter should be applied to an entity
+ * contain condition filters which determine if the filter should be applied to an entity.
  */
 public final class ConfiguredValueFilter extends AbstractFilterConfiguration {
 
     /**
      * The value to test. Shoud make use of {@link VariableReplacer} expressions. This may be left empty, in which case the filter
-     * 
      */
     private final String value;
     /**
@@ -47,7 +46,7 @@ public final class ConfiguredValueFilter extends AbstractFilterConfiguration {
     private final String matchRegex;
 
     /**
-     * internal constructor
+     * internal constructor.
      * 
      * @param action whether to pass or block matching entities
      * @param value the value to test
@@ -60,7 +59,7 @@ public final class ConfiguredValueFilter extends AbstractFilterConfiguration {
     }
 
     /**
-     * get a filter which passes all matches
+     * Get a filter which passes all matches.
      * 
      * @param value the value to test
      * @param matchRegex a regex which must match the value parameter for the filter to match
@@ -71,7 +70,7 @@ public final class ConfiguredValueFilter extends AbstractFilterConfiguration {
     }
 
     /**
-     * get a filter which blocks all matches
+     * Get a filter which blocks all matches.
      * 
      * @param value the value to test
      * @param matchRegex a regex which must match the value parameter for the filter to match
@@ -82,7 +81,7 @@ public final class ConfiguredValueFilter extends AbstractFilterConfiguration {
     }
 
     /**
-     * Create a new filter from a configuration block
+     * Creates a new filter from a configuration block.
      * 
      * @param config an xml configuration
      * @return a new {@link ConfiguredValueFilter}
@@ -121,6 +120,10 @@ public final class ConfiguredValueFilter extends AbstractFilterConfiguration {
 
     /**
      * alias for {@link #passes(VariableReplacer)}. The given value is ignored
+     *
+     * @param value ignored; this implementation uses the internal filter value instead
+     * @param vr variable replacer providing values to test against the filter
+     * @return true if the object represented by the variable replacer passes the filter, false otherwise
      */
     @Override
     public boolean passes(String value, VariableReplacer vr) {
@@ -128,7 +131,7 @@ public final class ConfiguredValueFilter extends AbstractFilterConfiguration {
     }
 
     /**
-     * Similar to {@link #matches(VariableReplacer)}, but if {@link #action} is {@link FilterAction#HIDE} the return value is negated
+     * Similar to {@link #matches(VariableReplacer)}, but if {@link #action} is {@link FilterAction#HIDE} the return value is negated.
      * 
      * @param vr a variable replacer containing values to test
      * @return whether the object represented by the variable replacer passes the filter, ignoring conditions
@@ -139,7 +142,7 @@ public final class ConfiguredValueFilter extends AbstractFilterConfiguration {
     }
 
     /**
-     * Test the match condition on a variable replacer
+     * Test the match condition on a variable replacer.
      * 
      * @param vr a variable replacer containing values to test
      * @return whether the {@link ConfiguredValueFilter#value} matches the {@link #matchRegex} if both are filled with values from the variable

@@ -21,6 +21,18 @@
  */
 package io.goobi.viewer.model.job;
 
+/**
+ * Lifecycle status of an asynchronous viewer job or upload process.
+ *
+ * <ul>
+ *   <li>{@code WAITING} – queued and waiting to be processed</li>
+ *   <li>{@code READY} – processing has completed successfully</li>
+ *   <li>{@code ERROR} – processing finished with an error</li>
+ *   <li>{@code UNDEFINED} – status is unknown or not yet set</li>
+ *   <li>{@code INITIALIZED} – job has been created but not yet started</li>
+ *   <li>{@code DELETED} – job has been removed</li>
+ * </ul>
+ */
 public enum JobStatus {
     WAITING,
     READY,

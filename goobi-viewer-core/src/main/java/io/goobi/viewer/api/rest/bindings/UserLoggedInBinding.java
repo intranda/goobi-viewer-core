@@ -27,9 +27,7 @@ import java.lang.annotation.RetentionPolicy;
 import jakarta.ws.rs.NameBinding;
 
 /**
- * <p>
  * Allows request by sessions with a logged in user.
- * </p>
  */
 @NameBinding
 @Retention(RetentionPolicy.RUNTIME)

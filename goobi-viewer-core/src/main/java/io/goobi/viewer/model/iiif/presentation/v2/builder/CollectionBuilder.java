@@ -62,9 +62,7 @@ import io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
- * <p>
- * CollectionBuilder class.
- * </p>
+ * Builds IIIF Presentation API v2 Collection resources from Solr index data.
  *
  * @author Florian Alpers
  */
@@ -73,28 +71,26 @@ public class CollectionBuilder extends AbstractBuilder {
     private static final Logger logger = LogManager.getLogger(CollectionBuilder.class);
 
     /**
-     * Required field to create manifest stubs for works in collection
+     * Required field to create manifest stubs for works in collection.
      */
     public static final String[] CONTAINED_WORKS_QUERY_FIELDS =
             { SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LABEL, SolrConstants.MIMETYPE, SolrConstants.PI, SolrConstants.TITLE,
                     SolrConstants.DOCSTRCT, SolrConstants.IDDOC };
-    /** Constant <code>RSS_FEED_LABEL="Rss feed"</code> */
+    /** Constant <code>RSS_FEED_LABEL="Rss feed"</code>. */
     public static final String RSS_FEED_LABEL = "Rss feed";
-    /** Constant <code>RSS_FEED_FORMAT="Rss feed"</code> */
+    /** Constant <code>RSS_FEED_FORMAT="Rss feed"</code>. */
     public static final String RSS_FEED_FORMAT = "Rss feed";
 
     /**
-     * Caching for collections
+     * Caching for collections.
      */
     private static Map<String, String> facetFieldMap = new HashMap<>();
     //    private static Map<String, CollectionView> collectionViewMap = new HashMap<>();
 
     /**
-     * <p>
-     * Constructor for CollectionBuilder.
-     * </p>
+     * Creates a new CollectionBuilder instance.
      *
-     * @param apiUrlManager
+     * @param apiUrlManager the URL manager for building API paths
      * @throws java.net.URISyntaxException if any.
      */
     public CollectionBuilder(AbstractApiUrlManager apiUrlManager) throws URISyntaxException {
@@ -102,16 +98,14 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * generateCollection.
-     * </p>
      *
-     * @param collectionField a {@link java.lang.String} object.
-     * @param topElement a {@link java.lang.String} object.
-     * @param splittingChar a {@link java.lang.String} object.
+     * @param collectionField Solr field name identifying the collection
+     * @param topElement name of the collection element to use as root; null or blank for top-level
+     * @param splittingChar character separating hierarchy levels in collection names
      * @param facetField A SOLR field which values are requested for all records within the collection and stored within the collection for later use
-     * @param ignoreCollections
-     * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
+     * @param ignoreCollections collection names to exclude from the result
+     * @return the generated IIIF Collection for the given Solr collection field and top element
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -178,13 +172,11 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * addContainedWorks.
-     * </p>
      *
-     * @param collectionField a {@link java.lang.String} object.
-     * @param topElement a {@link java.lang.String} object.
-     * @param collection a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
+     * @param collectionField Solr field name identifying the collection
+     * @param topElement name of the root collection element to query works for
+     * @param collection the IIIF collection to add the work manifests to
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws java.net.URISyntaxException if any.
@@ -213,7 +205,7 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param query
+     * @param query solr query string to find contained works
      * @return {@link SolrDocumentList}
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -223,13 +215,11 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * createCollectionQuery.
-     * </p>
      *
-     * @param collectionField a {@link java.lang.String} object.
-     * @param topElement a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param collectionField Solr field name identifying the collection
+     * @param topElement name of the top-level collection element to filter by; null for all
+     * @return the Solr query string for retrieving records in the given collection hierarchy
      */
     public String createCollectionQuery(String collectionField, final String topElement) {
         String query;
@@ -243,14 +233,12 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * createCollection.
-     * </p>
      *
-     * @param baseElement a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
-     * @param collectionView a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object.
-     * @param uri a {@link java.net.URI} object.
-     * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
+     * @param baseElement the collection element to build the IIIF collection for; null for top-level
+     * @param collectionView the collection view providing metadata and child elements
+     * @param uri the identifier URI for the resulting IIIF collection
+     * @return the IIIF Collection built from the given collection view and base element
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -302,9 +290,9 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param baseElement
-     * @param collectionView
-     * @param collection
+     * @param baseElement the collection element whose renderings are added
+     * @param collectionView the collection view providing linking URLs
+     * @param collection the IIIF collection to add renderings to
      */
     private void addRenderings(HierarchicalBrowseDcElement baseElement, CollectionView collectionView, Collection2 collection) {
 
@@ -318,9 +306,9 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param baseElement
-     * @param collectionView
-     * @param target
+     * @param baseElement the collection element for which the URI is built
+     * @param collectionView the collection view providing base URLs
+     * @param target the linking target type to resolve
      * @return {@link URI}
      */
     private URI getLinkingPropertyUri(HierarchicalBrowseDcElement baseElement, CollectionView collectionView, LinkingTarget target) {
@@ -339,10 +327,10 @@ public class CollectionBuilder extends AbstractBuilder {
     /**
      * Add a taglist service to the collection and all subcollections. The taglist service provides a list of
      *
-     * @param collection
-     * @param collectionField
-     * @param facetField
-     * @param label
+     * @param collection the IIIF collection to attach the service to
+     * @param collectionField the Solr field name identifying the collection
+     * @param facetField the Solr field whose values populate the tag list
+     * @param label display label for the tag list service
      * @throws IndexUnreachableException
      * @throws IllegalRequestException
      */
@@ -356,9 +344,9 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param collection
-     * @param view
-     * @param label
+     * @param collection the IIIF collection to attach the service to
+     * @param view the collection view providing element and facet data
+     * @param label display label for the tag list service
      */
     private void addTagListService(Collection2 collection, CollectionView view, String label) {
         if (collection.getInternalName() != null) {
@@ -373,14 +361,12 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * getCollectionView.
-     * </p>
      *
-     * @param collectionField a {@link java.lang.String} object.
-     * @param groupingField a {@link java.lang.String} object.
-     * @param splittingChar a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object.
+     * @param collectionField Solr field name identifying the collection
+     * @param groupingField Solr field used for grouping or faceting within the collection
+     * @param splittingChar character separating hierarchy levels in collection names
+     * @return the CollectionView for the given field, retrieved from session cache or freshly created
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws IllegalRequestException
      */
@@ -396,9 +382,9 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param collectionField
+     * @param collectionField the Solr field name identifying the collection
      * @param facetField A SOLR field which values are queried and kept in the collectionView for later use
-     * @param splittingChar
+     * @param splittingChar character used to separate hierarchy levels in collection names
      * @return {@link CollectionView}
      * @throws IndexUnreachableException
      * @throws IllegalRequestException
@@ -415,12 +401,10 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * getFacetField.
-     * </p>
      *
-     * @param collectionField a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param collectionField Solr field name to derive the facet field from
+     * @return the corresponding Solr facet field name for the given collection field (e.g. MD_ prefix replaced with FACET_)
      */
     public String getFacetField(String collectionField) {
 

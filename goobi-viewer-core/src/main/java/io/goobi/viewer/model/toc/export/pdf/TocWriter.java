@@ -49,9 +49,7 @@ import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.model.toc.TOCElement;
 
 /**
- * <p>
- * TocWriter class.
- * </p>
+ * Writes a table-of-contents structure to a PDF document.
  */
 public class TocWriter {
 
@@ -67,12 +65,10 @@ public class TocWriter {
     private int levelIndent = DEFAULT_LEVEL_INDENT;
 
     /**
-     * <p>
-     * Constructor for TocWriter.
-     * </p>
+     * Creates a new TocWriter instance.
      *
-     * @param author a {@link java.lang.String} object.
-     * @param title a {@link java.lang.String} object.
+     * @param author author name added to the PDF document metadata
+     * @param title title displayed as heading and added to PDF metadata
      */
     public TocWriter(String author, String title) {
         this.author = author;
@@ -80,31 +76,25 @@ public class TocWriter {
     }
 
     /**
-     * <p>
      * Getter for the field <code>author</code>.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the author of the document represented in this TOC entry
      */
     public String getAuthor() {
         return author;
     }
 
     /**
-     * <p>
      * Getter for the field <code>title</code>.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the title of the document represented in this TOC entry
      */
     public String getTitle() {
         return title;
     }
 
     /**
-     * <p>
      * Getter for the field <code>levelIndent</code>.
-     * </p>
      *
      * @return a int.
      */
@@ -113,23 +103,19 @@ public class TocWriter {
     }
 
     /**
-     * <p>
      * Setter for the field <code>levelIndent</code>.
-     * </p>
      *
-     * @param levelIndent a int.
+     * @param levelIndent pixel indentation applied per hierarchy level
      */
     public void setLevelIndent(int levelIndent) {
         this.levelIndent = levelIndent;
     }
 
     /**
-     * <p>
      * createDocument.
-     * </p>
      *
-     * @param output a {@link java.io.OutputStream} object.
-     * @param elements a {@link java.util.List} object.
+     * @param output stream to write the generated PDF document to
+     * @param elements TOC elements to render as PDF table rows
      * @throws io.goobi.viewer.model.toc.export.pdf.WriteTocException if any.
      */
     public void createPdfDocument(OutputStream output, List<TOCElement> elements) throws WriteTocException {
@@ -208,11 +194,9 @@ public class TocWriter {
     }
 
     /**
-     * <p>
      * main.
-     * </p>
      *
-     * @param args an array of {@link java.lang.String} objects.
+     * @param args command-line arguments (unused)
      * @throws java.io.FileNotFoundException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.model.toc.export.pdf.WriteTocException if any.

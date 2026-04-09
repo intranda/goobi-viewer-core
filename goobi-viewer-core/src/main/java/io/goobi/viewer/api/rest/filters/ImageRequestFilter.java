@@ -50,13 +50,11 @@ import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.ext.Provider;
 
 /**
- * <p>
- * Request filter for image requests. Does two things:
+ * JAX-RS request filter for IIIF Image API requests. Does two things:
  * <ol>
- * <li>Forwards requests to a page number to the actual file</li>
- * <li>Sets parameters for image delivery in request</li>
+ * <li>Forwards requests referencing a page order number to the request with the resolved filename</li>
+ * <li>Sets image delivery parameters in the request context</li>
  * </ol>
- * </p>
  */
 @Provider
 @ContentServerImageBinding
@@ -115,20 +113,18 @@ public class ImageRequestFilter implements ContainerRequestFilter {
     }
 
     /**
-     * @param request
+     * @param request the container request context to modify
      */
     public static void addThumbnailCompression(ContainerRequestContext request) {
         request.setProperty("param:compression", "85");
     }
 
     /**
-     * <p>
      * forwardToCanonicalUrl.
-     * </p>
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param imageName a {@link java.lang.String} object.
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param pi persistent identifier of the record
+     * @param imageName image filename or page order number to resolve
+     * @param request incoming HTTP request to update with resolved filename
      * @return the redirect URI if a redirect is needed, or null otherwise.
      * @throws java.io.IOException if any.
      */
@@ -157,8 +153,8 @@ public class ImageRequestFilter implements ContainerRequestFilter {
     }
 
     /**
-     * @param request
-     * @param isThumb
+     * @param request the container request context to modify
+     * @param isThumb whether the request is for a thumbnail image
      */
     private static void setRequestParameter(ContainerRequestContext request, boolean isThumb) {
         if (isThumb) {

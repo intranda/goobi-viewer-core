@@ -42,13 +42,20 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
- * This class describes license types for record access conditions and also system user roles (not to be confused with the class Role, however), also
- * known as core license types.
+ * Represents a time-limited access ticket that grants a user access to a restricted record or download,
+ * persisted in the {@code access_tickets} database table.
+ *
+ * <p>Tickets are issued in response to access requests and are protected by a BCrypt-hashed password.
+ * A ticket transitions from a pending request (no password hash) to an active grant once a password is set,
+ * and expires after a configurable validity period.
  */
 @Entity
 @Table(name = "access_tickets")
 public class AccessTicket {
 
+    /**
+     * Classifies the resource scope an {@link AccessTicket} controls access to.
+     */
     public enum AccessTicketType {
         DOWNLOAD,
         RECORD;
@@ -199,149 +206,109 @@ public class AccessTicket {
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
-     * @return the id
+     * @return the database primary key for this access ticket
      */
     public Long getId() {
         return id;
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
-     * @param id the id to set
+     * @param id the database identifier to set
      */
     public void setId(Long id) {
         this.id = id;
     }
 
-    /**
-     * @return the type
-     */
+
     public AccessTicketType getType() {
         return type;
     }
 
-    /**
-     * @param type the type to set
-     */
+    
     public void setType(AccessTicketType type) {
         this.type = type;
     }
 
-    /**
-     * @return the dateCreated
-     */
+    
     public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
-    /**
-     * @param dateCreated the dateCreated to set
-     */
+    
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
 
-    /**
-     * @return the expirationDate
-     */
+    
     public LocalDateTime getExpirationDate() {
         return expirationDate;
     }
 
-    /**
-     * @param expirationDate the expirationDate to set
-     */
+    
     public void setExpirationDate(LocalDateTime expirationDate) {
         this.expirationDate = expirationDate;
     }
 
-    /**
-     * @return the password
-     */
+    
     public String getPassword() {
         return password;
     }
 
-    /**
-     * @param password the password to set
-     */
+    
     public void setPassword(String password) {
         this.password = password;
     }
 
-    /**
-     * @return the passwordHash
-     */
+    
     public String getPasswordHash() {
         return passwordHash;
     }
 
-    /**
-     * @param passwordHash the passwordHash to set
-     */
+    
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
     }
 
-    /**
-     * @return the email
-     */
+    
     public String getEmail() {
         return email;
     }
 
-    /**
-     * @param email the email to set
-     */
+    
     public void setEmail(String email) {
         this.email = email;
     }
 
-    /**
-     * @return the pi
-     */
+    
     public String getPi() {
         return pi;
     }
 
-    /**
-     * @param pi the pi to set
-     */
+    
     public void setPi(String pi) {
         this.pi = pi;
     }
 
-    /**
-     * @return the title
-     */
+    
     public String getTitle() {
         return title;
     }
 
-    /**
-     * @param title the title to set
-     */
+    
     public void setTitle(String title) {
         this.title = title;
     }
 
-    /**
-     * @return the requestMessage
-     */
+    
     public String getRequestMessage() {
         return requestMessage;
     }
 
-    /**
-     * @param requestMessage the requestMessage to set
-     */
+    
     public void setRequestMessage(String requestMessage) {
         this.requestMessage = requestMessage;
     }

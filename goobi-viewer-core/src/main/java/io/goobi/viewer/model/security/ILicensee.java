@@ -29,18 +29,16 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.security.License.AccessType;
 
 /**
- * <p>
- * ILicensee interface.
- * </p>
+ * Represents an entity (user, user group, IP range, or client application) that can hold access licenses in the Goobi viewer.
+ * Provides methods to retrieve assigned licenses and to check whether a particular license — optionally restricted to a
+ * specific privilege and record identifier — has been granted.
  */
 public interface ILicensee {
 
     /**
-     * <p>
      * getName.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the name of this licensee
      */
     public String getName();
 
@@ -51,11 +49,9 @@ public interface ILicensee {
     public AccessType getAccessType();
 
     /**
-     * <p>
      * getLicenses.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of licenses assigned to this licensee
      */
     public List<License> getLicenses();
 
@@ -66,7 +62,7 @@ public interface ILicensee {
      * @param licenseName License name.
      * @param privilegeName Required privilege (optional).
      * @param pi Checks the privilege in connection with a specific record identifier (optional).
-     * @return a boolean.
+     * @return true if the licensee holds a matching license (and the required privilege if specified), false otherwise
      * @throws DAOException
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.

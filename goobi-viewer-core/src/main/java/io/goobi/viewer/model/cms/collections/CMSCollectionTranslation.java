@@ -46,20 +46,16 @@ public class CMSCollectionTranslation extends Translation implements Serializabl
     private CMSCollection owner;
 
     /**
-     * <p>
-     * Constructor for CMSCollectionTranslation.
-     * </p>
+     * Creates a new CMSCollectionTranslation instance.
      */
     public CMSCollectionTranslation() {
     }
 
     /**
-     * <p>
-     * Constructor for CMSCollectionTranslation.
-     * </p>
+     * Creates a new CMSCollectionTranslation instance.
      *
-     * @param language a {@link java.lang.String} object.
-     * @param value a {@link java.lang.String} object.
+     * @param language BCP 47 language code for this translation
+     * @param value translated text value
      */
     public CMSCollectionTranslation(String language, String value) {
         super(language, value);
@@ -68,8 +64,8 @@ public class CMSCollectionTranslation extends Translation implements Serializabl
     /**
      * Cloning constructor.
      * 
-     * @param tr
-     * @param owner
+     * @param tr translation to copy
+     * @param owner collection that owns this translation
      */
     public CMSCollectionTranslation(CMSCollectionTranslation tr, CMSCollection owner) {
         this.id = tr.id;
@@ -80,22 +76,18 @@ public class CMSCollectionTranslation extends Translation implements Serializabl
     }
 
     /**
-     * <p>
      * Getter for the field <code>owner</code>.
-     * </p>
      *
-     * @return the owner
+     * @return the CMS collection this translation belongs to
      */
     public CMSCollection getOwner() {
         return owner;
     }
 
     /**
-     * <p>
      * Setter for the field <code>owner</code>.
-     * </p>
      *
-     * @param owner the owner to set
+     * @param owner the CMS collection this translation belongs to
      */
     public void setOwner(CMSCollection owner) {
         this.owner = owner;

@@ -83,7 +83,7 @@ public class StatisticsBean implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(StatisticsBean.class);
 
-    /** Constant <code>SEPARATOR="::"</code> */
+    /** Constant <code>SEPARATOR="::"</code>. */
     public static final String SEPARATOR = "::";
     private static final int DAY_MS = 86400000;
 
@@ -92,13 +92,11 @@ public class StatisticsBean implements Serializable {
     private transient Map<String, StatisticsSummary> recordUsageStatisticsMap = new ConcurrentHashMap<>();
 
     /**
-     * <p>
      * getImportedRecordsTrend.
-     * </p>
      *
-     * @param days a int.
-     * @param dataPoints a int.
-     * @return a {@link java.util.List} object.
+     * @param days total number of days covered by the trend
+     * @param dataPoints number of data points to plot
+     * @return a list of "timestamp;count" strings representing the record import trend over the given period
      */
     public List<String> getImportedRecordsTrend(final int days, final int dataPoints) {
         logger.debug("getImportedRecordsTrend start");
@@ -172,7 +170,7 @@ public class StatisticsBean implements Serializable {
     /**
      * Returns a list of size two arrays which each contain the name and total number of imported works of a type of work (DocStructType).
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of "name;count" strings for each top-level document structure type ordered by number of records
      * @should return list of docstruct types
      */
     public List<String> getTopStructTypesByNumber() {
@@ -219,7 +217,7 @@ public class StatisticsBean implements Serializable {
     /**
      * Returns the total number of imported pages.
      *
-     * @return a {@link java.lang.Long} object.
+     * @return the total number of imported page documents in the Solr index
      * @should return a non zero number
      */
     public Long getImportedPages() {
@@ -248,7 +246,7 @@ public class StatisticsBean implements Serializable {
     /**
      * Returns the total number of pages with OCR data.
      *
-     * @return a {@link java.lang.Long} object.
+     * @return the total number of page documents with full-text in the Solr index
      * @should return a non zero number
      */
     public Long getImportedFullTexts() {
@@ -293,9 +291,7 @@ public class StatisticsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getCoreVersion.
-     * </p>
      *
      * @return goobi-viewer-core version
      */
@@ -304,9 +300,7 @@ public class StatisticsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getConnectorVersion.
-     * </p>
      *
      * @return goobi-viewer-connector version
      */
@@ -315,9 +309,7 @@ public class StatisticsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getContentServerVersion.
-     * </p>
      *
      * @return intrandaContentServer version
      */
@@ -333,9 +325,7 @@ public class StatisticsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getIndexerVersion.
-     * </p>
      *
      * @return goobi-viewer-indexer version
      */
@@ -344,11 +334,9 @@ public class StatisticsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getUsageStatisticsForRecord.
-     * </p>
      *
-     * @param pi a {@link java.lang.String} object
+     * @param pi persistent identifier of the record
      * @return {@link io.goobi.viewer.model.statistics.usage.StatisticsSummary}
      * @throws io.goobi.viewer.exceptions.PresentationException
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
@@ -378,11 +366,9 @@ public class StatisticsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getLastUsageStatisticsCheck.
-     * </p>
      *
-     * @return a {@link java.time.LocalDate} object
+     * @return the date of the most recent usage statistics entry in the Solr index
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public LocalDate getLastUsageStatisticsCheck() throws IndexUnreachableException {
@@ -406,11 +392,9 @@ public class StatisticsBean implements Serializable {
     }
 
     /**
-     * <p>
      * isUsageStatisticsActive.
-     * </p>
      *
-     * @return a boolean
+     * @return true if usage statistics collection is currently active, false otherwise
      */
     public boolean isUsageStatisticsActive() {
         return DataManager.getInstance().getConfiguration().isStatisticsEnabled();

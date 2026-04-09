@@ -25,6 +25,10 @@ import java.util.Locale;
 
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
+/**
+ * Classifies a search hit by the type of Solr document it originates from, such as a record,
+ * structure element, metadata group, user-generated content entry, or CMS page.
+ */
 public enum HitType {
     ACCESSDENIED,
     ARCHIVE, // EAD archive
@@ -45,7 +49,7 @@ public enum HitType {
 
     /**
      * 
-     * @param name
+     * @param name hit type name to look up
      * @return {@link HitType} matching given name; null if none found
      * @should return all known types correctly
      * @should return null if name unknown

@@ -44,7 +44,7 @@ import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.StringTools;
 
 /**
- * Detect word coordinates in alto document
+ * Detects word coordinates in alto document.
  */
 public class CoordinateFinder {
 
@@ -261,10 +261,10 @@ public class CoordinateFinder {
 
     /**
      * 
-     * @param rotation
-     * @param pageSize
-     * @param eleWord
-     * @param tempList
+     * @param rotation page rotation in degrees to apply to coordinates
+     * @param pageSize dimensions of the page used for coordinate rotation
+     * @param eleWord ALTO word element from which to extract coordinates
+     * @param tempList list to which the extracted coordinate string is appended
      * @return ALTO word coordinates as a {@link String}
      */
     private String addWordCoords(int rotation, Dimension pageSize, Word eleWord, List<String> tempList) {

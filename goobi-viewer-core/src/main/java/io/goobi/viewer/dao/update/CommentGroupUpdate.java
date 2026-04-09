@@ -32,6 +32,10 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
+/**
+ * Database migration step that ensures the static "all comments" {@link CommentGroup} exists in
+ * the database, creating it if it is missing.
+ */
 public class CommentGroupUpdate implements IModelUpdate {
 
     private static final Logger logger = LogManager.getLogger(CommentGroupUpdate.class);
@@ -43,9 +47,7 @@ public class CommentGroupUpdate implements IModelUpdate {
     }
 
     /**
-     * <p>
      * persistData.
-     * </p>
      *
      * @param dao a {@link io.goobi.viewer.dao.IDAO} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.

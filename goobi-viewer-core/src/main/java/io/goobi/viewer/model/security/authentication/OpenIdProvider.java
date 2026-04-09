@@ -61,15 +61,13 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * <p>
- * OpenIdProvider class.
- * </p>
+ * Authentication provider that authenticates users via an OpenID Connect identity provider.
  */
 public class OpenIdProvider extends HttpAuthenticationProvider {
 
     private static final Logger logger = LogManager.getLogger(OpenIdProvider.class);
 
-    /** Constant <code>TYPE_OPENID="openId"</code> */
+    /** Constant <code>TYPE_OPENID="openId"</code>. */
     public static final String TYPE_OPENID = "openId";
 
     /** Reusable Random object. */
@@ -109,22 +107,20 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     private volatile LoginResult loginResult = null; //NOSONAR   LoginResult is immutable, so thread-savety is guaranteed
 
     /**
-     * Lock to be opened once login is completed
+     * Locks to be opened once login is completed.
      */
     private Object responseLock = new Object();
 
     /**
-     * <p>
-     * Constructor for OpenIdProvider.
-     * </p>
+     * Creates a new OpenIdProvider instance.
      *
-     * @param name a {@link java.lang.String} object.
-     * @param label a {@link java.lang.String} object.
-     * @param url a {@link java.lang.String} object.
-     * @param image a {@link java.lang.String} object.
-     * @param timeoutMillis a long.
-     * @param clientId a {@link java.lang.String} object.
-     * @param clientSecret a {@link java.lang.String} object.
+     * @param name unique internal name identifying this provider
+     * @param label display label shown in the UI
+     * @param url authorization endpoint URL of the provider
+     * @param image URL or path to the provider's logo image
+     * @param timeoutMillis login response wait timeout in milliseconds
+     * @param clientId OAuth client ID registered with the provider
+     * @param clientSecret OAuth client secret for token exchange
      */
     public OpenIdProvider(String name, String label, String url, String image, long timeoutMillis, String clientId, String clientSecret) {
         super(name, label, TYPE_OPENID, url, image, timeoutMillis);
@@ -198,14 +194,14 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
      * Tries to find or create a valid {@link io.goobi.viewer.model.security.user.User} based on the given json object. Generates a
      * {@link io.goobi.viewer.model.security.authentication.LoginResult} containing the given request and response and either an optional containing
      * the user or nothing if no user was found, or a {@link io.goobi.viewer.model.security.authentication.AuthenticationProviderException} if an
-     * internal error occured during login If this method is not called within {@link #getTimeoutMillis()} ms after calling
+     * internal error occurred during login If this method is not called within {@link #getTimeoutMillis()} ms after calling
      * {@link #login(String, String)}, a loginResponse is created containing an appropriate exception. In any case, the future returned by
      * {@link #login(String, String)} is resolved.
      *
-     * @param jwt {@link DecodedJWT}
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
-     * @return a {@link java.util.concurrent.Future} object.
+     * @param jwt decoded JWT token received from the OAuth callback
+     * @param request incoming HTTP request from the OAuth redirect
+     * @param response HTTP response for the OAuth callback
+     * @return a Future resolving to true if login succeeded, false otherwise
      */
     public Future<Boolean> completeLogin(DecodedJWT jwt, HttpServletRequest request, HttpServletResponse response) {
         try {
@@ -367,15 +363,13 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         return false;
     }
 
-    /**
-     * @return the discoveryUri
-     */
+    
     public String getDiscoveryUri() {
         return discoveryUri;
     }
 
     /**
-     * @param discoveryUri the discoveryUri to set
+     * @param discoveryUri the OpenID Connect discovery endpoint URI used to retrieve provider metadata
      * @return this
      */
     public OpenIdProvider setDiscoveryUri(String discoveryUri) {
@@ -384,36 +378,30 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-     * <p>
      * Getter for the field <code>clientId</code>.
-     * </p>
      *
-     * @return the clientId
+     * @return the OAuth 2.0 client identifier registered with the OpenID provider
      */
     public String getClientId() {
         return clientId;
     }
 
     /**
-     * <p>
      * Getter for the field <code>clientSecret</code>.
-     * </p>
      *
-     * @return the clientSecret
+     * @return the OAuth 2.0 client secret used to authenticate with the OpenID provider
      */
     public String getClientSecret() {
         return clientSecret;
     }
 
-    /**
-     * @return the tokenEndpoint
-     */
+    
     public String getTokenEndpoint() {
         return tokenEndpoint;
     }
 
     /**
-     * @param tokenEndpoint the tokenEndpoint to set
+     * @param tokenEndpoint the URL of the token endpoint used to exchange authorization codes for tokens
      * @return this
      */
     public OpenIdProvider setTokenEndpoint(String tokenEndpoint) {
@@ -423,15 +411,13 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         return this;
     }
 
-    /**
-     * @return the jwksUri
-     */
+    
     public String getJwksUri() {
         return jwksUri;
     }
 
     /**
-     * @param jwksUri the jwksUri to set
+     * @param jwksUri the URL of the JSON Web Key Set endpoint used to retrieve signing keys
      * @return this
      */
     public OpenIdProvider setJwksUri(String jwksUri) {
@@ -439,15 +425,13 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         return this;
     }
 
-    /**
-     * @return the redirectionEndpoint
-     */
+    
     public String getRedirectionEndpoint() {
         return redirectionEndpoint;
     }
 
     /**
-     * @param redirectionEndpoint the redirectionEndpoint to set
+     * @param redirectionEndpoint the redirect URI registered with the provider to receive the authorization response
      * @return this
      */
     public OpenIdProvider setRedirectionEndpoint(String redirectionEndpoint) {
@@ -457,15 +441,13 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         return this;
     }
 
-    /**
-     * @return the scope
-     */
+    
     public String getScope() {
         return scope;
     }
 
     /**
-     * @param scope the scope to set
+     * @param scope the space-separated OAuth 2.0 scope values requested during authorization
      * @return this
      */
     public OpenIdProvider setScope(String scope) {
@@ -475,15 +457,13 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         return this;
     }
 
-    /**
-     * @return the responseType
-     */
+    
     public String getResponseType() {
         return responseType;
     }
 
     /**
-     * @param responseType the responseType to set
+     * @param responseType the OAuth 2.0 response type requested (e.g. "code" for authorization code flow)
      * @return this
      */
     public OpenIdProvider setResponseType(String responseType) {
@@ -491,15 +471,13 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         return this;
     }
 
-    /**
-     * @return the responseMode
-     */
+    
     public String getResponseMode() {
         return responseMode;
     }
 
     /**
-     * @param responseMode the responseMode to set
+     * @param responseMode the OAuth 2.0 response mode specifying how the authorization response is returned (e.g. "query", "fragment")
      * @return this
      */
     public OpenIdProvider setResponseMode(String responseMode) {
@@ -507,15 +485,13 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         return this;
     }
 
-    /**
-     * @return the issuer
-     */
+    
     public String getIssuer() {
         return issuer;
     }
 
     /**
-     * @param issuer the issuer to set
+     * @param issuer the expected issuer claim value used to validate ID tokens from this provider
      * @return this
      */
     public OpenIdProvider setIssuer(String issuer) {
@@ -523,15 +499,13 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         return this;
     }
 
-    /**
-     * @return the tokenCheckDelay
-     */
+    
     public long getTokenCheckDelay() {
         return tokenCheckDelay;
     }
 
     /**
-     * @param tokenCheckDelay the tokenCheckDelay to set
+     * @param tokenCheckDelay the delay in milliseconds before performing the token validation check
      * @return this
      */
     public OpenIdProvider setTokenCheckDelay(long tokenCheckDelay) {
@@ -573,44 +547,36 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-     * <p>
      * Getter for the field <code>oAuthState</code>.
-     * </p>
      *
-     * @return the oAuthState
+     * @return the OAuth 2.0 state parameter used to prevent cross-site request forgery
      */
     public String getoAuthState() {
         return oAuthState;
     }
 
     /**
-     * <p>
      * Setter for the field <code>oAuthState</code>.
-     * </p>
      *
-     * @param oAuthState the oAuthState to set
+     * @param oAuthState the OAuth 2.0 state parameter used to prevent cross-site request forgery
      */
     public void setoAuthState(String oAuthState) {
         this.oAuthState = oAuthState;
     }
 
     /**
-     * <p>
      * Getter for the field <code>oAuthAccessToken</code>.
-     * </p>
      *
-     * @return the oAuthAccessToken
+     * @return the OAuth 2.0 access token received from the provider
      */
     public String getoAuthAccessToken() {
         return oAuthAccessToken;
     }
 
     /**
-     * <p>
      * Setter for the field <code>oAuthAccessToken</code>.
-     * </p>
      *
-     * @param oAuthAccessToken the oAuthAccessToken to set
+     * @param oAuthAccessToken the OAuth 2.0 access token received from the provider
      */
     public void setoAuthAccessToken(String oAuthAccessToken) {
         this.oAuthAccessToken = oAuthAccessToken;

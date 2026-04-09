@@ -43,9 +43,8 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
 /**
- * <p>
- * ViewerApplication class.
- * </p>
+ * Jersey {@link org.glassfish.jersey.server.ResourceConfig} that bootstraps the JAX-RS v1 API,
+ * registering resources, providers, filters, and dependency bindings.
  */
 @ApplicationPath(ApiUrls.API)
 @ViewerRestServiceBinding
@@ -54,11 +53,9 @@ public class Application extends ResourceConfig {
     private static final Logger logger = LogManager.getLogger(Application.class);
 
     /**
-     * <p>
-     * Constructor for ViewerApplication.
-     * </p>
-     * 
-     * @param servletConfig
+     * Creates a new ViewerApplication instance.
+     *
+     * @param servletConfig servlet configuration for dependency injection setup
      */
     public Application(@Context ServletConfig servletConfig) {
         super();
@@ -89,7 +86,7 @@ public class Application extends ResourceConfig {
     /**
      * Constructor with custom injection binder for tests.
      *
-     * @param binder
+     * @param binder custom injection binder used in tests
      */
     public Application(AbstractBinder binder) {
         super();

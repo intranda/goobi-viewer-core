@@ -45,8 +45,7 @@ import mil.nga.sf.geojson.Polygon;
 import mil.nga.sf.geojson.Position;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class GeoMapFeature {
 
@@ -73,44 +72,32 @@ public class GeoMapFeature {
         this.geoJson = new Feature(geometry);
     }
 
-    /**
-     * @return the title
-     */
+    
     public IMetadataValue getTitle() {
         return title;
     }
 
-    /**
-     * @param title the title to set
-     */
+    
     public void setTitle(IMetadataValue title) {
         this.title = title;
     }
 
-    /**
-     * @return the description
-     */
+    
     public IMetadataValue getDescription() {
         return description;
     }
 
-    /**
-     * @param description the description to set
-     */
+    
     public void setDescription(IMetadataValue description) {
         this.description = description;
     }
 
-    /**
-     * @return the link
-     */
+    
     public String getLink() {
         return link;
     }
 
-    /**
-     * @param link the link to set
-     */
+    
     public void setLink(String link) {
         this.link = link;
     }
@@ -123,16 +110,12 @@ public class GeoMapFeature {
         this.filterQuery = filterQuery;
     }
 
-    /**
-     * @param documentId the documentId to set
-     */
+    
     public void setDocumentId(String documentId) {
         this.documentId = documentId;
     }
 
-    /**
-     * @return the documentId
-     */
+    
     public String getDocumentId() {
         return documentId;
     }
@@ -145,30 +128,22 @@ public class GeoMapFeature {
         this.pageNo = pageNo;
     }
 
-    /**
-     * @return the json
-     */
+    
     public String getJson() {
         return FeatureConverter.toStringValue(this.geoJson);
     }
 
-    /**
-     * @param json the json to set
-     */
+    
     public void setJson(String json) {
         this.geoJson = FeatureConverter.toFeature(json);
     }
 
-    /**
-     * @return the count
-     */
+    
     public int getCount() {
         return count;
     }
 
-    /**
-     * @param count the count to set
-     */
+    
     public void setCount(int count) {
         this.count = count;
     }
@@ -263,9 +238,6 @@ public class GeoMapFeature {
         }
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         int jsonCode = this.geoJson == null ? "".hashCode() : this.geoJson.hashCode();
@@ -273,9 +245,6 @@ public class GeoMapFeature {
         return jsonCode + 31 * (titleCode);
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -290,9 +259,6 @@ public class GeoMapFeature {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return getJsonObject().toString();

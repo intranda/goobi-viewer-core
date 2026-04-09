@@ -25,9 +25,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 
 /**
- * <p>
- * StringPair class.
- * </p>
+ * Immutable pair of two string values, used for key-value mappings throughout the viewer.
  */
 public class StringPair implements Comparable<StringPair>, Serializable {
 
@@ -37,12 +35,10 @@ public class StringPair implements Comparable<StringPair>, Serializable {
     private String two;
 
     /**
-     * <p>
-     * Constructor for StringPair.
-     * </p>
+     * Creates a new StringPair instance.
      *
-     * @param one a {@link java.lang.String} object.
-     * @param two a {@link java.lang.String} object.
+     * @param one first element of the pair
+     * @param two second element of the pair (used for sorting)
      */
     public StringPair(String one, String two) {
         //        if (one == null || two == null) {
@@ -52,9 +48,6 @@ public class StringPair implements Comparable<StringPair>, Serializable {
         this.two = two;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -65,9 +58,6 @@ public class StringPair implements Comparable<StringPair>, Serializable {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -101,7 +91,7 @@ public class StringPair implements Comparable<StringPair>, Serializable {
     /**
      * {@inheritDoc}
      *
-     * Compare by translation.
+     * <p>Compare by translation.
      */
     @Override
     public int compareTo(StringPair o) {
@@ -109,44 +99,36 @@ public class StringPair implements Comparable<StringPair>, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>one</code>.
-     * </p>
      *
-     * @return the one
+     * @return the first value of this pair
      */
     public String getOne() {
         return one;
     }
 
     /**
-     * <p>
      * Setter for the field <code>one</code>.
-     * </p>
      *
-     * @param one the one to set
+     * @param one the first value of this pair
      */
     public void setOne(String one) {
         this.one = one;
     }
 
     /**
-     * <p>
      * Getter for the field <code>two</code>.
-     * </p>
      *
-     * @return the two
+     * @return the second value of this pair
      */
     public String getTwo() {
         return two;
     }
 
     /**
-     * <p>
      * Setter for the field <code>two</code>.
-     * </p>
      *
-     * @param two the two to set
+     * @param two the second value of this pair
      */
     public void setTwo(String two) {
         this.two = two;
@@ -162,9 +144,6 @@ public class StringPair implements Comparable<StringPair>, Serializable {
 
         private static final long serialVersionUID = -5579914817514299754L;
 
-        /* (non-Javadoc)
-         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-         */
         @Override
         public int compare(StringPair o1, StringPair o2) {
             return o1.getOne().compareTo(o2.getOne());
@@ -175,9 +154,6 @@ public class StringPair implements Comparable<StringPair>, Serializable {
 
         private static final long serialVersionUID = 3377396736263291749L;
 
-        /* (non-Javadoc)
-         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-         */
         @Override
         public int compare(StringPair o1, StringPair o2) {
             return o1.getTwo().compareTo(o2.getTwo());

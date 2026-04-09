@@ -37,12 +37,9 @@ import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
 import io.goobi.viewer.controller.NetTools;
 
 /**
- * <p>
  * Adds the @context property to all IIIF Presentation responses in the topmost json element.
- * </p>
  *
  * @author Florian Alpers
- *
  */
 @Provider
 @IIIFPresentationBinding
@@ -53,9 +50,6 @@ public class IIIFPresentationResponseFilter implements ContainerResponseFilter {
     public static final String CONTEXT_SEARCH = "http://iiif.io/api/search/1/context.json";
     public static final String CONTENT_TYPE_IIIF3 = "application/ld+json;profile=\"http://iiif.io/api/presentation/3/context.json\"";
 
-    /* (non-Javadoc)
-     * @see jakarta.ws.rs.container.ContainerResponseFilter#filter(jakarta.ws.rs.container.ContainerRequestContext, ContainerResponseContext)
-     */
     /** {@inheritDoc} */
     @Override
     public void filter(ContainerRequestContext request, ContainerResponseContext response) throws IOException {
@@ -86,12 +80,10 @@ public class IIIFPresentationResponseFilter implements ContainerResponseFilter {
     }
 
     /**
-     * <p>
      * setResponseCharset.
-     * </p>
      *
-     * @param response a {@link jakarta.ws.rs.container.ContainerResponseContext} object.
-     * @param charset a {@link java.lang.String} object.
+     * @param response JAX-RS response context whose Content-Type header is updated
+     * @param charset charset name to append to the Content-Type header
      */
     public void setResponseCharset(ContainerResponseContext response, String charset) {
         String contentType = response.getHeaderString(NetTools.HTTP_HEADER_CONTENT_TYPE) + ";charset=" + charset;

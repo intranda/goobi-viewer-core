@@ -54,10 +54,9 @@ import jakarta.persistence.Transient;
  * subclasses. This main class should be considered effectively abstract, even though it cannot be marked as abstract due to dao persistence
  * restrictions. The exact type of custom widget can be gathered from #{CustomSidebarWidget{@link #getType()}
  *
- * Each inheriting class must implement a cloning constructor, i.e. a constructor taking an argument of the same class and copying all its data
+ * <p>Each inheriting class must implement a cloning constructor, i.e. a constructor taking an argument of the same class and copying all its data
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "custom_sidebar_widgets")
@@ -81,7 +80,7 @@ public class CustomSidebarWidget implements IPolyglott, Serializable {
     private TranslatedText title = new TranslatedText(IPolyglott.getLocalesStatic(), IPolyglott.getCurrentLocale());
 
     /**
-     * Currently not in use
+     * Currently not in use.
      */
     @Column(name = "widget_description", columnDefinition = "MEDIUMTEXT")
     @Convert(converter = TranslatedTextConverter.class)
@@ -106,7 +105,7 @@ public class CustomSidebarWidget implements IPolyglott, Serializable {
     /**
      * Cloning constructor.
      * 
-     * @param source
+     * @param source widget to copy fields from
      */
     public CustomSidebarWidget(CustomSidebarWidget source) {
         this.id = source.id;
@@ -146,23 +145,17 @@ public class CustomSidebarWidget implements IPolyglott, Serializable {
         this.title.setSelectedLocale(locale);
     }
 
-    /**
-     * @return the id
-     */
+    
     public Long getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
+    
     public void setId(Long id) {
         this.id = id;
     }
 
-    /**
-     * @return the title
-     */
+    
     public TranslatedText getTitle() {
         return title;
     }
@@ -171,9 +164,7 @@ public class CustomSidebarWidget implements IPolyglott, Serializable {
         this.title = title;
     }
 
-    /**
-     * @return the description
-     */
+    
     public TranslatedText getDescription() {
         return description;
     }
@@ -196,9 +187,9 @@ public class CustomSidebarWidget implements IPolyglott, Serializable {
     }
 
     /**
-     * Set the css style class to use for this widget
+     * Sets the css style class to use for this widget.
      * 
-     * @param styleClass
+     * @param styleClass CSS class name to apply to this widget
      */
     public void setStyleClass(String styleClass) {
         this.styleClass = styleClass;
@@ -212,9 +203,9 @@ public class CustomSidebarWidget implements IPolyglott, Serializable {
     }
 
     /**
-     * Set this widget to be displayed as a collapseable
-     * 
-     * @param collapsed the collapsed to set
+     * Sets this widget to be displayed as a collapseable.
+     *
+     * @param collapsed true if the widget should be rendered in collapsed state by default
      */
     public void setCollapsed(boolean collapsed) {
         this.collapsed = collapsed;
@@ -223,7 +214,7 @@ public class CustomSidebarWidget implements IPolyglott, Serializable {
     /**
      * Creates a copy of the given custom widget o. Depends on cloning constructors if sublass
      *
-     * @param o
+     * @param o widget instance to clone
      * @return {@link CustomSidebarWidget}
      */
     public static CustomSidebarWidget clone(CustomSidebarWidget o) {

@@ -34,11 +34,24 @@ class PIValidatorTest {
      */
     @Test
     void validatePi_shouldReturnFalseIfPiContainsIllegalCharacters() throws Exception {
+        // existing checks
         Assertions.assertFalse(PIValidator.validatePi("PPN!"));
         Assertions.assertFalse(PIValidator.validatePi("PPN?"));
         Assertions.assertFalse(PIValidator.validatePi("PPN/"));
         Assertions.assertFalse(PIValidator.validatePi("PPN\\"));
         Assertions.assertFalse(PIValidator.validatePi("PPN:"));
+        // new: characters that cause java.net.URI path construction to fail
+        Assertions.assertFalse(PIValidator.validatePi("PPN|"));
+        Assertions.assertFalse(PIValidator.validatePi("PPN<"));
+        Assertions.assertFalse(PIValidator.validatePi("PPN>"));
+        Assertions.assertFalse(PIValidator.validatePi("PPN["));
+        Assertions.assertFalse(PIValidator.validatePi("PPN]"));
+        Assertions.assertFalse(PIValidator.validatePi("PPN*"));
+        Assertions.assertFalse(PIValidator.validatePi("foo bar"));   // embedded space
+        Assertions.assertFalse(PIValidator.validatePi("PPN%00"));    // percent → double-encoding bypass
+        Assertions.assertFalse(PIValidator.validatePi("PPN\r"));
+        Assertions.assertFalse(PIValidator.validatePi("PPN\n"));
+        Assertions.assertFalse(PIValidator.validatePi("PPN\0"));
     }
 
     /**
@@ -59,5 +72,54 @@ class PIValidatorTest {
     @Test
     void validatePi_shouldReturnTrueIfPiGood() throws Exception {
         Assertions.assertTrue(PIValidator.validatePi("PPN123456789"));
+        // Hyphen is allowed as long as at least one alphanumeric character is present
+        Assertions.assertTrue(PIValidator.validatePi("PPN123-456"));
+        Assertions.assertTrue(PIValidator.validatePi("record_001"));
+    }
+
+    /**
+     * @see PIValidator#validatePi(String)
+     * @verifies return false if pi contains no alphanumeric character
+     */
+    @Test
+    void validatePi_shouldReturnFalseIfPiContainsNoAlphanumericCharacter() throws Exception {
+        // A bare hyphen (or any punctuation-only value) must be rejected
+        Assertions.assertFalse(PIValidator.validatePi("-"));
+        Assertions.assertFalse(PIValidator.validatePi("---"));
+        Assertions.assertFalse(PIValidator.validatePi("_"));
+    }
+
+    /**
+     * @see PIValidator#validatePi(String)
+     * @verifies return false if pi starts with non alphanumeric character
+     */
+    @Test
+    void validatePi_shouldReturnFalseIfPiStartsWithNonAlphanumericCharacter() throws Exception {
+        // Leading '-' would create a Solr negation operator (e.g. PI:-267 → syntax error)
+        Assertions.assertFalse(PIValidator.validatePi("-267"));
+        Assertions.assertFalse(PIValidator.validatePi("-abc"));
+        Assertions.assertFalse(PIValidator.validatePi(".abc"));
+        Assertions.assertFalse(PIValidator.validatePi("_abc"));
+    }
+
+    /**
+     * @see PIValidator#validatePi(String)
+     * @verifies return false if pi contains plus sign
+     */
+    @Test
+    void validatePi_shouldReturnFalseIfPiContainsPlusSign() throws Exception {
+        // '+' is the Solr required-term operator and must not appear in PI values
+        Assertions.assertFalse(PIValidator.validatePi("PPN+123"));
+        Assertions.assertFalse(PIValidator.validatePi("foo+bar"));
+    }
+
+    /**
+     * @see PIValidator#validatePi(String)
+     * @verifies return false if pi contains non-ASCII characters
+     */
+    @Test
+    void validatePi_shouldReturnFalseIfPiContainsNonAsciiCharacters() throws Exception {
+        Assertions.assertFalse(PIValidator.validatePi("PPN\u00e9")); // é
+        Assertions.assertFalse(PIValidator.validatePi("PPN\u4e2d")); // Chinese character
     }
 }

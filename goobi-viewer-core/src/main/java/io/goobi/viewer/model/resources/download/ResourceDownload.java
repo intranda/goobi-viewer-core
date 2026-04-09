@@ -26,7 +26,7 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.model.job.TaskType;
 
 /**
- * Manages record resources that are made available to users for download, like pdf files or other media not displayed directly in the viewer
+ * Manages record resources that are made available to users for download, like pdf files or other media not displayed directly in the viewer.
  */
 public final class ResourceDownload {
 
@@ -37,7 +37,7 @@ public final class ResourceDownload {
     }
 
     /**
-     * Create an identifier for a resource accessible through an external url
+     * Creates an identifier for a resource accessible through an external url.
      * 
      * @param pi persistent identifier of the work the resource belongs to
      * @param url download url of the resource

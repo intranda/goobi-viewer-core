@@ -92,9 +92,7 @@ import jakarta.servlet.http.HttpSessionBindingListener;
 import jakarta.servlet.http.Part;
 
 /**
- * <p>
- * User class.
- * </p>
+ * Represents a registered viewer user with authentication credentials, roles, and associated licences.
  */
 @Entity
 @Table(name = "viewer_users")
@@ -105,10 +103,10 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(User.class);
 
-    /** Constant <code>ATTRIBUTE_LOGINS="logins"</code> */
+    /** Constant <code>ATTRIBUTE_LOGINS="logins"</code>. */
     public static final String ATTRIBUTE_LOGINS = "logins";
 
-    /** Constant <code>AVATAR_DEFAULT_SIZE=140</code> */
+    /** Constant <code>AVATAR_DEFAULT_SIZE=140</code>. */
     public static final int AVATAR_DEFAULT_SIZE = 140;
 
     private static final String URI_ID_TEMPLATE = DataManager.getInstance().getConfiguration().getRestApiUrl() + "users/{id}";
@@ -215,7 +213,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
 
     /**
      *
-     * @param nickname
+     * @param nickname the display nickname to assign to this user
      */
     public User(String nickname) {
         this.nickName = nickname;
@@ -258,11 +256,6 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -272,11 +265,6 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -310,7 +298,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Returns the name best suited for displaying (depending on which values are available).
      *
-     * @return a {@link java.lang.String} object.
+     * @return the display name of this user (nickname, email, or a default label depending on available values)
      */
     public String getDisplayName() {
         if (StringUtils.isNotBlank(nickName)) {
@@ -331,7 +319,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Returns a list of UserGroups of which this user is the owner.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of user groups owned by this user
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<UserGroup> getUserGroupOwnerships() throws DAOException {
@@ -339,11 +327,9 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * getUserGroupMemberships.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of user role entries representing this user's group memberships
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<UserRole> getUserGroupMemberships() throws DAOException {
@@ -353,7 +339,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Returns a list of UserGroups of which this user is a member.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of user groups in which this user holds a membership
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<UserGroup> getUserGroupsWithMembership() throws DAOException {
@@ -367,12 +353,10 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * isGroupMember.
-     * </p>
      *
-     * @param group a {@link io.goobi.viewer.model.security.user.UserGroup} object.
-     * @return a boolean.
+     * @param group the user group to check membership in
+     * @return true if this user is a member of the given group, false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isGroupMember(UserGroup group) throws DAOException {
@@ -388,7 +372,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Returns a list of all groups with this user's involvement (either as owner or member).
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all user groups this user is associated with as owner or member
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<UserGroup> getAllUserGroups() {
@@ -406,9 +390,9 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
      * Checks whether the user can satisfy at least one of the given access conditions with a license that contains the given privilege name. If one
      * of the conditions is OPENACCESS, true is always returned. Superusers always get access.
      *
-     * @param requiredAccessConditions a {@link java.util.Set} object.
-     * @param privilegeName a {@link java.lang.String} object.
-     * @param pi a {@link java.lang.String} object.
+     * @param requiredAccessConditions set of access condition names to satisfy
+     * @param privilegeName the privilege to check against each condition
+     * @param pi persistent identifier of the record being accessed
      * @should return true if user is superuser
      * @should return true if condition is open access
      * @should return true if user has license
@@ -466,11 +450,9 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * isHasCmsPrivilege.
-     * </p>
      *
-     * @param privilege a {@link java.lang.String} object.
+     * @param privilege the CMS privilege name to check
      * @return boolean
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -481,12 +463,10 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * isHasPrivilege.
-     * </p>
      *
-     * @param licenseType a {@link java.lang.String} object.
-     * @param privilege a {@link java.lang.String} object.
+     * @param licenseType the license type name to check
+     * @param privilege the privilege name to check
      * @return boolean
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -515,7 +495,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Checks whether this user has the permission to delete all ocr-content of one page in crowdsourcing.
      *
-     * @return a boolean.
+     * @return true if this user is allowed to delete OCR page content for the current record, false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -536,9 +516,9 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
 
     /**
      *
-     * @param licenseType
-     * @param privilegeName
-     * @param alreadyCheckedPiMap
+     * @param licenseType the license type name to check
+     * @param privilegeName the access privilege name to check
+     * @param alreadyCheckedPiMap cache of previously checked PIs and their access results
      * @return boolean
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -558,10 +538,10 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
 
     /**
      *
-     * @param pi
-     * @param licenseType
-     * @param privilegeName
-     * @param alreadyCheckedPiMap
+     * @param pi the persistent identifier of the record to check
+     * @param licenseType the license type name to check
+     * @param privilegeName the access privilege name to check
+     * @param alreadyCheckedPiMap cache of previously checked PIs and their access results
      * @return {@link AccessPermission}
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -590,8 +570,8 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
      * {@link io.goobi.viewer.model.security.user.icon.GravatarUserAvatar#getGravatarUrl(int size)}. Otherwise build a resource url to
      * 'resources/images/backend/thumbnail_goobi_person.svg' from the request or the JSF-Context if no request is provided
      *
-     * @param size
-     * @param request
+     * @param size the desired avatar image size in pixels
+     * @param request the HTTP request used to build resource URLs; may be null
      * @return Avatar URL
      */
     public String getAvatarUrl(int size, HttpServletRequest request) {
@@ -609,7 +589,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
 
     /**
      *
-     * @param request
+     * @param request the HTTP request used to build resource URLs
      * @return {@link #getAvatarUrl(int size, HttpServletRequest request)} with size={@link #AVATAR_DEFAULT_SIZE}
      */
     public String getAvatarUrl(HttpServletRequest request) {
@@ -619,7 +599,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Used by the crowdsourcing module.
      *
-     * @param size a int.
+     * @param size the desired avatar image size in pixels
      * @return {@link #getAvatarUrl(int size, HttpServletRequest request)} with request=null
      */
     public String getAvatarUrl(int size) {
@@ -629,8 +609,8 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Generates salt and a password hash for the given password string.
      *
-     * @param password a {@link java.lang.String} object.
-     * @return a boolean.
+     * @param password the plain-text password to hash and store
+     * @return true if the password was set successfully (i.e. the given password is not blank), false otherwise
      */
     public boolean setNewPassword(String password) {
         if (StringUtils.isNotBlank(password)) {
@@ -644,8 +624,8 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * Authentication check for regular (i.e. non-OpenID) accounts.
      *
-     * @param email a {@link java.lang.String} object.
-     * @param password a {@link java.lang.String} object.
+     * @param email the email address to look up
+     * @param password the plain-text password to verify
      * @return The user, if successful.
      * @throws io.goobi.viewer.exceptions.AuthenticationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -662,11 +642,9 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * hasPriviledgeForAllTemplates.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this user has access to all CMS page templates (as superuser or via an unrestricted CMS admin license), false otherwise
      */
     public boolean hasPriviledgeForAllTemplates() {
 
@@ -691,11 +669,9 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * hasPrivilegesForTemplate.
-     * </p>
      *
-     * @param template
+     * @param template the CMS page template to check privileges for
      * @return true exactly if the user is not restricted to certain cmsTemplates or if the given templateId is among the allowed templates for the
      *         user of a usergroup she is in
      */
@@ -742,12 +718,10 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * getAllowedTemplates.
-     * </p>
      *
-     * @param allTemplates a {@link java.util.List} object.
-     * @return a {@link java.util.List} object.
+     * @param allTemplates full list of available CMS page templates
+     * @return a list of CMS page templates this user is permitted to use
      */
     public List<CMSPageTemplate> getAllowedTemplates(List<CMSPageTemplate> allTemplates) {
         if (allTemplates == null || allTemplates.isEmpty()) {
@@ -812,11 +786,9 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * hasPrivilegeForAllCategories.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this user has access to all CMS categories (as superuser or via an unrestricted CMS admin license), false otherwise
      */
     public boolean hasPrivilegeForAllCategories() {
 
@@ -841,12 +813,10 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * getAllowedCategories.
-     * </p>
      *
-     * @param allCategories a {@link java.util.List} object.
-     * @return a {@link java.util.List} object.
+     * @param allCategories full list of available CMS categories
+     * @return a list of CMS categories this user is permitted to assign
      */
     public List<CMSCategory> getAllowedCategories(List<CMSCategory> allCategories) {
         if (allCategories == null || allCategories.isEmpty()) {
@@ -899,11 +869,10 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * hasPrivilegeForAllSubthemeDiscriminatorValues.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this user has access to all CMS subtheme discriminator values (as superuser or
+     *         via an unrestricted CMS admin license), false otherwise
      */
     public boolean hasPrivilegeForAllSubthemeDiscriminatorValues() {
 
@@ -928,9 +897,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * getAllowedSubthemeDiscriminatorValues.
-     * </p>
      *
      * @param rawValues All possible values
      * @return filtered list of allowed values
@@ -986,286 +953,234 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
-     * @return the id
+     * @return the database identifier of this user
      */
     public Long getId() {
         return id;
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
-     * @param id the id to set
+     * @param id the database identifier to set
      */
     public void setId(Long id) {
         this.id = id;
     }
 
     /**
-     * <p>
      * Getter for the field <code>passwordHash</code>.
-     * </p>
      *
-     * @return the passwordHash
+     * @return the hashed password of this user
      */
     public String getPasswordHash() {
         return passwordHash;
     }
 
     /**
-     * <p>
      * Setter for the field <code>passwordHash</code>.
-     * </p>
      *
-     * @param passwordHash the passwordHash to set
+     * @param passwordHash the hashed password to set
      */
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
     }
 
     /**
-     * <p>
      * Getter for the field <code>activationKey</code>.
-     * </p>
      *
-     * @return the activationKey
+     * @return the account activation key sent by email
      */
     public String getActivationKey() {
         return activationKey;
     }
 
     /**
-     * <p>
      * Setter for the field <code>activationKey</code>.
-     * </p>
      *
-     * @param activationKey the activationKey to set
+     * @param activationKey the account activation key sent by email to set
      */
     public void setActivationKey(String activationKey) {
         this.activationKey = activationKey;
     }
 
     /**
-     * <p>
      * Getter for the field <code>lastLogin</code>.
-     * </p>
      *
-     * @return the lastLogin
+     * @return the timestamp of the most recent login
      */
     public LocalDateTime getLastLogin() {
         return lastLogin;
     }
 
     /**
-     * <p>
      * Setter for the field <code>lastLogin</code>.
-     * </p>
      *
-     * @param lastLogin the lastLogin to set
+     * @param lastLogin the timestamp of the most recent login to set
      */
     public void setLastLogin(LocalDateTime lastLogin) {
         this.lastLogin = lastLogin;
     }
 
     /**
-     * <p>
      * isActive.
-     * </p>
      *
-     * @return the active
+     * @return true if the user account is active; false otherwise
      */
     public boolean isActive() {
         return active;
     }
 
     /**
-     * <p>
      * Setter for the field <code>active</code>.
-     * </p>
      *
-     * @param active the active to set
+     * @param active true if the user account is active; false otherwise
      */
     public void setActive(boolean active) {
         this.active = active;
     }
 
     /**
-     * <p>
      * isSuspended.
-     * </p>
      *
-     * @return the suspended
+     * @return true if the user account is suspended; false otherwise
      */
     public boolean isSuspended() {
         return suspended;
     }
 
     /**
-     * <p>
      * Setter for the field <code>suspended</code>.
-     * </p>
      *
-     * @param suspended the suspended to set
+     * @param suspended true if the user account is suspended; false otherwise
      */
     public void setSuspended(boolean suspended) {
         this.suspended = suspended;
     }
 
     /**
-     * <p>
      * Getter for the field <code>nickName</code>.
-     * </p>
      *
-     * @return the nickName
+     * @return the display nickname of this user
      */
     public String getNickName() {
         return nickName;
     }
 
     /**
-     * <p>
      * Setter for the field <code>nickName</code>.
-     * </p>
      *
-     * @param nickName the nickName to set
+     * @param nickName the display nickname of the user to set
      */
     public void setNickName(String nickName) {
         this.nickName = nickName;
     }
 
     /**
-     * <p>
      * Getter for the field <code>lastName</code>.
-     * </p>
      *
-     * @return the lastName
+     * @return the last name of this user
      */
     public String getLastName() {
         return lastName;
     }
 
     /**
-     * <p>
      * Setter for the field <code>lastName</code>.
-     * </p>
      *
-     * @param lastName the lastName to set
+     * @param lastName the last name of the user to set
      */
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
     /**
-     * <p>
      * Getter for the field <code>firstName</code>.
-     * </p>
      *
-     * @return the firstName
+     * @return the first name of this user
      */
     public String getFirstName() {
         return firstName;
     }
 
     /**
-     * <p>
      * Setter for the field <code>firstName</code>.
-     * </p>
      *
-     * @param firstName the firstName to set
+     * @param firstName the first name of the user to set
      */
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
     /**
-     * <p>
      * Getter for the field <code>openIdAccounts</code>.
-     * </p>
      *
-     * @return the openIdAccounts
+     * @return the list of OpenID account identifiers linked to this user
      */
     public List<String> getOpenIdAccounts() {
         return openIdAccounts;
     }
 
     /**
-     * <p>
      * Setter for the field <code>openIdAccounts</code>.
-     * </p>
      *
-     * @param openIdAccounts the openIdAccounts to set
+     * @param openIdAccounts the list of OpenID account identifiers linked to this user to set
      */
     public void setOpenIdAccounts(List<String> openIdAccounts) {
         this.openIdAccounts = openIdAccounts;
     }
 
     /**
-     * <p>
      * Setter for the field <code>email</code>.
-     * </p>
      *
-     * @param email the email to set
+     * @param email the email address of the user to set
      */
     public void setEmail(String email) {
         this.email = email;
     }
 
     /**
-     * <p>
      * Getter for the field <code>email</code>.
-     * </p>
      *
-     * @return the email
+     * @return the email address of this user
      */
     public String getEmail() {
         return email;
     }
 
     /**
-     * <p>
      * Getter for the field <code>comments</code>.
-     * </p>
      *
-     * @return the comments
+     * @return administrative comments about this user account
      */
     public String getComments() {
         return comments;
     }
 
     /**
-     * <p>
      * Setter for the field <code>comments</code>.
-     * </p>
      *
-     * @param comments the comments to set
+     * @param comments administrative comments about the user account to set
      */
     public void setComments(String comments) {
         this.comments = comments;
     }
 
     /**
-     * <p>
      * Getter for the field <code>score</code>.
-     * </p>
      *
-     * @return the score
+     * @return the contribution score of this user
      */
     public long getScore() {
         return score;
     }
 
     /**
-     * <p>
      * Setter for the field <code>score</code>.
-     * </p>
      *
-     * @param score the score to set
+     * @param score the user's contribution score to set
      */
     public void setScore(long score) {
         this.score = score;
@@ -1280,11 +1195,9 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * raiseScore.
-     * </p>
      *
-     * @param amount a int.
+     * @param amount points to add to the user score
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void raiseScore(int amount) throws DAOException {
@@ -1293,9 +1206,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * getRank.
-     * </p>
      *
      * @return a int.
      */
@@ -1313,35 +1224,27 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         return 3;
     }
 
-    /**
-     * @return the userProperties
-     */
+    
     public Map<String, String> getUserProperties() {
         return userProperties;
     }
 
-    /**
-     * @param userProperties the userProperties to set
-     */
+    
     public void setUserProperties(Map<String, String> userProperties) {
         this.userProperties = userProperties;
     }
 
     /**
-     * <p>
      * isSuperuser.
-     * </p>
      *
-     * @return the superuser
+     * @return true if this user has superuser privileges; false otherwise
      */
     public boolean isSuperuser() {
         return superuser;
     }
 
     /**
-     * <p>
      * isCmsAdmin.
-     * </p>
      *
      * @return true if user is superuser or has CMS-specific privileges
      */
@@ -1358,66 +1261,54 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * Setter for the field <code>superuser</code>.
-     * </p>
      *
-     * @param superuser the superuser to set
+     * @param superuser true if the user should have superuser privileges; false otherwise
      */
     public void setSuperuser(boolean superuser) {
         this.superuser = superuser;
     }
 
     /**
-     * <p>
      * isOpenIdUser.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this user has at least one linked OpenID account, false otherwise
      */
     public boolean isOpenIdUser() {
         return openIdAccounts != null && !openIdAccounts.isEmpty();
     }
 
     /**
-     * <p>
      * Getter for the field <code>copy</code>.
-     * </p>
      *
-     * @return the copy
+     * @return the unsaved copy of this user instance
      */
     public User getCopy() {
         return copy;
     }
 
     /**
-     * <p>
      * Setter for the field <code>copy</code>.
-     * </p>
      *
-     * @param copy the copy to set
+     * @param copy the user instance representing an unsaved copy of this user to set
      */
     public void setCopy(User copy) {
         this.copy = copy;
     }
 
     /**
-     * <p>
      * Getter for the field <code>transkribusSession</code>.
-     * </p>
      *
-     * @return the transkribusSession
+     * @return the active Transkribus session for this user
      */
     public TranskribusSession getTranskribusSession() {
         return transkribusSession;
     }
 
     /**
-     * <p>
      * Setter for the field <code>transkribusSession</code>.
-     * </p>
      *
-     * @param transkribusSession the transkribusSession to set
+     * @param transkribusSession the active Transkribus session for this user to set
      */
     public void setTranskribusSession(TranskribusSession transkribusSession) {
         this.transkribusSession = transkribusSession;
@@ -1426,7 +1317,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * {@inheritDoc}
      *
-     * Required by the ILicensee interface.
+     * <p>Required by the ILicensee interface.
      */
     @Override
     public String getName() {
@@ -1442,13 +1333,6 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         return AccessType.USER;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * jakarta.servlet.http.HttpSessionBindingListener#valueBound(jakarta.servlet.http.
-     * HttpSessionBindingEvent)
-     */
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -1463,13 +1347,6 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         logger.debug("User added to context: {}", getId());
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * jakarta.servlet.http.HttpSessionBindingListener#valueUnbound(jakarta.servlet.http
-     * .HttpSessionBindingEvent)
-     */
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -1483,9 +1360,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * backupFields.
-     * </p>
      */
     public void backupFields() {
         //keep avatar update date of copy because a change in the avatar file is recorded in the copy
@@ -1502,21 +1377,19 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * setBCrypt.
-     * </p>
      *
-     * @param bcrypt a {@link io.goobi.viewer.controller.BCrypt} object.
+     * @param bcrypt the BCrypt instance to use for password hashing
      */
     protected void setBCrypt(BCrypt bcrypt) {
         this.bcrypt = bcrypt;
     }
 
     /**
-     * Get the {@link io.goobi.viewer.model.security.user.User#id} of a user from a URI
+     * Gets the {@link io.goobi.viewer.model.security.user.User#id} of a user from a URI.
      *
-     * @param idAsURI a {@link java.net.URI} object.
-     * @return a {@link java.lang.Long} object.
+     * @param idAsURI URI containing the user ID in its path
+     * @return the numeric user ID extracted from the URI, or null if not found
      * @should extract id correctly
      */
     public static Long getId(URI idAsURI) {
@@ -1533,40 +1406,30 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * getIdAsURI.
-     * </p>
      *
-     * @return a {@link java.net.URI} object.
+     * @return the REST API URI for this user, constructed from the user ID
      */
     public URI getIdAsURI() {
         return URI.create(URI_ID_TEMPLATE.replace("{id}", this.getId().toString()));
     }
 
-    /**
-     * @param agreedToTermsOfUse the agreedToTermsOfUse to set
-     */
+    
     public void setAgreedToTermsOfUse(boolean agreedToTermsOfUse) {
         this.agreedToTermsOfUse = agreedToTermsOfUse;
     }
 
-    /**
-     * @return the agreedToTermsOfUse
-     */
+    
     public boolean isAgreedToTermsOfUse() {
         return agreedToTermsOfUse;
     }
 
-    /**
-     * @return the avatarType
-     */
+    
     public UserAvatarOption getAvatarType() {
         return Optional.ofNullable(avatarType).orElse(UserAvatarOption.DEFAULT);
     }
 
-    /**
-     * @param avatarType the avatarType to set
-     */
+    
     public void setAvatarType(UserAvatarOption avatarType) {
         this.avatarType = avatarType;
     }
@@ -1624,16 +1487,12 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         });
     }
 
-    /**
-     * @return the localAvatarUpdated
-     */
+    
     public Long getLocalAvatarUpdated() {
         return localAvatarUpdated;
     }
 
-    /**
-     * @param localAvatarUpdated the localAvatarUpdated to set
-     */
+    
     public void setLocalAvatarUpdated(Long localAvatarUpdated) {
         this.localAvatarUpdated = localAvatarUpdated;
     }
@@ -1668,11 +1527,9 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * main.
-     * </p>
      *
-     * @param args an array of {@link java.lang.String} objects.
+     * @param args command-line arguments (unused)
      */
     public static void main(String[] args) {
         System.out.println(BCrypt.hashpw("halbgeviertstrich", BCrypt.gensalt()));

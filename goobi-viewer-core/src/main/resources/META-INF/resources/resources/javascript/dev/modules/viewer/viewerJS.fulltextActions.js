@@ -90,12 +90,12 @@ var viewerJS = (function (viewer) {
 	  				<div class="d-flex flex-column">
 	  						<button class="view-fulltext__popover-button" type="button" data-remotecontent="${authorityDataUri}">
 	  						<span class="icon-wrapper view-fulltext__popover-icon" aria-hidden="true">
-	  							<svg class="icon" focusable="false"><use href="${iconBasePath}resources/icons/outline/list-details.svg#icon"></use></svg>
+	  							<svg class="icon-svg" focusable="false"><use href="${iconBasePath}resources/icons/outline/list-details.svg#icon"></use></svg>
 	  						</span><span>${authorityDataMsg}</span>
 	  					</button>
 	  					<a class="view-fulltext__popover-button" href="${searchLink}">
 	  						<span class="icon-wrapper view-fulltext__popover-icon" aria-hidden="true">
-	  							<svg class="icon" focusable="false"><use href="${iconBasePath}resources/icons/outline/search.svg#icon"></use></svg>
+	  							<svg class="icon-svg" focusable="false"><use href="${iconBasePath}resources/icons/outline/search.svg#icon"></use></svg>
 	  						</span><span>${triggerSearchMsg}</span></a>
 	  				</div>
 	  			</div>
@@ -139,10 +139,7 @@ var viewerJS = (function (viewer) {
 
                 // CLOSE POPOVERS WHEN CLICKED OUTSIDE OF THE POPOVERS
                 $('html').on('click', function (e) {
-                    if (
-                        typeof $(e.target).data('original-title') == 'undefined' &&
-                        !$(e.target).parents().is('.popover')
-                    ) {
+                    if (typeof $(e.target).data('original-title') == 'undefined' && !$(e.target).parents().is('.popover')) {
                         $('[data-original-title]').popover('hide');
                     }
                 });

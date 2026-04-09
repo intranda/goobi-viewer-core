@@ -41,9 +41,9 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSCategory;
 
 /**
- * Managed Bean for editing, deleting and creating {@link CMSCategory categories}
+ * Managed Bean for editing, deleting and creating {@link CMSCategory categories}.
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Named("cmsCategoriesBean")
 @SessionScoped
@@ -100,7 +100,8 @@ public class CmsCategoriesBean implements Serializable {
 
     /**
      * If editing mode is active, set categoryName and categoryDescription to the currently selected category, persist it and end the editing mode.
-     * Otherwise, if {@link #isValid()} is true, create a new category based on {@link #getCategoryName()} and
+     *
+     * <p>Otherwise, if {@link #isValid()} is true, create a new category based on {@link #getCategoryName()} and
      * {@link io.goobi.viewer.managedbeans.CmsCategoriesBean#getCategoryDescription()} and persist it. Also clear categoryName and
      * categoryDescription.
      *
@@ -141,7 +142,7 @@ public class CmsCategoriesBean implements Serializable {
     /**
      * Delete the given Category in DAO. Also clear categoryName and categoryDescription
      *
-     * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
+     * @param category category to delete from the database
      * @return Navigation outcome
      */
     public String deleteCategoryAction(CMSCategory category) {
@@ -187,7 +188,7 @@ public class CmsCategoriesBean implements Serializable {
     }
 
     /**
-     * <p>endEditing.</p>
+     * <p>endEditing.
      */
     public void endEditing() {
         this.selectedCategory = null;
@@ -196,7 +197,7 @@ public class CmsCategoriesBean implements Serializable {
     }
 
     /**
-     * Returns a newly created list of all saved categories
+     * Returns a newly created list of all saved categories.
      *
      * @return a newly created list of all saved categories
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -206,62 +207,52 @@ public class CmsCategoriesBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>categoryName</code>.
-     * </p>
      *
-     * @return the categoryName
+     * @return the name entered for the new or edited category
      */
     public String getCategoryName() {
         return categoryName;
     }
 
     /**
-     * <p>
      * Setter for the field <code>categoryName</code>.
-     * </p>
      *
-     * @param categoryName the categoryName to set
+     * @param categoryName name entered for the new or edited category
      */
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
     }
 
     /**
-     * <p>
      * Getter for the field <code>categoryDescription</code>.
-     * </p>
      *
-     * @return the categoryDescription
+     * @return the description entered for the new or edited category
      */
     public String getCategoryDescription() {
         return categoryDescription;
     }
 
     /**
-     * <p>
      * Setter for the field <code>categoryDescription</code>.
-     * </p>
      *
-     * @param categoryDescription the categoryDescription to set
+     * @param categoryDescription description entered for the new or edited category
      */
     public void setCategoryDescription(String categoryDescription) {
         this.categoryDescription = categoryDescription;
     }
 
     /**
-     * <p>
      * Getter for the field <code>selectedCategory</code>.
-     * </p>
      *
-     * @return the selectedCategory
+     * @return the currently selected CMS category, or null if none is selected
      */
     public CMSCategory getSelectedCategory() {
         return selectedCategory;
     }
 
     /**
-     * <p>getSelectedCategoryId.</p>
+     * <p>getSelectedCategoryId.
      *
      * @return ID of the selected category
      */
@@ -274,9 +265,9 @@ public class CmsCategoriesBean implements Serializable {
     }
 
     /**
-     * <p>setSelectedCategoryId.</p>
+     * <p>setSelectedCategoryId.
      *
-     * @param id a {@link java.lang.Long} object
+     * @param id database ID of the category to edit
      * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void setSelectedCategoryId(Long id) throws DAOException {

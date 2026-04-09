@@ -25,7 +25,9 @@ import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
 
 /**
- * @author florian store variables in view scope
+ * JSF backing bean for storing variables in view scope.
+ *
+ * @author Florian Alpers
  */
 @Named
 @ViewScoped

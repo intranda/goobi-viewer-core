@@ -76,7 +76,7 @@ import io.goobi.viewer.solr.SolrTools;
 /**
  * Metadata field configuration.
  */
-public class Metadata implements Serializable {
+public class Metadata implements MetadataListElement, Serializable {
 
     private static final long serialVersionUID = 5671775647919258310L;
 
@@ -92,12 +92,12 @@ public class Metadata implements Serializable {
      * Only used for group metadata. The value of the field 'LABEL' of the relevant metadata docs
      */
     private final String key;
-    /** Value from messages.properties (with placeholders) */
+    /** Value from messages.properties (with placeholders). */
     private final String masterValue;
     private String citationTemplate;
     private String sortField;
     /**
-     * Optional metadata field that will provide the label value (if singleString=true)
+     * Optional metadata field that will provide the label value (if singleString=true).
      */
     private String labelField;
     private String separator;
@@ -154,9 +154,7 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>
      * Default constructor.
-     * </p>
      */
     public Metadata() {
         this.ownerStructElementIddoc = "";
@@ -166,14 +164,12 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>
      * Constructor with a single metadata value.
-     * </p>
      *
-     * @param ownerIddoc
-     * @param label a {@link java.lang.String} object.
-     * @param masterValue a {@link java.lang.String} object.
-     * @param paramValue a {@link java.lang.String} object.
+     * @param ownerIddoc IDDOC of the owning structure element
+     * @param label display label key from messages.properties
+     * @param masterValue value template with placeholders
+     * @param paramValue single initial parameter value to populate
      */
     public Metadata(String ownerIddoc, String label, String masterValue, String paramValue) {
         this.ownerStructElementIddoc = ownerIddoc;
@@ -195,27 +191,23 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>
      * Constructor with a {@link MetadataParameter} list.
-     * </p>
      *
-     * @param label a {@link java.lang.String} object.
-     * @param masterValue a {@link java.lang.String} object.
-     * @param params a {@link java.util.List} object.
+     * @param label display label key from messages.properties
+     * @param masterValue value template with placeholders
+     * @param params list of metadata parameters to configure
      */
     public Metadata(String label, String masterValue, List<MetadataParameter> params) {
         this(label, label, masterValue, params);
     }
 
     /**
-     * <p>
      * Constructor with a {@link MetadataParameter} list.
-     * </p>
      *
-     * @param label a {@link java.lang.String} object.
-     * @param key a {@link java.lang.String} object.
-     * @param masterValue a {@link java.lang.String} object.
-     * @param params a {@link java.util.List} object.
+     * @param label display label key from messages.properties
+     * @param key LABEL field value used to identify grouped metadata docs
+     * @param masterValue value template with placeholders
+     * @param params list of metadata parameters to configure
      */
     public Metadata(String label, String key, String masterValue, List<MetadataParameter> params) {
         this.label = label;
@@ -225,16 +217,14 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>
-     * Constructor for Metadata.
-     * </p>
+     * Creates a new Metadata instance.
      *
-     * @param ownerIddoc
-     * @param label a {@link java.lang.String} object.
-     * @param masterValue a {@link java.lang.String} object.
-     * @param param a {@link io.goobi.viewer.model.metadata.MetadataParameter} object.
-     * @param paramValue a {@link java.lang.String} object.
-     * @param locale
+     * @param ownerIddoc IDDOC of the owning structure element
+     * @param label display label key from messages.properties
+     * @param masterValue value template with placeholders
+     * @param param metadata parameter defining how the value is processed
+     * @param paramValue initial value to populate via setParamValue
+     * @param locale locale used for value translation and formatting
      */
     public Metadata(String ownerIddoc, String label, String masterValue, MetadataParameter param, String paramValue,
             Locale locale) {
@@ -293,33 +283,27 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>
      * isHasLabel.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this metadata field has a non-blank display label, false otherwise
      */
     public boolean isHasLabel() {
         return StringUtils.isNotBlank(label);
     }
 
     /**
-     * <p>
      * Getter for the field <code>label</code>.
-     * </p>
      *
-     * @return the label
+     * @return the display label of this metadata field
      */
     public String getLabel() {
         return label;
     }
 
     /**
-     * <p>
      * Getter for the field <code>masterValue</code>.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the master value format string, or a generated placeholder string if not set
      * @should return placeholders for every parameter for group metadata if masterValue empty
      * @should return single placeholder for non group metadata if masterValue empty
      */
@@ -341,18 +325,16 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>type</code>.
-     * </p>
      *
-     * @return the type
+     * @return the metadata display type (e.g. 0 for default, 1 for group, 2 for citation)
      */
     public int getType() {
         return type;
     }
 
     /**
-     * @param type the type to set
+     * @param type the metadata display type (e.g. 0 for default, 1 for group, 2 for citation)
      * @return this
      */
     public Metadata setType(int type) {
@@ -372,15 +354,13 @@ public class Metadata implements Serializable {
         return Collections.singletonList(new StringPair(sortField, "asc"));
     }
 
-    /**
-     * @return the sortField
-     */
+    
     public String getSortField() {
         return sortField;
     }
 
     /**
-     * @param sortField the sortField to set
+     * @param sortField the Solr field name used for sorting this metadata field
      * @return this
      */
     public Metadata setSortField(String sortField) {
@@ -389,11 +369,9 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>values</code>.
-     * </p>
      *
-     * @return the values
+     * @return the list of {@link MetadataValue} objects associated with this metadata field
      */
     public List<MetadataValue> getValues() {
         return values;
@@ -401,7 +379,7 @@ public class Metadata implements Serializable {
 
     /**
      *
-     * @param ownerIddoc
+     * @param ownerIddoc IDDOC of the owning structure element to filter values by
      * @return Sublist of all values that belong to <code>ownerIddoc</code>; all values if <code>ownerIddoc</code> null
      * @should return all values if ownerIddoc null
      * @should return only values for the given ownerIddoc
@@ -434,18 +412,16 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>
      * setParamValue.
-     * </p>
      *
-     * @param valueIndex a int.
-     * @param paramIndex a int.
+     * @param valueIndex index of the MetadataValue to populate
+     * @param paramIndex index of the parameter within this metadata
      * @param inValues List with values
-     * @param paramLabel a {@link java.lang.String} object.
-     * @param url a {@link java.lang.String} object.
-     * @param options a {@link java.util.Map} object.
+     * @param paramLabel display label for the parameter
+     * @param url optional hyperlink URL associated with the value
+     * @param options additional key/value options (e.g. NORM_TYPE)
      * @param groupType value of METADATATYPE, if available
-     * @param locale a {@link java.util.Locale} object.
+     * @param locale locale for value translation and formatting
      * @should add multivalued param values correctly
      * @should set group type correctly
      */
@@ -755,11 +731,9 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>params</code>.
-     * </p>
      *
-     * @return the params
+     * @return the list of {@link MetadataParameter} objects that define how values are retrieved for this metadata field
      */
     public List<MetadataParameter> getParams() {
         return params;
@@ -774,12 +748,10 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>
      * hasParam.
-     * </p>
      *
-     * @param paramName a {@link java.lang.String} object.
-     * @return a boolean.
+     * @param paramName Solr field name of the parameter to find
+     * @return true if this metadata has a parameter with the given field name, false otherwise
      */
     public boolean hasParam(String paramName) {
         for (MetadataParameter param : params) {
@@ -821,7 +793,7 @@ public class Metadata implements Serializable {
 
     /**
      *
-     * @param ownerIddoc
+     * @param ownerIddoc IDDOC of the owning structure element to filter values by
      * @return true if this metadata contains no non-blank values; false otherwise
      * @should return true if all paramValues are empty
      * @should return false if at least one paramValue is not empty
@@ -850,12 +822,12 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * 
-     * @param se
-     * @param ownerIddoc
-     * @param sortFields
-     * @param locale
-     * @return a boolean.
+     *
+     * @param se structure element providing the metadata field values
+     * @param ownerIddoc IDDOC of the owner document
+     * @param sortFields field/order pairs used for sorting grouped metadata
+     * @param locale locale used for value translation and formatting
+     * @return true if at least one value was populated successfully, false otherwise
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -867,14 +839,14 @@ public class Metadata implements Serializable {
     /**
      * Populates the parameters of the given metadata with values from the given StructElement.
      *
-     * @param se a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param se structure element providing the metadata field values
      * @param anchorSe Optional anchor {@link StructElement}
      * @param ownerIddoc IDDOC of the owner document (either docstruct or parent metadata)
-     * @param sortFields
-     * @param searchTerms
-     * @param truncateLength
-     * @param locale a {@link java.util.Locale} object.
-     * @return a boolean.
+     * @param sortFields field/order pairs used for sorting grouped metadata
+     * @param searchTerms map of search terms for adding highlighting to matched values
+     * @param truncateLength maximum character length before truncation; 0 to disable
+     * @param locale locale for value translation and formatting
+     * @return true if at least one value was populated successfully, false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @should use default value of no value found
@@ -1057,9 +1029,9 @@ public class Metadata implements Serializable {
      * @param se {@link StructElement}
      * @param ownerIddoc Owner IDDOC (either docstruct or parent metadata)
      * @param sortFields Optional field/order pairs for sorting
-     * @param searchTerms
-     * @param truncateLength
-     * @param locale
+     * @param searchTerms map of search terms for adding highlighting to matched values
+     * @param truncateLength maximum character length before truncation; 0 to disable
+     * @param locale locale used for value translation and formatting
      * @return true if successful; false otherwise
      * @throws IndexUnreachableException
      * @should populate group correctly
@@ -1079,7 +1051,7 @@ public class Metadata implements Serializable {
                 return false;
             }
             /**
-             * Load data of related documents if any params are of type "related". Otherwise generate an empty RelationshipMetadataContainer
+             * Loads data of related documents if any params are of type "related". Otherwise generate an empty RelationshipMetadataContainer
              */
             RelationshipMetadataContainer relatedDocuments = new RelationshipMetadataContainer(Collections.emptyList(),
                     Collections.emptyMap());
@@ -1239,12 +1211,12 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * Return all values from the given map for either the given key, or - preferably - the given key suffixed by "_LANG_{locale.language}", i.e. the
+     * Returns all values from the given map for either the given key, or - preferably - the given key suffixed by "_LANG_{locale.language}", i.e. the
      * language specific values for that key ( = metadata field) The return value may be null if neither the key nor the suffix key is in the map
      *
-     * @param metadataMap
-     * @param key
-     * @param locale
+     * @param metadataMap map of field names to their string values
+     * @param key metadata field name to look up
+     * @param locale locale used to prefer language-specific field variants
      * @return List<String>
      */
     private static List<String> getMetadata(Map<String, List<String>> metadataMap, String key, Locale locale) {
@@ -1266,8 +1238,8 @@ public class Metadata implements Serializable {
     /**
      * Converts aggregated person/corporation metadata to just the displayable name.
      *
-     * @param aggregatedMetadata a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param aggregatedMetadata semicolon-delimited person metadata string to parse
+     * @return the displayable person name extracted from the aggregated metadata string
      */
     public static String getPersonDisplayName(String aggregatedMetadata) {
         if (aggregatedMetadata.contains(";")) {
@@ -1286,9 +1258,7 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>number</code>.
-     * </p>
      *
      * @return a int.
      */
@@ -1297,7 +1267,7 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * @param number the number to set
+     * @param number the display order number of this metadata field within its section
      * @return this
      */
     public Metadata setNumber(int number) {
@@ -1306,18 +1276,16 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>
      * isGroup.
-     * </p>
      *
-     * @return the group
+     * @return true if this metadata represents a grouped metadata element, false otherwise
      */
     public boolean isGroup() {
         return group;
     }
 
     /**
-     * @param group the group to set
+     * @param group true if this metadata represents a grouped metadata element
      * @return this
      */
     public Metadata setGroup(boolean group) {
@@ -1325,15 +1293,13 @@ public class Metadata implements Serializable {
         return this;
     }
 
-    /**
-     * @return the singleString
-     */
+    
     public boolean isSingleString() {
         return singleString;
     }
 
     /**
-     * @param singleString the singleString to set
+     * @param singleString true if all parameter values should be concatenated into a single string for display
      * @return this
      */
     public Metadata setSingleString(boolean singleString) {
@@ -1341,15 +1307,13 @@ public class Metadata implements Serializable {
         return this;
     }
 
-    /**
-     * @return the hideIfOnlyMetadataField
-     */
+    
     public boolean isHideIfOnlyMetadataField() {
         return hideIfOnlyMetadataField;
     }
 
     /**
-     * @param hideIfOnlyMetadataField the hideIfOnlyMetadataField to set
+     * @param hideIfOnlyMetadataField true if this field should be hidden when it is the only metadata field displayed
      * @return this
      */
     public Metadata setHideIfOnlyMetadataField(boolean hideIfOnlyMetadataField) {
@@ -1357,15 +1321,13 @@ public class Metadata implements Serializable {
         return this;
     }
 
-    /**
-     * @return the topstructOnly
-     */
+    
     public boolean isTopstructOnly() {
         return topstructOnly;
     }
 
     /**
-     * @param topstructOnly the topstructOnly to set
+     * @param topstructOnly true if this metadata should only be displayed for the top-level structure element
      * @return this
      */
     public Metadata setTopstructOnly(boolean topstructOnly) {
@@ -1373,15 +1335,13 @@ public class Metadata implements Serializable {
         return this;
     }
 
-    /**
-     * @return the labelField
-     */
+    
     public String getLabelField() {
         return labelField;
     }
 
     /**
-     * @param labelField the labelField to set
+     * @param labelField the Solr field name whose value is used as the display label for this metadata
      * @return this
      */
     public Metadata setLabelField(String labelField) {
@@ -1389,15 +1349,13 @@ public class Metadata implements Serializable {
         return this;
     }
 
-    /**
-     * @return the separator
-     */
+    
     public String getSeparator() {
         return separator;
     }
 
     /**
-     * @param separator the separator to set
+     * @param separator the string used to separate multiple values when rendering this metadata field
      * @return this
      */
     public Metadata setSeparator(String separator) {
@@ -1405,15 +1363,13 @@ public class Metadata implements Serializable {
         return this;
     }
 
-    /**
-     * @return the ownerDocstrctType
-     */
+    
     public String getOwnerDocstrctType() {
         return ownerDocstrctType;
     }
 
     /**
-     * @param ownerDocstrctType the ownerDocstrctType to set
+     * @param ownerDocstrctType the document structure type of the owning structure element
      * @return this
      */
     public Metadata setOwnerDocstrctType(String ownerDocstrctType) {
@@ -1430,29 +1386,23 @@ public class Metadata implements Serializable {
         return filterQuery;
     }
 
-    /**
-     * @return the accessGranted
-     */
+    
     public boolean isAccessGranted() {
         return accessGranted;
     }
 
-    /**
-     * @param accessGranted the accessGranted to set
-     */
+    
     public void setAccessGranted(boolean accessGranted) {
         this.accessGranted = accessGranted;
     }
 
-    /**
-     * @return the citationTemplate
-     */
+    
     public String getCitationTemplate() {
         return citationTemplate;
     }
 
     /**
-     * @param citationTemplate the citationTemplate to set
+     * @param citationTemplate the CSL citation style template name used to format citation output
      * @return this
      */
     public Metadata setCitationTemplate(String citationTemplate) {
@@ -1460,30 +1410,22 @@ public class Metadata implements Serializable {
         return this;
     }
 
-    /**
-     * @return the citationProcessorWrapper
-     */
+    
     public CitationProcessorWrapper getCitationProcessorWrapper() {
         return citationProcessorWrapper;
     }
 
-    /**
-     * @param citationProcessorWrapper the citationProcessorWrapper to set
-     */
+    
     public void setCitationProcessorWrapper(CitationProcessorWrapper citationProcessorWrapper) {
         this.citationProcessorWrapper = citationProcessorWrapper;
     }
 
-    /**
-     * @return the parentMetadata
-     */
+    
     public Metadata getParentMetadata() {
         return parentMetadata;
     }
 
-    /**
-     * @param parentMetadata the parentMetadata to set
-     */
+    
     public void setParentMetadata(Metadata parentMetadata) {
         this.parentMetadata = parentMetadata;
     }
@@ -1496,24 +1438,19 @@ public class Metadata implements Serializable {
         return !childMetadata.isEmpty();
     }
 
-    /**
-     * @return the childMetadata
-     */
+    
     public List<Metadata> getChildMetadata() {
         return childMetadata;
     }
 
-    /**
-     * @return the indentation
-     */
+    
     public int getIndentation() {
         return indentation;
     }
 
     /**
-     * @param indentation the indentation to set
+     * @param indentation the nesting level used for visual indentation when rendering child metadata
      * @return this
-     *
      */
     public Metadata setIndentation(int indentation) {
         this.indentation = indentation;
@@ -1524,9 +1461,9 @@ public class Metadata implements Serializable {
      * Returns a metadata list that contains the fields of the given metadata list minus any language-specific fields that do not match the given
      * language.
      *
-     * @param metadataList a {@link java.util.List} object.
-     * @param language a {@link java.lang.String} object.
-     * @param field
+     * @param metadataList list of Metadata objects to filter
+     * @param language two-letter language code to match field variants against
+     * @param field metadata field name to filter by; null to include all fields
      * @return Metadata list without any fields with non-matching language; original list if no language is given
      * @should return language-specific version of a field
      * @should return generic version if no language specific version is found

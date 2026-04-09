@@ -38,8 +38,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * parameter. Depending on the type, a subclass of TaskParameter may contain additional properties. These properties are interpreted in
  * {@link TaskManager#createTask(TaskType)}
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 @JsonTypeInfo(
         use = Id.NAME,

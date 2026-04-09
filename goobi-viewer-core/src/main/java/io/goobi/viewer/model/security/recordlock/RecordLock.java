@@ -26,7 +26,7 @@ package io.goobi.viewer.model.security.recordlock;
  */
 public class RecordLock {
 
-    /** Record PI */
+    /** Record PI. */
     private final String pi;
     /** HTTP session ID. */
     private final String sessionId;
@@ -45,9 +45,6 @@ public class RecordLock {
         this.timeCreated = System.currentTimeMillis();
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -59,6 +56,8 @@ public class RecordLock {
 
     /**
      * @see java.lang.Object#equals(java.lang.Object)
+     * @param obj the object to compare to this record lock
+     * @return true if the given object is equal to this instance, false otherwise
      * @should return true if pi and sessionId same
      */
     @Override
@@ -90,23 +89,17 @@ public class RecordLock {
         return true;
     }
 
-    /**
-     * @return the pi
-     */
+    
     public String getPi() {
         return pi;
     }
 
-    /**
-     * @return the sessionId
-     */
+    
     public String getSessionId() {
         return sessionId;
     }
 
-    /**
-     * @return the timeCreated
-     */
+    
     public long getTimeCreated() {
         return timeCreated;
     }

@@ -24,6 +24,7 @@ package io.goobi.viewer.api.rest.v1.annotations;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -41,6 +42,13 @@ import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
  *
  */
 class AnnotationResourceTest extends AbstractRestApiTest {
+
+    // PPN648829383 has ALTO data in the testing Solr (viewer-testing-index.goobi.io)
+    // and in src/test/resources/data/viewer/data/1/alto/PPN648829383/
+    private static final String PI_WITH_ALTO = "PPN648829383";
+    // TextLine_214 exists in PPN648829383/00000001.xml
+    private static final String ALTO_ELEMENT_ID = "TextLine_214";
+    private static final int ALTO_PAGE_NO = 1;
 
     @Test
     void testGetAnnotation() throws JsonMappingException, JsonProcessingException {
@@ -67,6 +75,55 @@ class AnnotationResourceTest extends AbstractRestApiTest {
             String entity = response.readEntity(String.class);
             WebAnnotation annotation = mapper.readValue(entity, WebAnnotation.class);
             assertNotNull(annotation);
+        }
+    }
+
+    /**
+     * Verifies that an ALTO annotation URL with a non-existent PI returns 404 and does not throw
+     * a NumberFormatException (which would have caused a 500 before this fix).
+     */
+    @Test
+    void testGetAltoAnnotation_notFound() {
+        String url = urls.path(ANNOTATIONS, ANNOTATIONS_ALTO).params("NONEXISTENT_PI", 1, "SomeElement").build();
+        try (Response response = target(url)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(404, response.getStatus(), "Non-existent PI should return 404, not 500");
+        }
+    }
+
+    /**
+     * Verifies that an existing ALTO element can be resolved as a Web Annotation.
+     * Uses PPN648829383 which has ALTO data in the testing Solr and test resources.
+     */
+    @Test
+    void testGetAltoAnnotation_found() {
+        String url = urls.path(ANNOTATIONS, ANNOTATIONS_ALTO).params(PI_WITH_ALTO, ALTO_PAGE_NO, ALTO_ELEMENT_ID).build();
+        try (Response response = target(url)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(200, response.getStatus(),
+                    "Valid ALTO element should return 200 - url: " + url);
+            String entity = response.readEntity(String.class);
+            assertNotNull(entity, "Response body should not be null");
+            assertTrue(entity.contains("Annotation"), "Response should be an annotation: " + entity);
+        }
+    }
+
+    /**
+     * Verifies that a valid PI/page with a non-existent element ID returns 404.
+     * Uses PPN648829383 page 1 which has a real ALTO file.
+     */
+    @Test
+    void testGetAltoAnnotation_elementNotFound() {
+        String url = urls.path(ANNOTATIONS, ANNOTATIONS_ALTO).params(PI_WITH_ALTO, ALTO_PAGE_NO, "NONEXISTENT_ELEMENT").build();
+        try (Response response = target(url)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(404, response.getStatus(), "Non-existent element ID should return 404");
         }
     }
 }

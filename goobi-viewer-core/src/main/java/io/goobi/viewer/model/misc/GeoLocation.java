@@ -30,9 +30,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * <p>
- * GeoLocation class.
- * </p>
+ * Represents a single geographic location with coordinates and an optional display label.
  *
  * @author Florian Alpers
  */
@@ -50,21 +48,17 @@ public class GeoLocation {
     private String link = null;
 
     /**
-     * <p>
-     * Constructor for GeoLocation.
-     * </p>
+     * Creates a new GeoLocation instance.
      */
     public GeoLocation() {
         //
     }
 
     /**
-     * <p>
-     * Constructor for GeoLocation.
-     * </p>
+     * Creates a new GeoLocation instance.
      *
-     * @param latitude a {@link java.lang.Double} object.
-     * @param longitude a {@link java.lang.Double} object.
+     * @param latitude geographic latitude in decimal degrees.
+     * @param longitude geographic longitude in decimal degrees.
      */
     public GeoLocation(Double latitude, Double longitude) {
         super();
@@ -73,11 +67,9 @@ public class GeoLocation {
     }
 
     /**
-     * <p>
-     * Constructor for GeoLocation.
-     * </p>
+     * Creates a new GeoLocation instance.
      *
-     * @param json a {@link org.json.JSONObject} object.
+     * @param json JSON object containing latitude, longitude, info and link fields.
      * @throws org.json.JSONException if any.
      */
     public GeoLocation(JSONObject json) throws JSONException {
@@ -104,7 +96,7 @@ public class GeoLocation {
     }
 
     /**
-     * @param string
+     * @param string raw JSON string to format for display
      * @return Formatted string
      */
     private static String formatJson(final String string) {
@@ -114,55 +106,45 @@ public class GeoLocation {
     }
 
     /**
-     * <p>
      * Getter for the field <code>latitude</code>.
-     * </p>
      *
-     * @return the langitude
+     * @return the geographic latitude in decimal degrees, or null if not set
      */
     public Double getLatitude() {
         return latitude;
     }
 
     /**
-     * <p>
      * Setter for the field <code>latitude</code>.
-     * </p>
      *
-     * @param latitude a {@link java.lang.Double} object.
+     * @param latitude geographic latitude in decimal degrees.
      */
     public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
 
     /**
-     * <p>
      * Getter for the field <code>longitude</code>.
-     * </p>
      *
-     * @return the longitude
+     * @return the geographic longitude in decimal degrees (WGS84), or null if not set
      */
     public Double getLongitude() {
         return longitude;
     }
 
     /**
-     * <p>
      * Setter for the field <code>longitude</code>.
-     * </p>
      *
-     * @param longitude the longitude to set
+     * @param longitude the geographic longitude in decimal degrees (WGS84)
      */
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
 
     /**
-     * <p>
      * getAsJson.
-     * </p>
      *
-     * @return a {@link org.json.JSONObject} object.
+     * @return the geographic coordinates and optional info and link as a JSON object
      */
     public JSONObject getAsJson() {
         Map<String, Object> map = new HashMap<>();
@@ -179,9 +161,7 @@ public class GeoLocation {
     }
 
     /**
-     * <p>
      * isEmpty.
-     * </p>
      *
      * @return true if either latitude or longitude is not set or set to NULL
      */
@@ -190,44 +170,36 @@ public class GeoLocation {
     }
 
     /**
-     * <p>
      * Getter for the field <code>info</code>.
-     * </p>
      *
-     * @return the info
+     * @return the descriptive text or HTML content shown in the map popup for this location
      */
     public String getInfo() {
         return info;
     }
 
     /**
-     * <p>
      * Setter for the field <code>info</code>.
-     * </p>
      *
-     * @param info the info to set
+     * @param info the descriptive text or HTML content shown in the map popup for this location
      */
     public void setInfo(String info) {
         this.info = info;
     }
 
     /**
-     * <p>
      * Getter for the field <code>link</code>.
-     * </p>
      *
-     * @return the link
+     * @return the URL linked from the map popup for this location
      */
     public String getLink() {
         return link;
     }
 
     /**
-     * <p>
      * Setter for the field <code>link</code>.
-     * </p>
      *
-     * @param link the link to set
+     * @param link the URL linked from the map popup for this location
      */
     public void setLink(String link) {
         this.link = link;

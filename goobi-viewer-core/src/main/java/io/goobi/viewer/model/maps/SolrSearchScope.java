@@ -21,6 +21,10 @@
  */
 package io.goobi.viewer.model.maps;
 
+/**
+ * Defines the scope of a Solr query used to populate geo-map features: constants control whether
+ * top-level records, structure documents, metadata documents, relationship documents, or all of them are searched.
+ */
 public enum SolrSearchScope {
 
     ALL("label__geomap_search_scope__all", "desc__geomap_search_scope__all"),

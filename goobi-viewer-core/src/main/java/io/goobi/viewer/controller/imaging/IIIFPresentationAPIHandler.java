@@ -30,7 +30,7 @@ import io.goobi.viewer.model.iiif.presentation.v2.builder.AbstractBuilder;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
- * Creates urls to IIIF Presentation api calls to get manifests, canvases, annotationLists or layers
+ * Creates urls to IIIF Presentation api calls to get manifests, canvases, annotationLists or layers.
  *
  * @author Florian Alpers
  */
@@ -39,12 +39,10 @@ public class IIIFPresentationAPIHandler {
     private final AbstractBuilder builder;
 
     /**
-     * <p>
-     * Constructor for IIIFPresentationAPIHandler.
-     * </p>
+     * Creates a new IIIFPresentationAPIHandler instance.
      *
-     * @param urls
-     * @param configuration a {@link io.goobi.viewer.controller.Configuration} object.
+     * @param urls API URL manager for building IIIF resource URLs
+     * @param configuration viewer configuration used to initialize the builder
      * @throws java.net.URISyntaxException if any.
      */
     public IIIFPresentationAPIHandler(AbstractApiUrlManager urls, Configuration configuration) throws URISyntaxException {
@@ -54,10 +52,10 @@ public class IIIFPresentationAPIHandler {
     }
 
     /**
-     * Returns the url to the manifest for the given pi
+     * Returns the url to the manifest for the given pi.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param pageNo
+     * @param pi persistent identifier of the record
+     * @param pageNo physical page number
      * @return The IIIF manifest
      * @throws java.net.URISyntaxException if any.
      */
@@ -66,9 +64,9 @@ public class IIIFPresentationAPIHandler {
     }
     
     /**
-     * Returns the url to the manifest for the given pi
+     * Returns the url to the manifest for the given pi.
      *
-     * @param pi a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record
      * @return The IIIF manifest
      * @throws java.net.URISyntaxException if any.
      */
@@ -77,7 +75,7 @@ public class IIIFPresentationAPIHandler {
     }
 
     /**
-     * Returns the url to a IIIF collection resource containing all top level collections for the field DC
+     * Returns the url to a IIIF collection resource containing all top level collections for the field DC.
      *
      * @return The IIIF collection url
      * @throws java.net.URISyntaxException if any.
@@ -87,10 +85,10 @@ public class IIIFPresentationAPIHandler {
     }
 
     /**
-     * Returns the url to a IIIF collection resource containing all top level collections for the given field
+     * Returns the url to a IIIF collection resource containing all top level collections for the given field.
      *
+     * @param field Solr field name identifying the collection hierarchy
      * @return The IIIF collection url
-     * @param field a {@link java.lang.String} object.
      * @throws java.net.URISyntaxException if any.
      */
     public String getCollectionUrl(String field) throws URISyntaxException {
@@ -98,11 +96,11 @@ public class IIIFPresentationAPIHandler {
     }
 
     /**
-     * Returns the url to a IIIF collection resource for the given collection name for the given field
+     * Returns the url to a IIIF collection resource for the given collection name for the given field.
      *
+     * @param field Solr field name identifying the collection hierarchy
+     * @param collection collection name within the field hierarchy
      * @return The IIIF collection url
-     * @param field a {@link java.lang.String} object.
-     * @param collection a {@link java.lang.String} object.
      * @throws java.net.URISyntaxException if any.
      */
     public String getCollectionUrl(String field, String collection) throws URISyntaxException {
@@ -111,10 +109,10 @@ public class IIIFPresentationAPIHandler {
 
     /**
      *
-     * Returns a IIIF layer with all annotations of the given {@link AnnotationType type} within the work of the given pi
+     * Returns a IIIF layer with all annotations of the given {@link AnnotationType type} within the work of the given pi.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param annotationType a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record
+     * @param annotationType name of the annotation type to filter by
      * @return The IIIF layer url
      * @throws java.net.URISyntaxException if any.
      */
@@ -127,11 +125,11 @@ public class IIIFPresentationAPIHandler {
     }
 
     /**
-     * Returns a IIIF annotation list containing all annotations of the given type for the given page
+     * Returns a IIIF annotation list containing all annotations of the given type for the given page.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param pageOrder a int.
-     * @param annotationType a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record
+     * @param pageOrder physical page order number
+     * @param annotationType name of the annotation type to filter by
      * @return The IIIF annotation list
      * @throws java.net.URISyntaxException if any.
      */
@@ -144,10 +142,10 @@ public class IIIFPresentationAPIHandler {
     }
 
     /**
-     * Returns the IIIF canvas for the given page
+     * Returns the IIIF canvas for the given page.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param pageOrder a int.
+     * @param pi persistent identifier of the record
+     * @param pageOrder physical page order number
      * @return The IIIF canvas url
      * @throws java.net.URISyntaxException if any.
      */
@@ -159,8 +157,8 @@ public class IIIFPresentationAPIHandler {
      * Returns a IIIF range representing the structural element for the given PI and logid. If the logid is the logid of the work itself, The
      * "CONTENT" range is returned, containing all topmost ranges but no canvases and no metadata
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param logId a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record
+     * @param logId logical structure element identifier
      * @return The IIIF range url
      * @throws java.net.URISyntaxException if any.
      */

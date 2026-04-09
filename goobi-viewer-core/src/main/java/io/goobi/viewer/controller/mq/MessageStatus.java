@@ -21,6 +21,10 @@
  */
 package io.goobi.viewer.controller.mq;
 
+/**
+ * Enumeration of the possible processing states for a message queue entry, each carrying a
+ * message-key label used for display in the admin UI.
+ */
 public enum MessageStatus {
 
     FINISH("admin__tasks__status_finished"),

@@ -29,38 +29,29 @@ import java.util.stream.Collectors;
 import io.goobi.viewer.model.viewer.collections.CollectionView;
 
 /**
- * <p>
- * CollectionLabeledLink class.
- * </p>
+ * A labeled link targeting a collection browse page, carrying the collection name alongside label and URL.
  *
  * @author Florian Alpers
  */
 public class CollectionLabeledLink extends CompoundLabeledLink {
 
-    /**
-     *
-     */
+    
     private static final long serialVersionUID = -318199786884811710L;
     private final CollectionView collection;
 
     /**
-     * <p>
-     * Constructor for CollectionLabeledLink.
-     * </p>
+     * Creates a new CollectionLabeledLink instance.
      *
-     * @param name a {@link java.lang.String} object.
-     * @param url a {@link java.lang.String} object.
-     * @param weight a int.
-     * @param collection a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object.
+     * @param name display label of the collection link
+     * @param url target URL of the collection link
+     * @param collection collection view providing sub-links and field information
+     * @param weight sort weight of this link
      */
     public CollectionLabeledLink(String name, String url, CollectionView collection, int weight) {
         super(name, url, Optional.ofNullable(collection).map(CollectionView::getField).orElse(null), weight);
         this.collection = collection;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.viewer.CompoundLabeledLink#getSubLinks()
-     */
     /** {@inheritDoc} */
     @Override
     public List<LabeledLink> getSubLinks() {

@@ -66,6 +66,11 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.servlet.ServletContext;
 
+/**
+ * JSF application-scoped backing bean for the developer administration panel. Provides tools for
+ * managing Quartz jobs, the internal message queue, and theme pull operations, and exposes
+ * developer-oriented utilities such as creating diagnostic packages.
+ */
 @Named
 @ApplicationScoped
 public class AdminDeveloperBean implements Serializable {

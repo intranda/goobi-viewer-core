@@ -127,9 +127,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     private AccessPermission accessPermissionThumbnail = null;
 
     /**
-     * <p>
-     * Constructor for CMSCollection.
-     * </p>
+     * Creates a new CMSCollection instance.
      */
     public CMSCollection() {
         // TODO Is this in use?
@@ -137,7 +135,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
 
     /**
      * Default constructor, creating a Collection from the identifying fields {@link io.goobi.viewer.model.cms.collections.CMSCollection#solrField}
-     * and {@link io.goobi.viewer.model.cms.collections.CMSCollection#solrFieldValue}
+     * and {@link io.goobi.viewer.model.cms.collections.CMSCollection#solrFieldValue}.
      *
      * @param solrField The name of the SOLR field holding the values for the collection
      * @param solrFieldValue The value of the solrField identifying this collection
@@ -153,9 +151,9 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * Cloning constructor
+     * Cloning constructor.
      *
-     * @param orig
+     * @param orig the CMSCollection to clone
      */
     public CMSCollection(CMSCollection orig) {
         this.solrField = orig.solrField;
@@ -197,11 +195,9 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * <p>
      * Getter for the field <code>mediaItem</code>.
-     * </p>
      *
-     * @return the mediaItem
+     * @return the CMS media item used as the representative image for this collection, or null if none is set
      */
     public CMSMediaItem getMediaItem() {
         return mediaItem;
@@ -213,31 +209,27 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * <p>
      * Getter for the field <code>collectionUrl</code>.
-     * </p>
      *
-     * @return the collectionUri
+     * @return the custom URL overriding the default collection browse URL, or null if not set
      */
     public String getCollectionUrl() {
         return collectionUrl;
     }
 
     /**
-     * <p>
      * Setter for the field <code>collectionUrl</code>.
-     * </p>
      *
-     * @param collectionUrl a {@link java.lang.String} object.
+     * @param collectionUrl custom URL overriding the default collection browse URL
      */
     public void setCollectionUrl(String collectionUrl) {
         this.collectionUrl = collectionUrl;
     }
 
     /**
-     * Adds a translation for the collection label
+     * Adds a translation for the collection label.
      *
-     * @param label a {@link io.goobi.viewer.model.cms.collections.CMSCollectionTranslation} object.
+     * @param label translation to add as a collection label
      */
     public void addLabel(CMSCollectionTranslation label) {
         label.setTag(LABEL_TAG);
@@ -246,9 +238,9 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * Adds a translation for the collection description
+     * Adds a translation for the collection description.
      *
-     * @param description a {@link io.goobi.viewer.model.cms.collections.CMSCollectionTranslation} object.
+     * @param description translation to add as a collection description
      */
     public void addDescription(CMSCollectionTranslation description) {
         description.setTag(DESCRIPTION_TAG);
@@ -257,7 +249,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * returns all translations of this page with the tag {@link #LABEL_TAG}
+     * returns all translations of this page with the tag {@link #LABEL_TAG}.
      *
      * @return all labels for this collections
      */
@@ -266,7 +258,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * returns all translations of this page with the tag {@link #DESCRIPTION_TAG}
+     * returns all translations of this page with the tag {@link #DESCRIPTION_TAG}.
      *
      * @return all descriptions for this collections
      */
@@ -275,7 +267,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * get the label for the given {@code locale}, or an empty string if no matching label exists
+     * Get the label for the given {@code locale}, or an empty string if no matching label exists.
      *
      * @param locale a {@link java.util.Locale} object.
      * @return The string value of the label of the given locale, or an empty string
@@ -285,24 +277,20 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * <p>
      * getLabelAsTranslation.
-     * </p>
      *
-     * @param language a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.cms.collections.CMSCollectionTranslation} object.
+     * @param language ISO language code to filter label translations by
+     * @return the label translation for the given language, or null if none exists
      */
     public CMSCollectionTranslation getLabelAsTranslation(String language) {
         return getLabels().stream().filter(translation -> language.equalsIgnoreCase(translation.getLanguage())).findFirst().orElse(null);
     }
 
     /**
-     * <p>
      * getDescriptionAsTranslation.
-     * </p>
      *
-     * @param language a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.cms.collections.CMSCollectionTranslation} object.
+     * @param language ISO language code to filter description translations by
+     * @return the description translation for the given language, or null if none exists
      */
     public CMSCollectionTranslation getDescriptionAsTranslation(String language) {
         return getDescriptions().stream().filter(translation -> language.equalsIgnoreCase(translation.getLanguage())).findFirst().orElse(null);
@@ -318,12 +306,10 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * <p>
      * setLabel.
-     * </p>
      *
-     * @param language a {@link java.lang.String} object.
-     * @param value a {@link java.lang.String} object.
+     * @param language ISO language code identifying the label to update
+     * @param value new label text to set for the given language
      */
     public void setLabel(String value, String language) {
         getLabels().stream()
@@ -334,9 +320,9 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
 
     /**
      * get the description for the given {@code language}, or an empty string if no matching description exists the language should be the language
-     * code of a {@link java.util.Locale} and is case insensitive
+     * code of a {@link java.util.Locale} and is case insensitive.
      *
-     * @param language a {@link java.lang.String} object.
+     * @param language ISO language code identifying the desired description
      * @return The string value of the description of the given language, or an empty string
      */
     public String getDescription(String language) {
@@ -350,7 +336,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * get the description for the given {@code locale}, or an empty string if no matching description exists
+     * Get the description for the given {@code locale}, or an empty string if no matching description exists.
      *
      * @param locale a {@link java.util.Locale} object.
      * @return The string value of the description of the given locale, or an empty string
@@ -361,7 +347,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
 
     /**
      * get the description for the current locale (given by {@link io.goobi.viewer.managedbeans.utils.BeanUtils#getLocale()}, or an empty string if no
-     * matching description exists
+     * matching description exists.
      *
      * @return The string value of the description of the current locale, or an empty string
      */
@@ -370,12 +356,10 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * <p>
      * setDescription.
-     * </p>
      *
-     * @param value a {@link java.lang.String} object.
-     * @param language a {@link java.lang.String} object.
+     * @param value new description text to set for the given language
+     * @param language ISO language code identifying the description to update
      */
     public void setDescription(String value, String language) {
         getDescriptions().stream()
@@ -385,9 +369,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * <p>
      * Getter for the field <code>solrField</code>.
-     * </p>
      *
      * @return the solrField. Guaranteed to hold a non-blank value
      */
@@ -396,9 +378,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * <p>
      * Getter for the field <code>solrFieldValue</code>.
-     * </p>
      *
      * @return the solrFieldValue. Guaranteed to hold a non-blank value
      */
@@ -409,7 +389,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /**
      * {@inheritDoc}
      *
-     * Compares collection by the alphabatical sorting of their {@link CMSCollection#getSolrFieldValue()}
+     * <p>Compares collection by the alphabatical sorting of their {@link CMSCollection#getSolrFieldValue()}
      */
     @Override
     public int compareTo(CMSCollection other) {
@@ -419,7 +399,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /**
      * {@inheritDoc}
      *
-     * Returns the hashCode of {@link CMSCollection#getSolrFieldValue()}
+     * <p>Returns the hashCode of {@link CMSCollection#getSolrFieldValue()}
      */
     @Override
     public int hashCode() {
@@ -429,7 +409,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /**
      * {@inheritDoc}
      *
-     * A {@link CMSCollection} is equal to any other object if that is also a CMSCollection and returns the same values for
+     * <p>A {@link CMSCollection} is equal to any other object if that is also a CMSCollection and returns the same values for
      * {@link CMSCollection#getSolrField()} and {@link CMSCollection#getSolrFieldValue()}
      */
     @Override
@@ -444,8 +424,8 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
 
     /**
      *
-     * @param other
-     * @return a boolean
+     * @param other the other CMSCollection to compare content with
+     * @return true if the content of this collection matches the given collection, false otherwise
      */
     public boolean contentEquals(CMSCollection other) {
         return Objects.equals(this.mediaItem, other.mediaItem)
@@ -457,8 +437,8 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * @param tr1
-     * @param tr2
+     * @param tr1 first list of translations to compare
+     * @param tr2 second list of translations to compare
      * @return true if translations equal; false otherwise
      */
     private static boolean translationsEquals(List<CMSCollectionTranslation> tr1, List<CMSCollectionTranslation> tr2) {
@@ -482,9 +462,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * <p>
      * populateLabels.
-     * </p>
      */
     public void populateLabels() {
         List<String> languages = BeanUtils.getNavigationHelper().getSupportedLanguages();
@@ -496,20 +474,16 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * <p>
      * populateDescriptions.
-     * </p>
      */
     public void populateDescriptions() {
         this.populateDescriptions(BeanUtils.getNavigationHelper().getSupportedLanguages());
     }
 
     /**
-     * <p>
      * populateDescriptions.
-     * </p>
-     * 
-     * @param languages
+     *
+     * @param languages list of language codes to ensure descriptions exist for
      */
     public void populateDescriptions(List<String> languages) {
         logger.trace("populateDescriptions");
@@ -521,44 +495,36 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * <p>
      * hasMediaItem.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this collection has an associated media item, false otherwise
      */
     public boolean hasMediaItem() {
         return getMediaItem() != null;
     }
 
     /**
-     * <p>
      * hasRepresentativeWork.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this collection has a non-blank representative work persistent identifier, false otherwise
      */
     public boolean hasRepresentativeWork() {
         return StringUtils.isNotBlank(getRepresentativeWorkPI());
     }
 
     /**
-     * <p>
      * hasImage.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this collection has a representative work or an associated media item, false otherwise
      */
     public boolean hasImage() {
         return hasRepresentativeWork() || hasMediaItem();
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
-     * @return the id
+     * @return the database primary key of this collection
      */
     public Long getId() {
         return id;
@@ -621,11 +587,9 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * <p>
      * getRepresentativeWork.
-     * </p>
      *
-     * @return a {@link java.util.Optional} object.
+     * @return an Optional containing the representative StructElement, or empty if none is configured or found
      */
     public Optional<StructElement> getRepresentativeWork() {
         if (hasRepresentativeWork()) {
@@ -642,22 +606,18 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * <p>
      * Getter for the field <code>representativeWorkPI</code>.
-     * </p>
      *
-     * @return the representativeWorkPI
+     * @return the persistent identifier of the record whose thumbnail represents this collection
      */
     public String getRepresentativeWorkPI() {
         return representativeWorkPI;
     }
 
     /**
-     * <p>
      * Setter for the field <code>representativeWorkPI</code>.
-     * </p>
      *
-     * @param representativeWorkPI the representativeWorkPI to set
+     * @param representativeWorkPI the persistent identifier of the record whose thumbnail represents this collection
      */
     public void setRepresentativeWorkPI(String representativeWorkPI) {
         this.representativeWorkPI = representativeWorkPI;
@@ -743,16 +703,12 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         this.selectedLocale = locale;
     }
 
-    /**
-     * @return the accessPermissionThumbnail
-     */
+    
     public AccessPermission getAccessPermissionThumbnail() {
         return accessPermissionThumbnail;
     }
 
-    /**
-     * @param accessPermissionThumbnail the accessPermissionThumbnail to set
-     */
+    
     public void setAccessPermissionThumbnail(AccessPermission accessPermissionThumbnail) {
         this.accessPermissionThumbnail = accessPermissionThumbnail;
     }

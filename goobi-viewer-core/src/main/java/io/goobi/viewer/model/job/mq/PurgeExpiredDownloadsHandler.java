@@ -36,6 +36,9 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.security.tickets.AccessTicket;
 
+/**
+ * Message handler that removes all expired download access tickets from the database.
+ */
 public class PurgeExpiredDownloadsHandler implements MessageHandler<MessageStatus> {
 
     private static final Logger logger = LogManager.getLogger(PurgeExpiredDownloadsHandler.class);

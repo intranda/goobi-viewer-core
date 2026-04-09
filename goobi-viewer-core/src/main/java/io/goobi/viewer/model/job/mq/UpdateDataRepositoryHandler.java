@@ -29,6 +29,10 @@ import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.model.job.TaskType;
 
+/**
+ * Message handler that updates the data repository name mapping for a given record identifier in the Solr index
+ * and clears any cached access condition data for that record.
+ */
 public class UpdateDataRepositoryHandler implements MessageHandler<MessageStatus> {
 
     @Override

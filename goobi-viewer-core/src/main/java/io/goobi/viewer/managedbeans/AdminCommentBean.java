@@ -53,7 +53,7 @@ import io.goobi.viewer.model.annotation.comments.CommentManager;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * <p>AdminCommentBean class.</p>
+ * JSF backing bean for admin comment management, providing CRUD operations for user comments in the admin interface.
  */
 @Named
 @SessionScoped
@@ -73,7 +73,7 @@ public class AdminCommentBean implements Serializable {
     private Comment currentComment = null;
 
     /**
-     * <p>init.</p>
+     * <p>init.
      *
      * @should sort lazyModelComments by dateCreated desc by default
      */
@@ -155,7 +155,7 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * <p>isUserCommentsEnabled.</p>
+     * <p>isUserCommentsEnabled.
      *
      * @return true if comments enabled; false otherwise
      */
@@ -168,27 +168,27 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>userBean</code>.</p>
+     * <p>Setter for the field <code>userBean</code>.
      *
-     * @param userBean a {@link io.goobi.viewer.managedbeans.UserBean} object
+     * @param userBean injected user session bean
      */
     public void setUserBean(UserBean userBean) {
         this.userBean = userBean;
     }
 
     /**
-     * <p>Getter for the field <code>userBean</code>.</p>
+     * <p>Getter for the field <code>userBean</code>.
      *
-     * @return a {@link io.goobi.viewer.managedbeans.UserBean} object
+     * @return the injected UserBean
      */
     public UserBean getUserBean() {
         return userBean;
     }
 
     /**
-     * <p>setUserCommentsEnabled.</p>
+     * <p>setUserCommentsEnabled.
      *
-     * @param userCommentsEnabled a boolean
+     * @param userCommentsEnabled true to enable comments; false to disable
      * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void setUserCommentsEnabled(boolean userCommentsEnabled) throws DAOException {
@@ -199,7 +199,7 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * <p>getAllCommentGroups.</p>
+     * <p>getAllCommentGroups.
      *
      * @return All comment groups in the database
      * @throws io.goobi.viewer.exceptions.DAOException
@@ -209,7 +209,7 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * <p>getCommentGroupsForUser.</p>
+     * <p>getCommentGroupsForUser.
      *
      * @param user Current user
      * @return Filtered list of available {@link io.goobi.viewer.model.annotation.comments.CommentGroup}s to the given user
@@ -238,14 +238,14 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * <p>resetCurrentCommentGroupAction.</p>
+     * <p>resetCurrentCommentGroupAction.
      */
     public void resetCurrentCommentGroupAction() {
         currentCommentGroup = null;
     }
 
     /**
-     * <p>newCurrentCommentGroupAction.</p>
+     * <p>newCurrentCommentGroupAction.
      */
     public void newCurrentCommentGroupAction() {
         logger.trace("newCurrentCommentGroupAction");
@@ -253,7 +253,7 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * <p>saveCurentCommentGroupAction.</p>
+     * <p>saveCurentCommentGroupAction.
      *
      * @return Navigation outcome
      * @throws io.goobi.viewer.exceptions.DAOException
@@ -263,11 +263,9 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * <p>
      * saveCommentGroupAction.
-     * </p>
      *
-     * @param commentGroup a {@link io.goobi.viewer.model.annotation.comments.CommentGroup} object.
+     * @param commentGroup comment group to persist or update
      * @return Navigation outcome
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -292,11 +290,9 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * <p>
      * deleteCommentGroupAction.
-     * </p>
      *
-     * @param commentGroup a {@link io.goobi.viewer.model.annotation.comments.CommentGroup} object.
+     * @param commentGroup comment group to delete from the database
      * @return Navigation outcome
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -313,18 +309,16 @@ public class AdminCommentBean implements Serializable {
     // Comments
 
     /**
-     * <p>resetCurrentCommentAction.</p>
+     * <p>resetCurrentCommentAction.
      */
     public void resetCurrentCommentAction() {
         currentComment = null;
     }
 
     /**
-     * <p>
      * saveCommentAction.
-     * </p>
      *
-     * @param comment a {@link io.goobi.viewer.model.annotation.comments.Comment} object.
+     * @param comment comment to persist or update
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void saveCommentAction(Comment comment) throws DAOException {
@@ -349,12 +343,10 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * <p>
      * deleteCommentAction.
-     * </p>
      *
-     * @param comment a {@link io.goobi.viewer.model.annotation.comments.Comment} object.
-     * @return a {@link java.lang.String} object.
+     * @param comment comment to delete from the database
+     * @return empty navigation outcome string
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String deleteCommentAction(Comment comment) throws DAOException {
@@ -368,40 +360,36 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>lazyModelComments</code>.
-     * </p>
      *
-     * @return the lazyModelComments
+     * @return the {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider} used for paginated comment listing in the admin interface
      */
     public TableDataProvider<Comment> getLazyModelComments() {
         return lazyModelComments;
     }
 
     /**
-     * <p>
      * getPageComments.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of comments for the current page in the paginated comment list
      */
     public List<Comment> getPageComments() {
         return lazyModelComments.getPaginatorList();
     }
 
     /**
-     * <p>Getter for the field <code>currentCommentGroup</code>.</p>
+     * <p>Getter for the field <code>currentCommentGroup</code>.
      *
-     * @return the currentCommentGroup
+     * @return the {@link io.goobi.viewer.model.annotation.comments.CommentGroup} currently active in the admin interface, or null if none selected
      */
     public CommentGroup getCurrentCommentGroup() {
         return currentCommentGroup;
     }
 
     /**
-     * <p>Setter for the field <code>currentCommentGroup</code>.</p>
+     * <p>Setter for the field <code>currentCommentGroup</code>.
      *
-     * @param currentCommentGroup the currentCommentGroup to set
+     * @param currentCommentGroup comment group to set as active and reload the table for
      */
     public void setCurrentCommentGroup(CommentGroup currentCommentGroup) {
         this.currentCommentGroup = currentCommentGroup;
@@ -424,7 +412,7 @@ public class AdminCommentBean implements Serializable {
     /**
      * Sets <code>currentCommentGroup</code> by loading it from the DB via the given ID.
      *
-     * @param id a {@link java.lang.Long} object
+     * @param id database ID of the comment group to load
      * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void setCurrentCommentGroupId(Long id) throws DAOException {
@@ -444,22 +432,18 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>selectedComment</code>.
-     * </p>
      *
-     * @return the selectedComment
+     * @return the {@link io.goobi.viewer.model.annotation.comments.Comment} currently selected for editing or deletion, or null if none selected
      */
     public Comment getSelectedComment() {
         return currentComment;
     }
 
     /**
-     * <p>
      * Setter for the field <code>selectedComment</code>.
-     * </p>
      *
-     * @param selectedComment the selectedComment to set
+     * @param selectedComment comment selected for editing or deletion
      */
     public void setSelectedComment(Comment selectedComment) {
         this.currentComment = selectedComment;

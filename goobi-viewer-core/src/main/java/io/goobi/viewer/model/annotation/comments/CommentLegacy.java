@@ -48,9 +48,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Transient;
 
 /**
- * <p>
- * Comment class.
- * </p>
+ * Legacy comment model for migrating user comments from the old persistence format.
  */
 //@Entity
 //@Index(name = "index_comments_pi_page", columnNames = { "pi", "page" })
@@ -96,24 +94,20 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     //    private List<Comment> children;
 
     /**
-     * <p>
-     * Constructor for Comment.
-     * </p>
+     * Creates a new Comment instance.
      */
     public CommentLegacy() {
         // the emptiness inside
     }
 
     /**
-     * <p>
-     * Constructor for Comment.
-     * </p>
+     * Creates a new Comment instance.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param page a int.
-     * @param owner a {@link io.goobi.viewer.model.security.user.User} object.
-     * @param text a {@link java.lang.String} object.
-     * @param parent a {@link io.goobi.viewer.model.annotation.comments.Comment} object.
+     * @param pi persistent identifier of the commented record
+     * @param page page number the comment is attached to
+     * @param owner user who created this comment
+     * @param text comment body text
+     * @param parent unused parent comment (legacy field)
      * @should construct object correctly
      */
     public CommentLegacy(String pi, int page, User owner, String text, CommentLegacy parent) {
@@ -146,10 +140,10 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Sends an email notification about a new or altered comment to the configured recipient addresses.
      *
-     * @param comment a {@link io.goobi.viewer.model.annotation.comments.Comment} object.
-     * @param oldText a {@link java.lang.String} object.
+     * @param comment comment that was created or modified
+     * @param oldText previous comment text, or empty/null if this is a new comment
      * @param locale Language locale for the email text.
-     * @return a boolean.
+     * @return true if the email notification was sent successfully, false otherwise
      */
     public static boolean sendEmailNotifications(CommentLegacy comment, String oldText, Locale locale) {
         List<String> addresses = new ArrayList<>(); // Static configured list of email addresses is no longer available
@@ -184,23 +178,21 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Checks whether the user with the given ID is allowed to edit this comment (i.e. the annotation belongs to this (proper) user.
      *
+     * @param user user requesting edit access
      * @return true if allowed; false otherwise
      * @should return true if use id equals owner id
      * @should return false if owner id is null
      * @should return false if user is null
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      */
     public boolean mayEdit(User user) {
         return owner.getId() != null && user != null && owner.getId().equals(user.getId());
     }
 
     /**
-     * <p>
      * getDisplayDate.
-     * </p>
      *
-     * @param date a {@link java.time.LocalDateTime} object.
-     * @return a {@link java.lang.String} object.
+     * @param date date and time to format for display
+     * @return the given date and time formatted as a German date-time string
      */
     public String getDisplayDate(LocalDateTime date) {
         return DateTools.format(date, DateTools.FORMATTERDEDATETIME, false);
@@ -224,99 +216,81 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     // Property accessors
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
-     * @return the id
+     * @return the database primary key of this comment
      */
     public Long getId() {
         return id;
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
-     * @param id the id to set
+     * @param id the database ID to set
      */
     public void setId(Long id) {
         this.id = id;
     }
 
     /**
-     * <p>
      * Getter for the field <code>pi</code>.
-     * </p>
      *
-     * @return the pi
+     * @return the persistent identifier of the record this comment belongs to
      */
     public String getPi() {
         return pi;
     }
 
     /**
-     * <p>
      * Setter for the field <code>pi</code>.
-     * </p>
      *
-     * @param pi the pi to set
+     * @param pi the persistent identifier of the record this comment belongs to
      */
     public void setPi(String pi) {
         this.pi = pi;
     }
 
     /**
-     * <p>
      * Getter for the field <code>page</code>.
-     * </p>
      *
-     * @return the page
+     * @return the 1-based page order number within the record this comment targets
      */
     public Integer getPage() {
         return page;
     }
 
     /**
-     * <p>
      * Setter for the field <code>page</code>.
-     * </p>
      *
-     * @param page the page to set
+     * @param page the 1-based page order number within the record this comment targets
      */
     public void setPage(Integer page) {
         this.page = page;
     }
 
     /**
-     * <p>
      * Getter for the field <code>owner</code>.
-     * </p>
      *
-     * @return the owner
+     * @return the user who authored this comment
      */
     public User getOwner() {
         return owner;
     }
 
     /**
-     * <p>
      * Setter for the field <code>owner</code>.
-     * </p>
      *
-     * @param owner the owner to set
+     * @param owner the user who authored this comment
      */
     public void setOwner(User owner) {
         this.owner = owner;
     }
 
     /**
-     * <p>
      * Setter for the field <code>text</code>.
-     * </p>
      *
-     * @param text the text to set
+     * @param text the new comment text; the previous value is preserved in {@code oldText}
      */
     public void setText(String text) {
         this.oldText = this.text;
@@ -324,77 +298,63 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>text</code>.
-     * </p>
      *
-     * @return the text
+     * @return the current comment text
      */
     public String getText() {
         return text;
     }
 
     /**
-     * <p>
      * getDisplayText.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the comment text with any JavaScript stripped out
      */
     public String getDisplayText() {
         return StringTools.stripJS(text);
     }
 
     /**
-     * <p>
      * Getter for the field <code>oldText</code>.
-     * </p>
      *
-     * @return the oldText
+     * @return the previous comment text before the last update, or null if the text has not been changed
      */
     public String getOldText() {
         return oldText;
     }
 
     /**
-     * <p>
      * Getter for the field <code>dateCreated</code>.
-     * </p>
      *
-     * @return the dateCreated
+     * @return the timestamp when this comment was created
      */
     public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
     /**
-     * <p>
      * Setter for the field <code>dateCreated</code>.
-     * </p>
      *
-     * @param dateCreated the dateCreated to set
+     * @param dateCreated the creation timestamp to set
      */
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
 
     /**
-     * <p>
      * Getter for the field <code>dateUpdated</code>.
-     * </p>
      *
-     * @return the dateUpdated
+     * @return the timestamp when this comment was last updated
      */
     public LocalDateTime getDateUpdated() {
         return dateUpdated;
     }
 
     /**
-     * <p>
      * Setter for the field <code>dateUpdated</code>.
-     * </p>
      *
-     * @param dateUpdated the dateUpdated to set
+     * @param dateUpdated the last-updated timestamp to set
      */
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;

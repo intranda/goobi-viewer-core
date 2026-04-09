@@ -38,6 +38,10 @@ import jakarta.enterprise.inject.spi.DefinitionException;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
+/**
+ * A {@link SolrFeatureSet} that derives its geo map features from the current search result set
+ * by using the active search query from the {@link io.goobi.viewer.managedbeans.SearchBean}.
+ */
 @Entity
 @DiscriminatorValue("search")
 public class SearchResultFeatureSet extends SolrFeatureSet {

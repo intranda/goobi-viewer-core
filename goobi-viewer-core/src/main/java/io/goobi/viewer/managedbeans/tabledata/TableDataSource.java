@@ -27,44 +27,38 @@ import java.util.Map;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 
 /**
- * <p>
- * TableDataSource interface.
- * </p>
+ * Data-source interface for paginated, sortable, and filterable table data used by {@link TableDataProvider}.
+ * Implementors supply a page of entries for a given offset and page size as well as the total record count,
+ * both taking an arbitrary map of filter criteria into account.
  *
- * @param <T>
+ * @param <T> the type of entities returned by this data source
  */
 public interface TableDataSource<T> {
 
     /**
-     * <p>
      * getEntries.
-     * </p>
      *
-     * @param first a int.
-     * @param pageSize a int.
-     * @param sortField a {@link java.lang.String} object.
-     * @param sortOrder a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder} object.
-     * @param filters a {@link java.util.Map} object.
-     * @return a {@link java.util.List} object.
+     * @param first zero-based index of the first result to return.
+     * @param pageSize maximum number of results to return.
+     * @param sortField field name to sort by; null for default order.
+     * @param sortOrder ascending or descending sort direction.
+     * @param filters map of field names to filter values.
+     * @return a list of entries for the requested page, sorted and filtered according to the given parameters
      * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
      */
     public List<T> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters)
             throws TableDataSourceException;
 
     /**
-     * <p>
      * getTotalNumberOfRecords.
-     * </p>
      *
-     * @param filters a {@link java.util.Map} object.
+     * @param filters map of field names to filter values applied to the count.
      * @return a long.
      */
     long getTotalNumberOfRecords(Map<String, String> filters);
 
     /**
-     * <p>
      * resetTotalNumberOfRecords.
-     * </p>
      */
     void resetTotalNumberOfRecords();
 

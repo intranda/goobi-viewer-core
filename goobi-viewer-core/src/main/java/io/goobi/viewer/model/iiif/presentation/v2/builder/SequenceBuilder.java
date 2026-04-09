@@ -93,9 +93,7 @@ import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * <p>
- * SequenceBuilder class.
- * </p>
+ * Builds the Sequence and Canvas resources within a IIIF Presentation API v2 Manifest.
  *
  * @author Florian Alpers
  */
@@ -108,11 +106,9 @@ public class SequenceBuilder extends AbstractBuilder {
     private PageType preferedView = PageType.viewObject;
 
     /**
-     * <p>
-     * Constructor for SequenceBuilder.
-     * </p>
+     * Creates a new SequenceBuilder instance.
      *
-     * @param apiUrlManager
+     * @param apiUrlManager API URL manager for building IIIF resource URIs
      */
     public SequenceBuilder(AbstractApiUrlManager apiUrlManager) {
         super(apiUrlManager);
@@ -122,11 +118,11 @@ public class SequenceBuilder extends AbstractBuilder {
      * Creates a sequence from all pages within the given doc and appends it to manifest.
      *
      * @param manifest The manifest to include the sequence. May be null
-     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @param manifestId a {@link java.lang.String} object.
-     * @param pagesToInclude
-     * @param request
-     * @return a {@link java.util.Map} object.
+     * @param doc structure element of the record whose pages are sequenced
+     * @param manifestId URI string identifying the manifest this sequence belongs to
+     * @param pagesToInclude list of physical page orders to include; empty means all pages
+     * @param request the current HTTP servlet request, used for crowdsourcing annotation lookup
+     * @return a map of annotation type to lists of annotation lists collected while building the sequence
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -187,12 +183,10 @@ public class SequenceBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * addSeeAlsos.
-     * </p>
      *
-     * @param canvas a {@link de.intranda.api.iiif.presentation.v2.Canvas2} object.
-     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @param canvas IIIF canvas to attach seeAlso links to
+     * @param page physical page whose file names are used to resolve seeAlso URIs
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -207,8 +201,8 @@ public class SequenceBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param page
-     * @param canvas
+     * @param page the physical page whose file info is used to resolve rendering URIs
+     * @param canvas the canvas to add rendering links to
      */
     public void addRenderings(PhysicalElement page, Canvas2 canvas) {
 
@@ -259,11 +253,11 @@ public class SequenceBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param canvas
-     * @param x
-     * @param y
-     * @param width
-     * @param height
+     * @param canvas the canvas that is the source of the specific resource
+     * @param x left edge of the region in canvas coordinates
+     * @param y top edge of the region in canvas coordinates
+     * @param width width of the region in canvas coordinates
+     * @param height height of the region in canvas coordinates
      * @return {@link SpecificResource}
      */
     private static SpecificResource createSpecificResource(Canvas2 canvas, int x, int y, int width, int height) {
@@ -271,12 +265,10 @@ public class SequenceBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * merge.
-     * </p>
      *
-     * @param annotationMap a {@link java.util.Map} object.
-     * @param content a {@link java.util.Map} object.
+     * @param annotationMap accumulator map to merge content into
+     * @param content single-canvas annotation map to merge into annotationMap
      */
     public void merge(Map<AnnotationType, List<AnnotationList>> annotationMap, Map<AnnotationType, AnnotationList> content) {
         for (Entry<AnnotationType, AnnotationList> entry : content.entrySet()) {
@@ -286,13 +278,11 @@ public class SequenceBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * getPage.
-     * </p>
      *
-     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @param order a int.
-     * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @param doc structure element that provides the record context for the loader
+     * @param order physical page order number to retrieve
+     * @return the PhysicalElement at the given page order, or null if not found
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws PresentationException
@@ -303,13 +293,11 @@ public class SequenceBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * generateCanvas.
-     * </p>
      *
      * @param pi Record identifier
-     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
-     * @return a {@link de.intranda.api.iiif.presentation.v2.Canvas2} object.
+     * @param page physical page to generate the canvas from
+     * @return the IIIF Canvas for the given page, or null if pi or page is null
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -382,8 +370,8 @@ public class SequenceBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param page
-     * @param target
+     * @param page physical page whose linked resource URI is built
+     * @param target linking target type (PLAINTEXT, ALTO, PDF, etc.)
      * @return {@link URI}
      */
     private URI getCanvasLinkingPropertyUri(PhysicalElement page, LinkingProperty.LinkingTarget target) {
@@ -431,15 +419,13 @@ public class SequenceBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * addOtherContent.
-     * </p>
      *
-     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
-     * @param canvas a {@link de.intranda.api.iiif.presentation.v2.Canvas2} object.
-     * @param populate a boolean.
-     * @return a {@link java.util.Map} object.
+     * @param doc structure element providing the record PI for text lookups
+     * @param page physical page whose full-text, audio, and video resources are added
+     * @param canvas IIIF canvas to attach annotation lists to
+     * @param populate if true, annotation bodies are fully resolved; otherwise only list stubs are created
+     * @return a map of annotation type to annotation list for all content types found on the given page
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -567,7 +553,7 @@ public class SequenceBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param page
+     * @param page physical page whose image dimensions are retrieved
      * @return {@link DimensionMismatchException}
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -596,23 +582,19 @@ public class SequenceBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * Getter for the field <code>buildMode</code>.
-     * </p>
      *
-     * @return the buildMode
+     * @return the build mode controlling whether full IIIF or thumbnail-only canvases are built
      */
     public BuildMode getBuildMode() {
         return buildMode;
     }
 
     /**
-     * <p>
      * Setter for the field <code>buildMode</code>.
-     * </p>
      *
-     * @param buildMode the buildMode to set
-     * @return a {@link io.goobi.viewer.model.iiif.presentation.v2.builder.SequenceBuilder} object.
+     * @param buildMode controls whether full IIIF or thumbnail-only canvases are built
+     * @return this SequenceBuilder instance for method chaining
      */
     public SequenceBuilder setBuildMode(BuildMode buildMode) {
         this.buildMode = buildMode;
@@ -620,23 +602,19 @@ public class SequenceBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * Getter for the field <code>preferredView</code>.
-     * </p>
      *
-     * @return the preferredView
+     * @return the page type used when constructing viewer links for canvas renderings
      */
     public PageType getPreferedView() {
         return preferedView;
     }
 
     /**
-     * <p>
      * Setter for the field <code>preferredView</code>.
-     * </p>
      *
-     * @param preferredView the preferredView to set
-     * @return a {@link io.goobi.viewer.model.iiif.presentation.v2.builder.SequenceBuilder} object.
+     * @param preferredView page type used when constructing viewer links for canvas renderings
+     * @return this SequenceBuilder instance for method chaining
      */
     public SequenceBuilder setPreferedView(PageType preferredView) {
         this.preferedView = preferredView;

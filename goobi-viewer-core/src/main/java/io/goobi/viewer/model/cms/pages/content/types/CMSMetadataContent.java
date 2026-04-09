@@ -40,6 +40,10 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
+/**
+ * CMS content type that renders a configurable set of Solr metadata fields for the currently
+ * viewed record on a CMS page.
+ */
 @Entity
 @Table(name = "cms_content_metadata")
 @DiscriminatorValue("metadata")

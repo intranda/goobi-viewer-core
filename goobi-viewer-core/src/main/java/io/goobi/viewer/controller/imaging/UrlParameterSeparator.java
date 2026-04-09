@@ -22,7 +22,7 @@
 package io.goobi.viewer.controller.imaging;
 
 /**
- * {@link #getChar()} returns {@code ?} the first time it is called, and {@code &} any subsequent time
+ * {@link #getChar()} returns {@code ?} the first time it is called, and {@code &} any subsequent time.
  *
  * @author Florian Alpers
  */
@@ -32,9 +32,7 @@ public class UrlParameterSeparator {
     private int index = 0;
 
     /**
-     * <p>
      * getChar.
-     * </p>
      *
      * @return {@code ?} the first time it is called, and {@code &} any subsequent time
      */

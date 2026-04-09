@@ -105,13 +105,13 @@ import io.goobi.viewer.model.cms.media.CMSMediaItemMetadata;
 import io.goobi.viewer.model.cms.media.CMSMediaLister;
 import io.goobi.viewer.model.cms.media.MediaItem;
 import io.goobi.viewer.model.security.user.User;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
- * <p>
- * CMSMediaResource class.
- * </p>
+ * REST resource for accessing CMS media files in the v2 API with category and type filtering.
  *
  * @author Florian Alpers
  */
@@ -131,15 +131,13 @@ public class CMSMediaResource {
     private IDAO dao;
 
     /**
-     * <p>
      * getMediaByTag.
-     * </p>
      *
      * @param tags a {@link java.lang.String} object.
-     * @param maxItems
-     * @param prioritySlots
-     * @param random
-     * @return a {@link io.goobi.viewer.api.rest.v2.cms.CMSMediaResource.MediaList} object.
+     * @param maxItems maximum number of items to return
+     * @param prioritySlots number of high-priority items guaranteed in result
+     * @param random if true, return items in random order
+     * @return a MediaList containing the CMS media items matching the given category tags
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @GET
@@ -167,15 +165,13 @@ public class CMSMediaResource {
     }
 
     /**
-     * <p>
      * getMediaByTag.
-     * </p>
      *
-     * @param tags
-     * @param maxItems
-     * @param prioritySlots
-     * @param random
-     * @return a {@link io.goobi.viewer.api.rest.v2.cms.CMSMediaResource.MediaList} object.
+     * @param tags comma-separated list of category tags to filter by
+     * @param maxItems maximum number of items to return
+     * @param prioritySlots number of high-priority items guaranteed in result
+     * @param random if true, return items in random order
+     * @return a MediaList containing all CMS media items optionally filtered by the given tags
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @GET
@@ -208,17 +204,18 @@ public class CMSMediaResource {
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_ITEM_BY_ID)
     @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "media" }, summary = "Get CMS media item metadata by its database ID")
+    @ApiResponse(responseCode = "200", description = "CMS media item metadata")
+    @ApiResponse(responseCode = "404", description = "CMS media item not found")
     public MediaItem getMediaItem(@PathParam("id") Long id) throws DAOException {
         CMSMediaItem item = DataManager.getInstance().getDao().getCMSMediaItem(id);
         return new MediaItem(item, servletRequest);
     }
 
     /**
-     * <p>
      * getPDFMediaItemContent.
-     * </p>
      *
-     * @param filename
+     * @param filename name of the PDF file to serve
      * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
      * @return File contents as HTML
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
@@ -228,6 +225,9 @@ public class CMSMediaResource {
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_PDF)
     @Produces("application/pdf")
     @CORSBinding
+    @Operation(tags = { "media" }, summary = "Get CMS media file content as PDF")
+    @ApiResponse(responseCode = "200", description = "PDF file content")
+    @ApiResponse(responseCode = "404", description = "PDF media file not found")
     public static StreamingOutput getPDFMediaItemContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
             throws ContentNotFoundException {
         String decFilename = StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename));
@@ -253,6 +253,9 @@ public class CMSMediaResource {
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_SVG)
     @Produces("image/svg+xml")
     @CORSBinding
+    @Operation(tags = { "media" }, summary = "Get CMS media file content as SVG")
+    @ApiResponse(responseCode = "200", description = "SVG file content")
+    @ApiResponse(responseCode = "404", description = "SVG media file not found")
     public static StreamingOutput getSvgContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
             throws ContentNotFoundException {
         String decFilename = StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename));
@@ -278,6 +281,9 @@ public class CMSMediaResource {
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_ICO)
     @Produces("image/x-icon")
     @CORSBinding
+    @Operation(tags = { "media" }, summary = "Get CMS media file content as ICO")
+    @ApiResponse(responseCode = "200", description = "ICO file content")
+    @ApiResponse(responseCode = "404", description = "ICO media file not found")
     public static StreamingOutput getIcoContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
             throws ContentNotFoundException {
         String decFilename = StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename));
@@ -301,6 +307,9 @@ public class CMSMediaResource {
 
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_VIDEO)
+    @Operation(tags = { "media" }, summary = "Stream CMS media file as video")
+    @ApiResponse(responseCode = "200", description = "Video stream")
+    @ApiResponse(responseCode = "404", description = "Video media file not found")
     public String serveVideoContent(@PathParam("filename") String filename)
             throws PresentationException, WebApplicationException {
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
@@ -311,6 +320,9 @@ public class CMSMediaResource {
 
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_AUDIO)
+    @Operation(tags = { "media" }, summary = "Stream CMS media file as audio")
+    @ApiResponse(responseCode = "200", description = "Audio stream")
+    @ApiResponse(responseCode = "404", description = "Audio media file not found")
     public String serveAudioContent(@PathParam("filename") String filename)
             throws PresentationException, WebApplicationException {
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
@@ -320,11 +332,9 @@ public class CMSMediaResource {
     }
 
     /**
-     * <p>
      * getMediaItemContent.
-     * </p>
      *
-     * @param filename
+     * @param filename name of the HTML file to serve
      * @return File contents as HTML
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -332,6 +342,9 @@ public class CMSMediaResource {
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_HTML)
     @Produces({ MediaType.TEXT_HTML })
+    @Operation(tags = { "media" }, summary = "Get CMS media file content as HTML")
+    @ApiResponse(responseCode = "200", description = "HTML file content")
+    @ApiResponse(responseCode = "404", description = "HTML media file not found")
     public static String getMediaItemContent(@PathParam("filename") String filename) throws ContentNotFoundException {
 
         String decFilename = StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename));
@@ -356,17 +369,18 @@ public class CMSMediaResource {
     }
 
     /**
-     * <p>
      * Return the media item for the given filename. If no matching media item exists, return a not-found status code
-     * </p>
      *
-     * @param filename a {@link java.lang.String} object.
-     * @return a {@link jakarta.ws.rs.core.Response} object.
+     * @param filename URL-encoded filename to look up in the database
+     * @return an HTTP response containing the CMS media item metadata as JSON, or a 404 response if no item was found for the given filename
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_ITEM_BY_FILE)
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags = { "media" }, summary = "Get CMS media item metadata by filename")
+    @ApiResponse(responseCode = "200", description = "CMS media item metadata")
+    @ApiResponse(responseCode = "404", description = "No CMS media item found for the given filename")
     public Response validateUploadMediaFiles(@PathParam("filename") String filename) throws DAOException {
 
         CMSMediaItem item =
@@ -383,12 +397,14 @@ public class CMSMediaResource {
      * 
      * @return All CMS media files
      * @throws PresentationException
-     *
      */
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES)
     @Produces(MediaType.APPLICATION_JSON)
     @UserLoggedInBinding
+    @Operation(tags = { "media" }, summary = "List all uploaded CMS media files (requires login)")
+    @ApiResponse(responseCode = "200", description = "List of filenames in the CMS media folder")
+    @ApiResponse(responseCode = "401", description = "Not logged in")
     public List<String> getAllFiles() throws PresentationException {
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder());
@@ -399,31 +415,58 @@ public class CMSMediaResource {
         }
     }
 
+    // Deleting CMS media files via REST is intentionally not supported — always returns 400
+    @Hidden
     @DELETE
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES)
     @Produces(MediaType.APPLICATION_JSON)
     @AuthorizationBinding
+    @Operation(hidden = true)
     public void deleteAllFiles() throws IllegalRequestException {
         throw new IllegalRequestException("Deleting cms media files is not supported via REST");
     }
 
+    // Deleting a single CMS media file via REST is intentionally not supported — always returns 400
+    @Hidden
     @DELETE
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE)
     @Produces(MediaType.APPLICATION_JSON)
     @AuthorizationBinding
+    @Operation(hidden = true)
     public void deleteFile() throws IllegalRequestException {
         throw new IllegalRequestException("Deleting cms media files is not supported via REST");
     }
 
     /**
+     * Fallback GET handler for filenames that do NOT match any of the specific extension patterns
+     * handled by {@link CMSMediaImageResource3} and the other typed handlers.
+     *
+     * <p>Returns 400 so that schemathesis receives the correct error code instead of 405 Method Not
+     * Allowed (which JAX-RS would return if no GET handler existed for this path).
+     *
+     * @param filename the requested filename
+     * @return never returns normally; always throws {@link IllegalRequestException}
+     */
+    @io.swagger.v3.oas.annotations.Hidden
+    @GET
+    @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(hidden = true)
+    public Response getInvalidFilename(
+            @PathParam("filename") String filename) throws IllegalRequestException {
+        throw new IllegalRequestException("Invalid filename: must have a supported file extension"
+                + " (jpg, png, tif, gif, jp2, pdf, svg, ico, mp4, webm, mp3, ogg, html)");
+    }
+
+    /**
      * May receive a file from a multipart form and saves the file in the cms media folder.
      *
+     * @param enabled whether the uploaded media item should be enabled; defaults to true
+     * @param filename target filename for the uploaded file in the CMS media folder
+     * @param uploadedInputStream byte stream of the uploaded file content
+     * @param fileDetail multipart content-disposition metadata for the uploaded file
      * @return an ACCEPTED response if the upload was successful, a FORBIDDEN response if no user is registered in the html session or the user does
      *         not have rights to upload media, or a CONFLICT response if a file of the same name already exists in the cms media foler
-     * @param enabled a boolean.
-     * @param filename a {@link java.lang.String} object.
-     * @param uploadedInputStream a {@link java.io.InputStream} object.
-     * @param fileDetail a {@link org.glassfish.jersey.media.multipart.FormDataContentDisposition} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @POST
@@ -431,6 +474,12 @@ public class CMSMediaResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @UserLoggedInBinding
+    @Operation(tags = { "media" }, summary = "Upload a new CMS media file (requires login)")
+    @ApiResponse(responseCode = "200", description = "File successfully uploaded; returns the CMS media item metadata")
+    @ApiResponse(responseCode = "401", description = "Not logged in")
+    @ApiResponse(responseCode = "403", description = "User does not have rights to upload media")
+    @ApiResponse(responseCode = "406", description = "Upload stream is null")
+    @ApiResponse(responseCode = "500", description = "Upload failed due to an internal error")
     public Response uploadMediaFiles(@DefaultValue("true") @FormDataParam("enabled") boolean enabled, @FormDataParam("filename") String filename,
             @FormDataParam("file") InputStream uploadedInputStream, @FormDataParam("file") FormDataContentDisposition fileDetail)
             throws DAOException {
@@ -450,10 +499,10 @@ public class CMSMediaResource {
     }
 
     /**
-     * 
-     * @param uploadedInputStream
-     * @param cmsMediaFolder
-     * @param mediaFile
+     *
+     * @param uploadedInputStream the input stream of the uploaded file data
+     * @param cmsMediaFolder path to the CMS media storage directory
+     * @param mediaFile resolved target path for the uploaded file
      * @return {@link Response}
      * @throws RestApiException
      */
@@ -508,7 +557,7 @@ public class CMSMediaResource {
     }
 
     /**
-     * @param item
+     * @param item the CMS media item to evict from cache
      */
     public static void removeFromImageCache(CMSMediaItem item) {
         String identifier =
@@ -519,9 +568,9 @@ public class CMSMediaResource {
 
     /**
      * Return an Optional containing a {@link CMSCategory} for which the user has access rights if the user in a CmsAdmin but has limited category
-     * rights If the user has unlimited category rights, return an empty optional
+     * rights If the user has unlimited category rights, return an empty optional.
      *
-     * @param user
+     * @param user the logged-in user to check category rights for
      * @return Optional<CMSCategory>
      * @throws DAOException
      * @throws AccessDeniedException if the user is not allowed to use any categories whatsoever
@@ -539,12 +588,10 @@ public class CMSMediaResource {
     }
 
     /**
-     * <p>
      * createMediaItem.
-     * </p>
      *
-     * @param filePath a {@link java.nio.file.Path} object.
-     * @return a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
+     * @param filePath path to the newly uploaded file on disk
+     * @return a new CMSMediaItem initialized with the filename and empty metadata for all configured locales
      */
     public CMSMediaItem createMediaItem(Path filePath) {
         CMSMediaItem item = new CMSMediaItem();
@@ -577,6 +624,9 @@ public class CMSMediaResource {
         return Optional.of(user);
     }
 
+    /**
+     * Holds an ordered list of {@link MediaItem} wrappers built from {@link CMSMediaItem} entities, suitable for serialization as a REST response.
+     */
     public class MediaList {
 
         private final List<MediaItem> mediaItems;
@@ -585,18 +635,16 @@ public class CMSMediaResource {
             this.mediaItems = items.stream().map(item -> new MediaItem(item, servletRequest)).collect(Collectors.toList());
         }
 
-        /**
-         * @return the mediaItems
-         */
+        
         public List<MediaItem> getMediaItems() {
             return mediaItems;
         }
     }
 
     /**
-     * 
-     * @param type
-     * @param file
+     *
+     * @param type media type prefix, e.g. "video" or "audio"
+     * @param file path to the media file to stream
      * @return {@link String}
      * @throws PresentationException
      * @throws WebApplicationException

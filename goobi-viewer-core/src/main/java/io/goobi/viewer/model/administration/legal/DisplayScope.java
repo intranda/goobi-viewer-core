@@ -36,26 +36,24 @@ import io.goobi.viewer.solr.SolrSearchIndex;
  * Describes the locations in the viewer where a notification should be displayed. This can either be all pages or all record pages which may be
  * further restricted by a SOLR query condition
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class DisplayScope implements Serializable {
 
     private static final long serialVersionUID = 8408939885661597164L;
 
     /**
-     * The type of viewer-pages that are in scope
+     * The type of viewer-pages that are in scope.
      *
-     * @author florian
-     *
+     * @author Florian Alpers
      */
     public enum PageScope {
         /**
-         * all viewer pages, except those in the admin backend
+         * All viewer pages, except those in the admin backend.
          */
         ALL,
         /**
-         * only pages belonging to a record/document
+         * Only pages belonging to a record/document.
          */
         RECORD
     }
@@ -64,7 +62,7 @@ public class DisplayScope implements Serializable {
     private String filterQuery;
 
     /**
-     * Creates a scope that appplies to all viewer pages
+     * Creates a scope that appplies to all viewer pages.
      */
     public DisplayScope() {
         this.pageScope = PageScope.ALL;
@@ -74,8 +72,8 @@ public class DisplayScope implements Serializable {
     /**
      * Creates a scope from a given PageScope and filterQuery. The filterQuery is only meaningful if the scope is PageScope.RECORD
      *
-     * @param scope
-     * @param filter
+     * @param scope page scope defining where the display applies
+     * @param filter Solr filter query restricting the scope to specific records
      */
     public DisplayScope(PageScope scope, String filter) {
         this.pageScope = scope;
@@ -93,30 +91,22 @@ public class DisplayScope implements Serializable {
 
     }
 
-    /**
-     * @return the pageScope
-     */
+    
     public PageScope getPageScope() {
         return pageScope;
     }
 
-    /**
-     * @param pageScope the pageScope to set
-     */
+    
     public void setPageScope(PageScope pageScope) {
         this.pageScope = pageScope;
     }
 
-    /**
-     * @return the filterQuery
-     */
+    
     public String getFilterQuery() {
         return filterQuery;
     }
 
-    /**
-     * @param filterQuery the filterQuery to set
-     */
+    
     public void setFilterQuery(String filterQuery) {
         this.filterQuery = filterQuery;
     }
@@ -133,9 +123,9 @@ public class DisplayScope implements Serializable {
 
     /**
      *
-     * @param query
-     * @param pi
-     * @param searchIndex
+     * @param query Solr query to match the record against
+     * @param pi persistent identifier of the record to check
+     * @param searchIndex Solr search index to query
      * @return true if given pi is found using query; false otherwise
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -153,7 +143,7 @@ public class DisplayScope implements Serializable {
     }
 
     /**
-     * Get the query to use in a SOLR search to deterimine whether a record should show the disclaimer
+     * Gets the query to use in a SOLR search to determine whether a record should show the disclaimer.
      *
      * @return a solr search query for the disclaimer
      */

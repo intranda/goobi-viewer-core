@@ -27,42 +27,36 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * <p>
- * GenericList class.
- * </p>
- * 
- * @param <T>
+ * Thin wrapper around a Java {@link java.util.List} that serializes its contents directly as a JSON array
+ * via {@link com.fasterxml.jackson.annotation.JsonValue}.
+ * Intended for REST API responses that need to return a typed list as a bare JSON array.
+ *
+ * @param <T> the element type of the wrapped list
  */
 public class GenericList<T> {
 
     private List<T> list;
 
     /**
-     * <p>
-     * Constructor for GenericList.
-     * </p>
+     * Creates a new GenericList instance.
      */
     public GenericList() {
         this.list = Collections.emptyList();
     }
 
     /**
-     * <p>
-     * Constructor for GenericList.
-     * </p>
+     * Creates a new GenericList instance.
      *
-     * @param theList a {@link java.util.List} object.
+     * @param theList list of elements to wrap as an unmodifiable list
      */
     public GenericList(List<T> theList) {
         this.list = Collections.unmodifiableList(theList);
     }
 
     /**
-     * <p>
      * Getter for the field <code>list</code>.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return the wrapped list of elements
      */
     @JsonValue
     public List<T> getList() {

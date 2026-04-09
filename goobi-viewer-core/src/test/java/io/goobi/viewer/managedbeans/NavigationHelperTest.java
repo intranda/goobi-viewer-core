@@ -251,4 +251,42 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
         assertEquals(cms.getTitle(Locale.ENGLISH), adb.getTitleBarLabel(Locale.ENGLISH));
     }
 
+    /**
+     * @see NavigationHelper#setCurrentPageForError(String)
+     * @verifies map null and generic error types to error
+     * @verifies pass through specific error types unchanged
+     */
+    @Test
+    void setCurrentPageForError_shouldMapGenericTypesToError() {
+        NavigationHelper nh = new NavigationHelper();
+
+        // null, general, general_no_url must all fall back to "error"
+        nh.setCurrentPageForError(null);
+        assertEquals("error", nh.getCurrentPage());
+
+        nh.setCurrentPageForError("general");
+        assertEquals("error", nh.getCurrentPage());
+
+        nh.setCurrentPageForError("general_no_url");
+        assertEquals("error", nh.getCurrentPage());
+    }
+
+    /**
+     * @see NavigationHelper#setCurrentPageForError(String)
+     * @verifies pass through specific error types unchanged
+     */
+    @Test
+    void setCurrentPageForError_shouldPassThroughSpecificErrorTypes() {
+        NavigationHelper nh = new NavigationHelper();
+
+        nh.setCurrentPageForError("recordNotFound");
+        assertEquals("recordNotFound", nh.getCurrentPage());
+
+        nh.setCurrentPageForError("download");
+        assertEquals("download", nh.getCurrentPage());
+
+        nh.setCurrentPageForError("viewExpired");
+        assertEquals("viewExpired", nh.getCurrentPage());
+    }
+
 }

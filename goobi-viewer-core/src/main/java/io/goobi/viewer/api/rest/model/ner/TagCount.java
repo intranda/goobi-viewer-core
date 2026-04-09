@@ -32,9 +32,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.goobi.viewer.api.rest.model.ner.NERTag.Type;
 
 /**
- * <p>
- * TagCount class.
- * </p>
+ * REST API model aggregating the occurrences of a single named-entity tag value and type within a page group.
+ * Holds the tag's text value, its NER type, an optional authority identifier, and the list of {@link ElementReference} objects
+ * indicating every position where the tag appears; the occurrence count is derived from that list.
  */
 @JsonPropertyOrder({ "value", "type", "counter", "references" })
 @JsonInclude(Include.NON_NULL)
@@ -46,13 +46,11 @@ public class TagCount implements Comparable<TagCount> {
     private List<ElementReference> references = new ArrayList<>();
 
     /**
-     * <p>
-     * Constructor for TagCount.
-     * </p>
+     * Creates a new TagCount instance.
      *
-     * @param element a {@link io.goobi.viewer.api.rest.model.ner.ElementReference} object.
-     * @param value a {@link java.lang.String} object.
-     * @param type a {@link io.goobi.viewer.api.rest.model.ner.NERTag.Type} object.
+     * @param element initial element reference where this tag occurs
+     * @param value text value of the named entity tag
+     * @param type NER category of the tag (person, location, etc.)
      */
     public TagCount(String value, Type type, ElementReference element) {
         this.value = value;
@@ -63,33 +61,27 @@ public class TagCount implements Comparable<TagCount> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>value</code>.
-     * </p>
      *
-     * @return the value
+     * @return the text value of the named entity tag
      */
     public String getValue() {
         return value;
     }
 
     /**
-     * <p>
      * Setter for the field <code>value</code>.
-     * </p>
      *
-     * @param value the value to set
+     * @param value text value of the named entity tag to set
      */
     public void setValue(String value) {
         this.value = value;
     }
 
     /**
-     * <p>
      * getCounter.
-     * </p>
      *
-     * @return the counter
+     * @return the number of element references for this tag, i.e. how often it occurs
      */
     @JsonProperty("counter")
     public Integer getCounter() {
@@ -97,84 +89,63 @@ public class TagCount implements Comparable<TagCount> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>type</code>.
-     * </p>
      *
-     * @return the type
+     * @return the NER category of this tag (e.g. person, location, organisation)
      */
     public NERTag.Type getType() {
         return type;
     }
 
     /**
-     * <p>
      * Setter for the field <code>type</code>.
-     * </p>
      *
-     * @param type the type to set
+     * @param type NER category to assign to this tag
      */
     public void setType(NERTag.Type type) {
         this.type = type;
     }
 
-    /**
-     * @return the identifier
-     */
+    
     public String getIdentifier() {
         return identifier;
     }
 
-    /**
-     * @param identifier the identifier to set
-     */
+    
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }
 
     /**
-     * <p>
      * Getter for the field <code>references</code>.
-     * </p>
      *
-     * @return the references
+     * @return the list of element references where this named entity tag occurs
      */
     public List<ElementReference> getReferences() {
         return references;
     }
 
     /**
-     * <p>
      * Setter for the field <code>references</code>.
-     * </p>
      *
-     * @param references the references to set
+     * @param references list of element references to assign
      */
     public void setReferences(List<ElementReference> references) {
         this.references = references;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public int compareTo(TagCount o) {
         return getCounter().compareTo(o.getCounter());
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return getValue().hashCode();
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -193,11 +164,9 @@ public class TagCount implements Comparable<TagCount> {
     }
 
     /**
-     * <p>
      * addReferences.
-     * </p>
      *
-     * @param references a {@link java.util.List} object.
+     * @param references element references to add if not already present
      */
     public void addReferences(List<ElementReference> references) {
         for (ElementReference ref : references) {
@@ -207,7 +176,7 @@ public class TagCount implements Comparable<TagCount> {
     }
 
     /**
-     * @param ref
+     * @param ref element reference to add
      */
     private void addReference(ElementReference ref) {
         if (!references.contains(ref)) {

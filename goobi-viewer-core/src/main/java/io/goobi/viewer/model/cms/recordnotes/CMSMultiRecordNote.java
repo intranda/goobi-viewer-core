@@ -45,10 +45,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Transient;
 
 /**
- * Class holding a formatted text related to a single PI which may be edited in the admin/cms-backend and displayed in a (sidebar) widget
+ * Class holding a formatted text related to a single PI which may be edited in the admin/cms-backend and displayed in a (sidebar) widget.
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Entity
 @DiscriminatorValue("MULTI")
@@ -75,7 +74,7 @@ public class CMSMultiRecordNote extends CMSRecordNote {
     }
 
     /**
-     * @param query
+     * @param query Solr query used to match records for this note
      */
     public CMSMultiRecordNote(String query) {
         super();
@@ -83,7 +82,7 @@ public class CMSMultiRecordNote extends CMSRecordNote {
     }
 
     /**
-     * @param source
+     * @param source the record note to copy
      */
     public CMSMultiRecordNote(CMSRecordNote source) {
         super(source);
@@ -92,16 +91,12 @@ public class CMSMultiRecordNote extends CMSRecordNote {
         }
     }
 
-    /**
-     * @return the query
-     */
+    
     public String getQuery() {
         return query;
     }
 
-    /**
-     * @param query the query to set
-     */
+    
     public void setQuery(String query) {
         if (!Strings.CS.equals(query, this.query)) {
             this.records = null;
@@ -144,25 +139,16 @@ public class CMSMultiRecordNote extends CMSRecordNote {
         return "+(" + this.query + ") +(ISWORK:* ISANCHOR:*)";
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.CMSRecordNote#isSingleRecordNote()
-     */
     @Override
     public boolean isSingleRecordNote() {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.CMSRecordNote#isMultiRecordNote()
-     */
     @Override
     public boolean isMultiRecordNote() {
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.CMSRecordNote#matchesFilter(java.lang.String)
-     */
     @Override
     public boolean matchesFilter(String filter) {
         if (StringUtils.isNotBlank(filter)) {
@@ -181,9 +167,9 @@ public class CMSMultiRecordNote extends CMSRecordNote {
 
     /**
      * Check if the given pi is a match for the query of the record note The pi is a match if the record note query combined with a query for the
-     * given pi returns at least one result
+     * given pi returns at least one result.
      *
-     * @param pi
+     * @param pi persistent identifier of the record to check
      * @return true if pi matches query; false otherwise
      */
     public boolean matchesRecord(String pi) {

@@ -27,28 +27,27 @@ import java.time.Month;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * A class holding values by which a {@link StatisticsSummary} instance should be filtered
+ * A class holding values by which a {@link StatisticsSummary} instance should be filtered.
  * 
- * @author florian
- *
+ * @author Florian Alpers
  */
 public final class StatisticsSummaryFilter {
 
     /**
-     * {@link LOCAL_DATE_MIN} is not accepted as date by SQL, so this is the min date to use, 0000-01-01
+     * {@link LOCAL_DATE_MIN} is not accepted as date by SQL, so this is the min date to use, 0000-01-01.
      */
     public static final LocalDate LOCAL_DATE_MIN = LocalDate.of(0, Month.JANUARY, 1);
     /**
-     * {@link LOCAL_DATE_MAX} is not accepted as date by SQL, so this is the max date to use, 3000-12-31
+     * {@link LOCAL_DATE_MAX} is not accepted as date by SQL, so this is the max date to use, 3000-12-31.
      */
     public static final LocalDate LOCAL_DATE_MAX = LocalDate.of(3000, Month.DECEMBER, 31);
 
     /**
-     * Earliest date from which to collect data
+     * Earliest date from which to collect data.
      */
     private final LocalDate startDate;
     /**
-     * Latest date from which to collect data
+     * Latest date from which to collect data.
      */
     private final LocalDate endDate;
     /**
@@ -57,9 +56,9 @@ public final class StatisticsSummaryFilter {
     private final String filterQuery;
 
     /**
-     * @param startDate
-     * @param endDate
-     * @param filterQuery
+     * @param startDate earliest date from which to collect data
+     * @param endDate latest date from which to collect data
+     * @param filterQuery Solr query to filter results by record identifier
      */
     private StatisticsSummaryFilter(LocalDate startDate, LocalDate endDate, String filterQuery) {
         super();
@@ -68,31 +67,25 @@ public final class StatisticsSummaryFilter {
         this.filterQuery = filterQuery;
     }
 
-    /**
-     * @return the startDate
-     */
+    
     public LocalDate getStartDate() {
         return startDate;
     }
 
-    /**
-     * @return the endDate
-     */
+    
     public LocalDate getEndDate() {
         return endDate;
     }
 
-    /**
-     * @return the filterQuery
-     */
+    
     public String getFilterQuery() {
         return filterQuery;
     }
 
     /**
-     * Create an instance filtering by a single date
-     * 
-     * @param date
+     * Creates an instance filtering by a single date.
+     *
+     * @param date the single date to filter by
      * @return {@link StatisticsSummaryFilter}
      */
     public static StatisticsSummaryFilter ofDate(LocalDate date) {
@@ -100,7 +93,7 @@ public final class StatisticsSummaryFilter {
     }
 
     /**
-     * Create an instance for a range of dates
+     * Creates an instance for a range of dates.
      * 
      * @param start the first date to include
      * @param end the last date to include
@@ -111,9 +104,9 @@ public final class StatisticsSummaryFilter {
     }
 
     /**
-     * Create an instance for a single record identifier
-     * 
-     * @param pi
+     * Creates an instance for a single record identifier.
+     *
+     * @param pi the record identifier (PI) to filter by
      * @return {@link StatisticsSummaryFilter}
      */
     public static StatisticsSummaryFilter forRecord(String pi) {
@@ -121,9 +114,9 @@ public final class StatisticsSummaryFilter {
     }
 
     /**
-     * Create an instance for all records within a single digital collection
-     * 
-     * @param collectionName
+     * Creates an instance for all records within a single digital collection.
+     *
+     * @param collectionName name of the digital collection (DC field value)
      * @return {@link StatisticsSummaryFilter}
      */
     public static StatisticsSummaryFilter ofDigitalCollection(String collectionName) {
@@ -132,7 +125,7 @@ public final class StatisticsSummaryFilter {
     }
 
     /**
-     * Create an instance for all records returned by a SOLR query
+     * Creates an instance for all records returned by a SOLR query.
      * 
      * @param query the SOLR query returning all record identifiers which to include in the summary
      * @return {@link StatisticsSummaryFilter}
@@ -142,7 +135,7 @@ public final class StatisticsSummaryFilter {
     }
 
     /**
-     * Create an instance of a date range and a SOLR query
+     * Creates an instance of a date range and a SOLR query.
      * 
      * @param start the first date to include
      * @param end the last date to include
@@ -154,7 +147,7 @@ public final class StatisticsSummaryFilter {
     }
 
     /**
-     * Check if a {@link #startDate} has been set for this filter
+     * Checks if a {@link #startDate} has been set for this filter.
      * 
      * @return true if a {@link #startDate} has been set
      */
@@ -163,7 +156,7 @@ public final class StatisticsSummaryFilter {
     }
 
     /**
-     * Check if a {@link #endDate} has been set for this filter
+     * Checks if a {@link #endDate} has been set for this filter.
      * 
      * @return true if a {@link #endDate} has been set
      */
@@ -172,7 +165,7 @@ public final class StatisticsSummaryFilter {
     }
 
     /**
-     * Check if the filter is set for a range of dates
+     * Checks if the filter is set for a range of dates.
      * 
      * @return true if the filter is set for a range of dates (more than a single date
      */
@@ -181,7 +174,7 @@ public final class StatisticsSummaryFilter {
     }
 
     /**
-     * Check if a SOLR query has been set for the filter
+     * Checks if a SOLR query has been set for the filter.
      * 
      * @return true if a {@link #filterQuery} has been set for this filter
      */

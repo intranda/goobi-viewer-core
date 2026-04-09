@@ -56,8 +56,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Named
 @ViewScoped
@@ -83,16 +82,12 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     @Inject
     private transient FacesContext facesContext;
 
-    /**
-     * @return the note
-     */
+    
     public CMSRecordNote getNote() {
         return note;
     }
 
-    /**
-     * @param note the note to set
-     */
+    
     public void setNote(CMSRecordNote note) {
         if (note == null) {
             this.note = null;
@@ -138,16 +133,12 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
                 .orElse("");
     }
 
-    /**
-     * @return the returnUrl
-     */
+    
     public String getReturnUrl() {
         return returnUrl;
     }
 
-    /**
-     * @param returnUrl the returnUrl to set
-     */
+    
     public void setReturnUrl(String returnUrl) {
         this.returnUrl = returnUrl;
     }
@@ -161,7 +152,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     }
 
     /**
-     * Save the selected note to the database
+     * Saves the selected note to the database.
      * 
      * @should do nothing if node null
      * @should save new note correctly
@@ -224,7 +215,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     }
 
     /**
-     * @param recordPi
+     * @param recordPi Persistent identifier of the record to load
      * @param index Metadata view index
      * @return Loaded {@link MetadataElement}
      * @throws DAOException
@@ -249,7 +240,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     }
 
     /**
-     * @param solrDoc
+     * @param solrDoc Solr document from which to extract the record title
      * @return {@link TranslatedText}
      */
     private TranslatedText createRecordTitle(SolrDocument solrDoc) {
@@ -258,7 +249,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     }
 
     /**
-     * @param label
+     * @param label Metadata value containing the record title
      * @return {@link TranslatedText}
      */
     public TranslatedText createRecordTitle(IMetadataValue label) {
@@ -272,7 +263,8 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     /**
      * Return true if text and title are both complete (not empty) for both title and text. If locale is not the default locale, text/title counts as
      * complete if they are empty as long as the corresponding field in the default language is also empty.
-     * 
+     *
+     * @param locale the locale for which to check completeness
      * @return true if title and text of the note are complete; false otherwise;
      */
     @Override
@@ -289,33 +281,21 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.IPolyglott#isValid(java.util.Locale)
-     */
     @Override
     public boolean isValid(Locale locale) {
         return isComplete(locale);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.IPolyglott#isEmpty(java.util.Locale)
-     */
     @Override
     public boolean isEmpty(Locale locale) {
         return this.note.getNoteTitle().isEmpty(locale) && this.note.getNoteText().isEmpty(locale);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.IPolyglott#getSelectedLocale()
-     */
     @Override
     public Locale getSelectedLocale() {
         return this.selectedLocale;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.IPolyglott#setSelectedLocale(java.util.Locale)
-     */
     @Override
     public void setSelectedLocale(Locale locale) {
         this.selectedLocale = locale;
@@ -326,9 +306,9 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
      * Set all note texts to the given locale unless the note texts are not filled ("valid") for the defaultLocale. In this case set them to the
      * defaultLocale.
      *
-     * @param note
-     * @param locale
-     * @param defaultLocale
+     * @param note Note whose text locales are to be set
+     * @param locale Desired locale to select
+     * @param defaultLocale Fallback locale used if texts are not valid for the desired locale
      * @return the given locale if texts are valid for the default locale, otherwise the default locale
      */
     private static Locale setSelectedLocale(CMSRecordNote note, Locale locale, Locale defaultLocale) {
@@ -346,16 +326,12 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
         return locale;
     }
 
-    /**
-     * @return the currentNoteType
-     */
+    
     public String getCurrentNoteType() {
         return currentNoteType;
     }
 
-    /**
-     * @param currentNoteType the currentNoteType to set
-     */
+    
     public void setCurrentNoteType(String currentNoteType) {
         this.currentNoteType = currentNoteType;
     }
@@ -371,7 +347,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     /**
      * For unit tests.
      * 
-     * @param testMode the testMode to set
+
      */
     void setTestMode(boolean testMode) {
         this.testMode = testMode;

@@ -39,6 +39,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 
+/**
+ * CMS content type that embeds a configured {@link io.goobi.viewer.model.cms.CMSSlider} into a
+ * CMS page, linking the content to a persisted slider entity.
+ */
 @Entity
 @Table(name = "cms_content_slider")
 @DiscriminatorValue("slider")

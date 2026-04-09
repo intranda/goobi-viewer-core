@@ -38,16 +38,12 @@ import jakarta.servlet.http.HttpServletRequest;
  * Stores the url path of a http request organized by its logical parts so application url, application name, view type and parameter urls can be
  * retrieved independendly. If applicable, the {@link io.goobi.viewer.model.viewer.PageType} of the requested view and an associated
  * {@link io.goobi.viewer.model.cms.pages.CMSPage} are also referenced
- * <p>
  * This information helps calling the correct url in different contexts and is also used to redirect to CMSPages and store a brief view history to
  * allow returning to a previous view The entire url always consists of the properties {@link #applicationUrl} + {@link #pagePath} +
  * {@link parameterPath}
- * </p>
- * <p>
  * The easiest way to create ViewerPath based on a http request is by calling
  * {@link io.goobi.viewer.model.urlresolution.ViewerPathBuilder#createPath(HttpServletRequest)} or
  * {@link io.goobi.viewer.model.urlresolution.ViewerPathBuilder#createPath(String, String, String, String)}
- * </p>
  *
  * @author Florian Alpers
  */
@@ -105,10 +101,10 @@ public class ViewerPath implements Serializable {
      * Creates a {@link ViewerPath} based on the given request properties. This should not be called directly. Instead a ViewerPath should be created
      * by calling {@link ViewerPathBuilder#createPath(HttpServletRequest)} or {@link ViewerPathBuilder#createPath(String, String, String)}
      *
-     * @param applicationUrl
-     * @param applicationName
-     * @param pagePath
-     * @param parameterPath
+     * @param applicationUrl base URL of the viewer application
+     * @param applicationName context name of the web application
+     * @param pagePath URI path to the viewer page
+     * @param parameterPath URI path containing additional parameters
      */
     ViewerPath(String applicationUrl, String applicationName, URI pagePath, URI parameterPath) {
         super();
@@ -135,9 +131,7 @@ public class ViewerPath implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>applicationUrl</code>.
-     * </p>
      *
      * @return the {@link #applicationUrl}
      */
@@ -146,9 +140,7 @@ public class ViewerPath implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>applicationUrl</code>.
-     * </p>
      *
      * @param applicationUrl The {@link #applicationUrl} to set
      */
@@ -157,9 +149,7 @@ public class ViewerPath implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>pagePath</code>.
-     * </p>
      *
      * @return the {@link #pagePath}
      */
@@ -168,9 +158,7 @@ public class ViewerPath implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>pagePath</code>.
-     * </p>
      *
      * @param pagePath the {@link #pagePath} to set
      */
@@ -179,9 +167,7 @@ public class ViewerPath implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>parameterPath</code>.
-     * </p>
      *
      * @return the {@link #parameterPath}
      */
@@ -190,9 +176,7 @@ public class ViewerPath implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>parameterPath</code>.
-     * </p>
      *
      * @param parameterPath the {@link #parameterPath} to set
      */
@@ -200,24 +184,18 @@ public class ViewerPath implements Serializable {
         this.parameterPath = parameterPath;
     }
 
-    /**
-     * @return the queryString
-     */
+    
     public String getQueryString() {
         return queryString;
     }
 
-    /**
-     * @param queryString the queryString to set
-     */
+    
     public void setQueryString(String queryString) {
         this.queryString = queryString;
     }
 
     /**
-     * <p>
      * getPrettifiedPagePath.
-     * </p>
      *
      * @return The alternative url or static page url of a CMSPage if present, otherwise {@link #pagePath}
      */
@@ -246,10 +224,8 @@ public class ViewerPath implements Serializable {
     }
 
     /**
-     * <p>
      * getCombinedPrettyfiedPath.
-     * </p>
-     * 
+     *
      * @param addQueryString If true, the GET query parameter part will be added
      * @return the entire {@link #getPrettifiedPagePath() prettified} url <b>except</b> the application url
      */
@@ -261,9 +237,7 @@ public class ViewerPath implements Serializable {
     }
 
     /**
-     * <p>
      * getCombinedPrettyfiedUrl.
-     * </p>
      *
      * @param addQueryString If true, the GET query parameter part will be added
      * @return the entire {@link #getPrettifiedPagePath() prettified} url as a path <b>except</b> the application url
@@ -275,9 +249,7 @@ public class ViewerPath implements Serializable {
     }
 
     /**
-     * <p>
      * getCombinedPrettyfiedUrl.
-     * </p>
      *
      * @return the entire {@link #getPrettifiedPagePath() prettified} url as a path <b>except</b> the application url
      */
@@ -286,9 +258,7 @@ public class ViewerPath implements Serializable {
     }
 
     /**
-     * <p>
      * getCombinedPath.
-     * </p>
      *
      * @return the entire request url as a path <b>except</b> the application url
      */
@@ -297,9 +267,7 @@ public class ViewerPath implements Serializable {
     }
 
     /**
-     * <p>
      * getCombinedUrl.
-     * </p>
      *
      * @return the entire request url <b>except</b> the application url
      */
@@ -314,9 +282,7 @@ public class ViewerPath implements Serializable {
     }
 
     /**
-     * <p>
      * isPage.
-     * </p>
      *
      * @return true if this path has been associated with a pageType other than 'other'
      */
@@ -326,9 +292,7 @@ public class ViewerPath implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>pageType</code>.
-     * </p>
      *
      * @param pageType the {@link io.goobi.viewer.model.viewer.PageType} to set
      */
@@ -337,9 +301,7 @@ public class ViewerPath implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>pageType</code>.
-     * </p>
      *
      * @return the {@link #pageType}
      */
@@ -348,13 +310,11 @@ public class ViewerPath implements Serializable {
     }
 
     /**
-     * <p>
      * matches.
-     * </p>
      *
-     * @see PageType#matches(URI)
      * @param pageType a {@link io.goobi.viewer.model.viewer.PageType} object.
      * @return The matching {@link io.goobi.viewer.model.viewer.PageType} or null if no PageType matches
+     * @see PageType#matches(URI)
      */
     public boolean matches(PageType pageType) {
         if (pageType != null) {
@@ -364,9 +324,7 @@ public class ViewerPath implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>cmsPage</code>.
-     * </p>
      *
      * @return the {@link #cmsPage} if one is associated with this path. Otherwise null
      */
@@ -375,9 +333,7 @@ public class ViewerPath implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>cmsPage</code>.
-     * </p>
      *
      * @param cmsPage the {@link #cmsPage} to set
      */
@@ -386,31 +342,25 @@ public class ViewerPath implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>campaign</code>.
-     * </p>
      *
-     * @return the campaign
+     * @return the crowdsourcing campaign associated with this path
      */
     public Campaign getCampaign() {
         return campaign;
     }
 
     /**
-     * <p>
      * Setter for the field <code>campaign</code>.
-     * </p>
      *
-     * @param campaign the campaign to set
+     * @param campaign the crowdsourcing campaign associated with this path
      */
     public void setCampaign(Campaign campaign) {
         this.campaign = campaign;
     }
 
     /**
-     * <p>
      * Getter for the field <code>applicationName</code>.
-     * </p>
      *
      * @return the {@link #applicationName}
      */
@@ -419,9 +369,7 @@ public class ViewerPath implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>applicationName</code>.
-     * </p>
      *
      * @param applicationName the {@link #applicationName} to set
      */
@@ -430,11 +378,9 @@ public class ViewerPath implements Serializable {
     }
 
     /**
-     * <p>
      * isCmsPage.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this viewer path resolves to a CMS page, false otherwise
      */
     public boolean isCmsPage() {
         return getCmsPage() != null;

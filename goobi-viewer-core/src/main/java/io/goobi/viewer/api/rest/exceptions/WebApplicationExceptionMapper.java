@@ -50,7 +50,7 @@ import io.goobi.viewer.exceptions.NotImplementedException;
 import io.goobi.viewer.exceptions.PresentationException;
 
 /**
- * Catches general exceptions encountered during rest-api calls and creates an error response.
+ * JAX-RS exception mapper that catches general exceptions encountered during REST API calls and creates a JSON-formatted error response.
  *
  * @author Florian Alpers
  */
@@ -86,6 +86,13 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
             return new ContentExceptionMapper(request, response).toResponse((ContentLibException) e);
         } else if (e instanceof TimeoutException) {
             status = Status.INTERNAL_SERVER_ERROR;
+        } else if (e instanceof NumberFormatException || e.getCause() instanceof NumberFormatException) {
+            // Client sent a non-numeric value for an integer path/query parameter → 400, not 500.
+            // Jersey may wrap the NumberFormatException in an ExtractorException (RuntimeException)
+            // before wrapping it in InternalServerErrorException (WebApplicationException). Check one
+            // level of cause to catch the ExtractorException→NumberFormatException wrapping.
+            status = Status.BAD_REQUEST;
+            e = new IllegalArgumentException("Invalid parameter: not a valid integer");
         } else if (e instanceof RuntimeException) {
             status = Status.INTERNAL_SERVER_ERROR;
             logger.error("Error on request {};\t ERROR MESSAGE: {} (method: {})", request.getRequestURI(), e.getMessage(), request.getMethod());
@@ -98,7 +105,7 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
         } else {
             //unknown error. Probably request error
             status = Status.BAD_REQUEST;
-            printStackTrace = true;
+            // Do NOT set printStackTrace=true: stack traces must not be sent to clients.
             logger.error(e.getMessage(), e);
         }
 
@@ -107,11 +114,9 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
     }
 
     /**
-     * <p>
      * getRequestHeaders.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return all HTTP request headers as a semicolon-separated key-value string
      */
     public String getRequestHeaders() {
         return Collections.list(request.getHeaderNames())

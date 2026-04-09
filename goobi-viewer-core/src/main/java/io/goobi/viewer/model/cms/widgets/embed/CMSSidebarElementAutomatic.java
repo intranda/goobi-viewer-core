@@ -35,8 +35,7 @@ import jakarta.persistence.JoinColumn;
 /**
  * Wrapper for automatic widgets contained in a CMSPage. Currently always bound to a {@link GeoMap} object to display in this widget
  * 
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Entity
 @DiscriminatorValue("AUTOMATIC")
@@ -48,17 +47,17 @@ public class CMSSidebarElementAutomatic extends CMSSidebarElement {
     private GeoMap map;
 
     /**
-     * Empty constructor for the DAO
+     * Empty constructor for the DAO.
      */
     public CMSSidebarElementAutomatic() {
         super();
     }
 
     /**
-     * Default constructor for a {@link GeoMap} to display and an owning {@link CMSPage}
+     * Default constructor for a {@link GeoMap} to display and an owning {@link CMSPage}.
      * 
-     * @param map
-     * @param owner
+     * @param map the GeoMap to display in the sidebar widget
+     * @param owner the owning CMS page
      */
     public CMSSidebarElementAutomatic(GeoMap map, CMSPage owner) {
         super(AutomaticWidgetType.WIDGET_CMSGEOMAP, owner);
@@ -71,10 +70,10 @@ public class CMSSidebarElementAutomatic extends CMSSidebarElement {
     }
 
     /**
-     * Cloning constructor assigning the given CMSPage as owner
+     * Cloning constructor assigning the given CMSPage as owner.
      * 
-     * @param orig
-     * @param owner
+     * @param orig original sidebar element to clone
+     * @param owner the owning CMS page
      */
     public CMSSidebarElementAutomatic(CMSSidebarElementAutomatic orig, CMSPage owner) {
         super(orig, owner);
@@ -87,9 +86,9 @@ public class CMSSidebarElementAutomatic extends CMSSidebarElement {
     }
 
     /**
-     * The underlying {@link GeoMap}
-     * 
-     * @return the map
+     * The underlying {@link GeoMap}.
+     *
+     * @return the {@link GeoMap} providing the data for this automatic sidebar element
      */
     public GeoMap getMap() {
         return map;
@@ -101,9 +100,9 @@ public class CMSSidebarElementAutomatic extends CMSSidebarElement {
     }
 
     /**
-     * The title of the underlying geomap
-     * 
-     * @return the title
+     * The title of the underlying geomap.
+     *
+     * @return the title of the underlying {@link GeoMap} as a {@link TranslatedText}
      */
     @Override
     public TranslatedText getTitle() {

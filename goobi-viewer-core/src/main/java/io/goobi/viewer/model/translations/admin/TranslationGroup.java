@@ -41,10 +41,17 @@ import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
- * Translation group configuration item.
+ * Groups a set of translatable message keys of the same category for display and editing in the admin backend.
+ *
+ * <p>Each group has a {@link TranslationGroupType} that determines how its entries are loaded (e.g. from Solr
+ * field names, Solr field values, or message property files), along with a name, description, and a list of
+ * {@link TranslationGroupItem} patterns that define which keys belong to the group.
  */
 public final class TranslationGroup {
 
+    /**
+     * Defines the source from which message keys and their translations are loaded for a {@link TranslationGroup}.
+     */
     public enum TranslationGroupType {
         SOLR_FIELD_NAMES,
         SOLR_FIELD_VALUES,
@@ -53,8 +60,8 @@ public final class TranslationGroup {
 
         /**
          *
-         * @param name
-         * @return {@link TranslationGroupType} matching given name; null if none foudn
+         * @param name name of the enum constant to look up
+         * @return {@link TranslationGroupType} matching given name; null if none found
          */
         public static TranslationGroupType getByName(String name) {
             if (name == null) {
@@ -93,10 +100,10 @@ public final class TranslationGroup {
      * Factory method.
      *
      * @param id unique ID number
-     * @param type
-     * @param name
-     * @param description
-     * @param numItems
+     * @param type the type of this translation group
+     * @param name display name of this group
+     * @param description human-readable description of this group
+     * @param numItems initial capacity for the items list
      * @return Created {@link TranslationGroup}
      */
     public static TranslationGroup create(int id, TranslationGroupType type, String name, String description, int numItems) {
@@ -106,11 +113,11 @@ public final class TranslationGroup {
     /**
      * Private constructor.
      *
-     * @param id
-     * @param type
-     * @param name
-     * @param description
-     * @param numItems
+     * @param id unique ID number
+     * @param type the type of this translation group
+     * @param name display name of this group
+     * @param description human-readable description of this group
+     * @param numItems initial capacity for the items list
      */
     private TranslationGroup(int id, TranslationGroupType type, String name, String description, int numItems) {
         if (numItems < 0) {
@@ -123,9 +130,6 @@ public final class TranslationGroup {
         this.items = new ArrayList<>(numItems);
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -134,9 +138,6 @@ public final class TranslationGroup {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -184,37 +185,27 @@ public final class TranslationGroup {
         return false;
     }
 
-    /**
-     * @return the id
-     */
+    
     public int getId() {
         return id;
     }
 
-    /**
-     * @return the type
-     */
+    
     public TranslationGroupType getType() {
         return type;
     }
 
-    /**
-     * @return the name
-     */
+    
     public String getName() {
         return name;
     }
 
-    /**
-     * @return the description
-     */
+    
     public String getDescription() {
         return description;
     }
 
-    /**
-     * @return the keys
-     */
+    
     public List<TranslationGroupItem> getItems() {
         return items;
     }
@@ -276,7 +267,7 @@ public final class TranslationGroup {
 
     /**
      *
-     * @param status
+     * @param status the translation status to count
      * @return Count of entries with the given <code>status</code>
      */
     int getEntryStatusCount(TranslationStatus status) {
@@ -413,9 +404,7 @@ public final class TranslationGroup {
         return allEntries;
     }
 
-    /**
-     * @return the selectedEntry
-     */
+    
     public MessageEntry getSelectedEntry() {
         if (selectedEntry == null && getFilteredEntries().size() > selectedEntryIndex) {
             setSelectedEntry(allEntries.get(selectedEntryIndex));
@@ -424,9 +413,7 @@ public final class TranslationGroup {
         return selectedEntry;
     }
 
-    /**
-     * @param selectedEntry the selectedEntry to set
-     */
+    
     public void setSelectedEntry(MessageEntry selectedEntry) {
         saveSelectedEntry();
         this.selectedEntry = selectedEntry;
@@ -444,37 +431,27 @@ public final class TranslationGroup {
         this.selectedEntryIndex = 0;
     }
 
-    /**
-     * @return the selectedMessageEntryIndex
-     */
+    
     public int getSelectedEntryIndex() {
         return selectedEntryIndex;
     }
 
-    /**
-     * @param selectedEntryIndex the selectedEntryIndex to set
-     */
+    
     public void setSelectedEntryIndex(int selectedEntryIndex) {
         this.selectedEntryIndex = selectedEntryIndex;
     }
 
-    /**
-     * @return the filterString
-     */
+    
     public String getFilterString() {
         return filterString;
     }
 
-    /**
-     * @param filterString the filterString to set
-     */
+    
     public void setFilterString(String filterString) {
         this.filterString = filterString;
     }
 
-    /**
-     * @return the loadError
-     */
+    
     public boolean isLoadError() {
         if (loadError == null) {
             getAllEntries();
@@ -482,23 +459,17 @@ public final class TranslationGroup {
         return loadError;
     }
 
-    /**
-     * @param loadError the loadError to set
-     */
+    
     public void setLoadError(boolean loadError) {
         this.loadError = loadError;
     }
 
-    /**
-     * @return the newEntryMode
-     */
+    
     public boolean isNewEntryMode() {
         return newEntryMode;
     }
 
-    /**
-     * @param newEntryMode the newEntryMode to set
-     */
+    
     public void setNewEntryMode(boolean newEntryMode) {
         this.newEntryMode = newEntryMode;
     }
@@ -524,7 +495,6 @@ public final class TranslationGroup {
      * @should select fully translated entries if all are fully translated
      * @should resume at the end when moving past first element
      * @should resume at the beginning when moving past last element
-     *
      */
     void selectEntry(int step) {
         // logger.trace("selectEntry: {}", step); //NOSONAR Debug
@@ -618,7 +588,7 @@ public final class TranslationGroup {
     }
 
     /**
-     * Resets the counts for fully translated and untranslated entries to update the translation process
+     * Resets the counts for fully translated and untranslated entries to update the translation process.
      */
     public void resetStatusCount() {
         this.fullyTranslatedEntryCount = null;

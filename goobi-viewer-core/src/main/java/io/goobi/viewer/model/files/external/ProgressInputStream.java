@@ -29,6 +29,9 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+/**
+ * A {@link FilterInputStream} that tracks the number of bytes read and reports download progress via a callback.
+ */
 public class ProgressInputStream extends FilterInputStream {
 
     private AtomicLong bytesRead = new AtomicLong(0);

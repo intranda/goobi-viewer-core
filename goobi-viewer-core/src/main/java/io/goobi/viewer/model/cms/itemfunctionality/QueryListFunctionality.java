@@ -24,34 +24,26 @@ package io.goobi.viewer.model.cms.itemfunctionality;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
- * <p>
- * QueryListFunctionality class.
- * </p>
+ * CMS item functionality that renders a list of records matching a configurable Solr query.
  *
  * @author Florian Alpers
  */
 public class QueryListFunctionality extends SearchFunctionality {
 
     /**
-     * @param pageFacetString
-     * @param baseUrl
+     * @param pageFacetString facet string for the current search page
+     * @param baseUrl base URL of the CMS page hosting this functionality
      */
     public QueryListFunctionality(String pageFacetString, String baseUrl) {
         super(pageFacetString, baseUrl);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.itemfunctionality.Functionality#setPageNo(int)
-     */
     /** {@inheritDoc} */
     @Override
     public void setPageNo(int pageNo) {
         BeanUtils.getSearchBean().setCurrentPage(pageNo);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.itemfunctionality.Functionality#getPageNo()
-     */
     /** {@inheritDoc} */
     @Override
     public int getPageNo() {

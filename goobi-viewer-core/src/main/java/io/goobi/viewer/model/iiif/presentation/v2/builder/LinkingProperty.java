@@ -29,11 +29,13 @@ import de.intranda.api.iiif.presentation.enums.Format;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class LinkingProperty {
 
+    /**
+     * Enumerates the IIIF Presentation API v2 linking property types that associate a manifest or canvas with an external resource.
+     */
     public enum LinkingType {
         RENDERING,
         SEE_ALSO,
@@ -41,6 +43,10 @@ public class LinkingProperty {
         SERVICE;
     }
 
+    /**
+     * Enumerates the supported linked resource formats for IIIF Presentation API v2, pairing each target with its MIME type and Dublin Core resource
+     * type.
+     */
     public enum LinkingTarget {
         PLAINTEXT(Format.TEXT_PLAIN, DcType.TEXT),
         ALTO(Format.TEXT_XML, DcType.TEXT),
@@ -63,9 +69,9 @@ public class LinkingProperty {
     private final IMetadataValue label;
 
     /**
-     * @param type
-     * @param target
-     * @param label
+     * @param type IIIF linking property type (e.g. related, rendering)
+     * @param target linking target specifying MIME type and resource type
+     * @param label human-readable label for this link
      */
     public LinkingProperty(LinkingType type, LinkingTarget target, IMetadataValue label) {
         super();
@@ -84,9 +90,7 @@ public class LinkingProperty {
         return link;
     }
 
-    /**
-     * @return the target
-     */
+    
     public LinkingTarget getTarget() {
         return target;
     }

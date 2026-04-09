@@ -154,4 +154,24 @@ class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
         assertFalse(otherChild.isExpanded());
         assertFalse(otherGrandchild.isVisible());
     }
+
+    /**
+     * @see TOC#getTreeViewForGroup(String)
+     * @verifies not throw NPE when ViewManager is null
+     */
+    @Test
+    void getTreeViewForGroup_shouldNotThrowNPEWhenViewManagerIsNull() {
+        // Regression test: BeanUtils.getActiveDocumentBean() may return null (or its
+        // ViewManager may be null) in concurrent scenarios; must not throw NPE.
+        TOC toc = new TOC();
+        Map<String, List<TOCElement>> tocElementMap = new HashMap<>();
+        TOCElement element = new TOCElement(new SimpleMetadataValue("root"), "1", null, "1", "LOG_0001", 0, "PI", null, false, true, false, null,
+                "monograph", null);
+        tocElementMap.put(StringConstants.DEFAULT_NAME, List.of(element));
+        toc.setTocElementMap(tocElementMap);
+
+        // In test context BeanUtils.getActiveDocumentBean() returns null — this must
+        // not cause a NullPointerException after the fix.
+        Assertions.assertDoesNotThrow(() -> toc.getTreeViewForGroup(StringConstants.DEFAULT_NAME));
+    }
 }

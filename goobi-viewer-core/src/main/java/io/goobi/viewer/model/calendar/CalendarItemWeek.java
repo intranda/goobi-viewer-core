@@ -26,9 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * <p>
- * CalendarItemWeek class.
- * </p>
+ * Calendar browsing item representing a single week.
  */
 public class CalendarItemWeek extends AbstractCalendarItem implements Serializable {
     private static final long serialVersionUID = -6938153715941936763L;
@@ -36,46 +34,38 @@ public class CalendarItemWeek extends AbstractCalendarItem implements Serializab
     private List<CalendarItemDay> daysOfWeek = new ArrayList<>();
 
     /**
-     * <p>
-     * Constructor for CalendarItemWeek.
-     * </p>
+     * Creates a new CalendarItemWeek instance.
      *
-     * @param name a {@link java.lang.String} object.
-     * @param value a int.
-     * @param hits a int.
+     * @param name display label for the week
+     * @param value numeric week-of-year value
+     * @param hits number of records found for this week
      */
     public CalendarItemWeek(String name, int value, int hits) {
         super(name, value, hits);
     }
 
     /**
-     * <p>
      * Getter for the field <code>daysOfWeek</code>.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of daily calendar items for this week
      */
     public List<CalendarItemDay> getDaysOfWeek() {
         return daysOfWeek;
     }
 
     /**
-     * <p>
      * Setter for the field <code>daysOfWeek</code>.
-     * </p>
      *
-     * @param daysOfWeek a {@link java.util.List} object.
+     * @param daysOfWeek list of daily calendar items for this week
      */
     public void setDaysOfWeek(List<CalendarItemDay> daysOfWeek) {
         this.daysOfWeek = daysOfWeek;
     }
 
     /**
-     * <p>
      * addDay.
-     * </p>
      *
-     * @param day a {@link io.goobi.viewer.model.calendar.CalendarItemDay} object.
+     * @param day daily calendar item to append to this week
      */
     public void addDay(CalendarItemDay day) {
         daysOfWeek.add(day);

@@ -104,167 +104,121 @@ public class CommentGroup implements Serializable {
         return commentGroupAll;
     }
 
-    /**
-     * @return the id
-     */
+    
     public Long getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
+    
     public void setId(Long id) {
         this.id = id;
     }
 
-    /**
-     * @return the title
-     */
+    
     public String getTitle() {
         return title;
     }
 
-    /**
-     * @param title the title to set
-     */
+    
     public void setTitle(String title) {
         this.title = title;
     }
 
-    /**
-     * @return the solrQuery
-     */
+    
     public String getSolrQuery() {
         return solrQuery;
     }
 
-    /**
-     * @param solrQuery the solrQuery to set
-     */
+    
     public void setSolrQuery(String solrQuery) {
         this.solrQuery = solrQuery;
     }
 
-    /**
-     * @return the description
-     */
+    
     public String getDescription() {
         return description;
     }
 
-    /**
-     * @param description the description to set
-     */
+    
     public void setDescription(String description) {
         this.description = description;
     }
 
-    /**
-     * @return the userGroup
-     */
+    
     public UserGroup getUserGroup() {
         return userGroup;
     }
 
-    /**
-     * @param userGroup the userGroup to set
-     */
+    
     public void setUserGroup(UserGroup userGroup) {
         logger.trace("setUserGroup: {}", userGroup);
         this.userGroup = userGroup;
     }
 
-    /**
-     * @return the sendEmailNotifications
-     */
+    
     public boolean isSendEmailNotifications() {
         return sendEmailNotifications;
     }
 
-    /**
-     * @param sendEmailNotifications the sendEmailNotifications to set
-     */
+    
     public void setSendEmailNotifications(boolean sendEmailNotifications) {
         logger.trace("setSendEmailNotifications: {}", sendEmailNotifications);
         this.sendEmailNotifications = sendEmailNotifications;
     }
 
-    /**
-     * @return the membersMayEditComments
-     */
+    
     public boolean isMembersMayEditComments() {
         return membersMayEditComments;
     }
 
-    /**
-     * @param membersMayEditComments the membersMayEditComments to set
-     */
+    
     public void setMembersMayEditComments(boolean membersMayEditComments) {
         logger.trace("setMembersMayEditComments: {}", membersMayEditComments);
         this.membersMayEditComments = membersMayEditComments;
     }
 
-    /**
-     * @return the membersMayDeleteComments
-     */
+    
     public boolean isMembersMayDeleteComments() {
         return membersMayDeleteComments;
     }
 
-    /**
-     * @param membersMayDeleteComments the membersMayDeleteComments to set
-     */
+    
     public void setMembersMayDeleteComments(boolean membersMayDeleteComments) {
         logger.trace("setMembersMayDeleteComments: {}", membersMayDeleteComments);
         this.membersMayDeleteComments = membersMayDeleteComments;
     }
 
-    /**
-     * @return the coreType
-     */
+    
     public boolean isCoreType() {
         return coreType;
     }
 
-    /**
-     * @param coreType the coreType to set
-     */
+    
     public void setCoreType(boolean coreType) {
         this.coreType = coreType;
     }
 
-    /**
-     * @return the enabled
-     */
+    
     public boolean isEnabled() {
         return enabled;
     }
 
-    /**
-     * @param enabled the enabled to set
-     */
+    
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
-    /**
-     * @return the identifiers
-     */
+    
     public Set<String> getIdentifiers() {
         return identifiers;
     }
 
-    /**
-     * @return the identifiersQueried
-     */
+    
     public boolean isIdentifiersQueried() {
         return identifiersQueried;
     }
 
-    /**
-     * @param identifiersQueried the identifiersQueried to set
-     */
+    
     public void setIdentifiersQueried(boolean identifiersQueried) {
         this.identifiersQueried = identifiersQueried;
     }

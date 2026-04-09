@@ -40,6 +40,10 @@ import de.undercouch.citeproc.csl.CSLNameBuilder;
 import de.undercouch.citeproc.csl.CSLType;
 import io.goobi.viewer.controller.DateTools;
 
+/**
+ * Implements the CSL {@link de.undercouch.citeproc.ItemDataProvider} interface by mapping Goobi
+ * Viewer metadata fields to CSL item data for citation formatting.
+ */
 public class CitationDataProvider implements ItemDataProvider {
 
     public static final String AUTHOR = "author";
@@ -67,9 +71,9 @@ public class CitationDataProvider implements ItemDataProvider {
 
     /**
      *
-     * @param id
-     * @param fields
-     * @param type
+     * @param id citation item identifier
+     * @param fields map of metadata field names to their values
+     * @param type CSL document type for this citation
      * @return Created CSLItemData
      * @should add item data correctly
      * @should parse years correctly
@@ -188,17 +192,11 @@ public class CitationDataProvider implements ItemDataProvider {
         return item;
     }
 
-    /* (non-Javadoc)
-     * @see de.undercouch.citeproc.ItemDataProvider#retrieveItem(java.lang.String)
-     */
     @Override
     public CSLItemData retrieveItem(String id) {
         return itemDataMap.get(id);
     }
 
-    /* (non-Javadoc)
-     * @see de.undercouch.citeproc.ItemDataProvider#getIds()
-     */
     @Override
     public Collection<String> getIds() {
         return itemDataMap.keySet();

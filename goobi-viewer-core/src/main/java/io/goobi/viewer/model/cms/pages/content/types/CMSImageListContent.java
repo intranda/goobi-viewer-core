@@ -59,6 +59,10 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
+/**
+ * CMS content type that displays a filterable list of CMS media images on a CMS page, supporting
+ * category-based filtering, a configurable items-per-page limit, and random ordering.
+ */
 @Entity
 @Table(name = "cms_content_imagelist")
 @DiscriminatorValue("imagelist")
@@ -151,11 +155,9 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
     }
 
     /**
-     * <p>
      * getTileGridUrl.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the URL for the IIIF tile grid view of the selected CMS media images
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException if any.
      */
     public String getTileGridUrl() throws IllegalRequestException {
@@ -171,10 +173,10 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
 
     /**
      * 
-     * @param urls
-     * @param tags
-     * @param imagesPerView
-     * @param priorityImagesPerView
+     * @param urls API URL manager for path construction
+     * @param tags comma-separated category tags to filter media items
+     * @param imagesPerView maximum number of images to display per view
+     * @param priorityImagesPerView number of priority/important images per view
      * @return Generated URL
      */
     private static String buildTilegridUrl(AbstractApiUrlManager urls, final String tags, int imagesPerView, int priorityImagesPerView) {

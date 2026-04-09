@@ -25,8 +25,10 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS_PDF;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.core.Response;
 
 import org.junit.jupiter.api.AfterEach;
@@ -61,6 +63,15 @@ class ViewerSectionPDFResourceTest extends AbstractRestApiTest {
     @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
+    }
+
+    @Test
+    void testRequireValidPi_rejectsIllegalChars() {
+        // Illegal chars used in fuzz tests that caused MetsPdfResource to throw HTTP 500
+        assertThrows(BadRequestException.class, () -> ViewerSectionPDFResource.requireValidPi(" "));
+        assertThrows(BadRequestException.class, () -> ViewerSectionPDFResource.requireValidPi("|"));
+        assertThrows(BadRequestException.class, () -> ViewerSectionPDFResource.requireValidPi("<xml>"));
+        assertThrows(BadRequestException.class, () -> ViewerSectionPDFResource.requireValidPi("%00"));
     }
 
     @Test
