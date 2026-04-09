@@ -311,8 +311,11 @@ public class SearchFacets implements Serializable {
      * @return a int.
      */
     public int getAvailableFacetsListSizeForField(String field) {
-        if (availableFacets.get(field) != null) {
-            return availableFacets.get(field).size();
+        // Store in local variable to avoid TOCTOU race on the synchronized map:
+        // a concurrent clear() between the null-check and the second get() would cause NPE.
+        List<IFacetItem> facetItems = availableFacets.get(field);
+        if (facetItems != null) {
+            return facetItems.size();
         }
 
         return 0;
