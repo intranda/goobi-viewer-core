@@ -218,6 +218,9 @@ class FileToolsTest extends AbstractTest {
         Assertions.assertEquals("Kritisches_über_Shakespeare_0009.xml",
                 FileTools.sanitizeFileName("Kritisches_über_Shakespeare_0009.xml"));
         Assertions.assertEquals("Ärger_mit_Äpfeln.xml", FileTools.sanitizeFileName("Ärger_mit_Äpfeln.xml"));
+        // Filename with both Unicode characters and spaces (regression test for production error)
+        Assertions.assertEquals("Der Aufbau Deutschlands und das Rätesystem_0004.xml",
+                FileTools.sanitizeFileName("Der Aufbau Deutschlands und das Rätesystem_0004.xml"));
     }
 
     /**
