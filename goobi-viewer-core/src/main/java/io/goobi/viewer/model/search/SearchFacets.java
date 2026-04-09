@@ -369,7 +369,9 @@ public class SearchFacets implements Serializable {
         // Trim to initial number
         int initialNumber = DataManager.getInstance().getConfiguration().getInitialFacetElementNumber(field);
         if (!isFacetExpanded(field) && initialNumber != -1 && facetItems.size() > initialNumber) {
-            return facetItems.subList(0, initialNumber);
+            // Return a defensive copy instead of a subList view to prevent ConcurrentModificationException
+            // when this session-scoped bean is accessed concurrently by multiple requests (e.g., AJAX).
+            return new ArrayList<>(facetItems.subList(0, initialNumber));
         }
 
         return facetItems;

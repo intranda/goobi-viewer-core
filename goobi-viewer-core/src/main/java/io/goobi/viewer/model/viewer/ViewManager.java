@@ -3069,7 +3069,9 @@ public class ViewManager implements Serializable {
 
         logger.trace("docHierarchy size: {}", docHierarchy.size());
         if (!DataManager.getInstance().getConfiguration().getIncludeAnchorInTitleBreadcrumbs() && !docHierarchy.isEmpty()) {
-            return docHierarchy.subList(1, docHierarchy.size());
+            // Return a defensive copy instead of a subList view to prevent ConcurrentModificationException
+            // when this session-scoped bean is accessed concurrently by multiple requests.
+            return new ArrayList<>(docHierarchy.subList(1, docHierarchy.size()));
         }
         return docHierarchy;
     }
