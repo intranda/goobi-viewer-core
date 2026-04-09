@@ -1,7 +1,6 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:util="http://goobi.io/util"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
@@ -16,12 +15,6 @@
     </composite:interface>
 
     <composite:implementation>
-        <!-- preRenderView event moved here from <f:metadata> to avoid JSF1103:
-             loadCompositeComponent applies this file via includeFacelet with a UIPanel as parent,
-             not UIViewRoot. MetadataHandler logs JSF1103 whenever parent != UIViewRoot. -->
-        <f:event
-            type="preRenderView"
-            listener="#{metadataBean.loadMetadata}" />
         <c:if test="#{activeDocumentBean.recordLoaded and activeDocumentBean.viewManager.displayArchivesWidget}">
             <!-- neighbours is a pair of optionals holding the ids of the previous and succeeding archives entry. This format is used to avoid querying solr more than once -->
             <c:set

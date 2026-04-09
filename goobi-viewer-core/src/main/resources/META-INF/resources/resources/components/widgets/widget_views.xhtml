@@ -22,12 +22,6 @@
     </composite:interface>
 
     <composite:implementation>
-        <!-- preRenderView event moved here from <f:metadata> to avoid JSF1103:
-             loadCompositeComponent applies this file via includeFacelet with a UIPanel as parent,
-             not UIViewRoot. MetadataHandler logs JSF1103 whenever parent != UIViewRoot. -->
-        <f:event
-            type="preRenderView"
-            listener="#{metadataBean.loadMetadata}" />
         <div
             class="widget widget-views"
             jsf:id="widgetViewsContent"
