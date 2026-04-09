@@ -760,6 +760,7 @@ public final class FileTools {
      * @should return unchanged string if string blank
      * @should remove everything but the file name from given path
      * @should throw IllegalArgumentException given invalid file name
+     * @should accept file names containing Unicode characters
      */
     public static String sanitizeFileName(String fileName) {
         if (StringUtils.isBlank(fileName)) {
@@ -767,7 +768,10 @@ public final class FileTools {
         }
 
         final String sanitizedFileName = Paths.get(fileName).getFileName().toString();
-        if (sanitizedFileName == null || !sanitizedFileName.matches("[\\w.,\\- ]+")) {
+        // Use (?U) to enable Unicode-aware \w so that file names with non-ASCII
+        // letters (e.g. umlauts like ü) are accepted. Without (?U), \w only
+        // matches [a-zA-Z_0-9] and rejects valid Unicode file names.
+        if (sanitizedFileName == null || !sanitizedFileName.matches("(?U)[\\w.,\\- ]+")) {
             throw new IllegalArgumentException("Illegal fileName: " + fileName);
         }
 

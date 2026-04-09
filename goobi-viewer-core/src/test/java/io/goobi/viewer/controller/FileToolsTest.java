@@ -206,6 +206,18 @@ class FileToolsTest extends AbstractTest {
         Assertions.assertEquals("foo.bar", FileTools.sanitizeFileName("/foo.bar"));
         Assertions.assertEquals("f o-o_.bar", FileTools.sanitizeFileName("/f o-o_.bar"));
         Assertions.assertEquals("XIX-1083.4-14,1919_0001.xml", FileTools.sanitizeFileName("XIX-1083.4-14,1919_0001.xml"));
+        Assertions.assertEquals("über.xml", FileTools.sanitizeFileName("/opt/digiverso/über.xml"));
+    }
+
+    /**
+     * @see FileTools#sanitizeFileName(String)
+     * @verifies accept file names containing Unicode characters
+     */
+    @Test
+    void sanitizeFileName_shouldAcceptFileNamesContainingUnicodeCharacters() {
+        Assertions.assertEquals("Kritisches_über_Shakespeare_0009.xml",
+                FileTools.sanitizeFileName("Kritisches_über_Shakespeare_0009.xml"));
+        Assertions.assertEquals("Ärger_mit_Äpfeln.xml", FileTools.sanitizeFileName("Ärger_mit_Äpfeln.xml"));
     }
 
     /**
