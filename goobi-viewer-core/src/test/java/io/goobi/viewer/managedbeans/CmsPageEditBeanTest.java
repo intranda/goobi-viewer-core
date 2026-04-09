@@ -21,22 +21,27 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
@@ -264,5 +269,40 @@ class CmsPageEditBeanTest {
         assertFalse(bean.getSelectedPage().getComponents().isEmpty());
         bean.deleteComponent(bean.getSelectedPage().getComponents().get(0));
         assertTrue(bean.getSelectedPage().getComponents().isEmpty());
+    }
+
+    /**
+     * Verifies that setUserRestrictedValues() stores an independent copy of the allowed categories
+     * rather than a raw subList view. If a raw subList were stored, modifying the backing list
+     * afterwards would cause ConcurrentModificationException in JSF's ListDataModel during rendering.
+     */
+    @Test
+    void testSetUserRestrictedValues_categoriesIsDefensiveCopy() throws DAOException {
+        List<CMSCategory> backingCategories = new ArrayList<>(List.of(new CMSCategory("cat1"), new CMSCategory("cat2")));
+
+        User restrictedUser = Mockito.mock(User.class);
+        Mockito.when(restrictedUser.isCmsAdmin()).thenReturn(true);
+        Mockito.when(restrictedUser.hasPrivilegeForAllSubthemeDiscriminatorValues()).thenReturn(true);
+        Mockito.when(restrictedUser.hasPrivilegeForAllCategories()).thenReturn(false);
+        // Simulate User.getAllowedCategories() returning the original list directly (as it does for superusers)
+        Mockito.when(restrictedUser.getAllowedCategories(ArgumentMatchers.anyList())).thenReturn(backingCategories);
+
+        UserBean restrictedUserBean = Mockito.mock(UserBean.class);
+        Mockito.when(restrictedUserBean.getUser()).thenReturn(restrictedUser);
+
+        CmsBean mockCmsBean = Mockito.mock(CmsBean.class);
+        Mockito.when(mockCmsBean.getAllCategories()).thenReturn(backingCategories);
+
+        bean.setUserBean(restrictedUserBean);
+        bean.setCmsBean(mockCmsBean);
+        bean.setFacesContext(mockFacesContext(Map.of()));
+        bean.setup();
+
+        // Simulate concurrent modification: another request modifies the backing list
+        backingCategories.add(new CMSCategory("cat3"));
+
+        // If categories were stored as a raw subList view, this would throw ConcurrentModificationException
+        assertDoesNotThrow(() -> bean.getSelectedPage().getCategories().size());
+        assertEquals(1, bean.getSelectedPage().getCategories().size());
     }
 }
