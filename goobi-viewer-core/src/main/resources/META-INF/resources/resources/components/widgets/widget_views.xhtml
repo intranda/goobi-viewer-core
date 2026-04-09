@@ -9,14 +9,6 @@
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
-    <ui:define name="metadata">
-        <f:metadata>
-            <f:event
-                type="preRenderView"
-                listener="#{metadataBean.loadMetadata}" />
-        </f:metadata>
-    </ui:define>
-
     <composite:interface>
         <composite:attribute
             name="widgetTitle"
@@ -30,6 +22,12 @@
     </composite:interface>
 
     <composite:implementation>
+        <!-- preRenderView event moved here from <f:metadata> to avoid JSF1103:
+             loadCompositeComponent applies this file via includeFacelet with a UIPanel as parent,
+             not UIViewRoot. MetadataHandler logs JSF1103 whenever parent != UIViewRoot. -->
+        <f:event
+            type="preRenderView"
+            listener="#{metadataBean.loadMetadata}" />
         <div
             class="widget widget-views"
             jsf:id="widgetViewsContent"
