@@ -142,10 +142,14 @@ public final class DataManager {
     /**
      * Getter for the field <code>modules</code>.
      *
-     * @return the list of all registered viewer modules
+     * <p>Returns a defensive copy to prevent {@link java.util.ConcurrentModificationException}
+     * when JSF's {@code c:forEach} iterates the list while a background thread registers
+     * a new module via {@link #registerModule(IModule)}.</p>
+     *
+     * @return a snapshot of all registered viewer modules
      */
     public List<IModule> getModules() {
-        return modules;
+        return new ArrayList<>(modules);
     }
 
     /**
