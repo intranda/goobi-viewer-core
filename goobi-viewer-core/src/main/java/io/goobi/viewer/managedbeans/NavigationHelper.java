@@ -274,13 +274,24 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * 
+     * Sets the CMS page as the current page for navigation purposes.
+     *
+     * <p>Skips execution on JSF postback requests to avoid triggering during AJAX calls,
+     * which could conflict with parallel record loads. This mirrors the former
+     * {@code <f:viewAction onPostback="false">} behavior that was declared in the view.
+     *
      * @param cmsPage CMS page to set as current page
      */
     public void setCurrentPage(CMSPage cmsPage) {
+        // Skip on postbacks to avoid conflicting with parallel record loads triggered by AJAX requests.
+        // FacesContext may be null in non-JSF contexts (e.g. tests), in which case we proceed normally.
+        FacesContext ctx = FacesContext.getCurrentInstance();
+        if (ctx != null && ctx.isPostback()) {
+            return;
+        }
         try {
-            //call "setCurrentView" first, because it calls setCurrentPage which needs to be overwritten by the 
-            //call to "setCurrentPage" here
+            // Call setCurrentView first because it internally calls setCurrentPage,
+            // which must be overwritten by the subsequent explicit call below.
             setCurrentView(cmsBean.isRelatedWorkLoaded() ? PageType.cmsPageOfWork.name() : PageType.cmsPage.name());
             setCurrentPage(getCMSPageNavigationId(cmsPage), false, !cmsBean.isRelatedWorkLoaded(), true);
         } catch (IndexUnreachableException e) {
