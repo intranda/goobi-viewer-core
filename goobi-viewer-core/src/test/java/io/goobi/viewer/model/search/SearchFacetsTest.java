@@ -684,6 +684,59 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchFacets#getAvailableFacetsListSizeForField(String)
+     * @verifies return zero for unknown field
+     */
+    @Test
+    void getAvailableFacetsListSizeForField_shouldReturnZeroForUnknownField() {
+        SearchFacets facets = new SearchFacets();
+        Assertions.assertEquals(0, facets.getAvailableFacetsListSizeForField("NONEXISTENT"));
+    }
+
+    /**
+     * @see SearchFacets#getAvailableFacetsListSizeForField(String)
+     * @verifies return correct size
+     */
+    @Test
+    void getAvailableFacetsListSizeForField_shouldReturnCorrectSize() {
+        SearchFacets facets = new SearchFacets();
+        facets.getAvailableFacets().put("DC", new ArrayList<>(List.of(new FacetItem("DC:a", false), new FacetItem("DC:b", false))));
+        Assertions.assertEquals(2, facets.getAvailableFacetsListSizeForField("DC"));
+    }
+
+    /**
+     * @see SearchFacets#isFacetListSizeSufficient(String)
+     * @verifies return false for unknown field
+     */
+    @Test
+    void isFacetListSizeSufficient_shouldReturnFalseForUnknownField() {
+        SearchFacets facets = new SearchFacets();
+        Assertions.assertFalse(facets.isFacetListSizeSufficient("NONEXISTENT"));
+    }
+
+    /**
+     * @see SearchFacets#isFacetListSizeSufficient(String)
+     * @verifies return false for single item field
+     */
+    @Test
+    void isFacetListSizeSufficient_shouldReturnFalseForSingleItemField() {
+        SearchFacets facets = new SearchFacets();
+        facets.getAvailableFacets().put("DC", new ArrayList<>(Collections.singletonList(new FacetItem("DC:a", false))));
+        Assertions.assertFalse(facets.isFacetListSizeSufficient("DC"));
+    }
+
+    /**
+     * @see SearchFacets#isFacetListSizeSufficient(String)
+     * @verifies return true for field with two or more items
+     */
+    @Test
+    void isFacetListSizeSufficient_shouldReturnTrueForFieldWithTwoOrMoreItems() {
+        SearchFacets facets = new SearchFacets();
+        facets.getAvailableFacets().put("DC", new ArrayList<>(List.of(new FacetItem("DC:a", false), new FacetItem("DC:b", false))));
+        Assertions.assertTrue(facets.isFacetListSizeSufficient("DC"));
+    }
+
+    /**
      * @see SearchFacets#isUnselectedValuesAvailable()
      * @verifies return false if only range facets available
      */
