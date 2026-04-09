@@ -25,7 +25,9 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Named;
 
 /**
- * @author florian Store variables in request scope
+ * JSF backing bean for storing variables in request scope.
+ *
+ * @author Florian Alpers
  */
 @Named
 @RequestScoped

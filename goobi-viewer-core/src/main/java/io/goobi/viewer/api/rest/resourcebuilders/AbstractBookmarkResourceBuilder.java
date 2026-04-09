@@ -52,8 +52,7 @@ import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.ManifestBuilder;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public abstract class AbstractBookmarkResourceBuilder {
 
@@ -88,12 +87,10 @@ public abstract class AbstractBookmarkResourceBuilder {
     public abstract Collection2 createCollection(BookmarkList list, AbstractApiUrlManager urls);
 
     /**
-     * <p>
      * getPageOrder.
-     * </p>
      *
-     * @param pageString a {@link java.lang.String} object.
-     * @return a {@link java.lang.Integer} object.
+     * @param pageString numeric page order as a string; null or non-numeric returns null
+     * @return the page order number parsed from the string, or null if the string is blank or not a valid integer
      */
     public Integer getPageOrder(String pageString) {
         Integer order = null;
@@ -120,7 +117,7 @@ public abstract class AbstractBookmarkResourceBuilder {
     /**
      * Returns all public bookmark lists.
      *
-     * @return a {@link java.util.List} object.
+     * @return all publicly visible bookmark lists stored in the database
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -130,13 +127,11 @@ public abstract class AbstractBookmarkResourceBuilder {
     }
 
     /**
-     * <p>
      * getAsCollection.
-     * </p>
      *
-     * @param sharedKey
-     * @param urls
-     * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
+     * @param sharedKey the share key identifying the bookmark list
+     * @param urls URL manager used to build the collection URL
+     * @return the IIIF Presentation v2 Collection representing the publicly shared bookmark list identified by the given key
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
      */
@@ -152,8 +147,8 @@ public abstract class AbstractBookmarkResourceBuilder {
     }
 
     /**
-     * @param list
-     * @param url
+     * @param list the bookmark list to represent as a IIIF collection
+     * @param url the IIIF collection URL
      * @return {@link Collection2}
      */
     protected Collection2 createCollection(BookmarkList list, String url) {
@@ -182,9 +177,9 @@ public abstract class AbstractBookmarkResourceBuilder {
     }
 
     /**
-     * @param shareKey
+     * @param shareKey the share key identifying the bookmark list
      * @return {@link BookmarkList}
-     * @throws DAOException If an error occured talking to the database
+     * @throws DAOException If an error occurred talking to the database
      * @throws RestApiException If no user session exists or if the user has no access to the requested list
      * @throws ContentNotFoundException If no list with the given key was found
      */
@@ -202,7 +197,7 @@ public abstract class AbstractBookmarkResourceBuilder {
     }
 
     /**
-     * @param orig
+     * @param orig the bookmark list to update
      * @throws IllegalRequestException
      * @throws DAOException
      */

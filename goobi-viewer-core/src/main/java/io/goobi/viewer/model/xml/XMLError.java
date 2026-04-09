@@ -21,6 +21,10 @@
  */
 package io.goobi.viewer.model.xml;
 
+/**
+ * Immutable value object representing a single XML parse error, holding the line number,
+ * column number, severity level, and human-readable message.
+ */
 public class XMLError {
     private final int line;
     private final int column;
@@ -29,10 +33,10 @@ public class XMLError {
 
     /**
      * 
-     * @param line
-     * @param column
-     * @param severity
-     * @param message
+     * @param line line number where the error occurred
+     * @param column column number where the error occurred
+     * @param severity severity level of the error (e.g. error, warning)
+     * @param message human-readable error message
      */
     public XMLError(int line, int column, String severity, String message) {
         this.line = line;
@@ -41,30 +45,22 @@ public class XMLError {
         this.message = message;
     }
 
-    /**
-     * @return the line
-     */
+    
     public int getLine() {
         return line;
     }
 
-    /**
-     * @return the column
-     */
+    
     public int getColumn() {
         return column;
     }
 
-    /**
-     * @return the severity
-     */
+    
     public String getSeverity() {
         return severity;
     }
 
-    /**
-     * @return the message
-     */
+    
     public String getMessage() {
         return message;
     }

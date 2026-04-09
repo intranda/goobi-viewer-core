@@ -36,6 +36,10 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
+/**
+ * Feature data provider that retrieves Solr metadata documents (DOCTYPE:METADATA) and their
+ * parent top-level records for use in geo map feature generation.
+ */
 public class MetadataDataProvider extends AbstractFeatureDataProvider {
 
     private static final int MAX_METATA_PER_RECORD = 1000;

@@ -42,9 +42,9 @@ public class Tag implements Comparable<Tag>, Serializable {
     /**
      * Konstruktor.
      *
-     * @param size {@link java.lang.Integer}
-     * @param name {@link java.lang.String}
-     * @param field a {@link java.lang.String} object.
+     * @param size relative weight of this tag in the cloud
+     * @param name display label of the tag
+     * @param field Solr field this tag is based on
      */
     public Tag(long size, String name, String field) {
         super();
@@ -65,75 +65,63 @@ public class Tag implements Comparable<Tag>, Serializable {
     }
 
     /**
-     ********************************* Getter and Setter **************************************
+     ********************************* Getter and Setter **************************************.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the CSS class name assigned to this tag
      */
     public String getCss() {
         return css;
     }
 
     /**
-     * <p>
      * Setter for the field <code>css</code>.
-     * </p>
      *
-     * @param css a {@link java.lang.String} object.
+     * @param css CSS class name to assign to this tag
      */
     public void setCss(String css) {
         this.css = css;
     }
 
     /**
-     * <p>
      * Setter for the field <code>size</code>.
-     * </p>
      *
-     * @param size the size to set
+     * @param size the relative size or weight of this tag in a tag cloud
      */
     public void setSize(long size) {
         this.size = size;
     }
 
     /**
-     * <p>
      * Getter for the field <code>size</code>.
-     * </p>
      *
-     * @return the size
+     * @return the relative frequency or weight of this tag
      */
     public long getSize() {
         return size;
     }
 
     /**
-     * <p>
      * Setter for the field <code>name</code>.
-     * </p>
      *
-     * @param name the name to set
+     * @param name the tag text value to display
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * <p>
      * Getter for the field <code>name</code>.
-     * </p>
      *
-     * @return the name
+     * @return the tag text value
      */
     public String getName() {
         return name;
     }
 
     /**
-     * <p>
      * getEscapedName.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the URL-encoded tag name
      */
     public String getEscapedName() {
         try {
@@ -144,22 +132,18 @@ public class Tag implements Comparable<Tag>, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>field</code>.
-     * </p>
      *
-     * @return the field
+     * @return the Solr field name this tag is associated with
      */
     public String getField() {
         return field;
     }
 
     /**
-     * <p>
      * Setter for the field <code>field</code>.
-     * </p>
      *
-     * @param field the field to set
+     * @param field the Solr field name this tag is associated with
      */
     public void setField(String field) {
         this.field = field;

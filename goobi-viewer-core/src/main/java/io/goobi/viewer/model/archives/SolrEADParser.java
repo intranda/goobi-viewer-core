@@ -1,5 +1,5 @@
 /*
-  * This file is part of the Goobi viewer - a content presentation and management
+ * This file is part of the Goobi viewer - a content presentation and management
  * application for digitized objects.
  *
  * Visit these websites for more information.
@@ -71,13 +71,13 @@ public class SolrEADParser extends ArchiveParser {
             SolrConstants.TITLE };
 
     private Map<String, Map<String, List<SolrDocument>>> archiveDocMap = new HashMap<>();
-    /** Map of IDDOCs and their parent IDDOCs */
+    /** Map of IDDOCs and their parent IDDOCs. */
     private Map<String, String> parentIddocMap = new HashMap<>();
-    /** Map of IDDOCs and loaded ArchiveEntry nodes */
+    /** Map of IDDOCs and loaded ArchiveEntry nodes. */
     private Map<String, ArchiveEntry> loadedNodeMap = new HashMap<>();
 
     /**
-     * Get the database names.
+     * Gets the database names.
      *
      * @return List<ArchiveResource>
      * @throws IndexUnreachableException
@@ -121,8 +121,8 @@ public class SolrEADParser extends ArchiveParser {
     }
 
     /**
-     * 
-     * @param timestamp
+     *
+     * @param timestamp milliseconds since epoch, or null
      * @return Given timestamp formatted as an ISO instant; null if timestamp null
      * @should format timestamp correctly
      */
@@ -135,8 +135,8 @@ public class SolrEADParser extends ArchiveParser {
     /**
      * Loads the given database and parses the EAD document.
      *
-     * @param database
-     * @param lazyLoadingThreshold
+     * @param database the archive resource to load
+     * @param lazyLoadingThreshold minimum tree size to switch to lazy loading
      * @return Root element of the loaded tree
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -188,11 +188,11 @@ public class SolrEADParser extends ArchiveParser {
     }
 
     /**
-     * @param order
-     * @param hierarchy
-     * @param doc
-     * @param loadPath
-     * @param loadChildrenRecursively
+     * @param order position of this node within its parent's children
+     * @param hierarchy depth level of this node in the tree
+     * @param doc Solr document representing this archive entry
+     * @param loadPath set of IDDOCs on the path to the search hit to load
+     * @param loadChildrenRecursively if true, child nodes are loaded recursively
      * @return {@link ArchiveEntry}
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -281,10 +281,10 @@ public class SolrEADParser extends ArchiveParser {
     }
 
     /**
-     * 
-     * @param entry
-     * @param loadPath
-     * @param loadChildrenRecursively
+     *
+     * @param entry the parent entry whose children are to be loaded
+     * @param loadPath set of IDDOCs on the path to the search hit
+     * @param loadChildrenRecursively if true, child nodes are loaded recursively
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
@@ -382,7 +382,7 @@ public class SolrEADParser extends ArchiveParser {
     }
 
     /**
-     * a
+     * A.
      * 
      * @param template Metadata template name
      * @return List of Solr field names

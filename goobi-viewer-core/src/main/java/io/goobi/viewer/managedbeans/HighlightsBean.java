@@ -59,7 +59,7 @@ import io.goobi.viewer.model.cms.HighlightData;
 import io.goobi.viewer.model.metadata.MetadataElement;
 
 /**
- * Managed bean handling {@link Highlight} objects
+ * Managed bean handling {@link Highlight} objects.
  */
 @Named
 @SessionScoped
@@ -89,19 +89,19 @@ public class HighlightsBean implements Serializable {
     private ImageDeliveryBean imaging;
 
     /**
-     * Status of editing the {@link HighlightsBean#getSelectedObject() selected highlight} in the administration backend
+     * Status of editing the {@link HighlightsBean#getSelectedObject() selected highlight} in the administration backend.
      */
     public enum EditStatus {
         /**
-         * User still needs to select whether the highlight should be based on a record or a url
+         * User still needs to select whether the highlight should be based on a record or a url.
          */
         SELECT_TARGET,
         /**
-         * A new highlight is being created after {@link #SELECT_TARGET} is completed
+         * A new highlight is being created after {@link #SELECT_TARGET} is completed.
          */
         CREATE,
         /**
-         * An existing highlight is being edited
+         * An existing highlight is being edited.
          */
         EDIT;
     }
@@ -113,7 +113,7 @@ public class HighlightsBean implements Serializable {
     }
 
     /**
-     * Testing constructor explicitly initializing required properties
+     * Testing constructor explicitly initializing required properties.
      * 
      * @param dao The {@link IDAO} in which to store the highlight data
      * @param navigationHelper {@link NavigationHelper} to handle URL resolving
@@ -126,7 +126,7 @@ public class HighlightsBean implements Serializable {
     }
 
     /**
-     * called after initialization to load listing of existing highlights
+     * Called after initialization to load listing of existing highlights.
      */
     @PostConstruct
     public void init() {
@@ -153,9 +153,9 @@ public class HighlightsBean implements Serializable {
     }
 
     /**
-     * Get a {@link TableDataProvider} to all saved {@link Highlight highlights}
-     * 
-     * @return a {@link TableDataProvider}
+     * Get a {@link TableDataProvider} to all saved {@link Highlight highlights}.
+     *
+     * @return the TableDataProvider for all saved highlights
      */
     public TableDataProvider<Highlight> getAllObjectsProvider() {
         return allObjectsProvider;
@@ -164,8 +164,8 @@ public class HighlightsBean implements Serializable {
     /**
      * Get a {@link TableDataProvider} to all current {@link Highlight highlights}. That is all highlights which are valid for the current date and
      * set to active
-     * 
-     * @return a {@link TableDataProvider}
+     *
+     * @return the TableDataProvider for all currently active highlights
      */
     public TableDataProvider<Highlight> getCurrentObjectsProvider() {
         return currentObjectsProvider;
@@ -173,9 +173,9 @@ public class HighlightsBean implements Serializable {
 
     /**
      * Get the URL to the highlighted object. Either the record page URL of the URL given in highlight creation
-     * 
+     *
      * @param object the highlight object
-     * @return the URL
+     * @return the URL of the highlighted object, or an empty string if none can be determined
      */
     public String getUrl(Highlight object) {
         if (object != null) {
@@ -201,9 +201,9 @@ public class HighlightsBean implements Serializable {
     }
 
     /**
-     * Delete a {@link Highlight}
+     * Delete a {@link Highlight}.
      * 
-     * @param object
+     * @param object the highlight to delete
      */
     public void deleteObject(Highlight object) {
         try {
@@ -216,18 +216,18 @@ public class HighlightsBean implements Serializable {
     }
 
     /**
-     * Get the currently selected {@link Highlight}
-     * 
-     * @return a {@link Highlight}
+     * Get the currently selected {@link Highlight}.
+     *
+     * @return the currently selected highlight, or null if none is selected
      */
     public Highlight getSelectedObject() {
         return selectedObject;
     }
 
     /**
-     * Set the {@link Highlight} selected for editing
+     * Sets the {@link Highlight} selected for editing.
      * 
-     * @param selectedObject
+     * @param selectedObject the highlight to set as selected for editing
      */
     public void setSelectedObject(Highlight selectedObject) {
         this.selectedObject = selectedObject;
@@ -242,9 +242,9 @@ public class HighlightsBean implements Serializable {
     }
 
     /**
-     * Set the {@link Highlight} selected for editing via its database id
+     * Sets the {@link Highlight} selected for editing via its database id.
      * 
-     * @param id
+     * @param id database id of the highlight to select
      */
     public void setSelectedObjectId(long id) {
 
@@ -262,7 +262,7 @@ public class HighlightsBean implements Serializable {
     }
 
     /**
-     * Create a new {@link Highlight} and set as the selected highlight
+     * Creates a new {@link Highlight} and set as the selected highlight.
      */
     public void setNewSelectedObject() {
         HighlightData data = new HighlightData();
@@ -270,7 +270,7 @@ public class HighlightsBean implements Serializable {
     }
 
     /**
-     * Check if the currently selected highlight has been persisted already
+     * Checks if the currently selected highlight has been persisted already.
      * 
      * @return true if {@link #getSelectedObject()} has no database id and has thus not been persisted yet
      */
@@ -279,9 +279,9 @@ public class HighlightsBean implements Serializable {
     }
 
     /**
-     * Persist the given {@link Highlight} to the database
+     * Persist the given {@link Highlight} to the database.
      * 
-     * @param object
+     * @param object the highlight to persist to the database
      * @throws DAOException
      */
     public void saveObject(Highlight object) throws DAOException {
@@ -306,7 +306,7 @@ public class HighlightsBean implements Serializable {
     }
 
     /**
-     * If a {@link Highlight} has been selected and it points to a record (rather than a URL), retrieve the metadata for this record
+     * If a {@link Highlight} has been selected and it points to a record (rather than a URL), retrieve the metadata for this record.
      * 
      * @return A {@link MetadataElement} with metadata for the related record if one exists. Otherwise null
      */
@@ -328,8 +328,8 @@ public class HighlightsBean implements Serializable {
 
     /**
      * Get the currently displayed highlight. This highlight is randomly chosen from all highlights valid for the current day which are set to enabled
-     * 
-     * @return a {@link Highlight}
+     *
+     * @return a randomly selected currently active highlight, or null if none are active
      * @throws DAOException
      */
     public Highlight getCurrentHighlight() throws DAOException {
@@ -363,9 +363,9 @@ public class HighlightsBean implements Serializable {
      * Get the URL of a representative image for the record related to the currently selected highlight if a highlight is selected and it refers to a
      * record. Otherwise return null
      * 
-     * @return A URL to the record for the selected highlight if one exists. Otherwise null
      * @param width the desired width of the image. Chose '0' for original image width
      * @param height the desired height of the image. Chose '0' for original image height
+     * @return A URL to the record for the selected highlight if one exists. Otherwise null
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws ViewerConfigurationException
@@ -381,7 +381,7 @@ public class HighlightsBean implements Serializable {
     }
 
     /**
-     * Get all objected contained in {@link #getCurrentObjectsProvider()}
+     * Get all objected contained in {@link #getCurrentObjectsProvider()}.
      * 
      * @return A list of all currently active {@link Highlight}s
      */
@@ -390,18 +390,18 @@ public class HighlightsBean implements Serializable {
     }
 
     /**
-     * Get the current {@link EditStatus}
-     * 
-     * @return a {@link EditStatus}
+     * Get the current {@link EditStatus}.
+     *
+     * @return the current edit status of the highlight editor
      */
     public EditStatus getEditStatus() {
         return editStatus;
     }
 
     /**
-     * Set the {@link #getEditStatus()}
+     * Set the {@link #getEditStatus()}.
      * 
-     * @param editStatus
+     * @param editStatus the edit status to set
      */
     public void setEditStatus(EditStatus editStatus) {
         this.editStatus = editStatus;

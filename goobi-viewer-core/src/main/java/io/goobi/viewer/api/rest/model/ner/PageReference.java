@@ -31,9 +31,8 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * <p>
- * PageReference class.
- * </p>
+ * REST API model representing a single page of a digitized document and the NER tag counts found on it.
+ * Implements {@link TagGroup} to allow uniform handling alongside multi-page references.
  */
 @JsonInclude(Include.NON_ABSENT)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -43,9 +42,7 @@ public class PageReference implements TagGroup {
     private List<TagCount> tags;
 
     /**
-     * <p>
-     * Constructor for PageReference.
-     * </p>
+     * Creates a new PageReference instance.
      */
     public PageReference() {
         super();
@@ -54,11 +51,9 @@ public class PageReference implements TagGroup {
     }
 
     /**
-     * <p>
-     * Constructor for PageReference.
-     * </p>
+     * Creates a new PageReference instance.
      *
-     * @param pageOrder a int.
+     * @param pageOrder display order number of the referenced page
      */
     public PageReference(int pageOrder) {
         super();
@@ -80,11 +75,9 @@ public class PageReference implements TagGroup {
     }
 
     /**
-     * <p>
      * Setter for the field <code>tags</code>.
-     * </p>
      *
-     * @param nerTags a {@link java.util.List} object.
+     * @param nerTags list of NER tag counts to assign to this page reference
      */
     public void setTags(List<TagCount> nerTags) {
         this.tags = nerTags;
@@ -97,9 +90,6 @@ public class PageReference implements TagGroup {
         return this.getPageOrder().compareTo(o.getPageOrder());
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -110,9 +100,6 @@ public class PageReference implements TagGroup {
         return 0;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {

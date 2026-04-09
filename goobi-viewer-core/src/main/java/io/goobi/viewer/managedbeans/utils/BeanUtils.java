@@ -92,9 +92,9 @@ public final class BeanUtils {
     }
 
     /**
-     * Gets the current Request from the faces context
+     * Gets the current Request from the faces context.
      *
-     * @return a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @return the current HTTP servlet request, or null if unavailable
      */
     public static HttpServletRequest getRequest() {
         SessionBean sb = getSessionBean();
@@ -109,12 +109,10 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getRequest.
-     * </p>
      *
-     * @param context a {@link jakarta.faces.context.FacesContext} object.
-     * @return a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param context faces context to extract the request from
+     * @return the HTTP servlet request from the given FacesContext, or null if unavailable
      */
     public static HttpServletRequest getRequest(FacesContext context) {
         if (context != null && context.getExternalContext() != null) {
@@ -125,9 +123,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getSession.
-     * </p>
      *
      * @return HttpSession from current request
      */
@@ -161,24 +157,20 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * hasJsfContext.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if a JSF FacesContext is available in the current thread, false otherwise
      */
     public static boolean hasJsfContext() {
         return FacesContext.getCurrentInstance() != null;
     }
 
     /**
-     * <p>
      * getServletImagesPathFromRequest.
-     * </p>
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @param theme a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param request incoming HTTP request for base URL resolution
+     * @param theme theme folder name appended to the path
+     * @return the absolute URL path to the servlet images directory for the given theme
      */
     public static String getServletImagesPathFromRequest(HttpServletRequest request, String theme) {
         StringBuilder sb = new StringBuilder(ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
@@ -194,11 +186,9 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getServletContext.
-     * </p>
      *
-     * @return a {@link jakarta.servlet.ServletContext} object.
+     * @return the current ServletContext, or null if no FacesContext is available
      */
     public static ServletContext getServletContext() {
         FacesContext context = FacesContext.getCurrentInstance();
@@ -210,9 +200,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getInitialLocale.
-     * </p>
      *
      * @return Currently selected or default {@link java.util.Locale}
      */
@@ -248,9 +236,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getLocale.
-     * </p>
      *
      * @return Current Locale in {@link io.goobi.viewer.managedbeans.NavigationHelper}; default locale if none found
      */
@@ -264,11 +250,9 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getDefaultLocale.
-     * </p>
      *
-     * @return a {@link java.util.Locale} object.
+     * @return the default application locale
      */
     public static Locale getDefaultLocale() {
         if (defaultLocale == null) {
@@ -313,16 +297,14 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getBeanByName.
-     * </p>
      *
-     * @param name a {@link java.lang.String} object.
-     * @param clazz a {@link java.lang.Class} object.
-     * @throws ContextNotActiveException if no jsf context is available to retrieve the bean from
-     * @return a {@link java.lang.Object} object.
+     * @param name CDI bean name to look up
+     * @param clazz expected type used to create the CDI reference
+     * @return the CDI-managed bean reference for the given name and type, or null if not found
      * @should throw IllegalArgumentException if named bean of different class
      * @should throw IllegalStateException if named bean of different class
+     * @throws ContextNotActiveException if no jsf context is available to retrieve the bean from
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static Object getBeanByName(String name, Class clazz) throws ContextNotActiveException {
@@ -344,11 +326,9 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getNavigationHelper.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.managedbeans.NavigationHelper} object.
+     * @return the NavigationHelper managed bean, or null if outside a JSF context
      */
     public static NavigationHelper getNavigationHelper() {
         //Don't attempt to get navigationHelper outside of faces context. Otherwise a new navigationHelper entity will be constructed
@@ -360,166 +340,136 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getAdminBean.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.managedbeans.AdminBean} object.
+     * @return the AdminBean managed bean
      */
     public static AdminBean getAdminBean() {
         return (AdminBean) getBeanByName("adminBean", AdminBean.class);
     }
 
     /**
-     * <p>
      * getCollectionViewBean.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.managedbeans.CollectionViewBean} object
+     * @return the CollectionViewBean managed bean
      */
     public static CollectionViewBean getCollectionViewBean() {
         return (CollectionViewBean) getBeanByName("collectionViewBean", CollectionViewBean.class);
     }
 
     /**
-     * <p>
      * getActiveDocumentBean.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.managedbeans.ActiveDocumentBean} object.
+     * @return the ActiveDocumentBean managed bean
      */
     public static ActiveDocumentBean getActiveDocumentBean() {
         return (ActiveDocumentBean) getBeanByName("activeDocumentBean", ActiveDocumentBean.class);
     }
 
     /**
-     * <p>
      * getPersistentStorageBean.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.managedbeans.storage.ApplicationBean} object
+     * @return the ApplicationBean managed bean
      */
     public static ApplicationBean getPersistentStorageBean() {
         return (ApplicationBean) getBeanByName("applicationBean", ApplicationBean.class);
     }
 
     /**
-     * <p>
      * getSearchBean.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.managedbeans.SearchBean} object.
+     * @return the SearchBean managed bean
      */
     public static SearchBean getSearchBean() {
         return (SearchBean) getBeanByName("searchBean", SearchBean.class);
     }
 
     /**
-     * <p>
      * getBookmarkBean.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.managedbeans.BookmarkBean} object
+     * @return the BookmarkBean managed bean
      */
     public static BookmarkBean getBookmarkBean() {
         return (BookmarkBean) getBeanByName("bookmarkBean", BookmarkBean.class);
     }
 
     /**
-     * <p>
      * getCreateRecordBean.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.managedbeans.CreateRecordBean} object
+     * @return the CreateRecordBean managed bean
      */
     public static CreateRecordBean getCreateRecordBean() {
         return (CreateRecordBean) getBeanByName("createRecordBean", CreateRecordBean.class);
     }
 
     /**
-     * <p>
      * getCMSCollectionsBean.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.managedbeans.CmsCollectionsBean} object.
+     * @return the CmsCollectionsBean managed bean
      */
     public static CmsCollectionsBean getCMSCollectionsBean() {
         return (CmsCollectionsBean) getBeanByName("cmsCollectionsBean", CmsCollectionsBean.class);
     }
 
     /**
-     * <p>
      * getMetadataBean.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.managedbeans.MetadataBean} object.
+     * @return the MetadataBean managed bean
      */
     public static MetadataBean getMetadataBean() {
         return (MetadataBean) getBeanByName("metadataBean", MetadataBean.class);
     }
 
     /**
-     * <p>
      * getCmsBean.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.managedbeans.CmsBean} object.
+     * @return the CmsBean managed bean
      */
     public static CmsBean getCmsBean() {
         return (CmsBean) getBeanByName("cmsBean", CmsBean.class);
     }
 
     /**
-     * <p>
      * getCmsMediaBean.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.managedbeans.CmsMediaBean} object.
+     * @return the CmsMediaBean managed bean
      */
     public static CmsMediaBean getCmsMediaBean() {
         return (CmsMediaBean) getBeanByName("cmsMediaBean", CmsMediaBean.class);
     }
 
     /**
-     * <p>
      * getCalendarBean.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.managedbeans.CalendarBean} object.
+     * @return the CalendarBean managed bean
      */
     public static CalendarBean getCalendarBean() {
         return (CalendarBean) getBeanByName("calendarBean", CalendarBean.class);
     }
 
     /**
-     * <p>
      * getCaptchaBean.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.managedbeans.CaptchaBean} object.
+     * @return the CaptchaBean managed bean
      */
     public static CaptchaBean getCaptchaBean() {
         return (CaptchaBean) getBeanByName("captchaBean", CaptchaBean.class);
     }
 
     /**
-     * <p>
      * getUserBean.
-     * </p>
-     * 
+     *
+     * @return the UserBean managed bean
      * @throws ContextNotActiveException if no jsf context is available to retrieve the bean from
-     * @return a {@link io.goobi.viewer.managedbeans.UserBean} object.
      */
     public static UserBean getUserBean() throws ContextNotActiveException {
         return (UserBean) getBeanByName("userBean", UserBean.class);
     }
 
     /**
-     * <p>
      * getSessionBean.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.managedbeans.storage.SessionBean} object
+     * @return the SessionBean managed bean, or a new instance if the CDI bean is unavailable
      */
     public static SessionBean getSessionBean() {
         Object bean = getBeanByName("sessionBean", SessionBean.class);
@@ -531,11 +481,9 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getImageDeliveryBean.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.managedbeans.ImageDeliveryBean} object.
+     * @return the ImageDeliveryBean managed bean, or a newly initialized one if unavailable
      */
     public static ImageDeliveryBean getImageDeliveryBean() {
         ImageDeliveryBean bean = (ImageDeliveryBean) getBeanByName("imageDelivery", ImageDeliveryBean.class);
@@ -556,34 +504,28 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getBrowseBean.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.managedbeans.BrowseBean} object.
+     * @return the BrowseBean managed bean
      */
     public static BrowseBean getBrowseBean() {
         return (BrowseBean) getBeanByName("browseBean", BrowseBean.class);
     }
 
     /**
-     * <p>
      * getUserBean.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.managedbeans.ContentBean} object.
+     * @return the ContentBean managed bean
      */
     public static ContentBean getContentBean() {
         return (ContentBean) getBeanByName("contentBean", ContentBean.class);
     }
 
     /**
-     * <p>
      * getUserBeanFromSession.
-     * </p>
      *
-     * @param session a {@link jakarta.servlet.http.HttpSession} object.
-     * @return a {@link io.goobi.viewer.managedbeans.UserBean} object.
+     * @param session HTTP session to retrieve the UserBean from
+     * @return the UserBean stored in the given session, or null if not found
      */
     public static UserBean getUserBeanFromSession(HttpSession session) {
         if (session != null) {
@@ -604,21 +546,19 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getBeanFromSession.
-     * </p>
      *
-     * @param session a {@link jakarta.servlet.http.HttpSession} object
-     * @param beanName a {@link java.lang.String} object
-     * @param clazz a {@link java.lang.Class} object
+     * @param session HTTP session to retrieve the bean from
+     * @param beanName session attribute name of the bean
+     * @param clazz expected type of the bean
      * @param <T> a T class
-     * @return a {@link java.util.Optional} object
+     * @return an Optional containing the typed bean from the session, or empty if not found
      */
     @SuppressWarnings("unchecked")
     public static <T> Optional<T> getBeanFromSession(HttpSession session, String beanName, Class<T> clazz) {
         if (session != null) {
             Object bean = session.getAttribute(beanName);
-            if (bean != null && bean.getClass().equals(clazz)) {
+            if (clazz.isInstance(bean)) {
                 return Optional.of(bean).map(o -> (T) o);
             }
             return findInstanceInSessionAttributes(session, clazz);
@@ -628,12 +568,11 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
-     * getUserFromSession.
-     * </p>
+     * getUserFromSession. This performs a scan of the whole session and may be expensive. Prefer using {@link #getUserBean()} and
+     * #{@link UserBean#getUser()}
      *
-     * @param session a {@link jakarta.servlet.http.HttpSession} object.
-     * @return a {@link io.goobi.viewer.model.security.user.User} object.
+     * @param session HTTP session containing the UserBean
+     * @return the User stored in the UserBean of the given session, or null if not found
      */
     public static User getUserFromSession(HttpSession session) {
         UserBean ub = getUserBeanFromSession(session);
@@ -645,26 +584,22 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * escapeCriticalUrlChracters.
-     * </p>
      *
-     * @param value a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param value URL string to escape
+     * @return the input string with critical URL characters escaped
      */
     public static String escapeCriticalUrlChracters(String value) {
         return StringTools.escapeCriticalUrlChracters(value, false);
     }
 
     /**
-     * <p>
      * findInstanceInSessionAttributes.
-     * </p>
      *
-     * @param session a {@link jakarta.servlet.http.HttpSession} object
-     * @param clazz a {@link java.lang.Class} object
+     * @param session HTTP session whose attributes are scanned
+     * @param clazz type to search for among session attributes
      * @param <T> a T class
-     * @return a {@link java.util.Optional} object
+     * @return an Optional containing the first session attribute of the given type, or empty if none found
      */
     @SuppressWarnings({ "unchecked" })
     public static <T> Optional<T> findInstanceInSessionAttributes(HttpSession session, Class<T> clazz) {
@@ -672,11 +607,11 @@ public final class BeanUtils {
         while (attributeNames.hasMoreElements()) {
             String attributeName = attributeNames.nextElement();
             Object attributeValue = session.getAttribute(attributeName);
-            if (attributeValue != null && attributeValue.getClass().equals(clazz)) {
+            if (clazz.isInstance(attributeValue)) {
                 return Optional.of(attributeValue).map(o -> (T) o);
             } else if (attributeValue instanceof SerializableContextualInstance serializableContextualInstance) {
                 Object instance = serializableContextualInstance.getInstance();
-                if (instance != null && instance.getClass().equals(clazz)) {
+                if (clazz.isInstance(instance)) {
                     return Optional.of(instance).map(o -> (T) o);
                 }
             }
@@ -685,11 +620,9 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getResponse.
-     * </p>
      *
-     * @return a {@link jakarta.servlet.http.HttpServletResponse} object.
+     * @return the current HTTP servlet response, or null if no FacesContext is available
      */
     public static HttpServletResponse getResponse() {
         FacesContext context = FacesContext.getCurrentInstance();
@@ -701,12 +634,10 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getManagedBeanValue.
-     * </p>
      *
-     * @param expr a {@link java.lang.String} object
-     * @return a {@link java.lang.Object} object
+     * @param expr EL expression string to evaluate
+     * @return the value resolved by the EL expression, or null if the context or expression is unavailable
      */
     public static Object getManagedBeanValue(String expr) {
         FacesContext context = FacesContext.getCurrentInstance();

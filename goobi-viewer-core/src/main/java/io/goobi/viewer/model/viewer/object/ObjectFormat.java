@@ -24,9 +24,7 @@ package io.goobi.viewer.model.viewer.object;
 import org.apache.commons.io.FilenameUtils;
 
 /**
- * <p>
- * ObjectFormat class.
- * </p>
+ * Enum representing the supported 3D object file formats (e.g. OBJ, STL, X3D) for 3D viewer integration.
  *
  * @author Florian Alpers
  */
@@ -38,12 +36,10 @@ public enum ObjectFormat {
     GLTF;
 
     /**
-     * <p>
      * getByFileExtension.
-     * </p>
      *
-     * @param filename a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.viewer.object.ObjectFormat} object.
+     * @param filename file name whose extension is examined
+     * @return the ObjectFormat matching the file extension, or null if unrecognized
      */
     public static ObjectFormat getByFileExtension(String filename) {
         switch (FilenameUtils.getExtension(filename.toLowerCase())) {

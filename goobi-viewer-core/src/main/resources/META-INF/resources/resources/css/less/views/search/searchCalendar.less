@@ -51,6 +51,7 @@
         margin-bottom: 0;
     }
     &__input {
+        margin-top: 20px;
         padding: 21px;
         border: 1px solid @middlegray;
         background-color: @white;
@@ -73,7 +74,6 @@
     }
     &__months {
         margin-bottom: 21px;
-        padding: 21px 0;
     }
     &__month {
         min-height: 270px;
@@ -115,20 +115,6 @@
             padding: 5px 10px;
             line-height: 19px;
         }
-        a,
-        button {
-            width: 100%;
-            color: @blue;
-            text-decoration: none;
-            background-color: @lightgray;
-            &:hover,
-            &:focus,
-            &:active {
-                text-decoration: none;
-                color: @white;
-                background-color: @blue;
-            }
-        }
         .popover-title {
             line-height: normal;
             color: @black;
@@ -145,6 +131,20 @@
             }
         }
     }
+	&__month-day-link,
+	&__month-day-button {
+		width: 100%;
+		color: @blue;
+		text-decoration: none;
+		background-color: @lightgray;
+		&:hover,
+		&:focus,
+		&:active {
+		    text-decoration: none;
+		    color: @white;
+		    background-color: @blue;
+		}
+	}
     &__month-day-empty {
         min-height: 1px;
     }
@@ -156,6 +156,129 @@
         .label {
             padding: 7px 15px;
             font-size: 0.9rem;
+        }
+    }
+    /* NEWSPAPER SEARCH */
+    &__newspaper-search {}
+    &__newspaper-search-body {
+		border: 1px solid @middlegray;
+		background-color: @white;
+        padding: 24px;
+    }
+    &__newspaper-search-title,
+    &__issues-title {
+        margin-top: 24px;
+        margin-bottom: 16px;
+        font-size: @fontLarge;
+    }
+    &__issues-header {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 32px;
+        margin-bottom: 16px;
+    }
+    &__issues-header &__issues-title {
+        margin: 0;
+    }
+    &__year-select {
+        flex-shrink: 0;
+        .form-control {
+            width: auto;
+            min-width: 160px;
+        }
+    }
+    &__search-field {
+        margin-bottom: 20px;
+    }
+    &__newspaper-search-date {
+        display: flex;
+        align-items: stretch;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    &__newspaper-search-date-label {
+        flex-shrink: 0;
+        font-size: @fontMedium;
+    }
+    &__newspaper-search-date-fields {
+        display: flex;
+        align-items: stretch;
+        gap: 12px;
+        flex: 1;
+			.form-control  {
+				height: 100%;
+				min-height: 38px;
+			}
+    }
+	&__newspaper-search-date-sep,
+	&__newspaper-search-date-label {
+		display: flex;
+		align-items: center;
+	}
+    &__newspaper-search-date-sep {
+        font-size: @fontMedium;
+    }
+    &__newspaper-search-btn {
+        flex-shrink: 0;
+        align-self: stretch;
+    }
+    /* YEAR GRID */
+    &__year-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        max-height: 320px;
+        overflow-y: auto;
+        padding: 2px;
+    }
+    &__decade-header {
+        flex-basis: 100%;
+        font-size: @fontSmall;
+        font-weight: 600;
+        color: @gray;
+        margin-top: 14px;
+        padding-bottom: 6px;
+
+        &:first-child {
+            margin-top: 0;
+        }
+    }
+    &__year-chip {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        min-width: 56px;
+        padding: 8px 16px;
+        border: 1px solid @middlegray;
+        border-radius: 20px;
+        background-color: @white;
+        color: @colorFonts;
+        font-size: 14px;
+        line-height: 1;
+        cursor: pointer;
+        transition:
+            background-color 0.2s ease,
+            border-color 0.2s ease,
+            color 0.2s ease,
+            box-shadow 0.2s ease;
+
+        &:hover {
+            background-color: @lightgray;
+            border-color: @gray;
+        }
+
+        &:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px fade(@blue, 10%);
+        }
+
+        &.-active {
+            background-color: @blue;
+            border-color: @blue;
+            color: @white;
+            font-weight: 700;
         }
     }
     /* MODIFICATION */
@@ -183,4 +306,19 @@
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
+    .search-calendar {
+        &__newspaper-search-date {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        &__newspaper-search-date-fields {
+            flex-direction: column;
+        }
+        &__newspaper-search-btn {
+            width: 100%;
+        }
+		&__newspaper-search-date-fields {
+			align-items: unset;
+		}
+    }
 }

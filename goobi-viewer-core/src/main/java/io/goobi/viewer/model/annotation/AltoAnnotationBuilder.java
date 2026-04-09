@@ -47,9 +47,10 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
 
 /**
  * Creates an {@link de.intranda.api.iiif.presentation.v2.AnnotationList} of {@link TextualResource}s from the content of an ALTO document.
- * Depending on selected granularity, it is either one annotation per page, per TextBlock, per line or per word
  *
- * @author Florian
+ * <p>Depending on selected granularity, it is either one annotation per page, per TextBlock, per line or per word
+ *
+ * @author Florian Alpers
  */
 public class AltoAnnotationBuilder {
 
@@ -58,8 +59,8 @@ public class AltoAnnotationBuilder {
 
     /**
      *
-     * @param urls
-     * @param format
+     * @param urls the URL manager for building annotation API paths
+     * @param format the annotation format, e.g. "oa" for OpenAnnotation or "wa" for WebAnnotation
      */
     public AltoAnnotationBuilder(AbstractApiUrlManager urls, String format) {
         this.urls = urls;
@@ -67,17 +68,15 @@ public class AltoAnnotationBuilder {
     }
 
     /**
-     * <p>
      * createAnnotations.
-     * </p>
      *
-     * @param alto a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.Page} object.
-     * @param pi
-     * @param pageNo
-     * @param target
-     * @param granularity a {@link io.goobi.viewer.model.annotation.AltoAnnotationBuilder.Granularity} object.
-     * @param urlOnlyTarget a boolean.
-     * @return a {@link java.util.List} object.
+     * @param alto parsed ALTO page from which annotations are extracted
+     * @param pi persistent identifier of the digitized work
+     * @param pageNo physical page number within the work
+     * @param target the IIIF canvas resource used as annotation target
+     * @param granularity level of text elements to generate annotations for
+     * @param urlOnlyTarget if true, use URI-only specific resources as annotation targets
+     * @return a list of IIIF annotations generated from the ALTO text elements of the given granularity
      */
     public List<AbstractAnnotation> createAnnotations(Page alto, String pi, Integer pageNo, IResource target, Granularity granularity,
             boolean urlOnlyTarget) {
@@ -106,16 +105,14 @@ public class AltoAnnotationBuilder {
     }
 
     /**
-     * <p>
      * createAnnotations.
-     * </p>
      *
-     * @param elements a {@link java.util.List} object.
-     * @param pi
-     * @param pageNo
-     * @param target
-     * @param urlOnlyTarget a boolean.
-     * @return a {@link java.util.List} object.
+     * @param elements list of ALTO geometric elements to convert to annotations
+     * @param pi persistent identifier of the digitized work
+     * @param pageNo physical page number within the work
+     * @param target the IIIF canvas resource used as annotation target
+     * @param urlOnlyTarget if true, use URI-only specific resources as annotation targets
+     * @return a list of IIIF annotations generated from the given ALTO geometric elements
      */
     public List<AbstractAnnotation> createAnnotations(List<GeometricData> elements, String pi, Integer pageNo, IResource target,
             boolean urlOnlyTarget) {
@@ -123,16 +120,14 @@ public class AltoAnnotationBuilder {
     }
 
     /**
-     * <p>
      * createAnnotation.
-     * </p>
      *
-     * @param element a {@link de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData} object.
-     * @param pi
-     * @param pageNo
-     * @param canvas a {@link de.intranda.api.annotation.IResource} object.
-     * @param urlOnlyTarget a boolean.
-     * @return a {@link de.intranda.api.annotation.IAnnotation} object.
+     * @param element ALTO geometric element providing bounds and text content
+     * @param pi persistent identifier of the digitized work
+     * @param pageNo physical page number within the work
+     * @param canvas IIIF canvas resource to annotate
+     * @param urlOnlyTarget if true, use URI-only specific resources as annotation targets
+     * @return the annotation created from the given ALTO element, targeting the specified canvas
      */
     public AbstractAnnotation createAnnotation(GeometricData element, String pi, Integer pageNo, IResource canvas, boolean urlOnlyTarget) {
         String id = Optional.ofNullable(element.getId()).orElse(buildId(element));
@@ -152,7 +147,7 @@ public class AltoAnnotationBuilder {
     /**
      * Method to construct alto element id if no id attribute is available.
      *
-     * @param e
+     * @param e the ALTO geometric element lacking an explicit id attribute
      * @return {@link String}
      */
     private static String buildId(GeometricData e) {
@@ -160,9 +155,9 @@ public class AltoAnnotationBuilder {
     }
 
     /**
-     * @param canvas
-     * @param area
-     * @param urlOnly
+     * @param canvas the IIIF canvas resource to target
+     * @param area the rectangular region on the canvas
+     * @param urlOnly if true, return a URI-only specific resource
      * @return {@link IResource}
      */
     private IResource createSpecificResource(IResource canvas, Rectangle area, boolean urlOnly) {
@@ -179,9 +174,9 @@ public class AltoAnnotationBuilder {
     }
 
     /**
-     * @param pi
-     * @param pageNo
-     * @param id
+     * @param pi persistent identifier of the digitized work
+     * @param pageNo physical page number within the work
+     * @param id element-level identifier within the ALTO document
      * @return {@link URI}
      */
     private URI createAnnotationId(String pi, Integer pageNo, String id) {
@@ -192,6 +187,9 @@ public class AltoAnnotationBuilder {
         return URI.create(path.build());
     }
 
+    /**
+     * Enumerates the ALTO document hierarchy levels at which annotations can be generated, from a full page down to individual words.
+     */
     public enum Granularity {
         PAGE,
         PAGEAREA,

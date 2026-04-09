@@ -583,6 +583,27 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchBean#generateAdvancedSearchMainQuery(boolean)
+     * @verifies remove facets for hierarchical field when value is deselected
+     */
+    @Test
+    void generateAdvancedSearchMainQuery_shouldRemoveFacetsForHierarchicalFieldWhenValueIsDeselected() throws Exception {
+        searchBean.resetAdvancedSearchParameters();
+
+        searchBean.getFacets().setActiveFacetString(SolrConstants.DC + ":foo;;");
+        assertEquals(1, searchBean.getFacets().getActiveFacets().size());
+        Assertions.assertTrue(searchBean.getFacets().getActiveFacets().get(0).isHierarchial());
+
+        SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
+        item.setField(SolrConstants.DC);
+        item.setValue("");
+
+        searchBean.generateAdvancedSearchMainQuery();
+
+        assertEquals("-", searchBean.getFacets().getActiveFacetString());
+    }
+
+    /**
      * @see SearchBean#getSearchUrl()
      * @verifies return correct url
      */

@@ -32,13 +32,17 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * <p>
- * NERTag class.
- * </p>
+ * REST API model representing a single named-entity recognition (NER) tag extracted from a digitized document.
+ * Each tag carries a unique ID, a text value, a {@link Type} category (person, location, corporation, event, or miscellaneous), and a reference
+ * to the element on the page where it appears.
  */
 @JsonInclude(Include.NON_NULL)
 public class NERTag {
 
+    /**
+     * Enumerates the recognized categories of named entities, such as persons, locations, corporations, events, and miscellaneous types.
+     * Each constant carries one or more label strings used to match raw NER output from the indexer.
+     */
     public enum Type {
         PERSON("person"),
         LOCATION("location", "place"),
@@ -75,9 +79,7 @@ public class NERTag {
     private ElementReference element;
 
     /**
-     * <p>
-     * Constructor for NERTag.
-     * </p>
+     * Creates a new NERTag instance.
      */
     public NERTag() {
         this.id = null;
@@ -87,14 +89,12 @@ public class NERTag {
     }
 
     /**
-     * <p>
-     * Constructor for NERTag.
-     * </p>
+     * Creates a new NERTag instance.
      *
-     * @param id a {@link java.lang.String} object.
-     * @param value a {@link java.lang.String} object.
-     * @param type a {@link io.goobi.viewer.api.rest.model.ner.NERTag.Type} object.
-     * @param element a {@link io.goobi.viewer.api.rest.model.ner.ElementReference} object.
+     * @param id unique identifier of the named entity tag
+     * @param value text value of the named entity tag
+     * @param type NER category of the tag (person, location, etc.)
+     * @param element element reference where the tag appears
      */
     public NERTag(String id, String value, Type type, ElementReference element) {
         this.id = id;
@@ -104,72 +104,56 @@ public class NERTag {
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the identifier of this NER tag
      */
     public String getId() {
         return id;
     }
 
     /**
-     * <p>
      * Getter for the field <code>value</code>.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the text value of this NER tag
      */
     public String getValue() {
         return value;
     }
 
     /**
-     * <p>
      * Getter for the field <code>type</code>.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.api.rest.model.ner.NERTag.Type} object.
+     * @return the NER tag type (e.g. person, location, organization)
      */
     public Type getType() {
         return type;
     }
 
     /**
-     * <p>
      * Getter for the field <code>element</code>.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.api.rest.model.ner.ElementReference} object.
+     * @return the element reference indicating where this tag appears on the page
      */
     public ElementReference getElement() {
         return element;
     }
 
     /**
-     * <p>
      * Setter for the field <code>element</code>.
-     * </p>
      *
-     * @param element a {@link io.goobi.viewer.api.rest.model.ner.ElementReference} object.
+     * @param element element reference where the tag appears
      */
     public void setElement(ElementReference element) {
         this.element = element;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return getId().hashCode();
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -184,9 +168,6 @@ public class NERTag {
 
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     /** {@inheritDoc} */
     @Override
     public String toString() {

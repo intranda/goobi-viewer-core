@@ -89,9 +89,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.UriBuilder;
 
 /**
- * <p>
- * ManifestBuilder class.
- * </p>
+ * Builds IIIF Presentation API v3 Manifest resources from Solr index data and content files.
  *
  * @author Florian Alpers
  */
@@ -102,12 +100,10 @@ public class ManifestBuilder extends AbstractBuilder {
     private final CanvasBuilder canvasBuilder;
 
     /**
-     * <p>
-     * Constructor for ManifestBuilder.
-     * </p>
+     * Creates a new ManifestBuilder instance.
      *
-     * @param apiUrlManager
-     * @param request
+     * @param apiUrlManager URL manager providing API endpoint paths
+     * @param request current HTTP servlet request
      */
     public ManifestBuilder(AbstractApiUrlManager apiUrlManager, HttpServletRequest request) {
         super(apiUrlManager, request);
@@ -116,8 +112,8 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * 
-     * @param pi
+     *
+     * @param pi persistent identifier of the record to build
      * @return {@link IPresentationModelElement3}
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -164,10 +160,10 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * 
-     * @param pi
-     * @param manifest
-     * @param request
+     *
+     * @param pi persistent identifier of the record
+     * @param manifest IIIF manifest to add annotations to
+     * @param request current HTTP servlet request
      */
     private void addAnnotations(String pi, Manifest3 manifest, HttpServletRequest request) {
         try {
@@ -208,11 +204,11 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * 
-     * @param pi
-     * @param pageNo
-     * @param manifest
-     * @param request
+     *
+     * @param pi persistent identifier of the record
+     * @param pageNo physical page number to filter annotations by
+     * @param manifest IIIF manifest to add annotations to
+     * @param request current HTTP servlet request
      */
     private void addAnnotations(String pi, int pageNo, Manifest3 manifest, HttpServletRequest request) {
         try {
@@ -233,8 +229,8 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param childDocuments
-     * @param manifest
+     * @param childDocuments list of volume struct elements to add as items
+     * @param manifest IIIF collection manifest to add volumes to
      */
     private void addVolumes(List<StructElement> childDocuments, Collection3 manifest) {
         for (StructElement volume : childDocuments) {
@@ -250,9 +246,9 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param mainDocument
-     * @param childDocuments
-     * @param manifest
+     * @param mainDocument top structure element of the record
+     * @param childDocuments list of child struct elements for range building
+     * @param manifest IIIF manifest to add ranges to
      * @throws ContentNotFoundException
      * @throws PresentationException
      */
@@ -268,12 +264,11 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * generateManifest.
-     * </p>
      *
      * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @return a {@link de.intranda.api.iiif.presentation.IPresentationModelElement} object.
+     * @param pageNo optional 1-based page number to pre-select in the manifest viewer
+     * @return the generated IIIF v3 Manifest or Collection for the given structure element
      * @throws PresentationException
      */
     private AbstractPresentationModelElement3 generateManifest(StructElement ele, Optional<Integer> pageNo) throws PresentationException {
@@ -298,8 +293,8 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param ele
-     * @param manifest
+     * @param ele top structure element whose pages to load
+     * @param manifest IIIF manifest to add canvas items to
      * @throws DAOException
      * @throws URISyntaxException
      * @throws ContentLibException
@@ -335,12 +330,11 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * populate.
-     * </p>
      *
      * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param manifest a {@link de.intranda.api.iiif.presentation.AbstractPresentationModelElement} object.
+     * @param pageNo optional 1-based page number to pre-select in the manifest viewer
      * @return {@link AbstractPresentationModelElement3}
      * @throws PresentationException
      */
@@ -395,8 +389,8 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param manifest
-     * @param ele
+     * @param manifest IIIF manifest to attach linking properties to
+     * @param ele struct element providing record-level metadata
      */
     private void addRelatedResources(AbstractPresentationModelElement3 manifest, StructElement ele) {
         logger.trace("addRelatedResources (record)");
@@ -476,10 +470,10 @@ public class ManifestBuilder extends AbstractBuilder {
 
     /**
      * Page manifest resources.
-     * 
-     * @param manifest
-     * @param ele
-     * @param page
+     *
+     * @param manifest IIIF manifest to attach page-level linking properties to
+     * @param ele struct element providing record-level metadata
+     * @param page physical page element for page-specific resources
      * @throws IndexUnreachableException
      * @throws DAOException
      */
@@ -597,8 +591,8 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * 
-     * @param format
+     *
+     * @param format MIME type string to map to an IIIF type label
      * @return {@link String}
      */
     private static String getType(String format) {
@@ -623,9 +617,9 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * TODO: config for docStruct types that should be presented as "paged"
+     * TODO: config for docStruct types that should be presented as "paged".
      *
-     * @param ele
+     * @param ele struct element whose doc-struct type determines the viewing hint
      * @return {@link ViewingHint}
      */
     private static ViewingHint getViewingBehavior(StructElement ele) {
@@ -642,8 +636,8 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * 
-     * @param ele
+     *
+     * @param ele struct element containing the navigation date metadata field
      * @return {@link LocalDateTime}
      */
     private static LocalDateTime getNavDate(StructElement ele) {
@@ -661,8 +655,8 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * 
-     * @param pi
+     *
+     * @param pi persistent identifier used to look up associated CMS pages
      * @return List<LabeledResource>
      */
     private static List<LabeledResource> getCmsPageLinks(String pi) {

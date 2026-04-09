@@ -70,9 +70,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.ext.Provider;
 
 /**
- * <p>
  * Filter for IIIF Image info.json requests. Sets the tile sizes, image sizes and maximum sizes configured in config_viewer.xml
- * </p>
  */
 @Provider
 @ContentServerImageInfoBinding
@@ -160,7 +158,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     }
 
     /**
-     * @param info
+     * @param info IIIF image information object to enrich with watermark logo URL
      * @throws ViewerConfigurationException
      */
     private void setWatermark(ImageInformation info) {
@@ -182,8 +180,8 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     }
 
     /**
-     * @param filename
-     * @param element
+     * @param filename image file name to look up
+     * @param element top-level struct element of the record
      * @return Optional<PhysicalElement>
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -200,12 +198,10 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     }
 
     /**
-     * <p>
      * getStructElement.
-     * </p>
      *
-     * @param pi a {@link java.lang.String} object.
-     * @return a {@link java.util.Optional} object.
+     * @param pi persistent identifier of the record to look up
+     * @return an Optional containing the StructElement for the given PI, or empty if not found in the index
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -224,7 +220,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     }
 
     /**
-     * @param info
+     * @param info IIIF image information object to determine the format from
      * @return {@link ImageType}
      */
     private static ImageType getImageType(ImageInformation info) {
@@ -238,10 +234,10 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     }
 
     /**
-     * Write.
+     * Writes.
      *
-     * @param info
-     * @param mayZoom
+     * @param info IIIF image information object to set maximum dimensions on
+     * @param mayZoom true if zooming is permitted; determines which max size config to use
      */
     private static void setMaxImageSizes(ImageInformation info, boolean mayZoom) {
 
@@ -268,10 +264,10 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     }
 
     /**
-     * Set the IIIF image info property "sizes". Create one size object per entry of imageSizes. Values of imageSizes are interpreted as width
+     * Sets the IIIF image info property "sizes". Create one size object per entry of imageSizes. Values of imageSizes are interpreted as width
      *
-     * @param imageInfo
-     * @param imageSizes
+     * @param imageInfo IIIF image information object to set size entries on
+     * @param imageSizes list of widths (in pixels) to expose as available sizes
      */
     private static void setImageSizes(ImageInformation imageInfo, List<Integer> imageSizes) {
 
@@ -287,7 +283,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     }
 
     /**
-     * @param mayZoom
+     * @param mayZoom true if zooming is permitted; used to cap sizes at the unzoomed max width
      * @return List<Integer>
      * @throws ViewerConfigurationException
      */
@@ -341,8 +337,8 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     }
 
     /**
-     * @param imageInfo
-     * @param tileSizes
+     * @param imageInfo IIIF image information object to set tile definitions on
+     * @param tileSizes list of tile configurations to apply
      */
     private static void setTileSizes(ImageInformation imageInfo, List<ImageTile> tileSizes) {
         imageInfo.setTiles(tileSizes);

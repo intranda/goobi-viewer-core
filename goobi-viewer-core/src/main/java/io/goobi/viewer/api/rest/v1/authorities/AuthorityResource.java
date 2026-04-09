@@ -52,6 +52,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.metadata.MetadataTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.GET;
@@ -61,10 +62,9 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 
 /**
- * Resolver for normdata authority resources identified by their escaped url.
+ * REST resource for resolving authority records and retrieving metadata from linked data sources.
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 @jakarta.ws.rs.Path(AUTHORITY)
 @ViewerRestServiceBinding
@@ -89,6 +89,10 @@ public class AuthorityResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
     @Operation(tags = { "authority" }, summary = "Get a normdata authority resource identified by its escaped url")
+    @ApiResponse(responseCode = "200", description = "Authority record data for the given identifier")
+    @ApiResponse(responseCode = "400", description = "Invalid or missing authority URL")
+    @ApiResponse(responseCode = "404", description = "No authority record found for the given URL")
+    @ApiResponse(responseCode = "500", description = "Error fetching authority data")
     public String getIdentity(
             @Parameter(description = "Identifier url of the resource") @QueryParam("id") final String inUrl,
             @Parameter(description = "Metadata template to use") @QueryParam("template") String template,
@@ -199,8 +203,8 @@ public class AuthorityResource {
 
     /**
      * 
-     * @param normData
-     * @param locale
+     * @param normData normdata entry containing key and values
+     * @param locale locale for translating field keys
      * @return {@link JSONObject}
      */
     static JSONObject addNormDataValuesToJSON(NormData normData, Locale locale) {

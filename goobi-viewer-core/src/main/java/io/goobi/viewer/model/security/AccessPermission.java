@@ -115,15 +115,13 @@ public class AccessPermission implements Serializable {
         }
     }
 
-    /**
-     * @return the granted
-     */
+    
     public boolean isGranted() {
         return granted;
     }
 
     /**
-     * @param granted the granted to set
+     * @param granted true if access is granted; false otherwise
      * @return this
      */
     public AccessPermission setGranted(boolean granted) {
@@ -131,15 +129,13 @@ public class AccessPermission implements Serializable {
         return this;
     }
 
-    /**
-     * @return the accessTicketRequired
-     */
+    
     public boolean isAccessTicketRequired() {
         return accessTicketRequired;
     }
 
     /**
-     * @param accessTicketRequired the accessTicketRequired to set
+     * @param accessTicketRequired true if an access ticket must be presented to gain access; false otherwise
      * @return this;
      */
     public AccessPermission setAccessTicketRequired(boolean accessTicketRequired) {
@@ -147,15 +143,13 @@ public class AccessPermission implements Serializable {
         return this;
     }
 
-    /**
-     * @return the downloadTicketRequired
-     */
+    
     public boolean isDownloadTicketRequired() {
         return downloadTicketRequired;
     }
 
     /**
-     * @param downloadTicketRequired the downloadTicketRequired to set
+     * @param downloadTicketRequired true if a download ticket must be presented to download content; false otherwise
      * @return this
      */
     public AccessPermission setDownloadTicketRequired(boolean downloadTicketRequired) {
@@ -163,15 +157,13 @@ public class AccessPermission implements Serializable {
         return this;
     }
 
-    /**
-     * @return the redirect
-     */
+    
     public boolean isRedirect() {
         return redirect;
     }
 
     /**
-     * @param redirect the redirect to set
+     * @param redirect true if the user should be redirected instead of seeing a denial page; false otherwise
      * @return this
      */
     public AccessPermission setRedirect(boolean redirect) {
@@ -179,15 +171,13 @@ public class AccessPermission implements Serializable {
         return this;
     }
 
-    /**
-     * @return the redirectUrl
-     */
+    
     public String getRedirectUrl() {
         return redirectUrl;
     }
 
     /**
-     * @param redirectUrl the redirectUrl to set
+     * @param redirectUrl the URL to redirect the user to when access is denied with redirect enabled
      * @return this
      */
     public AccessPermission setRedirectUrl(String redirectUrl) {
@@ -195,15 +185,13 @@ public class AccessPermission implements Serializable {
         return this;
     }
 
-    /**
-     * @return the accessDeniedPlaceholderInfo
-     */
+    
     public Map<String, AccessDeniedInfoConfig> getAccessDeniedPlaceholderInfo() {
         return accessDeniedPlaceholderInfo;
     }
 
     /**
-     * @param accessDeniedPlaceholderInfo the accessDeniedPlaceholderInfo to set
+     * @param accessDeniedPlaceholderInfo map of language code to placeholder configuration shown when access is denied
      * @return this
      */
     public AccessPermission setAccessDeniedPlaceholderInfo(Map<String, AccessDeniedInfoConfig> accessDeniedPlaceholderInfo) {
@@ -211,15 +199,13 @@ public class AccessPermission implements Serializable {
         return this;
     }
 
-    /**
-     * @return the addionalCheckRequired
-     */
+    
     public ILicensee getAddionalCheckRequired() {
         return addionalCheckRequired;
     }
 
     /**
-     * @param addionalCheckRequired the addionalCheckRequired to set
+     * @param addionalCheckRequired the licensee for which an additional access check must be performed
      * @return this
      */
     public AccessPermission setAddionalCheckRequired(ILicensee addionalCheckRequired) {

@@ -56,6 +56,10 @@ import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
+/**
+ * JPA entity representing a CMS component instance persisted to the database, storing its
+ * ordering, translated labels, content items, and the association to a CMS page or template.
+ */
 @Entity
 @Table(name = "cms_components")
 public class PersistentCMSComponent implements IPolyglott, Serializable, Comparable<PersistentCMSComponent> {
@@ -143,37 +147,27 @@ public class PersistentCMSComponent implements IPolyglott, Serializable, Compara
         this.id = id;
     }
 
-    /**
-     * @return the publicationState
-     */
+    
     public ContentItemPublicationState getPublicationState() {
         return publicationState;
     }
 
-    /**
-     * @param publicationState the publicationState to set
-     */
+    
     public void setPublicationState(ContentItemPublicationState publicationState) {
         this.publicationState = publicationState;
     }
 
-    /**
-     * @return the order
-     */
+    
     public Integer getOrder() {
         return order;
     }
 
-    /**
-     * @param order the order to set
-     */
+    
     public void setOrder(Integer order) {
         this.order = order;
     }
 
-    /**
-     * @return the contentItems
-     */
+    
     public List<CMSContent> getContentItems() {
         return contentItems;
     }

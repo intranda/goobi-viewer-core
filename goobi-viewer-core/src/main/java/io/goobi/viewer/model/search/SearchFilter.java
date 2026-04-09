@@ -24,9 +24,7 @@ package io.goobi.viewer.model.search;
 import java.io.Serializable;
 
 /**
- * <p>
- * SearchFilter class.
- * </p>
+ * Represents a configurable search scope filter (e.g. restricting search to a specific collection or document type).
  */
 public class SearchFilter implements Serializable {
 
@@ -36,9 +34,6 @@ public class SearchFilter implements Serializable {
     private String field;
     private boolean defaultFilter = false;
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -49,9 +44,6 @@ public class SearchFilter implements Serializable {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -83,13 +75,11 @@ public class SearchFilter implements Serializable {
     }
 
     /**
-     * <p>
-     * Constructor for SearchFilter.
-     * </p>
+     * Creates a new SearchFilter instance.
      *
-     * @param label a {@link java.lang.String} object.
-     * @param field a {@link java.lang.String} object.
-     * @param defaultFilter
+     * @param label display label shown in the UI
+     * @param field Solr field name this filter applies to
+     * @param defaultFilter whether this filter is the default selection
      * @should set attributes correctly
      */
     public SearchFilter(String label, String field, boolean defaultFilter) {
@@ -99,59 +89,47 @@ public class SearchFilter implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>label</code>.
-     * </p>
      *
-     * @return the label
+     * @return the display label shown for this search filter in the UI
      */
     public String getLabel() {
         return label;
     }
 
     /**
-     * <p>
      * Setter for the field <code>label</code>.
-     * </p>
      *
-     * @param label the label to set
+     * @param label the display label shown for this search filter in the UI
      */
     public void setLabel(String label) {
         this.label = label;
     }
 
     /**
-     * <p>
      * Getter for the field <code>field</code>.
-     * </p>
      *
-     * @return the field
+     * @return the Solr field name this search filter applies to
      */
     public String getField() {
         return field;
     }
 
     /**
-     * <p>
      * Setter for the field <code>field</code>.
-     * </p>
      *
-     * @param field the field to set
+     * @param field the Solr field name this search filter applies to
      */
     public void setField(String field) {
         this.field = field;
     }
 
-    /**
-     * @return the defaultFilter
-     */
+    
     public boolean isDefaultFilter() {
         return defaultFilter;
     }
 
-    /**
-     * @param defaultFilter the defaultFilter to set
-     */
+    
     public void setDefaultFilter(boolean defaultFilter) {
         this.defaultFilter = defaultFilter;
     }

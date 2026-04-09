@@ -72,7 +72,7 @@ import io.goobi.viewer.model.translations.TranslatedText;
  * An annotation generator to create a specific type of annotation for a specific question. One or more of these may be contained within a
  * {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign}
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "cs_questions")
@@ -127,9 +127,9 @@ public class Question implements Serializable {
     }
 
     /**
-     * constructor setting the owning campaign
+     * Constructor setting the owning campaign.
      *
-     * @param owner a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
+     * @param owner campaign that owns this question
      */
     public Question(Campaign owner) {
         this();
@@ -138,12 +138,12 @@ public class Question implements Serializable {
 
     /**
      *
-     * constructor setting the owning campaign as well ass the type of annotation to be generated
+     * Constructor setting the owning campaign as well as the type of annotation to be generated.
      *
-     * @param questionType a {@link io.goobi.viewer.model.crowdsourcing.questions.QuestionType} object.
-     * @param targetSelector a {@link io.goobi.viewer.model.crowdsourcing.questions.TargetSelector} object.
-     * @param targetFrequency a int.
-     * @param owner a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
+     * @param questionType type of annotation this question generates
+     * @param targetSelector scope selector for annotation targets
+     * @param targetFrequency how often this question may be answered per target
+     * @param owner campaign that owns this question
      */
     public Question(QuestionType questionType, TargetSelector targetSelector, int targetFrequency, Campaign owner) {
         this(owner);
@@ -154,7 +154,7 @@ public class Question implements Serializable {
 
     /**
      * 
-     * @param orig
+     * @param orig question to copy
      */
     public Question(Question orig) {
         this.id = orig.id;
@@ -167,10 +167,10 @@ public class Question implements Serializable {
     }
 
     /**
-     * Create a clone of the given question with the given campaign as owner
+     * Creates a clone of the given question with the given campaign as owner.
      *
-     * @param orig
-     * @param campaign
+     * @param orig question to copy
+     * @param campaign crowdsourcing campaign to set as owner
      */
     public Question(Question orig, Campaign campaign) {
         this(orig);
@@ -178,7 +178,7 @@ public class Question implements Serializable {
     }
 
     /**
-     * Call when metadata list changes
+     * Call when metadata list changes.
      */
     public void serializeMetadataFields() {
         if (QuestionType.METADATA.equals(getQuestionType())) {
@@ -188,9 +188,7 @@ public class Question implements Serializable {
     }
 
     /**
-     * <p>
      * getAvailableQuestionTypes.
-     * </p>
      *
      * @return available values of the QuestionType enum
      */
@@ -200,9 +198,7 @@ public class Question implements Serializable {
     }
 
     /**
-     * <p>
      * getAvailableTargetSelectors.
-     * </p>
      *
      * @return available values of the TargetSelector enum
      */
@@ -212,11 +208,9 @@ public class Question implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
-     * @return the id
+     * @return the database primary key of this question
      */
     @JsonIgnore
     public Long getId() {
@@ -224,110 +218,88 @@ public class Question implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
-     * @param id the id to set
+     * @param id the database primary key to set
      */
     public void setId(Long id) {
         this.id = id;
     }
 
     /**
-     * <p>
      * Getter for the field <code>owner</code>.
-     * </p>
      *
-     * @return the owner
+     * @return the campaign this question belongs to
      */
     public Campaign getOwner() {
         return owner;
     }
 
     /**
-     * <p>
      * Setter for the field <code>owner</code>.
-     * </p>
      *
-     * @param owner the owner to set
+     * @param owner the campaign this question belongs to
      */
     public void setOwner(Campaign owner) {
         this.owner = owner;
     }
 
-    /**
-     * @return the tempTranslations
-     */
+    
     public TranslatedText getText() {
         return text;
     }
 
     /**
-     * <p>
      * Getter for the field <code>questionType</code>.
-     * </p>
      *
-     * @return the questionType
+     * @return the type of annotation this question requests from contributors
      */
     public QuestionType getQuestionType() {
         return questionType;
     }
 
     /**
-     * <p>
      * Setter for the field <code>questionType</code>.
-     * </p>
      *
-     * @param questionType the questionType to set
+     * @param questionType the type of annotation this question requests from contributors
      */
     public void setQuestionType(QuestionType questionType) {
         this.questionType = questionType;
     }
 
     /**
-     * <p>
      * Getter for the field <code>targetSelector</code>.
-     * </p>
      *
-     * @return the targetSelector
+     * @return the selector defining which part of the record this question targets
      */
     public TargetSelector getTargetSelector() {
         return targetSelector;
     }
 
     /**
-     * <p>
      * Setter for the field <code>targetSelector</code>.
-     * </p>
      *
-     * @param targetSelector the targetSelector to set
+     * @param targetSelector the selector defining which part of the record this question targets
      */
     public void setTargetSelector(TargetSelector targetSelector) {
         this.targetSelector = targetSelector;
     }
 
     /**
-     * <p>
      * Getter for the field <code>targetFrequency</code>.
-     * </p>
      *
-     * @return the targetFrequency
+     * @return the number of times this question should be answered per target
      */
     public int getTargetFrequency() {
         return targetFrequency;
     }
 
-    /**
-     * @return the metadataFields
-     */
+    
     public List<String> getMetadataFields() {
         return metadataFields;
     }
 
-    /**
-     * @param metadataFields the metadataFields to set
-     */
+    
     public void setMetadataFields(List<String> metadataFields) {
         this.metadataFields = new ArrayList<>(metadataFields);
     }
@@ -340,18 +312,14 @@ public class Question implements Serializable {
         this.metadataFields.remove(field);
     }
 
-    /**
-     * @param metadataToAdd the metadataToAdd to set
-     */
+    
     public void setMetadataToAdd(String metadataToAdd) {
         if (StringUtils.isNotBlank(metadataToAdd)) {
             addMetadataField(metadataToAdd);
         }
     }
 
-    /**
-     * @return the metadataToAdd
-     */
+    
     public String getMetadataToAdd() {
         return "";
     }
@@ -379,21 +347,19 @@ public class Question implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>targetFrequency</code>.
-     * </p>
      *
-     * @param targetFrequency the targetFrequency to set
+     * @param targetFrequency the number of times this question should be answered per target resource
      */
     public void setTargetFrequency(int targetFrequency) {
         this.targetFrequency = targetFrequency;
     }
 
     /**
-     * get the {@link #id} of a question from an URI identifier
+     * Get the {@link #id} of a question from an URI identifier.
      *
-     * @param idAsURI a {@link java.net.URI} object.
-     * @return a {@link java.lang.Long} object.
+     * @param idAsURI URI identifier containing the question ID
+     * @return the numeric question ID extracted from the URI, or null if not found
      * @should extract id correctly
      */
     public static Long getQuestionId(URI idAsURI) {
@@ -407,10 +373,10 @@ public class Question implements Serializable {
     }
 
     /**
-     * get the {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign#id} of the owning campaign from an URI identifier of a question
+     * Get the {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign#id} of the owning campaign from an URI identifier of a question.
      *
-     * @param idAsURI a {@link java.net.URI} object.
-     * @return a {@link java.lang.Long} object.
+     * @param idAsURI URI identifier containing the campaign ID segment
+     * @return the numeric campaign ID extracted from the URI, or null if not found
      * @should extract id correctly
      */
     public static Long getCampaignId(URI idAsURI) {
@@ -424,9 +390,7 @@ public class Question implements Serializable {
     }
 
     /**
-     * <p>
      * getIdAsURI.
-     * </p>
      *
      * @return The URI identifier for this question from the question and campaign id
      */
@@ -451,7 +415,7 @@ public class Question implements Serializable {
     }
 
     /**
-     * @return the metadataFieldSelection
+     * @return a map of all available metadata fields to a boolean indicating whether each field is selected for this question
      * @throws IOException
      * @throws SolrServerException
      */

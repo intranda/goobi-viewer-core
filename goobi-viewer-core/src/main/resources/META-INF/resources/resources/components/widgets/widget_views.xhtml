@@ -48,7 +48,7 @@
                         <util:icon
                             icon="chevron-down"
                             styleClass="widget__topbar-icon-collapsible icon-rot-on-open"
-                            svgClass="icon" />
+                            svgClass="icon widget__topbar-icon-svg widget-views__topbar-icon-svg" />
                     </div>
                 </div>
             </ui:fragment>
@@ -64,7 +64,7 @@
                         <util:icon
                             icon="chevron-down"
                             styleClass="widget__topbar-icon-collapsible icon-rot-on-open"
-                            svgClass="icon" />
+                            svgClass="icon widget__topbar-icon-svg widget-views__topbar-icon-svg" />
                     </div>
                 </div>
             </ui:fragment>
@@ -79,7 +79,7 @@
                         <!-- Object -->
                         <h:panelGroup
                             visibility-class="widget-element"
-                            rendered="#{configurationBean.sidebarPageLinkVisible and displayConditions.matchRecord('{numPages:1, contentType:[IMAGE, AUDIO, VIDEO, MODEL, PDF]}')}">
+                            rendered="#{configurationBean.sidebarPageLinkVisible and displayConditions.matchRecord('{numPages:1, contentType:[MEDIA]}')}">
                             <li class="#{navigationHelper.currentPage == 'object' ? 'active' : ''}">
                                 <h:outputLink
                                     value="#{navigationHelper.imageActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/#{activeDocumentBean.logid}/">
@@ -91,10 +91,10 @@
                             </li>
                         </h:panelGroup>
 
-                        <!-- Calendar -->
+                        <!-- Calendar (hidden when integrated into TOC for anchors) -->
                         <h:panelGroup
                             visibility-class="widget-element"
-                            rendered="#{configurationBean.sidebarCalendarLinkVisible and activeDocumentBean.viewManager.calendarView.display}">
+                            rendered="#{configurationBean.sidebarCalendarLinkVisible and activeDocumentBean.viewManager.calendarView.display and !activeDocumentBean.anchor}">
                             <li class="#{navigationHelper.currentPage == 'calendar' ? 'active' : ''}">
                                 <h:outputLink
                                     value="#{navigationHelper.calendarActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/#{activeDocumentBean.logid}/">
@@ -146,7 +146,7 @@
                         <!-- Thumbnails -->
                         <h:panelGroup
                             visibility-class="widget-element"
-                            rendered="#{configurationBean.sidebarThumbsLinkVisible and displayConditions.matchRecord('{numPages:2, contentType:[IMAGE, AUDIO, VIDEO, MODEL, PDF]}')}">
+                            rendered="#{configurationBean.sidebarThumbsLinkVisible and displayConditions.matchRecord('{numPages:2, contentType:[MEDIA]}')}">
                             <li class="#{navigationHelper.currentPage == 'thumbs' ? 'active' : ''}">
                                 <h:outputLink value="#{navigationHelper.thumbsActiveUrl}/#{activeDocumentBean.persistentIdentifier}/1/">
                                     <h:outputText value="#{msg.thumbGal}" />

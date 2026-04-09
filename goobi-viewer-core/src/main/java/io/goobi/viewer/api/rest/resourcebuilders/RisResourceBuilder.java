@@ -56,8 +56,7 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class RisResourceBuilder {
 
@@ -68,8 +67,8 @@ public class RisResourceBuilder {
 
     /**
      * 
-     * @param request
-     * @param response
+     * @param request HTTP servlet request
+     * @param response HTTP servlet response for setting headers
      */
     public RisResourceBuilder(HttpServletRequest request, HttpServletResponse response) {
         this.request = request;
@@ -78,7 +77,7 @@ public class RisResourceBuilder {
 
     /**
      * 
-     * @param searchHits
+     * @param searchHits list of search hits to export as RIS
      * @return {@link StreamingOutput}
      * @throws ContentLibException
      */
@@ -122,7 +121,7 @@ public class RisResourceBuilder {
     }
 
     /**
-     * @param se
+     * @param se structure element to generate RIS for
      * @return {@link StreamingOutput}
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -175,7 +174,7 @@ public class RisResourceBuilder {
     }
 
     /**
-     * @param se
+     * @param se structure element to generate RIS for
      * @return Generated RIS
      * @throws ContentNotFoundException
      * @throws DAOException

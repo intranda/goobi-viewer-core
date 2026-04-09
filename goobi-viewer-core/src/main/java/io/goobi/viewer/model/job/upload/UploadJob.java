@@ -77,9 +77,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 /**
- * <p>
- * Abstract DownloadJob class.
- * </p>
+ * Represents an asynchronous file upload job with its status, progress, and associated record identifier.
  */
 @Entity
 @Table(name = "upload_jobs")
@@ -267,7 +265,7 @@ public class UploadJob implements Serializable {
 
     /**
      * 
-     * @param file
+     * @param file file to upload to the Goobi workflow process
      * @throws IOException
      */
     public void uploadFile(File file) throws IOException {
@@ -287,7 +285,6 @@ public class UploadJob implements Serializable {
      * @return true if status changed; false otherwise
      * @throws PresentationException
      * @throws IndexUnreachableException
-     * 
      */
     public boolean updateStatus() throws IndexUnreachableException, PresentationException {
         boolean ret = updateStatus(getJobStatus(processId));
@@ -296,12 +293,10 @@ public class UploadJob implements Serializable {
     }
 
     /**
-     * <p>
      * getJobStatus.
-     * </p>
      *
      * @param processId Process ID to check
-     * @return a {@link java.lang.String} object.
+     * @return the status response for the given Goobi workflow process ID
      */
     ProcessStatusResponse getJobStatus(int processId) {
         StringBuilder url = new StringBuilder()
@@ -326,10 +321,8 @@ public class UploadJob implements Serializable {
     }
 
     /**
-     * <p>
      * updateStatus.
-     * </p>
-     * 
+     *
      * @param psr {@link ProcessStatusResponse}
      * @return true if status has changed; false otherwise
      * 
@@ -404,75 +397,57 @@ public class UploadJob implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
-     * @return the id
+     * @return the database primary key of this upload job
      */
     public Long getId() {
         return id;
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
-     * @param id the id to set
+     * @param id the database primary key to set
      */
     public void setId(Long id) {
         this.id = id;
     }
 
-    /**
-     * @return the dateCreated
-     */
+    
     public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
-    /**
-     * @param dateCreated the dateCreated to set
-     */
+    
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
 
-    /**
-     * @return the creatorId
-     */
+    
     public Long getCreatorId() {
         return creatorId;
     }
 
-    /**
-     * @param creatorId the creatorId to set
-     */
+    
     public void setCreatorId(Long creatorId) {
         this.creatorId = creatorId;
     }
 
-    /**
-     * @return the email
-     */
+    
     public String getEmail() {
         return email;
     }
 
-    /**
-     * @param email the email to set
-     */
+    
     public void setEmail(String email) {
         this.email = email;
     }
 
     /**
-     * <p>
      * Getter for the field <code>status</code>.
-     * </p>
      *
-     * @return the status
+     * @return the current processing status of this upload job
      */
     public JobStatus getStatus() {
         if (status == null) {
@@ -482,169 +457,128 @@ public class UploadJob implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>status</code>.
-     * </p>
      *
-     * @param status the status to set
+     * @param status the current processing status of this upload job
      */
     public void setStatus(JobStatus status) {
         this.status = status;
     }
 
     /**
-     * <p>
      * Getter for the field <code>message</code>.
-     * </p>
      *
-     * @return the message
+     * @return the status or error message describing the current processing state
      */
     public String getMessage() {
         return message;
     }
 
     /**
-     * <p>
      * Setter for the field <code>message</code>.
-     * </p>
      *
-     * @param message the message to set
+     * @param message the status or error message describing the current processing state
      */
     public void setMessage(String message) {
         this.message = message;
     }
 
     /**
-     * <p>
      * Getter for the field <code>pi</code>.
-     * </p>
      *
-     * @return the pi
+     * @return the persistent identifier of the record associated with this upload job
      */
     public String getPi() {
         return pi;
     }
 
     /**
-     * <p>
      * Setter for the field <code>pi</code>.
-     * </p>
      *
-     * @param pi the pi to set
+     * @param pi the persistent identifier of the record associated with this upload job
      */
     public void setPi(String pi) {
         this.pi = pi;
     }
 
-    /**
-     * @return the processId
-     */
+    
     public Integer getProcessId() {
         return processId;
     }
 
-    /**
-     * @param processId the processId to set
-     */
+    
     public void setProcessId(Integer processId) {
         this.processId = processId;
     }
 
-    /**
-     * @return the title
-     */
+    
     public String getTitle() {
         return title;
     }
 
-    /**
-     * @param title the title to set
-     */
+    
     public void setTitle(String title) {
         this.title = title;
     }
 
     /**
-     * <p>
      * Getter for the field <code>description</code>.
-     * </p>
      *
-     * @return the description
+     * @return the human-readable description of this upload job
      */
     public String getDescription() {
         return description;
     }
 
     /**
-     * <p>
      * Setter for the field <code>description</code>.
-     * </p>
      *
-     * @param description the description to set
+     * @param description the human-readable description of this upload job
      */
     public void setDescription(String description) {
         this.description = description;
     }
 
-    /**
-     * @return the templateName
-     */
+    
     String getTemplateName() {
         return templateName;
     }
 
-    /**
-     * @param templateName the templateName to set
-     */
+    
     void setTemplateName(String templateName) {
         this.templateName = templateName;
     }
 
-    /**
-     * @return the docstruct
-     */
+    
     String getDocstruct() {
         return docstruct;
     }
 
-    /**
-     * @param docstruct the docstruct to set
-     */
+    
     void setDocstruct(String docstruct) {
         this.docstruct = docstruct;
     }
 
-    /**
-     * @return the consent
-     */
+    
     public boolean isConsent() {
         return consent;
     }
 
-    /**
-     * @param consent the consent to set
-     */
+    
     public void setConsent(boolean consent) {
         this.consent = consent;
     }
 
-    /**
-     * @return the files
-     */
+    
     public List<Part> getFiles() {
         return files;
     }
 
-    /**
-     * @param files the files to set
-     */
+    
     public void setFiles(List<Part> files) {
         this.files = files;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     /** {@inheritDoc} */
     @Override
     public String toString() {

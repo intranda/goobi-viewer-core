@@ -33,7 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
- * Validates that any input text has no "script" tags
+ * Validates that any input text has no "script" tags.
  *
  * @author Florian Alpers
  */
@@ -43,7 +43,7 @@ public class HtmlScriptValidator implements Validator<String> {
     /**
      * {@inheritDoc}
      *
-     * Throws a {@link ValidatorException} with message key {@code validate_error_scriptTag} if {@link #validate(String)} returns false
+     * <p>Throws a {@link ValidatorException} with message key {@code validate_error_scriptTag} if {@link #validate(String)} returns false
      */
     @Override
     public void validate(FacesContext context, UIComponent component, String input) throws ValidatorException {
@@ -56,10 +56,10 @@ public class HtmlScriptValidator implements Validator<String> {
     }
 
     /**
-     * Returns false if the input string is not blank and does not contain the string {@code <script} (disregarding case)
+     * Returns false if the input string is not blank and contains a script opening tag (disregarding case).
      *
-     * @param input a {@link java.lang.String} object.
-     * @return a boolean.
+     * @param input HTML string to check for script opening tags
+     * @return true if the input does not contain a script opening tag (i.e. is safe), false if a script tag is detected
      */
     public boolean validate(String input) {
         return !(StringUtils.isNotBlank(input) && input.toLowerCase().contains("<script"));

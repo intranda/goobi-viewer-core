@@ -28,10 +28,11 @@ import java.util.Locale;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -52,11 +53,11 @@ import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
- * <p>
- * SearchResultResource class.
- * </p>
+ * REST resource for exporting search results in OpenSearch and RIS bibliographic formats.
  */
 @Path(ApiUrls.SEARCH)
 @ViewerRestServiceBinding
@@ -80,9 +81,18 @@ public class SearchResultResource {
     @jakarta.ws.rs.Path(RECORDS_RIS_FILE)
     @Produces({ MediaType.TEXT_PLAIN })
     @Operation(tags = { "search" }, summary = "Download current search as RIS export file")
+    @ApiResponse(responseCode = "200", description = "RIS export file for the current search results")
+    @ApiResponse(responseCode = "400", description = "Invalid search query or parameters")
+    @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     @AccessConditionBinding
-    public Response getRISAsFile(@PathParam("query") String query, @PathParam("sortString") String sortString,
-            @PathParam("activeFacetString") String activeFacetString, @PathParam("proximitySearchDistance") int proximitySearchDistance)
+    public Response getRISAsFile(
+            // Previously declared as @PathParam but the path template /search/ris has no {param} segments,
+            // so these were never populated. Changed to @QueryParam so callers can actually pass them.
+            @Parameter(description = "Search query string") @QueryParam("query") @DefaultValue("") String query,
+            @Parameter(description = "Sort string for the search results") @QueryParam("sortString") @DefaultValue("") String sortString,
+            @Parameter(description = "Active facet filter string") @QueryParam("activeFacetString") @DefaultValue("") String activeFacetString,
+            @Parameter(description = "Maximum word distance for proximity search") @QueryParam("proximitySearchDistance")
+                    @DefaultValue("0") int proximitySearchDistance)
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException, ViewerConfigurationException {
         String currentQuery = SearchHelper.prepareQuery(query);
         String finalQuery = SearchHelper.buildFinalQuery(currentQuery, true, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);

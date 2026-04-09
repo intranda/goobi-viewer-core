@@ -144,7 +144,7 @@ public class Search implements Serializable {
     private int proximitySearchDistance = 0;
 
     /**
-     * Load configured result groups. If none are configured or groups are disabled, use a single default group for regular search. TODO Always set
+     * Loads configured result groups. If none are configured or groups are disabled, use a single default group for regular search. TODO Always set
      * externally, according to context?
      */
     @Transient
@@ -164,13 +164,13 @@ public class Search implements Serializable {
     private final List<String> facetFields;
 
     /**
-     * List of geo-locations found by the last search
+     * Lists of geo-locations found by the last search.
      */
     @Transient
     private List<Location> hitLocationList = new ArrayList<>();
     @Transient
     private boolean hasGeoLocationHits = false;
-    /** Metadata configuration list type (default is "searchHit") */
+    /** Metadata configuration list type (default is "searchHit"). */
     @Transient
     private String metadataListType = Configuration.METADATA_LIST_TYPE_SEARCH_HIT;
 
@@ -182,10 +182,10 @@ public class Search implements Serializable {
     }
 
     /**
-     * cloning constructor. Creates a new search in a state as it might be loaded from database, i.e. without any transient fields set. In particular
+     * Cloning constructor. Creates a new search in a state as it might be loaded from database, i.e. without any transient fields set. In particular
      * with empty {@link #getHits()}
      *
-     * @param blueprint
+     * @param blueprint search instance to copy state from
      */
     public Search(Search blueprint) {
         this.id = blueprint.id;
@@ -212,25 +212,21 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>
-     * Constructor for Search.
-     * </p>
+     * Creates a new Search instance.
      *
-     * @param searchType a int.
-     * @param searchFilter a {@link io.goobi.viewer.model.search.SearchFilter} object.
-     * @param resultGroups
+     * @param searchType numeric search type constant
+     * @param searchFilter filter restricting the search scope
+     * @param resultGroups result groups to search within
      */
     public Search(int searchType, SearchFilter searchFilter, List<SearchResultGroup> resultGroups) {
         this(searchType, searchFilter, resultGroups, DataManager.getInstance().getConfiguration().getAllFacetFields());
     }
 
     /**
-     * <p>
-     * Constructor for Search.
-     * </p>
+     * Creates a new Search instance.
      *
-     * @param searchType a int.
-     * @param searchFilter a {@link io.goobi.viewer.model.search.SearchFilter} object.
+     * @param searchType numeric search type constant
+     * @param searchFilter filter restricting the search scope
      * @param resultGroups the {@link SearchResultGroup}s to search
      * @param facetFields the facet fields to use
      */
@@ -245,9 +241,6 @@ public class Search implements Serializable {
         this.facetFields = facetFields;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -258,9 +251,6 @@ public class Search implements Serializable {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -293,7 +283,7 @@ public class Search implements Serializable {
 
     /**
      * 
-     * @param facets
+     * @param facets active search facets
      * @return Generated Solr query
      * @throws IndexUnreachableException
      */
@@ -303,8 +293,8 @@ public class Search implements Serializable {
 
     /**
      * 
-     * @param facets
-     * @param aggregationType
+     * @param facets active search facets
+     * @param aggregationType controls how results are aggregated
      * @return Generated Solr query
      * @throws IndexUnreachableException
      */
@@ -325,13 +315,11 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>
      * execute.
-     * </p>
      *
-     * @param facets a {@link io.goobi.viewer.model.search.SearchFacets} object.
-     * @param searchTerms a {@link java.util.Map} object.
-     * @param hitsPerPage a int.
+     * @param facets active search facets to apply during execution
+     * @param searchTerms map of search terms per field for highlighting
+     * @param hitsPerPage number of hits to return per page
      * @param locale Selected locale
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -344,16 +332,14 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>
      * execute.
-     * </p>
      *
-     * @param facets a {@link io.goobi.viewer.model.search.SearchFacets} object.
-     * @param searchTerms a {@link java.util.Map} object.
-     * @param hitsPerPage a int.
+     * @param facets active search facets to apply during execution
+     * @param searchTerms map of search terms per field for highlighting
+     * @param hitsPerPage number of hits to return per page
      * @param locale Selected locale
-     * @param keepSolrDoc
-     * @param aggregationType
+     * @param keepSolrDoc if true, retains the raw Solr document in each hit
+     * @param aggregationType controls how results are aggregated
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -408,19 +394,19 @@ public class Search implements Serializable {
 
     /**
      * 
-     * @param resultGroup
-     * @param currentQuery
-     * @param finalQuery
-     * @param subElementQueryFilterSuffix
-     * @param activeFacetFilterQueries
-     * @param params
-     * @param searchTerms
+     * @param resultGroup result group to search
+     * @param currentQuery prepared user query string
+     * @param finalQuery fully assembled Solr query with aggregation suffix
+     * @param subElementQueryFilterSuffix additional filter for sub-element facets
+     * @param activeFacetFilterQueries list of active Solr facet filter queries
+     * @param params additional Solr query parameters
+     * @param searchTerms map of search terms per field for highlighting
      * @param facets {@link SearchFacets} object
      * @param generateAvailableFacets If true, facet links will be generated from the search result
-     * @param hitsPerPage
-     * @param locale
-     * @param keepSolrDoc
-     * @param aggregationType
+     * @param hitsPerPage number of hits to return per page
+     * @param locale locale used for facet label translation
+     * @param keepSolrDoc if true, retains the raw Solr document in each hit
+     * @param aggregationType controls how results are aggregated
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -639,10 +625,10 @@ public class Search implements Serializable {
     /**
      * Populates slider ranges for ranged facets.
      * 
-     * @param finalQuery
-     * @param facets
+     * @param finalQuery fully assembled Solr query
+     * @param facets active search facets to populate range values into
      * @param resultGroup Active result group for optional filtering
-     * @param params
+     * @param params additional Solr query parameters
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
@@ -693,11 +679,11 @@ public class Search implements Serializable {
     /**
      * Populates facets that are applied to a raw, unfiltered search, such as total slider range and permanently displayed facets.
      * 
-     * @param finalQuery
-     * @param facets
-     * @param resultGroup
-     * @param params
-     * @param locale
+     * @param finalQuery fully assembled Solr query
+     * @param facets active search facets to populate unfiltered values into
+     * @param resultGroup optional result group for additional filtering
+     * @param params additional Solr query parameters
+     * @param locale locale used for facet label translation
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
@@ -758,8 +744,8 @@ public class Search implements Serializable {
 
     /**
      * 
-     * @param solrField
-     * @param results
+     * @param solrField Solr field name containing WKT coordinate values
+     * @param results list of Solr documents to extract locations from
      * @return List<Location>
      */
     private static List<Location> getLocations(String solrField, SolrDocumentList results) {
@@ -789,7 +775,7 @@ public class Search implements Serializable {
 
     /**
      * 
-     * @param o
+     * @param o WKT string or list of WKT strings to parse
      * @return List<IArea>
      */
     protected static List<IArea> getLocations(Object o) {
@@ -821,7 +807,7 @@ public class Search implements Serializable {
 
     /**
      * 
-     * @param value
+     * @param value WKT string containing coordinate pairs to parse
      * @return double[][]
      */
     protected static double[][] getPoints(String value) {
@@ -835,8 +821,8 @@ public class Search implements Serializable {
 
     /**
      * 
-     * @param x
-     * @param y
+     * @param x longitude coordinate as Number or String
+     * @param y latitude coordinate as Number or String
      * @return double[][]
      */
     protected static double[] parsePoint(Object x, Object y) {
@@ -861,7 +847,7 @@ public class Search implements Serializable {
     /**
      * Constructs a search URL using the query parameters contained in this object.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the viewer search URL with query, page, sort, and facet parameters encoded
      * @throws java.io.UnsupportedEncodingException if any.
      */
     public String getUrl() throws UnsupportedEncodingException {
@@ -876,256 +862,208 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
-     * @return the id
+     * @return the database primary key for this saved search
      */
     public Long getId() {
         return id;
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
-     * @param id the id to set
+     * @param id the database primary key for this saved search
      */
     public void setId(Long id) {
         this.id = id;
     }
 
     /**
-     * <p>
      * Getter for the field <code>owner</code>.
-     * </p>
      *
-     * @return the owner
+     * @return the user who owns this saved search
      */
     public User getOwner() {
         return owner;
     }
 
     /**
-     * <p>
      * Setter for the field <code>owner</code>.
-     * </p>
      *
-     * @param owner the owner to set
+     * @param owner the user who owns this saved search
      */
     public void setOwner(User owner) {
         this.owner = owner;
     }
 
     /**
-     * <p>
      * Getter for the field <code>name</code>.
-     * </p>
      *
-     * @return the name
+     * @return the user-defined display name for this saved search
      */
     public String getName() {
         return name;
     }
 
     /**
-     * <p>
      * Setter for the field <code>name</code>.
-     * </p>
      *
-     * @param name the name to set
+     * @param name the user-defined display name for this saved search
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * <p>
      * Getter for the field <code>userInput</code>.
-     * </p>
      *
-     * @return the userInput
+     * @return the raw search string entered by the user
      */
     public String getUserInput() {
         return userInput;
     }
 
     /**
-     * <p>
      * Setter for the field <code>userInput</code>.
-     * </p>
      *
-     * @param userInput the userInput to set
+     * @param userInput the raw search string entered by the user
      */
     public void setUserInput(String userInput) {
         this.userInput = userInput;
     }
 
     /**
-     * <p>
      * Getter for the field <code>searchType</code>.
-     * </p>
      *
-     * @return the searchType
+     * @return the numeric type constant identifying the search mode (e.g. simple, advanced)
      */
     public int getSearchType() {
         return searchType;
     }
 
     /**
-     * <p>
      * Setter for the field <code>searchType</code>.
-     * </p>
      *
-     * @param searchType the searchType to set
+     * @param searchType the numeric type constant identifying the search mode (e.g. simple, advanced)
      */
     public void setSearchType(int searchType) {
         this.searchType = searchType;
     }
 
     /**
-     * <p>
      * Getter for the field <code>searchFilter</code>.
-     * </p>
      *
-     * @return the searchFilter
+     * @return the active search filter expression limiting the search scope
      */
     public String getSearchFilter() {
         return searchFilter;
     }
 
     /**
-     * <p>
      * Setter for the field <code>searchFilter</code>.
-     * </p>
      *
-     * @param searchFilter the searchFilter to set
+     * @param searchFilter the active search filter expression limiting the search scope
      */
     public void setSearchFilter(String searchFilter) {
         this.searchFilter = searchFilter;
     }
 
     /**
-     * <p>
      * Getter for the field <code>query</code>.
-     * </p>
      *
-     * @return the query
+     * @return the Solr query string used for this search
      */
     public String getQuery() {
         return query;
     }
 
     /**
-     * <p>
      * Setter for the field <code>query</code>.
-     * </p>
      *
-     * @param query the query to set
+     * @param query the Solr query string used for this search
      */
     public void setQuery(String query) {
         this.query = query;
     }
 
     /**
-     * <p>
      * Getter for the field <code>expandQuery</code>.
-     * </p>
      *
-     * @return the expandQuery
+     * @return the Solr query used to expand child documents into the result set
      */
     public String getExpandQuery() {
         return expandQuery;
     }
 
     /**
-     * <p>
      * Setter for the field <code>expandQuery</code>.
-     * </p>
      *
-     * @param expandQuery the expandQuery to set
+     * @param expandQuery the Solr query used to expand child documents into the result set
      */
     public void setExpandQuery(String expandQuery) {
         this.expandQuery = expandQuery;
     }
 
-    /**
-     * @return the customFilterQuery
-     */
+    
     public String getCustomFilterQuery() {
         return customFilterQuery;
     }
 
-    /**
-     * @param customFilterQuery the customFilterQuery to set
-     */
+    
     public void setCustomFilterQuery(String customFilterQuery) {
         this.customFilterQuery = customFilterQuery;
     }
 
     /**
-     * <p>
      * Getter for the field <code>page</code>.
-     * </p>
      *
-     * @return the page
+     * @return the current result page number (1-based)
      */
     public int getPage() {
         return page;
     }
 
     /**
-     * <p>
      * Setter for the field <code>page</code>.
-     * </p>
      *
-     * @param page the page to set
+     * @param page the current result page number (1-based)
      */
     public void setPage(int page) {
         this.page = page;
     }
 
     /**
-     * <p>
      * Getter for the field <code>facetString</code>.
-     * </p>
      *
-     * @return the facetString
+     * @return the serialized string representation of active facet filters
      */
     public String getFacetString() {
         return facetString;
     }
 
     /**
-     * <p>
      * Setter for the field <code>facetString</code>.
-     * </p>
      *
-     * @param facetString the facetString to set
+     * @param facetString the serialized string representation of active facet filters
      */
     public void setFacetString(String facetString) {
         this.facetString = facetString;
     }
 
     /**
-     * <p>
      * Getter for the field <code>sortString</code>.
-     * </p>
      *
-     * @return the sortString
+     * @return the serialized sort order string (prefix "!" for descending)
      */
     public String getSortString() {
         return sortString;
     }
 
     /**
-     * <p>
      * Setter for the field <code>sortString</code>.
-     * </p>
      *
-     * @param sortString the sortString to set
+     * @param sortString the serialized sort order string (prefix "!" for descending)
      */
     public void setSortString(String sortString) {
         if (StringUtils.isNotBlank(sortString)) {
@@ -1152,7 +1090,7 @@ public class Search implements Serializable {
 
     /**
      * 
-     * @param option
+     * @param option sorting option containing field and direction
      */
     public void setSearchSortingOption(SearchSortingOption option) {
         logger.trace("setSearchSortingOption: {}", option);
@@ -1186,138 +1124,110 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>sortFields</code>.
-     * </p>
      *
-     * @return the sortFields
+     * @return the list of sort fields and their directions applied to this search
      */
     public List<StringPair> getSortFields() {
         return sortFields;
     }
 
     /**
-     * <p>
      * Getter for the field <code>dateUpdated</code>.
-     * </p>
      *
-     * @return the dateUpdated
+     * @return the timestamp of the last update check for new hits in this saved search
      */
     public LocalDateTime getDateUpdated() {
         return dateUpdated;
     }
 
     /**
-     * <p>
      * Setter for the field <code>dateUpdated</code>.
-     * </p>
      *
-     * @param dateUpdated the dateUpdated to set
+     * @param dateUpdated the timestamp of the last update check for new hits in this saved search
      */
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
 
     /**
-     * <p>
      * Getter for the field <code>lastHitsCount</code>.
-     * </p>
      *
-     * @return the lastHitsCount
+     * @return the number of hits recorded during the last notification check
      */
     public long getLastHitsCount() {
         return lastHitsCount;
     }
 
     /**
-     * <p>
      * Setter for the field <code>lastHitsCount</code>.
-     * </p>
      *
-     * @param lastHitsCount the lastHitsCount to set
+     * @param lastHitsCount the number of hits recorded during the last notification check
      */
     public void setLastHitsCount(long lastHitsCount) {
         this.lastHitsCount = lastHitsCount;
     }
 
     /**
-     * <p>
      * isNewHitsNotification.
-     * </p>
      *
-     * @return the newHitsNotification
+     * @return true if email notification for new hits is enabled for this saved search, false otherwise
      */
     public boolean isNewHitsNotification() {
         return newHitsNotification;
     }
 
     /**
-     * <p>
      * Setter for the field <code>newHitsNotification</code>.
-     * </p>
      *
-     * @param newHitsNotification the newHitsNotification to set
+     * @param newHitsNotification true if email notification for new hits should be enabled for this saved search; false otherwise
      */
     public void setNewHitsNotification(boolean newHitsNotification) {
         this.newHitsNotification = newHitsNotification;
     }
 
-    /**
-     * @return the proximitySearchDistance
-     */
+    
     public int getProximitySearchDistance() {
         return proximitySearchDistance;
     }
 
-    /**
-     * @param proximitySearchDistance the proximitySearchDistance to set
-     */
+    
     public void setProximitySearchDistance(int proximitySearchDistance) {
         this.proximitySearchDistance = proximitySearchDistance;
     }
 
-    /**
-     * @return the resultGroups
-     */
+    
     public List<SearchResultGroup> getResultGroups() {
         return resultGroups;
     }
 
-    /**
-     * @param resultGroups the resultGroups to set
-     */
+    
     public void setResultGroups(List<SearchResultGroup> resultGroups) {
         this.resultGroups = resultGroups;
     }
 
     /**
-     * <p>
      * isSaved.
-     * </p>
      *
-     * @return the saved
+     * @return true if this search has been saved by the user, false otherwise
      */
     public boolean isSaved() {
         return saved;
     }
 
     /**
-     * <p>
      * Setter for the field <code>saved</code>.
-     * </p>
      *
-     * @param saved the saved to set
+     * @param saved true if this search has been saved by the user; false otherwise
      */
     public void setSaved(boolean saved) {
         this.saved = saved;
     }
 
     /**
-     * <p>
      * Getter for the field <code>hitsCount</code>.
-     * </p>
      *
-     * @return the hitsCount
+     * @return the total number of search hits across all result groups
      */
     public long getHitsCount() {
         long ret = 0;
@@ -1331,11 +1241,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>hitsCount</code>.
-     * </p>
      *
-     * @param hitsCount the hitsCount to set
+     * @param hitsCount the total number of search hits to store in the first result group
      */
     public void setHitsCount(long hitsCount) {
         if (!resultGroups.isEmpty()) {
@@ -1344,11 +1252,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>hits</code>.
-     * </p>
      *
-     * @return the hits
+     * @return the list of search hits for the first result group, or an empty list if no result groups exist
      */
     public List<SearchHit> getHits() {
         if (!resultGroups.isEmpty()) {
@@ -1359,11 +1265,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>
      * getLastPage.
-     * </p>
      *
-     * @param hitsPerPage a int.
+     * @param hitsPerPage number of hits displayed per page
      * @return a int.
      */
     public int getLastPage(int hitsPerPage) {
@@ -1389,9 +1293,7 @@ public class Search implements Serializable {
         DataManager.getInstance().getDao().updateSearch(this);
     }
 
-    /**
-     * @return the hitGeoCoordinateList
-     */
+    
     public List<Location> getHitsLocationList() {
         if (!resultGroups.isEmpty()) {
             return resultGroups.get(0).getHitLocationList();
@@ -1400,9 +1302,7 @@ public class Search implements Serializable {
         return Collections.emptyList();
     }
 
-    /**
-     * @return the hasGeoLocationHits
-     */
+    
     public boolean isHasGeoLocationHits() {
         if (!resultGroups.isEmpty()) {
             return resultGroups.get(0).isHasGeoLocationHits();
@@ -1419,16 +1319,12 @@ public class Search implements Serializable {
         return resultGroups.size() > 1;
     }
 
-    /**
-     * @return the metadataListType
-     */
+    
     public String getMetadataListType() {
         return metadataListType;
     }
 
-    /**
-     * @param metadataListType the metadataListType to set
-     */
+    
     public void setMetadataListType(String metadataListType) {
         this.metadataListType = metadataListType;
     }

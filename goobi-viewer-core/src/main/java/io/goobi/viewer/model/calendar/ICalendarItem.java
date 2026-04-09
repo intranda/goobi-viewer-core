@@ -22,63 +22,51 @@
 package io.goobi.viewer.model.calendar;
 
 /**
- * <p>
- * ICalendarItem interface.
- * </p>
+ * Represents a single selectable item in a calendar navigation (e.g. a year, month, or day entry).
+ * Each item has a display name, a numeric value used for ordering, a hit count reflecting how many records fall within it,
+ * and a selected state.
  */
 public interface ICalendarItem extends Comparable<ICalendarItem> {
 
     /**
-     * <p>
      * getName.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the display name of this calendar item
      */
     public String getName();
 
     /**
-     * <p>
      * getValue.
-     * </p>
      *
      * @return a int.
      */
     public int getValue();
 
     /**
-     * <p>
      * getHits.
-     * </p>
      *
      * @return a int.
      */
     public int getHits();
 
     /**
-     * <p>
      * setHits.
-     * </p>
      *
-     * @param hits a int.
+     * @param hits number of search hits for this item
      */
     public void setHits(int hits);
 
     /**
-     * <p>
      * isSelected.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this calendar item is currently selected, false otherwise
      */
     public boolean isSelected();
 
     /**
-     * <p>
      * setSelected.
-     * </p>
      *
-     * @param selected a boolean.
+     * @param selected true to mark this item as selected
      */
     public void setSelected(boolean selected);
 

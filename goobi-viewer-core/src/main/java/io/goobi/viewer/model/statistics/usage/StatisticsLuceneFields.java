@@ -26,28 +26,27 @@ import java.time.format.DateTimeFormatter;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Contains field names of STATISTICS_USAGE SOLR documents
+ * Contains field names of STATISTICS_USAGE SOLR documents.
  * 
- * @author florian
- *
+ * @author Florian Alpers
  */
 public final class StatisticsLuceneFields {
 
     /**
-     * Format dates to/from the string representation used in SOLR
+     * Formats dates to/from the string representation used in SOLR.
      */
     public static final DateTimeFormatter SOLR_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
     /**
-     * DOCTYPE field value for usage statistics documents
+     * DOCTYPE field value for usage statistics documents.
      */
     public static final String USAGE_STATISTICS_DOCTYPE = "STATISTICS_USAGE";
     /**
-     * SOLR field name containing the name of the viewer instance
+     * SOLR field name containing the name of the viewer instance.
      */
     public static final String VIEWER_NAME = "STATISTICS_VIEWERNAME";
     /**
-     * SOLR field name containing the date at which the statistics were recorded
+     * SOLR field name containing the date at which the statistics were recorded.
      */
     public static final String DATE = "STATISTICS_DATE";
     /**
@@ -57,7 +56,7 @@ public final class StatisticsLuceneFields {
     public static final String RECORD_STATISTICS_PREFIX = "STATISTICS_RECORD_";
 
     /**
-     * Get the complete SOLR field name for a given record identifier
+     * Gets the complete SOLR field name for a given record identifier.
      * 
      * @param pi the record identifier
      * @return {@link String}
@@ -67,9 +66,9 @@ public final class StatisticsLuceneFields {
     }
 
     /**
-     * Get the record identifier from the given SOLR field name
+     * Gets the record identifier from the given SOLR field name.
      * 
-     * @param fieldname
+     * @param fieldname full Solr field name containing the record identifier
      * @return the record identifier
      */
     public static String getPi(String fieldname) {

@@ -46,12 +46,12 @@ import jakarta.servlet.http.HttpServletRequest;
  * during object construcion. A Task has an {@link Accessibility} property defining which calls are allowed to access the task, and a {@link TaskType}
  * defining the actual process to use. Parameters of the execution as well as the type itself are determined by a {@link TaskParameter} object given
  * at task creation. Also each task has a status property signaling he current state of the task. A task starts out as {@link TaskStatus#CREATED}.
- * Once processing starts (which may be delayed by the limited thread pool if other tasks are running) the status changes to
- * {@link TaskStatus#STARTED}. After processing ends the task is set to either {@link TaskStatus#COMPLETE} or {@link TaskStatus#ERROR} depedning on
- * whether an error occured which may be recorded in the {@link #exception} property.
  *
- * @author florian
+ * <p>Once processing starts (which may be delayed by the limited thread pool if other tasks are running) the status changes to
+ * {@link TaskStatus#STARTED}. After processing ends the task is set to either {@link TaskStatus#COMPLETE} or {@link TaskStatus#ERROR} depending on
+ * whether an error occurred which may be recorded in the {@link #exception} property.
  *
+ * @author Florian Alpers
  */
 @JsonInclude(Include.NON_EMPTY)
 public class Task {
@@ -60,6 +60,9 @@ public class Task {
 
     private static final AtomicLong ID_COUNTER = new AtomicLong(0);
 
+    /**
+     * Enumerates the access levels that control which callers are permitted to read or monitor a {@link Task}.
+     */
     public enum Accessibility {
         /**
          * Anyone may access this task.
@@ -79,6 +82,9 @@ public class Task {
         TOKEN;
     }
 
+    /**
+     * Enumerates the lifecycle states of a {@link Task}, from initial creation through active processing to a terminal completed or error state.
+     */
     public enum TaskStatus {
         CREATED,
         STARTED,
@@ -103,8 +109,8 @@ public class Task {
 
     /**
      * 
-     * @param params
-     * @param work
+     * @param params task parameters including the task type
+     * @param work the actual work to execute when task is run
      */
     public Task(TaskParameter params, BiConsumer<HttpServletRequest, Task> work) {
         this.type = params.getType();
@@ -117,7 +123,7 @@ public class Task {
 
     /**
      * 
-     * @param request
+     * @param request HTTP servlet request used to execute the task
      */
     public void doTask(HttpServletRequest request) {
         logger.debug("Started Task '{}'", this);
@@ -132,7 +138,7 @@ public class Task {
 
     /**
      * 
-     * @param error
+     * @param error error message describing the task failure
      */
     public void setError(String error) {
         this.status = TaskStatus.ERROR;
@@ -141,7 +147,7 @@ public class Task {
 
     /**
      * 
-     * @param type
+     * @param type the task type to determine accessibility for
      * @return {@link Accessibility}
      */
     public static Accessibility getAccessibility(ITaskType type) {
@@ -161,79 +167,57 @@ public class Task {
         }
     }
 
-    /**
-     * @return the id
-     */
+    
     public long getId() {
         return id;
     }
 
-    /**
-     * @return the type
-     */
+    
     public TaskType getType() {
         return type;
     }
 
-    /**
-     * @return the exception
-     */
+    
     public Optional<String> getException() {
         return exception;
     }
 
-    /**
-     * @param exception the exception to set
-     */
+    
     public void setException(Optional<String> exception) {
         this.exception = exception;
     }
 
-    /**
-     * @return the sessionId
-     */
+    
     public Optional<String> getSessionId() {
         return sessionId;
     }
 
-    /**
-     * @param sessionId the sessionId to set
-     */
+    
     public void setSessionId(Optional<String> sessionId) {
         this.sessionId = sessionId;
     }
 
-    /**
-     * @return the timeCreated
-     */
+    
     public LocalDateTime getTimeCreated() {
         return timeCreated;
     }
 
-    /**
-     * @return the work
-     */
+    
     public BiConsumer<HttpServletRequest, Task> getWork() {
         return work;
     }
 
-    /**
-     * @return the params
-     */
+    
     public TaskParameter getParams() {
         return params;
     }
 
-    /**
-     * @param status the status to set
-     */
+    
     public void setStatus(TaskStatus status) {
         this.status = status;
     }
 
-    /**
-     * @return the status
-     */
+    
     public TaskStatus getStatus() {
         return status;
     }
@@ -242,9 +226,6 @@ public class Task {
         return exception.orElse(null);
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return "Task " + this.id + "; Type: " + this.type + "; Status: " + this.status;

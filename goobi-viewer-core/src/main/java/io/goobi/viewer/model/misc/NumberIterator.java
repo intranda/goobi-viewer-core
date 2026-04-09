@@ -25,9 +25,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * <p>
- * NumberIterator class.
- * </p>
+ * Iterator that generates sequential integer values starting from a configurable initial value.
  */
 public class NumberIterator implements Iterator<Integer> {
 
@@ -35,9 +33,6 @@ public class NumberIterator implements Iterator<Integer> {
 
     private Integer counter = 0;
 
-    /* (non-Javadoc)
-     * @see java.util.Iterator#hasNext()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean hasNext() {
@@ -46,9 +41,6 @@ public class NumberIterator implements Iterator<Integer> {
         }
     }
 
-    /* (non-Javadoc)
-     * @see java.util.Iterator#next()
-     */
     /** {@inheritDoc} */
     @Override
     public Integer next() {
@@ -61,9 +53,6 @@ public class NumberIterator implements Iterator<Integer> {
         }
     }
 
-    /* (non-Javadoc)
-     * @see java.util.Iterator#remove()
-     */
     /** {@inheritDoc} */
     @Override
     public void remove() {

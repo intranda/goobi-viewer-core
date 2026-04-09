@@ -110,9 +110,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
- * <p>
- * CMSPage class.
- * </p>
+ * Represents a CMS page with configurable content components, metadata, and URL mappings.
  */
 @Entity
 @Table(name = "cms_pages")
@@ -123,9 +121,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(CMSPage.class);
 
-    /** Constant <code>GLOBAL_LANGUAGE="global"</code> */
+    /** Constant <code>GLOBAL_LANGUAGE="global"</code>. */
     public static final String GLOBAL_LANGUAGE = "global";
-    /** Constant <code>CLASSIFICATION_OVERVIEWPAGE="overviewpage"</code> */
+    /** Constant <code>CLASSIFICATION_OVERVIEWPAGE="overviewpage"</code>. */
     public static final String CLASSIFICATION_OVERVIEWPAGE = "overviewpage";
     public static final String TOPBAR_SLIDER_ID = "topbar_slider";
 
@@ -164,8 +162,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     @Column(name = "use_as_default_record_view", nullable = false, columnDefinition = "boolean default false")
     private boolean useAsDefaultRecordView = false;
 
-    @Column(name = "subtheme_discriminator", nullable = true)
-    private String subThemeDiscriminatorValue = "";
+    @Column(name = "subtheme", nullable = true)
+    private String subTheme = "";
 
     @OneToMany(mappedBy = "ownerPage", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @OrderBy("order")
@@ -206,7 +204,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     private String parentPageId = null;
 
     /**
-     * A html class name to be applied to the DOM element containing the page html
+     * A html class name to be applied to the DOM element containing the page html.
      */
     @Column(name = "wrapper_element_class")
     private String wrapperElementClass = "";
@@ -237,9 +235,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     private final Object cmsComponentsLock = new Object();
 
     /**
-     * <p>
-     * Constructor for CMSPage.
-     * </p>
+     * Creates a new CMSPage instance.
      */
     public CMSPage() {
         this.dateCreated = LocalDateTime.now();
@@ -248,7 +244,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * creates a deep copy of the original CMSPage. Only copies persisted properties and performs initialization for them
      *
-     * @param original a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
+     * @param original source page to copy from
      */
     public CMSPage(CMSPage original) {
         if (original.id != null) {
@@ -268,7 +264,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         this.useDefaultSidebar = original.useDefaultSidebar;
         this.persistentUrl = original.persistentUrl;
         this.relatedPI = original.relatedPI;
-        this.subThemeDiscriminatorValue = original.subThemeDiscriminatorValue;
+        this.subTheme = original.subTheme;
         this.categories = new ArrayList<>(original.categories);
         this.parentPageId = original.parentPageId;
         this.wrapperElementClass = original.wrapperElementClass;
@@ -303,13 +299,13 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * creates a CMSPage from a {@link CMSPageTemplate}. Only copies persisted properties and performs initialization for them
      *
-     * @param original a {@link io.goobi.viewer.model.cms.pages.CMSPageTemplate} object.
+     * @param original template to derive the new page from
      */
     public CMSPage(CMSPageTemplate original) {
 
         this.dateCreated = LocalDateTime.now();
         this.useDefaultSidebar = original.isUseDefaultSidebar();
-        this.subThemeDiscriminatorValue = original.getSubThemeDiscriminatorValue();
+        this.subTheme = original.getSubTheme();
         this.categories = new ArrayList<>(original.getCategories());
         this.wrapperElementClass = original.getWrapperElementClass();
         this.templateId = original.getId();
@@ -407,11 +403,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     /**
-     * <p>
      * addSidebarElement.
-     * </p>
      *
-     * @param element a {@link io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement} object.
+     * @param element sidebar element to append to the list
      */
     public void addSidebarElement(CMSSidebarElement element) {
         if (element != null) {
@@ -420,44 +414,36 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
-     * @return the id
+     * @return the database primary key of this page
      */
     public Long getId() {
         return id;
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
-     * @param id the id to set
+     * @param id the database primary key to set
      */
     public void setId(Long id) {
         this.id = id;
     }
 
     /**
-     * <p>
      * Getter for the field <code>dateCreated</code>.
-     * </p>
      *
-     * @return the dateCreated
+     * @return the date and time when this page was created
      */
     public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
     /**
-     * <p>
      * Setter for the field <code>dateCreated</code>.
-     * </p>
      *
-     * @param dateCreated the dateCreated to set
+     * @param dateCreated the date and time when this page was created
      */
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
@@ -470,77 +456,63 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     /**
-     * <p>
      * Setter for the field <code>dateUpdated</code>.
-     * </p>
      *
-     * @param dateUpdated the dateUpdated to set
+     * @param dateUpdated the date and time when this page was last updated
      */
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
 
     /**
-     * <p>
      * isPublished.
-     * </p>
      *
-     * @return the published
+     * @return true if the publication status is PUBLISHED, false otherwise
      */
     public boolean isPublished() {
         return PublicationStatus.PUBLISHED.equals(this.publicationStatus);
     }
 
     /**
-     * <p>
      * Setter for the field <code>published</code>.
-     * </p>
      *
-     * @param published the published to set
+     * @param published true sets the publication status to PUBLISHED, false sets it to PRIVATE
      */
     public void setPublished(boolean published) {
         this.publicationStatus = published ? PublicationStatus.PUBLISHED : PublicationStatus.PRIVATE;
     }
 
     /**
-     * <p>
      * isUseDefaultSidebar.
-     * </p>
      *
-     * @return the useDefaultSidebar
+     * @return true if this page uses the default sidebar instead of a custom one, false otherwise
      */
     public boolean isUseDefaultSidebar() {
         return useDefaultSidebar;
     }
 
     /**
-     * <p>
      * Setter for the field <code>useDefaultSidebar</code>.
-     * </p>
      *
-     * @param useDefaultSidebar the useDefaultSidebar to set
+     * @param useDefaultSidebar true if this page should use the default sidebar instead of a custom one
      */
     public void setUseDefaultSidebar(boolean useDefaultSidebar) {
         this.useDefaultSidebar = useDefaultSidebar;
     }
 
     /**
-     * <p>
      * Getter for the field <code>sidebarElements</code>.
-     * </p>
      *
-     * @return the sidebarElements
+     * @return the list of sidebar elements configured for this page
      */
     public List<CMSSidebarElement> getSidebarElements() {
         return sidebarElements;
     }
 
     /**
-     * <p>
      * Setter for the field <code>sidebarElements</code>.
-     * </p>
      *
-     * @param sidebarElements the sidebarElements to set
+     * @param sidebarElements the list of sidebar widget elements to assign to this page
      */
     public void setSidebarElements(List<CMSSidebarElement> sidebarElements) {
         this.sidebarElements = sidebarElements;
@@ -620,33 +592,27 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     /**
-     * <p>
      * Getter for the field <code>categories</code>.
-     * </p>
      *
-     * @return the classifications
+     * @return the list of categories assigned to this page
      */
     public List<CMSCategory> getCategories() {
         return categories;
     }
 
     /**
-     * <p>
      * Setter for the field <code>categories</code>.
-     * </p>
      *
-     * @param categories a {@link java.util.List} object.
+     * @param categories list of categories to assign to this page
      */
     public void setCategories(List<CMSCategory> categories) {
         this.categories = categories;
     }
 
     /**
-     * <p>
      * addCategory.
-     * </p>
      *
-     * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
+     * @param category category to add if not already present
      */
     public void addCategory(CMSCategory category) {
         if (category != null && !categories.contains(category)) {
@@ -655,33 +621,27 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     /**
-     * <p>
      * removeCategory.
-     * </p>
      *
-     * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
+     * @param category category to remove from this page
      */
     public void removeCategory(CMSCategory category) {
         categories.remove(category);
     }
 
     /**
-     * <p>
      * Getter for the field <code>sidebarElementString</code>.
-     * </p>
      *
-     * @return the sidebarElementString
+     * @return the serialized sidebar element configuration string
      */
     public String getSidebarElementString() {
         return sidebarElementString;
     }
 
     /**
-     * <p>
      * Setter for the field <code>sidebarElementString</code>.
-     * </p>
      *
-     * @param sidebarElementString the sidebarElementString to set
+     * @param sidebarElementString serialized sidebar element configuration string
      */
     public void setSidebarElementString(String sidebarElementString) {
         logger.trace("setSidebarElementString: {}", sidebarElementString);
@@ -689,23 +649,19 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     /**
-     * <p>
      * getTitle.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the CMS page title in the default language
      */
     public String getTitle() {
         return this.title.getTextOrDefault();
     }
 
     /**
-     * <p>
      * getTitle.
-     * </p>
      *
-     * @param locale a {@link java.util.Locale} object.
-     * @return a {@link java.lang.String} object.
+     * @param locale locale of the desired title translation
+     * @return the CMS page title in the given locale
      */
     public String getTitle(Locale locale) {
         return this.title.getText(locale);
@@ -716,34 +672,28 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     /**
-     * <p>
      * getMenuTitle.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the CMS page menu title in the default language
      */
     public String getMenuTitle() {
         return this.menuTitle.getTextOrDefault();
     }
 
     /**
-     * <p>
      * getMenuTitle.
-     * </p>
      *
-     * @param locale a {@link java.util.Locale} object.
-     * @return a {@link java.lang.String} object.
+     * @param locale locale of the desired menu title translation
+     * @return the CMS page menu title in the given locale
      */
     public String getMenuTitle(Locale locale) {
         return this.menuTitle.getText(locale);
     }
 
     /**
-     * <p>
      * getMenuTitleOrTitle.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the CMS page menu title in the default language, falling back to the title if the menu title is empty
      */
     public String getMenuTitleOrTitle() {
         if (this.menuTitle.isEmpty()) {
@@ -753,12 +703,10 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     /**
-     * <p>
      * getMenuTitleOrTitle.
-     * </p>
      *
-     * @param locale a {@link java.util.Locale} object.
-     * @return a {@link java.lang.String} object.
+     * @param locale locale of the desired translation
+     * @return the CMS page menu title in the given locale, falling back to the title if not available
      */
     public String getMenuTitleOrTitle(Locale locale) {
         return this.menuTitle.getValue(locale).orElse(this.title.getText(locale));
@@ -769,11 +717,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     /**
-     * <p>
      * Getter for the field <code>pageSorting</code>.
-     * </p>
      *
-     * @return a {@link java.lang.Long} object.
+     * @return the numeric sort position used for page ordering, or null if not set
      */
     public Long getPageSorting() {
         return pageSorting;
@@ -784,42 +730,34 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     /**
-     * <p>
      * Setter for the field <code>pageSorting</code>.
-     * </p>
      *
-     * @param pageSorting a {@link java.lang.Long} object.
+     * @param pageSorting numeric sort position for page ordering
      */
     public void setPageSorting(Long pageSorting) {
         this.pageSorting = pageSorting;
     }
 
     /**
-     * <p>
-     * Getter for the field <code>subThemeDiscriminatorValue</code>.
-     * </p>
+     * Getter for the field <code>subTheme</code>.
      *
-     * @return the subThemeDiscriminatorValue
+     * @return the sub-theme discriminator value for this page, or an empty string if none is set
      */
-    public String getSubThemeDiscriminatorValue() {
-        return subThemeDiscriminatorValue;
+    public String getSubTheme() {
+        return subTheme;
     }
 
     /**
-     * <p>
-     * Setter for the field <code>subThemeDiscriminatorValue</code>.
-     * </p>
+     * Setter for the field <code>subTheme</code>.
      *
-     * @param subThemeDiscriminatorValue the subThemeDiscriminatorValue to set
+     * @param subTheme sub-theme discriminator value for this page
      */
-    public void setSubThemeDiscriminatorValue(String subThemeDiscriminatorValue) {
-        this.subThemeDiscriminatorValue = subThemeDiscriminatorValue == null ? "" : subThemeDiscriminatorValue;
+    public void setSubTheme(String subTheme) {
+        this.subTheme = subTheme == null ? "" : subTheme;
     }
 
     /**
-     * <p>
      * getPageUrl.
-     * </p>
      *
      * @return the pretty url to this page (using alternative url if set)
      */
@@ -837,7 +775,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     /**
-     * Gets the pagination number for this page's main list if it contains one
+     * Gets the pagination number for this page's main list if it contains one.
      *
      * @return a int.
      */
@@ -846,31 +784,27 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     /**
-     * Sets the pagination number for this page's main list if it contains one
+     * Sets the pagination number for this page's main list if it contains one.
      *
-     * @param listPage a int.
+     * @param listPage current pagination page number of the main list
      */
     public void setListPage(int listPage) {
         this.listPage = listPage;
     }
 
     /**
-     * <p>
      * Getter for the field <code>persistentUrl</code>.
-     * </p>
      *
-     * @return the persistentUrl
+     * @return the custom URL path for this page, without leading or trailing slashes
      */
     public String getPersistentUrl() {
         return persistentUrl;
     }
 
     /**
-     * <p>
      * Setter for the field <code>persistentUrl</code>.
-     * </p>
      *
-     * @param persistentUrl the persistentUrl to set
+     * @param persistentUrl the custom URL path for this page; leading and trailing slashes are stripped
      */
     public void setPersistentUrl(final String persistentUrl) {
         // TODO null check
@@ -895,23 +829,19 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     /**
-     * <p>
      * getRelativeUrlPath.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the relative URL path for this CMS page, using static or persistent URL if available
      */
     public String getRelativeUrlPath() {
         return getRelativeUrlPath(true);
     }
 
     /**
-     * <p>
      * getRelativeUrlPath.
-     * </p>
      *
-     * @param pretty a boolean.
-     * @return a {@link java.lang.String} object.
+     * @param pretty if true, use static or persistent URL when available
+     * @return the relative URL path for this CMS page, optionally using the pretty URL
      */
     public String getRelativeUrlPath(boolean pretty) {
 
@@ -935,11 +865,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     /**
-     * <p>
      * isHasSidebarElements.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this page uses the default sidebar or has at least one custom sidebar element, false otherwise
      */
     public boolean isHasSidebarElements() {
         if (!isUseDefaultSidebar()) {
@@ -949,33 +877,27 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     /**
-     * <p>
      * Setter for the field <code>parentPageId</code>.
-     * </p>
      *
-     * @param parentPageId the parentPageId to set
+     * @param parentPageId the string ID of the parent CMS page, or null if this page has no parent
      */
     public void setParentPageId(String parentPageId) {
         this.parentPageId = parentPageId;
     }
 
     /**
-     * <p>
      * Getter for the field <code>parentPageId</code>.
-     * </p>
      *
-     * @return the parentPageId
+     * @return the string ID of the parent CMS page, or null if this page has no parent
      */
     public String getParentPageId() {
         return parentPageId;
     }
 
     /**
-     * <p>
      * isMayContainUrlParameters.
-     * </p>
      *
-     * @return the mayContainUrlParameters
+     * @return true if this page contains paged components that require URL parameters, false otherwise
      */
     public boolean isMayContainUrlParameters() {
         return isContainsPagedComponents();
@@ -986,46 +908,38 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     /**
-     * <p>
      * Getter for the field <code>relatedPI</code>.
-     * </p>
      *
-     * @return the relatedPI
+     * @return the persistent identifier of the record associated with this CMS page, or null if none is set
      */
     public String getRelatedPI() {
         return relatedPI;
     }
 
     /**
-     * <p>
      * Setter for the field <code>relatedPI</code>.
-     * </p>
      *
-     * @param relatedPI the relatedPI to set
+     * @param relatedPI the persistent identifier of the record associated with this CMS page
      */
     public void setRelatedPI(String relatedPI) {
         this.relatedPI = relatedPI;
     }
 
-    /**
-     * @return the useAsDefaultRecordView
-     */
+    
     public boolean isUseAsDefaultRecordView() {
         logger.trace("isUseAsDefaultRecordView: {}", useAsDefaultRecordView);
         return useAsDefaultRecordView;
     }
 
-    /**
-     * @param useAsDefaultRecordView the useAsDefaultRecordView to set
-     */
+    
     public void setUseAsDefaultRecordView(boolean useAsDefaultRecordView) {
         this.useAsDefaultRecordView = useAsDefaultRecordView;
     }
 
     /**
-     * Returns the property with the given key or else creates a new one with that key and returns it
+     * Returns the property with the given key or else creates a new one with that key and returns it.
      *
-     * @param key a {@link java.lang.String} object.
+     * @param key property key to look up or create
      * @return the property with the given key or else creates a new one with that key and returns it
      * @throws java.lang.ClassCastException if the returned property has the wrong generic type.
      */
@@ -1049,9 +963,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     /**
-     * <p>
      * Getter for the field <code>wrapperElementClass</code>.
-     * </p>
      *
      * @return the {@link #wrapperElementClass}
      */
@@ -1060,9 +972,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     /**
-     * <p>
      * Setter for the field <code>wrapperElementClass</code>.
-     * </p>
      *
      * @param wrapperElementClass the {@link #wrapperElementClass} to set
      */
@@ -1070,22 +980,20 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         this.wrapperElementClass = wrapperElementClass;
     }
 
-    /**
-     * @return the searchable
-     */
+    
     public boolean isSearchable() {
         return searchable;
     }
 
-    /**
-     * @param searchable the searchable to set
-     */
+    
     public void setSearchable(boolean searchable) {
         this.searchable = searchable;
     }
 
     /**
-     * @return the accessCondition
+     * Returns the access condition configured for this CMS page.
+     *
+     * @return the access condition property value, or null if no access condition is configured
      */
     public String getAccessCondition() {
         for (CMSProperty property : properties) {
@@ -1098,9 +1006,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         return null;
     }
 
-    /**
-     * @param accessCondition the accessCondition to set
-     */
+    
     public void setAccessCondition(String accessCondition) {
         logger.trace("setAccessCondition: {}", accessCondition);
         for (CMSProperty property : properties) {
@@ -1195,9 +1101,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * Exports text/html fragments from this page's content items for indexing.
      *
-     * @param outputFolderPath a {@link java.lang.String} object.
-     * @param namingScheme a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
+     * @param outputFolderPath destination directory for exported text fragments
+     * @param namingScheme filename pattern used when writing exported files
+     * @return a list of exported text fragment files written to the output folder
      * @throws java.io.IOException if any.
      */
     public List<File> exportTexts(String outputFolderPath, String namingScheme) throws IOException {
@@ -1218,7 +1124,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     /**
-     * Exports relevant page contents as JDOM2 document for indexing
+     * Exports relevant page contents as JDOM2 document for indexing.
      * 
      * @return {@link Document}
      * @should create doc correctly
@@ -1288,11 +1194,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     /**
-     * <p>
      * Getter for the field <code>selectableCategories</code>.
-     * </p>
      *
-     * @return the selectableCategories
+     * @return the list of all allowed categories wrapped as selectable items, with selection state reflecting current page categories
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<Selectable<CMSCategory>> getSelectableCategories() throws DAOException {
@@ -1308,9 +1212,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         this.selectableCategories = null;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.misc.Harvestable#getPi()
-     */
     /** {@inheritDoc} */
     @Override
     public String getPi() {
@@ -1461,8 +1362,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      * Set the order attribute of the {@link PersistentCMSComponent} belonging to the given {@link CMSComponent} to the given order value. Also, sets
      * the order value of all Components which previously had the given order to the order value of the given component
      * 
-     * @param component
-     * @param order
+     * @param component the CMS component whose order to set
+     * @param order the new order value to assign
      */
     public void setComponentOrder(CMSComponent component, int order) {
         PersistentCMSComponent persistentComponent = component.getPersistentComponent();

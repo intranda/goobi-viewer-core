@@ -49,10 +49,8 @@ import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.ext.Provider;
 
 /**
- * <p>
- * Filter for all IIIF Presentation resources. Checks the {@link io.goobi.viewer.model.security.IPrivilegeHolder#PRIV_GENERATE_IIIF_MANIFEST}
- * privilege for the request.
- * </p>
+ * JAX-RS request filter for all IIIF Presentation resources. Checks the
+ * {@link io.goobi.viewer.model.security.IPrivilegeHolder#PRIV_GENERATE_IIIF_MANIFEST} privilege for the request.
  */
 @Provider
 @IIIFPresentationBinding
@@ -82,15 +80,13 @@ public class IIIFPresentationRequestFilter implements ContainerRequestFilter {
     }
 
     /**
-     * <p>
      * forwardToCanonicalUrl.
-     * </p>
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param imageName a {@link java.lang.String} object.
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
-     * @return a boolean.
+     * @param pi persistent identifier of the record
+     * @param imageName image filename or page order number to resolve
+     * @param request incoming HTTP request to update with resolved filename
+     * @param response HTTP response used to perform the redirect
+     * @return true if a redirect to the canonical URL was performed, false if no redirect was necessary
      * @throws java.io.IOException if any.
      */
     public static boolean forwardToCanonicalUrl(String pi, String imageName, HttpServletRequest request, HttpServletResponse response)
@@ -121,8 +117,8 @@ public class IIIFPresentationRequestFilter implements ContainerRequestFilter {
     }
 
     /**
-     * @param pi
-     * @param logId
+     * @param pi persistent identifier of the record
+     * @param logId logical structure ID to check
      * @throws ServiceNotAllowedException
      */
     private void filterForAccessConditions(String pi, String logId) throws ServiceNotAllowedException {

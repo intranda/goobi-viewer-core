@@ -74,8 +74,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.UriBuilder;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class CanvasBuilder extends AbstractBuilder {
 
@@ -85,8 +84,8 @@ public class CanvasBuilder extends AbstractBuilder {
     private final AbstractApiUrlManager imageUrlManager = DataManager.getInstance().getRestApiManager().getIIIFContentApiManager();
 
     /**
-     * @param apiUrlManager
-     * @param request
+     * @param apiUrlManager URL manager providing API endpoint paths
+     * @param request current HTTP servlet request
      */
     public CanvasBuilder(AbstractApiUrlManager apiUrlManager, HttpServletRequest request) {
         super(apiUrlManager, request);
@@ -94,9 +93,9 @@ public class CanvasBuilder extends AbstractBuilder {
     }
 
     /**
-     * 
-     * @param pi
-     * @param order
+     *
+     * @param pi persistent identifier of the record
+     * @param order physical page order number of the canvas to build
      * @return {@link Canvas3}
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -116,9 +115,9 @@ public class CanvasBuilder extends AbstractBuilder {
     }
 
     /**
-     * 
-     * @param pi
-     * @param order
+     *
+     * @param pi persistent identifier of the record
+     * @param order physical page order number whose fulltext annotations to build
      * @return {@link AnnotationPage}
      * @throws ContentLibException
      * @throws URISyntaxException
@@ -135,8 +134,8 @@ public class CanvasBuilder extends AbstractBuilder {
     }
 
     /**
-     * 
-     * @param page
+     *
+     * @param page physical page element to build the canvas from
      * @return {@link Canvas3}
      * @throws ContentLibException
      * @throws URISyntaxException
@@ -167,7 +166,7 @@ public class CanvasBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param page
+     * @param page physical page element for which the comment annotations reference is built
      * @return {@link AnnotationPage}
      */
     private AnnotationPage getCommentAnnotationsReference(PhysicalElement page) {
@@ -176,8 +175,8 @@ public class CanvasBuilder extends AbstractBuilder {
     }
 
     /**
-     * 
-     * @param page
+     *
+     * @param page physical page element for which the crowdsourcing annotations reference is built
      * @return {@link AnnotationPage}
      */
     private AnnotationPage getCrowdsourcingAnnotationsReference(PhysicalElement page) {
@@ -186,9 +185,9 @@ public class CanvasBuilder extends AbstractBuilder {
     }
 
     /**
-     * Get a reference to an annotation page containing all fulltext annotations for the given page
+     * Gets a reference to an annotation page containing all fulltext annotations for the given page.
      *
-     * @param page
+     * @param page physical page element to check for fulltext availability
      * @return The annotation page, or null if no fulltext is available for the given page
      * @throws DAOException
      * @throws IndexUnreachableException
@@ -210,10 +209,10 @@ public class CanvasBuilder extends AbstractBuilder {
     }
 
     /**
-     * Return an annotation page with any fulltext annotations for the given page. The annotation page contains the @context property
+     * Returns an annotation page with any fulltext annotations for the given page. The annotation page contains the @context property
      *
-     * @param canvas
-     * @param page
+     * @param canvas canvas to target when building annotation bodies
+     * @param page physical page element providing ALTO or plaintext content
      * @return {@link AnnotationPage}
      * @throws IndexUnreachableException
      */
@@ -264,8 +263,8 @@ public class CanvasBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param canvas
-     * @param page
+     * @param canvas canvas to attach the image resource to
+     * @param page physical page element providing image file and dimension data
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws URISyntaxException
@@ -313,9 +312,9 @@ public class CanvasBuilder extends AbstractBuilder {
     }
 
     /**
-     * 
-     * @param canvas
-     * @param page
+     *
+     * @param canvas canvas to attach linking and rendering properties to
+     * @param page physical page element providing file names and access state
      * @throws DAOException
      * @throws IndexUnreachableException
      */

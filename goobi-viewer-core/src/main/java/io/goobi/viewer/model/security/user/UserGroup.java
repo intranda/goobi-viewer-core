@@ -48,9 +48,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
- * <p>
- * UserGroup class.
- * </p>
+ * Represents a group of users that can be assigned licences and roles collectively.
  */
 @Entity
 @Table(name = "user_groups")
@@ -82,11 +80,6 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     @Transient
     private List<UserRole> memberships = null;
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -99,11 +92,6 @@ public class UserGroup extends AbstractLicensee implements Serializable {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -149,13 +137,11 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * <p>
      * changeMemberRole.
-     * </p>
      *
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
-     * @param role a {@link io.goobi.viewer.model.security.Role} object.
-     * @return a boolean.
+     * @param user user whose role to update in this group
+     * @param role new role to assign to the user
+     * @return true if the role was changed successfully (i.e. both user and role are non-null), false otherwise
      */
     public boolean changeMemberRole(User user, Role role) {
         if (user != null && role != null) {
@@ -168,10 +154,10 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * remove User from Group
+     * Remove User from Group.
      *
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
-     * @return a boolean.
+     * @param user user to remove from this group
+     * @return true if the user was removed (i.e. the user argument is non-null), false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean removeMember(User user) throws DAOException {
@@ -185,12 +171,10 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * <p>
      * hasUserPrivilege.
-     * </p>
      *
-     * @param privilegeName a {@link java.lang.String} object.
-     * @return a boolean.
+     * @param privilegeName name of the privilege to check
+     * @return true if any member role of this group grants the given privilege, false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean hasUserPrivilege(String privilegeName) throws DAOException {
@@ -206,22 +190,18 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     /*********************************** Getter and Setter ***************************************/
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
-     * @return the id
+     * @return the database identifier of this user group
      */
     public Long getId() {
         return id;
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
-     * @param id the id to set
+     * @param id the database identifier to set
      */
     public void setId(Long id) {
         this.id = id;
@@ -234,33 +214,27 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>name</code>.
-     * </p>
      *
-     * @param name the name to set
+     * @param name the display name of this user group to set
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * <p>
      * Getter for the field <code>description</code>.
-     * </p>
      *
-     * @return the description
+     * @return a human-readable description of this user group
      */
     public String getDescription() {
         return description;
     }
 
     /**
-     * <p>
      * Setter for the field <code>description</code>.
-     * </p>
      *
-     * @param description the description to set
+     * @param description a human-readable description of this user group to set
      */
     public void setDescription(String description) {
         this.description = description;
@@ -272,44 +246,36 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>owner</code>.
-     * </p>
      *
-     * @return the owner
+     * @return the user who owns this group
      */
     public User getOwner() {
         return owner;
     }
 
     /**
-     * <p>
      * Setter for the field <code>owner</code>.
-     * </p>
      *
-     * @param owner the owner to set
+     * @param owner the user who owns this group to set
      */
     public void setOwner(User owner) {
         this.owner = owner;
     }
 
     /**
-     * <p>
      * isActive.
-     * </p>
      *
-     * @return the active
+     * @return true if this user group is active, false otherwise
      */
     public boolean isActive() {
         return active;
     }
 
     /**
-     * <p>
      * Setter for the field <code>active</code>.
-     * </p>
      *
-     * @param active the active to set
+     * @param active true if this user group is active; false otherwise
      */
     public void setActive(boolean active) {
         this.active = active;
@@ -318,6 +284,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
 //    /**
 //     * <p>
 //     * Getter for the field <code>licenses</code>.
+//     *
 //     * </p>
 //     *
 //     * @param core a boolean.
@@ -361,11 +328,9 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * <p>
      * getMemberships.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of user role entries representing the members of this group
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<UserRole> getMemberships() throws DAOException {
@@ -376,19 +341,15 @@ public class UserGroup extends AbstractLicensee implements Serializable {
         return memberships;
     }
 
-    /**
-     * @param memberships the memberships to set
-     */
+    
     public void setMemberships(List<UserRole> memberships) {
         this.memberships = memberships;
     }
 
     /**
-     * <p>
      * getMembers.
-     * </p>
      *
-     * @return a {@link java.util.Set} object.
+     * @return the set of all users that are members of this group
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @should return all members
      */

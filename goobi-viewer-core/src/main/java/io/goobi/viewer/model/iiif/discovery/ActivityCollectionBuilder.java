@@ -86,7 +86,7 @@ public class ActivityCollectionBuilder {
 
     /**
      * Creates a An {@link de.intranda.api.iiif.discovery.OrderedCollection} of {@link Activity Acvitities}, linking to the first and last contained
-     * {@link de.intranda.api.iiif.discovery.OrderedCollectionPage} as well as counting the total number of Activities
+     * {@link de.intranda.api.iiif.discovery.OrderedCollectionPage} as well as counting the total number of Activities.
      *
      * @return An {@link de.intranda.api.iiif.discovery.OrderedCollection}
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -155,7 +155,7 @@ public class ActivityCollectionBuilder {
     }
 
     /**
-     * Set an additional filter query which must be met by all processes for which activities are counted
+     * Sets an additional filter query which must be met by all processes for which activities are counted.
      * 
      * @param query The solr query which counted processes must meet
      * @return myself
@@ -167,7 +167,7 @@ public class ActivityCollectionBuilder {
     }
 
     /**
-     * Get the earliest date of Activities which may be contained in the collection
+     * Gets the earliest date of Activities which may be contained in the collection.
      *
      * @return the earliest date of Activities which may be contained in the collection. May return null if no startDate is specified
      */
@@ -177,7 +177,7 @@ public class ActivityCollectionBuilder {
 
     /**
      * Get the number of activities per page as defined by {@link io.goobi.viewer.controller.Configuration#getIIIFDiscoveryAvtivitiesPerPage()
-     * Configuration#getIIIFDiscoveryAvtivitiesPerPage()}
+     * Configuration#getIIIFDiscoveryAvtivitiesPerPage()}.
      *
      * @return the number of activities per page as defined by {@link io.goobi.viewer.controller.Configuration#getIIIFDiscoveryAvtivitiesPerPage()
      *         Configuration#getIIIFDiscoveryAvtivitiesPerPage()}
@@ -187,7 +187,7 @@ public class ActivityCollectionBuilder {
     }
 
     /**
-     * Get the total number of {@link Activity Activities} in the collection
+     * Gets the total number of {@link Activity Activities} in the collection.
      *
      * @return the total number of {@link Activity Activities} in the collection
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -201,7 +201,7 @@ public class ActivityCollectionBuilder {
     }
 
     /**
-     * Get the URI for the collection request
+     * Gets the URI for the collection request.
      *
      * @return the URI for the collection request
      */
@@ -211,7 +211,7 @@ public class ActivityCollectionBuilder {
     }
 
     /**
-     * Get the URI to request a specific collection page
+     * Gets the URI to request a specific collection page.
      *
      * @param no the page number
      * @return the URI to request a specific collection page
@@ -233,10 +233,10 @@ public class ActivityCollectionBuilder {
     }
 
     /**
-     * 
-     * @param docs
-     * @param startDate
-     * @param endDate
+     *
+     * @param docs Solr documents to convert into activities
+     * @param startDate lower bound timestamp in milliseconds (inclusive)
+     * @param endDate upper bound timestamp in milliseconds (inclusive)
      * @return List<Activity>
      */
     private List<Activity> buildItems(SolrDocumentList docs, Long startDate, Long endDate) {
@@ -305,11 +305,11 @@ public class ActivityCollectionBuilder {
 
     /**
      * Get all activity dates after startDate limited to the results between first and last; sorted chronologically ascending (earliest dates come
-     * first)
+     * first).
      *
-     * @param startDate
-     * @param first
-     * @param last
+     * @param startDate earliest allowed activity date; null means no lower bound
+     * @param first zero-based index of the first activity to return
+     * @param last zero-based index of the last activity to return (inclusive)
      * @return List<Long>
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -350,9 +350,9 @@ public class ActivityCollectionBuilder {
     }
 
     /**
-     * 
-     * @param startDate
-     * @param endDate
+     *
+     * @param startDate lower bound timestamp in milliseconds (inclusive); null means no lower bound
+     * @param endDate upper bound timestamp in milliseconds (inclusive); null means no upper bound
      * @return {@link SolrDocumentList}
      * @throws PresentationException
      * @throws IndexUnreachableException

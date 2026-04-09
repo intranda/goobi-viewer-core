@@ -245,9 +245,7 @@
                 this.pageType = document.querySelector(_config.elementSelectors.data.pageType).textContent;
                 this.viewMode = imageElement.dataset[_config.datasets.image.viewMode];
 
-                this.topMarginElement = document.querySelector(
-                    _config.elementSelectors.data.topMarginElement
-                )?.textContent;
+                this.topMarginElement = document.querySelector(_config.elementSelectors.data.topMarginElement)?.textContent;
                 this.leftMarginElement = document.querySelector(
                     _config.elementSelectors.data.leftMarginElement
                 )?.textContent;
@@ -320,14 +318,12 @@
 
         load() {
             if (this.viewer) {
-                return this.viewer
-                    .load(Object.values(this.tileSources), this.getCurrentTileSourceIndex())
-                    .then((image) => {
-                        this.sequence?.initialize(this.getCurrentTileSourceId());
-                        this.overlayGroups.forEach((group) => group.show());
-                        this.initWindowResize();
-                        return this;
-                    });
+                return this.viewer.load(Object.values(this.tileSources), this.getCurrentTileSourceIndex()).then((image) => {
+                    this.sequence?.initialize(this.getCurrentTileSourceId());
+                    this.overlayGroups.forEach((group) => group.show());
+                    this.initWindowResize();
+                    return this;
+                });
             } else {
                 return new Promise((resolve, reject) => {
                     reject('no image found');
@@ -581,11 +577,7 @@
                 this.fragmentSelect.finishedHook.subscribe((area) => {
                     var areaString = this.getAreaString(area);
                     var pageUrl =
-                        window.location.origin +
-                        window.location.pathname +
-                        window.location.search +
-                        '#xywh=' +
-                        areaString;
+                        window.location.origin + window.location.pathname + window.location.search + '#xywh=' + areaString;
                     var imageUrl = this.getRegionUrl(area);
                     console.log('set area data ', pageUrl, imageUrl);
                     $('[data-fragment-link="page"]').attr('data-copy-share-image', pageUrl);
@@ -599,13 +591,7 @@
         }
 
         getAreaString(area) {
-            if (
-                area &&
-                area.x != undefined &&
-                area.y != undefined &&
-                area.width != undefined &&
-                area.height != undefined
-            ) {
+            if (area && area.x != undefined && area.y != undefined && area.width != undefined && area.height != undefined) {
                 var areaString =
                     area.x.toFixed(0) +
                     ',' +
@@ -720,7 +706,8 @@
             this.container = document.querySelector(this.config.container);
             // console.log('init voyager3d', this);
             if (this.isVisible()) {
-                this.loaded = this.initView().then(() => {});
+                this.loaded = this.initView().then(() => {
+                });
             }
         }
 
@@ -849,4 +836,5 @@
 
         window.voyager3dView = new Voyager3dView();
     });
+
 })();

@@ -58,7 +58,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
 
     private static final Logger logger = LogManager.getLogger(BrowseDcElement.class);
 
-    /** Collection name */
+    /** Collection name. */
     private final String name;
     private final String field;
     private final String splittingChar;
@@ -78,16 +78,14 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     private List<String> facetValues = new ArrayList<>();
 
     /**
-     * <p>
-     * Constructor for BrowseDcElement.
-     * </p>
+     * Creates a new BrowseDcElement instance.
      *
-     * @param name a {@link java.lang.String} object.
-     * @param number a long.
-     * @param field a {@link java.lang.String} object.
-     * @param sortField a {@link java.lang.String} object.
-     * @param splittingChar
-     * @param displayNumberOfVolumesLevel
+     * @param name collection name (Solr field value)
+     * @param number total number of records in this collection
+     * @param field Solr field used to identify the collection
+     * @param sortField Solr field used to sort collection contents
+     * @param splittingChar character used to split hierarchical collection names
+     * @param displayNumberOfVolumesLevel level at which to display the number of volumes
      */
     public BrowseDcElement(String name, long number, String field, String sortField, String splittingChar, int displayNumberOfVolumesLevel) {
         this.name = name != null ? name.intern() : name;
@@ -111,11 +109,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * <p>
-     * Constructor for BrowseDcElement.
-     * </p>
+     * Creates a new BrowseDcElement instance.
      *
-     * @param blueprint a {@link io.goobi.viewer.model.viewer.collections.BrowseDcElement} object.
+     * @param blueprint existing element to copy fields from
      */
     public BrowseDcElement(BrowseDcElement blueprint) {
         this.name = blueprint.name;
@@ -170,11 +166,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Getter for the field <code>name</code>. If the <code>CMSCollection</code> translation is desired, use <code>getLabel()</code> instead.
-     * </p>
      *
-     * @return the name
+     * @return the internal collection name (Solr field value)
      */
     public String getName() {
         return name;
@@ -185,9 +179,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getLabel.
-     * </p>
      *
      * @return <code>CMSCollection</code> translation, if ava ilable; name otherwise
      */
@@ -201,7 +193,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     /**
      * Returns the message key for the collection description.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the collection description from CMS info, or a message key derived from the collection name
      */
     public String getDescription() {
         if (getInfo() != null) {
@@ -224,9 +216,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * Returns the message key for the collection representative image url
+     * Returns the message key for the collection representative image url.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the representative image URI from CMS info, or a message key derived from the collection name
      */
     public String getRepresentant() {
         if (getInfo() != null && getInfo().getIconURI() != null) {
@@ -236,64 +228,53 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getLuceneName.
-     * </p>
      *
-     * @return the name
+     * @return the Lucene-compatible name of this collection element
      */
     public String getLuceneName() {
         return getName();
     }
 
     /**
-     * <p>
      * addToNumber.
-     * </p>
      *
-     * @param inNumber a long.
+     * @param inNumber value to add to the record count
      */
     public void addToNumber(long inNumber) {
         number += inNumber;
     }
 
     /**
-     * <p>
      * Setter for the field <code>hasSubelements</code>.
-     * </p>
      *
-     * @param hasSubelements a boolean.
+     * @param hasSubelements true if this collection has sub-collections
      */
     public void setHasSubelements(boolean hasSubelements) {
         this.hasSubelements = hasSubelements;
     }
 
     /**
-     * <p>
      * isHasSubelements.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this collection element has sub-collection elements, false otherwise
      */
     public boolean isHasSubelements() {
         return hasSubelements;
     }
 
     /**
-     * <p>
      * isDisplayNumberOfVolumes.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the number of volumes should be displayed for this collection element (i.e. the
+     *         element level meets the configured threshold), false otherwise
      */
     public boolean isDisplayNumberOfVolumes() {
         return getLevel() >= displayNumberOfVolumesLevel;
     }
 
     /**
-     * <p>
      * getNumberOfVolumes.
-     * </p>
      *
      * @return number of elements
      */
@@ -301,24 +282,18 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
         return number;
     }
 
-    /**
-     * @return the singleRecordUrl
-     */
+    
     public String getSingleRecordUrl() {
         return singleRecordUrl;
     }
 
-    /**
-     * @param singleRecordUrl the singleRecordUrl to set
-     */
+    
     public void setSingleRecordUrl(String singleRecordUrl) {
         this.singleRecordUrl = singleRecordUrl;
     }
 
     /**
-     * <p>
      * getLevel.
-     * </p>
      *
      * @return a int.
      */
@@ -327,11 +302,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getParentName.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the name of the parent collection, or an empty string if this is a root-level collection
      */
     public String getParentName() {
         if (getLevel() > 0) {
@@ -342,66 +315,54 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Getter for the field <code>sortField</code>.
-     * </p>
      *
-     * @return the sortField
+     * @return the Solr field name used for sorting this collection
      */
     public String getSortField() {
         return sortField;
     }
 
     /**
-     * <p>
      * Setter for the field <code>sortField</code>.
-     * </p>
      *
-     * @param sortField the sortField to set
+     * @param sortField Solr field name used for sorting
      */
     public void setSortField(String sortField) {
         this.sortField = sortField;
     }
 
     /**
-     * <p>
      * isShowSubElements.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the sub-collections of this element are currently expanded for display, false otherwise
      */
     public boolean isShowSubElements() {
         return showSubElements;
     }
 
     /**
-     * <p>
      * Setter for the field <code>showSubElements</code>.
-     * </p>
      *
-     * @param showSubElements a boolean.
+     * @param showSubElements true to expand sub-collections in the view
      */
     public void setShowSubElements(boolean showSubElements) {
         this.showSubElements = showSubElements;
     }
 
     /**
-     * <p>
      * isShowDescription.
-     * </p>
      *
-     * @return the showDescription
+     * @return true if the collection description should be displayed, false otherwise
      */
     public boolean isShowDescription() {
         return showDescription;
     }
 
     /**
-     * <p>
      * Setter for the field <code>showDescription</code>.
-     * </p>
      *
-     * @param showDescription the showDescription to set
+     * @param showDescription true to show the collection description
      */
     public void setShowDescription(boolean showDescription) {
         this.showDescription = showDescription;
@@ -473,22 +434,18 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Setter for the field <code>info</code>.
-     * </p>
      *
-     * @param info the info to set
+     * @param info the browse element info providing display metadata for this collection entry
      */
     public void setInfo(BrowseElementInfo info) {
         this.info = info;
     }
 
     /**
-     * <p>
      * Getter for the field <code>info</code>.
-     * </p>
      *
-     * @return the info
+     * @return the browse element info providing CMS-based metadata for this collection
      */
     public BrowseElementInfo getInfo() {
         return info;
@@ -498,9 +455,6 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
 
         private static final long serialVersionUID = -2594688666989841956L;
 
-        /* (non-Javadoc)
-         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-         */
         @Override
         public int compare(BrowseDcElement o1, BrowseDcElement o2) {
             return ViewerResourceBundle.getTranslation(o1.getName(), null).compareTo(ViewerResourceBundle.getTranslation(o2.getName(), null));
@@ -508,33 +462,27 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * hasCMSDescription.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this element has a CMS-provided (non-simple) description that is not blank, false otherwise
      */
     public boolean hasCMSDescription() {
         return !(this.info instanceof SimpleBrowseElementInfo) && StringUtils.isNotBlank(info.getDescription());
     }
 
     /**
-     * <p>
      * hasIcon.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this collection element has an icon URI configured, false otherwise
      */
     public boolean hasIcon() {
         return getInfo() != null && getInfo().getIconURI() != null;
     }
 
     /**
-     * <p>
      * getIcon.
-     * </p>
      *
-     * @return a {@link java.net.URI} object.
+     * @return the icon URI for this collection element, or null if no icon is set
      */
     public URI getIcon() {
         if (getInfo() != null) {
@@ -544,16 +492,12 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
         return null;
     }
 
-    /**
-     * @return the facetValues
-     */
+    
     public List<String> getFacetValues() {
         return facetValues;
     }
 
-    /**
-     * @param facetValues the facetValues to set
-     */
+    
     public void setFacetValues(Collection<String> facetValues) {
         this.facetValues = new ArrayList<>(facetValues);
     }

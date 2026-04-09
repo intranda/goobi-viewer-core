@@ -51,11 +51,11 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return both static and configured fields
      */
     @Test
-    void getSolrFieldsToFetch_shouldReturnBothStaticAndConfiguredFields() throws Exception {
+    void getSolrFieldsToFetch_shouldReturnBothStaticAndConfiguredFields() {
         List<?> fields = TocMaker.getSolrFieldsToFetch("_DEFAULT");
         Assertions.assertNotNull(fields);
         // The fields configured in getTocLabelConfiguration() are counted twice, once  suffixed with _LANG_...
-        Assertions.assertEquals(34, fields.size());
+        Assertions.assertEquals(35, fields.size());
     }
 
     /**
@@ -182,8 +182,9 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     void generateToc_shouldThrowIllegalArgumentExceptionIfStructElementIsNull() {
+        TOC toc = new TOC();
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> TocMaker.generateToc(new TOC(), null, true, "image/tiff", 1, -1));
+                () -> TocMaker.generateToc(toc, null, true, "image/tiff", 1, -1));
     }
 
     /**
@@ -194,8 +195,9 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     void generateToc_shouldThrowIllegalArgumentExceptionIfTocIsNull() throws Exception {
         String iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648_1891");
         Assertions.assertNotNull(iddoc);
+        StructElement se = new StructElement(iddoc);
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> TocMaker.generateToc(null, new StructElement(iddoc), true, "image/tiff", 1, -1));
+                () -> TocMaker.generateToc(null, se, true, "image/tiff", 1, -1));
     }
 
     /**

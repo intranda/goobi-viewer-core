@@ -856,12 +856,6 @@
             </template>
         </normdataList>
 
-        <!-- calendarDocstructTypes: the list of structure elements allowed to 
-            be shown in calendar view -->
-        <calendarDocstructTypes>
-            <docStruct>Calendaria</docStruct>
-            <docStruct>PeriodicalVolume</docStruct>
-        </calendarDocstructTypes>
 
         <!-- browsingMenu: configuration of the browsing section (Stoebern) -->
         <!-- @enabled: if false, the browsing section is hidden -->

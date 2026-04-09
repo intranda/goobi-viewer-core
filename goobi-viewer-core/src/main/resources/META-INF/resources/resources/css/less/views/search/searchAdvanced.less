@@ -68,7 +68,7 @@
             padding: 0;
             border-radius: 0;
             background-color: @white;
-            border: 1px solid #ced4da;
+            border: 1px solid @middlegray;
             border-left: none;
             a {
                 color: @black;
@@ -113,6 +113,14 @@
         flex: 1 1 auto;
         width: 1%;
         margin-bottom: 0;
+    }
+    .datepicker-input {
+        flex: 1 1 auto;
+        width: 1%;
+        min-width: 120px;
+        .form-control {
+            width: 100%;
+        }
     }
     &__select-values {
         width: auto;
@@ -218,7 +226,7 @@
             max-width: 100%;
         }
         .badge-light {
-            background: #f3f3f3;
+            background: @lightgray;
         }
     }
 

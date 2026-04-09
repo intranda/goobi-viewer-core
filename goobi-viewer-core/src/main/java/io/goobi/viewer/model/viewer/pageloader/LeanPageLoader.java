@@ -65,12 +65,10 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
     private int lastPageOrder = 1;
 
     /**
-     * <p>
      * Package private constructor for LeanPageLoader.
-     * </p>
      *
-     * @param topElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @param numPages a int.
+     * @param topElement top-level structure element of the record
+     * @param numPages total page count; -1 to derive lazily
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     LeanPageLoader(StructElement topElement, int numPages) throws IndexUnreachableException {
@@ -88,18 +86,12 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
         return numPages;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.viewer.pageloader.IPageLoader#getFirstPageOrder()
-     */
     /** {@inheritDoc} */
     @Override
     public int getFirstPageOrder() {
         return firstPageOrder;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.viewer.pageloader.IPageLoader#getLastPageOrder()
-     */
     /** {@inheritDoc} */
     @Override
     public int getLastPageOrder() {
@@ -131,18 +123,12 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
         return loadPage(-1, fileName);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.viewer.pageloader.IPageLoader#getIddocForPage(int)
-     */
     /** {@inheritDoc} */
     @Override
     public String getOwnerIddocForPage(int pageOrder) throws IndexUnreachableException, PresentationException {
         return DataManager.getInstance().getSearchIndex().getImageOwnerIddoc(topElement.getPi(), pageOrder);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.viewer.IPageLoader#generateSelectItems(List, List, String, Boolean, Locale)
-     */
     /** {@inheritDoc} */
     @Override
     public void generateSelectItems(List<SelectPageItem> dropdownPages, List<SelectPageItem> dropdownFulltext, String urlRoot,
@@ -185,11 +171,11 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
 
     /**
      *
-     * @param labelTemplate
-     * @param pageNo
-     * @param nextPageNo
-     * @param orderLabel
-     * @param nextOderLabel
+     * @param labelTemplate template string with {order} and {orderlabel} placeholders
+     * @param pageNo physical page number
+     * @param nextPageNo physical page number of the next page; null for single page
+     * @param orderLabel order label of the page
+     * @param nextOderLabel order label of the next page; null for single page
      * @return {@link SelectItem}
      */
     static SelectItem buildPageSelectItem(String labelTemplate, int pageNo, Integer nextPageNo, String orderLabel, String nextOderLabel) {
@@ -211,9 +197,7 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
     }
 
     /**
-     * <p>
      * setFirstAndLastPageOrder.
-     * </p>
      *
      * @should set first page order correctly
      * @should set last page order correctly
@@ -250,16 +234,14 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
     }
 
     /**
-     * <p>
      * loadPage.
-     * </p>
      *
-     * @param pageNumber a int.
-     * @param fileName a {@link java.lang.String} object.
+     * @param pageNumber physical page order number; -1 to ignore
+     * @param fileName file name to match; null to ignore
      * @should load page correctly via page number
      * @should load page correctly via file name
      * @should return null if page not found
-     * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @return the loaded PhysicalElement matching the given page number or file name, or null if not found
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.

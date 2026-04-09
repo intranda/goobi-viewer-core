@@ -38,10 +38,9 @@ import jakarta.persistence.Entity;
 
 /**
  * A subtype of {@link CustomSidebarWidget} to display a list of possible values of a given SOLR field and link to a search listing of items with a
- * specific value
+ * specific value.
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Entity
 @DiscriminatorValue("FacetFieldSidebarWidget")
@@ -57,16 +56,16 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
     private int numEntries = 5;
 
     /**
-     * Empty default constructor
+     * Empty default constructor.
      */
     public FacetFieldSidebarWidget() {
 
     }
 
     /**
-     * Cloning constructor
+     * Cloning constructor.
      *
-     * @param o
+     * @param o the widget to copy from
      */
     public FacetFieldSidebarWidget(FacetFieldSidebarWidget o) {
         super(o);
@@ -76,18 +75,18 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
     }
 
     /**
-     * Contains the SOLR field holding the values to list
-     * 
-     * @return the facetField
+     * Contains the SOLR field holding the values to list.
+     *
+     * @return the name of the Solr field whose values are listed in this widget
      */
     public String getFacetField() {
         return facetField;
     }
 
     /**
-     * Set the SOLR field for which to list values
-     * 
-     * @param facetField the facetField to set
+     * Sets the SOLR field for which to list values.
+     *
+     * @param facetField the name of the Solr field to facet on
      */
     public void setFacetField(String facetField) {
         this.facetField = facetField;
@@ -96,8 +95,8 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
     /**
      * An additional SOLR query. If this is not empty, only values of the {@link #getFacetField()} are listed that are contained in documents meeting
      * this query. This is also true for the linked result lists
-     * 
-     * @return the filterQuery
+     *
+     * @return the additional Solr filter query, or an empty string if no filter is set
      */
     public String getFilterQuery() {
         return filterQuery;
@@ -132,9 +131,9 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
     }
 
     /**
-     * Set the value of {@link #getFilterQuery()}
-     * 
-     * @param filterQuery the filterQuery to set
+     * Set the value of {@link #getFilterQuery()}.
+     *
+     * @param filterQuery an additional Solr query to restrict which field values are shown
      */
     public void setFilterQuery(String filterQuery) {
         this.filterQuery = filterQuery;
@@ -154,16 +153,18 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
     }
 
     /**
-     * Set the number of field values displayed in the widget
+     * Sets the number of field values displayed in the widget.
      * 
-     * @param numEntries
+     * @param numEntries the number of field values to display
      */
     public void setNumEntries(int numEntries) {
         this.numEntries = numEntries;
     }
 
     /**
-     * Override default title to always show the selected facetField
+     * Override default title to always show the selected facetField.
+     *
+     * @return a {@link TranslatedText} built from the translations of the configured facet field name
      */
     @Override
     public TranslatedText getTitle() {

@@ -47,6 +47,10 @@ import io.goobi.viewer.model.cms.pages.content.types.CMSSliderContent;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.viewer.collections.Sorting;
 
+/**
+ * Converts legacy CMS content item data (represented as raw property maps) into the corresponding
+ * typed {@link io.goobi.viewer.model.cms.pages.content.CMSContent} objects used by the current CMS model.
+ */
 public class CMSContentConverter {
 
     private final IDAO dao;

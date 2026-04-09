@@ -25,6 +25,10 @@ import java.util.Optional;
 
 import io.goobi.viewer.model.cms.pages.CMSPage;
 
+/**
+ * Marks a CMS content type that supports paginated list views, providing access to the current
+ * list page number via the owning {@link PersistentCMSComponent} and its {@link io.goobi.viewer.model.cms.pages.CMSPage}.
+ */
 public interface PagedCMSContent {
 
     public PersistentCMSComponent getOwningComponent();

@@ -2,14 +2,22 @@
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
     <!-- false positives -->
 
-
-    <!-- jsp sites are not included, so the error cannot occur -->
+    <!-- CVE-2006-0197 is an X.Org vulnerability from 2006, incorrectly matched against jbibtex (a Java BibTeX parser) -->
     <suppress>
-       <notes><![CDATA[
-       file name: javax.ws.rs-api-2.1.1.jar
-       ]]></notes>
-       <packageUrl regex="true">^pkg:maven/javax\.ws\.rs/javax\.ws\.rs\-api@.*$</packageUrl>
-       <cpe>cpe:/a:eclipse:eclipse_ide</cpe>
+        <notes><![CDATA[
+        file name: jbibtex-1.0.20.jar
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.jbibtex/jbibtex@.*$</packageUrl>
+        <cve>CVE-2006-0197</cve>
+    </suppress>
+
+    <!-- CVE-2026-23907 only affects the ExtractEmbeddedFiles example program, not the PDFBox library itself -->
+    <suppress>
+        <notes><![CDATA[
+        file name: pdfbox-3.0.5.jar / pdfbox-io-3.0.5.jar
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.pdfbox/pdfbox.*@.*$</packageUrl>
+        <cve>CVE-2026-23907</cve>
     </suppress>
 
 
@@ -17,146 +25,167 @@
          included in the final artifact because of explicit exclusion, see pom.xml ~ line 829 -->
     <suppress>
         <notes><![CDATA[
-        file name: jquery.js
+        file name: jquery.js / jquery-1.11.3.js
         ]]></notes>
         <packageUrl regex="true">^pkg:javascript/jquery@.*$</packageUrl>
         <cve>CVE-2015-9251</cve>
-    </suppress>
-    <suppress>
-       <notes><![CDATA[
-       file name: jquery.js
-       ]]></notes>
-       <packageUrl regex="true">^pkg:javascript/jquery@.*$</packageUrl>
-       <cve>CVE-2019-11358</cve>
-    </suppress>
-    <suppress>
-       <notes><![CDATA[
-       file name: jquery.js
-       ]]></notes>
-       <packageUrl regex="true">^pkg:javascript/jquery@.*$</packageUrl>
-       <cve>CVE-2020-11022</cve>
-    </suppress>
-    <suppress>
-       <notes><![CDATA[
-       file name: jquery.js
-       ]]></notes>
-       <packageUrl regex="true">^pkg:javascript/jquery@.*$</packageUrl>
-       <cve>CVE-2020-11023</cve>
+        <cve>CVE-2019-11358</cve>
+        <cve>CVE-2020-11022</cve>
+        <cve>CVE-2020-11023</cve>
+        <vulnerabilityName>jquery issue: 11974</vulnerabilityName>
+        <vulnerabilityName>jquery issue: 162</vulnerabilityName>
     </suppress>
 
-
-    <!-- ignore weld-servlet reports that are for bootstrap, probe.js, moment.js or jquery versions we don't use -->
-    <suppress>
-       <notes><![CDATA[
-       file name: weld-servlet-shaded-3.1.9.Final.jar: probe.js
-       ]]></notes>
-       <packageUrl regex="true">^pkg:javascript/bootstrap@.*$</packageUrl>
-       <cve>CVE-2015-9251</cve>
-       <cve>CVE-2015-9251</cve>
-       <cve>CVE-2016-10735</cve>
-       <cve>CVE-2017-18214</cve>
-       <cve>CVE-2018-14040</cve>
-       <cve>CVE-2018-14041</cve>
-       <cve>CVE-2018-14042</cve>
-       <cve>CVE-2019-11358</cve>
-       <cve>CVE-2019-8331</cve>
-       <cve>CVE-2020-11022</cve>
-       <cve>CVE-2020-11023</cve>
-       <cve>CVE-2022-24785</cve>
-       <vulnerabilityName>Regular Expression Denial of Service (ReDoS)</vulnerabilityName>
-       <vulnerabilityName>reDOS - regular expression denial of service</vulnerabilityName>
-    </suppress>
-
-
-
-
-    <!-- ignore javax.faces-2.3.9.jar, all known reports are for other products we don't use, not for the jar itself -->
+    <!-- postcss is not used in production, only as build tool -->
     <suppress>
         <notes><![CDATA[
-       file name: javax.faces-2.3.9.jar
-       ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.glassfish/javax\.faces@.*$</packageUrl>
-        <cve>CVE-2000-1235</cve>
-        <cve>CVE-2000-1236</cve>
-        <cve>CVE-2002-0655</cve>
-        <cve>CVE-2002-0656</cve>
-        <cve>CVE-2002-0659</cve>
-        <cve>CVE-2002-1635</cve>
-        <cve>CVE-2002-1637</cve>
-        <cve>CVE-2004-1362</cve>
-        <cve>CVE-2004-1363</cve>
-        <cve>CVE-2004-1364</cve>
-        <cve>CVE-2004-1365</cve>
-        <cve>CVE-2004-1366</cve>
-        <cve>CVE-2004-1367</cve>
-        <cve>CVE-2004-1368</cve>
-        <cve>CVE-2004-1369</cve>
-        <cve>CVE-2004-1370</cve>
-        <cve>CVE-2004-1371</cve>
-        <cve>CVE-2004-1707</cve>
-        <cve>CVE-2006-0435</cve>
-        <cve>CVE-2008-2583</cve>
-        <cve>CVE-2009-1999</cve>    
-    </suppress>
-
-
-
-    <!-- postcss is not used in production -->
-    <suppress>
-        <notes><![CDATA[
-        file name: postcss:6.0.23
+        file name: postcss:7.0.39 - transitive of gulp-sourcemaps (build-time only)
         ]]></notes>
         <packageUrl regex="true">^pkg:npm/postcss@.*$</packageUrl>
         <cve>CVE-2021-23382</cve>
+        <cve>CVE-2023-44270</cve>
         <vulnerabilityName>1064600</vulnerabilityName>
         <vulnerabilityName>1070012</vulnerabilityName>
         <vulnerabilityName>CVE-2021-23368</vulnerabilityName>
     </suppress>
-    
 
-
-    <!-- JSTL has no CSSv3 score, but even after checking the CVE we are not vulnurable because we do not use x:parse or x:transform -->
+    <!-- undici is a transitive dependency of cheerio (devDependency used only at build time), not in the production artifact -->
     <suppress>
         <notes><![CDATA[
-        file name: jstl-1.2.jar
+        file name: undici:7.19.2 - transitive of cheerio (devDependency, build-time only)
         ]]></notes>
-        <packageUrl regex="true">^pkg:maven/javax\.servlet/jstl@.*$</packageUrl>
-        <vulnerabilityName>CVE-2015-0254</vulnerabilityName>
+        <packageUrl regex="true">^pkg:npm/undici@.*$</packageUrl>
+        <cve>CVE-2026-1525</cve>
+        <cve>CVE-2026-1526</cve>
+        <cve>CVE-2026-1527</cve>
+        <cve>CVE-2026-1528</cve>
+        <cve>CVE-2026-2229</cve>
+        <cve>CVE-2026-2581</cve>
+        <vulnerabilityName>GHSA-2mjp-6q6p-2qxm</vulnerabilityName>
+        <vulnerabilityName>GHSA-4992-7rv2-5pvq</vulnerabilityName>
+        <vulnerabilityName>GHSA-f269-vfmq-vjvj</vulnerabilityName>
+        <vulnerabilityName>GHSA-phc3-fgpg-7m6h</vulnerabilityName>
+        <vulnerabilityName>GHSA-v9p9-hfj2-hcw8</vulnerabilityName>
+        <vulnerabilityName>GHSA-vrm6-8vpv-qv8q</vulnerabilityName>
+    </suppress>
+
+    <!-- braces and micromatch are transitive dependencies of gulp@4 via glob-watcher (build-time only) -->
+    <suppress>
+        <notes><![CDATA[
+        file name: braces:2.3.2 - transitive of gulp@4 via glob-watcher (build-time only)
+        ]]></notes>
+        <packageUrl regex="true">^pkg:npm/braces@.*$</packageUrl>
+        <cve>CVE-2024-4068</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: micromatch:3.1.10 - transitive of gulp@4 via glob-watcher (build-time only)
+        ]]></notes>
+        <packageUrl regex="true">^pkg:npm/micromatch@.*$</packageUrl>
+        <cve>CVE-2024-4067</cve>
+        <vulnerabilityName>GHSA-952p-6rrq-rcjv</vulnerabilityName>
+    </suppress>
+
+    <!-- picomatch is a transitive dependency of gulp (build-time only) -->
+    <suppress>
+        <notes><![CDATA[
+        file name: picomatch:2.3.1 - transitive of gulp (build-time only)
+        ]]></notes>
+        <packageUrl regex="true">^pkg:npm/picomatch@.*$</packageUrl>
+        <vulnerabilityName>GHSA-c2c7-rcm5-vvqj</vulnerabilityName>
+        <vulnerabilityName>GHSA-3v7f-55p6-f55p</vulnerabilityName>
+    </suppress>
+
+    <!-- brace-expansion is a transitive dependency of build tools (build-time only) -->
+    <suppress>
+        <notes><![CDATA[
+        file name: brace-expansion:1.1.12 - transitive of build tools (build-time only)
+        ]]></notes>
+        <packageUrl regex="true">^pkg:npm/brace\-expansion@.*$</packageUrl>
+        <vulnerabilityName>GHSA-f886-m6hf-6m8v</vulnerabilityName>
+    </suppress>
+
+    <!-- serialize-javascript is a transitive dependency of @rollup/plugin-terser (build-time only) -->
+    <suppress>
+        <notes><![CDATA[
+        file name: serialize-javascript:6.0.2 - transitive of @rollup/plugin-terser (build-time only)
+        ]]></notes>
+        <packageUrl regex="true">^pkg:npm/serialize\-javascript@.*$</packageUrl>
+        <vulnerabilityName>GHSA-5c6j-r48x-rmvq</vulnerabilityName>
+        <vulnerabilityName>GHSA-qj8w-gfj5-8c6v</vulnerabilityName>
+    </suppress>
+
+    <!-- svgo is a transitive dependency of gulp-svgmin (build-time only) -->
+    <suppress>
+        <notes><![CDATA[
+        file name: svgo:2.8.0 - transitive of gulp-svgmin (build-time only)
+        ]]></notes>
+        <packageUrl regex="true">^pkg:npm/svgo@.*$</packageUrl>
+        <cve>CVE-2026-29074</cve>
+        <vulnerabilityName>GHSA-xpqw-6gx7-v673</vulnerabilityName>
+    </suppress>
+
+    <!-- yaml is a transitive dependency of postcss-load-config via gulp-postcss (build-time only) -->
+    <suppress>
+        <notes><![CDATA[
+        file name: yaml:1.10.2 - transitive of postcss-load-config via gulp-postcss (build-time only)
+        ]]></notes>
+        <packageUrl regex="true">^pkg:npm/yaml@.*$</packageUrl>
+        <vulnerabilityName>GHSA-48c2-rrv3-qjmp</vulnerabilityName>
     </suppress>
 
 
-
-    <!-- This CVE is not relevant, because the user interface does not allow uploading of tif images -->
+    <!-- no fix available yet: these CVEs affect all current Netty releases including 4.1.119.Final;
+         Netty is pinned to 4.1.119.Final in dependencyManagement to stay on the latest available version.
+         To be re-evaluated when a fixed Netty release is published. -->
     <suppress>
         <notes><![CDATA[
-        file name: jai-imageio-core-1.3.1.jar
+        file name: netty-transport-*.jar - CVE-2026-* and CVE-2025-58056/58057/55163/67735 affect all current Netty releases
         ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.github\.jai\-imageio/jai\-imageio\-core@.*$</packageUrl>
-        <vulnerabilityName>CWE-120: Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')</vulnerabilityName>
+        <packageUrl regex="true">^pkg:maven/io\.netty/netty\-.*@.*$</packageUrl>
+        <cve>CVE-2026-33870</cve>
+        <cve>CVE-2026-33871</cve>
+        <cve>CVE-2025-58056</cve>
+        <cve>CVE-2025-58057</cve>
+        <cve>CVE-2025-55163</cve>
+        <cve>CVE-2025-67735</cve>
     </suppress>
 
 
-
-    <!-- We use websockets from omnifaces and not this library -->
+    <!-- Jetty 10.0.26 is a transitive dependency of solr-solrj and cannot be upgraded independently
+         without risking incompatibility with the Solr client. To be re-evaluated when Solr ships a
+         version that includes a fixed Jetty release. -->
     <suppress>
         <notes><![CDATA[
-        file name: faye-websocket:0.10.0
+        file name: jetty-*.jar - transitive of solr-solrj, cannot be upgraded independently
         ]]></notes>
-        <packageUrl regex="true">^pkg:npm/faye\-websocket@.*$</packageUrl>
-        <cve>CVE-2020-15133</cve>
+        <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty.*@.*$</packageUrl>
+        <cve>CVE-2025-11143</cve>
     </suppress>
 
 
-
-    <!-- We use npm as package management but not to run applications -->
+    <!-- CVE-2025-48734 is matched against rewrite-config-prettyfaces because its JAR contains an embedded
+         pom.xml referencing commons-beanutils 1.9.4 as metadata. The actual commons-beanutils runtime
+         dependency is provided by ICS at 1.11.0 (fixed version); this is a scanner false positive. -->
     <suppress>
         <notes><![CDATA[
-        file name: glob-parent:3.1.0
+        file name: rewrite-config-prettyfaces-10.0.2.Final.jar - embedded pom.xml references commons-beanutils 1.9.4 as metadata only, not a runtime dependency
         ]]></notes>
-        <packageUrl regex="true">^pkg:npm/glob\-parent@.*$</packageUrl>
-        <vulnerabilityName>1067329</vulnerabilityName>
-        <vulnerabilityName>CVE-2020-28469</vulnerabilityName>
-        <vulnerabilityName>CWE-400: Uncontrolled Resource Consumption ('Resource Exhaustion')</vulnerabilityName>
+        <packageUrl regex="true">^pkg:maven/commons\-beanutils/commons\-beanutils@1\.9\.4$</packageUrl>
+        <cve>CVE-2025-48734</cve>
+    </suppress>
+
+
+    <!-- ZooKeeper 3.9.4 is a transitive dependency of solr-solrj-zookeeper and cannot be upgraded
+         independently without risking incompatibility with the Solr client. To be re-evaluated when
+         Solr ships a version that includes a fixed ZooKeeper release. -->
+    <suppress>
+        <notes><![CDATA[
+        file name: zookeeper-3.9.4.jar - transitive of solr-solrj-zookeeper, cannot be upgraded independently
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.zookeeper/zookeeper@.*$</packageUrl>
+        <cve>CVE-2026-24308</cve>
+        <cve>CVE-2026-24281</cve>
     </suppress>
 
 

@@ -58,15 +58,14 @@ import io.goobi.viewer.solr.SolrTools;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * Utility class for retrieving data folders, data files and source files.
- *
+ * Utility class for locating and accessing data files (ALTO, TEI, etc.) on the viewer file system.
  */
 public final class DataFileTools {
 
     private static final Logger logger = LogManager.getLogger(DataFileTools.class);
 
     /**
-     * Hidden constructor to avoid instantiating the class
+     * Hidden constructor to avoid instantiating the class.
      */
     private DataFileTools() {
     }
@@ -107,7 +106,7 @@ public final class DataFileTools {
     }
 
     /**
-     * Constructs the media folder path for the given pi, either directly in viewer-home or within a data repository
+     * Constructs the media folder path for the given pi, either directly in viewer-home or within a data repository.
      *
      * @param pi The work PI. This is both the actual name of the folder and the identifier used to look up data repository in solr
      * @return A Path to the media folder for the given PI
@@ -119,7 +118,7 @@ public final class DataFileTools {
     }
 
     /**
-     * Constructs the pdf folder path for the given pi, either directly in viewer-home or within a data repository
+     * Constructs the pdf folder path for the given pi, either directly in viewer-home or within a data repository.
      *
      * @param pi The work PI. This is both the actual name of the folder and the identifier used to look up data repository in solr
      * @return A Path to the pdf folder for the given PI
@@ -131,7 +130,7 @@ public final class DataFileTools {
     }
 
     /**
-     * Constructs the alto folder path for the given pi, either directly in viewer-home or within a data repository
+     * Constructs the alto folder path for the given pi, either directly in viewer-home or within a data repository.
      *
      * @param pi The work PI. This is both the actual name of the folder and the identifier used to look up data repository in solr
      * @return A Path to the alto folder for the given PI
@@ -146,9 +145,9 @@ public final class DataFileTools {
      * Returns a map of Paths for each data folder name passed as an argument.
      *
      * @param pi The record identifier. This is both the actual name of the folder and the identifier used to look up data repository in Solr
+     * @param dataFolderNames names of the data folders to resolve
      * @return HashMap&lt;dataFolderName,Path&gt;
      * @should return all requested data folders
-     * @param dataFolderNames a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -191,12 +190,12 @@ public final class DataFileTools {
     /**
      * Returns the data folder path for the given record identifier. To be used in clients that already possess the data repository name.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param dataFolderName a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record
+     * @param dataFolderName name of the data subfolder (e.g. 'alto', 'media')
      * @param dataRepositoryFolder Absolute path to the data repository folder or just the folder name
      * @should return correct folder if no data repository used
      * @should return correct folder if data repository used
-     * @return a {@link java.nio.file.Path} object.
+     * @return the resolved path to the named data subfolder for the given record
      */
     public static Path getDataFolder(String pi, String dataFolderName, String dataRepositoryFolder) {
         Path repository;
@@ -242,9 +241,7 @@ public final class DataFileTools {
     }
 
     /**
-     * <p>
      * getDataFilePath.
-     * </p>
      *
      * @param pi Record identifier
      * @param relativeFilePath File path relative to data repositories root
@@ -266,9 +263,9 @@ public final class DataFileTools {
     /**
      * Returns the absolute path to the source (METS/LIDO/etc.) file with the given file name.
      *
-     * @param fileName a {@link java.lang.String} object.
-     * @param format a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param fileName source file name (basename is used as record identifier)
+     * @param format source document format (e.g. METS, LIDO)
+     * @return the absolute file system path to the source file
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -281,9 +278,9 @@ public final class DataFileTools {
     /**
      * Returns the absolute path to the source (METS/LIDO/DENKXWEB/DUBLINCORE) file with the given file name.
      *
-     * @param fileName a {@link java.lang.String} object.
-     * @param dataRepository a {@link java.lang.String} object.
-     * @param format a {@link java.lang.String} object.
+     * @param fileName source file name including extension
+     * @param dataRepository path or name of the data repository folder
+     * @param format source document format (e.g. METS, LIDO)
      * @should construct METS file path correctly
      * @should construct METS_MARC file path correctly
      * @should construct LIDO file path correctly
@@ -291,7 +288,7 @@ public final class DataFileTools {
      * @should construct DenkXweb file path correctly
      * @should throw IllegalArgumentException if fileName is null
      * @should throw IllegalArgumentException if format is unknown
-     * @return a {@link java.lang.String} object.
+     * @return the absolute file system path to the source file in the given data repository
      */
     public static String getSourceFilePath(String fileName, String dataRepository, String format) {
         if (StringUtils.isEmpty(fileName)) {
@@ -342,15 +339,13 @@ public final class DataFileTools {
     }
 
     /**
-     * <p>
      * getTextFilePath.
-     * </p>
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param fileName a {@link java.lang.String} object.
-     * @param format a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record
+     * @param fileName name of the text file
+     * @param format text format constant (e.g. FILENAME_ALTO, FILENAME_FULLTEXT)
      * @should return correct path
-     * @return a {@link java.lang.String} object.
+     * @return the absolute file system path to the text file in the resolved data repository
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -381,13 +376,11 @@ public final class DataFileTools {
     }
 
     /**
-     * <p>
      * getTextFilePath.
-     * </p>
      *
-     * @param pi a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record
      * @param relativeFilePath ALTO/text file path relative to the data folder
-     * @return a {@link java.nio.file.Path} object.
+     * @return the absolute path to the text file within the resolved data repository, or null if relativeFilePath is blank
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -405,10 +398,10 @@ public final class DataFileTools {
      *
      * @param altoFilePath ALTO file path relative to the repository root (e.g. "alto/PPN123/00000001.xml")
      * @param fulltextFilePath plain full-text file path relative to the repository root (e.g. "fulltext/PPN123/00000001.xml")
-     * @param mergeLineBreakWords a boolean.
+     * @param mergeLineBreakWords true to merge words split across line breaks
      * @should load fulltext from alto correctly
      * @should load fulltext from plain text correctly
-     * @return a {@link java.lang.String} object.
+     * @return the plain text content of the page, or null if no fulltext could be loaded
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
      * @throws java.io.FileNotFoundException if any.
      * @throws java.io.IOException if any.
@@ -469,8 +462,8 @@ public final class DataFileTools {
 
     /**
      *
-     * @param altoFilePath
-     * @return StringPair(ALTO,charset)
+     * @param altoFilePath the path to the ALTO file
+     * @return StringPair(ALTO,charset), or null if altoFilePath is null
      * @throws ContentNotFoundException
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -495,13 +488,11 @@ public final class DataFileTools {
     }
 
     /**
-     * <p>
      * loadTei.
-     * </p>
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param language a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record
+     * @param language ISO language code for the requested TEI document
+     * @return the TEI document content as a string, or null if not available
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -523,8 +514,8 @@ public final class DataFileTools {
 
     /**
      * 
-     * @param pi
-     * @param servletRequest
+     * @param pi persistent identifier of the record
+     * @param servletRequest the HTTP servlet request
      * @return MEI content string; null if none available
      * @throws AccessDeniedException
      * @throws DAOException
@@ -562,10 +553,10 @@ public final class DataFileTools {
     }
 
     /**
-     * creates a Dataset object, containing all relevant file paths
+     * Creates a Dataset object, containing all relevant file paths.
      * 
-     * @param pi a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.viewer.Dataset} object.
+     * @param pi persistent identifier of the record to build the dataset for
+     * @return the Dataset containing all relevant file paths for the given record
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws RecordNotFoundException

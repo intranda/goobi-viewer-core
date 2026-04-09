@@ -83,7 +83,18 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 /**
- * Primarily for user authentication.
+ * JSF session-scoped backing bean responsible for user authentication, registration, and account
+ * management. Holds the currently logged-in {@link io.goobi.viewer.model.security.user.User}
+ * and mediates login/logout across local and OpenID Connect providers.
+ *
+ * <p><b>Lifecycle:</b> Created once per HTTP session; destroyed when the session expires or the
+ * user explicitly logs out. Sensitive credential fields ({@code password}, {@code passwordOne},
+ * {@code passwordTwo}) are declared {@code transient} and are therefore not included in session
+ * serialisation.
+ *
+ * <p><b>Thread safety:</b> Mostly confined to the JSF request thread. The
+ * {@code getAuthenticationProviders()} method is {@code synchronized} to prevent concurrent
+ * lazy initialisation of the provider list.
  */
 @Named
 @SessionScoped
@@ -103,7 +114,7 @@ public class UserBean implements Serializable {
     private PushContext sessionTimeoutCounter;
 
     /**
-     * The logged in user
+     * The logged in user.
      */
     private User user;
     private String nickName;
@@ -139,9 +150,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * updateSessionTimeoutCounter.
-     * </p>
      */
     public void updateSessionTimeoutCounter() {
         logger.trace("updateSessionTimeoutCounter");
@@ -149,11 +158,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * getSessionTimeout.
-     * </p>
      *
-     * @return a {@link java.lang.String} object
+     * @return the remaining session timeout formatted as an ISO time string
      */
     public String getSessionTimeout() {
         long lastActityTimestamp = BeanUtils.getSession().getLastAccessedTime();
@@ -171,7 +178,7 @@ public class UserBean implements Serializable {
     /**
      * Creates and persists a new local User.
      *
-     * @return a {@link java.lang.String} object.
+     * @return an empty string after attempting to register the new user account
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String createNewUserAccount() throws DAOException {
@@ -259,11 +266,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * activateUserAccountAction.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the navigation outcome after attempting to activate the user account via email and key
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String activateUserAccountAction() throws DAOException {
@@ -307,12 +312,10 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * login.
-     * </p>
      *
-     * @param provider a {@link io.goobi.viewer.model.security.authentication.IAuthenticationProvider} object.
-     * @return a {@link java.lang.String} object.
+     * @param provider authentication provider to use for the login attempt
+     * @return the navigation outcome or redirect URL after the login attempt
      * @throws java.lang.IllegalStateException if any.
      * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException if any.
      * @throws java.lang.InterruptedException if any.
@@ -355,8 +358,8 @@ public class UserBean implements Serializable {
 
     /**
      *
-     * @param provider
-     * @param result
+     * @param provider Authentication provider that performed the login
+     * @param result Result object containing user and request/response data
      * @throws IllegalStateException
      */
     private void completeLogin(IAuthenticationProvider provider, LoginResult result) {
@@ -490,7 +493,7 @@ public class UserBean implements Serializable {
     /**
      * Logout action method.
      *
-     * @return a {@link java.lang.String} object.
+     * @return an empty string after logging out the current user and invalidating the session
      * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException if any.
      * @throws IOException
      */
@@ -536,7 +539,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * @param request
+     * @param request Current HTTP servlet request
      * @return Redirect outcome
      */
     private String getRedirectUrl(HttpServletRequest request) {
@@ -577,7 +580,7 @@ public class UserBean implements Serializable {
     /**
      * Returns a list of all existing users (minus the superusers and the current user).
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all non-superuser users excluding the currently logged-in user
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<User> getAllUsers() throws DAOException {
@@ -594,7 +597,7 @@ public class UserBean implements Serializable {
 
     /**
      *
-     * @param user
+     * @param user User for whom to send the activation email
      * @return true if activation email sent successfully; false otherwise
      */
     private boolean sendActivationEmail(User user) {
@@ -644,7 +647,7 @@ public class UserBean implements Serializable {
     /**
      * Sends a password reset link to the current e-mail address.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the navigation outcome after attempting to send the password reset email
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String sendPasswordResetLinkAction() throws DAOException {
@@ -697,7 +700,7 @@ public class UserBean implements Serializable {
     /**
      * Generates a new user password if the key is correct.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the navigation outcome after attempting to reset the password via the activation key
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String resetPasswordAction() throws DAOException {
@@ -732,11 +735,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * transkribusLoginAction.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return an empty string after attempting to authenticate with Transkribus
      */
     public String transkribusLoginAction() {
         if (transkribusUserName == null || transkribusPassword == null) {
@@ -760,132 +761,108 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>user</code>.
-     * </p>
      *
-     * @return the user
+     * @return the currently authenticated user, or null if no user is logged in
      */
     public User getUser() {
         return user;
     }
 
     /**
-     * <p>
      * Setter for the field <code>user</code>.
-     * </p>
      *
-     * @param user the user to set
+     * @param user the currently authenticated user to set
      */
     public void setUser(User user) {
         this.user = user;
     }
 
     /**
-     * <p>
      * Getter for the field <code>nickName</code>.
-     * </p>
      *
-     * @return the nickName
+     * @return the nickname entered during registration or profile editing
      */
     public String getNickName() {
         return nickName;
     }
 
     /**
-     * <p>
      * Setter for the field <code>nickName</code>.
-     * </p>
      *
-     * @param nickName the nickName to set
+     * @param nickName the desired nickname for the user account
      */
     public void setNickName(String nickName) {
         this.nickName = nickName;
     }
 
     /**
-     * <p>
      * Getter for the field <code>email</code>.
-     * </p>
      *
-     * @return the email
+     * @return the email address entered for login or registration
      */
     public String getEmail() {
         return email;
     }
 
     /**
-     * <p>
      * Setter for the field <code>email</code>.
-     * </p>
      *
-     * @param email the email to set
+     * @param email the email address for login or registration
      */
     public void setEmail(String email) {
         this.email = email;
     }
 
     /**
-     * <p>
      * Getter for the field <code>password</code>.
-     * </p>
      *
-     * @return the password
+     * @return the plain-text password entered by the user for login or registration
      */
     public String getPassword() {
         return password;
     }
 
     /**
-     * <p>
      * Setter for the field <code>password</code>.
-     * </p>
      *
-     * @param password the password to set
+     * @param password the plain-text password entered by the user for login or registration
      */
     public void setPassword(String password) {
         this.password = password;
     }
 
     /**
-     * <p>
      * isLoggedIn.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if a user is currently logged in and their account is active and not suspended, false otherwise
      */
     public boolean isLoggedIn() {
         return user != null && user.isActive() && !user.isSuspended();
     }
 
     /**
-     * <p>
      * isAdmin.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the currently logged-in user is a superuser (administrator), false otherwise
      */
     public boolean isAdmin() {
         return user != null && user.isSuperuser();
     }
 
     /**
-     * <p>
      * isUserRegistrationEnabled.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if self-registration for new users is enabled in the configuration, false otherwise
      */
     public boolean isUserRegistrationEnabled() {
         return DataManager.getInstance().getConfiguration().isUserRegistrationEnabled();
     }
 
     /**
-     * <p>
      * isShowOpenId.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if OpenID Connect authentication options should be shown in the UI, false otherwise
      */
     public boolean isShowOpenId() {
         return DataManager.getInstance().getConfiguration().isShowOpenIdConnect();
@@ -896,44 +873,36 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>authenticationProviders</code>.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all configured authentication providers
      */
     public synchronized List<IAuthenticationProvider> getAuthenticationProviders() {
         return DataManager.getInstance().getConfiguration().getAuthenticationProviders();
     }
 
     /**
-     * <p>
      * getLocalAuthenticationProvider.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.model.security.authentication.IAuthenticationProvider} object.
+     * @return the first configured local authentication provider, or null if none is configured
      */
     public IAuthenticationProvider getLocalAuthenticationProvider() {
         return getProvidersOfType("local").stream().findFirst().orElse(null);
     }
 
     /**
-     * <p>
      * getXserviceAuthenticationProvider.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.model.security.authentication.IAuthenticationProvider} object.
+     * @return the first configured userPassword-type authentication provider, or null if none is configured
      */
     public IAuthenticationProvider getXserviceAuthenticationProvider() {
         return getProvidersOfType("userPassword").stream().findFirst().orElse(null);
     }
 
     /**
-     * <p>
      * showAuthenticationProviderSelection.
-     * </p>
      *
-     * @return a boolean
+     * @return true if more than one local or username/password authentication provider is configured, false otherwise
      */
     public boolean showAuthenticationProviderSelection() {
         return getAuthenticationProviders().stream()
@@ -942,11 +911,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>authenticationProvider</code>.
-     * </p>
      *
-     * @param provider a {@link io.goobi.viewer.model.security.authentication.IAuthenticationProvider} object.
+     * @param provider authentication provider to set as the active one
      */
     public void setAuthenticationProvider(IAuthenticationProvider provider) {
         logger.trace("setAuthenticationProvider: {}", provider.getName());
@@ -954,22 +921,18 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>authenticationProvider</code>.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.model.security.authentication.IAuthenticationProvider} object.
+     * @return the currently active authentication provider
      */
     public IAuthenticationProvider getAuthenticationProvider() {
         return authenticationProvider;
     }
 
     /**
-     * <p>
      * setAuthenticationProviderName.
-     * </p>
      *
-     * @param name a {@link java.lang.String} object.
+     * @param name name used to look up the matching authentication provider
      */
     public void setAuthenticationProviderName(String name) {
         this.authenticationProvider = getAuthenticationProviders().stream()
@@ -979,11 +942,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * getAuthenticationProviderName.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the name of the currently selected authentication provider, or an empty string if none is selected
      */
     public String getAuthenticationProviderName() {
         if (this.authenticationProvider != null) {
@@ -994,53 +955,43 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>passwordOne</code>.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the first password entry for new account creation or password change
      */
     public String getPasswordOne() {
         return this.passwordOne;
     }
 
     /**
-     * <p>
      * Setter for the field <code>passwordOne</code>.
-     * </p>
      *
-     * @param passwordOne a {@link java.lang.String} object.
+     * @param passwordOne first password entry for new account creation
      */
     public void setPasswordOne(String passwordOne) {
         this.passwordOne = passwordOne;
     }
 
     /**
-     * <p>
      * Getter for the field <code>passwordTwo</code>.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the confirmation password entry for new account creation or password change
      */
     public String getPasswordTwo() {
         return this.passwordTwo;
     }
 
     /**
-     * <p>
      * Setter for the field <code>passwordTwo</code>.
-     * </p>
      *
-     * @param passwordTwo a {@link java.lang.String} object.
+     * @param passwordTwo confirmation password entry for new account creation
      */
     public void setPasswordTwo(String passwordTwo) {
         this.passwordTwo = passwordTwo;
     }
 
     /**
-     * <p>
      * resetPasswordFields.
-     * </p>
      */
     public void resetPasswordFields() {
         passwordOne = "";
@@ -1048,128 +999,109 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>lastName</code>.
-     * </p>
      *
-     * @return the lastName
+     * @return the last name of the user
      */
     public String getLastName() {
         return lastName;
     }
 
     /**
-     * <p>
      * Setter for the field <code>lastName</code>.
-     * </p>
      *
-     * @param lastName the lastName to set
+     * @param lastName the last name of the user
      */
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
     /**
-     * <p>
      * Getter for the field <code>redirectUrl</code>.
-     * </p>
      *
-     * @return the redirectUrl
+     * @return the URL to redirect to after a successful login, or null if the default redirect applies
      */
     public String getRedirectUrl() {
         return redirectUrl;
     }
 
     /**
-     * <p>
      * Setter for the field <code>redirectUrl</code>.
-     * </p>
      *
-     * @param redirectUrl the redirectUrl to set
+     * @param redirectUrl the URL to redirect to after a successful login, or null to use the default
      */
     public void setRedirectUrl(String redirectUrl) {
         if (!"RES_NOT_FOUND".equals(redirectUrl)) {
+            if (StringUtils.isNotEmpty(redirectUrl) && !redirectUrl.equals("#")
+                    && !NetTools.isRedirectUrlAllowed(redirectUrl, navigationHelper != null ? navigationHelper.getApplicationUrl() : null)) {
+                logger.warn("Rejected redirect URL not on whitelist: {}", redirectUrl);
+                return;
+            }
             this.redirectUrl = redirectUrl;
             logger.trace("Redirect URL: {}", redirectUrl);
         }
     }
 
-    /**
-     * @return the origin
-     */
+    
     public String getOrigin() {
         return origin;
     }
 
-    /**
-     * @param origin the origin to set
-     */
+    
     public void setOrigin(String origin) {
         logger.debug("setOrigin: {}", origin);
         this.origin = origin;
     }
 
     /**
-     * <p>
      * Getter for the field <code>activationKey</code>.
-     * </p>
      *
-     * @return the activationKey
+     * @return the account activation key sent to the user by email
      */
     public String getActivationKey() {
         return activationKey;
     }
 
     /**
-     * <p>
      * Setter for the field <code>activationKey</code>.
-     * </p>
      *
-     * @param activationKey the activationKey to set
+     * @param activationKey the account activation key sent to the user by email
      */
     public void setActivationKey(String activationKey) {
         this.activationKey = activationKey;
     }
 
     /**
-     * <p>
      * Getter for the field <code>transkribusUserName</code>.
-     * </p>
      *
-     * @return the transkribusUserName
+     * @return the Transkribus account username for the linked integration
      */
     public String getTranskribusUserName() {
         return transkribusUserName;
     }
 
     /**
-     * <p>
      * Setter for the field <code>transkribusUserName</code>.
-     * </p>
      *
-     * @param transkribusUserName the transkribusUserName to set
+     * @param transkribusUserName the Transkribus account username for the linked integration
      */
     public void setTranskribusUserName(String transkribusUserName) {
         this.transkribusUserName = transkribusUserName;
     }
 
     /**
-     * <p>
      * Getter for the field <code>transkribusPassword</code>.
-     * </p>
      *
-     * @return the transkribusPassword
+     * @return the Transkribus account password for the linked integration
      */
     public String getTranskribusPassword() {
         return transkribusPassword;
     }
 
     /**
-     * <p>
      * Setter for the field <code>transkribusPassword</code>.
-     * </p>
      *
-     * @param transkribusPassword the transkribusPassword to set
+     * @param transkribusPassword the Transkribus account password for the linked integration
      */
     public void setTranskribusPassword(String transkribusPassword) {
         this.transkribusPassword = transkribusPassword;
@@ -1179,7 +1111,7 @@ public class UserBean implements Serializable {
      * Checks whether the logged in user has access to the admin backend via being an admin or having CMS/campaign/comments access. Result is
      * persisted for the duration of the session.
      *
-     * @return the hasAdminBackendAccess
+     * @return true if the current user has access to the admin backend, false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @throws io.goobi.viewer.exceptions.PresentationException
@@ -1198,35 +1130,29 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>hasAdminBackendAccess</code>.
-     * </p>
      *
-     * @param hasAdminBackendAccess the hasAdminBackendAccess to set
+     * @param hasAdminBackendAccess true if the current user has access to the admin backend; false otherwise
      */
     public void setHasAdminBackendAccess(Boolean hasAdminBackendAccess) {
         this.hasAdminBackendAccess = hasAdminBackendAccess;
     }
 
     /**
-     * <p>
      * userEquals.
-     * </p>
      *
-     * @param id a long.
-     * @return a boolean.
+     * @param id database ID to compare against the current user
+     * @return true if the given database ID matches the ID of the currently logged-in user, false otherwise
      */
     public boolean userEquals(long id) {
         return getUser().getId().equals(id);
     }
 
     /**
-     * <p>
      * hasProvidersOfType.
-     * </p>
      *
-     * @param type a {@link java.lang.String} object.
-     * @return a boolean.
+     * @param type provider type string to match (e.g. "local", "openId")
+     * @return true if at least one configured authentication provider matches the given type, false otherwise
      */
     public boolean hasProvidersOfType(String type) {
         if (type != null) {
@@ -1236,12 +1162,10 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * getProvidersOfType.
-     * </p>
      *
-     * @param type a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
+     * @param type provider type string to filter by (e.g. "local", "openId")
+     * @return a list of authentication providers of the given type
      */
     public List<IAuthenticationProvider> getProvidersOfType(String type) {
         if (type != null) {
@@ -1251,9 +1175,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * getNumberOfProviderTypes.
-     * </p>
      *
      * @return a int.
      */
@@ -1262,22 +1184,18 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * isAllowPasswordChange.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the currently used authentication provider allows the user to change their password, false otherwise
      */
     public boolean isAllowPasswordChange() {
         return loggedInProvider != null && loggedInProvider.allowsPasswordChange();
     }
 
     /**
-     * <p>
      * isAllowNickNameChange.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the currently used authentication provider allows the user to change their nickname, false otherwise
      */
     public boolean isAllowNickNameChange() {
         return loggedInProvider != null && loggedInProvider.allowsNicknameChange();
@@ -1285,11 +1203,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * isAllowEmailChange.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the currently used authentication provider allows the user to change their email address, false otherwise
      */
     public boolean isAllowEmailChange() {
         return loggedInProvider != null && loggedInProvider.allowsEmailChange();
@@ -1297,11 +1213,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * isRequireLoginCaptcha.
-     * </p>
      *
-     * @return a boolean
+     * @return true if a CAPTCHA is required for the login form, false otherwise
      */
     public boolean isRequireLoginCaptcha() {
         // TODO
@@ -1309,7 +1223,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * Check if the current user is required to agree to the terms of use
+     * Checks if the current user is required to agree to the terms of use.
      *
      * @return true if a user is logged in and {@link io.goobi.viewer.model.security.user.User#isAgreedToTermsOfUse()} returns false for this user
      */
@@ -1318,9 +1232,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * agreeToTermsOfUse.
-     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1332,9 +1244,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * rejectTermsOfUse.
-     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1346,11 +1256,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * logoutWithMessage.
-     * </p>
      *
-     * @param messageKey a {@link java.lang.String} object
+     * @param messageKey i18n key for the info message shown after logout
      * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException if any.
      * @throws IOException
      */
@@ -1361,9 +1269,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * createBackupOfCurrentUser.
-     * </p>
      */
     public void createBackupOfCurrentUser() {
         if (getUser() != null) {
@@ -1371,6 +1277,9 @@ public class UserBean implements Serializable {
         }
     }
 
+    /**
+     * Represents a {@link TimerTask} that periodically updates the session timeout counter to keep the user's session information current.
+     */
     public class SessionTimeoutMonitorTask extends TimerTask {
         @Override
         public void run() {

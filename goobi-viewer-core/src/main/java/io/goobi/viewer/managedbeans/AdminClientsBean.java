@@ -1,4 +1,4 @@
-/**
+/*
  * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
  *
  * Visit these websites for more information.
@@ -46,18 +46,15 @@ import jakarta.inject.Named;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * Backing bean for pages adminClientEdit.xhtml and adminClients.xhtml
+ * Backing bean for pages adminClientEdit.xhtml and adminClients.xhtml.
  * 
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Named
 @SessionScoped
 public class AdminClientsBean implements Serializable {
 
-    /**
-     * 
-     */
+    /** Default table filter key covering name, IP address, and client identifier columns. */
     public static final String DEFAULT_TABLE_FILTER = "name_ip_identifier";
     private static final long serialVersionUID = -614644783330750969L;
     private static final Logger logger = LogManager.getLogger(AdminClientsBean.class);
@@ -70,10 +67,10 @@ public class AdminClientsBean implements Serializable {
     private TableDataProvider<ClientApplication> configuredClientsModel;
 
     /**
-     * Constructor for testing
+     * Creates a new AdminClientsBean instance for testing.
      * 
-     * @param dao
-     * @param listEntriesPerPage
+     * @param dao DAO instance used for database access
+     * @param listEntriesPerPage number of entries shown per page in the client list
      */
     AdminClientsBean(IDAO dao, int listEntriesPerPage) {
         this.dao = dao;
@@ -81,7 +78,7 @@ public class AdminClientsBean implements Serializable {
     }
 
     /**
-     * Publi no-args constructor
+     * Creates a new AdminClientsBean instance.
      */
     public AdminClientsBean() {
         try {
@@ -94,9 +91,9 @@ public class AdminClientsBean implements Serializable {
     }
 
     /**
-     * Get the model used for paginated listing configured clients
-     * 
-     * @return the configuredClientsModel
+     * Gets the model used for paginated listing configured clients.
+     *
+     * @return the {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider} used for paginated listing of configured client applications
      */
     public TableDataProvider<ClientApplication> getConfiguredClientsModel() {
         return configuredClientsModel;
@@ -117,7 +114,7 @@ public class AdminClientsBean implements Serializable {
     }
 
     /**
-     * Get the id of the client currently being edited
+     * Gets the id of the client currently being edited.
      * 
      * @return client database id or null if no client is selected
      */
@@ -129,27 +126,27 @@ public class AdminClientsBean implements Serializable {
     }
 
     /**
-     * Set the currently edited client
-     * 
-     * @param selectedClient the selectedClient to set
+     * Sets the currently edited client.
+     *
+     * @param selectedClient the client application currently being edited in the admin interface
      */
     public void setSelectedClient(ClientApplication selectedClient) {
         this.selectedClient = selectedClient;
     }
 
     /**
-     * Get the currently edited client
-     * 
-     * @return the selectedClient
+     * Gets the currently edited client.
+     *
+     * @return the {@link io.goobi.viewer.model.security.clients.ClientApplication} currently being edited, or null if none selected
      */
     public ClientApplication getSelectedClient() {
         return selectedClient;
     }
 
     /**
-     * 'Accept' a registered client by setting its {@link ClientApplication#getAccessStatus()} to {@link AccessStatus#GRANTED}
+     * 'Accept' a registered client by setting its {@link ClientApplication#getAccessStatus()} to {@link AccessStatus#GRANTED}.
      * 
-     * @param client
+     * @param client client application to grant access to
      */
     public void accept(ClientApplication client) {
         client.setAccessStatus(AccessStatus.GRANTED);
@@ -158,9 +155,9 @@ public class AdminClientsBean implements Serializable {
     }
 
     /**
-     * 'Regect a registered client by calling {@link #delete(ClientApplication)} on it
+     * Reject a registered client by calling {@link #delete(ClientApplication)} on it.
      * 
-     * @param client
+     * @param client client application to reject and delete
      * @return pretty url of admin/clients overview page
      */
     public String reject(ClientApplication client) {
@@ -169,9 +166,9 @@ public class AdminClientsBean implements Serializable {
     }
 
     /**
-     * Save the given client to database
+     * Saves the given client to database.
      * 
-     * @param client
+     * @param client client application to persist
      */
     public void save(ClientApplication client) {
         String clientId = Optional.ofNullable(client).map(ClientApplication::getClientIdentifier).orElse("-");
@@ -188,9 +185,9 @@ public class AdminClientsBean implements Serializable {
     }
 
     /**
-     * Delete given client from database
+     * Deletes given client from database.
      * 
-     * @param client
+     * @param client client application to remove from the database
      * @return Navigation outcome
      */
     public String delete(ClientApplication client) {
@@ -300,7 +297,7 @@ public class AdminClientsBean implements Serializable {
     }
 
     /**
-     * Get a list of all clients with {@link AccessStatus#REQUESTED}
+     * Get a list of all clients with {@link AccessStatus#REQUESTED}.
      * 
      * @return List of clients that are not configured
      * @throws DAOException
@@ -313,7 +310,7 @@ public class AdminClientsBean implements Serializable {
     }
 
     /**
-     * Get a list of all clients with {@link AccessStatus#GRANTED}
+     * Get a list of all clients with {@link AccessStatus#GRANTED}.
      * 
      * @return List of clients that have been granted
      * @throws DAOException
@@ -326,7 +323,7 @@ public class AdminClientsBean implements Serializable {
     }
 
     /**
-     * Get a list of all clients with {@link AccessStatus#GRANTED} pr {@link AccessStatus#DENIED}
+     * Get a list of all clients with {@link AccessStatus#GRANTED} pr {@link AccessStatus#DENIED}.
      * 
      * @return List of clients that have been either granted or denied
      * @throws DAOException
@@ -339,9 +336,9 @@ public class AdminClientsBean implements Serializable {
     }
 
     /**
-     * Get the internally created client representing all clients for access rights purposes
-     * 
-     * @return the allClients
+     * Gets the internally created client representing all clients for access rights purposes.
+     *
+     * @return the {@link io.goobi.viewer.model.security.clients.ClientApplication} representing all clients in access rights configuration
      * @throws DAOException
      */
     public ClientApplication getAllClients() throws DAOException {
@@ -358,7 +355,7 @@ public class AdminClientsBean implements Serializable {
     }
 
     /**
-     * Check if a client application is logged in that is applicable for access privileges
+     * Checks if a client application is logged in that is applicable for access privileges.
      * 
      * @return true if the session contains a clientApplication with the accessStatus {@link AccessStatus#GRANTED} and if the request ip matches the
      *         client's subnet mask

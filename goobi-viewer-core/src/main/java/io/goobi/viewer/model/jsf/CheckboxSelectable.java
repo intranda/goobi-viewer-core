@@ -24,6 +24,12 @@ package io.goobi.viewer.model.jsf;
 import java.util.Collection;
 import java.util.function.Function;
 
+/**
+ * Wraps a single value together with a backing collection to model a checkbox selection state,
+ * where the checkbox is considered selected when the value is present in the collection.
+ *
+ * @param <T> the type of the selectable value
+ */
 public class CheckboxSelectable<T> {
 
     private final Collection<T> dataSet;
@@ -32,9 +38,9 @@ public class CheckboxSelectable<T> {
 
     /**
      * 
-     * @param dataSet
-     * @param value
-     * @param labelGetter
+     * @param dataSet collection backing the checkbox selection state
+     * @param value the value represented by this checkbox
+     * @param labelGetter function to derive the display label from the value
      */
     public CheckboxSelectable(Collection<T> dataSet, T value, Function<T, String> labelGetter) {
         super();
@@ -49,7 +55,7 @@ public class CheckboxSelectable<T> {
 
     /**
      * 
-     * @param selected
+     * @param selected true to add value to data set; false to remove it
      */
     public void setSelected(boolean selected) {
         if (selected) {

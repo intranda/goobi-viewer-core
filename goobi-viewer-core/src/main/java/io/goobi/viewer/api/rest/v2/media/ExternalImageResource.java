@@ -58,6 +58,7 @@ import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.GET;
@@ -71,10 +72,9 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 
 /**
- * @author florian
+ * REST resource for accessing externally-hosted images via the v2 IIIF image service. Uses ContentServer to proxy external image resource URLs.
  *
- *         Used to call ContentServer with external image resource URLs
- *
+ * @author Florian Alpers
  */
 @Path(EXTERNAL_IMAGES)
 @ContentServerBinding
@@ -85,12 +85,12 @@ public class ExternalImageResource extends ImageResource {
     private static final Logger logger = LogManager.getLogger(ExternalImageResource.class);
 
     /**
-     * @param context
-     * @param request
-     * @param response
-     * @param urls
-     * @param imageUrl
-     * @param cacheManager
+     * @param context JAX-RS container request context
+     * @param request current HTTP servlet request
+     * @param response current HTTP servlet response
+     * @param urls configured API URL manager
+     * @param imageUrl URL-encoded filename/URL of the external image
+     * @param cacheManager content server cache manager
      */
     public ExternalImageResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
@@ -137,6 +137,9 @@ public class ExternalImageResource extends ImageResource {
     @Produces("application/pdf")
     @ContentServerPdfBinding
     @Operation(tags = { "records" }, summary = "Returns the image for the given filename as PDF")
+    // Access-denied and error responses are returned as application/json even though the declared content type is application/pdf
+    @ApiResponse(responseCode = "403", description = "Access denied due to access conditions")
+    @ApiResponse(responseCode = "404", description = "Image not found")
     public StreamingOutput getPdf() throws ContentLibException {
         String pi = request.getAttribute("pi").toString();
         String filename = request.getAttribute("filename").toString();

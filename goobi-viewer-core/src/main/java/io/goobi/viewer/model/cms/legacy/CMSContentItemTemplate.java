@@ -62,15 +62,13 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     private String itemId;
 
     /**
-     * For SOLRQUERY items: If true, show number of hits and sort order options on page and hide them in cms backend
+     * For SOLRQUERY items: If true, show number of hits and sort order options on page and hide them in cms backend.
      */
     private boolean hitListOptions = false;
     private boolean randomizeItems = false;
 
     /**
-     * <p>
-     * Constructor for CMSContentItemTemplate.
-     * </p>
+     * Creates a new CMSContentItemTemplate instance.
      *
      * @param type a CMSContentItemType object.
      */
@@ -91,11 +89,9 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     }
 
     /**
-     * <p>
      * Setter for the field <code>mode</code>.
-     * </p>
      *
-     * @param mode the mode to set
+     * @param mode the display mode to set for this content item
      */
     public void setMode(ContentItemMode mode) {
         this.mode = mode;
@@ -119,11 +115,9 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     }
 
     /**
-     * <p>
      * Setter for the field <code>inlineHelp</code>.
-     * </p>
      *
-     * @param inlineHelp the inlineHelp to set
+     * @param inlineHelp the message key to display when clicking the inline help button
      */
     public void setInlineHelp(String inlineHelp) {
         this.inlineHelp = inlineHelp;
@@ -134,117 +128,80 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     }
 
     /**
-     * <p>
      * Setter for the field <code>mediaFilter</code>.
-     * </p>
      *
-     * @param mediaFilter the mediaFilter to set
+     * @param mediaFilter the media type filter string; null is treated as empty string
      */
     public void setMediaFilter(String mediaFilter) {
         this.mediaFilter = mediaFilter == null ? "" : mediaFilter;
     }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.CMSContentItem#isPreview()
-     */
 
     public boolean isPreview() {
         return this.preview;
     }
 
     /**
-     * <p>
      * Setter for the field <code>preview</code>.
-     * </p>
      *
-     * @param preview the preview to set
+     * @param preview true if this item should be rendered in preview mode
      */
     public void setPreview(boolean preview) {
         this.preview = preview;
     }
 
-    /**
-     * @param mandatory the mandatory to set
-     */
+    
     public void setMandatory(boolean mandatory) {
         this.mandatory = mandatory;
     }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.CMSContentItem#isMandatory()
-     */
 
     public boolean isMandatory() {
         return this.mandatory;
     }
 
-    /**
-     * @param order the order to set
-     */
+    
     public void setOrder(int order) {
         this.order = order;
     }
 
-    /**
-     * @return the order
-     */
+    
     public int getOrder() {
         return order;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.CMSContentItem#setItemLabel(java.lang.String)
-     */
     public void setItemLabel(String itemLabel) {
         this.itemLabel = itemLabel;
     }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.CMSContentItem#getItemLabel()
-     */
 
     public String getItemLabel() {
         return this.itemLabel;
     }
 
-    /**
-     * @return the ignoreCollectionHierarchy
-     */
+    
     public boolean isIgnoreCollectionHierarchy() {
         return ignoreCollectionHierarchy;
     }
 
-    /**
-     * @param ignoreCollectionHierarchy the ignoreCollectionHierarchy to set
-     */
+    
     public void setIgnoreCollectionHierarchy(boolean ignoreCollectionHierarchy) {
         this.ignoreCollectionHierarchy = ignoreCollectionHierarchy;
     }
 
-    /**
-     * @return the hitListOptions
-     */
+    
     public boolean isHitListOptions() {
         return hitListOptions;
     }
 
-    /**
-     * @param hitListOptions the hitListOptions to set
-     */
+    
     public void setHitListOptions(boolean hitListOptions) {
         this.hitListOptions = hitListOptions;
     }
 
-    /**
-     * @param radomizeItems the radomizeItems to set
-     */
+    
     public void setRandomizeItems(boolean radomizeItems) {
         this.randomizeItems = radomizeItems;
     }
 
-    /**
-     * @return the randomizeItems
-     */
+    
     public boolean isRandomizeItems() {
         return this.randomizeItems;
     }
@@ -266,8 +223,8 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
 
     /**
      * 
-     * @param type
-     * @param mediaFilter
+     * @param type content item type to create
+     * @param mediaFilter media filter string for media content types
      * @return {@link CMSContent}
      */
     private static CMSContent createCMSContent(CMSContentItemType type, String mediaFilter) {

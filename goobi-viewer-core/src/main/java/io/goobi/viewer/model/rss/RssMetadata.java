@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * Represents metadata for an RSS feed object
+ * Represents metadata for an RSS feed object.
  *
  * @author Florian Alpers
  */
@@ -45,13 +45,11 @@ public class RssMetadata {
     }
 
     /**
-     * <p>
-     * Constructor for RssMetadata.
-     * </p>
+     * Creates a new RssMetadata instance.
      *
-     * @param label a {@link java.lang.String} object.
-     * @param value a {@link java.lang.String} object.
-     * @param link a {@link java.lang.String} object.
+     * @param label display label for this metadata field
+     * @param value metadata field value
+     * @param link optional URL associated with this metadata
      */
     public RssMetadata(String label, String value, String link) {
         super();
@@ -61,12 +59,10 @@ public class RssMetadata {
     }
 
     /**
-     * <p>
-     * Constructor for RssMetadata.
-     * </p>
+     * Creates a new RssMetadata instance.
      *
-     * @param label a {@link java.lang.String} object.
-     * @param value a {@link java.lang.String} object.
+     * @param label display label for this metadata field
+     * @param value metadata field value
      */
     public RssMetadata(String label, String value) {
         super();
@@ -76,33 +72,27 @@ public class RssMetadata {
     }
 
     /**
-     * <p>
      * Getter for the field <code>link</code>.
-     * </p>
      *
-     * @return the link
+     * @return the URL associated with this metadata entry
      */
     public String getLink() {
         return link;
     }
 
     /**
-     * <p>
      * Getter for the field <code>label</code>.
-     * </p>
      *
-     * @return the label
+     * @return the display label for this metadata entry
      */
     public String getLabel() {
         return label;
     }
 
     /**
-     * <p>
      * Getter for the field <code>value</code>.
-     * </p>
      *
-     * @return the value
+     * @return the metadata value associated with this entry
      */
     public String getValue() {
         return value;

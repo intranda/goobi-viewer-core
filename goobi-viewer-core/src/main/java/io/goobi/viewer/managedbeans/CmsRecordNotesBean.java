@@ -55,10 +55,9 @@ import jakarta.inject.Named;
 
 /**
  *
- * Bean used for listing and retrieving {@link CMSRecordNote}s
+ * Bean used for listing and retrieving {@link CMSRecordNote}s.
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Named
 @SessionScoped
@@ -85,7 +84,7 @@ public class CmsRecordNotesBean implements Serializable {
     }
 
     /**
-     * @param images
+     * @param images Bean used for image delivery
      */
     public CmsRecordNotesBean(ImageDeliveryBean images) {
         this.images = images;
@@ -98,17 +97,15 @@ public class CmsRecordNotesBean implements Serializable {
         }
     }
 
-    /**
-     * @return the dataProvider
-     */
+    
     public TableDataProvider<CMSRecordNote> getDataProvider() {
         return dataProvider;
     }
 
     /**
-     * get the thumbnail url for the record related to the note
+     * Get the thumbnail url for the record related to the note.
      *
-     * @param note
+     * @param note Note whose related record's thumbnail is requested
      * @return Thumbnail URL
      * @throws ViewerConfigurationException
      * @throws PresentationException
@@ -122,11 +119,11 @@ public class CmsRecordNotesBean implements Serializable {
     }
 
     /**
-     * get the thumbnail url for the record related to the note for given width and height
+     * Get the thumbnail url for the record related to the note for given width and height.
      *
-     * @param note
-     * @param width
-     * @param height
+     * @param note Note whose related record's thumbnail is requested
+     * @param width Desired thumbnail width in pixels
+     * @param height Desired thumbnail height in pixels
      * @return Thumbnail URL
      * @throws ViewerConfigurationException
      * @throws PresentationException
@@ -156,8 +153,8 @@ public class CmsRecordNotesBean implements Serializable {
     }
 
     /**
-     * 
-     * @param note
+     *
+     * @param note Note whose related record URL is requested
      * @return Record URL
      * @throws IndexUnreachableException
      * @throws PresentationException

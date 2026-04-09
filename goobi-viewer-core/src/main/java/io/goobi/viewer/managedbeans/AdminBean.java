@@ -107,18 +107,18 @@ public class AdminBean implements Serializable {
     private User currentUser = null;
     private UserGroup currentUserGroup = null;
     private Role currentRole = null;
-    /** List of UserRoles to persist or delete */
+    /** List of UserRoles to persist or delete. */
     private Map<UserRole, String> dirtyUserRoles = new HashMap<>();
     private UserRole currentUserRole = null;
     private IpRange currentIpRange = null;
     private TranslationGroup currentTranslationGroup = null;
     private MaintenanceMode maintenanceMode;
 
-    /** Current password for password change */
+    /** Current password for password change. */
     private String currentPassword = null;
-    /** New password */
+    /** New password. */
     private String passwordOne = "";
-    /** New password confirmation */
+    /** New password confirmation. */
     private String passwordTwo = "";
     private String emailConfirmation = "";
     private boolean deleteUserContributions = false;
@@ -130,18 +130,14 @@ public class AdminBean implements Serializable {
     private CacheUtils cacheUtils = new CacheUtils(ContentServerCacheManager.getInstance());
 
     /**
-     * <p>
-     * Constructor for AdminBean.
-     * </p>
+     * Creates a new AdminBean instance.
      */
     public AdminBean() {
         // the emptiness inside
     }
 
     /**
-     * <p>
      * init.
-     * </p>
      */
     @PostConstruct
     public void init() {
@@ -193,7 +189,7 @@ public class AdminBean implements Serializable {
     /**
      * Returns all users in the DB. Needed for getting a list of users (e.g for adding user group members).
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all registered users sorted by display name
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<User> getAllUsers() throws DAOException {
@@ -203,13 +199,11 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * getAllUsersExcept.
-     * </p>
      *
-     * @param usersToExclude a {@link java.util.Set} object.
+     * @param usersToExclude set of users to omit from the result
      * @should return all users except given
-     * @return a {@link java.util.List} object.
+     * @return a list of all registered users excluding the specified users
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<User> getAllUsersExcept(Set<User> usersToExclude) throws DAOException {
@@ -222,14 +216,12 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * saveUserAction.
-     * </p>
      *
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object
+     * @param user user to save
      * @param forceCheckCurrentPassword If true, even if an admin is changing their own password
-     * @param returnPage a {@link java.lang.String} object
-     * @return a {@link java.lang.String} object
+     * @param returnPage navigation outcome returned on success
+     * @return the navigation outcome for the return page on success, or empty string on failure
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String saveUserAction(User user, boolean forceCheckCurrentPassword, String returnPage) throws DAOException {
@@ -240,13 +232,11 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * resetUserAction.
-     * </p>
      *
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object
-     * @param returnPage a {@link java.lang.String} object
-     * @return a {@link java.lang.String} object
+     * @param user user whose fields are restored from backup
+     * @param returnPage navigation outcome to return after reset
+     * @return the navigation outcome for the return page
      */
     public String resetUserAction(User user, String returnPage) {
         user.backupFields();
@@ -254,13 +244,11 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * Saves the given use. Attention: Used by regular users editing their own profile as well.
-     * </p>
      *
      * @param user User to save
      * @param forceCheckCurrentPassword If true, even if an admin is changing their own password
-     * @return a {@link java.lang.String} object.
+     * @return true if the user was saved successfully, false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean saveUser(User user, boolean forceCheckCurrentPassword) throws DAOException {
@@ -345,10 +333,8 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * Deletes the given User and optionally their contributions. This method is user for admin-induced deletion of other users as well as
      * self-deletion by a user.
-     * </p>
      *
      * @param user User to be deleted
      * @param deleteContributions If true, all content created by this user will also be deleted
@@ -404,9 +390,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * resetCurrentUserAction.
-     * </p>
      */
     public void resetCurrentUserAction() {
         currentUser = new User();
@@ -417,7 +401,7 @@ public class AdminBean implements Serializable {
     /**
      * Returns all user groups in the DB. Needed for getting a list of users (e.g for adding user group members).
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all user groups in the database
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<UserGroup> getAllUserGroups() throws DAOException {
@@ -461,11 +445,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * deleteUserGroupAction.
-     * </p>
      *
-     * @param userGroup a {@link io.goobi.viewer.model.security.user.UserGroup} object.
+     * @param userGroup user group to delete from the database
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void deleteUserGroupAction(UserGroup userGroup) throws DAOException {
@@ -477,9 +459,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * resetCurrentUserGroupAction.
-     * </p>
      */
     public void resetCurrentUserGroupAction() {
         currentUserGroup = new UserGroup();
@@ -490,7 +470,7 @@ public class AdminBean implements Serializable {
     /**
      * Returns a list of all existing roles. Required for admin tab components.
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all role definitions in the database
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<Role> getAllRoles() throws DAOException {
@@ -498,9 +478,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * saveRoleAction.
-     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -522,11 +500,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * deleteRoleAction.
-     * </p>
      *
-     * @param role a {@link io.goobi.viewer.model.security.Role} object.
+     * @param role role to delete from the database
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void deleteRoleAction(Role role) throws DAOException {
@@ -538,9 +514,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * resetCurrentRoleAction.
-     * </p>
      */
     public void resetCurrentRoleAction() {
         currentRole = new Role();
@@ -549,18 +523,14 @@ public class AdminBean implements Serializable {
     // UserRole
 
     /**
-     * <p>
      * resetCurrentUserRoleAction.
-     * </p>
      */
     public void resetCurrentUserRoleAction() {
         currentUserRole = new UserRole(getCurrentUserGroup(), null, memberRole);
     }
 
     /**
-     * <p>
      * resetDirtyUserRolesAction.
-     * </p>
      */
     public void resetDirtyUserRolesAction() {
         dirtyUserRoles.clear();
@@ -598,11 +568,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * Adds currentUserRole to the map of UserRoles to be processed, marked as to delete.
-     * </p>
      *
-     * @param userRole a {@link io.goobi.viewer.model.security.user.UserRole} object.
+     * @param userRole membership entry to mark for deletion
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void deleteUserRoleAction(UserRole userRole) throws DAOException {
@@ -614,9 +582,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * saveUserRoleAction.
-     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @should persist UserRole correctly
@@ -690,9 +656,7 @@ public class AdminBean implements Serializable {
     // IpRange
 
     /**
-     * <p>
      * getAllIpRanges.
-     * </p>
      *
      * @return all IpRanges from the database
      * @throws io.goobi.viewer.exceptions.DAOException
@@ -702,9 +666,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * saveIpRangeAction.
-     * </p>
      *
      * @return Navigation outcome
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -731,11 +693,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * deleteIpRangeAction.
-     * </p>
      *
-     * @param ipRange a {@link io.goobi.viewer.model.security.user.IpRange} object.
+     * @param ipRange IP range entry to delete from the database
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void deleteIpRangeAction(IpRange ipRange) throws DAOException {
@@ -747,18 +707,14 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * resetCurrentIpRangeAction.
-     * </p>
      */
     public void resetCurrentIpRangeAction() {
         currentIpRange = new IpRange();
     }
 
     /**
-     * <p>
      * saveMaintenanceModeAction.
-     * </p>
      *
      * @return Navigation outcome
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -789,29 +745,25 @@ public class AdminBean implements Serializable {
     /*********************************** Getter and Setter ***************************************/
 
     /**
-     * <p>
      * Getter for the field <code>currentUser</code>.
-     * </p>
      *
-     * @return the currentUser
+     * @return the {@link io.goobi.viewer.model.security.user.User} currently being edited in the admin interface, or null if none selected
      */
     public User getCurrentUser() {
         return currentUser;
     }
 
     /**
-     * <p>
      * Setter for the field <code>currentUser</code>.
-     * </p>
      *
-     * @param currentUser the currentUser to set
+     * @param currentUser the user currently being edited in the admin interface
      */
     public void setCurrentUser(User currentUser) {
         this.currentUser = currentUser;
     }
 
     /**
-     * Returns the user ID of <code>currentUser/code>.
+     * Returns the user ID of <code>currentUser</code>.
      *
      * @return <code>currentUser.id</code> if loaded and has ID; null if not
      */
@@ -826,7 +778,7 @@ public class AdminBean implements Serializable {
     /**
      * Sets the current user by loading them from the DB via the given user ID.
      *
-     * @param id a {@link java.lang.Long} object
+     * @param id database ID of the user to load
      * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void setCurrentUserId(Long id) throws DAOException {
@@ -834,29 +786,25 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>currentUserGroup</code>.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.model.security.user.UserGroup} object.
+     * @return the user group currently selected for editing
      */
     public UserGroup getCurrentUserGroup() {
         return this.currentUserGroup;
     }
 
     /**
-     * <p>
      * Setter for the field <code>currentUserGroup</code>.
-     * </p>
      *
-     * @param userGroup a {@link io.goobi.viewer.model.security.user.UserGroup} object.
+     * @param userGroup user group to set as currently edited
      */
     public void setCurrentUserGroup(UserGroup userGroup) {
         this.currentUserGroup = userGroup;
     }
 
     /**
-     * Returns the user ID of <code>currentUserGroup/code>.
+     * Returns the user ID of <code>currentUserGroup</code>.
      *
      * @return <code>currentUserGroup.id</code> if loaded and has ID; null if not
      */
@@ -869,9 +817,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * Sets <code>currentUserGroup/code> by loading it from the DB via the given ID.
+     * Sets <code>currentUserGroup</code> by loading it from the DB via the given ID.
      *
-     * @param id a {@link java.lang.Long} object
+     * @param id database ID of the user group to load
      * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void setCurrentUserGroupId(Long id) throws DAOException {
@@ -879,22 +827,18 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>currentRole</code>.
-     * </p>
      *
-     * @return the currentRole
+     * @return the {@link io.goobi.viewer.model.security.Role} currently being edited in the admin interface, or null if none selected
      */
     public Role getCurrentRole() {
         return currentRole;
     }
 
     /**
-     * <p>
      * Setter for the field <code>currentRole</code>.
-     * </p>
      *
-     * @param currentRole the currentRole to set
+     * @param currentRole the role currently being edited in the admin interface
      */
     public void setCurrentRole(Role currentRole) {
         this.currentRole = currentRole;
@@ -903,58 +847,50 @@ public class AdminBean implements Serializable {
     /**
      * Getter for unit tests.
      * 
-     * @return the dirtyUserRoles
+
      */
     Map<UserRole, String> getDirtyUserRoles() {
         return dirtyUserRoles;
     }
 
     /**
-     * <p>
      * Getter for the field <code>currentUserRole</code>.
-     * </p>
      *
-     * @return the currentUserRole
+     * @return the {@link io.goobi.viewer.model.security.user.UserRole} assignment currently being edited, or null if none selected
      */
     public UserRole getCurrentUserRole() {
         return currentUserRole;
     }
 
     /**
-     * <p>
      * Setter for the field <code>currentUserRole</code>.
-     * </p>
      *
-     * @param currentUserRole the currentUserRole to set
+     * @param currentUserRole the user-role assignment currently being edited
      */
     public void setCurrentUserRole(UserRole currentUserRole) {
         this.currentUserRole = currentUserRole;
     }
 
     /**
-     * <p>
      * Getter for the field <code>currentIpRange</code>.
-     * </p>
      *
-     * @return the currentIpRange
+     * @return the {@link io.goobi.viewer.model.security.user.IpRange} currently being edited in the admin interface, or null if none selected
      */
     public IpRange getCurrentIpRange() {
         return currentIpRange;
     }
 
     /**
-     * <p>
      * Setter for the field <code>currentIpRange</code>.
-     * </p>
      *
-     * @param currentIpRange the currentIpRange to set
+     * @param currentIpRange the IP range currently being edited in the admin interface
      */
     public void setCurrentIpRange(IpRange currentIpRange) {
         this.currentIpRange = currentIpRange;
     }
 
     /**
-     * Returns the user ID of <code>currentIpRange/code>.
+     * Returns the user ID of <code>currentIpRange</code>.
      *
      * @return <code>currentIpRange.id</code> if loaded and has ID; null if not
      */
@@ -967,9 +903,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * Sets <code>currentIpRange/code> by loading it from the DB via the given ID.
+     * Sets <code>currentIpRange</code> by loading it from the DB via the given ID.
      *
-     * @param id a {@link java.lang.Long} object
+     * @param id database ID of the IP range to load
      * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void setCurrentIpRangeId(Long id) throws DAOException {
@@ -979,132 +915,108 @@ public class AdminBean implements Serializable {
     // Lazy models
 
     /**
-     * <p>
      * Getter for the field <code>lazyModelUsers</code>.
-     * </p>
      *
-     * @return the lazyModelUsers
+     * @return the {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider} used for paginated user listing in the admin interface
      */
     public TableDataProvider<User> getLazyModelUsers() {
         return lazyModelUsers;
     }
 
     /**
-     * <p>
      * getPageUsers.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of users for the current page in the paginated user list
      */
     public List<User> getPageUsers() {
         return lazyModelUsers.getPaginatorList();
     }
 
     /**
-     * <p>
      * Getter for the field <code>currentPassword</code>.
-     * </p>
      *
-     * @return the currentPassword
+     * @return the current password entered for verification, or null if not set
      */
     public String getCurrentPassword() {
         return currentPassword;
     }
 
     /**
-     * <p>
      * Setter for the field <code>currentPassword</code>.
-     * </p>
      *
-     * @param currentPassword the currentPassword to set
+     * @param currentPassword the current password entered for verification
      */
     public void setCurrentPassword(String currentPassword) {
         this.currentPassword = currentPassword;
     }
 
     /**
-     * <p>
      * Getter for the field <code>passwordOne</code>.
-     * </p>
      *
-     * @return the passwordOne
+     * @return the new password entered in the first password field, or null if not set
      */
     public String getPasswordOne() {
         return passwordOne;
     }
 
     /**
-     * <p>
      * Setter for the field <code>passwordOne</code>.
-     * </p>
      *
-     * @param passwordOne the passwordOne to set
+     * @param passwordOne the new password entered in the first password field
      */
     public void setPasswordOne(String passwordOne) {
         this.passwordOne = passwordOne;
     }
 
     /**
-     * <p>
      * Getter for the field <code>passwordTwo</code>.
-     * </p>
      *
-     * @return the passwordTwo
+     * @return the new password entered in the confirmation password field, or null if not set
      */
     public String getPasswordTwo() {
         return passwordTwo;
     }
 
     /**
-     * <p>
      * Setter for the field <code>passwordTwo</code>.
-     * </p>
      *
-     * @param passwordTwo the passwordTwo to set
+     * @param passwordTwo the new password entered in the confirmation password field
      */
     public void setPasswordTwo(String passwordTwo) {
         this.passwordTwo = passwordTwo;
     }
 
     /**
-     * <p>
      * Getter for the field <code>emailConfirmation</code>.
-     * </p>
      *
-     * @return the emailConfirmation
+     * @return the email address entered for confirmation during account deletion, or null if not set
      */
     public String getEmailConfirmation() {
         return emailConfirmation;
     }
 
     /**
-     * <p>
      * Setter for the field <code>emailConfirmation</code>.
-     * </p>
      *
-     * @param emailConfirmation the emailConfirmation to set
+     * @param emailConfirmation the email address entered for confirmation during account deletion
      */
     public void setEmailConfirmation(String emailConfirmation) {
         this.emailConfirmation = emailConfirmation;
     }
 
     /**
-     * <p>
      * isDeleteUserContributions.
-     * </p>
      *
-     * @return the deleteUserContributions
+     * @return true if all user contributions (comments, bookmarks) should be deleted when deleting the user account; false otherwise
      */
     public boolean isDeleteUserContributions() {
         return deleteUserContributions;
     }
 
     /**
-     * <p>
      * Setter for the field <code>deleteUserContributions</code>.
-     * </p>
      *
-     * @param deleteUserContributions the deleteUserContributions to set
+     * @param deleteUserContributions true to delete all user contributions (comments, bookmarks) when deleting the user account
      */
     public void setDeleteUserContributions(boolean deleteUserContributions) {
         logger.trace("setDeleteUserContributions: {}", deleteUserContributions);
@@ -1112,13 +1024,11 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * deleteFromCache.
-     * </p>
      *
-     * @param identifiers a {@link java.util.List} object.
-     * @param fromContentCache a boolean.
-     * @param fromThumbnailCache a boolean.
+     * @param identifiers list of record identifiers to evict from cache
+     * @param fromContentCache true to clear entries from the content cache
+     * @param fromThumbnailCache true to clear entries from the thumbnail cache
      * @return a int.
      */
     public int deleteFromCache(List<String> identifiers, boolean fromContentCache, boolean fromThumbnailCache) {
@@ -1126,14 +1036,12 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * deleteFromCache.
-     * </p>
      *
-     * @param identifiers a {@link java.util.List} object.
-     * @param fromContentCache a boolean.
-     * @param fromThumbnailCache a boolean.
-     * @param fromPdfCache a boolean.
+     * @param identifiers list of record identifiers to evict from cache
+     * @param fromContentCache true to clear entries from the content cache
+     * @param fromThumbnailCache true to clear entries from the thumbnail cache
+     * @param fromPdfCache true to delete PDF download jobs and files for each identifier
      * @return a int.
      * @throws io.goobi.viewer.exceptions.DAOException
      */
@@ -1149,14 +1057,12 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * setRepresantativeImageAction.
-     * </p>
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param dataRepository a {@link java.lang.String} object.
-     * @param fileIdRoot a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record to update
+     * @param dataRepository data repository path containing the METS file
+     * @param fileIdRoot file ID prefix of the image to mark as representative
+     * @return an empty string after setting the representative image in the METS file
      */
     public String setRepresantativeImageAction(String pi, String dataRepository, String fileIdRoot) {
         setRepresantativeImageStatic(pi, dataRepository, fileIdRoot);
@@ -1168,9 +1074,9 @@ public class AdminBean implements Serializable {
      * Opens the METS file for the given identifier and sets the attribute USE='banner' to all file elements that match the given file ID root. Any
      * USE='banner' attributes that do not match the file ID root are removed. Solr schema version "intranda_viewer-20130117" or newer required.
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param dataRepository a {@link java.lang.String} object.
-     * @param fileIdRoot a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record to update
+     * @param dataRepository data repository path containing the METS file
+     * @param fileIdRoot file ID prefix of the image to mark as representative
      */
     public static void setRepresantativeImageStatic(String pi, String dataRepository, String fileIdRoot) {
         logger.debug("setRepresantativeImageStatic: {}, {}", pi, fileIdRoot);
@@ -1234,12 +1140,10 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * toggleSuspendUserAction.
-     * </p>
      *
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
-     * @return a {@link java.lang.String} object.
+     * @param user user whose suspended status to toggle
+     * @return an empty string after toggling the user's suspended status
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String toggleSuspendUserAction(User user) throws DAOException {
@@ -1255,11 +1159,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * triggerMessage.
-     * </p>
      *
-     * @param message a {@link java.lang.String} object
+     * @param message message key to look up and display as info
      */
     public void triggerMessage(String message) {
         logger.debug("Show message: {}", message);
@@ -1267,9 +1169,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * isDisplayTranslationsDashboardWidget.
-     * </p>
      *
      * @return true if at least one group is not fully translated; false otherwise
      */
@@ -1284,9 +1184,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * getConfiguredTranslationGroupsCount.
-     * </p>
      *
      * @return Number of configured translation grouns
      */
@@ -1301,9 +1199,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * getConfiguredTranslationGroups.
-     * </p>
      *
      * @return All configured <code>TranslationGroup</code>s
      */
@@ -1318,9 +1214,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * getTranslationGroupsForSolrField.
-     * </p>
      *
      * @param field Index field that the translation groups should have as a key
      * @return List of TranslationGroups; null if not found
@@ -1331,9 +1225,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * getTranslationGroupForFieldAndKey.
-     * </p>
      *
      * @param field Solr field
      * @param key Message key
@@ -1352,9 +1244,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * getTranslationGroupsForSolrFieldStatic.
-     * </p>
      *
      * @param field Index field that the translation groups should have as a key
      * @return List of TranslationGroups; null if not found
@@ -1390,11 +1280,10 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>currentTranslationGroup</code>.
-     * </p>
      *
-     * @return the currentTranslationGroup
+     * @return the {@link io.goobi.viewer.model.translations.admin.TranslationGroup} currently being
+     *         edited, or null if none selected or session is locked
      */
     public TranslationGroup getCurrentTranslationGroup() {
         synchronized (TRANSLATION_LOCK) {
@@ -1419,20 +1308,16 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>currentTranslationGroup</code>.
-     * </p>
      *
-     * @param currentTranslationGroup the currentTranslationGroup to set
+     * @param currentTranslationGroup the translation group currently being edited
      */
     public void setCurrentTranslationGroup(TranslationGroup currentTranslationGroup) {
         this.currentTranslationGroup = currentTranslationGroup;
     }
 
     /**
-     * <p>
      * isNewMessageEntryModeAllowed.
-     * </p>
      *
      * @return true if at least one LOCAL_STRINGS type group is found in config; false otherwise
      */
@@ -1479,7 +1364,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * Reset selected message entry and returns to the translations overview page.
+     * Resets selected message entry and returns to the translations overview page.
      *
      * @return Target page
      */
@@ -1493,9 +1378,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * getCurrentTranslationGroupId.
-     * </p>
      *
      * @return Index of currentTranslationGroup in the list of configured groups
      */
@@ -1510,9 +1393,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * setCurrentTranslationGroupId.
-     * </p>
      *
      * @param id Looks up and loads <code>currentTranslationGroup</code> that matches the given id
      */
@@ -1529,9 +1410,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * getCurrentTranslationMessageKey.
-     * </p>
      *
      * @return Key of the currently selected entry; otherwise "-"
      */
@@ -1555,9 +1434,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * isTranslationLocked.
-     * </p>
      *
      * @return true if translations are locked by a different user; false otherwise
      */
@@ -1566,9 +1443,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * lockTranslation.
-     * </p>
      */
     public void lockTranslation() {
         if (translationGroupsEditorSession == null) {
@@ -1578,22 +1453,18 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>translationGroupsEditorSession</code>.
-     * </p>
      *
-     * @return the translationGroupsEditorSession
+     * @return the session identifier that holds the translation groups editor lock, or null if not locked
      */
     public static String getTranslationGroupsEditorSession() {
         return translationGroupsEditorSession;
     }
 
     /**
-     * <p>
      * Setter for the field <code>translationGroupsEditorSession</code>.
-     * </p>
      *
-     * @param translationGroupsEditorSession the translationGroupsEditorSession to set
+     * @param translationGroupsEditorSession session identifier used to coordinate the translation groups editor
      */
     public static void setTranslationGroupsEditorSession(String translationGroupsEditorSession) {
         logger.trace("setTranslationGroupsEditorSession: {}", translationGroupsEditorSession);
@@ -1601,18 +1472,14 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * updateHotfolderFileCount.
-     * </p>
      */
     public void updateHotfolderFileCount() {
         this.socketBean.send("{'action':'update', 'subject':'hotfolderFileCount'}");
     }
 
     /**
-     * <p>
      * Getter for the field <code>hotfolderFileCount</code>.
-     * </p>
      *
      * @return Number of queued records in hotfolder
      */
@@ -1621,9 +1488,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * isHasAccessPermissingForTranslationFiles.
-     * </p>
      *
      * @return {@link io.goobi.viewer.model.translations.admin.TranslationGroup#isHasFileAccess()}
      */
@@ -1632,30 +1497,24 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>uploadedAvatarFile</code>.
-     * </p>
      *
-     * @param uploadedAvatarFile the uploadedAvatarFile to set
+     * @param uploadedAvatarFile the uploaded file part containing the new avatar image
      */
     public void setUploadedAvatarFile(Part uploadedAvatarFile) {
         this.uploadedAvatarFile = uploadedAvatarFile;
     }
 
     /**
-     * <p>
      * Getter for the field <code>uploadedAvatarFile</code>.
-     * </p>
      *
-     * @return the uploadedAvatarFile
+     * @return the uploaded file part containing the new avatar image, or null if none uploaded
      */
     public Part getUploadedAvatarFile() {
         return uploadedAvatarFile;
     }
 
-    /**
-     * @return the maintenanceMode
-     */
+    
     public MaintenanceMode getMaintenanceMode() {
         if (this.maintenanceMode == null) {
             try {
@@ -1667,9 +1526,7 @@ public class AdminBean implements Serializable {
         return maintenanceMode;
     }
 
-    /**
-     * @param maintenanceMode the maintenanceMode to set
-     */
+    
     public void setMaintenanceMode(MaintenanceMode maintenanceMode) {
         this.maintenanceMode = maintenanceMode;
     }

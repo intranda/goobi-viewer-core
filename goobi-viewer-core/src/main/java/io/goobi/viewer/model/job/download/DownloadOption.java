@@ -35,16 +35,14 @@ import io.goobi.viewer.controller.DataManager;
  */
 public class DownloadOption {
 
-    /**
-     * 
-     */
+    
     public static final String TIMES_SYMBOL = "\u00D7";
     /**
-     * Dimension symbolizing the maximal image size
+     * Dimension symbolizing the maximal image size.
      */
     public static final Dimension MAX = new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE);
     /**
-     * Dimension symbolizing that no image size has been set
+     * Dimension symbolizing that no image size has been set.
      */
     public static final Dimension NONE = new Dimension(0, 0);
 
@@ -52,9 +50,7 @@ public class DownloadOption {
     private String format;
     private Dimension boxSize = NONE;
 
-    /**
-     * 
-     */
+    
     public DownloadOption() {
     }
 
@@ -102,15 +98,13 @@ public class DownloadOption {
         return null;
     }
 
-    /**
-     * @return the label
-     */
+    
     public String getLabel() {
         return label;
     }
 
     /**
-     * @param label the label to set
+     * @param label the human-readable display label for this download option
      * @return this
      */
     public DownloadOption setLabel(String label) {
@@ -118,15 +112,13 @@ public class DownloadOption {
         return this;
     }
 
-    /**
-     * @return the format
-     */
+    
     public String getFormat() {
         return format;
     }
 
     /**
-     * @param format the format to set
+     * @param format the image format identifier (e.g. "jpg", "png", "master") for the download
      * @return this
      */
     public DownloadOption setFormat(String format) {
@@ -134,9 +126,7 @@ public class DownloadOption {
         return this;
     }
 
-    /**
-     * @return the boxSizeInPixel
-     */
+    
     public Dimension getBoxSizeInPixel() {
         return boxSize;
     }
@@ -153,7 +143,7 @@ public class DownloadOption {
     }
 
     /**
-     * @param boxSizeInPixel the boxSizeInPixel to set
+     * @param boxSizeInPixel the maximum bounding box size in pixels as a number string, "max" for maximum resolution, or blank for no limit
      * @return this
      */
     public DownloadOption setBoxSizeInPixel(String boxSizeInPixel) {

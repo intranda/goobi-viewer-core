@@ -38,6 +38,7 @@ import org.json.JSONObject;
 
 import de.intranda.api.iiif.discovery.OrderedCollectionPage;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentation2ResourceBuilder;
@@ -50,8 +51,11 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.solr.SolrTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -65,19 +69,16 @@ import jakarta.ws.rs.core.Response;
 
 /**
  *
- * provides listings of records in reduced iiif form.
+ * Provides listings of records in reduced iiif form.
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 @jakarta.ws.rs.Path(RECORDS_LIST)
 @ViewerRestServiceBinding
 @CORSBinding
 public class RecordsListResource {
 
-    /**
-     *
-     */
+    
     private static final int DEFAULT_MAX_ROWS = 100;
     private static final Logger logger = LogManager.getLogger(RecordsListResource.class);
     @Context
@@ -90,6 +91,9 @@ public class RecordsListResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records" }, summary = "List records in an ordered collection page, use query parameter for filtering")
+    @ApiResponse(responseCode = "200", description = "Ordered collection page of record manifests")
+    @ApiResponse(responseCode = "400", description = "Invalid query or date parameters")
+    @ApiResponse(responseCode = "500", description = "Solr index unreachable or internal error")
     public OrderedCollectionPage<IPresentationModelElement> listManifests(
             @Parameter(description = "filter query") @QueryParam("query") String query,
             @Parameter(description = "Index of the first result to return") @QueryParam("first") final Integer firstRow,
@@ -97,15 +101,29 @@ public class RecordsListResource {
             @Parameter(description = "filter for records from this date or later") @QueryParam("start") String start,
             @Parameter(description = "filter for records from this date or earlier") @QueryParam("end") String end,
             @Parameter(description = "filter for records of this subtheme") @QueryParam("subtheme") String subtheme,
-            @Parameter(description = "sort string") @QueryParam("sort") String sort)
-            throws IndexUnreachableException, DAOException, PresentationException, URISyntaxException, ViewerConfigurationException {
+            @Parameter(description = "Solr field name to sort by",
+                    schema = @Schema(pattern = "^[A-Za-z_][A-Za-z0-9_]*$")) @QueryParam("sort") String sort)
+            throws IndexUnreachableException, DAOException, PresentationException, URISyntaxException, ViewerConfigurationException,
+            IllegalRequestException {
 
         String finalQuery = createQuery(query, start, end, subtheme);
 
         IIIFPresentation2ResourceBuilder builder = new IIIFPresentation2ResourceBuilder(urls, servletRequest);
 
-        List<IPresentationModelElement> items =
-                builder.getManifestsForQuery(finalQuery, sort, firstRow == null ? 0 : firstRow, rows == null ? DEFAULT_MAX_ROWS : rows);
+        List<IPresentationModelElement> items;
+        try {
+            items = builder.getManifestsForQuery(finalQuery, sort, firstRow == null ? 0 : firstRow, rows == null ? DEFAULT_MAX_ROWS : rows);
+        } catch (PresentationException e) {
+            // An empty or syntactically invalid query, or an invalid sort field, can cause Solr to reject the request.
+            // Also handle "sort param field can't be found" which Solr returns when the sort field name is valid syntax
+            // but does not exist in the index schema (e.g. GET /records/list?sort=A).
+            if (SolrTools.isQuerySyntaxError(e)
+                    || (e.getMessage() != null && e.getMessage().contains("sort param could not be parsed"))
+                    || (e.getMessage() != null && e.getMessage().contains("sort param field can't be found"))) {
+                throw new IllegalRequestException("Invalid query parameters: " + e.getMessage());
+            }
+            throw e;
+        }
 
         OrderedCollectionPage<IPresentationModelElement> page = new OrderedCollectionPage<>();
         page.setOrderedItems(items);
@@ -123,8 +141,14 @@ public class RecordsListResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_LIST_JSON)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "json" }, summary = "List record metadata as JSON. Solr query and filed mapping are configured statically.")
-    public Response getRecordMetadataAsJson(@PathParam("template") String template) throws IndexUnreachableException, PresentationException {
+    @Operation(tags = { "records", "json" }, summary = "List record metadata as JSON. Solr query and field mapping are configured statically.")
+    @ApiResponse(responseCode = "200", description = "Record metadata as JSON array")
+    @ApiResponse(responseCode = "400", description = "Missing template name")
+    @ApiResponse(responseCode = "404", description = "Template configuration not found")
+    public Response getRecordMetadataAsJson(
+            @Parameter(description = "Template name for the JSON configuration",
+                    schema = @Schema(pattern = "^[A-Za-z0-9_,.-]+$")) @PathParam("template") String template)
+            throws IndexUnreachableException, PresentationException {
         logger.trace("getRecordMetadataAsJson: {}", template);
         if (template == null) {
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "Template name required").build();
@@ -140,7 +164,8 @@ public class RecordsListResource {
             String t = templateSplit[i].trim();
             JsonMetadataConfiguration config = DataManager.getInstance().getConfiguration().getWebApiFields(t);
             if (config == null) {
-                return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "Template configuration not found: " + t).build();
+                // Template name is syntactically valid but no such configuration exists → 404 (not 400)
+                return Response.status(Response.Status.NOT_FOUND.getStatusCode(), "Template configuration not found: " + t).build();
             }
 
             SolrDocumentList docs =
@@ -160,10 +185,10 @@ public class RecordsListResource {
     }
 
     /**
-     * @param query
-     * @param start
-     * @param end
-     * @param subtheme
+     * @param query base Solr query string to filter records
+     * @param start start year for date range filter (inclusive)
+     * @param end end year for date range filter (inclusive)
+     * @param subtheme subtheme discriminator value for filtering
      * @return Generated query
      */
     private String createQuery(String query, final String start, final String end, String subtheme) {

@@ -36,7 +36,7 @@ import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IAccessDeniedThumbnailOutput;
 
 /**
- * Represents a single object within an RSS feed
+ * Represents a single object within an RSS feed.
  *
  * @author Florian Alpers
  */
@@ -67,140 +67,114 @@ public class RssItem implements Comparable<RssItem>, IAccessDeniedThumbnailOutpu
     }
 
     /**
-     * <p>
      * Getter for the field <code>title</code>.
-     * </p>
      *
-     * @return the title
+     * @return the title of this RSS item
      */
     public String getTitle() {
         return title;
     }
 
     /**
-     * <p>
      * Setter for the field <code>title</code>.
-     * </p>
      *
-     * @param title the title to set
+     * @param title the title of this RSS item
      */
     public void setTitle(String title) {
         this.title = title;
     }
 
     /**
-     * <p>
      * Getter for the field <code>link</code>.
-     * </p>
      *
-     * @return the link
+     * @return the URL of the record or resource represented by this RSS item
      */
     public String getLink() {
         return link;
     }
 
     /**
-     * <p>
      * Setter for the field <code>link</code>.
-     * </p>
      *
-     * @param link the link to set
+     * @param link the URL of the record or resource represented by this RSS item
      */
     public void setLink(String link) {
         this.link = link;
     }
 
     /**
-     * <p>
      * Getter for the field <code>description</code>.
-     * </p>
      *
-     * @return the description
+     * @return the structured description object containing image and text for this RSS item
      */
     public Description getDescription() {
         return description;
     }
 
     /**
-     * <p>
      * Setter for the field <code>description</code>.
-     * </p>
      *
-     * @param description the description to set
+     * @param description the structured description object containing image and text for this RSS item
      */
     public void setDescription(Description description) {
         this.description = description;
     }
 
     /**
-     * <p>
      * Getter for the field <code>pubDate</code>.
-     * </p>
      *
-     * @return the pubDate
+     * @return the publication date of this RSS item, used for sorting
      */
     public Date getPubDate() {
         return pubDate;
     }
 
     /**
-     * <p>
      * Setter for the field <code>pubDate</code>.
-     * </p>
      *
-     * @param pubDate the pubDate to set
+     * @param pubDate the publication date of this RSS item, used for sorting
      */
     public void setPubDate(Date pubDate) {
         this.pubDate = pubDate;
     }
 
     /**
-     * <p>
      * Getter for the field <code>creator</code>.
-     * </p>
      *
-     * @return the creator
+     * @return the Dublin Core creator (author or responsible party) of this RSS item
      */
     public String getCreator() {
         return creator;
     }
 
     /**
-     * <p>
      * Setter for the field <code>creator</code>.
-     * </p>
      *
-     * @param creator the creator to set
+     * @param creator the Dublin Core creator (author or responsible party) of this RSS item
      */
     public void setCreator(String creator) {
         this.creator = creator;
     }
 
     /**
-     * <p>
      * Setter for the field <code>docType</code>.
-     * </p>
      *
-     * @param docType the docType to set
+     * @param docType the Solr document type of the record represented by this RSS item (e.g. "monograph", "periodical")
      */
     public void setDocType(String docType) {
         this.docType = docType;
     }
 
     /**
-     * <p>
      * Getter for the field <code>docType</code>.
-     * </p>
      *
-     * @return the docType
+     * @return the Solr document type of the record represented by this RSS item (e.g. "monograph", "periodical")
      */
     public String getDocType() {
         return docType;
     }
 
-    /**
-     * @param accessPermissionThumbnail the accessPermissionThumbnail to set
-     */
+    
     public void setAccessPermissionThumbnail(AccessPermission accessPermissionThumbnail) {
         this.accessPermissionThumbnail = accessPermissionThumbnail;
     }
@@ -208,7 +182,7 @@ public class RssItem implements Comparable<RssItem>, IAccessDeniedThumbnailOutpu
     /**
      * {@inheritDoc}
      *
-     * Sorts the items accoring to their publication date
+     * <p>Sorts the items accoring to their publication date
      */
     @Override
     public int compareTo(RssItem other) {

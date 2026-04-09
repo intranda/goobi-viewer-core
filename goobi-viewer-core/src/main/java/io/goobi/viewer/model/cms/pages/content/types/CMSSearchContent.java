@@ -48,13 +48,16 @@ import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.search.HitListView;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchResultGroup;
-import io.goobi.viewer.solr.SolrSearchIndex;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
+/**
+ * CMS content type that embeds the standard search results view into a CMS page, managing
+ * search state, pagination, hit list layout, and search facets configuration.
+ */
 @Entity
 @Table(name = "cms_content_search")
 @DiscriminatorValue("search")
@@ -75,7 +78,7 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
 
     @Column(name = "view")
     private HitListView view = HitListView.DETAILS;
-    
+
     @Column(name = "sort_field", length = 40)
     private String sortField = DataManager.getInstance().getConfiguration().getDefaultSortField("");
 
@@ -198,14 +201,14 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
      * Uses SearchBean to execute a search.
      *
      * @param item a {@link io.goobi.viewer.model.cms.CMSContentItem} object.
-     * @return a {@link java.lang.String} object.
+     * @return empty string (navigation outcome; search is executed as a side effect)
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     private String searchAction() throws ViewerConfigurationException, PresentationException, IndexUnreachableException, DAOException {
-        this.search.search(this.getOwningPage().getSubThemeDiscriminatorValue());
+        this.search.search(this.getOwningPage().getSubTheme());
         BeanUtils.getNavigationHelper().addSearchUrlWithCurrentSortStringToHistory();
         return "";
     }
@@ -223,19 +226,19 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
     public Functionality getFunctionality() {
         return getSearch();
     }
-    
+
     public int getElementsPerPage() {
         return elementsPerPage;
     }
-    
+
     public void setElementsPerPage(int elementsPerPage) {
         this.elementsPerPage = elementsPerPage;
     }
-    
+
     public String getSortField() {
         return sortField;
     }
-    
+
     public void setSortField(String sortField) {
         this.sortField = sortField;
     }

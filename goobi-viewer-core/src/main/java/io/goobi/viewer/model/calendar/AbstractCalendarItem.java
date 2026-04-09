@@ -24,13 +24,11 @@ package io.goobi.viewer.model.calendar;
 import java.text.DecimalFormat;
 
 /**
- * <p>
- * Abstract AbstractCalendarItem class.
- * </p>
+ * Abstract base class for calendar browsing items representing a time period (year, month, day, etc.).
  */
 public abstract class AbstractCalendarItem implements ICalendarItem {
 
-    /** Constant <code>dfTwoDigitInteger</code> */
+    /** Constant <code>dfTwoDigitInteger</code>. */
     private static DecimalFormat dfTwoDigitInteger = new DecimalFormat("00");
 
     protected String name;
@@ -43,13 +41,11 @@ public abstract class AbstractCalendarItem implements ICalendarItem {
     }
 
     /**
-     * <p>
-     * Constructor for AbstractCalendarItem.
-     * </p>
+     * Creates a new AbstractCalendarItem instance.
      *
-     * @param name a {@link java.lang.String} object.
-     * @param value a int.
-     * @param hits a int.
+     * @param name display label for this item
+     * @param value numeric calendar value (e.g. day, month, year)
+     * @param hits initial number of search hits
      */
     protected AbstractCalendarItem(String name, int value, int hits) {
         this.name = name;
@@ -57,18 +53,12 @@ public abstract class AbstractCalendarItem implements ICalendarItem {
         this.hits = hits;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.ICalendarItem#getName()
-     */
     /** {@inheritDoc} */
     @Override
     public String getName() {
         return name;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.ICalendarItem#getValue()
-     */
     /** {@inheritDoc} */
     @Override
     public int getValue() {
@@ -78,24 +68,18 @@ public abstract class AbstractCalendarItem implements ICalendarItem {
     /**
      * Returns a two-digit string representation of this item's value.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the value of this calendar item formatted as a zero-padded two-digit string
      */
     public String getFormattedValue() {
         return (dfTwoDigitInteger.format(value));
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.ICalendarItem#getHits()
-     */
     /** {@inheritDoc} */
     @Override
     public int getHits() {
         return hits;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.ICalendarItem#setHits(int)
-     */
     /** {@inheritDoc} */
     @Override
     public void setHits(int hits) {
@@ -103,18 +87,12 @@ public abstract class AbstractCalendarItem implements ICalendarItem {
 
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.ICalendarItem#isSelected()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean isSelected() {
         return selected;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.ICalendarItem#setSelected(boolean)
-     */
     /** {@inheritDoc} */
     @Override
     public void setSelected(boolean selected) {

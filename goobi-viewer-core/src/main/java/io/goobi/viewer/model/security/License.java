@@ -46,6 +46,7 @@ import io.goobi.viewer.model.cms.Selectable;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.security.clients.ClientApplication;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -68,14 +69,15 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
- * <p>
- * License class.
- * </p>
+ * Represents an access licence assigned to a user, user group, or IP range, controlling permissions for specific access conditions.
  */
 @Entity
 @Table(name = "licenses")
 public class License extends AbstractPrivilegeHolder implements Serializable {
 
+    /**
+     * Classifies the kind of principal (user, user group, IP range, or client application) that holds a {@link License}.
+     */
     public enum AccessType {
         USER("admin__users"),
         USER_GROUP("admin__groups"),
@@ -85,16 +87,14 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
         private final String labelKey;
 
         /**
-         * 
-         * @param labelKey
+         *
+         * @param labelKey Message key for the access type label
          */
         private AccessType(String labelKey) {
             this.labelKey = labelKey;
         }
 
-        /**
-         * @return the labelKey
-         */
+        
         public String getLabelKey() {
             return labelKey;
         }
@@ -167,6 +167,8 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     @Deprecated(since = "2026.01")
     @ManyToOne
     @JoinColumn(name = "client_id")
+    // Hide from OpenAPI schema to break the circular reference: ClientApplication -> licenses -> License -> client -> ClientApplication
+    @Schema(hidden = true)
     private ClientApplication client;
 
     @Column(name = "date_start")
@@ -253,7 +255,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Adds the given privilege to the working set.
      *
-     * @param privilege
+     * @param privilege Privilege name to add to working set
      * @return true if successful; false otherwise
      */
     @Override
@@ -265,7 +267,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * Removes the given privilege from the working set.
      *
-     * @param privilege
+     * @param privilege Privilege name to remove from working set
      * @return true if successful; false otherwise
      */
     @Override
@@ -492,8 +494,8 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
 
     /**
      * Returns the list of available record privileges for adding to this license (using the given privileges list).
-     * 
-     * @param privileges
+     *
+     * @param privileges Currently assigned privileges to exclude from result
      * @return Values in IPrivilegeHolder.PRIVS_RECORD minus the privileges already added
      * @should return cms privileges if licenseType cms type
      * @should only return priv view ugc if licenseType ugc type
@@ -513,8 +515,8 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
 
     /**
      *
-     * @param excludePrivileges
-     * @param sourcePrivileges
+     * @param excludePrivileges Privileges to exclude from the result
+     * @param sourcePrivileges Full list of privileges to select from
      * @return List<String>
      */
     List<String> getAvailablePrivileges(Set<String> excludePrivileges, List<String> sourcePrivileges) {
@@ -608,69 +610,55 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
-     * @return the id
+     * @return the database primary key for this license
      */
     public Long getId() {
         return id;
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
-     * @param id the id to set
+     * @param id the database primary key for this license
      */
     public void setId(Long id) {
         this.id = id;
     }
 
     /**
-     * <p>
      * Getter for the field <code>licenseType</code>.
-     * </p>
      *
-     * @return the licenseType
+     * @return the license type defining the access conditions and privileges for this license
      */
     public LicenseType getLicenseType() {
         return licenseType;
     }
 
     /**
-     * <p>
      * Setter for the field <code>licenseType</code>.
-     * </p>
      *
-     * @param licenseType the licenseType to set
+     * @param licenseType the license type defining the access conditions and privileges for this license
      */
     public void setLicenseType(LicenseType licenseType) {
         this.licenseType = licenseType;
     }
 
-    /**
-     * @return the licensees
-     */
+    
     public List<LicenseRightsHolder> getLicensees() {
         return licensees;
     }
 
-    /**
-     * @param licensees the licensees to set
-     */
+    
     public void setLicensees(List<LicenseRightsHolder> licensees) {
         this.licensees = licensees;
     }
 
     /**
-     * <p>
      * Getter for the field <code>user</code>.
-     * </p>
      *
-     * @return the user
+     * @return the user this license is granted to, or null if granted to a group or IP range
      */
     @Deprecated(since = "2026.01")
     public User getUser() {
@@ -678,11 +666,9 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>user</code>.
-     * </p>
      *
-     * @param user the user to set
+     * @param user the user this license is granted to (clears userGroup and ipRange when non-null)
      * @should set userGroup and ipRange to null if user not null
      * @should not set userGroup and ipRange to null if user null
      */
@@ -696,11 +682,9 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>userGroup</code>.
-     * </p>
      *
-     * @return the userGroup
+     * @return the user group this license is granted to, or null if granted to a user or IP range
      */
     @Deprecated(since = "2026.01")
     public UserGroup getUserGroup() {
@@ -708,11 +692,9 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>userGroup</code>.
-     * </p>
      *
-     * @param userGroup the userGroup to set
+     * @param userGroup the user group this license is granted to (clears user and ipRange when non-null)
      * @should set user and ipRange to null if userGroup not null
      * @should not set user and ipRange to null if userGroup null
      */
@@ -726,11 +708,9 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>ipRange</code>.
-     * </p>
      *
-     * @return the ipRange
+     * @return the IP range this license is granted to, or null if granted to a user or user group
      */
     @Deprecated(since = "2026.01")
     public IpRange getIpRange() {
@@ -738,11 +718,9 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>ipRange</code>.
-     * </p>
      *
-     * @param ipRange the ipRange to set
+     * @param ipRange the IP range this license is granted to (clears user and userGroup when non-null)
      * @should set user and userGroup to null if ipRange not null
      * @should not set user and userGroup to null if ipRange null
      */
@@ -756,125 +734,101 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>start</code>.
-     * </p>
      *
-     * @return the start
+     * @return the date/time from which this license becomes valid, or null if there is no start restriction
      */
     public LocalDateTime getStart() {
         return start;
     }
 
     /**
-     * <p>
      * Setter for the field <code>start</code>.
-     * </p>
      *
-     * @param start the start to set
+     * @param start the date/time from which this license becomes valid; null means no start restriction
      */
     public void setStart(LocalDateTime start) {
         this.start = start;
     }
 
     /**
-     * <p>
      * Getter for the field <code>end</code>.
-     * </p>
      *
-     * @return the end
+     * @return the date/time after which this license expires, or null if there is no end restriction
      */
     public LocalDateTime getEnd() {
         return end;
     }
 
     /**
-     * <p>
      * Setter for the field <code>end</code>.
-     * </p>
      *
-     * @param end the end to set
+     * @param end the date/time after which this license expires; null means no end restriction
      */
     public void setEnd(LocalDateTime end) {
         this.end = end;
     }
 
     /**
-     * <p>
      * Getter for the field <code>privileges</code>.
-     * </p>
      *
-     * @return the privileges
+     * @return the set of privilege names granted by this license
      */
     public Set<String> getPrivileges() {
         return privileges;
     }
 
     /**
-     * <p>
      * Setter for the field <code>privileges</code>.
-     * </p>
      *
-     * @param privileges the privileges to set
+     * @param privileges the set of privilege names granted by this license
      */
     public void setPrivileges(Set<String> privileges) {
         this.privileges = privileges;
     }
 
     /**
-     * <p>
      * Getter for the field <code>conditions</code>.
-     * </p>
      *
-     * @return the conditions
+     * @return the Solr query expression restricting the records this license applies to
      */
     public String getConditions() {
         return conditions;
     }
 
     /**
-     * <p>
      * Setter for the field <code>conditions</code>.
-     * </p>
      *
-     * @param conditions the conditions to set
+     * @param conditions the Solr query expression restricting the records this license applies to
      */
     public void setConditions(String conditions) {
         this.conditions = conditions;
     }
 
     /**
-     * <p>
      * Getter for the field <code>description</code>.
-     * </p>
      *
-     * @return the description
+     * @return the human-readable description of this license
      */
     public String getDescription() {
         return description;
     }
 
     /**
-     * <p>
      * Setter for the field <code>description</code>.
-     * </p>
      *
-     * @param description the description to set
+     * @param description the human-readable description of this license
      */
     public void setDescription(String description) {
         this.description = description;
     }
 
-    /**
-     * @return the ticketRequired
-     */
+    
     public boolean isTicketRequired() {
         return ticketRequired;
     }
 
-    /**
-     * @param ticketRequired the ticketRequired to set
-     */
+    
     public void setTicketRequired(boolean ticketRequired) {
         this.ticketRequired = ticketRequired;
     }
@@ -888,103 +842,83 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>subthemeDiscriminatorValues</code>.
-     * </p>
      *
-     * @return the subthemeDiscriminatorValues
+     * @return the list of subtheme discriminator values that restrict the scope of this license
      */
     public List<String> getSubthemeDiscriminatorValues() {
         return subthemeDiscriminatorValues;
     }
 
     /**
-     * <p>
      * Setter for the field <code>subthemeDiscriminatorValues</code>.
-     * </p>
      *
-     * @param subthemeDiscriminatorValues the subthemeDiscriminatorValues to set
+     * @param subthemeDiscriminatorValues the list of subtheme discriminator values that restrict the scope of this license
      */
     public void setSubthemeDiscriminatorValues(List<String> subthemeDiscriminatorValues) {
         this.subthemeDiscriminatorValues = subthemeDiscriminatorValues;
     }
 
     /**
-     * <p>
      * Getter for the field <code>allowedCategories</code>.
-     * </p>
      *
-     * @return the allowedCategories
+     * @return the list of CMS categories accessible under this license
      */
     public List<CMSCategory> getAllowedCategories() {
         return allowedCategories;
     }
 
     /**
-     * <p>
      * Setter for the field <code>allowedCategories</code>.
-     * </p>
      *
-     * @param allowedCategories the allowedCategories to set
+     * @param allowedCategories the list of CMS categories accessible under this license
      */
     public void setAllowedCategories(List<CMSCategory> allowedCategories) {
         this.allowedCategories = allowedCategories;
     }
 
     /**
-     * <p>
      * Getter for the field <code>allowedCmsTemplates</code>.
-     * </p>
      *
-     * @return the allowedCmsTemplates
+     * @return the list of CMS page templates accessible under this license
      */
     public List<CMSPageTemplate> getAllowedCmsTemplates() {
         return allowedCmsTemplates;
     }
 
     /**
-     * <p>
      * Setter for the field <code>allowedCmsTemplates</code>.
-     * </p>
      *
-     * @param allowedCmsTemplates the allowedCmsTemplates to set
+     * @param allowedCmsTemplates the list of CMS page templates accessible under this license
      */
     public void setAllowedCmsTemplates(List<CMSPageTemplate> allowedCmsTemplates) {
         this.allowedCmsTemplates = allowedCmsTemplates;
     }
 
     /**
-     * <p>
      * Getter for the field <code>allowedCrowdsourcingCampaigns</code>.
-     * </p>
      *
-     * @return the allowedCrowdsourcingCampaigns
+     * @return the list of crowdsourcing campaigns accessible under this license
      */
     public List<Campaign> getAllowedCrowdsourcingCampaigns() {
         return allowedCrowdsourcingCampaigns;
     }
 
     /**
-     * <p>
      * Setter for the field <code>allowedCrowdsourcingCampaigns</code>.
-     * </p>
      *
-     * @param allowedCrowdsourcingCampaigns the allowedCrowdsourcingCampaigns to set
+     * @param allowedCrowdsourcingCampaigns the list of crowdsourcing campaigns accessible under this license
      */
     public void setAllowedCrowdsourcingCampaigns(List<Campaign> allowedCrowdsourcingCampaigns) {
         this.allowedCrowdsourcingCampaigns = allowedCrowdsourcingCampaigns;
     }
 
-    /**
-     * @return the privilegesCopy
-     */
+    
     public Set<String> getPrivilegesCopy() {
         return privilegesCopy;
     }
 
-    /**
-     * @param privilegesCopy the privilegesCopy to set
-     */
+    
     public void setPrivilegesCopy(Set<String> privilegesCopy) {
         this.privilegesCopy = privilegesCopy;
     }
@@ -993,9 +927,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
         return disclaimerScope;
     }
 
-    /**
-     * @return the client
-     */
+    
     @Deprecated(since = "2026.01")
     public Long getClientId() {
         return Optional.ofNullable(client).map(ClientApplication::getId).orElse(null);
@@ -1006,9 +938,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
         return this.client;
     }
 
-    /**
-     * @param client the client to set
-     */
+    
     @Deprecated(since = "2026.01")
     public void setClient(ClientApplication client) {
         this.client = client;
@@ -1039,7 +969,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * a
+     * A.
      * 
      * @return The other non-null member of user/userGroup/ipRange/client
      * @should return correct object

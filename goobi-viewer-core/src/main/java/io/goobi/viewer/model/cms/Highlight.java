@@ -60,6 +60,10 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 
+/**
+ * Wraps a {@link HighlightData} entity to provide a view-layer object for a highlighted content
+ * item, including thumbnail generation, metadata loading, and multilingual label support.
+ */
 public class Highlight implements CMSMediaHolder, IPolyglott {
 
     private static final Logger logger = LogManager.getLogger(Highlight.class);
@@ -148,7 +152,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     }
 
     /**
-     * Check whether an image is set for this object
+     * Checks whether an image is set for this object.
      * 
      * @return true if the image is taken from the record identifier or if it is taken from a media item and the media item is set
      */
@@ -164,10 +168,10 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     }
 
     /**
-     * Get the URI to the image representing the object
+     * Gets the URI to the image representing the object.
      * 
-     * @param width
-     * @param height
+     * @param width desired image width in pixels
+     * @param height desired image height in pixels
      * @return true if {@link #hasImageURI()} returns true and, if the image is taken from the record identifier, the record identifier points to a
      *         records which has a representative image
      * @throws IndexUnreachableException
@@ -208,7 +212,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     }
 
     /**
-     * alias for {@link #isCurrent()}
+     * alias for {@link #isCurrent()}.
      * 
      * @return true if startTime is before now (or null) and endTime is after now (or null)
      */
@@ -226,9 +230,9 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     }
 
     /**
-     * Check if the object is active at the given date
+     * Checks if the object is active at the given date.
      * 
-     * @param date
+     * @param date the point in time to check activity against
      * @return true if startTime is before now (or null) and endTime is after now (or null)
      */
     public boolean isCurrent(LocalDateTime date) {
@@ -246,8 +250,8 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
 
     /**
      * Check if this object was only active before the given date.
-     * 
-     * @param date
+     *
+     * @param date the point in time to evaluate past status against
      * @return true if timeEnd is not null and before now
      */
     public boolean isPast(LocalDateTime date) {
@@ -266,8 +270,8 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
 
     /**
      * Check if this object is not currently active but will be active in the future of the given date.
-     * 
-     * @param date
+     *
+     * @param date the point in time to evaluate future status against
      * @return true if startTime is not null and after now and timeEnd is either null or after now
      */
     public boolean isFuture(LocalDateTime date) {
@@ -275,7 +279,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     }
 
     /**
-     * Check if this object may be active at all
+     * Checks if this object may be active at all.
      * 
      * @return true if data enabled; false otherwise
      */
@@ -288,13 +292,24 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
         return "Data: " + this.getData().toString();
     }
 
-    public List<Metadata> getMetadataList() throws IndexUnreachableException, PresentationException {
-        return getMetadataList(BeanUtils.getLocale());
+    // No checked exceptions declared: when called from JSF EL (#{highlight.metadataList}),
+    // any thrown exception would propagate as an ELException through
+    // CompositeComponentTagHandler.applyCompositeComponent(), which would leave a stale
+    // entry on Mojarra's CompositeComponentStackManager and eventually cause a
+    // StackOverflowError during the render phase. Returning an empty list on failure is
+    // the safe fallback — the widget simply renders nothing.
+    public List<Metadata> getMetadataList() {
+        try {
+            return getMetadataList(BeanUtils.getLocale());
+        } catch (IndexUnreachableException | PresentationException e) {
+            logger.warn("Could not load metadata list for highlight '{}': {}", this.data.getRecordIdentifier(), e.getMessage());
+            return Collections.emptyList();
+        }
     }
 
     /**
-     * 
-     * @param locale
+     *
+     * @param locale locale for which to retrieve the metadata list
      * @return List<Metadata>
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -309,9 +324,9 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     }
 
     /**
-     * 
-     * @param field
-     * @param locale
+     *
+     * @param field Solr field name to filter metadata entries by
+     * @param locale locale used for language-specific field suffixes and metadata retrieval
      * @return List<Metadata>
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -331,8 +346,8 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     }
 
     /**
-     * 
-     * @param locale
+     *
+     * @param locale locale used to load and populate the metadata entries
      * @return List<Metadata>
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -371,7 +386,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     }
 
     /**
-     * @param solrDoc
+     * @param solrDoc Solr document from which the record title is extracted
      * @return TranslatedText
      */
     private static TranslatedText createRecordTitle(SolrDocument solrDoc) {
@@ -382,7 +397,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     }
 
     /**
-     * @param label
+     * @param label metadata value containing the record title, possibly multi-language
      * @return TranslatedText
      */
     private static TranslatedText createRecordTitle(IMetadataValue label) {
@@ -396,7 +411,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     }
 
     /**
-     * @param solrDoc
+     * @param solrDoc Solr document used to build the struct element
      * @param index Metadata view index
      * @return MetadataElement
      * @throws DAOException
@@ -411,8 +426,8 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     }
 
     /**
-     * 
-     * @param recordPi
+     *
+     * @param recordPi persistent identifier of the record to load
      * @return Loaded SolrDocument
      * @throws IndexUnreachableException
      * @throws PresentationException

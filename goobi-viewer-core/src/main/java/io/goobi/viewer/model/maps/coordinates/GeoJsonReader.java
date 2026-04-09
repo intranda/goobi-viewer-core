@@ -31,6 +31,10 @@ import mil.nga.sf.geojson.FeatureConverter;
 import mil.nga.sf.geojson.Geometry;
 import mil.nga.sf.geojson.GeometryCollection;
 
+/**
+ * {@link ICoordinateReader} implementation that parses GeoJSON strings,
+ * supporting plain geometry objects, feature objects, and feature collections.
+ */
 public class GeoJsonReader implements ICoordinateReader {
 
     @Override

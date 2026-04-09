@@ -52,13 +52,17 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignLogMessage;
 import io.goobi.viewer.model.log.LogMessage;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
- * Request filter to ensure only users with sufficient rights may access campaign resources.
+ * REST resource for retrieving activity logs and progress statistics for crowdsourcing campaign items.
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
+@Hidden
 @Path("/crowdsourcing/campaigns/{campaignId}")
 @ViewerRestServiceBinding
 @CrowdsourcingCampaignBinding
@@ -75,23 +79,22 @@ public class CampaignItemLogResource {
     private final Long campaignId;
 
     /**
-     * <p>
-     * Constructor for CampaignItemResource.
-     * </p>
-     * 
-     * @param servletRequest
-     * @param campaignId
+     * Creates a new CampaignItemResource instance.
+     *
+     * @param servletRequest HTTP servlet request
+     * @param campaignId identifier of the crowdsourcing campaign
      */
-    public CampaignItemLogResource(@Context HttpServletRequest servletRequest, @PathParam("campaignId") Long campaignId) {
+    public CampaignItemLogResource(@Context HttpServletRequest servletRequest,
+            @Parameter(description = "Crowdsourcing campaign identifier") @PathParam("campaignId") Long campaignId) {
         this.campaignId = campaignId;
         servletRequest.setAttribute(CrowdsourcingCampaignFilter.CAMPAIGN_ID_REQUEST_ATTRIBUTE, campaignId);
     }
 
     /**
      * 
-     * @param servletRequest
-     * @param urls
-     * @param campaignId
+     * @param servletRequest HTTP servlet request
+     * @param urls API URL manager for path construction
+     * @param campaignId identifier of the crowdsourcing campaign
      */
     public CampaignItemLogResource(HttpServletRequest servletRequest, AbstractApiUrlManager urls, @PathParam("campaignId") Long campaignId) {
         this.urls = urls;
@@ -103,7 +106,13 @@ public class CampaignItemLogResource {
     @Path("/{pi}/log")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public List<LogMessage> getLogForManifest(@PathParam("pi") String pi, @Context HttpServletRequest servletRequest)
+    @Operation(summary = "Get the log messages for a record within a crowdsourcing campaign", tags = { "crowdsourcing" })
+    @ApiResponse(responseCode = "200", description = "List of log messages for the record")
+    @ApiResponse(responseCode = "404", description = "Campaign or record not found")
+    @ApiResponse(responseCode = "500", description = "Database error")
+    public List<LogMessage> getLogForManifest(
+            @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
+            @Context HttpServletRequest servletRequest)
             throws DAOException, ContentNotFoundException {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
         if (campaign != null) {
@@ -121,7 +130,14 @@ public class CampaignItemLogResource {
     @Path("/{pi}/log")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public LogMessage addMessage(LogMessage message, @PathParam("pi") String pi, @Context HttpServletRequest servletRequest)
+    @Operation(summary = "Add a log message to a record within a crowdsourcing campaign", tags = { "crowdsourcing" })
+    @ApiResponse(responseCode = "200", description = "Log message created and returned")
+    @ApiResponse(responseCode = "400", description = "Invalid message body")
+    @ApiResponse(responseCode = "404", description = "Campaign or record not found")
+    @ApiResponse(responseCode = "500", description = "Database error")
+    public LogMessage addMessage(LogMessage message,
+            @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
+            @Context HttpServletRequest servletRequest)
             throws DAOException, ContentNotFoundException {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
         if (campaign != null) {
@@ -136,7 +152,14 @@ public class CampaignItemLogResource {
     @Path("/{pi}/log/{id}")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public void deleteMessage(@PathParam("pi") String pi, @PathParam("id") Long messageId) throws DAOException, ContentNotFoundException {
+    @Operation(summary = "Delete a log message from a crowdsourcing campaign record", tags = { "crowdsourcing" })
+    @ApiResponse(responseCode = "200", description = "Message deleted successfully")
+    @ApiResponse(responseCode = "404", description = "Message, campaign, or record not found")
+    @ApiResponse(responseCode = "500", description = "Database error")
+    public void deleteMessage(
+            @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
+            @Parameter(description = "Identifier of the log message") @PathParam("id") Long messageId)
+            throws DAOException, ContentNotFoundException {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
         if (campaign != null) {
             campaign.deleteLogMessage(messageId);
@@ -150,7 +173,14 @@ public class CampaignItemLogResource {
     @Path("/{pi}/log/{id}")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public LogMessage getMessage(@PathParam("pi") String pi, @PathParam("id") Long messageId, @Context HttpServletRequest servletRequest)
+    @Operation(summary = "Get a specific log message by id", tags = { "crowdsourcing" })
+    @ApiResponse(responseCode = "200", description = "Log message")
+    @ApiResponse(responseCode = "404", description = "Message, campaign, or record not found")
+    @ApiResponse(responseCode = "500", description = "Database error")
+    public LogMessage getMessage(
+            @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
+            @Parameter(description = "Identifier of the log message") @PathParam("id") Long messageId,
+            @Context HttpServletRequest servletRequest)
             throws DAOException, ContentNotFoundException {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
         if (campaign != null) {

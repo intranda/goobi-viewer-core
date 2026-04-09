@@ -12,6 +12,9 @@
 	<module name="SuppressionCommentFilter"/>
     <module name="JavadocMethod">
       <property name="accessModifiers" value="public"/>
+      <!-- @param and @return tags are optional; meaningful descriptions are preferred over trivial stubs -->
+      <property name="allowMissingParamTags" value="true"/>
+      <property name="allowMissingReturnTag" value="true"/>
     </module>
     <module name="JavadocStyle">
       <property name="severity" value="info"/>

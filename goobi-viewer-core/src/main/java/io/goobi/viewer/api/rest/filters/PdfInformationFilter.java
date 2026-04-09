@@ -38,9 +38,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfInfo
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
- * <p>
- * Response filter for PDF info requests. Translates the DocStruct name of the information request
- * </p>
+ * JAX-RS response filter that enriches PDF information responses with viewer-specific metadata.
  */
 @Provider
 @ContentServerPdfInfoBinding

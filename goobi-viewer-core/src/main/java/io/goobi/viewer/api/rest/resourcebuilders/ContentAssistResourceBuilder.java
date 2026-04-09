@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -37,25 +38,22 @@ import io.goobi.viewer.model.search.SearchHelper;
 /**
  * Manages contentAssist requests by returning lists of suggested values from partial input.
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class ContentAssistResourceBuilder {
 
     /**
-     * <p>
      * getCollections.
-     * </p>
      *
-     * @param solrField a {@link java.lang.String} object.
-     * @param inputString a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
+     * @param solrField Solr facet field to query for collection values
+     * @param inputString partial input to filter suggestions, or "-" for all
+     * @return a list of collection name strings matching the given input, filtered to exclude already configured CMS collections
      * @throws IllegalRequestException if the solrField doesn't exist in the index
      * @throws IndexUnreachableException If an error occurred communicating with the SOLR index
      */
 
     public List<String> getCollections(String solrField, final String inputString)
-            throws IllegalRequestException, IndexUnreachableException {
+            throws IllegalRequestException, IndexUnreachableException, ContentNotFoundException {
         String query = "DOCTYPE:DOCSTRCT AND (ISANCHOR:true OR ISWORK:true)";
         try {
             List<String> facets = SearchHelper.getFacetValues(query, solrField, "-".equals(inputString) ? "" : inputString, 0, null);
@@ -74,7 +72,8 @@ public class ContentAssistResourceBuilder {
                     .collect(Collectors.toList());
         } catch (PresentationException e) {
             if (e.getMessage() != null && e.getMessage().toLowerCase().contains("bad query")) {
-                throw new IllegalRequestException("Not a valid SOLR field: " + solrField);
+                // Field name is syntactically valid but doesn't exist in the Solr schema → 404
+                throw new ContentNotFoundException("Not a valid SOLR field: " + solrField);
             }
             throw new IndexUnreachableException("Internal error in index:" + e.toString());
         }
@@ -83,9 +82,9 @@ public class ContentAssistResourceBuilder {
 
     /**
      *
-     * @param prefix
-     * @param facet
-     * @param splittingChar
+     * @param prefix the prefix accumulated from parent hierarchy levels
+     * @param facet the facet value to split into hierarchy parts
+     * @param splittingChar the character separating hierarchy levels
      * @return List<String>
      */
     private List<String> getHierarchy(String prefix, String facet, String splittingChar) {

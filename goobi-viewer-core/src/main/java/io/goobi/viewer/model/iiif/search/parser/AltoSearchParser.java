@@ -37,22 +37,18 @@ import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 
 /**
- * <p>
- * AltoSearchParser class.
- * </p>
+ * IIIF Search API parser that searches for matches within ALTO full-text documents.
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class AltoSearchParser extends AbstractSearchParser {
 
     /**
-     * <p>
      * findWordMatches.
-     * </p>
      *
-     * @param words a {@link java.util.List} object.
-     * @param regex a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
+     * @param words candidate words to match against
+     * @param regex regular expression to test each word's content
+     * @return a list of matched word groups, where each group is a consecutive sequence of matching ALTO words
      */
     public List<List<Word>> findWordMatches(List<Word> words, String regex) {
         ListIterator<Word> iterator = words.listIterator();
@@ -77,13 +73,11 @@ public class AltoSearchParser extends AbstractSearchParser {
     }
 
     /**
-     * <p>
      * findLineMatches.
-     * </p>
      *
-     * @param lines a {@link java.util.List} object.
-     * @param regex a {@link java.lang.String} object.
-     * @return a {@link java.util.Map} object.
+     * @param lines ALTO lines to search through
+     * @param regex regular expression applied to concatenated line text
+     * @return a map of character-index ranges to the ALTO lines containing the match
      */
     public Map<Range<Integer>, List<Line>> findLineMatches(List<Line> lines, String regex) {
         String text = getText(lines);
@@ -101,36 +95,30 @@ public class AltoSearchParser extends AbstractSearchParser {
     }
 
     /**
-     * <p>
      * getText.
-     * </p>
      *
-     * @param lines a {@link java.util.List} object.
-     * @return a {@link java.lang.String} object.
+     * @param lines ALTO lines whose content to concatenate
+     * @return the concatenated text content of the given ALTO lines, joined by spaces
      */
     public String getText(List<Line> lines) {
         return lines.stream().map(Line::getContent).collect(Collectors.joining(" "));
     }
 
     /**
-     * <p>
      * getLines.
-     * </p>
      *
-     * @param doc a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument} object.
-     * @return a {@link java.util.List} object.
+     * @param doc ALTO document to extract lines from
+     * @return a list of all ALTO text lines contained in the given document
      */
     public List<Line> getLines(AltoDocument doc) {
         return doc.getAllPagesAsList().stream().flatMap(p -> p.getAllLinesAsList().stream()).toList();
     }
 
     /**
-     * <p>
      * getWords.
-     * </p>
      *
-     * @param doc a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument} object.
-     * @return a {@link java.util.List} object.
+     * @param doc ALTO document to extract words from
+     * @return a list of all ALTO word elements contained in the given document
      */
     public List<Word> getWords(AltoDocument doc) {
         return doc.getAllPagesAsList()
@@ -140,14 +128,12 @@ public class AltoSearchParser extends AbstractSearchParser {
     }
 
     /**
-     * <p>
      * getContainingLines.
-     * </p>
      *
-     * @param indexStart a int.
-     * @param indexEnd a int.
-     * @param allLines a {@link java.util.List} object.
-     * @return a {@link java.util.List} object.
+     * @param allLines all ALTO lines with their content
+     * @param indexStart start character index of the match
+     * @param indexEnd end character index of the match
+     * @return a list of ALTO lines whose character range overlaps with the given match positions
      */
     public List<Line> getContainingLines(List<Line> allLines, int indexStart, int indexEnd) {
         List<Line> containingLines = new ArrayList<>();
@@ -163,12 +149,10 @@ public class AltoSearchParser extends AbstractSearchParser {
     }
 
     /**
-     * <p>
      * getLineStartIndex.
-     * </p>
      *
-     * @param allLines a {@link java.util.List} object.
-     * @param line a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.Line} object.
+     * @param allLines all ALTO lines providing character offsets
+     * @param line target line whose start index is sought
      * @return a int.
      */
     public int getLineStartIndex(List<Line> allLines, Line line) {
@@ -184,12 +168,10 @@ public class AltoSearchParser extends AbstractSearchParser {
     }
 
     /**
-     * <p>
      * getLineEndIndex.
-     * </p>
      *
-     * @param allLines a {@link java.util.List} object.
-     * @param line a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.Line} object.
+     * @param allLines all ALTO lines providing character offsets
+     * @param line target line whose end index is sought
      * @return a int.
      */
     public int getLineEndIndex(List<Line> allLines, Line line) {
@@ -205,13 +187,11 @@ public class AltoSearchParser extends AbstractSearchParser {
     }
 
     /**
-     * <p>
      * getPrecedingText.
-     * </p>
      *
-     * @param w a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word} object.
-     * @param maxLength a int.
-     * @return a {@link java.lang.String} object.
+     * @param w word whose preceding siblings to collect
+     * @param maxLength maximum character count of returned text
+     * @return the text content of sibling words preceding the given word, up to maxLength characters
      */
     public String getPrecedingText(Word w, int maxLength) {
 
@@ -230,13 +210,11 @@ public class AltoSearchParser extends AbstractSearchParser {
     }
 
     /**
-     * <p>
      * getSucceedingText.
-     * </p>
      *
-     * @param w a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word} object.
-     * @param maxLength a int.
-     * @return a {@link java.lang.String} object.
+     * @param w word whose following siblings to collect
+     * @param maxLength maximum character count of returned text
+     * @return the text content of sibling words following the given word, up to maxLength characters
      */
     public String getSucceedingText(Word w, int maxLength) {
 

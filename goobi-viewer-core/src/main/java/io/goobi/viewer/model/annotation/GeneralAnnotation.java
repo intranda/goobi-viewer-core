@@ -24,6 +24,10 @@ package io.goobi.viewer.model.annotation;
 import de.intranda.api.annotation.AbstractAnnotation;
 import de.intranda.api.annotation.wa.WebAnnotation;
 
+/**
+ * A generic, purpose-neutral {@link PersistentAnnotation} that can be used wherever no
+ * specialised annotation subtype applies.
+ */
 public class GeneralAnnotation extends PersistentAnnotation {
 
     public GeneralAnnotation() {

@@ -68,9 +68,7 @@ public class UserRole implements Serializable {
     }
 
     /**
-     * <p>
-     * Constructor for UserRole.
-     * </p>
+     * Creates a new UserRole instance.
      *
      * @param userGroup a {@link io.goobi.viewer.model.security.user.UserGroup} object.
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
@@ -82,11 +80,6 @@ public class UserRole implements Serializable {
         this.role = role;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -97,11 +90,6 @@ public class UserRole implements Serializable {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -133,88 +121,72 @@ public class UserRole implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
-     * @return the id
+     * @return the database identifier of this user role assignment
      */
     public Long getId() {
         return id;
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
-     * @param id the id to set
+     * @param id the database identifier to set
      */
     public void setId(Long id) {
         this.id = id;
     }
 
     /**
-     * <p>
      * Getter for the field <code>userGroup</code>.
-     * </p>
      *
-     * @return the userGroup
+     * @return the user group this role assignment belongs to
      */
     public UserGroup getUserGroup() {
         return userGroup;
     }
 
     /**
-     * <p>
      * Setter for the field <code>userGroup</code>.
-     * </p>
      *
-     * @param userGroup the userGroup to set
+     * @param userGroup the user group this role assignment belongs to
      */
     public void setUserGroup(UserGroup userGroup) {
         this.userGroup = userGroup;
     }
 
     /**
-     * <p>
      * Getter for the field <code>user</code>.
-     * </p>
      *
-     * @return the user
+     * @return the user this role assignment belongs to
      */
     public User getUser() {
         return user;
     }
 
     /**
-     * <p>
      * Setter for the field <code>user</code>.
-     * </p>
      *
-     * @param user the user to set
+     * @param user the user this role assignment belongs to
      */
     public void setUser(User user) {
         this.user = user;
     }
 
     /**
-     * <p>
      * Getter for the field <code>role</code>.
-     * </p>
      *
-     * @return the role
+     * @return the role assigned to the user within the group
      */
     public Role getRole() {
         return role;
     }
 
     /**
-     * <p>
      * Setter for the field <code>role</code>.
-     * </p>
      *
-     * @param role the role to set
+     * @param role the role assigned to the user within the group
      */
     public void setRole(Role role) {
         this.role = role;

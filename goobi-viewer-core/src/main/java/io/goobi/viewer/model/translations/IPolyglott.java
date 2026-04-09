@@ -28,18 +28,17 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
- * Interface for objects containing translations for a set of languages. Used to construct tab panels to switch between languages
+ * Interface for objects containing translations for a set of languages. Used to construct tab panels to switch between languages.
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 public interface IPolyglott {
 
     /**
      * If this returns true, an associated language tab should have the 'already-translated' class, otherwise the '-partly-translated' class unless
-     * {@link #isEmpty(Locale)} also returns true
+     * {@link #isEmpty(Locale)} also returns true.
      *
-     * @param locale
+     * @param locale the locale to check translation completeness for
      * @return true if {@link #isValid(Locale)} returns true for the given locale and all fields contain a value which have a value in the default
      *         locale. For the default locale, {@link #isComplete(Locale)} and {@link #isValid(Locale)} are identical. For implementations with only
      *         one field, both methods are also always identical
@@ -47,17 +46,17 @@ public interface IPolyglott {
     public boolean isComplete(Locale locale);
 
     /**
-     * Only meaningful for the default language for which all required fields must be filled
+     * Only meaningful for the default language for which all required fields must be filled.
      *
-     * @param locale
+     * @param locale the locale to validate required fields for
      * @return true if all required fields contain a value in the given locale
      */
     public boolean isValid(Locale locale);
 
     /**
-     * If this returns true, an associated language tab should have neither the 'already-translated' nor the '-partly-translated' class
+     * If this returns true, an associated language tab should have neither the 'already-translated' nor the '-partly-translated' class.
      *
-     * @param locale
+     * @param locale the locale to check for empty fields
      * @return true if no fields are filled for the given locale
      */
     public boolean isEmpty(Locale locale);
@@ -69,16 +68,16 @@ public interface IPolyglott {
     public Locale getSelectedLocale();
 
     /**
-     * Set the locale to use for display and editing
-     * 
-     * @param locale
+     * Sets the locale to use for display and editing.
+     *
+     * @param locale the locale to select
      */
     public void setSelectedLocale(Locale locale);
 
     /**
      * Convenience method. Calls {@link #setSelectedLocale(Locale)} with the {@link Locale} given by the passed argument
      *
-     * @param language
+     * @param language IETF language tag string (e.g. "de", "en")
      */
     public default void setSelectedLocale(String language) {
         Locale locale = Locale.forLanguageTag(language);
@@ -99,7 +98,7 @@ public interface IPolyglott {
 
     /**
      *
-     * @param locale
+     * @param locale the locale to compare against the currently selected locale
      * @return return true if the currently selected locale is the given locale
      */
     public default boolean isSelected(Locale locale) {
@@ -116,7 +115,7 @@ public interface IPolyglott {
     }
 
     /**
-     * Get a list of all locales configured in the faces-configuration file
+     * Gets a list of all locales configured in the faces-configuration file.
      *
      * @return Collection<Locale>
      */

@@ -64,10 +64,13 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import jakarta.ws.rs.BadRequestException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.GET;
@@ -81,8 +84,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Path(RECORDS_FILES_IMAGE)
 @ContentServerBinding
@@ -95,20 +97,22 @@ public class RecordsFilesImageResource extends ImageResource {
     private String filename;
 
     /**
-     * @param context
-     * @param request
-     * @param response
-     * @param urls
-     * @param pi
-     * @param filename
-     * @param cacheManager
+     * @param context JAX-RS container request context
+     * @param request incoming HTTP servlet request
+     * @param response outgoing HTTP servlet response
+     * @param urls API URL manager for building resource URIs
+     * @param pi persistent identifier of the record
+     * @param filename filename of the image file
+     * @param cacheManager content server cache manager
      */
     public RecordsFilesImageResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
             @Context ApiUrls urls, @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description = "Filename of the image") @PathParam("filename") String filename,
             @Context ContentServerCacheManager cacheManager) {
-        super(context, request, response, pi, filename, cacheManager);
+        // Validate PI before passing to ImageResource which builds a file:// URI from the
+        // pi (as folder) and filename; illegal URI characters cause ContentLibException (HTTP 500).
+        super(context, request, response, requireValidPi(pi), filename, cacheManager);
         this.pi = pi;
         this.filename = filename;
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
@@ -158,6 +162,9 @@ public class RecordsFilesImageResource extends ImageResource {
     @ContentServerPdfBinding
     @RecordFileDownloadBinding
     @Operation(tags = { "records" }, summary = "Returns the image for the given filename as PDF")
+    // Access-denied and error responses are returned as application/json even though the declared content type is application/pdf
+    @ApiResponse(responseCode = "403", description = "Access denied or record not found in index")
+    @ApiResponse(responseCode = "404", description = "Image or record not found")
     @Override
     public StreamingOutput getPdf() throws ContentLibException {
         String pi = request.getAttribute("pi").toString();
@@ -249,5 +256,21 @@ public class RecordsFilesImageResource extends ImageResource {
         }
 
         return new ImageInformation3(info);
+    }
+
+    /**
+     * Validates the PI and returns it unchanged. Throws {@link BadRequestException} (HTTP 400)
+     * if the PI contains characters that are illegal in java.net.URI paths or Solr queries.
+     *
+     * <p>Declared static so it can be invoked inside the super() constructor call.
+     *
+     * @param pi persistent identifier to validate
+     * @return the unchanged pi if valid
+     */
+    static String requireValidPi(String pi) {
+        if (!PIValidator.validatePi(pi)) {
+            throw new BadRequestException("Invalid record identifier: " + pi);
+        }
+        return pi;
     }
 }

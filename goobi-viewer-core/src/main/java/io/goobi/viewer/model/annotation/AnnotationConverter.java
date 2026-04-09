@@ -65,8 +65,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.annotation.comments.Comment;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class AnnotationConverter {
 
@@ -97,10 +96,10 @@ public class AnnotationConverter {
     }
 
     /**
-     * Get the annotation target as an WebAnnotation {@link de.intranda.api.annotation.IResource} java object
-     * 
-     * @param anno
-     * @return a {@link de.intranda.api.annotation.IResource} object.
+     * Gets the annotation target as an WebAnnotation {@link de.intranda.api.annotation.IResource} java object.
+     *
+     * @param anno the annotation whose target is to be resolved
+     * @return the annotation target as a WebAnnotation resource, or null if no target is set
      * @throws java.io.IOException if any.
      */
     public IResource getTargetAsResource(PersistentAnnotation anno) throws IOException {
@@ -148,10 +147,10 @@ public class AnnotationConverter {
     }
 
     /**
-     * Get the annotation target as an OpenAnnotation {@link de.intranda.api.annotation.IResource} java object
+     * Gets the annotation target as an OpenAnnotation {@link de.intranda.api.annotation.IResource} java object.
      *
-     * @param anno
-     * @return a {@link de.intranda.api.annotation.IResource} object.
+     * @param anno the annotation whose target is to be resolved
+     * @return the annotation target as an OpenAnnotation resource, or null if no target is set
      * @throws java.io.IOException if any.
      */
     public IResource getTargetAsOAResource(PersistentAnnotation anno) throws IOException {
@@ -169,10 +168,10 @@ public class AnnotationConverter {
     }
 
     /**
-     * Get the
+     * Gets the body of the given annotation as a resource.
      *
-     * @param anno
-     * @return a {@link de.intranda.api.annotation.IResource} object.
+     * @param anno the annotation whose body is to be resolved
+     * @return the annotation body as a resource, or null if no body is set
      * @throws java.io.IOException if any.
      */
     public IResource getBodyAsResource(PersistentAnnotation anno) throws IOException {
@@ -189,12 +188,10 @@ public class AnnotationConverter {
     }
 
     /**
-     * <p>
      * getBodyAsOAResource.
-     * </p>
-     * 
-     * @param anno
-     * @return a {@link de.intranda.api.annotation.IResource} object.
+     *
+     * @param anno the annotation whose body is to be resolved as OA resource
+     * @return the annotation body as an OpenAnnotation resource, or null if no body is set
      * @throws java.io.IOException if any.
      */
     public IResource getBodyAsOAResource(PersistentAnnotation anno) throws IOException {
@@ -224,12 +221,11 @@ public class AnnotationConverter {
     }
 
     /**
-     * <p>
      * getBodyAsOAResource.
-     * </p>
-     * 
-     * @param anno
-     * @return a {@link de.intranda.api.annotation.IResource} object.
+     *
+     * @param bodyString the annotation body JSON string to parse as a textual resource
+     * @param mapper Jackson ObjectMapper used for JSON deserialization
+     * @return the annotation body as an OpenAnnotation textual resource
      * @throws java.io.IOException if any.
      */
     private IResource getBodyAsTextualResource(String bodyString, ObjectMapper mapper) throws IOException {
@@ -247,10 +243,10 @@ public class AnnotationConverter {
     }
 
     /**
-     * Get the annotation as an {@link de.intranda.api.annotation.wa.WebAnnotation} java object
+     * Gets the annotation as an {@link de.intranda.api.annotation.wa.WebAnnotation} java object.
      *
-     * @param anno
-     * @return a {@link de.intranda.api.annotation.wa.WebAnnotation} object.
+     * @param anno the persistent annotation to convert
+     * @return the WebAnnotation representation of the given persistent annotation
      * @throws DAOException
      */
     public WebAnnotation getAsWebAnnotation(PersistentAnnotation anno) {
@@ -286,10 +282,10 @@ public class AnnotationConverter {
     }
 
     /**
-     * Get the annotation as an {@link de.intranda.api.annotation.oa.OpenAnnotation} java object
+     * Gets the annotation as an {@link de.intranda.api.annotation.oa.OpenAnnotation} java object.
      *
-     * @param anno
-     * @return a {@link de.intranda.api.annotation.oa.OpenAnnotation} object.
+     * @param anno persistent annotation to convert to an OpenAnnotation object
+     * @return the OpenAnnotation representation of the given persistent annotation
      * @throws com.fasterxml.jackson.core.JsonParseException if any.
      * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
      * @throws java.io.IOException if any.
@@ -309,8 +305,8 @@ public class AnnotationConverter {
     }
 
     /**
-     * 
-     * @param anno
+     *
+     * @param anno the web annotation to convert
      * @return {@link PersistentAnnotation}
      */
     public PersistentAnnotation getAsPersistentAnnotation(WebAnnotation anno) {
@@ -327,7 +323,7 @@ public class AnnotationConverter {
     }
 
     /**
-     * @param target
+     * @param target annotation target resource to extract PI from
      * @return Optional<String>
      */
     private Optional<String> getPI(IResource target) {
@@ -367,7 +363,7 @@ public class AnnotationConverter {
     }
 
     /**
-     * @param target
+     * @param target annotation target resource to extract page number from
      * @return Optional<Integer>
      */
     private Optional<Integer> getPageNo(IResource target) {
@@ -382,7 +378,7 @@ public class AnnotationConverter {
     }
 
     /**
-     * @param anno
+     * @param anno the web annotation whose persistence ID is to be extracted
      * @return anno.id if exists; null otherwise
      */
     private Long getPersistenceId(WebAnnotation anno) {

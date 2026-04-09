@@ -54,11 +54,11 @@ import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.ext.Provider;
 
 /**
+ * JAX-RS request filter that evaluates access rights for IIIF Presentation resources.
  * <p>
- * Checks requests for access conditions. Requests must have set the request attribute {@link FilterTools#ATTRIBUTE_PI} to appropriate values for the
- * filter to work properly. Additionally {@link FilterTools#ATTRIBUTE_LOGID} and {@link FilterTools#ATTRIBUTE_FILENAME} may be set in the request to
- * check access to specific files or child documents
- * </p>
+ * Requests must have set the request attribute {@link FilterTools#ATTRIBUTE_PI} to appropriate values for the filter to work properly. Additionally
+ * {@link FilterTools#ATTRIBUTE_LOGID} and {@link FilterTools#ATTRIBUTE_FILENAME} may be set in the request to check access to specific files or child
+ * documents.
  */
 @Provider
 @AccessRightsBinding({})
@@ -133,10 +133,11 @@ public class AccessRightsRequestFilter implements ContainerRequestFilter {
     }
 
     /**
-     * @param request
-     * @param pi
-     * @param logid
-     * @param inContentFileName
+     * @param request HTTP servlet request
+     * @param pi persistent identifier of the record
+     * @param logid logical structure ID of the element
+     * @param inContentFileName content file name to check access for
+     * @param pageNo 1-based physical page order, or null if not page-specific
      * @throws ServiceNotAllowedException
      * @throws IndexUnreachableException
      */
@@ -187,9 +188,9 @@ public class AccessRightsRequestFilter implements ContainerRequestFilter {
     }
 
     /**
-     * Read required privilege from request and return it as String array. If the attribute doesn't exist, return an empty array
+     * Reads required privilege from request and return it as String array. If the attribute doesn't exist, return an empty array
      *
-     * @param request
+     * @param request HTTP servlet request to read required privilege from
      * @return Required privileges as {@link String}[]
      */
     public String[] getRequiredPrivileges(HttpServletRequest request) {

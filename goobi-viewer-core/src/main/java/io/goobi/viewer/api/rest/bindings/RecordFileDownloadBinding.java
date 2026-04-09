@@ -1,4 +1,4 @@
-/**
+/*
  * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
  *
  * Visit these websites for more information.
@@ -21,11 +21,9 @@ import java.lang.annotation.RetentionPolicy;
 import jakarta.ws.rs.NameBinding;
 
 /**
- * <p>
  * Binding for downloading files belonging to a record.
- * </p>
  *
- * @author florian
+ * @author Florian Alpers
  */
 @NameBinding
 @Retention(RetentionPolicy.RUNTIME)

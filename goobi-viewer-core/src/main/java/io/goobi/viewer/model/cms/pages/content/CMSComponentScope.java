@@ -21,18 +21,27 @@
  */
 package io.goobi.viewer.model.cms.pages.content;
 
+/**
+ * Defines the rendering context in which a CMS component is visible.
+ *
+ * <ul>
+ *   <li>{@code PREVIEW} – shown in an embedded preview of the page within another page</li>
+ *   <li>{@code PAGEHEADER} – displayed in the page header area</li>
+ *   <li>{@code PAGEVIEW} – shown when the page is displayed directly (full view)</li>
+ * </ul>
+ */
 public enum CMSComponentScope {
 
     /**
-     * Component is visible in a preview of its owning page embedded within another page
+     * Component is visible in a preview of its owning page embedded within another page.
      */
     PREVIEW,
     /**
-     * Component is displayed in the header of the page
+     * Component is displayed in the header of the page.
      */
     PAGEHEADER,
     /**
-     * Component is visible when its owning page is displayed directly
+     * Component is visible when its owning page is displayed directly.
      */
     PAGEVIEW;
 }

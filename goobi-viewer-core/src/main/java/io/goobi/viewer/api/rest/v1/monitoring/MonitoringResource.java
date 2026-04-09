@@ -43,6 +43,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.solr.SolrTools;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -53,6 +54,9 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 
+/**
+ * REST resource providing application health checks and version information for monitoring systems.
+ */
 @Path(ApiUrls.MONITORING)
 public class MonitoringResource {
 
@@ -72,6 +76,8 @@ public class MonitoringResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Checks and reports the availability of relevant data providing services", tags = { "monitoring" })
+    @ApiResponse(responseCode = "200",
+            description = "Status report for all monitored services (Solr, database, message queue). Service errors appear in the response body")
     public MonitoringStatus checkServices() {
         logger.trace("checkServices");
         MonitoringStatus ret = new MonitoringStatus();
@@ -148,8 +154,8 @@ public class MonitoringResource {
 
     /**
      * 
-     * @param versionMap
-     * @param versionJson
+     * @param versionMap map to populate with version and hash values
+     * @param versionJson JSON string containing version information
      */
     private static void setVersionValues(Map<String, String> versionMap, String versionJson) {
         versionMap.put("version", JsonTools.getVersion(versionJson));

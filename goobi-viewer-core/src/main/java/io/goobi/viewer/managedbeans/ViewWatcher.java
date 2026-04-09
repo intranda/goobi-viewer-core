@@ -34,8 +34,7 @@ import io.goobi.viewer.controller.Procedure;
 /**
  * View scoped bean to detect leaving a view and perform some action. The action may take no arguments and procudes not outcome
  * 
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Named
 @ViewScoped
@@ -44,14 +43,14 @@ public class ViewWatcher implements Serializable {
     private static final long serialVersionUID = 1488705096792424026L;
 
     /**
-     * The {@link Procedure} to invoke when leaving the view
+     * The {@link Procedure} to invoke when leaving the view.
      */
     private transient Optional<Procedure> onLeavePage = Optional.empty();
 
     /**
-     * Pass a {@link Procedure} which is to be invoced when leaving the page, more specificall on @PreDestroy of this bean
+     * Pass a {@link Procedure} which is to be invoced when leaving the page, more specificall on @PreDestroy of this bean.
      * 
-     * @param onLeavePage
+     * @param onLeavePage procedure to invoke when the view is left
      */
     public void onLeavePage(Procedure onLeavePage) {
         this.onLeavePage = Optional.ofNullable(onLeavePage);

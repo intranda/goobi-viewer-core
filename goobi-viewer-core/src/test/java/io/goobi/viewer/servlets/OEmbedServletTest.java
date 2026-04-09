@@ -63,4 +63,13 @@ class OEmbedServletTest extends AbstractSolrEnabledTest {
     void parseUrl_shouldReturnNullIfUrlContainsNoPi() throws Exception {
         Assertions.assertNull(OEmbedServlet.parseUrl("/image/"));
     }
+
+    /**
+     * @see OEmbedServlet#parseUrl(String)
+     * @verifies return null if page number is not an integer
+     */
+    @Test
+    void parseUrl_shouldReturnNullIfPageNumberIsNotAnInteger() throws Exception {
+        Assertions.assertNull(OEmbedServlet.parseUrl("/image/PPN517154005/DC:some.collection/"));
+    }
 }

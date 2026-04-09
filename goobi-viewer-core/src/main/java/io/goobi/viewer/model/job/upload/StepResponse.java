@@ -28,6 +28,11 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+/**
+ * Represents a single workflow step returned as part of a {@link ProcessStatusResponse} from the
+ * Goobi workflow REST API, carrying the step title, execution status, assigned user, start/end
+ * dates, and position order.
+ */
 @XmlRootElement
 
 @JsonPropertyOrder({ "title", "status", "id", "user", "startDate", "endDate", "status", "order" })
@@ -49,100 +54,72 @@ public class StepResponse {
 
     private int order;
 
-    /**
-     * @return the startDate
-     */
+    
     public Date getStartDate() {
         return startDate;
     }
 
-    /**
-     * @param startDate the startDate to set
-     */
+    
     public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
 
-    /**
-     * @return the endDate
-     */
+    
     public Date getEndDate() {
         return endDate;
     }
 
-    /**
-     * @param endDate the endDate to set
-     */
+    
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
     }
 
-    /**
-     * @return the user
-     */
+    
     public String getUser() {
         return user;
     }
 
-    /**
-     * @param user the user to set
-     */
+    
     public void setUser(String user) {
         this.user = user;
     }
 
-    /**
-     * @return the status
-     */
+    
     public String getStatus() {
         return status;
     }
 
-    /**
-     * @param status the status to set
-     */
+    
     public void setStatus(String status) {
         this.status = status;
     }
 
-    /**
-     * @return the id
-     */
+    
     public int getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
+    
     public void setId(int id) {
         this.id = id;
     }
 
-    /**
-     * @return the title
-     */
+    
     public String getTitle() {
         return title;
     }
 
-    /**
-     * @param title the title to set
-     */
+    
     public void setTitle(String title) {
         this.title = title;
     }
 
-    /**
-     * @return the order
-     */
+    
     public int getOrder() {
         return order;
     }
 
-    /**
-     * @param order the order to set
-     */
+    
     public void setOrder(int order) {
         this.order = order;
     }

@@ -49,6 +49,10 @@ import io.goobi.viewer.model.cms.pages.content.types.CMSSliderContent;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.viewer.collections.Sorting;
 
+/**
+ * Helper class used during the CMS page migration that converts raw legacy database rows into typed
+ * {@link io.goobi.viewer.model.cms.pages.content.CMSContent} objects.
+ */
 public class CMSContentConverter {
 
     private final IDAO dao;

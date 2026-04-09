@@ -31,10 +31,9 @@ import java.util.Random;
 
 /**
  * Comparator that sorts as many items marked as high priority to the beginning of the list as are given in the constructor The remaining items will
- * be sorted randomly if the random parameter is true or else by the {@link CMSMediaItem#compareTo(CMSMediaItem)}
+ * be sorted randomly if the random parameter is true or else by the {@link CMSMediaItem#compareTo(CMSMediaItem)}.
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class PriorityComparator implements Comparator<CMSMediaItem> {
 
@@ -49,9 +48,6 @@ public class PriorityComparator implements Comparator<CMSMediaItem> {
         this.random = random;
     }
 
-    /* (non-Javadoc)
-     * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-     */
     @Override
     public int compare(CMSMediaItem a, CMSMediaItem b) {
         maybeAddToPriorityList(a);
@@ -75,8 +71,8 @@ public class PriorityComparator implements Comparator<CMSMediaItem> {
 
     /**
      * 
-     * @param a
-     * @return an int
+     * @param a the CMS media item to look up
+     * @return a stable random integer priority value assigned to the given media item
      */
     private int valueFor(CMSMediaItem a) {
         synchronized (map) {
@@ -85,7 +81,7 @@ public class PriorityComparator implements Comparator<CMSMediaItem> {
     }
 
     /**
-     * @param teim
+     * @param item the CMS media item to conditionally add
      */
     private void maybeAddToPriorityList(CMSMediaItem item) {
         if (item.isImportant() && priorityList.size() < prioritySlots && !priorityList.contains(item)) {

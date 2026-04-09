@@ -99,9 +99,6 @@ public class CampaignRecordPageStatistic implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<User> reviewers = new ArrayList<>();
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -112,9 +109,6 @@ public class CampaignRecordPageStatistic implements Serializable {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -146,213 +140,171 @@ public class CampaignRecordPageStatistic implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
-     * @return the id
+     * @return the database primary key of this page statistic entry
      */
     public Long getId() {
         return id;
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
-     * @param id the id to set
+     * @param id the database primary key to set
      */
     public void setId(Long id) {
         this.id = id;
     }
 
     /**
-     * <p>
      * Getter for the field <code>dateCreated</code>.
-     * </p>
      *
-     * @return the dateCreated
+     * @return the date and time when this statistic entry was created
      */
     public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
     /**
-     * <p>
      * Setter for the field <code>dateCreated</code>.
-     * </p>
      *
-     * @param dateCreated the dateCreated to set
+     * @param dateCreated the date and time when this statistic entry was created
      */
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
 
     /**
-     * <p>
      * Getter for the field <code>dateUpdated</code>.
-     * </p>
      *
-     * @return the dateUpdated
+     * @return the date and time when this statistic entry was last updated
      */
     public LocalDateTime getDateUpdated() {
         return dateUpdated;
     }
 
     /**
-     * <p>
      * Setter for the field <code>dateUpdated</code>.
-     * </p>
      *
-     * @param dateUpdated the dateUpdated to set
+     * @param dateUpdated the date and time when this statistic entry was last updated
      */
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
 
     /**
-     * <p>
      * Getter for the field <code>owner</code>.
-     * </p>
      *
-     * @return the owner
+     * @return the campaign record statistic that owns this per-page statistic entry
      */
     public CampaignRecordStatistic getOwner() {
         return owner;
     }
 
     /**
-     * <p>
      * Setter for the field <code>owner</code>.
-     * </p>
      *
-     * @param owner the owner to set
+     * @param owner the campaign record statistic that owns this per-page statistic entry
      */
     public void setOwner(CampaignRecordStatistic owner) {
         this.owner = owner;
     }
 
     /**
-     * <p>
      * Getter for the field <code>pi</code>.
-     * </p>
      *
-     * @return the pi
+     * @return the persistent identifier of the record this page statistic belongs to
      */
     public String getPi() {
         return pi;
     }
 
     /**
-     * <p>
      * Setter for the field <code>pi</code>.
-     * </p>
      *
-     * @param pi the pi to set
+     * @param pi the persistent identifier of the record this page statistic belongs to
      */
     public void setPi(String pi) {
         this.pi = pi;
     }
 
-    /**
-     * @return the page
-     */
+    
     public Integer getPage() {
         return page;
     }
 
-    /**
-     * @param page the page to set
-     */
+    
     public void setPage(Integer page) {
         this.page = page;
     }
 
-    /**
-     * @return the key
-     */
+    
     public String getKey() {
         return key;
     }
 
-    /**
-     * @param key the key to set
-     */
+    
     public void setKey(String key) {
         this.key = key;
     }
 
     /**
-     * <p>
      * Getter for the field <code>status</code>.
-     * </p>
      *
-     * @return the status
+     * @return the crowdsourcing processing status for this page within the campaign
      */
     public CrowdsourcingStatus getStatus() {
         return status;
     }
 
     /**
-     * <p>
      * Setter for the field <code>status</code>.
-     * </p>
      *
-     * @param status the status to set
+     * @param status the crowdsourcing processing status for this page within the campaign
      */
     public void setStatus(CrowdsourcingStatus status) {
         this.status = status;
     }
 
     /**
-     * <p>
      * Getter for the field <code>annotators</code>.
-     * </p>
      *
-     * @return the annotators
+     * @return the list of users who have contributed annotations to this page
      */
     public List<User> getAnnotators() {
         return annotators;
     }
 
     /**
-     * <p>
      * Setter for the field <code>annotators</code>.
-     * </p>
      *
-     * @param annotators the annotators to set
+     * @param annotators the list of users who have contributed annotations to this page
      */
     public void setAnnotators(List<User> annotators) {
         this.annotators = annotators;
     }
 
     /**
-     * <p>
      * Getter for the field <code>reviewers</code>.
-     * </p>
      *
-     * @return the reviewers
+     * @return the list of users who have reviewed annotations on this page
      */
     public List<User> getReviewers() {
         return reviewers;
     }
 
     /**
-     * <p>
      * Setter for the field <code>reviewers</code>.
-     * </p>
      *
-     * @param reviewers the reviewers to set
+     * @param reviewers the list of users who have reviewed annotations on this page
      */
     public void setReviewers(List<User> reviewers) {
         this.reviewers = reviewers;
     }
 
     /**
-     * <p>
      * addAnnotater.
-     * </p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      */
@@ -363,9 +315,7 @@ public class CampaignRecordPageStatistic implements Serializable {
     }
 
     /**
-     * <p>
      * addReviewer.
-     * </p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      */

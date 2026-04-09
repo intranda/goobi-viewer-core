@@ -27,6 +27,10 @@ import java.util.List;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 
+/**
+ * Strategy interface for retrieving {@link MetadataDocument} results from a data source
+ * (e.g. the Solr index) based on a query and optional facet filters.
+ */
 public interface IFeatureDataProvider {
 
     static final List<String> REQUIRED_FIELDS =

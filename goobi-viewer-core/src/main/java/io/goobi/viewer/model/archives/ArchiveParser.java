@@ -43,6 +43,10 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 
+/**
+ * Abstract base class for parsing EAD archive structures and resolving associated Goobi viewer
+ * record identifiers from the Solr index.
+ */
 public abstract class ArchiveParser implements Serializable {
 
     private static final long serialVersionUID = -7986836324388942249L;
@@ -60,7 +64,7 @@ public abstract class ArchiveParser implements Serializable {
 
     /**
      * 
-     * @param searchIndex
+     * @param searchIndex Solr search index to query
      * @return Map&lt;String, Entry&lt;String, Boolean&gt;&gt;
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -81,7 +85,7 @@ public abstract class ArchiveParser implements Serializable {
     }
 
     /**
-     * Get the database names and file names.
+     * Gets the database names and file names.
      *
      * @return List<ArchiveResource>
      * @throws HTTPException
@@ -94,7 +98,7 @@ public abstract class ArchiveParser implements Serializable {
     /**
      * Loads the given database and parses the EAD document.
      *
-     * @param database
+     * @param database archive resource to load
      * @param lazyLoadingThreshold Number of total archive nodes from which to no longer eager load the entire tree
      * @return Root element of the loaded tree
      * @throws HTTPException
@@ -114,8 +118,8 @@ public abstract class ArchiveParser implements Serializable {
 
     /**
      * 
-     * @param node
-     * @param searchValue
+     * @param node archive entry node to search within
+     * @param searchValue search term to match against unparsed nodes
      * @return true if new nodes were loaded; false otherwise
      */
     public abstract boolean searchInUnparsedNodes(ArchiveEntry node, String searchValue);

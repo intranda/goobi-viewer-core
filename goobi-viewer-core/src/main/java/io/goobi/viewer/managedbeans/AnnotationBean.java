@@ -58,8 +58,7 @@ import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.misc.SelectionManager;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Named
 @ViewScoped
@@ -112,7 +111,7 @@ public class AnnotationBean implements Serializable {
                 }
 
                 /**
-                 * @param filters
+                 * @return map of filter field names to their values
                  */
                 public Map<String, String> getFilters() {
                     Map<String, String> filters = new HashMap<>();
@@ -151,47 +150,35 @@ public class AnnotationBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>lazyModelAnnotations</code>.
-     * </p>
      *
-     * @return the lazyModelAnnotations
+     * @return the {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider} used for paginated annotation listing in the admin interface
      */
     public TableDataProvider<CrowdsourcingAnnotation> getLazyModelAnnotations() {
         return lazyModelAnnotations;
     }
 
-    /**
-     * @return the ownerCampaignId
-     */
+    
     public String getOwnerCampaignId() {
         return ownerCampaignId;
     }
 
-    /**
-     * @param ownerCampaignId the ownerCampaignId to set
-     */
+    
     public void setOwnerCampaignId(String ownerCampaignId) {
         this.ownerCampaignId = ownerCampaignId;
     }
 
-    /**
-     * @return the targetRecordPI
-     */
+    
     public String getTargetRecordPI() {
         return targetRecordPI;
     }
 
-    /**
-     * @param targetRecordPI the targetRecordPI to set
-     */
+    
     public void setTargetRecordPI(String targetRecordPI) {
         this.targetRecordPI = targetRecordPI;
     }
 
-    /**
-     * @return the exportSelection
-     */
+    
     public SelectionManager<Long> getExportSelection() {
         return exportSelection;
     }
@@ -237,9 +224,9 @@ public class AnnotationBean implements Serializable {
 
     /**
      * Setter for {@link SelectionManager#setSelectAll(boolean) exportSelection#setSelectAll(boolean)} is placed here to avoid jsf confusing it with
-     * setting a value of the map
+     * setting a value of the map.
      *
-     * @param select
+     * @param select if true, selects all annotations; if false, deselects all
      */
     public void setSelectAll(boolean select) {
         this.exportSelection.setSelectAll(select);
@@ -247,7 +234,7 @@ public class AnnotationBean implements Serializable {
 
     /**
      * Getter for {@link SelectionManager#isSelectAll() exportSelection#isSelectAll()} is placed here to avoid jsf confusing it with getting a value
-     * of the map
+     * of the map.
      *
      * @return always false to deselect the select all button when loading the page
      */
@@ -261,7 +248,7 @@ public class AnnotationBean implements Serializable {
     }
 
     /**
-     * Create an excel sheet and write it to download stream
+     * Creates an excel sheet and write it to download stream.
      *
      * @throws IOException
      */
@@ -278,7 +265,7 @@ public class AnnotationBean implements Serializable {
 
     /**
      * 
-     * @param annotations
+     * @param annotations the list of annotations to export
      * @throws IOException
      */
     public void downloadAnnotations(List<CrowdsourcingAnnotation> annotations) throws IOException {

@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -101,6 +102,21 @@ class ChangeDiscoveryResourceTest extends AbstractRestApiTest {
             Assertions.assertEquals(urls.path(RECORDS_CHANGES).build(), activities.getPartOf().getId().toString());
             Assertions.assertFalse(activities.getOrderedItems().isEmpty());
 
+        }
+    }
+
+    /**
+     * An invalid 'start' date (e.g. unicode garbage) must return HTTP 400, not 500.
+     * Before the fix, LocalDate.parse() threw DateTimeParseException which was not caught,
+     * causing an unhandled exception and a 500 response.
+     */
+    @Test
+    void testGetChanges_invalidStartDate_returns400() {
+        try (Response response = target(urls.path(RECORDS_CHANGES).build() + "?start=not-a-date")
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(400, response.getStatus(), "Invalid 'start' date should return HTTP 400");
         }
     }
 

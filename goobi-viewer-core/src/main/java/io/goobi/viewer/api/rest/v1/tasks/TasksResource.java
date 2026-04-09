@@ -52,9 +52,14 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.MessageQueueException;
 import io.goobi.viewer.model.job.ITaskType;
 import io.goobi.viewer.model.job.TaskType;
+import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -70,12 +75,13 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 /**
- * Create and monitor (possibly time consuming) {@link Task tasks} within the viewer. These tasks are managed by the {@link TaskManager}
+ * REST resource for creating and monitoring asynchronous
+ * {@link io.goobi.viewer.api.rest.model.tasks.TaskManager} tasks within the viewer, such as PDF pre-rendering.
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Path(TASKS)
+@ViewerRestServiceBinding
 public class TasksResource {
 
     private static final Logger logger = LogManager.getLogger(TasksResource.class);
@@ -96,6 +102,13 @@ public class TasksResource {
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "tasks" }, summary = "Create a (possibly time consuming) task to execute in a limited thread pool. See javadoc for details")
+    @ApiResponse(responseCode = "200", description = "Task has been accepted and started")
+    @ApiResponse(responseCode = "400", description = "No task type provided or task type is invalid")
+    @ApiResponse(responseCode = "401", description = "Not authorized to create this type of task")
+    @ApiResponse(responseCode = "500", description = "Message queue unavailable or internal error")
+    // Explicit @Content required to produce a valid OpenAPI requestBody with a content map;
+    // @RequestBody(required=true) alone generates {"required":true} which is invalid per OpenAPI 3.
+    @RequestBody(required = true, content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = TaskParameter.class)))
     public Response addTask(TaskParameter desc) throws WebApplicationException {
         if (desc == null || desc.getType() == null) {
             throw new WebApplicationException(new IllegalRequestException("Must provide job type"));
@@ -181,8 +194,24 @@ public class TasksResource {
     @Path(TASKS_TASK)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "tasks" },
-            summary = "Return the task with the given id, provided it is accessibly by the request (determined by session or access token)")
-    public Response getTask(@Parameter(description = "The id of the task") @PathParam("id") String id) throws ContentNotFoundException {
+            summary = "Return the task with the given id, provided it is accessible by the request (determined by session or access token)")
+    @ApiResponse(responseCode = "200", description = "The task with the given id")
+    // 400 is returned when the id contains characters not allowed by the schema pattern ^[A-Za-z0-9_-]+$
+    @ApiResponse(responseCode = "400", description = "Invalid task id — must match ^[A-Za-z0-9_-]+$")
+    @ApiResponse(responseCode = "404", description = "No task found for the given id, or the request is not authorized to access it")
+    public Response getTask(@Parameter(description = "The id of the task",
+            schema = @Schema(pattern = "^[A-Za-z0-9_-]+$")) @PathParam("id") String id) throws ContentNotFoundException {
+
+        // Enforce the pattern documented in the schema to return 400 instead of accepting
+        // IDs with special characters (e.g. semicolons, non-ASCII) that would result in
+        // empty results (200) or unexpected database queries.
+        if (id == null || !id.matches("[A-Za-z0-9_-]+")) {
+            throw new WebApplicationException(
+                    jakarta.ws.rs.core.Response.status(jakarta.ws.rs.core.Response.Status.BAD_REQUEST)
+                            .entity("{\"status\":400,\"message\":\"Invalid task id: must match ^[A-Za-z0-9_-]+$\"}")
+                            .type(MediaType.APPLICATION_JSON)
+                            .build());
+        }
 
         if (id.matches("\\d+")) {
             Long idLong = Long.parseLong(id);
@@ -192,8 +221,10 @@ public class TasksResource {
             }
             return Response.ok(job).build();
         }
-        ViewerMessage message = this.messageBroker.getMessageById(id)
-                .orElse(getMessageFromDAO(id).orElse(null));
+        // Guard against a null broker (message queue not configured) to avoid NPE → HTTP 500.
+        ViewerMessage message = (this.messageBroker != null)
+                ? this.messageBroker.getMessageById(id).orElse(getMessageFromDAO(id).orElse(null))
+                : getMessageFromDAO(id).orElse(null);
         if (message != null && isAuthorized(getTaskType(message.getTaskName()).orElse(null), Optional.empty(), request)) {
             return Response.ok(message).build();
         }
@@ -213,12 +244,18 @@ public class TasksResource {
             return Optional.ofNullable(dao.getViewerMessageByMessageID(messageId));
         } catch (DAOException e) {
             return Optional.empty();
+        } catch (jakarta.persistence.PersistenceException e) {
+            // DB collation or other persistence errors (e.g. utf8mb3 vs utf8mb4 mismatch
+            // when message_id contains 4-byte Unicode characters) must not propagate as HTTP 500.
+            logger.warn("DB error looking up message '{}': {}", messageId, e.getMessage());
+            return Optional.empty();
         }
     }
 
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "tasks" }, summary = "Return a list of all tasks accessible to the request (determined by session or access token)")
+    @ApiResponse(responseCode = "200", description = "List of tasks accessible to the current request")
     public List<Task> getTasks() {
         return DataManager.getInstance()
                 .getRestApiJobManager()

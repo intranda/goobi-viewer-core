@@ -45,6 +45,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 
+/**
+ * Configuration model for an EAD archive tree embedded in a CMS page.
+ */
 @Entity
 @Table(name = "cms_archive_configs")
 public class CMSArchiveConfig implements CMSMediaMultiHolder, Serializable {
@@ -88,7 +91,7 @@ public class CMSArchiveConfig implements CMSMediaMultiHolder, Serializable {
 
     /**
      * 
-     * @param pi
+     * @param pi persistent identifier of the archive resource
      */
     public CMSArchiveConfig(String pi) {
         this.pi = pi;
@@ -110,114 +113,82 @@ public class CMSArchiveConfig implements CMSMediaMultiHolder, Serializable {
         this.headerImage = orig.headerImage;
     }
 
-    /**
-     * @return the id
-     */
+    
     public Long getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
+    
     public void setId(Long id) {
         this.id = id;
     }
 
-    /**
-     * @return the pi
-     */
+    
     public String getPi() {
         return pi;
     }
 
-    /**
-     * @param pi the pi to set
-     */
+    
     public void setPi(String pi) {
         this.pi = pi;
     }
 
-    /**
-     * @return the dateUpdated
-     */
+    
     public LocalDateTime getDateUpdated() {
         return dateUpdated;
     }
 
-    /**
-     * @param dateUpdated the dateUpdated to set
-     */
+    
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
 
-    /**
-     * @return the title
-     */
+    
     public TranslatedText getTitle() {
         return title;
     }
 
-    /**
-     * @param title the title to set
-     */
+    
     public void setTitle(TranslatedText title) {
         this.title = title;
     }
 
-    /**
-     * @return the previewText
-     */
+    
     public TranslatedText getPreviewText() {
         return previewText;
     }
 
-    /**
-     * @param previewText the previewText to set
-     */
+    
     public void setPreviewText(TranslatedText previewText) {
         this.previewText = previewText;
     }
 
-    /**
-     * @return the description
-     */
+    
     public TranslatedText getDescription() {
         return description;
     }
 
-    /**
-     * @param description the description to set
-     */
+    
     public void setDescription(TranslatedText description) {
         this.description = description;
     }
 
-    /**
-     * @return the tileImage
-     */
+    
     public CMSMediaItem getTileImage() {
         return tileImage;
     }
 
-    /**
-     * @param tileImage the tileImage to set
-     */
+    
     public void setTileImage(CMSMediaItem tileImage) {
         this.tileImage = tileImage;
     }
 
-    /**
-     * @return the headerImage
-     */
+    
     public CMSMediaItem getHeaderImage() {
         return headerImage;
     }
 
-    /**
-     * @param headerImage the headerImage to set
-     */
+    
     public void setHeaderImage(CMSMediaItem headerImage) {
         this.headerImage = headerImage;
     }

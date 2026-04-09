@@ -1,4 +1,4 @@
-/**
+/*
  * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
  *
  * Visit these websites for more information.
@@ -54,11 +54,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 /**
- * @author florian
+ * @author Florian Alpers
  *
- *         This class represents clients accessing the viewer not through web-browsers but using dedicated client-applications which must register
+ *         Represents clients accessing the viewer not through web-browsers but using dedicated client-applications which must register
  *         with the server to view any data but which may also enjoy unique viewing rights via dedicated {@link License Licenses}
- *
  */
 @Entity
 @Table(name = "client_applications")
@@ -73,11 +72,13 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "client_application_id")
-    @Schema(description = "The internal database identifier of the client", example = "2", type = "long", accessMode = Schema.AccessMode.READ_ONLY)
+    // type = "integer" with format = "int64" is the correct OpenAPI representation for Long/64-bit integer values.
+    @Schema(description = "The internal database identifier of the client", example = "2",
+            type = "integer", format = "int64", accessMode = Schema.AccessMode.READ_ONLY)
     private Long id;
 
     /**
-     * A secret a client needs to pass to the server to identify itself
+     * A secret a client needs to pass to the server to identify itself.
      */
     @Schema(description = "The internal identifier/secret of the client", example = "0D219Z74-F764-4CAD-8361-D9964FD1B186",
             accessMode = Schema.AccessMode.READ_ONLY)
@@ -85,7 +86,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     private String clientIdentifier;
 
     /**
-     * The IP under which the client first requested registration
+     * The IP under which the client first requested registration.
      */
     @Schema(description = "The IP under which the client first requested registration",
             example = "192.168.172.13", //NOSONAR, the ip address here is an example for the documentation
@@ -94,34 +95,36 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     private String clientIp;
 
     /**
-     * The name to be displayed for the client
+     * The name to be displayed for the client.
      */
     @Schema(description = "The name to be displayed for the client", example = "Windows Desktop 1", accessMode = Schema.AccessMode.READ_WRITE)
     @Column(name = "name")
     private String name;
 
     /**
-     * A description of the client
+     * A description of the client.
      */
     @Schema(description = "A description of the client", example = "second workplace, right aisle", accessMode = Schema.AccessMode.READ_WRITE)
     @Column(name = "description")
     private String description;
 
     /**
-     * The time at which the client was granted or denied access, or if not yet happened, the time at which it first requested access
+     * The time at which the client was granted or denied access, or if not yet happened, the time at which it first requested access.
      */
+    // type = "string" with format "date-time" is the correct OpenAPI representation for datetime values.
     @Schema(description = "The time at which the client was granted or denied access, or if not yet happened, "
             + "the time at which it first requested access",
-            example = "2022-05-19T11:55:16Z", type = "date", format = "ISO 8601", accessMode = Schema.AccessMode.READ_ONLY)
+            example = "2022-05-19T11:55:16Z", type = "string", format = "date-time", accessMode = Schema.AccessMode.READ_ONLY)
     @Column(name = "date_registered", nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = IPresentationModelElement3.DATETIME_FORMAT)
     private LocalDateTime dateRegistered = LocalDateTime.now();
 
     /**
-     * The last time the client sent a request to the server
+     * The last time the client sent a request to the server.
      */
-    @Schema(description = "The last time the client sent a request to the server", example = "2022-05-19T11:55:16Z", type = "date",
-            format = "ISO 8601", accessMode = Schema.AccessMode.READ_ONLY)
+    // type = "string" with format "date-time" is the correct OpenAPI representation for datetime values.
+    @Schema(description = "The last time the client sent a request to the server", example = "2022-05-19T11:55:16Z", type = "string",
+            format = "date-time", accessMode = Schema.AccessMode.READ_ONLY)
     @Column(name = "date_last_access", nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = IPresentationModelElement3.DATETIME_FORMAT)
     private LocalDateTime dateLastAccess = LocalDateTime.now();
@@ -138,29 +141,30 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     /**
      * The access status of the client. Only clients with access status 'GRANTED' benefit from client privileges
      */
+    // Remove allowableValues to avoid duplicating the Java enum values that SmallRye already derives
+    // automatically; having both causes duplicate entries in the OpenAPI spec's enum array.
     @Schema(description = "The access status of the client. Only clients with access status 'GRANTED' benefit from client privileges",
-            example = "GRANTED", accessMode = Schema.AccessMode.READ_WRITE, allowableValues = { "GRANTED, DENIED" })
+            example = "GRANTED", accessMode = Schema.AccessMode.READ_WRITE)
     @Column(name = "access_status")
     @Enumerated(EnumType.STRING)
     private AccessStatus accessStatus;
 
     /**
-     * Status describing if the client is eligible to receive viewing privileges
+     * Status describing if the client is eligible to receive viewing privileges.
      * 
-     * @author florian
-     *
+     * @author Florian Alpers
      */
     public enum AccessStatus {
         /**
-         * only used for the "all clients" core ClientApplication instance
+         * Only used for the "all clients" core ClientApplication instance.
          */
         NON_APPLICABLE,
         /**
-         * The client has requested access but has not been granted it
+         * The client has requested access but has not been granted it.
          */
         REQUESTED,
         /**
-         * The client has been granted access to viewing privileges
+         * The client has been granted access to viewing privileges.
          */
         GRANTED,
         /**
@@ -170,16 +174,16 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * internal constructor for deserializing from database
+     * Internal constructor for deserializing from database.
      */
     public ClientApplication() {
 
     }
 
     /**
-     * Cloning constructor
+     * Cloning constructor.
      * 
-     * @param source
+     * @param source client application instance to copy
      */
     public ClientApplication(ClientApplication source) {
         this.id = source.getId();
@@ -194,7 +198,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * constructor to create a new ClientApplication from a client request
+     * Constructor to create a new ClientApplication from a client request.
      * 
      * @param identifier the client identifier
      */
@@ -203,7 +207,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * Get the {@link #id}
+     * Get the {@link #id}.
      * 
      * @return the {@link #id}
      */
@@ -212,7 +216,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * Set the {@link #id}
+     * Set the {@link #id}.
      * 
      * @param id the {@link #id} to set
      */
@@ -221,7 +225,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * Get the current {@link #accessStatus}
+     * Get the current {@link #accessStatus}.
      * 
      * @return the {@link #accessStatus}
      */
@@ -230,7 +234,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * Set the {@link #accessStatus}
+     * Set the {@link #accessStatus}.
      * 
      * @param accessStatus the {@link #accessStatus} to set
      */
@@ -239,7 +243,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * Get the {@link #clientIdentifier}
+     * Get the {@link #clientIdentifier}.
      * 
      * @return the {@link #clientIdentifier}
      */
@@ -248,7 +252,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * Set the {@link #clientIdentifier}
+     * Set the {@link #clientIdentifier}.
      * 
      * @param clientIdentifier the {@link #clientIdentifier} to set
      */
@@ -257,7 +261,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * Get the {@link #clientIp}
+     * Get the {@link #clientIp}.
      * 
      * @return the {@link #clientIp}
      */
@@ -266,7 +270,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * Set the {@link #clientIp}
+     * Set the {@link #clientIp}.
      * 
      * @param clientIp the {@link #clientIp} to set
      */
@@ -275,7 +279,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * Get the {@link #dateRegistered}
+     * Get the {@link #dateRegistered}.
      * 
      * @return the {@link #dateRegistered}
      */
@@ -284,7 +288,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * Get the {@link #dateRegistered}
+     * Get the {@link #dateRegistered}.
      * 
      * @param dateRegistered the {@link #dateRegistered} to set
      */
@@ -293,7 +297,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * Get the {@link #dateLastAccess}
+     * Get the {@link #dateLastAccess}.
      * 
      * @return the {@link #dateLastAccess}
      */
@@ -302,7 +306,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * Set the {@link #dateLastAccess}
+     * Set the {@link #dateLastAccess}.
      * 
      * @param dateLastAccess the {@link #dateLastAccess} to set
      */
@@ -311,7 +315,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * Get the {@link #name}
+     * Get the {@link #name}.
      * 
      * @return the {@link #name}
      */
@@ -320,7 +324,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * Set the {@link #name}
+     * Set the {@link #name}.
      * 
      * @param name the {@link #name} to set
      */
@@ -329,7 +333,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * Get the {@link #description}
+     * Get the {@link #description}.
      * 
      * @return the {@link #description}
      */
@@ -338,7 +342,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * Set the {@link #description}
+     * Set the {@link #description}.
      * 
      * @param description the {@link #description} to set
      */
@@ -353,9 +357,9 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * Check if the given identifier matches this instances {@link #clientIdentifier}
+     * Check if the given identifier matches this instances {@link #clientIdentifier}.
      * 
-     * @param identifier
+     * @param identifier client identifier string to compare
      * @return true if the given identifier is not null and equals this instances {@link #clientIdentifier}
      */
     public boolean matchesClientIdentifier(String identifier) {
@@ -363,7 +367,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * Check if this client requires approval of its registration
+     * Checks if this client requires approval of its registration.
      * 
      * @return true if the {@link #accessStatus} is {@link AccessStatus#REQUESTED}
      */
@@ -373,7 +377,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * Check if this client requires approval of its registration or this approval has been denied
+     * Checks if this client requires approval of its registration or this approval has been denied.
      * 
      * @return true if the {@link #accessStatus} is {@link AccessStatus#REQUESTED} or {@link AccessStatus#DENIED}
      */
@@ -383,7 +387,9 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * Use hash code of the {@link #clientIdentifier}
+     * Use hash code of the {@link #clientIdentifier}.
+     *
+     * @return the hash code value for this object
      */
     @Override
     public int hashCode() {
@@ -395,7 +401,10 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * Two clients are equal if heir {@link #clientIdentifier}s are equals
+     * Two clients are equal if heir {@link #clientIdentifier}s are equals.
+     *
+     * @param obj the object to compare to this client
+     * @return true if the given object is equal to this instance, false otherwise
      */
     @Override
     public boolean equals(Object obj) {
@@ -408,7 +417,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * Get the {@link #subnetMask}
+     * Get the {@link #subnetMask}.
      * 
      * @return the {@link #subnetMask}
      */
@@ -417,7 +426,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * Set the {@link #subnetMask}
+     * Set the {@link #subnetMask}.
      * 
      * @param subnetMask the {@link #subnetMask} to set
      */
@@ -506,10 +515,10 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * Check if the given IP address matches the {@link #subnetMask} of this client
+     * Checks if the given IP address matches the {@link #subnetMask} of this client.
      *
-     * @param inIp a {@link java.lang.String} object.
-     * @return a boolean.
+     * @param inIp IP address of the connecting client
+     * @return true if the given IP address matches the subnet mask of this client application, false otherwise
      */
     public boolean matchIp(String inIp) {
 
@@ -540,7 +549,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * If no subnet mask has been set, use the clientIp if available with a '/32' mask
+     * If no subnet mask has been set, use the clientIp if available with a '/32' mask.
      */
     public void initializeSubnetMask() {
         if (subnetMask == null && StringUtils.isNotBlank(clientIp)) {
@@ -554,7 +563,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * @param remoteAddress
+     * @param remoteAddress IP address of the connecting client
      * @return true if remoteAddress may log in; false otherwise
      */
     public boolean mayLogIn(String remoteAddress) {

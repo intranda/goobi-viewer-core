@@ -26,6 +26,12 @@ import java.util.function.Function;
 
 import io.goobi.viewer.controller.DataManager;
 
+/**
+ * Interface for translating an object of type {@code T} into a locale-specific string representation,
+ * used by sorting comparators to obtain a display label before comparing elements.
+ *
+ * @param <T> the type of value to translate
+ */
 public interface ITranslator<T> {
 
     public String translate(T value, Locale locale);

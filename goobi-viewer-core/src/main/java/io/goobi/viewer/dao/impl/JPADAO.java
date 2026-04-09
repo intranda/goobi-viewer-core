@@ -122,9 +122,7 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 
 /**
- * <p>
- * JPADAO class.
- * </p>
+ * JPA-based implementation of {@link io.goobi.viewer.dao.IDAO}, providing all database access operations for the viewer.
  */
 public class JPADAO implements IDAO {
 
@@ -157,9 +155,7 @@ public class JPADAO implements IDAO {
     private Object viewerMessageLock = new Object();
 
     /**
-     * <p>
-     * Constructor for JPADAO.
-     * </p>
+     * Creates a new JPADAO instance.
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -168,11 +164,9 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * <p>
-     * Constructor for JPADAO.
-     * </p>
+     * Creates a new JPADAO instance.
      *
-     * @param inPersistenceUnitName a {@link java.lang.String} object.
+     * @param inPersistenceUnitName persistence unit name; uses default when null or empty
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public JPADAO(String inPersistenceUnitName) throws DAOException {
@@ -214,7 +208,6 @@ public class JPADAO implements IDAO {
 
     /**
      * @throws DAOException
-     * 
      */
     private boolean init() throws DAOException {
         try {
@@ -230,11 +223,9 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * <p>
      * Getter for the field <code>factory</code>.
-     * </p>
      *
-     * @return a {@link jakarta.persistence.EntityManagerFactory} object.
+     * @return the JPA EntityManagerFactory used by this DAO
      */
     @Override
     public EntityManagerFactory getFactory() {
@@ -242,10 +233,7 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * <p>
-     * Get a new {@link EntityManager} from the {@link JPADAO#factory}
-     *
-     * </p>
+     * Get a new {@link EntityManager} from the {@link JPADAO#factory}.
      *
      * @return {@link jakarta.persistence.EntityManager} for the current thread
      */
@@ -256,9 +244,9 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * Operation to call after a query or other kind of transaction is complete
+     * Operation to call after a query or other kind of transaction is complete.
      *
-     * @param em
+     * @param em entity manager to close
      * @throws DAOException
      */
     @Override
@@ -274,6 +262,7 @@ public class JPADAO implements IDAO {
      * Call {@link EntityManager#getTransaction() getTransaction()} on the given EntityManager and then {@link EntityTransaction#begin() begin()} on
      * the transaction.
      *
+     * @param em the EntityManager whose transaction is started
      * @return the transaction gotten from the entity manager
      */
     @Override
@@ -289,6 +278,9 @@ public class JPADAO implements IDAO {
 
     /**
      * Commits a persistence context transaction. Only to be used following a {@link #startTransaction(EntityManager)} call
+     *
+     * @param et the active entity transaction to commit
+     * @throws PersistenceException if the commit fails
      */
     @Override
     public void commitTransaction(EntityTransaction et) throws PersistenceException {
@@ -435,7 +427,7 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * @param param
+     * @param param named query parameter placeholder for filter values
      * @return Generated query
      */
     public String getUsersFilterQuery(String param) {
@@ -521,6 +513,9 @@ public class JPADAO implements IDAO {
 
     /**
      *
+     * @param nickname user nickname to look up (case-insensitive)
+     * @return the User with the given nickname, or null if not found or nickname is blank
+     * @throws DAOException if a database error occurs
      * @see io.goobi.viewer.dao.IDAO#getUserByNickname(java.lang.String)
      * @should return null if nickname empty
      */
@@ -731,8 +726,6 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * (non-Javadoc)
-     *
      * @see io.goobi.viewer.dao.IDAO#updateUserGroup(io.goobi.viewer.model.security.user.UserGroup)
      * @should set id on new license
      */
@@ -850,7 +843,6 @@ public class JPADAO implements IDAO {
      * @should return correct row for name
      * @should return correct row for name and user
      * @should return null if no result found
-     * 
      */
     @Override
     public BookmarkList getBookmarkList(String name, User user) throws DAOException {
@@ -1121,6 +1113,11 @@ public class JPADAO implements IDAO {
     }
 
     /**
+     * @param userGroup user group to filter by, or null to match any group
+     * @param user user to filter by, or null to match any user
+     * @param role role to filter by, or null to match any role
+     * @return the number of user role assignments matching the given filter criteria
+     * @throws DAOException if a database error occurs
      * @see io.goobi.viewer.dao.IDAO#getUserRoleCount(io.goobi.viewer.model.security.user.UserGroup, io.goobi.viewer.model.security.user.User,
      *      io.goobi.viewer.model.security.Role)
      * @should return correct count
@@ -1433,6 +1430,9 @@ public class JPADAO implements IDAO {
     }
 
     /**
+     * @param names list of license type names to retrieve; returns empty list if null or empty
+     * @return the list of LicenseType objects whose names match the given list, or an empty list if no matches are found
+     * @throws DAOException if a database error occurs
      * @see io.goobi.viewer.dao.IDAO#getLicenseTypes(java.util.List)
      * @should return all matching rows
      */
@@ -1460,6 +1460,9 @@ public class JPADAO implements IDAO {
     }
 
     /**
+     * @param licenseType the license type for which to find overriding license types
+     * @return the list of license types that override the given license type, or an empty list if none exist
+     * @throws DAOException if a database error occurs
      * @see io.goobi.viewer.dao.IDAO#getOverridingLicenseType(io.goobi.viewer.model.security.LicenseType)
      * @should return all matching rows
      */
@@ -1572,6 +1575,9 @@ public class JPADAO implements IDAO {
     }
 
     /**
+     * @param licenseType the license type whose associated licenses are retrieved; must not be null
+     * @return the list of License objects associated with the given license type
+     * @throws DAOException if a database error occurs
      * @see io.goobi.viewer.dao.IDAO#getLicenses(io.goobi.viewer.model.security.LicenseType)
      * @should return correct values
      */
@@ -1647,6 +1653,9 @@ public class JPADAO implements IDAO {
     }
 
     /**
+     * @param licenseType the license type whose associated licenses are counted; must not be null
+     * @return the number of License objects associated with the given license type
+     * @throws DAOException if a database error occurs
      * @see io.goobi.viewer.dao.IDAO#getLicenseCount(io.goobi.viewer.model.security.LicenseType)
      * @should return correct value
      */
@@ -2048,6 +2057,8 @@ public class JPADAO implements IDAO {
     // CommentGroup
 
     /**
+     * @return the list of all comment groups persisted in the database
+     * @throws DAOException if a database error occurs
      * @see io.goobi.viewer.dao.IDAO#getAllCommentGroups()
      * @should return all rows
      */
@@ -2067,6 +2078,7 @@ public class JPADAO implements IDAO {
     }
 
     /**
+     * @return the core (unfiltered) comment group, or null if none exists
      * @throws DAOException
      * @see io.goobi.viewer.dao.IDAO#getCommentGroupUnfiltered()
      * @should return correct row
@@ -2085,6 +2097,9 @@ public class JPADAO implements IDAO {
     }
 
     /**
+     * @param id database ID of the comment group to retrieve
+     * @return the CommentGroup with the given ID, or null if not found
+     * @throws DAOException if a database error occurs
      * @see io.goobi.viewer.dao.IDAO#getCommentGroup(long)
      */
     @Override
@@ -2101,6 +2116,9 @@ public class JPADAO implements IDAO {
     }
 
     /**
+     * @param commentGroup the comment group to persist in the database
+     * @return true if the comment group was successfully persisted, false if a persistence error occurred
+     * @throws DAOException if a database error occurs
      * @see io.goobi.viewer.dao.IDAO#addCommentGroup(io.goobi.viewer.model.annotation.comments.CommentGroup)
      */
     @Override
@@ -2122,6 +2140,9 @@ public class JPADAO implements IDAO {
     }
 
     /**
+     * @param commentGroup the comment group with updated values to merge into the database
+     * @return true if the comment group was successfully updated, false if a persistence error occurred
+     * @throws DAOException if a database error occurs
      * @see io.goobi.viewer.dao.IDAO#updateCommentGroup(io.goobi.viewer.model.annotation.comments.CommentGroup)
      */
     @Override
@@ -2143,6 +2164,9 @@ public class JPADAO implements IDAO {
     }
 
     /**
+     * @param commentGroup the comment group to remove from the database
+     * @return true if the comment group was successfully deleted, false if a persistence error occurred
+     * @throws DAOException if a database error occurs
      * @see io.goobi.viewer.dao.IDAO#deleteCommentGroup(io.goobi.viewer.model.annotation.comments.CommentGroup)
      */
     @Override
@@ -2411,6 +2435,10 @@ public class JPADAO implements IDAO {
     }
 
     /**
+     * @param pi persistent identifier to restrict deletion to comments on a specific record, or null for any
+     * @param owner user whose comments should be deleted, or null to delete regardless of owner
+     * @return the number of comments deleted
+     * @throws DAOException if a database error occurs
      * @see io.goobi.viewer.dao.IDAO#deleteComments(java.lang.String, io.goobi.viewer.model.security.user.User)
      * @should delete comments for pi correctly
      * @should delete comments for user correctly
@@ -2459,7 +2487,7 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * Gets all page numbers (order) within a work with the given pi which contain comments
+     * <p>Gets all page numbers (order) within a work with the given pi which contain comments
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -3824,9 +3852,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#deleteCampaign(io.goobi.viewer.model.crowdsourcing.campaigns.Campaign)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean deleteCampaign(Campaign campaign) throws DAOException {
@@ -3851,6 +3876,8 @@ public class JPADAO implements IDAO {
     }
 
     /**
+     * @param user the user whose campaign statistics entries are deleted
+     * @return the total number of database rows deleted across all statistic tables
      * @throws DAOException
      * @see io.goobi.viewer.dao.IDAO#deleteCampaignStatisticsForUser(io.goobi.viewer.model.security.user.User)
      * @should remove user from creators and reviewers lists correctly
@@ -3895,6 +3922,10 @@ public class JPADAO implements IDAO {
     }
 
     /**
+     * @param fromUser the user whose campaign statistic entries are replaced
+     * @param toUser the user who replaces fromUser in all campaign statistic entries
+     * @return the total number of database rows updated across all statistic tables
+     * @throws DAOException if a database error occurs
      * @see io.goobi.viewer.dao.IDAO#changeCampaignStatisticContributors(io.goobi.viewer.model.security.user.User,
      *      io.goobi.viewer.model.security.user.User)
      * @should replace user in creators and reviewers lists correctly
@@ -3957,7 +3988,7 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * currently noop since no persistence entity manager is kept
+     * Currently noop since no persistence entity manager is kept.
      */
     public void clear() {
         //noop
@@ -3973,9 +4004,7 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * <p>
      * Operation to call before getting an entity manager. currently noop
-     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -4134,9 +4163,9 @@ public class JPADAO implements IDAO {
     /**
      * Universal method for returning the row count for the given class and filter string.
      *
-     * @param className
+     * @param className fully qualified entity class name
      * @param filter Filter query string
-     * @param params
+     * @param params map of named query parameters and their values
      * @return Number of rows matching given filters
      * @throws DAOException
      */
@@ -4157,9 +4186,9 @@ public class JPADAO implements IDAO {
     /**
      * Universal method for returning the row count for the given class and filters.
      *
-     * @param className
+     * @param className fully qualified entity class name
      * @param staticFilterQuery Optional filter query in case the fuzzy filters aren't sufficient
-     * @param filters
+     * @param filters filter map of field names to filter values
      * @return Number of rows matching given filters
      * @throws DAOException
      */
@@ -4195,8 +4224,6 @@ public class JPADAO implements IDAO {
 
     /**
      * {@inheritDoc}
-     *
-     * @return
      */
     @Override
     public boolean addStaticPage(CMSStaticPage page) throws DAOException {
@@ -4534,7 +4561,8 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            Query q = em.createQuery("SELECT DISTINCT page FROM CMSPage page WHERE page.subThemeDiscriminatorValue = :subtheme");
+            // Use field name 'subTheme' as defined in CMSPage entity (was previously named subThemeDiscriminatorValue)
+            Query q = em.createQuery("SELECT DISTINCT page FROM CMSPage page WHERE page.subTheme = :subtheme");
             q.setParameter("subtheme", subtheme);
             return q.getResultList();
         } finally {
@@ -4568,16 +4596,14 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * <p>
      * createCMSPageFilter.
-     * </p>
      *
-     * @param params a {@link java.util.Map} object.
-     * @param pageParameter a {@link java.lang.String} object.
-     * @param allowedTemplates a {@link java.util.List} object.
-     * @param allowedSubthemes a {@link java.util.List} object.
-     * @param allowedCategoryIds a {@link java.util.List} object.
-     * @return a {@link java.lang.String} object.
+     * @param params query parameter map to populate with named parameter values
+     * @param pageParameter JPQL alias for the CMS page entity in the query
+     * @param allowedTemplates template IDs the user may view; null means no restriction
+     * @param allowedSubthemes subtheme discriminator values the user may view; null means no restriction
+     * @param allowedCategoryIds category IDs the user may view; null means no restriction
+     * @return the JPQL WHERE clause fragment restricting CMS page visibility, possibly empty
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
      */
     public static String createCMSPageFilter(Map<String, Object> params, String pageParameter, List<Long> allowedTemplates,
@@ -4615,7 +4641,7 @@ public class JPADAO implements IDAO {
                         .append(templateParameter)
                         .append(" = ")
                         .append(pageParameter)
-                        .append(".subThemeDiscriminatorValue")
+                        .append(".subTheme")
                         .append(" OR ");
                 params.put(templateParameter, subtheme);
             }
@@ -4625,7 +4651,7 @@ public class JPADAO implements IDAO {
             }
             query += ") AND";
         } else if (allowedSubthemes != null) {
-            query += " (" + pageParameter + ".subThemeDiscriminatorValue = \"\") AND";
+            query += " (" + pageParameter + ".subTheme = \"\") AND";
         }
 
         index = 0;
@@ -4725,7 +4751,7 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * Persist a new {@link CMSCategory} object
+     * <p>Persist a new {@link CMSCategory} object
      */
     @Override
     public boolean addCategory(CMSCategory category) throws DAOException {
@@ -4747,7 +4773,7 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * Update an existing {@link CMSCategory} object in the persistence context
+     * <p>Update an existing {@link CMSCategory} object in the persistence context
      */
     @Override
     public boolean updateCategory(CMSCategory category) throws DAOException {
@@ -4769,7 +4795,7 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * Delete a {@link CMSCategory} object from the persistence context
+     * <p>Delete a {@link CMSCategory} object from the persistence context
      */
     @Override
     public boolean deleteCategory(CMSCategory category) throws DAOException {
@@ -4792,7 +4818,7 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * Search the persistence context for a {@link CMSCategory} with the given name.
+     * <p>Search the persistence context for a {@link CMSCategory} with the given name.
      */
     @Override
     public CMSCategory getCategoryByName(String name) throws DAOException {
@@ -4811,7 +4837,7 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * Search the persistence context for a {@link CMSCategory} with the given unique id.
+     * <p>Search the persistence context for a {@link CMSCategory} with the given unique id.
      */
     @Override
     public CMSCategory getCategory(Long id) throws DAOException {
@@ -4829,7 +4855,7 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * Check if the database contains a table of the given name. Used by backward-compatibility routines
+     * <p>Check if the database contains a table of the given name. Used by backward-compatibility routines
      *
      * @throws SQLException
      */
@@ -4857,7 +4883,7 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * Check if the database contains a column in a table with the given names. Used by backward-compatibility routines
+     * <p>Check if the database contains a column in a table with the given names. Used by backward-compatibility routines
      */
     @Override
     public boolean columnsExists(String tableName, String columnName) throws SQLException, DAOException {
@@ -4934,7 +4960,7 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * Get all annotations associated with the work of the given pi
+     * <p>Get all annotations associated with the work of the given pi
      *
      * @should return correct rows
      */
@@ -5892,6 +5918,10 @@ public class JPADAO implements IDAO {
         try {
             Query q = em.createQuery("SELECT t FROM ThemeConfiguration t");
             return q.getResultList();
+        } catch (PersistenceException e) {
+            // Wrap JPA exception so callers (e.g. AdminThemesBean) can catch DAOException
+            // and degrade gracefully — without this, a DB outage crashes the error page rendering.
+            throw new DAOException(e.getMessage());
         } finally {
             close(em);
         }
@@ -6236,10 +6266,10 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * 
-     * @param staticFilterQuery
-     * @param filters
-     * @param params
+     *
+     * @param staticFilterQuery optional static where clause prepended to generated query
+     * @param filters filter map of field names to filter values
+     * @param params map populated with named query parameters during query construction
      * @return Generated query
      */
     static String createFilterQuery2(String staticFilterQuery, Map<String, String> filters, Map<String, Object> params) {
@@ -6311,9 +6341,9 @@ public class JPADAO implements IDAO {
 
     /**
      *
-     * @param staticFilterQuery
-     * @param filters
-     * @param params
+     * @param staticFilterQuery optional static where clause prepended to generated query
+     * @param filters filter map of field names to filter values
+     * @param params map populated with named query parameters during query construction
      * @return Generated query
      * @should create query correctly
      */
@@ -6396,9 +6426,9 @@ public class JPADAO implements IDAO {
 
     /**
      *
-     * @param staticFilterQuery
-     * @param filters
-     * @param params
+     * @param staticFilterQuery optional static where clause prepended to generated query
+     * @param filters filter map of field names to filter values
+     * @param params map populated with named query parameters during query construction
      * @return Generated query
      * @should create query correctly
      */
@@ -6507,9 +6537,9 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * Builds a query string to filter a query across several tables
+     * Builds a query string to filter a query across several tables.
      *
-     * @param staticFilterQuery
+     * @param staticFilterQuery optional static where clause prepended to generated query
      * @param filters The filters to use
      * @param params Empty map which will be filled with the used query parameters. These to be added to the query
      * @return A string consisting of a WHERE and possibly JOIN clause of a query
@@ -6987,21 +7017,24 @@ public class JPADAO implements IDAO {
     @Override
     public int deleteViewerMessagesBefore(LocalDateTime date)
             throws DAOException {
-        preQuery();
-        EntityManager em = getEntityManager();
-        try {
+        // Synchronized together with add/update/deleteViewerMessage to prevent concurrent DELETE+INSERT deadlocks on mq_message_properties
+        synchronized (viewerMessageLock) {
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
 
-            em.getTransaction().begin();
+                em.getTransaction().begin();
 
-            Query q = em.createQuery("DELETE FROM ViewerMessage a WHERE a.lastUpdateTime < :date");
-            q.setParameter("date", date);
-            int deleted = q.executeUpdate();
+                Query q = em.createQuery("DELETE FROM ViewerMessage a WHERE a.lastUpdateTime < :date");
+                q.setParameter("date", date);
+                int deleted = q.executeUpdate();
 
-            em.getTransaction().commit();
+                em.getTransaction().commit();
 
-            return deleted;
-        } finally {
-            close(em);
+                return deleted;
+            } finally {
+                close(em);
+            }
         }
     }
 
@@ -7441,12 +7474,12 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * returns String in the form "a.field LIKE :field if filterValue is a string or "a.field = :field" otherwise
+     * returns String in the form "a.field LIKE :field if filterValue is a string or "a.field = :field" otherwise.
      * 
      * @param filterField A field name to search in
      * @param filterValue The value to search for
-     * @param params a parameter
-     * @param entityVariable
+     * @param params map populated with named query parameters during query construction
+     * @param entityVariable single-letter JPQL alias for the entity
      * @return Generated query
      */
     private static String getFilterQuery(String filterField, Object filterValue, Map<String, Object> params, Character entityVariable) {

@@ -36,9 +36,7 @@ public class DcSortingList {
     private final List<String> collections;
 
     /**
-     * <p>
-     * Constructor for DcSortingList.
-     * </p>
+     * Creates a new DcSortingList instance.
      *
      * @param sortAfter the collection after which to insert the collectionlist
      * @param collectionList the sorted list of collections to insert
@@ -50,9 +48,7 @@ public class DcSortingList {
     }
 
     /**
-     * <p>
-     * Constructor for DcSortingList.
-     * </p>
+     * Creates a new DcSortingList instance.
      *
      * @param sortAfter the collection after which to insert the collectionlist
      */
@@ -63,9 +59,7 @@ public class DcSortingList {
     }
 
     /**
-     * <p>
-     * Constructor for DcSortingList.
-     * </p>
+     * Creates a new DcSortingList instance.
      *
      * @param collectionList the sorted list of collections to insert
      */
@@ -76,9 +70,7 @@ public class DcSortingList {
     }
 
     /**
-     * <p>
-     * Constructor for DcSortingList.
-     * </p>
+     * Creates a new DcSortingList instance.
      */
     public DcSortingList() {
         super();
@@ -87,33 +79,27 @@ public class DcSortingList {
     }
 
     /**
-     * <p>
      * Getter for the field <code>sortAfter</code>.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the collection name after which this sorting list should be positioned
      */
     public String getSortAfter() {
         return sortAfter;
     }
 
     /**
-     * <p>
      * Getter for the field <code>collections</code>.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of collection names managed by this sorting list
      */
     public List<String> getCollections() {
         return collections;
     }
 
     /**
-     * <p>
      * addCollection.
-     * </p>
      *
-     * @param collection a {@link java.lang.String} object.
+     * @param collection collection name to append
      */
     public void addCollection(String collection) {
         collections.add(collection);

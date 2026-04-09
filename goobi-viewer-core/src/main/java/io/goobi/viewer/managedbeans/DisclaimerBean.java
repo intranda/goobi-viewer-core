@@ -52,11 +52,10 @@ import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
- * Bean to check whether the disclaimer applies to a page/record as well as provide a configuration json object for the javascript This bean is
- * session scoped, so all stored settings are discarded outside a jsf session
- * 
- * @author florian
+ * JSF backing bean that checks whether the disclaimer applies to a page/record and provides a configuration JSON object for the disclaimer
+ * JavaScript. This bean is session-scoped, so all stored settings are discarded when the JSF session ends.
  *
+ * @author Florian Alpers
  */
 @Named
 @SessionScoped
@@ -73,7 +72,7 @@ public class DisclaimerBean implements Serializable {
     private UserBean userBean;
 
     /**
-     * the {@link LicenseType#LICENSE_TYPE_LEGAL_DISCLAIMER} core license type derived from the dao
+     * the {@link LicenseType#LICENSE_TYPE_LEGAL_DISCLAIMER} core license type derived from the dao.
      */
     private final LicenseType licenseType;
 
@@ -85,7 +84,7 @@ public class DisclaimerBean implements Serializable {
      */
     private Optional<User> currentUser = Optional.empty();
     /**
-     * the consentScope to use as long as the user doesn't change
+     * the consentScope to use as long as the user doesn't change.
      */
     private Optional<ConsentScope> currentConsentScope = Optional.empty();
 
@@ -94,17 +93,17 @@ public class DisclaimerBean implements Serializable {
      */
 
     /**
-     * Default constructor using the IDAO from the {@link DataManager} class
+     * Default constructor using the IDAO from the {@link DataManager} class.
      */
     public DisclaimerBean() {
         this(retrieveDAO(), DataManager.getInstance().getSearchIndex());
     }
 
     /**
-     * Constructor for testing purposes
+     * Creates a new testing purposes instance.
      *
      * @param dao the IDAO implementation to use
-     * @param searchIndex
+     * @param searchIndex Solr search index used for access condition checks
      */
     public DisclaimerBean(IDAO dao, SolrSearchIndex searchIndex) {
         this.dao = dao;
@@ -114,7 +113,7 @@ public class DisclaimerBean implements Serializable {
     }
 
     /**
-     * The configuration object for the disclaimer to be used by the viewerJS.disclaimerModal module
+     * The configuration object for the disclaimer to be used by the viewerJS.disclaimerModal module.
      * 
      * @return a json object
      */
@@ -214,7 +213,7 @@ public class DisclaimerBean implements Serializable {
     /**
      * Setter for unit tests.
      * 
-     * @param activeDocumentBean the activeDocumentBean to set
+
      */
     void setActiveDocumentBean(ActiveDocumentBean activeDocumentBean) {
         this.activeDocumentBean = activeDocumentBean;
@@ -223,7 +222,7 @@ public class DisclaimerBean implements Serializable {
     /**
      * Setter for unit tests.
      * 
-     * @param navigationHelper the navigationHelper to set
+
      */
     void setNavigationHelper(NavigationHelper navigationHelper) {
         this.navigationHelper = navigationHelper;
@@ -232,7 +231,7 @@ public class DisclaimerBean implements Serializable {
     /**
      * Setter for unit tests.
      * 
-     * @param userBean the userBean to set
+
      */
     void setUserBean(UserBean userBean) {
         this.userBean = userBean;

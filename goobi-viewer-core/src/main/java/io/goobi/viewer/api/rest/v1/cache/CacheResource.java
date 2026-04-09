@@ -44,6 +44,7 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.model.job.download.PdfDownloadJob;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -56,6 +57,9 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 
+/**
+ * REST resource providing cache management endpoints for content and image server caches.
+ */
 @Path(ApiUrls.CACHE)
 public class CacheResource {
 
@@ -71,6 +75,7 @@ public class CacheResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Return information about internal cache status", tags = { "cache" })
+    @ApiResponse(responseCode = "200", description = "Cache status information including item counts")
     public String getCacheInfo() throws ContentServerCacheException {
         //        ContentServerCache content = ContentServerCache.getContentCache();
         //        ContentServerCache pdf = ContentServerCache.getPdfCache();
@@ -106,14 +111,17 @@ public class CacheResource {
 
     /**
      *
-     * @param content
-     * @param thumbs
-     * @param pdf
+     * @param content if true, clears the main image content cache
+     * @param thumbs if true, clears the thumbnail cache
+     * @param pdf if true, clears the PDF cache
      * @return {@link IResponseMessage}
      */
     @DELETE
     @Produces({ MediaType.APPLICATION_JSON })
     @AuthorizationBinding
+    @ApiResponse(responseCode = "200", description = "Cache cleared successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid query parameters")
+    @ApiResponse(responseCode = "401", description = "No authorization token provided or token is invalid")
     @Operation(summary = "Requires an authentication token. Clears cache for main images, thumbnails and PDFs for all records", tags = { "cache" })
     public IResponseMessage clearCache(
             @Parameter(description = "If true, main image content cache will be cleared for all records") @QueryParam("content") boolean content,
@@ -129,10 +137,10 @@ public class CacheResource {
 
     /**
      *
-     * @param pi
-     * @param content
-     * @param thumbs
-     * @param pdf
+     * @param pi persistent identifier of the record whose cache entries are deleted
+     * @param content if true, clears the main image content cache for the record
+     * @param thumbs if true, clears the thumbnail cache for the record
+     * @param pdf if true, clears the PDF cache and download jobs for the record
      * @return {@link IResponseMessage}
      * @throws IOException
      */
@@ -140,9 +148,15 @@ public class CacheResource {
     @Path(ApiUrls.CACHE_RECORD)
     @Produces({ MediaType.APPLICATION_JSON })
     @ApiResponse(responseCode = "200", description = "Return the number of deleted cache items")
+    @ApiResponse(responseCode = "400", description = "Missing or empty record identifier")
+    @ApiResponse(responseCode = "401", description = "No authorization token provided or token is invalid")
+    // 404 is returned when the {pi} path parameter does not match any record in the cache
+    @ApiResponse(responseCode = "404", description = "Cache entry not found or record identifier not matched")
     @AuthorizationBinding
     @Operation(summary = "Requires an authentication token. Clears cache for main images, thumbnails and PDFs for all records", tags = { "cache" })
-    public IResponseMessage clearCacheForRecord(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
+    public IResponseMessage clearCacheForRecord(
+            @Parameter(description = "Persistent identifier of the record",
+                    schema = @Schema(pattern = "^[A-Za-z0-9][A-Za-z0-9_.-]*$")) @PathParam("pi") String pi,
             @Parameter(description = "If true, main image content cache will be cleared for all records") @QueryParam("content") boolean content,
             @Parameter(description = "If true, thumbnail cache will be cleared for all records") @QueryParam("thumbs") boolean thumbs,
             @Parameter(description = "If true, PDF cache will be cleared for all records") @QueryParam("pdf") boolean pdf) throws IOException {

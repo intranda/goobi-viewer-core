@@ -49,10 +49,10 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceUnavailableExce
 import io.goobi.viewer.solr.SolrTools;
 
 /**
- * Copied from ContentServer to catch ContentServer exceptions.
+ * JAX-RS exception mapper that converts {@link de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException} instances to HTTP error
+ * responses with appropriate status codes. Copied from ContentServer to catch ContentServer exceptions.
  *
  * @author Florian Alpers
- *
  */
 @Provider
 public class ContentExceptionMapper implements ExceptionMapper<ContentLibException> {
@@ -75,7 +75,6 @@ public class ContentExceptionMapper implements ExceptionMapper<ContentLibExcepti
     @Override
     public Response toResponse(ContentLibException e) {
         Response.Status status;
-        boolean printStackTrace = false;
         ContentLibException ee = e;
         //Get actual exception if e if of the wrapper class ImageManagerException
         if (ee.getClass().equals(ImageManagerException.class) && ee.getCause() != null && ee.getCause() instanceof ContentLibException cle) {
@@ -95,17 +94,19 @@ public class ContentExceptionMapper implements ExceptionMapper<ContentLibExcepti
             status = Status.REQUEST_TIMEOUT;
         } else {
             status = Status.INTERNAL_SERVER_ERROR;
-            printStackTrace = true;
         }
-        if (printStackTrace) {
-            logger.error("Error on request {}: {}", request.getRequestURI(), ee.toString());
+        if (status == Status.INTERNAL_SERVER_ERROR) {
+            // Log the full stack trace server-side for diagnosis, but never include it in
+            // the HTTP response body — stack traces must not be sent to clients.
+            logger.error("Error on request {}: ", request.getRequestURI(), ee);
         } else {
             logger.debug("Faulty request {}: {}", request.getRequestURI(), SolrTools.extractExceptionMessageHtmlTitle(ee.getMessage()));
         }
 
         String mediaType = MediaType.APPLICATION_JSON;
 
-        return Response.status(status).type(mediaType).entity(new ErrorMessage(status, ee, printStackTrace)).build();
+        // printStackTrace=false: the stacktrace field is omitted from the JSON response
+        return Response.status(status).type(mediaType).entity(new ErrorMessage(status, ee, false)).build();
     }
 
     @JsonInclude(Include.NON_NULL)
@@ -124,10 +125,10 @@ public class ContentExceptionMapper implements ExceptionMapper<ContentLibExcepti
         }
 
         /**
-         * 
-         * @param status
-         * @param e
-         * @param printStackTrace
+         *
+         * @param status HTTP status for the error response
+         * @param e the exception that caused the error
+         * @param printStackTrace whether to include the stack trace in the response
          */
         public ErrorMessage(Status status, Throwable e, boolean printStackTrace) {
             this.status = status.getStatusCode();
@@ -142,11 +143,11 @@ public class ContentExceptionMapper implements ExceptionMapper<ContentLibExcepti
         }
 
         /**
-         * 
-         * @param status
-         * @param e
-         * @param errorImage
-         * @param printStackTrace
+         *
+         * @param status HTTP status for the error response
+         * @param e the exception that caused the error
+         * @param errorImage URL or path of an error image to include
+         * @param printStackTrace whether to include the stack trace in the response
          */
         public ErrorMessage(Status status, Throwable e, String errorImage, boolean printStackTrace) {
             this.status = status.getStatusCode();

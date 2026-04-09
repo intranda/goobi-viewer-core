@@ -30,9 +30,7 @@ import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
- * <p>
- * LabeledLink class.
- * </p>
+ * Associates a display label with a target URL for use in navigation and breadcrumb components.
  */
 public class LabeledLink implements Serializable {
 
@@ -45,20 +43,18 @@ public class LabeledLink implements Serializable {
     protected int weight;
 
     /**
-     * Internal constructor for empty value
+     * Internal constructor for empty value.
      */
     private LabeledLink() {
 
     }
 
     /**
-     * <p>
-     * Constructor for LabeledLink.
-     * </p>
+     * Creates a new LabeledLink instance.
      *
-     * @param name a {@link java.lang.String} object.
-     * @param url a {@link java.lang.String} object.
-     * @param weight a int.
+     * @param name display label for the link.
+     * @param url target URL of the link.
+     * @param weight sort weight for ordering.
      */
     public LabeledLink(String name, String url, int weight) {
         this.name = new SimpleMetadataValue(name);
@@ -67,13 +63,11 @@ public class LabeledLink implements Serializable {
     }
 
     /**
-     * <p>
-     * Constructor for LabeledLink.
-     * </p>
+     * Creates a new LabeledLink instance.
      *
-     * @param name a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
-     * @param url a {@link java.lang.String} object.
-     * @param weight a int.
+     * @param name multilingual display label for the link.
+     * @param url target URL of the link.
+     * @param weight sort weight for ordering.
      */
     public LabeledLink(IMetadataValue name, String url, int weight) {
         this.name = name;
@@ -81,9 +75,6 @@ public class LabeledLink implements Serializable {
         this.weight = weight;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -93,9 +84,6 @@ public class LabeledLink implements Serializable {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -125,88 +113,72 @@ public class LabeledLink implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>name</code>.
-     * </p>
      *
-     * @return the name
+     * @return the display label for this link in the current locale
      */
     public String getName() {
         return name.getValue(BeanUtils.getLocale()).orElse("");
     }
 
     /**
-     * <p>
      * Setter for the field <code>name</code>.
-     * </p>
      *
-     * @param name the name to set
+     * @param name the plain-text display label to assign
      */
     public void setName(String name) {
         this.name = new SimpleMetadataValue(name);
     }
 
     /**
-     * <p>
      * Setter for the field <code>name</code>.
-     * </p>
      *
-     * @param name a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
+     * @param name multilingual display label to assign.
      */
     public void setName(IMetadataValue name) {
         this.name = name;
     }
 
     /**
-     * <p>
      * Getter for the field <code>url</code>.
-     * </p>
      *
-     * @return the url
+     * @return the URL this link points to
      */
     public String getUrl() {
         return url;
     }
 
     /**
-     * <p>
      * Setter for the field <code>url</code>.
-     * </p>
      *
-     * @param url the url to set
+     * @param url the URL this link points to
      */
     public void setUrl(String url) {
         this.url = url;
     }
 
     /**
-     * <p>
      * Getter for the field <code>weight</code>.
-     * </p>
      *
-     * @return the weight
+     * @return the sort weight determining the display order of this link
      */
     public int getWeight() {
         return weight;
     }
 
     /**
-     * <p>
      * Setter for the field <code>weight</code>.
-     * </p>
      *
-     * @param weight the weight to set
+     * @param weight the sort weight determining the display order of this link
      */
     public void setWeight(int weight) {
         this.weight = weight;
     }
 
     /**
-     * <p>
      * isLink.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this labeled link has a non-blank URL, false otherwise
      */
     public boolean isLink() {
         return StringUtils.isNotBlank(getUrl());

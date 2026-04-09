@@ -41,10 +41,9 @@ import jakarta.faces.component.html.HtmlPanelGroup;
 import jakarta.faces.context.FacesContext;
 
 /**
- * Wraps a {@link CMSContent} within a {@link CMSPage}
+ * Wraps a {@link CMSContent} within a {@link CMSPage}.
  * 
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class CMSContentItem {
 
@@ -56,7 +55,7 @@ public class CMSContentItem {
     private final String itemId;
 
     /**
-     * The actual {@link CMSContent} wrapped in this item
+     * The actual {@link CMSContent} wrapped in this item.
      */
     private final CMSContent content;
 
@@ -87,14 +86,14 @@ public class CMSContentItem {
 
     /**
      * 
-     * @param itemId
-     * @param content
-     * @param label
-     * @param description
-     * @param htmlGroup
-     * @param jsfComponent
-     * @param owningComponent
-     * @param required
+     * @param itemId unique identifier within the owning component
+     * @param content the CMS content wrapped by this item
+     * @param label human-readable label shown in the backend
+     * @param description explanatory text shown in the backend
+     * @param htmlGroup optional HTML group name for grouping content items
+     * @param jsfComponent the JSF component used to render this item
+     * @param owningComponent the component that contains this content item
+     * @param required true if this content item must not be empty
      */
     public CMSContentItem(String itemId, CMSContent content, String label, String description, String htmlGroup,
             JsfComponent jsfComponent,
@@ -157,7 +156,10 @@ public class CMSContentItem {
     }
 
     /**
-     * Two CMSContentItems are equal if their {@link #itemId}s are equal
+     * Two CMSContentItems are equal if their {@link #itemId}s are equal.
+     *
+     * @param obj the object to compare for equality
+     * @return true if the given object is equal to this instance, false otherwise
      */
     @Override
     public boolean equals(Object obj) {

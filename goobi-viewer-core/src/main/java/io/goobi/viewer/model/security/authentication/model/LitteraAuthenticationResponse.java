@@ -25,48 +25,40 @@ package io.goobi.viewer.model.security.authentication.model;
  * Representation of the Littera authentication response which is delivered as xml. It only contains the single information if a login attempt
  * succeeded or not
  *
- * @author florian
+ * @author Florian Alpers
  */
 public class LitteraAuthenticationResponse {
 
     private boolean authenticationSuccessful;
 
     /**
-     * <p>
-     * Constructor for LitteraAuthenticationResponse.
-     * </p>
+     * Creates a new LitteraAuthenticationResponse instance.
      */
     public LitteraAuthenticationResponse() {
     }
 
     /**
-     * <p>
-     * Constructor for LitteraAuthenticationResponse.
-     * </p>
+     * Creates a new LitteraAuthenticationResponse instance.
      *
-     * @param success a boolean.
+     * @param success true if authentication succeeded
      */
     public LitteraAuthenticationResponse(boolean success) {
         this.authenticationSuccessful = success;
     }
 
     /**
-     * <p>
      * isAuthenticationSuccessful.
-     * </p>
      *
-     * @return the authenticationSuccessful
+     * @return true if the authentication attempt succeeded, false otherwise
      */
     public boolean isAuthenticationSuccessful() {
         return authenticationSuccessful;
     }
 
     /**
-     * <p>
      * Setter for the field <code>authenticationSuccessful</code>.
-     * </p>
      *
-     * @param authenticationSuccessful the authenticationSuccessful to set
+     * @param authenticationSuccessful true if the authentication attempt succeeded
      */
     public void setAuthenticationSuccessful(boolean authenticationSuccessful) {
         this.authenticationSuccessful = authenticationSuccessful;

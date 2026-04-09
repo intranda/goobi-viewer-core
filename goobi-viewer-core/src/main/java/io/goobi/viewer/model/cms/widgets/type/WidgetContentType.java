@@ -24,12 +24,17 @@ package io.goobi.viewer.model.cms.widgets.type;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 
+/**
+ * Common interface for all CMS sidebar-widget content types ({@code DefaultWidgetType},
+ * {@code AutomaticWidgetType}, {@code CustomWidgetType}), providing metadata such as label,
+ * icon, filename, and page-level display constraints.
+ */
 public interface WidgetContentType {
 
     String getIconName();
 
     /**
-     * Get a message key providing a label for this widget.
+     * Gets a message key providing a label for this widget.
      * 
      * @return {@link String}
      */
@@ -50,9 +55,9 @@ public interface WidgetContentType {
     public String getName();
 
     /**
-     * Get the WidgetContentType for which {@link #getName()} method matches the given name.
+     * Gets the WidgetContentType for which {@link #getName()} method matches the given name.
      * 
-     * @param name
+     * @param name the name to look up
      * @return null if no matching type exists
      */
     public static WidgetContentType valueOf(String name) {
@@ -72,11 +77,12 @@ public interface WidgetContentType {
     }
 
     /**
-     * Get the corresponding generation type. Widgets of class {@link DefaultWidgetType} have the generation type {@link WidgetGenerationType#DEFAULT}
-     * Widgets of class {@link AutomaticWidgetType} have the generation type {@link WidgetGenerationType#AUTOMATIC} Widgets of class
+     * Gets the corresponding generation type. Widgets of class {@link DefaultWidgetType} have the generation type
+     * {@link WidgetGenerationType#DEFAULT} Widgets of class {@link AutomaticWidgetType} have the generation type
+     * {@link WidgetGenerationType#AUTOMATIC} Widgets of class
      * {@link CustomWidgetType} have the generation type {@link WidgetGenerationType#CUSTOM}
      * 
-     * @param type
+     * @param type the widget content type to resolve
      * @return {@link WidgetGenerationType}
      */
     public static WidgetGenerationType getGenerationType(WidgetContentType type) {

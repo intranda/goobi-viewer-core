@@ -22,9 +22,7 @@
 package io.goobi.viewer.model.viewer.object;
 
 /**
- * <p>
- * Point3D class.
- * </p>
+ * Represents a point in 3D space with x, y, and z coordinates.
  *
  * @author Florian Alpers
  */
@@ -35,9 +33,7 @@ public class Point3D {
     private double z;
 
     /**
-     * <p>
-     * Constructor for Point3D.
-     * </p>
+     * Creates a new Point3D instance.
      *
      * @param x a double.
      * @param y a double.
@@ -51,66 +47,54 @@ public class Point3D {
     }
 
     /**
-     * <p>
      * Getter for the field <code>x</code>.
-     * </p>
      *
-     * @return the x
+     * @return the X coordinate value
      */
     public double getX() {
         return x;
     }
 
     /**
-     * <p>
      * Setter for the field <code>x</code>.
-     * </p>
      *
-     * @param x the x to set
+     * @param x the X coordinate value
      */
     public void setX(double x) {
         this.x = x;
     }
 
     /**
-     * <p>
      * Getter for the field <code>y</code>.
-     * </p>
      *
-     * @return the y
+     * @return the Y coordinate value
      */
     public double getY() {
         return y;
     }
 
     /**
-     * <p>
      * Setter for the field <code>y</code>.
-     * </p>
      *
-     * @param y the y to set
+     * @param y the Y coordinate value
      */
     public void setY(double y) {
         this.y = y;
     }
 
     /**
-     * <p>
      * Getter for the field <code>z</code>.
-     * </p>
      *
-     * @return the z
+     * @return the Z coordinate value
      */
     public double getZ() {
         return z;
     }
 
     /**
-     * <p>
      * Setter for the field <code>z</code>.
-     * </p>
      *
-     * @param z the z to set
+     * @param z the Z coordinate value
      */
     public void setZ(double z) {
         this.z = z;

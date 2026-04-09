@@ -26,7 +26,7 @@ import java.util.Arrays;
 import com.ibm.icu.impl.UResource.Array;
 
 /**
- * @author florian
+ * @author Florian Alpers
  *
  *         A list of types of requets to count independently for usage statistics. When recording a request in {@link UsageStatisticsRecorder} you
  *         need to pass an appropriate type. Statistics for each type are recorded independently
@@ -34,15 +34,15 @@ import com.ibm.icu.impl.UResource.Array;
 public enum RequestType {
 
     /**
-     * Call of a viewer html page belonging to a record
+     * Call of a viewer html page belonging to a record.
      */
     RECORD_VIEW(0, 1, "statistics__views"),
     /**
-     * Download of a file (pdf, epub) belonging to a record
+     * Download of a file (pdf, epub) belonging to a record.
      */
     FILE_DOWNLOAD(2, 3, "statistics__downloads"),
     /**
-     * REST-call to an image or other media resource of a record
+     * REST-call to an image or other media resource of a record.
      */
     MEDIA_RESOURCE(4, 5, "statistics__media_requests");
 
@@ -57,7 +57,7 @@ public enum RequestType {
     }
 
     /**
-     * Get a message key serving as label to this type
+     * Gets a message key serving as label to this type.
      * 
      * @return a message key
      */
@@ -66,25 +66,25 @@ public enum RequestType {
     }
 
     /**
-     * Index of the total request count within the array of values of the SOLR-field recording requests for a record
-     * 
-     * @return the totalCountIndex
+     * Index of the total request count within the array of values of the SOLR-field recording requests for a record.
+     *
+     * @return the index position of the total request count in the Solr field value array
      */
     public int getTotalCountIndex() {
         return totalCountIndex;
     }
 
     /**
-     * Index of the count of requests by a unique http session within the array of values of the SOLR-field recording requests for a record
-     * 
-     * @return the uniqueCountIndex
+     * Index of the count of requests by a unique http session within the array of values of the SOLR-field recording requests for a record.
+     *
+     * @return the index position of the unique session request count in the Solr field value array
      */
     public int getUniqueCountIndex() {
         return uniqueCountIndex;
     }
 
     /**
-     * Index of the count for this type in {@link RequestType} within {@link SessionUsageStatistics}
+     * Index of the count for this type in {@link RequestType} within {@link SessionUsageStatistics}.
      * 
      * @return the ordinal of the instance
      */
@@ -93,10 +93,10 @@ public enum RequestType {
     }
 
     /**
-     * Get the RequestType for the given index of the count array in {@link RequestType} within {@link SessionUsageStatistics}
-     * 
-     * @param index
-     * @return the type
+     * Get the RequestType for the given index of the count array in {@link RequestType} within {@link SessionUsageStatistics}.
+     *
+     * @param index position in the session count array
+     * @return the RequestType matching the given session count index, or null if none matches
      */
     public static RequestType getTypeForSessionCountIndex(int index) {
         RequestType[] types = RequestType.values();
@@ -104,10 +104,10 @@ public enum RequestType {
     }
 
     /**
-     * Get the RequestType for the given index of the count array for total count in the SOLR field for the counts of a record identifier
-     * 
-     * @param index
-     * @return the type
+     * Gets the RequestType for the given index of the count array for total count in the SOLR field for the counts of a record identifier.
+     *
+     * @param index position in the total count array in the Solr field
+     * @return the RequestType matching the given total count index, or null if none matches
      */
     public static RequestType getTypeForTotalCountIndex(int index) {
         RequestType[] types = RequestType.values();
@@ -115,10 +115,10 @@ public enum RequestType {
     }
 
     /**
-     * Get the RequestType for the given index of the count array for unique count in the SOLR field for the counts of a record identifier
-     * 
-     * @param index
-     * @return the type
+     * Gets the RequestType for the given index of the count array for unique count in the SOLR field for the counts of a record identifier.
+     *
+     * @param index position in the unique count array in the Solr field
+     * @return the RequestType matching the given unique count index, or null if none matches
      */
     public static RequestType getTypeForUniqueCountIndex(int index) {
         RequestType[] types = RequestType.values();
@@ -126,7 +126,7 @@ public enum RequestType {
     }
 
     /**
-     * Get the values for which request are recorded
+     * Gets the values for which request are recorded.
      * 
      * @return An array
      */

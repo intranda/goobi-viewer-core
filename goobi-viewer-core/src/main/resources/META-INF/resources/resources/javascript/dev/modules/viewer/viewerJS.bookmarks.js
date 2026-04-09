@@ -93,20 +93,22 @@ var viewerJS = (function (viewer) {
 
                 let added = this.contained(pi, page, logid);
                 if (_debug) console.log('set added to ' + added + ' for ', pi, page);
-                let $span = $button.find('span');
+                // Use a specific selector to avoid accidentally initializing Bootstrap
+                // tooltips (with default hover trigger) on hidden child spans like
+                // .bookmark-toggle__icon--filled, which would cause Bootstrap 4 to
+                // throw "Please use show on visible elements" when _enter fires.
+                let $span = $button.find('.bookmark-toggle');
                 if (added) {
                     $button.addClass('added');
                     $span
                         .tooltip('hide')
-                        .attr('title', $span.attr('data-bookmark-list-title-added'))
-                        .tooltip('_fixTitle');
+                        .attr('data-original-title', $span.attr('data-bookmark-list-title-added'));
                     $button.attr('aria-checked', true);
                 } else {
                     $button.removeClass('added');
                     $span
                         .tooltip('hide')
-                        .attr('title', $span.attr('data-bookmark-list-title-add'))
-                        .tooltip('_fixTitle');
+                        .attr('data-original-title', $span.attr('data-bookmark-list-title-add'));
                     $button.attr('aria-checked', false);
                 }
             });

@@ -44,8 +44,7 @@ import jakarta.persistence.Table;
  * Interface for all classes containing a specific kind of content for a {@link CMSPage}. Each CMSContent on a CMSPage is wrapped in a
  * {@link CMSContentItem} which itself is contained in a {@link CMSComponent}.
  * 
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "cms_content")
@@ -60,7 +59,7 @@ public abstract class CMSContent {
 
     /**
      * Mirrors the {@link CMSContentItem#getItemId()} of the enclosing {@link CMSContentItem} Used to identify the persistent content with the
-     * configuration from the xml component file
+     * configuration from the xml component file.
      */
     @Column(name = "item_id", length = 20)
     private String itemId;
@@ -115,8 +114,8 @@ public abstract class CMSContent {
      * Writes HTML fragment value as file for re-indexing. HTML/text fragments are exported directly. Attached media items are exported as long as
      * their content type is one of the supported text document formats.
      *
-     * @param outputFolderPath a {@link java.lang.String} object.
-     * @param namingScheme a {@link java.lang.String} object.
+     * @param outputFolderPath filesystem path to the export output folder
+     * @param namingScheme base filename scheme for exported files
      * @return Exported Files
      * @should write files correctly
      * @throws java.io.IOException if any.
@@ -125,10 +124,10 @@ public abstract class CMSContent {
     public abstract List<File> exportHtmlFragment(String outputFolderPath, String namingScheme) throws IOException, ViewerConfigurationException;
 
     /**
-     * Method to call when loading a CMSPage including this content item
+     * Method to call when loading a CMSPage including this content item.
      * 
-     * @param resetResults
-     * @param component
+     * @param resetResults if true, any cached results should be discarded and reloaded
+     * @param component the enclosing CMS component triggering the page load
      * @return a JSF action response
      * @throws PresentationException
      */
@@ -140,25 +139,22 @@ public abstract class CMSContent {
         return this instanceof TranslatableCMSContent;
     }
 
-    /**
-     * 
-     * @return the id
-     */
+    
     public Long getId() {
         return this.id;
     }
 
     /**
-     * 
-     * @param id
+     *
+     * @param id the database id to set
      */
     public void setId(Long id) {
         this.id = id;
     }
 
     /**
-     * @param width
-     * @param height
+     * @param width optional target width in pixels
+     * @param height optional target height in pixels
      * @return a string representing this contentItem for use in frontend-components. May be an empty string for content with no clear String
      *         representation
      */
@@ -168,17 +164,14 @@ public abstract class CMSContent {
         return this.getData((Integer) null, (Integer) null);
     }
 
-    /**
-     * 
-     * @return the required
-     */
+    
     public boolean isRequired() {
         return required;
     }
 
     /**
-     * 
-     * @param required
+     *
+     * @param required true if this content item must not be empty
      */
     public void setRequired(boolean required) {
         this.required = required;

@@ -25,30 +25,34 @@ package io.goobi.viewer.model.viewer;
 import java.nio.file.Path;
 import java.util.List;
 
+/**
+ * Holds the file-system paths and ordered file lists for a single digitised record (dataset),
+ * including its metadata file, image folder, PDF folder, ALTO folder, and corresponding file lists.
+ */
 public class Dataset {
 
-    /** document identifier */
+    /** document identifier. */
     private String pi;
 
-    /** path to metadata file */
+    /** path to metadata file. */
     private Path metadataFilePath;
 
-    /** path to image folder */
+    /** path to image folder. */
     private Path mediaFolderPath;
 
-    /** path to pdf folder */
+    /** path to pdf folder. */
     private Path pdfFolderPath;
 
-    /** path to alto folder */
+    /** path to alto folder. */
     private Path altoFolderPath;
 
-    /** ordered image file list */
+    /** ordered image file list. */
     private List<Path> mediaFiles;
 
-    /** ordered pdf file list */
+    /** ordered pdf file list. */
     private List<Path> pdfFiles;
 
-    /** ordered alto file list */
+    /** ordered alto file list. */
     private List<Path> altoFiles;
 
     public String getPi() {

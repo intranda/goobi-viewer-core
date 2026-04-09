@@ -26,6 +26,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
 
+/**
+ * Utility class for determining and formatting file sizes. Provides methods to read the byte
+ * size of a file from the filesystem and to format raw byte counts as human-readable strings
+ * with appropriate units (B, KB, MB, etc.).
+ */
 public final class FileSizeCalculator {
 
     private FileSizeCalculator() {

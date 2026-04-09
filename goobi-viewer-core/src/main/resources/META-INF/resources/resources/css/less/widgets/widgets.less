@@ -4,22 +4,21 @@
    ==============================================================*/
 /* WIDGETS */
 /* BLOcK */
-.widget {
+.widget { 
     margin-bottom: 20px;
-    width: 100%;
+    width: 100%; 
+//    .icon-wrapper svg {
+//        color: @widget-icon-color-body;
+//    }
 
-    .icon-wrapper svg {
-        color: @widget-icon-color-body;
-    }
-
-    &__topbar .icon-wrapper svg,
-    .input-group-addon .icon-wrapper svg {
-        color: @widget-icon-color-topbar;
-    }
-
-    [class*='__collapse'] .icon-wrapper svg {
-        color: @widget-icon-color-expand;
-    }
+//    &__topbar .icon-wrapper svg,
+//    .input-group-addon .icon-wrapper svg {
+//        color: @widget-icon-color-topbar;
+//    }
+//
+//    [class*='__collapse'] .icon-wrapper svg {
+//        color: @widget-icon-color-expand;
+//    }
 
     .badge .icon-wrapper svg,
     .icon-wrapper.icon-badge svg {
@@ -51,6 +50,9 @@
     &__topbar-icon-collapsible {
         display: none;
     }
+	&__topbar-icon-svg {
+		color: @widget-icon-color-topbar;
+	}
     &__title {
         margin-top: 0;
         margin-bottom: 0;
@@ -97,6 +99,9 @@
             overflow: hidden;
         }
     }
+	&__body-icon-svg {
+		color: @widget-icon-color-body;
+	}
 
     &__description-text {
         margin-bottom: 10px;

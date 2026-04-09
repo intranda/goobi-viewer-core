@@ -39,10 +39,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 /**
- * Class to persist sliders ("slideshows") created in CMS backend
+ * Class to persist sliders ("slideshows") created in CMS backend.
  * 
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "cms_sliders")
@@ -80,8 +79,9 @@ public class CMSSlider implements Serializable {
     private String style = "base";
 
     /**
-     * Copy constructor
-     * @param o
+     * Copies constructor.
+     *
+     * @param o slider to copy
      */
     public CMSSlider(CMSSlider o) {
         this.id = o.id;
@@ -97,7 +97,7 @@ public class CMSSlider implements Serializable {
     }
 
     /**
-     * persistence constructor
+     * Persistence constructor.
      */
     public CMSSlider() {
 
@@ -106,120 +106,88 @@ public class CMSSlider implements Serializable {
     /**
      * Default constructor. Provides the source type which should be treated as final
      *
-     * @param type
+     * @param type source type determining how slider entries are loaded
      */
     public CMSSlider(SourceType type) {
         this.sourceType = type;
     }
 
-    /**
-     * @return the id
-     */
+    
     public Long getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
+    
     public void setId(Long id) {
         this.id = id;
     }
 
-    /**
-     * @return the name
-     */
+    
     public String getName() {
         return name;
     }
 
-    /**
-     * @param name the name to set
-     */
+    
     public void setName(String name) {
         this.name = name;
     }
 
-    /**
-     * @return the description
-     */
+    
     public String getDescription() {
         return description;
     }
 
-    /**
-     * @param description the description to set
-     */
+    
     public void setDescription(String description) {
         this.description = description;
     }
 
-    /**
-     * @return the solrQuery
-     */
+    
     public String getSolrQuery() {
         return solrQuery;
     }
 
-    /**
-     * @param solrQuery the solrQuery to set
-     */
+    
     public void setSolrQuery(String solrQuery) {
         this.solrQuery = solrQuery;
     }
 
-    /**
-     * @return the categories
-     */
+    
     public List<String> getCategories() {
         return categories;
     }
 
-    /**
-     * @param categories the categories to set
-     */
+    
     public void setCategories(List<String> categories) {
         this.categories = categories;
     }
 
-    /**
-     * @return the collections
-     */
+    
     public List<String> getCollections() {
         return collections;
     }
 
-    /**
-     * @param collections the collections to set
-     */
+    
     public void setCollections(List<String> collections) {
         this.collections = collections;
     }
 
-    /**
-     * @return the serialversionuid
-     */
+    
     public static long getSerialversionuid() {
         return serialVersionUID;
     }
 
-    /**
-     * @return the style
-     */
+    
     public String getStyle() {
         return style;
     }
 
-    /**
-     * @param style the style to set
-     */
+    
     public void setStyle(String style) {
         this.style = style;
     }
 
-    /**
-     * @return the sourceType
-     */
+    
     public SourceType getSourceType() {
         return sourceType;
     }
@@ -242,6 +210,10 @@ public class CMSSlider implements Serializable {
         }
     }
 
+    /**
+     * Enumerates the data source types from which a {@link CMSSlider} can retrieve its content, such as Solr-queried records, collections, CMS pages,
+     * or media items.
+     */
     public enum SourceType {
         RECORDS("label__records"), //has solrQuery
         COLLECTIONS("cms_collections"), //has collections
@@ -259,30 +231,22 @@ public class CMSSlider implements Serializable {
         }
     }
 
-    /**
-     * @return the sortField
-     */
+    
     public String getSortField() {
         return sortField;
     }
 
-    /**
-     * @param sortField the sortField to set
-     */
+    
     public void setSortField(String sortField) {
         this.sortField = sortField;
     }
 
-    /**
-     * @param maxEntries the maxEntries to set
-     */
+    
     public void setMaxEntries(int maxEntries) {
         this.maxEntries = maxEntries;
     }
 
-    /**
-     * @return the maxEntries
-     */
+    
     public int getMaxEntries() {
         return maxEntries;
     }

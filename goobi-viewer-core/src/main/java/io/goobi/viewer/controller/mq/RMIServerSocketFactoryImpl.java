@@ -29,7 +29,7 @@ import java.rmi.server.RMIServerSocketFactory;
 import javax.net.ServerSocketFactory;
 
 /**
- * taken from: https://vafer.org/blog/20061010091658/
+ * Taken from: https://vafer.org/blog/20061010091658/.
  */
 
 public class RMIServerSocketFactoryImpl implements RMIServerSocketFactory {

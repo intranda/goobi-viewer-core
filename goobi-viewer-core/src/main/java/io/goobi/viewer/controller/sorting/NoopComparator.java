@@ -24,6 +24,12 @@ package io.goobi.viewer.controller.sorting;
 import java.io.Serializable;
 import java.util.Comparator;
 
+/**
+ * No-operation comparator that always returns 0, effectively treating all elements as equal and
+ * preserving the original iteration order.
+ *
+ * @param <T> the type of elements to be compared
+ */
 public class NoopComparator<T> implements Comparator<T>, Serializable {
 
     private static final long serialVersionUID = -4727846742051668891L;

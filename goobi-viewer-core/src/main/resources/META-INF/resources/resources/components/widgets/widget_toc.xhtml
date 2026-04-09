@@ -58,7 +58,7 @@
                                     <!-- CLOSE -->
                                     <button
                                         type="button"
-                                        class="btn btn--clean"
+                                        class="btn btn--clean widget-toc__title-expand-all-button"
                                         data-action="collapse-all"
                                         title="#{msg.allClose}"
                                         data-toggle="tooltip"
@@ -66,12 +66,12 @@
                                         aria-label="#{msg.allClose}">
                                         <util:icon
                                             icon="square-rounded-minus"
-                                            svgClass="icon icon-lg" />
+                                            svgClass="icon icon-lg widget__topbar-icon-svg widget-toc__topbar-icon-svg" />
                                     </button>
                                     <!-- OPEN -->
                                     <button
                                         type="button"
-                                        class="btn btn--clean"
+                                        class="btn btn--clean widget-toc__title-close-all-button"
                                         data-action="expand-all"
                                         title="#{msg.allOpen}"
                                         data-toggle="tooltip"
@@ -79,7 +79,7 @@
                                         aria-label="#{msg.allOpen}">
                                         <util:icon
                                             icon="square-rounded-plus"
-                                            svgClass="icon icon-lg" />
+                                            svgClass="icon icon-lg widget__topbar-icon-svg widget-toc__topbar-icon-svg" />
                                     </button>
                                 </div>
                             </ui:fragment>
@@ -113,10 +113,10 @@
                                                         aria-label="#{tocElement.expanded ? msg.allClose : msg.allOpen}">
                                                         <util:icon
                                                             icon="square-rounded-plus"
-                                                            svgClass="icon icon-lg widget-toc__icon-expand" />
+                                                            svgClass="icon icon-lg widget__body-icon-svg widget-toc__body-icon-svg widget-toc__expand-svg" />
                                                         <util:icon
                                                             icon="square-rounded-minus"
-                                                            svgClass="icon icon-lg widget-toc__icon-collapse" />
+                                                            svgClass="icon icon-lg widget__body-icon-svg widget-toc__body-icon-svg widget-toc__collapse-svg" />
                                                     </button>
                                                 </div>
                                             </ui:fragment>
