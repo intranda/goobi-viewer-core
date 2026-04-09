@@ -1102,7 +1102,8 @@ public class ActiveDocumentBean implements Serializable {
         int page = pages[0];
         int page2 = pages[1];
 
-        if (viewManager != null) {
+        // Guard against null pageLoader: ViewManager may exist but not yet have a page loader initialized
+        if (viewManager != null && viewManager.getPageLoader() != null) {
             page = Math.max(page, viewManager.getPageLoader().getFirstPageOrder());
             page = Math.min(page, viewManager.getPageLoader().getLastPageOrder());
             if (page2 != Integer.MAX_VALUE) {
@@ -1177,7 +1178,7 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getFirstPageUrl() throws IndexUnreachableException {
-        if (viewManager != null) {
+        if (viewManager != null && viewManager.getPageLoader() != null) {
             int image = viewManager.getPageLoader().getFirstPageOrder();
             if (viewManager.isDoublePageMode()) {
                 return getPageUrl(image + "-" + image);
@@ -1196,7 +1197,7 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getLastPageUrl() throws IndexUnreachableException {
-        if (viewManager != null) {
+        if (viewManager != null && viewManager.getPageLoader() != null) {
             int image = viewManager.getPageLoader().getLastPageOrder();
             if (viewManager.isDoublePageMode()) {
                 return getPageUrl(image + "-" + image);
