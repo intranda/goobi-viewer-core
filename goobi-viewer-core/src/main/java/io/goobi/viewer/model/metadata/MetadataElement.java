@@ -439,7 +439,11 @@ public class MetadataElement implements Serializable {
      * @return the list of {@link Metadata} objects, optionally truncated at the fold index
      */
     public List<Metadata> getMetadataList(boolean beforeFold) {
-        List<Metadata> mdList = (beforeFold && isHasMetadataListFold()) ? metadataList.subList(0, this.metadataFoldIndex) : metadataList;
+        // Use a defensive copy of the subList to prevent ConcurrentModificationException when this
+        // MetadataElement is held by a session-scoped bean (e.g., HighlightsBean) and accessed concurrently.
+        List<Metadata> mdList = (beforeFold && isHasMetadataListFold())
+                ? new ArrayList<>(metadataList.subList(0, this.metadataFoldIndex))
+                : metadataList;
         return Metadata.filterMetadata(mdList, selectedRecordLanguage, null);
     }
 
@@ -453,7 +457,10 @@ public class MetadataElement implements Serializable {
     }
 
     public List<Metadata> getMetadataListAfterFold() {
-        List<Metadata> mdList = isHasMetadataListFold() ? metadataList.subList(this.metadataFoldIndex, this.metadataList.size()) : metadataList;
+        // Use a defensive copy of the subList to prevent ConcurrentModificationException (same reason as getMetadataList).
+        List<Metadata> mdList = isHasMetadataListFold()
+                ? new ArrayList<>(metadataList.subList(this.metadataFoldIndex, this.metadataList.size()))
+                : metadataList;
         return Metadata.filterMetadata(mdList, selectedRecordLanguage, null);
     }
 
