@@ -38,6 +38,7 @@ import org.jdom2.output.XMLOutputter;
 import org.jdom2.transform.XSLTransformException;
 import org.jdom2.transform.XSLTransformer;
 
+import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetAction;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
@@ -207,7 +208,11 @@ public class MetsResolver extends HttpServlet {
                         outputter.output(cleanDoc, response.getOutputStream());
                     }
                 } catch (IOException | JDOMException e) {
-                    logger.error(e.getMessage());
+                    if (e instanceof IOException && GetAction.isClientAbort(e)) {
+                        logger.debug("Client {} disconnected while serving METS for {}: {}", clientIp(request), id, e.getMessage());
+                    } else {
+                        logger.error(e.getMessage());
+                    }
                 }
             } else {
                 // Unfiltered access
@@ -219,7 +224,11 @@ public class MetsResolver extends HttpServlet {
                     }
                     out.flush();
                 } catch (IOException e) {
-                    logger.error(e.getMessage());
+                    if (GetAction.isClientAbort(e)) {
+                        logger.debug("Client {} disconnected while serving METS for {}: {}", clientIp(request), id, e.getMessage());
+                    } else {
+                        logger.error(e.getMessage());
+                    }
                 }
             }
         } catch (FileNotFoundException e) {
@@ -230,11 +239,15 @@ public class MetsResolver extends HttpServlet {
                 logger.error(e1.getMessage());
             }
         } catch (IOException e) {
-            logger.error(e.getMessage());
-            try {
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-            } catch (IOException e1) {
-                logger.error(e1.getMessage());
+            if (GetAction.isClientAbort(e)) {
+                logger.debug("Client {} disconnected while serving METS for {}: {}", clientIp(request), id, e.getMessage());
+            } else {
+                logger.error(e.getMessage());
+                try {
+                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+                } catch (IOException e1) {
+                    logger.error(e1.getMessage());
+                }
             }
         }
     }
@@ -256,5 +269,19 @@ public class MetsResolver extends HttpServlet {
         }
 
         return null;
+    }
+
+    /**
+     * Returns the client IP address, preferring the X-Forwarded-For header (first entry) over the direct remote address.
+     *
+     * @param request the HTTP request
+     * @return client IP string
+     */
+    private static String clientIp(HttpServletRequest request) {
+        String forwarded = request.getHeader("X-Forwarded-For");
+        if (forwarded != null && !forwarded.isEmpty()) {
+            return forwarded.split(",")[0].trim();
+        }
+        return request.getRemoteAddr();
     }
 }
