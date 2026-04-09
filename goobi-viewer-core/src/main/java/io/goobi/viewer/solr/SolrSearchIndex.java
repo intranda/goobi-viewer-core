@@ -810,15 +810,12 @@ public class SolrSearchIndex implements java.io.Closeable {
      * @return Data repository name for the record with the given identifier; null if not in a repository
      * @throws PresentationException
      * @throws IndexUnreachableException
-     * @should return value from map if available
+     * @should always return value from Solr
      */
     public String findDataRepositoryName(String pi) throws PresentationException, IndexUnreachableException {
-        if (!dataRepositoryNames.containsKey(pi)) {
-            String dataRepositoryName = findDataRepository(pi);
-            updateDataRepositoryNames(pi, dataRepositoryName);
-        }
-
-        return dataRepositoryNames.get(pi);
+        String dataRepositoryName = findDataRepository(pi);
+        updateDataRepositoryNames(pi, dataRepositoryName);
+        return dataRepositoryName;
     }
 
     /**
