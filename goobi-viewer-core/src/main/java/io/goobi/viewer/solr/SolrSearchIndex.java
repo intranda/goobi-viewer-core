@@ -97,15 +97,10 @@ public class SolrSearchIndex implements java.io.Closeable {
 
     public static final int MAX_HITS_EXPANDED = 100000;
 
-    /** Duration in ms after which cached data repository names are re-fetched from Solr. */
-    private static final long DATA_REPOSITORY_CACHE_TTL = 10 * 60 * 1000;
-
     private long lastPing = 0;
 
     /** Application-scoped map containing already looked up data repository names of records. */
     private Map<String, String> dataRepositoryNames = new HashMap<>();
-    /** Timestamps of when each data repository name was last fetched from Solr. */
-    private Map<String, Long> dataRepositoryTimestamps = new HashMap<>();
 
     private SolrClient client;
 
@@ -815,17 +810,12 @@ public class SolrSearchIndex implements java.io.Closeable {
      * @return Data repository name for the record with the given identifier; null if not in a repository
      * @throws PresentationException
      * @throws IndexUnreachableException
-     * @should return value from map if available
-     * @should re-fetch from Solr after TTL expires
+     * @should always return value from Solr
      */
     public String findDataRepositoryName(String pi) throws PresentationException, IndexUnreachableException {
-        Long lastFetched = dataRepositoryTimestamps.get(pi);
-        if (lastFetched == null || System.currentTimeMillis() - lastFetched > DATA_REPOSITORY_CACHE_TTL) {
-            String dataRepositoryName = findDataRepository(pi);
-            updateDataRepositoryNames(pi, dataRepositoryName);
-        }
-
-        return dataRepositoryNames.get(pi);
+        String dataRepositoryName = findDataRepository(pi);
+        updateDataRepositoryNames(pi, dataRepositoryName);
+        return dataRepositoryName;
     }
 
     /**
@@ -836,7 +826,6 @@ public class SolrSearchIndex implements java.io.Closeable {
      */
     public void updateDataRepositoryNames(String pi, String dataRepositoryName) {
         dataRepositoryNames.put(pi, dataRepositoryName);
-        dataRepositoryTimestamps.put(pi, System.currentTimeMillis());
     }
 
     /**

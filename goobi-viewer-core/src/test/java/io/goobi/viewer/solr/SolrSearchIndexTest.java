@@ -261,12 +261,13 @@ class SolrSearchIndexTest extends AbstractSolrEnabledTest {
 
     /**
      * @see SolrSearchIndex#findDataRepositoryName(String)
-     * @verifies return value from map if available
+     * @verifies always return value from Solr
      */
     @Test
-    void findDataRepositoryName_shouldReturnValueFromMapIfAvailable() throws Exception {
-        DataManager.getInstance().getSearchIndex().updateDataRepositoryNames("PPN123", "superrepo");
-        Assertions.assertEquals("superrepo", DataManager.getInstance().getSearchIndex().findDataRepositoryName("PPN123"));
+    void findDataRepositoryName_shouldAlwaysReturnValueFromSolr() throws Exception {
+        // Even with a cached value, findDataRepositoryName should return the current Solr value
+        DataManager.getInstance().getSearchIndex().getDataRepositoryNames().put("PPN123", "superrepo");
+        Assertions.assertNull(DataManager.getInstance().getSearchIndex().findDataRepositoryName("PPN123"));
     }
 
     /**
