@@ -701,7 +701,12 @@ public class CmsPageEditBean implements Serializable {
         if (!user.hasPrivilegeForAllCategories()) {
             List<CMSCategory> allowedCategories = user.getAllowedCategories(cmsBean.getAllCategories());
             if (page.getCategories().isEmpty() && !allowedCategories.isEmpty()) {
-                page.setCategories(allowedCategories.subList(0, 1));
+                // Use a defensive copy instead of a raw subList view: User.getAllowedCategories()
+                // can return the original allCategories list directly (for superusers/full-access),
+                // so subList(0,1) would be a live view of a shared list. If that list is modified
+                // by a concurrent request, JSF's ListDataModel.isRowAvailable() throws
+                // ConcurrentModificationException during rendering.
+                page.setCategories(new ArrayList<>(allowedCategories.subList(0, 1)));
             }
         }
 
@@ -829,7 +834,16 @@ public class CmsPageEditBean implements Serializable {
 
     /**
      * Setter for unit tests.
-     * 
+     *
+
+     */
+    void setCmsBean(CmsBean cmsBean) {
+        this.cmsBean = cmsBean;
+    }
+
+    /**
+     * Setter for unit tests.
+     *
 
      */
     void setFacesContext(FacesContext facesContext) {
