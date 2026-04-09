@@ -4454,6 +4454,15 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * Returns the TTL (in minutes) for cached data repository name lookups.
+     *
+     * @return TTL in minutes; default is 10
+     */
+    public int getDataRepositoryCacheTTL() {
+        return getLocalInt("performance.dataRepositoryCacheTTL", 10);
+    }
+
+    /**
      * isPreventProxyCaching.
      *
      * @should return correct value
