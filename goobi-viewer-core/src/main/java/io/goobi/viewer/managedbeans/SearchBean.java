@@ -1557,7 +1557,8 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public void mirrorAdvancedSearchCurrentHierarchicalFacets() {
         logger.trace("mirrorAdvancedSearchCurrentHierarchicalFacets");
-        if (facets.getActiveFacets().isEmpty()) {
+        // Use isActiveFacetsEmpty() to avoid allocating a defensive copy just for the null check.
+        if (facets.isActiveFacetsEmpty()) {
             // Reset hierarchical query items if no active facets selected
             List<SearchQueryItem> queryItems = new ArrayList<>(advancedSearchQueryGroup.getQueryItems());
             for (SearchQueryItem item : queryItems) {
@@ -1570,8 +1571,8 @@ public class SearchBean implements SearchInterface, Serializable {
         }
 
         Set<SearchQueryItem> populatedQueryItems = new HashSet<>();
-        List<IFacetItem> facetsItems = new ArrayList<>(facets.getActiveFacets());
-        for (IFacetItem facetItem : facetsItems) {
+        // getActiveFacets() already returns a defensive copy — no need for an additional new ArrayList<>().
+        for (IFacetItem facetItem : facets.getActiveFacets()) {
             if (!facetItem.isHierarchial()) {
                 continue;
             }
