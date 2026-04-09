@@ -1,4 +1,5 @@
 io.goobi.viewer
+io.goobi.viewer.api
 io.goobi.viewer.api.rest
 io.goobi.viewer.api.rest.bindings
 io.goobi.viewer.api.rest.exceptions
@@ -55,6 +56,7 @@ io.goobi.viewer.dao.converter
 io.goobi.viewer.dao.impl
 io.goobi.viewer.dao.update
 io.goobi.viewer.exceptions
+io.goobi.viewer.faces
 io.goobi.viewer.faces.components
 io.goobi.viewer.faces.converters
 io.goobi.viewer.faces.utils
@@ -65,6 +67,7 @@ io.goobi.viewer.managedbeans.storage
 io.goobi.viewer.managedbeans.tabledata
 io.goobi.viewer.managedbeans.utils
 io.goobi.viewer.messages
+io.goobi.viewer.model
 io.goobi.viewer.model.administration
 io.goobi.viewer.model.administration.configeditor
 io.goobi.viewer.model.administration.legal
