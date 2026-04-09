@@ -1165,6 +1165,17 @@ public class SearchFacets implements Serializable {
     }
 
     /**
+     * Returns whether <code>activeFacets</code> is empty without allocating a defensive copy.
+     *
+     * @return {@code true} if no active facets are set; {@code false} otherwise
+     */
+    public boolean isActiveFacetsEmpty() {
+        synchronized (lock) {
+            return activeFacets.isEmpty();
+        }
+    }
+
+    /**
      * Getter for the field <code>tempValue</code>.
      *
      * @return the temporary value held during facet editing before it is applied
