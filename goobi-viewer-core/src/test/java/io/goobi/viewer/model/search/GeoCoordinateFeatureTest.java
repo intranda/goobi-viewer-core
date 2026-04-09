@@ -105,9 +105,8 @@ class GeoCoordinateFeatureTest extends AbstractTest {
                 "WKT_COORDS:\"IsWithin(POLYGON((11.83273903383027 51.94656677497078,11.83273903383027 53.48917317885388,13.855459790711027 53.48917317885388,13.855459790711027 51.94656677497078,11.83273903383027 51.94656677497078)))\"";
         String geoJson =
                 "{\"type\":\"rectangle\",\"vertices\":[[11.83273903383027,51.94656677497078],[11.83273903383027,53.48917317885388],[13.855459790711027,53.48917317885388],[13.855459790711027,51.94656677497078],[11.83273903383027,51.94656677497078]]}";
-        GeoFacetItem item = new GeoFacetItem("WKT_COORDS");
+        // setGeoFacetFeature adds the GeoFacetItem to activeFacets internally
         SearchFacets facets = new SearchFacets();
-        facets.getActiveFacets().add(item);
         facets.setGeoFacetFeature(geoJson);
 
         String urlFacetString = facets.getActiveFacetString();
