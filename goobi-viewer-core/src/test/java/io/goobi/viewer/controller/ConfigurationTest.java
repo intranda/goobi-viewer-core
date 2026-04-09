@@ -619,6 +619,15 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getDataRepositoryCacheTTL()
+     * @verifies return correct value
+     */
+    @Test
+    void getDataRepositoryCacheTTL_shouldReturnCorrectValue() {
+        assertEquals(10, DataManager.getInstance().getConfiguration().getDataRepositoryCacheTTL());
+    }
+
+    /**
      * @see Configuration#getDatabaseConnectionAttempts()
      * @verifies return correct value
      */

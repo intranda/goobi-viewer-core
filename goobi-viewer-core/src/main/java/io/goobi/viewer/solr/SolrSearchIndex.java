@@ -101,6 +101,8 @@ public class SolrSearchIndex implements java.io.Closeable {
 
     /** Application-scoped map containing already looked up data repository names of records. */
     private Map<String, String> dataRepositoryNames = new HashMap<>();
+    /** Timestamps of when each data repository name was last fetched from Solr. */
+    private Map<String, Long> dataRepositoryTimestamps = new HashMap<>();
 
     private SolrClient client;
 
@@ -810,12 +812,18 @@ public class SolrSearchIndex implements java.io.Closeable {
      * @return Data repository name for the record with the given identifier; null if not in a repository
      * @throws PresentationException
      * @throws IndexUnreachableException
-     * @should always return value from Solr
+     * @should return value from map if available
+     * @should re-fetch from Solr after TTL expires
      */
     public String findDataRepositoryName(String pi) throws PresentationException, IndexUnreachableException {
-        String dataRepositoryName = findDataRepository(pi);
-        updateDataRepositoryNames(pi, dataRepositoryName);
-        return dataRepositoryName;
+        Long lastFetched = dataRepositoryTimestamps.get(pi);
+        long ttlMs = DataManager.getInstance().getConfiguration().getDataRepositoryCacheTTL() * 60L * 1000;
+        if (lastFetched == null || System.currentTimeMillis() - lastFetched > ttlMs) {
+            String dataRepositoryName = findDataRepository(pi);
+            updateDataRepositoryNames(pi, dataRepositoryName);
+        }
+
+        return dataRepositoryNames.get(pi);
     }
 
     /**
@@ -826,6 +834,7 @@ public class SolrSearchIndex implements java.io.Closeable {
      */
     public void updateDataRepositoryNames(String pi, String dataRepositoryName) {
         dataRepositoryNames.put(pi, dataRepositoryName);
+        dataRepositoryTimestamps.put(pi, System.currentTimeMillis());
     }
 
     /**
