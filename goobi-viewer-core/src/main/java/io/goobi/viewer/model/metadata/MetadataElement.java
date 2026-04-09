@@ -40,6 +40,7 @@ import io.goobi.viewer.managedbeans.ActiveDocumentBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -250,11 +251,12 @@ public class MetadataElement implements Serializable {
             if (metadata.getLabel().equals(SolrConstants.URN) || metadata.getLabel().equals(SolrConstants.IMAGEURN_OAI)) {
                 // TODO remove bean retrieval
                 ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
-                if (adb != null && adb.getViewManager() != null && adb.getViewManager().getCurrentPage() != null
-                        && adb.getViewManager().getCurrentPage().getUrn() != null && !adb.getViewManager().getCurrentPage().getUrn().equals("")) {
+                // Assign currentPage to a local variable to avoid TOCTOU race condition with concurrent AJAX requests
+                PhysicalElement currentPage = (adb != null && adb.getViewManager() != null) ? adb.getViewManager().getCurrentPage() : null;
+                if (currentPage != null && currentPage.getUrn() != null && !currentPage.getUrn().isEmpty()) {
                     Metadata newMetadata =
                             new Metadata(String.valueOf(se.getLuceneId()), metadata.getLabel(), metadata.getMasterValue(),
-                                    adb.getViewManager().getCurrentPage().getUrn());
+                                    currentPage.getUrn());
                     sidebarMetadataList.add(newMetadata);
                 }
             } else {
