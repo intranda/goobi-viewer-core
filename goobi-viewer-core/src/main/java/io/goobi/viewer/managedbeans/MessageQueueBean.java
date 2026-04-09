@@ -164,7 +164,14 @@ public class MessageQueueBean implements Serializable {
                 this.connection.close();
             }
         } catch (JMSException e) {
-            log.warn("Error closing connection", e);
+            // During shutdown the ActiveMQ transport may already be closed (EOFException /
+            // TransportDisposedIOException) before the JMS client gets to send a close frame.
+            // This is a known race condition and harmless — the connection is gone either way.
+            if (this.connection != null && this.connection.isTransportFailed()) {
+                log.debug("Connection was already disposed at shutdown");
+            } else {
+                log.warn("Error closing connection", e);
+            }
         }
     }
 
