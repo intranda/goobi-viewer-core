@@ -907,6 +907,30 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see ViewManager#isFilesOnly()
+     * @verifies return true if mimeType is application
+     */
+    @Test
+    void isFilesOnly_shouldReturnTrueForApplicationMimeType() throws Exception {
+        StructElement se = new StructElement("123");
+        IPageLoader pageLoader = Mockito.mock(EagerPageLoader.class);
+        ViewManager viewManager = new ViewManager(se, pageLoader, se.getLuceneId(), null, "application", null);
+        Assertions.assertTrue(viewManager.isFilesOnly());
+    }
+
+    /**
+     * @see ViewManager#isFilesOnly()
+     * @verifies return false if mimeType is not application
+     */
+    @Test
+    void isFilesOnly_shouldReturnFalseForImageMimeType() throws Exception {
+        StructElement se = new StructElement("123");
+        IPageLoader pageLoader = Mockito.mock(EagerPageLoader.class);
+        ViewManager viewManager = new ViewManager(se, pageLoader, se.getLuceneId(), null, "image/tiff", null);
+        Assertions.assertFalse(viewManager.isFilesOnly());
+    }
+
+    /**
      * @see ViewManager#getMimeTypesForLoadedPages()
      * @verifies return empty map if LeanPageLoader returns null for current page
      */
