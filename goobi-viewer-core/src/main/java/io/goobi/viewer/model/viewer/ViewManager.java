@@ -3398,6 +3398,18 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * Returns true if this record contains only downloadable files (mime type "application") and no displayable image pages.
+     *
+     * @return true if the record's primary MIME type is "application", false otherwise
+     */
+    public boolean isFilesOnly() {
+        if (filesOnly == null) {
+            filesOnly = "application".equalsIgnoreCase(getMimeType());
+        }
+        return filesOnly;
+    }
+
+    /**
      * togglePageOrientation.
      */
     public void togglePageOrientation() {
