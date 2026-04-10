@@ -1427,7 +1427,13 @@ public final class AccessConditionUtils {
             return false;
         }
 
-        session.setAttribute(attributeName, attributeValue);
+        // Guard against sessions that were invalidated concurrently (e.g. session timeout during TOC build)
+        try {
+            session.setAttribute(attributeName, attributeValue);
+        } catch (IllegalStateException e) {
+            logger.debug("Cannot store session permission '{}': session has already been invalidated", attributeName);
+            return false;
+        }
         return true;
     }
 
@@ -1442,7 +1448,15 @@ public final class AccessConditionUtils {
             return 0;
         }
 
-        Enumeration<String> attributeNames = session.getAttributeNames();
+        // Guard against sessions that were invalidated concurrently
+        Enumeration<String> attributeNames;
+        try {
+            attributeNames = session.getAttributeNames();
+        } catch (IllegalStateException e) {
+            logger.debug("Cannot clear session permissions: session has already been invalidated");
+            return 0;
+        }
+
         Set<String> attributesToRemove = new HashSet<>();
         while (attributeNames.hasMoreElements()) {
             String attribute = attributeNames.nextElement();
@@ -1454,9 +1468,13 @@ public final class AccessConditionUtils {
         int ret = 0;
         if (!attributesToRemove.isEmpty()) {
             for (String attribute : attributesToRemove) {
-                session.removeAttribute(attribute);
-                ret++;
-                logger.trace("Removed session attribute: {}", attribute);
+                try {
+                    session.removeAttribute(attribute);
+                    ret++;
+                    logger.trace("Removed session attribute: {}", attribute);
+                } catch (IllegalStateException e) {
+                    logger.debug("Cannot remove session attribute '{}': session has already been invalidated", attribute);
+                }
             }
         }
 
