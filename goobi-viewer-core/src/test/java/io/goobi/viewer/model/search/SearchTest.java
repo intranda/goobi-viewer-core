@@ -25,18 +25,26 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Locale;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.GeoCoordinateConverter;
 import io.goobi.viewer.model.maps.IArea;
 import io.goobi.viewer.model.maps.Location;
 import io.goobi.viewer.model.viewer.StringPair;
 
-class SearchTest extends AbstractTest {
+class SearchTest extends AbstractDatabaseAndSolrEnabledTest {
+
+    @BeforeAll
+    public static void setUpClass() throws Exception {
+        AbstractDatabaseAndSolrEnabledTest.setUpClass();
+    }
 
     /**
      * @see Search#getAllSortFields()
@@ -73,5 +81,51 @@ class SearchTest extends AbstractTest {
         List<IArea> locs = GeoCoordinateConverter.getLocations(fieldValue);
         assertEquals(2, locs.size());
         Location location = new Location(locs.get(0), "Label", URI.create("#"));
+    }
+
+    /**
+     * Regression test for the merge of populateRanges() and populateUnfilteredFacets() into a
+     * single Solr call. Verifies that range facet min/max values for the YEAR field are populated
+     * after Search.execute() runs against the test index.
+     *
+     * @see Search#execute(SearchFacets, java.util.Map, int, Locale)
+     * @verifies populate YEAR range facet values
+     */
+    @Test
+    void execute_shouldPopulateYearRangeFacets() throws Exception {
+        Search search = new Search();
+        // Empty query resolves to ALL_RECORDS_QUERY, matching the full test index
+        search.setQuery("");
+        SearchFacets facets = new SearchFacets();
+
+        search.execute(facets, null, 10, Locale.ENGLISH);
+
+        // YEAR is configured as a range facet in config_viewer.test.xml; the test index must
+        // contain at least one record with a YEAR value within the configured min/max window.
+        Assertions.assertFalse(facets.getValueRange("YEAR").isEmpty(),
+                "YEAR range facet should be populated after execute()");
+    }
+
+    /**
+     * Regression test for the merge of populateRanges() and populateUnfilteredFacets() into a
+     * single Solr call. Verifies that fields with alwaysApplyToUnfilteredHits=true are populated
+     * in the available-facets map after Search.execute() runs.
+     *
+     * @see Search#execute(SearchFacets, java.util.Map, int, Locale)
+     * @verifies populate DC unfiltered facet
+     */
+    @Test
+    void execute_shouldPopulateUnfilteredFacetsForAlwaysApplyFields() throws Exception {
+        Search search = new Search();
+        // Empty query resolves to ALL_RECORDS_QUERY, matching the full test index
+        search.setQuery("");
+        SearchFacets facets = new SearchFacets();
+
+        search.execute(facets, null, 10, Locale.ENGLISH);
+
+        // DC is configured with alwaysApplyToUnfilteredHits="true" in config_viewer.test.xml;
+        // every record in the test index has a DC value, so it must appear in availableFacets.
+        Assertions.assertTrue(facets.getAvailableFacets().containsKey("DC"),
+                "DC should appear in available facets after execute()");
     }
 }
