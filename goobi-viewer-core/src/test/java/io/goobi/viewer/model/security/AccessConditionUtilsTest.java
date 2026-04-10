@@ -474,4 +474,26 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
         licenses = AccessConditionUtils.getApplyingLicenses(Optional.empty(), "192.168.0.10", licenseType, dao);
         assertTrue(licenses.isEmpty());
     }
+
+    /**
+     * @see AccessConditionUtils#addSessionPermission(String, Object, HttpSession)
+     */
+    @Test
+    void testAddSessionPermission_invalidatedSession() {
+        jakarta.servlet.http.HttpSession session = Mockito.mock(jakarta.servlet.http.HttpSession.class);
+        // Simulate a session that has already been invalidated
+        Mockito.doThrow(new IllegalStateException("setAttribute: Session [null] has already been invalidated"))
+                .when(session).setAttribute(Mockito.anyString(), Mockito.any());
+
+        // Must not throw; must return false gracefully
+        assertFalse(AccessConditionUtils.addSessionPermission("PRIV_TEST", "value", session));
+    }
+
+    /**
+     * @see AccessConditionUtils#addSessionPermission(String, Object, HttpSession)
+     */
+    @Test
+    void testAddSessionPermission_nullSession() {
+        assertFalse(AccessConditionUtils.addSessionPermission("PRIV_TEST", "value", null));
+    }
 }
