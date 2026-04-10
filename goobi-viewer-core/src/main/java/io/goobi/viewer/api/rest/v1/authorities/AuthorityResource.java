@@ -155,7 +155,8 @@ public class AuthorityResource {
         JSONArray jsonArray = new JSONArray();
 
         // Explorative mode to return all available fields
-        if (template == null || StringConstants.DEFAULT_NAME.equals(template) || "_ALL".equals(template)) {
+        String useTemplate = template;
+        if (useTemplate == null || StringConstants.DEFAULT_NAME.equals(useTemplate) || "_ALL".equals(useTemplate)) {
             for (NormData normData : normDataList) {
                 jsonArray.put(addNormDataValuesToJSON(normData, locale));
             }
@@ -171,7 +172,7 @@ public class AuthorityResource {
             }
         }
 
-        List<String> normdataFields = DataManager.getInstance().getConfiguration().getNormdataFieldsForTemplate(template);
+        List<String> normdataFields = DataManager.getInstance().getConfiguration().getNormdataFieldsForTemplate(useTemplate);
         // Missing template config - add all fields
         if (normdataFields.isEmpty()) {
             for (NormData normData : normDataList) {
