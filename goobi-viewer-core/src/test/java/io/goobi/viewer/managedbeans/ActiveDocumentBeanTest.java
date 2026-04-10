@@ -40,6 +40,7 @@ import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
+import io.goobi.viewer.exceptions.IllegalUrlParameterException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.ViewManager;
@@ -437,6 +438,21 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     void getToc_shouldReturnNullWhenViewManagerIsNull() throws Exception {
         // Fresh bean has viewManager == null
         assertNull(adb.getToc());
+    }
+
+    /**
+     * @see ActiveDocumentBean#setTocCurrentPage(String)
+     * @verifies throw IllegalUrlParameterException for non-numeric value
+     */
+    @Test
+    void setTocCurrentPage_shouldThrowIllegalUrlParameterExceptionForNonNumericValue() {
+        // A record PI like "15849354_1940" (periodical volume) can end up in the
+        // tocCurrentPage URL slot when a mismatched PrettyFaces pattern injects it.
+        // The setter must reject it with IllegalUrlParameterException so that
+        // MyExceptionHandler treats it as an invalid URL (WARN) rather than ERROR.
+        Assertions.assertThrows(IllegalUrlParameterException.class, () -> adb.setTocCurrentPage("15849354_1940"));
+        Assertions.assertThrows(IllegalUrlParameterException.class, () -> adb.setTocCurrentPage("15592719_2011_00"));
+        Assertions.assertThrows(IllegalUrlParameterException.class, () -> adb.setTocCurrentPage("notANumber"));
     }
 
     /**
