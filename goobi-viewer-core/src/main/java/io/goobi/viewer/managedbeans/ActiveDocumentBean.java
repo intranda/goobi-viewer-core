@@ -1464,7 +1464,8 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String getFullscreenImageUrl() throws IndexUnreachableException {
         // Guard against null when page loader hasn't populated the current page yet
-        if (viewManager != null && viewManager.isDoublePageMode() && viewManager.getCurrentPage() != null && !viewManager.getCurrentPage().isDoubleImage()) {
+        if (viewManager != null && viewManager.isDoublePageMode()
+                && viewManager.getCurrentPage() != null && !viewManager.getCurrentPage().isDoubleImage()) {
             Optional<PhysicalElement> currentLeftPage = viewManager.getCurrentLeftPage();
             Optional<PhysicalElement> currentRightPage = viewManager.getCurrentRightPage();
             if (currentLeftPage.isPresent() && currentRightPage.isPresent()) {
