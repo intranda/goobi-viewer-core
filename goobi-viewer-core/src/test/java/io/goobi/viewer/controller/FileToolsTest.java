@@ -224,6 +224,22 @@ class FileToolsTest extends AbstractTest {
     }
 
     /**
+     * @see FileTools#sanitizeFileName(String)
+     * @verifies accept file names containing common punctuation characters
+     */
+    @Test
+    void sanitizeFileName_shouldAcceptFileNamesContainingCommonPunctuationCharacters() {
+        // Exclamation mark: common in German newspaper/document titles (regression test for production error)
+        Assertions.assertEquals("Nieder mit Spartakus!_0025_L.xml",
+                FileTools.sanitizeFileName("Nieder mit Spartakus!_0025_L.xml"));
+        // Parentheses and apostrophes: common in library catalog titles
+        Assertions.assertEquals("Le Monde (Paris)_0001.xml",
+                FileTools.sanitizeFileName("Le Monde (Paris)_0001.xml"));
+        Assertions.assertEquals("L'Humanité_0001.xml",
+                FileTools.sanitizeFileName("L'Humanité_0001.xml"));
+    }
+
+    /**
      * @see DataFileTools#sanitizeFileName(String)
      * @verifies throw IllegalArgumentException given invalid file name
      */
