@@ -2604,18 +2604,24 @@ public class ViewManager implements Serializable {
     }
 
     public long getPageCountWithFulltext() throws IndexUnreachableException, PresentationException {
-        return DataManager.getInstance()
-                .getSearchIndex()
-                .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
-                        .append(':')
-                        .append(pi)
-                        .append(" +")
-                        .append(SolrConstants.DOCTYPE)
-                        .append(":PAGE")
-                        .append(" +")
-                        .append(SolrConstants.FULLTEXTAVAILABLE)
-                        .append(":true")
-                        .toString());
+        // Lazy cache: the fulltext page count is immutable for a given record within a session,
+        // so repeated calls (e.g. from isBelowFulltextThreshold and FileType.getTypesForRecord)
+        // reuse the cached value instead of issuing a new Solr query each time.
+        if (pagesWithFulltext == null) {
+            pagesWithFulltext = DataManager.getInstance()
+                    .getSearchIndex()
+                    .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
+                            .append(':')
+                            .append(pi)
+                            .append(" +")
+                            .append(SolrConstants.DOCTYPE)
+                            .append(":PAGE")
+                            .append(" +")
+                            .append(SolrConstants.FULLTEXTAVAILABLE)
+                            .append(":true")
+                            .toString());
+        }
+        return pagesWithFulltext;
     }
 
     /**
@@ -2808,18 +2814,24 @@ public class ViewManager implements Serializable {
     }
 
     public Long getPageCountWithAlto() throws IndexUnreachableException, PresentationException {
-        return DataManager.getInstance()
-                .getSearchIndex()
-                .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
-                        .append(':')
-                        .append(pi)
-                        .append(" +")
-                        .append(SolrConstants.DOCTYPE)
-                        .append(":PAGE")
-                        .append(" +")
-                        .append(SolrConstants.FILENAME_ALTO)
-                        .append(":*")
-                        .toString());
+        // Lazy cache: the ALTO page count is immutable for a given record within a session,
+        // so repeated calls (e.g. from isAltoAvailableForWork and FileType.getTypesForRecord)
+        // reuse the cached value instead of issuing a new Solr query each time.
+        if (pagesWithAlto == null) {
+            pagesWithAlto = DataManager.getInstance()
+                    .getSearchIndex()
+                    .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
+                            .append(':')
+                            .append(pi)
+                            .append(" +")
+                            .append(SolrConstants.DOCTYPE)
+                            .append(":PAGE")
+                            .append(" +")
+                            .append(SolrConstants.FILENAME_ALTO)
+                            .append(":*")
+                            .toString());
+        }
+        return pagesWithAlto;
     }
 
     /**
