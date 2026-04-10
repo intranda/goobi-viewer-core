@@ -4806,8 +4806,10 @@ public class Configuration extends AbstractConfiguration {
      * getRecordGroupIdentifierFields.
      *
      * @should return all configured values
-     * @return a list of configured Solr field names used to identify record groups
+     * @return a {@link java.util.List} object.
+     * @deprecated Group identifier fields are now detected implicitly via the {@code GROUPID_} prefix. This config is no longer needed.
      */
+    @Deprecated(since = "26.04")
     public List<String> getRecordGroupIdentifierFields() {
         return getLocalList("toc.recordGroupIdentifierFields.field");
     }
