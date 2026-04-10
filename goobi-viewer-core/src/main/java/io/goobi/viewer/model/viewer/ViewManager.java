@@ -190,6 +190,10 @@ public class ViewManager implements Serializable {
     /** Top level document. */
     private StructElement topStructElement;
 
+    // Cached result of getHighwirePressMetaTags() — topStructElement and downloadResources are
+    // stable for the lifetime of this ViewManager, so the output never changes.
+    private String highwireMetaTagsCache = null;
+
     /** Currently selected document. */
     private StructElement currentStructElement;
 
@@ -3141,12 +3145,17 @@ public class ViewManager implements Serializable {
      * @return String with tags
      */
     public String getHighwirePressMetaTags() {
-        try {
-            return MetadataTools.generateHighwirePressMetaTags(this.topStructElement, getDownloadResources());
-        } catch (IndexUnreachableException | ViewerConfigurationException | PresentationException e) {
-            logger.error(e.getMessage(), e);
-            return "";
+        if (highwireMetaTagsCache == null) {
+            // topStructElement and downloadResources are stable for the lifetime of this ViewManager,
+            // so the result is computed once and reused to avoid a repeated Solr call for the anchor.
+            try {
+                highwireMetaTagsCache = MetadataTools.generateHighwirePressMetaTags(this.topStructElement, getDownloadResources());
+            } catch (IndexUnreachableException | ViewerConfigurationException | PresentationException e) {
+                logger.error(e.getMessage(), e);
+                highwireMetaTagsCache = "";
+            }
         }
+        return highwireMetaTagsCache;
     }
 
     /**
