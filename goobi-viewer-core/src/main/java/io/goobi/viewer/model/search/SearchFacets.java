@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
@@ -65,8 +66,9 @@ public class SearchFacets implements Serializable {
 
     private final transient Object lock = new Object();
 
-    /** Available regular facets for the current search result. Wrapped in synchronizedMap to prevent concurrent modification exceptions. */
-    private final Map<String, List<IFacetItem>> availableFacets = Collections.synchronizedMap(new LinkedHashMap<>());
+    /** Available regular facets for the current search result. ConcurrentHashMap allows concurrent reads and fine-grained write locks,
+     *  replacing the single-mutex synchronizedMap bottleneck. Display order is controlled by getAllFacetFields(), not map insertion order. */
+    private final Map<String, List<IFacetItem>> availableFacets = new ConcurrentHashMap<>();
     /** Currently applied facets. */
     private final List<IFacetItem> activeFacets = new ArrayList<>();
 
@@ -411,10 +413,8 @@ public class SearchFacets implements Serializable {
      * @should return false if only range facets available
      */
     public boolean isUnselectedValuesAvailable() {
-        List<String> availableFacetFields;
-        synchronized (availableFacets) {
-            availableFacetFields = new ArrayList<>(availableFacets.keySet());
-        }
+        // ConcurrentHashMap.keySet() is thread-safe; no external synchronization needed
+        List<String> availableFacetFields = new ArrayList<>(availableFacets.keySet());
         for (String field : availableFacetFields) {
             if (!getAvailableFacetsForField(field, true).isEmpty()
                     && !DataManager.getInstance().getConfiguration().getRangeFacetFields().contains(field)) {
