@@ -691,6 +691,17 @@ public final class TocMaker {
 
         // Loosely referenced children (e.g. anchor volumes)
         if (StringUtils.isNotEmpty(ancestorField)) {
+            // Guard: skip the sibling query for documents that are outside the current navigation
+            // path. For those documents, addSiblings will always be false (evaluated below at
+            // line 725) and any children found by the query would never be added to the TOC.
+            // Without this guard, a journal with N volumes fires N useless sibling queries per
+            // page load, producing 60-140 second response times for large serials (observed:
+            // 2101 queries for PI "1374945714", causing a 74-second metadata page load).
+            // The addTocElementsRecursively() call above has already added this document to ret,
+            // so it still appears as a leaf entry in the TOC.
+            if (mainDocumentChain != null && !mainDocumentChain.contains(iddoc)) {
+                return;
+            }
             String queryValue;
             if (ancestorField.startsWith(SolrConstants.IDDOC)) {
                 queryValue = (String) doc.getFieldValue(SolrConstants.IDDOC);
