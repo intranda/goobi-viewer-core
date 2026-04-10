@@ -3057,23 +3057,25 @@ public class ViewManager implements Serializable {
      */
     public List<StructElementStub> getCurrentDocumentHierarchy() throws IndexUnreachableException {
         if (docHierarchy == null) {
-            docHierarchy = new LinkedList<>();
-
+            // Build into a local variable first, then assign to the field only once complete.
+            // This prevents other threads from observing a partially-built LinkedList and racing
+            // with Collections.reverse(), which caused NPE in LinkedList$ListItr.next().
+            LinkedList<StructElementStub> temp = new LinkedList<>();
             StructElement curDoc = getCurrentStructElement();
             while (curDoc != null) {
-                docHierarchy.add(curDoc.createStub());
+                temp.add(curDoc.createStub());
                 curDoc = curDoc.getParent();
             }
-            Collections.reverse(docHierarchy);
+            Collections.reverse(temp);
+            docHierarchy = temp;
         }
 
         logger.trace("docHierarchy size: {}", docHierarchy.size());
         if (!DataManager.getInstance().getConfiguration().getIncludeAnchorInTitleBreadcrumbs() && !docHierarchy.isEmpty()) {
-            // Return a defensive copy instead of a subList view to prevent ConcurrentModificationException
-            // when this session-scoped bean is accessed concurrently by multiple requests.
+            // Return a defensive copy to avoid exposing the internal list to callers.
             return new ArrayList<>(docHierarchy.subList(1, docHierarchy.size()));
         }
-        return docHierarchy;
+        return new ArrayList<>(docHierarchy);
     }
 
     /**
