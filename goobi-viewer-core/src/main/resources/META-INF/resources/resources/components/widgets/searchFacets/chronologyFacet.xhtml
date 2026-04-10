@@ -15,10 +15,17 @@
     <composite:implementation>
         <!--  WIDGET CHRONOLOGY -->
         <ui:fragment rendered="#{searchBean.facets.hasRangeFacets}">
+            <h:form>
+                <h:commandButton
+                    id="chronologySliderSet"
+                    action="#{searchBean.updateFacetItem('YEAR', false)}"
+                    value="Button" />
+            </h:form>
             <c:forEach
                 var="field"
                 items="#{searchBean.facets.allRangeFacetFields}"
                 varStatus="status">
+                <div>Field: #{field}</div>
                 <ui:fragment rendered="#{!searchBean.facets.getValueRange(field).isEmpty()}">
                     <div class="widget widget-chronology-slider">
                         <div class="widget__topbar widget-chronology-slider__topbar">
@@ -80,12 +87,12 @@
                     <script>
                         // chronologySlider.tag and chronologyGraph.tag for widget chronology
 
-                                 (() => {
-                        let values = #{searchBean.facets.getValueRangeAsJsonMap(field)};
-                        	let valueMap = new Map(Object.entries(values));
-
-                        	let graphType = "#{searchBean.facets.getRangeFacetStyle(field)}";
-                        	graphType = graphType ? graphType : "slider";
+                            (() => {
+	                            let values = #{searchBean.facets.getValueRangeAsJsonMap(field)};
+	                        	let valueMap = new Map(Object.entries(values));
+	
+	                        	let graphType = "#{searchBean.facets.getRangeFacetStyle(field)}";
+	                        	graphType = graphType ? graphType : "slider";
 
                                riot.mount("#chronoSlider_#{status.count}", "chronology"+graphType, {
                                	datamap: valueMap,
@@ -97,7 +104,7 @@
                                		description: '#{msg[configurationBean.getFacetFieldDescriptionKey(field)]}',
                                	}
                                })
-                                 })();
+                           })();
                     </script>
                 </ui:fragment>
             </c:forEach>

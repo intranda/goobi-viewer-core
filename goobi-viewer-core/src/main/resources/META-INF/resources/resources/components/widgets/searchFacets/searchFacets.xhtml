@@ -104,7 +104,7 @@
                                                     <h:outputLink
                                                         styleClass="btn widget-search-facets__boolean-button"
                                                         title="#{msg.yes} (#{searchBean.facets.getFacet(field.key,'true').count})"
-                                                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeContext}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.getActiveFacetStringPrefix(field.key)}#{field.key}:true/">
+                                                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeContext}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.getActiveFacetStringPrefix(field.key)}#{field.key}:true/#{navigationHelper.subThemeQueryParam}">
                                                         #{msg.yes}
                                                         <f:passThroughAttribute
                                                             name="data-triggerjs"
@@ -149,7 +149,7 @@
                                                     <h:outputLink
                                                         styleClass="btn widget-search-facets__boolean-button"
                                                         title="#{msg.no} (#{searchBean.facets.getFacet(field.key,'false').count})"
-                                                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeContext}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.getActiveFacetStringPrefix(field.key)}#{field.key}:false/">
+                                                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeContext}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.getActiveFacetStringPrefix(field.key)}#{field.key}:false/#{navigationHelper.subThemeQueryParam}">
                                                         #{msg.no}
                                                         <f:passThroughAttribute
                                                             name="data-triggerjs"
@@ -223,7 +223,7 @@
                                                 <li class="widget-search-facets__list-item">
                                                     <h:outputLink
                                                         styleClass="widget-search-facets__list-item-link"
-                                                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/">
+                                                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/#{navigationHelper.subThemeQueryParam}">
                                                         <span class="widget-search-facets__list-item-label">#{facet.translatedLabel}</span>
                                                         <span class="widget-search-facets__list-item-count">(#{facet.count})</span>
                                                         <f:passThroughAttribute

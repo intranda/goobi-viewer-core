@@ -180,7 +180,7 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals("c", facetItems.get(1).getValue());
         Assertions.assertEquals("d", facetItems.get(1).getValue2());
     }
-    
+
     /**
      * @see SearchFacets#parseFacetString(String,List,Map)
      * @verifies skip value pairs if field or value missing
@@ -255,7 +255,7 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
         SearchFacets facets = new SearchFacets();
         facets.setActiveFacetString("DOCSTRCT:a;;MD_TITLE:bob;;MD_TITLE:b;;");
         Assertions.assertEquals(3, facets.getActiveFacets().size());
-        facets.removeFacetAction("MD_TITLE:b", null);
+        facets.removeFacetAction("MD_TITLE:b");
         Assertions.assertEquals(2, facets.getActiveFacets().size());
         // Make sure only "MD_TITLE:b" is removed but not facets starting with "MD_TITLE:b"
         Assertions.assertEquals("DOCSTRCT%3Aa%3B%3BMD_TITLE%3Abob%3B%3B", facets.getActiveFacetString());
@@ -270,7 +270,7 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
         SearchFacets facets = new SearchFacets();
         facets.setActiveFacetString("DOCSTRCT:a;;MD_TITLE:bob;;MD_TITLE:{[b]};;");
         Assertions.assertEquals(3, facets.getActiveFacets().size());
-        facets.removeFacetAction("MD_TITLE:{[b]}", null);
+        facets.removeFacetAction("MD_TITLE:{[b]}");
         Assertions.assertEquals(2, facets.getActiveFacets().size());
         Assertions.assertEquals("DOCSTRCT%3Aa%3B%3BMD_TITLE%3Abob%3B%3B", facets.getActiveFacetString());
     }
@@ -286,7 +286,7 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
         SearchFacets facets = new SearchFacets();
         facets.setActiveFacetString("MD_FIELD1:normal;;MD_FIELD2:trailing_semicolon;");
         Assertions.assertEquals(2, facets.getActiveFacets().size());
-        facets.removeFacetAction("MD_FIELD1:normal", null);
+        facets.removeFacetAction("MD_FIELD1:normal");
         String decoded = URLDecoder.decode(facets.getActiveFacetString(), SearchBean.URL_ENCODING);
         Assertions.assertFalse(decoded.contains(";;;"), "Facet string must not contain triple semicolons after removal");
     }
@@ -602,7 +602,7 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     void testFacetEscaping()
             throws UnsupportedEncodingException, PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         TestUtils.mockFacesContext();
-        
+
         //original geojson string received from geomap
         String geoJson =
                 "{\"type\":\"rectangle\",\"vertices\":[[52.27468490157105,12.831527289994273],[52.78227376368535,12.831527289994273],[52.78227376368535,13.864873763618117],[52.27468490157105,13.864873763618117],[52.27468490157105,12.831527289994273]]}";

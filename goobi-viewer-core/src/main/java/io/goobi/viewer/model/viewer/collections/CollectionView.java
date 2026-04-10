@@ -45,6 +45,7 @@ import io.goobi.viewer.controller.sorting.ObjectComparatorBuilder;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.collections.CMSCollection;
 import io.goobi.viewer.model.search.CollectionResult;
@@ -70,7 +71,11 @@ public class CollectionView implements Serializable {
 
     private String baseElementName = null;
     private boolean showAllHierarchyLevels = false;
-    private String searchUrl = "";
+    /**
+     * If a collection is part of a cms component, it may have a subtheme. Then all browse/search links from that collection should remain within that
+     * subtheme
+     */
+    private String subtheme = "";
     private boolean ignoreHierarchy = false;
     private final int displayNumberOfVolumesLevel;
 
@@ -101,7 +106,7 @@ public class CollectionView implements Serializable {
         this.field = blueprint.field;
         this.splittingChar = blueprint.splittingChar;
         this.dataProvider = blueprint.dataProvider;
-        this.searchUrl = blueprint.searchUrl;
+        this.subtheme = blueprint.subtheme;
         this.displayNumberOfVolumesLevel = blueprint.displayNumberOfVolumesLevel;
     }
 
@@ -300,7 +305,8 @@ public class CollectionView implements Serializable {
     /**
      * associateWithCMSCollections.
      *
-     * <p>returns the 'collection' parameter
+     * <p>
+     * returns the 'collection' parameter
      *
      * @param collections browse elements to enrich with CMS data
      * @param cmsCollections list of CMS collection configurations to associate
@@ -798,11 +804,11 @@ public class CollectionView implements Serializable {
      * @throws URISyntaxException
      */
     public String getCollectionUrl(HierarchicalBrowseDcElement collection) {
-        return getCollectionUrl(collection, field, getSearchUrl(), true);
+        return getCollectionUrl(collection, field, true);
     }
 
     public String getCollectionUrl(HierarchicalBrowseDcElement collection, boolean openInSearch) {
-        return getCollectionUrl(collection, field, getSearchUrl(), openInSearch);
+        return getCollectionUrl(collection, field, openInSearch);
     }
 
     /**
@@ -810,7 +816,6 @@ public class CollectionView implements Serializable {
      *
      * @param collection a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      * @param field Solr collection field name
-     * @param baseSearchUrl base URL of the search page
      * @param openInSearch if true, return a search url if no cms page is associated with the collection. In case of single record in collection, the
      *            record may be opened directly
      * @return the viewer URL for the given collection element, directing to a CMS page, search, or single record as applicable
@@ -818,14 +823,14 @@ public class CollectionView implements Serializable {
      * @should return identifier resolver url if single record and pi known
      * @should escape critical url chars in collection name
      */
-    public String getCollectionUrl(HierarchicalBrowseDcElement collection, String field, final String baseSearchUrl, boolean openInSearch) {
+    public String getCollectionUrl(HierarchicalBrowseDcElement collection, String field, boolean openInSearch) {
         if (hasCollectionPage(collection)) {
             return getCollectionPageUrl(collection);
         } else if (openInSearch) {
             if (hasSingleRecordLink(collection)) {
-                return getFirstRecordUrl(collection, field);
+                return getFirstRecordUrl(collection, field, getSubtheme());
             }
-            return getSearchUrl(collection, field, baseSearchUrl);
+            return getSearchUrl(collection, field);
         } else {
             return getCollectionViewUrl(collection);
         }
@@ -859,7 +864,7 @@ public class CollectionView implements Serializable {
      * @return URL of the first record in the given collection field/name combo
      * @should escape url encode collection name
      */
-    public static String getFirstRecordUrl(HierarchicalBrowseDcElement collection, String field) {
+    public static String getFirstRecordUrl(HierarchicalBrowseDcElement collection, String field, String subtheme) {
 
         // Link directly to single record, if record PI known
         if (collection.getSingleRecordUrl() != null) {
@@ -873,6 +878,7 @@ public class CollectionView implements Serializable {
                 .append("/")
                 .append(escapedCollectionName)
                 .append("/record/")
+                .append(NavigationHelper.getSubThemeQueryParam(subtheme))
                 .toString();
     }
 
@@ -891,19 +897,17 @@ public class CollectionView implements Serializable {
         return "";
     }
 
-    public String getSearchUrl(HierarchicalBrowseDcElement collection, String field, final String baseSearchUrl) {
-        String useSearchUrl = baseSearchUrl;
-        if (StringUtils.isBlank(useSearchUrl)) {
-            useSearchUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.search.getName() + "/";
-        }
+    public String getSearchUrl(HierarchicalBrowseDcElement collection, String field) {
+        String baseSearchUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.search.getName() + "/";
         String facetString = field + ":" + collection.getLuceneName();
         String encFacetString = StringTools.encodeUrl(facetString, true);
-        return new StringBuilder(useSearchUrl)
+        return new StringBuilder(baseSearchUrl)
                 .append("-/-/1/")
                 .append(collection.getSortField())
                 .append('/')
                 .append(encFacetString)
                 .append('/')
+                .append(NavigationHelper.getSubThemeQueryParam(getSubtheme()))
                 .toString();
     }
 
@@ -994,22 +998,18 @@ public class CollectionView implements Serializable {
         return field;
     }
 
-    
-    public String getSearchUrl() {
-        return searchUrl;
+    public String getSubtheme() {
+        return subtheme;
     }
 
-    
-    public void setSearchUrl(String searchUrl) {
-        this.searchUrl = searchUrl;
+    public void setSubtheme(String subtheme) {
+        this.subtheme = subtheme;
     }
 
-    
     public boolean isIgnoreHierarchy() {
         return ignoreHierarchy;
     }
 
-    
     public void setIgnoreHierarchy(boolean ignoreHierarchy) {
         this.ignoreHierarchy = ignoreHierarchy;
     }
@@ -1035,12 +1035,10 @@ public class CollectionView implements Serializable {
         return "-";
     }
 
-    
     public String getSplittingChar() {
         return splittingChar;
     }
 
-    
     public int getDisplayNumberOfVolumesLevel() {
         return displayNumberOfVolumesLevel;
     }

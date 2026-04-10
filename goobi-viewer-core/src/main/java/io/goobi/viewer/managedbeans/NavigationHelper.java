@@ -97,15 +97,14 @@ import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * JSF session-scoped backing bean providing navigation state, URL building, and breadcrumb
- * tracking for the viewer frontend. Initialised via {@code @PostConstruct init()} which resolves
- * the user's locale from the current JSF view root and seeds the status map with default values.
+ * JSF session-scoped backing bean providing navigation state, URL building, and breadcrumb tracking for the viewer frontend. Initialised via
+ * {@code @PostConstruct init()} which resolves the user's locale from the current JSF view root and seeds the status map with default values.
  *
- * <p><b>Lifecycle:</b> Created once per HTTP session; survives across page navigations and is
- * destroyed when the session expires.
+ * <p>
+ * <b>Lifecycle:</b> Created once per HTTP session; survives across page navigations and is destroyed when the session expires.
  *
- * <p><b>Thread safety:</b> Not explicitly synchronised; all state is expected to be accessed
- * from the JSF request thread of the owning session only.
+ * <p>
+ * <b>Thread safety:</b> Not explicitly synchronised; all state is expected to be accessed from the JSF request thread of the owning session only.
  */
 @Named
 @SessionScoped
@@ -300,11 +299,11 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * Sets the current page for the error page, mapping generic error types (general, general_no_url)
-     * to the "error" page name so that the browser title shows "Fehler" instead of unrelated translations.
+     * Sets the current page for the error page, mapping generic error types (general, general_no_url) to the "error" page name so that the browser
+     * title shows "Fehler" instead of unrelated translations.
      *
-     * <p>Specific error types (e.g. recordNotFound, download) are passed through directly so that
-     * their own message keys are used as the page title.
+     * <p>
+     * Specific error types (e.g. recordNotFound, download) are passed through directly so that their own message keys are used as the page title.
      *
      * @param errorType the error type string set by the exception handler; may be null
      */
@@ -1070,13 +1069,19 @@ public class NavigationHelper implements Serializable {
     public String getSubThemeQueryParam() {
         try {
             String value = getSubThemeDiscriminatorValue();
-            if (StringUtils.isNotBlank(value) && !"-".equals(value)) {
-                return "?subtheme=" + value;
-            }
+            return getSubThemeQueryParam(value);
         } catch (IndexUnreachableException e) {
             logger.debug("Cannot read subtheme discriminator value: {}", e.getMessage());
         }
         return "";
+    }
+
+    public static String getSubThemeQueryParam(String subtheme) {
+        if (StringUtils.isNotBlank(subtheme) && !"-".equals(subtheme)) {
+            return "?subtheme=" + subtheme;
+        } else {
+            return "";
+        }
     }
 
     public void resetTheme() {
@@ -1537,7 +1542,8 @@ public class NavigationHelper implements Serializable {
     /**
      * Returns the translation for the given <code>msgKey</code> and replaces all {i} placeholders with values from the given <code>params</code>.
      *
-     * <p>Does not carry out character escaping
+     * <p>
+     * Does not carry out character escaping
      *
      * @param msgKey Message key to translate
      * @param params One or more parameter values to replace the placeholders.

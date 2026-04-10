@@ -326,16 +326,15 @@ class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
 
     }
 
-
     /**
-     * @throws PresentationException 
+     * @throws PresentationException
      * @see Configuration#getFirstRecordUrl(HierarchicalBrowseDcElement,String)
      * @verifies escape url encode collection name
      */
     @Test
     void getFirstRecordUrl_shouldReturnHyphenIfCollectionNotFound() throws PresentationException {
         HierarchicalBrowseDcElement collection = new HierarchicalBrowseDcElement("Foo (2025-2026)", 1, "MD_FOO", null, ".", 0);
-        String url = CollectionView.getFirstRecordUrl(collection, "MD_FOO");
+        String url = CollectionView.getFirstRecordUrl(collection, "MD_FOO", "");
         Assertions.assertEquals("/browse/MD_FOO/Foo+%282025-2026%29/record/", url);
     }
 }
