@@ -92,6 +92,12 @@ class ThumbnailHandlerTest extends AbstractTest {
     }
 
     @Test
+    void testNullPage_shouldReturnEmptyString() {
+        String url = handler.getThumbnailUrl((PhysicalElement) null, 200, 300);
+        Assertions.assertEquals("", url);
+    }
+
+    @Test
     void testExternalIIIFImageUrl() {
         String fileUrl = "http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/full/full/0/native.jpg";
         PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
