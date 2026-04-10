@@ -369,7 +369,7 @@ public class SearchBean implements SearchInterface, Serializable {
             facets.resetActiveFacetString();
         }
         generateSimpleSearchString(searchString);
-        return StringConstants.PRETTY_NEWSEARCH5;
+        return redirectToSearchUrl(StringConstants.PRETTY_NEWSEARCH5);
     }
 
     /**
@@ -2794,7 +2794,7 @@ public class SearchBean implements SearchInterface, Serializable {
             sb.append(currentPath.getApplicationUrl()).append("/").append(currentPath.getPrettifiedPagePath());
             URI uri = URI.create(sb.toString());
             uri = getParameterPath(uri);
-            return StringTools.appendTrailingSlash(uri.toString());
+            return StringTools.appendTrailingSlash(uri.toString()) + navigationHelper.getSubThemeQueryParam();
         }
 
         //fallback

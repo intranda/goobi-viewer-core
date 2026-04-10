@@ -274,7 +274,7 @@
 			    let value = '[' + this.startYear + ' TO ' + this.endYear + ']' ;
 			    $( this.valueInput ).val(value);
 			    // submit form
-			    $( this.updateFacet ).click();
+			    this.updateFacet.click();
 		}
 			
 		calculateYearFromEvent(e) {

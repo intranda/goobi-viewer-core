@@ -31,8 +31,6 @@ this.on("mount", () => {
 	this.endYear = parseInt(opts.endYear);
 	this.minYear = this.yearList[0];
 	this.maxYear = this.yearList[this.yearList.length - 1];
-	this.valueInput = document.getElementById(opts.valueInput);
-	this.updateFacet = document.getElementById(opts.updateFacet);
 	this.loader = document.getElementById(opts.loader);	
 	this.msg = opts.msg;
 	this.rtl = $( this.refs.slider ).closest('[dir="rtl"]').length > 0;
@@ -116,9 +114,9 @@ initSlider() {
 				    
 				    // set query to hidden input
 				    let value = '[' + startDate + ' TO ' + endDate + ']' ;
-				    $( this.valueInput ).val(value);
+				    $(document.getElementById(opts.valueInput)).val(value);
 				    // submit form
-				   $( this.updateFacet ).click();
+				   document.getElementById(opts.updateFacet)?.click();
 				}
 				// console.log('something changed');
 				// console.log(-1 * this.$getLastHandle().width() * ( this.$getSlider().slider( "values", 1 ) / this.$getSlider().slider('option', 'max')));
