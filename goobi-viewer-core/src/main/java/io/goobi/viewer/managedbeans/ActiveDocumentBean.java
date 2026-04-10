@@ -1608,15 +1608,26 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @param tocCurrentPage desired TOC pagination page number
      * @should set toc page to last page if value too high
+     * @should throw IllegalUrlParameterException for non-numeric value
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws io.goobi.viewer.exceptions.IllegalUrlParameterException if tocCurrentPage is not a valid integer or range
      */
     public void setTocCurrentPage(String tocCurrentPage)
-            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException, IllegalUrlParameterException {
         synchronized (this) {
-            int[] pages = StringTools.getIntegerRange(tocCurrentPage);
+            // Guard against non-numeric values (e.g. when a record PI like "15849354_1940" is
+            // incorrectly injected into this parameter by a mismatched PrettyFaces URL pattern).
+            // Wrap NumberFormatException as IllegalUrlParameterException so MyExceptionHandler
+            // treats it as an invalid URL (WARN) rather than an application error (ERROR).
+            int[] pages;
+            try {
+                pages = StringTools.getIntegerRange(tocCurrentPage);
+            } catch (NumberFormatException e) {
+                throw new IllegalUrlParameterException("Illegal TOC page value: " + tocCurrentPage);
+            }
             this.tocCurrentPage = pages[0];
             if (this.tocCurrentPage < 1) {
                 this.tocCurrentPage = 1;
