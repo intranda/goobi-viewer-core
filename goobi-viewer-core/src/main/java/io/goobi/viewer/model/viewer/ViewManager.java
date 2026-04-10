@@ -728,11 +728,17 @@ public class ViewManager implements Serializable {
      * @return Image URL
      */
     private String getCurrentImageUrl(PageType view, int size) {
-        StringBuilder sb = new StringBuilder(imageDeliveryBean.getThumbs().getThumbnailUrl(getCurrentPage(), size, size));
+        // Guard against null current page: return null so EL expressions like
+        // "currentImageUrl != null" correctly evaluate to false instead of throwing NPE
+        PhysicalElement page = getCurrentPage();
+        if (page == null) {
+            return null;
+        }
+        StringBuilder sb = new StringBuilder(imageDeliveryBean.getThumbs().getThumbnailUrl(page, size, size));
         try {
             if (DataManager.getInstance().getConfiguration().getFooterHeight(new ViewAttributes(this, view)) > 0) {
                 sb.append("?ignoreWatermark=false");
-                sb.append(imageDeliveryBean.getFooter().getWatermarkTextIfExists(getCurrentPage()).map(text -> {
+                sb.append(imageDeliveryBean.getFooter().getWatermarkTextIfExists(page).map(text -> {
                     try {
                         return "&watermarkText=" + URLEncoder.encode(text, StringTools.DEFAULT_ENCODING);
                     } catch (UnsupportedEncodingException e) {

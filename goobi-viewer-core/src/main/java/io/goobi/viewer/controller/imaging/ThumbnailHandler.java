@@ -397,6 +397,10 @@ public class ThumbnailHandler {
      * @return the thumbnail image URL for the given page at the given scale
      */
     public String getThumbnailUrl(PhysicalElement page, Scale scale) {
+        // Guard against null page to avoid NPE when no page is loaded
+        if (page == null) {
+            return "";
+        }
         ImageFileFormat format = ImageFileFormat.getImageFileFormatFromMimeType(page.getMimeType());
         if (format == null) {
             format = ImageFileFormat.JPG;
