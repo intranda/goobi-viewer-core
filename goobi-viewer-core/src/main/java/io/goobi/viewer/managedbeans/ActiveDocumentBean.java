@@ -522,7 +522,6 @@ public class ActiveDocumentBean implements Serializable {
             if (StringUtils.isNotEmpty(logid) && viewManager != null && !logid.equals(viewManager.getLogId())) {
                 // TODO set new values instead of re-creating ViewManager, perhaps
                 logger.debug("Find doc by LOGID: {}", logid);
-                new StructElement(topDocumentIddoc);
                 String query = new StringBuilder("+")
                         .append(SolrConstants.LOGID)
                         .append(":\"")
