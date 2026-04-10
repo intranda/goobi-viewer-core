@@ -37,6 +37,9 @@ import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.search.SearchHitsNotifier;
 import jakarta.enterprise.context.ContextNotActiveException;
 
+/**
+ * Message handler that sends e-mail notifications to users whose saved searches have new hits since their last notification.
+ */
 public class NotifySearchUpdateHandler implements MessageHandler<MessageStatus> {
 
     private static final Logger logger = LogManager.getLogger(NotifySearchUpdateHandler.class);

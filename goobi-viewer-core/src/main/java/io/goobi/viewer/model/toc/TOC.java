@@ -67,23 +67,19 @@ public class TOC implements Serializable {
     private int currentPage = 1;
 
     /**
-     * <p>
-     * Constructor for TOC.
-     * </p>
+     * Creates a new TOC instance.
      */
     public TOC() {
         logger.trace("new TOC()");
     }
 
     /**
-     * <p>
      * generate.
-     * </p>
      *
-     * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @param addAllSiblings a boolean.
-     * @param mimeType a {@link java.lang.String} object.
-     * @param tocCurrentPage a int.
+     * @param structElement root struct element for TOC generation
+     * @param addAllSiblings if true, sibling elements are included in the TOC
+     * @param mimeType MIME type of the record
+     * @param tocCurrentPage current paginator page of anchor group elements
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -98,11 +94,9 @@ public class TOC implements Serializable {
     }
 
     /**
-     * <p>
      * getGroupNames.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of TOC group names available in this table of contents
      */
     public List<String> getGroupNames() {
         if (tocElementMap != null) {
@@ -113,12 +107,10 @@ public class TOC implements Serializable {
     }
 
     /**
-     * <p>
      * getViewForGroup.
-     * </p>
      *
-     * @param group a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
+     * @param group TOC group name to retrieve elements for
+     * @return a list of TOC elements belonging to the given group, or null if none found
      */
     public List<TOCElement> getViewForGroup(String group) {
         if (tocElementMap != null) {
@@ -129,33 +121,31 @@ public class TOC implements Serializable {
     }
 
     /**
-     * <p>
      * getTreeViewForGroup.
-     * </p>
      *
-     * @param group a {@link java.lang.String} object.
+     * @param group TOC group name to build the tree for
      * @should call buildTree and set maxTocDepth correctly
-     * @return a {@link java.util.List} object.
+     * @return a list of TOC elements for the given group with tree nesting applied
      */
     public List<TOCElement> getTreeViewForGroup(String group) {
         if (!treeBuilt) {
             int visibleLevel = DataManager.getInstance().getConfiguration().getSidebarTocInitialCollapseLevel();
             int collapseThreshold = DataManager.getInstance().getConfiguration().getSidebarTocCollapseLengthThreshold();
             int lowestLevelToCollapse = DataManager.getInstance().getConfiguration().getSidebarTocLowestLevelToCollapseForLength();
-            String currentElementIdDoc =
-                    BeanUtils.getActiveDocumentBean().isRecordLoaded()
-                            ? BeanUtils.getActiveDocumentBean().getViewManager().getCurrentStructElementIddoc() : null;
+            // Guard against TOCTOU: fetch bean once and null-check ViewManager directly,
+            // because isRecordLoaded() and getViewManager() may race in concurrent requests.
+            io.goobi.viewer.managedbeans.ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
+            io.goobi.viewer.model.viewer.ViewManager vm = adb != null ? adb.getViewManager() : null;
+            String currentElementIdDoc = vm != null ? vm.getCurrentStructElementIddoc() : null;
             buildTree(group, visibleLevel, collapseThreshold, lowestLevelToCollapse, currentElementIdDoc);
         }
         return getViewForGroup(group);
     }
 
     /**
-     * <p>
      * getFlatView.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a flat list of all TOC elements in the default group
      */
     public List<TOCElement> getFlatView() {
         // logger.trace("getFlatView"); //NOSONAR Debug
@@ -163,11 +153,9 @@ public class TOC implements Serializable {
     }
 
     /**
-     * <p>
      * getTreeView.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of TOC elements for the default group with tree nesting applied
      */
     public List<TOCElement> getTreeView() {
         return getTreeViewForGroup(StringConstants.DEFAULT_NAME);
@@ -175,11 +163,11 @@ public class TOC implements Serializable {
 
     /**
      *
-     * @param group
-     * @param visibleLevel
-     * @param collapseThreshold
-     * @param lowestLevelToCollapse
-     * @param currentElementIdDoc
+     * @param group TOC group name to build the tree for
+     * @param visibleLevel maximum hierarchy level shown expanded initially
+     * @param collapseThreshold sibling count above which a level is auto-collapsed
+     * @param lowestLevelToCollapse minimum hierarchy level eligible for length-based collapse
+     * @param currentElementIdDoc IDDOC of the currently displayed struct element
      */
     protected void buildTree(String group, int visibleLevel, int collapseThreshold, int lowestLevelToCollapse, String currentElementIdDoc) {
         logger.trace("buildTree");
@@ -237,9 +225,8 @@ public class TOC implements Serializable {
 
     /**
      *
-     *
-     * @param list
-     * @param currentElementIdDoc
+     * @param list flat list of all TOC elements
+     * @param currentElementIdDoc IDDOC of the currently displayed struct element
      */
     private void uncollapseCurrentElementAncestors(List<TOCElement> list, String currentElementIdDoc) {
         if (currentElementIdDoc != null) {
@@ -260,9 +247,9 @@ public class TOC implements Serializable {
     }
 
     /**
-     * 
-     * @param list
-     * @param iddoc
+     *
+     * @param list flat list of all TOC elements
+     * @param iddoc IDDOC value to search for
      * @return {@link TOCElement}
      */
     private static TOCElement getElement(List<TOCElement> list, String iddoc) {
@@ -270,9 +257,9 @@ public class TOC implements Serializable {
     }
 
     /**
-     * 
-     * @param list
-     * @param id
+     *
+     * @param list flat list of all TOC elements
+     * @param id numeric element ID to search for
      * @return {@link TOCElement}
      */
     private static TOCElement getElement(List<TOCElement> list, int id) {
@@ -280,9 +267,9 @@ public class TOC implements Serializable {
     }
 
     /**
-     * 
-     * @param collapseThreshold
-     * @param lowestLevelToCollapse
+     *
+     * @param collapseThreshold sibling count above which a level is auto-collapsed
+     * @param lowestLevelToCollapse minimum hierarchy level eligible for length-based collapse
      */
     private void collapseTocForLength(int collapseThreshold, int lowestLevelToCollapse) {
         if (collapseThreshold <= 0 || tocElementMap == null) {
@@ -339,7 +326,7 @@ public class TOC implements Serializable {
     /**
      * Recalculates the visibility of TOC elements after a +/- button has been pressed.
      *
-     * @return a {@link io.goobi.viewer.model.toc.TOCElement} object.
+     * @return the TOCElement that was expanded or collapsed after processing the pending visibility change, or null if none was pending
      */
     public TOCElement getActiveElement() {
         TOCElement activeTocElement = null;
@@ -364,7 +351,7 @@ public class TOC implements Serializable {
     /**
      * Collapses all elements below the element with the given ID.
      *
-     * @param parentId
+     * @param parentId index of the parent element in the flat TOC list
      */
     private void collapseTree(int parentId) {
         logger.trace("collapseTree: {}", parentId);
@@ -386,7 +373,7 @@ public class TOC implements Serializable {
     /**
      * Recursively expands the child elements of the element with the given ID.
      *
-     * @param parentId
+     * @param parentId index of the parent element in the flat TOC list
      */
     private void expandTree(int parentId) {
         // logger.trace("expandTree: {}", parentId); //NOSONAR Debug
@@ -411,9 +398,7 @@ public class TOC implements Serializable {
     }
 
     /**
-     * <p>
      * expandAll.
-     * </p>
      */
     public void expandAll() {
         logger.trace("expandAll");
@@ -428,9 +413,7 @@ public class TOC implements Serializable {
     }
 
     /**
-     * <p>
      * collapseAll.
-     * </p>
      */
     public void collapseAll() {
         logger.trace("collapseAll");
@@ -446,47 +429,37 @@ public class TOC implements Serializable {
     }
 
     /**
-     * <p>
      * setChildVisible.
-     * </p>
      *
-     * @param id a int.
+     * @param id index of the TOC element to expand
      */
     public void setChildVisible(int id) {
         this.tocVisible = id;
     }
 
     /**
-     * <p>
      * setChildInvisible.
-     * </p>
      *
-     * @param id a int.
+     * @param id index of the TOC element to collapse
      */
     public void setChildInvisible(int id) {
         this.tocInvisible = id;
     }
 
-    /**
-     * @return the tocElementMap
-     */
+    
     Map<String, List<TOCElement>> getTocElementMap() {
         return tocElementMap;
     }
 
-    /**
-     * @param tocElementMap the tocElementMap to set
-     */
+    
     void setTocElementMap(Map<String, List<TOCElement>> tocElementMap) {
         this.tocElementMap = tocElementMap;
     }
 
     /**
-     * <p>
      * getTocElements.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all TOC elements in the default group
      */
     public List<TOCElement> getTocElements() {
         if (tocElementMap != null) {
@@ -519,55 +492,45 @@ public class TOC implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>tocVisible</code>.
-     * </p>
      *
-     * @return the tocVisible
+     * @return the number of visible TOC entries on the current page
      */
     public int getTocVisible() {
         return tocVisible;
     }
 
     /**
-     * <p>
      * Setter for the field <code>tocVisible</code>.
-     * </p>
      *
-     * @param tocVisible the tocVisible to set
+     * @param tocVisible the number of visible TOC entries on the current page to set
      */
     public void setTocVisible(int tocVisible) {
         this.tocVisible = tocVisible;
     }
 
     /**
-     * <p>
      * Getter for the field <code>tocInvisible</code>.
-     * </p>
      *
-     * @return the tocInvisible
+     * @return the number of hidden (collapsed) TOC entries on the current page
      */
     public int getTocInvisible() {
         return tocInvisible;
     }
 
     /**
-     * <p>
      * Setter for the field <code>tocInvisible</code>.
-     * </p>
      *
-     * @param tocInvisible the tocInvisible to set
+     * @param tocInvisible the number of hidden (collapsed) TOC entries on the current page to set
      */
     public void setTocInvisible(int tocInvisible) {
         this.tocInvisible = tocInvisible;
     }
 
     /**
-     * <p>
      * Getter for the field <code>maxTocDepth</code>.
-     * </p>
      *
-     * @return the maxTocDepth
+     * @return the maximum nesting depth of the TOC tree
      */
     public int getMaxTocDepth() {
         // If this method is called before getTreeView, the depth will always be 0
@@ -580,55 +543,45 @@ public class TOC implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>maxTocDepth</code>.
-     * </p>
      *
-     * @param maxTocDepth the maxTocDepth to set
+     * @param maxTocDepth the maximum nesting depth of the TOC tree to set
      */
     public void setMaxTocDepth(int maxTocDepth) {
         this.maxTocDepth = maxTocDepth;
     }
 
     /**
-     * <p>
      * Getter for the field <code>totalTocSize</code>.
-     * </p>
      *
-     * @return the totalTocSize
+     * @return the total number of TOC entries across all pages
      */
     public int getTotalTocSize() {
         return totalTocSize;
     }
 
     /**
-     * <p>
      * Setter for the field <code>totalTocSize</code>.
-     * </p>
      *
-     * @param totalTocSize the totalTocSize to set
+     * @param totalTocSize the total number of TOC entries across all pages to set
      */
     public void setTotalTocSize(int totalTocSize) {
         this.totalTocSize = totalTocSize;
     }
 
     /**
-     * <p>
      * Getter for the field <code>currentPage</code>.
-     * </p>
      *
-     * @return the currentPage
+     * @return the 1-based page number of the currently displayed TOC page
      */
     public int getCurrentPage() {
         return currentPage;
     }
 
     /**
-     * <p>
      * Setter for the field <code>currentPage</code>.
-     * </p>
      *
-     * @param currentPage the currentPage to set
+     * @param currentPage the 1-based page number of the TOC page to display
      * @should set value to 1 if given value too low
      * @should set value to last page number if given value too high
      */
@@ -667,11 +620,9 @@ public class TOC implements Serializable {
     }
 
     /**
-     * <p>
      * hasChildren.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the TOC contains more than one element or any element has child entries, false otherwise
      */
     public boolean isHasChildren() {
         if (tocElementMap == null || tocElementMap.get(StringConstants.DEFAULT_NAME) == null
@@ -685,9 +636,9 @@ public class TOC implements Serializable {
     /**
      * Returns the label of the first found TOCElement that has the given PI as its topStructPi.
      *
-     * @param pi a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record
      * @should return correct label
-     * @return a {@link java.lang.String} object.
+     * @return the label of the matching TOC element, or null if none found
      */
     public String getLabel(String pi) {
         return getLabel(pi, MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
@@ -696,10 +647,10 @@ public class TOC implements Serializable {
     /**
      * Returns the label in the given language of the first found TOCElement that has the given PI as its topStructPi.
      *
-     * @param pi a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record
      * @should return correct label
-     * @param language a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param language ISO 639-1 language code for the desired label
+     * @return the language-specific label of the matching TOC element, or null if none found
      */
     public String getLabel(String pi, String language) {
         if (StringUtils.isEmpty(pi)) {
@@ -721,10 +672,10 @@ public class TOC implements Serializable {
     /**
      * Returns the label in the given locale of the first found TOCElement that has the given PI as its topStructPi.
      *
-     * @param pi a {@link java.lang.String} object.
+     * @param pi persistent identifier of the record
      * @should return correct label
-     * @param locale a {@link java.util.Locale} object.
-     * @return a {@link java.lang.String} object.
+     * @param locale locale for the desired label language
+     * @return the locale-specific label of the matching TOC element, or null if none found
      */
     public String getLabel(String pi, Locale locale) {
         return getLabel(pi, locale.getLanguage());

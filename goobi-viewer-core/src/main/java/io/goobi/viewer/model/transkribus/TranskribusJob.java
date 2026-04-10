@@ -45,9 +45,7 @@ import jakarta.persistence.Table;
 import io.goobi.viewer.model.job.JobStatus;
 
 /**
- * <p>
- * TranskribusJob class.
- * </p>
+ * Represents a Transkribus HTR (handwritten text recognition) processing job with its status and associated record.
  */
 @Entity
 @Table(name = "transkribus_jobs")
@@ -77,11 +75,11 @@ public class TranskribusJob implements Serializable {
     @Column(name = "owner_id", nullable = false)
     private String ownerId;
 
-    /** Transkribus collection (user) */
+    /** Transkribus collection (user). */
     @Column(name = "user_collection_id", nullable = false)
     private String userCollectionId;
 
-    /** Transkribus collection (viewer) */
+    /** Transkribus collection (viewer). */
     @Column(name = "viewer_collection_id", nullable = false)
     private String viewerCollectionId;
 
@@ -111,264 +109,216 @@ public class TranskribusJob implements Serializable {
     protected List<String> observers = new ArrayList<>();
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
-     * @return the id
+     * @return the database identifier of this Transkribus job
      */
     public Long getId() {
         return id;
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
-     * @param id the id to set
+     * @param id the database identifier to set
      */
     public void setId(Long id) {
         this.id = id;
     }
 
     /**
-     * <p>
      * Getter for the field <code>jobId</code>.
-     * </p>
      *
-     * @return the jobId
+     * @return the Transkribus job identifier
      */
     public String getJobId() {
         return jobId;
     }
 
     /**
-     * <p>
      * Setter for the field <code>jobId</code>.
-     * </p>
      *
-     * @param jobId the jobId to set
+     * @param jobId the Transkribus job identifier to set
      */
     public void setJobId(String jobId) {
         this.jobId = jobId;
     }
 
     /**
-     * <p>
      * Getter for the field <code>docId</code>.
-     * </p>
      *
-     * @return the docId
+     * @return the Transkribus document identifier
      */
     public String getDocId() {
         return docId;
     }
 
     /**
-     * <p>
      * Setter for the field <code>docId</code>.
-     * </p>
      *
-     * @param docId the docId to set
+     * @param docId the Transkribus document identifier to set
      */
     public void setDocId(String docId) {
         this.docId = docId;
     }
 
     /**
-     * <p>
      * Getter for the field <code>pi</code>.
-     * </p>
      *
-     * @return the pi
+     * @return the persistent identifier of the associated Goobi viewer record
      */
     public String getPi() {
         return pi;
     }
 
     /**
-     * <p>
      * Setter for the field <code>pi</code>.
-     * </p>
      *
-     * @param pi the pi to set
+     * @param pi the persistent identifier of the Goobi viewer record to set
      */
     public void setPi(String pi) {
         this.pi = pi;
     }
 
     /**
-     * <p>
      * Getter for the field <code>ownerId</code>.
-     * </p>
      *
-     * @return the ownerId
+     * @return the identifier of the user who submitted this job
      */
     public String getOwnerId() {
         return ownerId;
     }
 
     /**
-     * <p>
      * Setter for the field <code>ownerId</code>.
-     * </p>
      *
-     * @param ownerId the ownerId to set
+     * @param ownerId the identifier of the user who submitted this job to set
      */
     public void setOwnerId(String ownerId) {
         this.ownerId = ownerId;
     }
 
     /**
-     * <p>
      * Getter for the field <code>userCollectionId</code>.
-     * </p>
      *
-     * @return the userCollectionId
+     * @return the user's Transkribus collection identifier
      */
     public String getUserCollectionId() {
         return userCollectionId;
     }
 
     /**
-     * <p>
      * Setter for the field <code>userCollectionId</code>.
-     * </p>
      *
-     * @param userCollectionId the userCollectionId to set
+     * @param userCollectionId the user's Transkribus collection identifier to set
      */
     public void setUserCollectionId(String userCollectionId) {
         this.userCollectionId = userCollectionId;
     }
 
     /**
-     * <p>
      * Getter for the field <code>viewerCollectionId</code>.
-     * </p>
      *
-     * @return the viewerCollectionId
+     * @return the viewer's Transkribus collection identifier
      */
     public String getViewerCollectionId() {
         return viewerCollectionId;
     }
 
     /**
-     * <p>
      * Setter for the field <code>viewerCollectionId</code>.
-     * </p>
      *
-     * @param viewerCollectionId the viewerCollectionId to set
+     * @param viewerCollectionId the viewer's Transkribus collection identifier to set
      */
     public void setViewerCollectionId(String viewerCollectionId) {
         this.viewerCollectionId = viewerCollectionId;
     }
 
     /**
-     * <p>
      * Getter for the field <code>message</code>.
-     * </p>
      *
-     * @return the message
+     * @return the status or error message from Transkribus
      */
     public String getMessage() {
         return message;
     }
 
     /**
-     * <p>
      * Setter for the field <code>message</code>.
-     * </p>
      *
-     * @param message the message to set
+     * @param message the status or error message from Transkribus to set
      */
     public void setMessage(String message) {
         this.message = message;
     }
 
     /**
-     * <p>
      * Getter for the field <code>dateCreated</code>.
-     * </p>
      *
-     * @return the dateCreated
+     * @return the timestamp when this job was created
      */
     public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
     /**
-     * <p>
      * Setter for the field <code>dateCreated</code>.
-     * </p>
      *
-     * @param dateCreated the dateCreated to set
+     * @param dateCreated the timestamp when this job was created to set
      */
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
 
     /**
-     * <p>
      * Getter for the field <code>status</code>.
-     * </p>
      *
-     * @return the status
+     * @return the current processing status of this job
      */
     public JobStatus getStatus() {
         return status;
     }
 
     /**
-     * <p>
      * Setter for the field <code>status</code>.
-     * </p>
      *
-     * @param status the status to set
+     * @param status the current processing status of this job to set
      */
     public void setStatus(JobStatus status) {
         this.status = status;
     }
 
     /**
-     * <p>
      * Getter for the field <code>description</code>.
-     * </p>
      *
-     * @return the description
+     * @return a human-readable description of this job
      */
     public String getDescription() {
         return description;
     }
 
     /**
-     * <p>
      * Setter for the field <code>description</code>.
-     * </p>
      *
-     * @param description the description to set
+     * @param description a human-readable description of this job to set
      */
     public void setDescription(String description) {
         this.description = description;
     }
 
     /**
-     * <p>
      * Getter for the field <code>observers</code>.
-     * </p>
      *
-     * @return the observers
+     * @return the list of email addresses to notify about job status changes
      */
     public List<String> getObservers() {
         return observers;
     }
 
     /**
-     * <p>
      * Setter for the field <code>observers</code>.
-     * </p>
      *
-     * @param observers the observers to set
+     * @param observers the list of email addresses to notify about job status changes to set
      */
     public void setObservers(List<String> observers) {
         this.observers = observers;

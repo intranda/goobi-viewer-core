@@ -48,9 +48,7 @@ import io.goobi.viewer.model.search.FacetSorting.SortingMap;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
- * <p>
- * FacetItem class.
- * </p>
+ * Represents a single facet value with its display label, hit count, and selection state.
  */
 public class FacetItem implements Serializable, IFacetItem {
 
@@ -71,17 +69,17 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Constructor that doesn't parse the link; for testing purposes.
      *
-     * @param hierarchical
+     * @param hierarchical true if this is a hierarchical facet
      */
     FacetItem(boolean hierarchical) {
         this.hierarchial = hierarchical;
     }
 
     /**
-     * Constructor for active facets received via the URL. The Solr query is split into individual field/value.
+     * Creates a new FacetItem for active facets received via the URL. The Solr query is split into individual field/value.
      *
-     * @param link a {@link java.lang.String} object.
-     * @param hierarchical a boolean.
+     * @param link Solr field:value query string to parse
+     * @param hierarchical true if this is a hierarchical facet
      * @should split field and value correctly
      * @should split field and value range correctly
      */
@@ -90,11 +88,11 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * Constructor for active facets received via the URL. The Solr query is split into individual field/value.
+     * Creates a new FacetItem for active facets received via the URL. The Solr query is split into individual field/value.
      *
-     * @param link a {@link java.lang.String} object.
-     * @param label
-     * @param hierarchical a boolean.
+     * @param link Solr field:value query string to parse
+     * @param label display label; null to use the value as label
+     * @param hierarchical true if this is a hierarchical facet
      * @should split field and value correctly
      * @should split field and value range correctly
      * @should set label to value if no label value given
@@ -107,7 +105,7 @@ public class FacetItem implements Serializable, IFacetItem {
 
     /**
      * 
-     * @param count
+     * @param count Solr facet count object to build the item from
      */
     public FacetItem(Count count) {
         this(count.getFacetField().getName(), count.getFacetField().getName() + ":" + count.getName(), count.getName(), count.getCount(), false);
@@ -116,11 +114,11 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Internal constructor.
      * 
-     * @param field
+     * @param field Solr field name for this facet
      * @param link {@link String}
      * @param label {@link String}
      * @param count {@link Integer}
-     * @param hierarchical
+     * @param hierarchical true if this is a hierarchical facet
      */
     private FacetItem(String field, String link, String label, long count, boolean hierarchical) {
         this.field = field;
@@ -130,9 +128,6 @@ public class FacetItem implements Serializable, IFacetItem {
         setLink(link.trim());
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#hashCode()
-     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -142,9 +137,6 @@ public class FacetItem implements Serializable, IFacetItem {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -245,9 +237,11 @@ public class FacetItem implements Serializable, IFacetItem {
 
         List<IFacetItem> retList = new ArrayList<>();
         Map<String, FacetItem> existingItems = new HashMap<>();
-        // Add supplied existing items
+        // Add supplied existing items; copy first to avoid ConcurrentModificationException
+        // if the shared list is modified by another thread while iterating (refs #1234)
         if (existingFacetsItems != null) {
-            for (IFacetItem item : existingFacetsItems) {
+            List<IFacetItem> existingItemsCopy = new ArrayList<>(existingFacetsItems);
+            for (IFacetItem item : existingItemsCopy) {
                 if (item instanceof FacetItem facetItem) {
                     values.getMap().compute(item.getValue(), (k, v) -> v == null ? item.getCount() : v + item.getCount());
                 }
@@ -319,12 +313,12 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Constructs a list of FilterLink objects for faceting. Optionally sorted by the raw values.
      *
-     * @param field a {@link java.lang.String} object.
-     * @param values a {@link java.util.Map} object.
-     * @param sort a boolean.
-     * @param reverseOrder a boolean.
-     * @param hierarchical a boolean.
-     * @return a {@link java.util.List} object.
+     * @param field Solr facet field name
+     * @param values map of facet values to their document counts
+     * @param sort if true, sort items by value before returning
+     * @param reverseOrder if true, reverse the sort order
+     * @param hierarchical true if facet field is hierarchical
+     * @return a list of facet items generated from the given values map, optionally sorted
      * @should sort items correctly
      */
     public static List<IFacetItem> generateFacetItems(String field, Map<String, Long> values, boolean sort, boolean reverseOrder,
@@ -391,7 +385,7 @@ public class FacetItem implements Serializable, IFacetItem {
      * @should construct hierarchical link correctly
      * @should construct range link correctly
      * @should construct polygon link correctly
-     * @return a {@link java.lang.String} object.
+     * @return the Solr filter query string for this facet item, with field and value properly escaped
      */
     @Override
     public String getQueryEscapedLink() {
@@ -471,7 +465,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Link after slash/backslash replacements for partner collection, static drill-down components and topic browsing (HU Berlin).
      *
-     * @return a {@link java.lang.String} object.
+     * @return the facet link with critical URL characters escaped
      */
     @Override
     public String getEscapedLink() {
@@ -481,7 +475,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * URL escaped link for using in search drill-downs.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the URL-encoded facet link for use in drill-down search URLs
      */
     @Override
     public String getUrlEscapedLink() {
@@ -493,27 +487,21 @@ public class FacetItem implements Serializable, IFacetItem {
         }
     }
 
-    /**
-     * @return the type
-     */
+    
     @Override
     public FacetType getType() {
         return type;
     }
 
-    /**
-     * @param type the type to set
-     */
+    
     public void setType(FacetType type) {
         this.type = type;
     }
 
     /**
-     * <p>
      * Getter for the field <code>field</code>.
-     * </p>
      *
-     * @return the field
+     * @return the Solr field name this facet item belongs to
      */
     @Override
     public String getField() {
@@ -521,11 +509,9 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * <p>
      * Setter for the field <code>field</code>.
-     * </p>
      *
-     * @param field the field to set
+     * @param field the Solr field name this facet item belongs to
      */
     @Override
     public void setField(String field) {
@@ -533,9 +519,7 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * <p>
      * getFullValue.
-     * </p>
      *
      * @return Range of value - value2; just value if value2 empty
      * @should build full value correctly
@@ -550,11 +534,9 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * <p>
      * Getter for the field <code>value</code>.
-     * </p>
      *
-     * @return the value
+     * @return the facet value string
      */
     @Override
     public String getValue() {
@@ -562,11 +544,9 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * <p>
      * Setter for the field <code>value</code>.
-     * </p>
      *
-     * @param value the value to set
+     * @param value the facet value string
      */
     @Override
     public void setValue(String value) {
@@ -574,11 +554,9 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * <p>
      * Getter for the field <code>value2</code>.
-     * </p>
      *
-     * @return the value2
+     * @return the upper bound value for range facets
      */
     @Override
     public String getValue2() {
@@ -586,11 +564,9 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * <p>
      * Setter for the field <code>value2</code>.
-     * </p>
      *
-     * @param value2 the value2 to set
+     * @param value2 the upper bound value for range facets
      */
     @Override
     public void setValue2(String value2) {
@@ -598,11 +574,9 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * <p>
      * Getter for the field <code>link</code>.
-     * </p>
      *
-     * @return the link
+     * @return the colon-separated field:value string used as the facet link
      */
     @Override
     public String getLink() {
@@ -610,11 +584,9 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * <p>
      * Setter for the field <code>link</code>.
-     * </p>
      *
-     * @param link the link to set
+     * @param link the colon-separated field:value string used as the facet link
      */
     @Override
     public void setLink(String link) {
@@ -631,11 +603,9 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * <p>
      * Getter for the field <code>label</code>.
-     * </p>
      *
-     * @return the label
+     * @return the display label for this facet item
      */
     @Override
     public String getLabel() {
@@ -643,11 +613,9 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * <p>
      * Setter for the field <code>label</code>.
-     * </p>
      *
-     * @param label the label to set
+     * @param label the display label for this facet item
      * @return this
      */
     @Override
@@ -657,11 +625,9 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * <p>
      * Getter for the field <code>translatedLabel</code>.
-     * </p>
      *
-     * @return the translatedLabel
+     * @return the translated label if translation is configured for this field, otherwise the raw label
      */
     @Override
     public String getTranslatedLabel() {
@@ -675,7 +641,7 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Dummy setter to fulfill the interface contract.
      *
-     * @param translatedLabel the translatedLabel to set
+     * @param translatedLabel ignored; translations are computed dynamically from {@link #label}
      */
     @Override
     public void setTranslatedLabel(String translatedLabel) {
@@ -683,11 +649,9 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * <p>
      * Getter for the field <code>count</code>.
-     * </p>
      *
-     * @return the count
+     * @return the number of search results matching this facet value
      */
     @Override
     public long getCount() {
@@ -695,11 +659,9 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * <p>
      * Setter for the field <code>count</code>.
-     * </p>
      *
-     * @param count the count to set
+     * @param count the number of search results matching this facet value
      * @return this
      */
     @Override
@@ -712,17 +674,13 @@ public class FacetItem implements Serializable, IFacetItem {
         this.count += amount;
     }
 
-    /**
-     * 
-     */
+    
     @Override
     public boolean isGroup() {
         return group;
     }
 
-    /**
-     * 
-     */
+    
     @Override
     public IFacetItem setGroup(boolean group) {
         this.group = group;
@@ -730,11 +688,9 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * <p>
      * isHierarchial.
-     * </p>
      *
-     * @return the hierarchial
+     * @return true if this facet item belongs to a hierarchical facet field, false otherwise
      */
     @Override
     public boolean isHierarchial() {
@@ -746,13 +702,13 @@ public class FacetItem implements Serializable, IFacetItem {
         return DataManager.getInstance().getConfiguration().getBooleanFacetFields().contains(field);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#toString()
-     */
     public String toString() {
         return field + ":" + value + " - " + value2;
     }
 
+    /**
+     * Enumerates the structural types of a facet field, determining how its values are queried, displayed, and filtered in the search UI.
+     */
     public enum FacetType {
         STANDARD,
         BOOLEAN,

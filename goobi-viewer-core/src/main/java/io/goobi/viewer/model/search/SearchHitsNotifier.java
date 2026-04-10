@@ -43,9 +43,7 @@ import io.goobi.viewer.solr.SolrConstants;
 import jakarta.mail.MessagingException;
 
 /**
- * <p>
- * SearchHitsNotificationResource class.
- * </p>
+ * Sends email notifications to users when new search hits appear for their saved searches.
  */
 public class SearchHitsNotifier {
 
@@ -78,9 +76,9 @@ public class SearchHitsNotifier {
     }
 
     /**
-     * @param newHits
-     * @param searchName
-     * @param address
+     * @param newHits list of new search hits to include in notification
+     * @param searchName name of the saved search
+     * @param address email address to send the notification to
      */
     private static void sendEmailNotification(List<SearchHit> newHits, String searchName, String address) {
         StringBuilder sb = new StringBuilder();
@@ -116,8 +114,7 @@ public class SearchHitsNotifier {
      * the {@link Search#getHitsCount()} is larger than {@link Search#getLastHitsCount()} the newest (hitsCount - lastHitsCount) hits are returned and
      * the lastHitsCount of the search is updated
      *
-     *
-     * @param search
+     * @param search the saved search to execute and compare against last hit count
      * @return A list of new hits (based on {@link Search#getLastHitsCount()}
      * @throws PresentationException
      * @throws IndexUnreachableException

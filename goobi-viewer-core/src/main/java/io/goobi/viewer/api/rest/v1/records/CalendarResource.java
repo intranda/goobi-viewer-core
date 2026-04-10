@@ -42,6 +42,7 @@ import org.json.JSONObject;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.filters.FilterTools;
+import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -50,7 +51,10 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -71,7 +75,12 @@ public class CalendarResource {
     private final String pi;
 
     public CalendarResource(@Context HttpServletRequest request,
-            @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) {
+            @Parameter(description = "Persistent identifier of the record",
+                    schema = @Schema(pattern = "^[A-Za-z0-9][A-Za-z0-9_.-]*$")) @PathParam("pi") String pi) {
+        // Validate PI to prevent Solr query injection from control characters or special chars
+        if (!PIValidator.validatePi(pi)) {
+            throw new BadRequestException("Invalid record identifier: " + pi);
+        }
         this.pi = pi;
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
     }
@@ -91,8 +100,13 @@ public class CalendarResource {
     @jakarta.ws.rs.Path(RECORDS_CALENDAR_YEAR_REGEX)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records" }, summary = "Get calendar entries for a record and year")
+    @ApiResponse(responseCode = "200", description = "JSON array of calendar entries for the record and year")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier or year value")
+    @ApiResponse(responseCode = "404", description = "Record not found for the given identifier")
     public Response getCalendarEntries(
-            @Parameter(description = "Year to retrieve calendar entries for") @PathParam("year") int year)
+            // Restrict year to 4 digits so JAX-RS doesn't try to parse an overflowing long as int and return HTTP 400.
+            @Parameter(description = "Year to retrieve calendar entries for",
+                    schema = @Schema(minimum = "1", maximum = "9999")) @PathParam("year") int year)
             throws PresentationException, IndexUnreachableException {
         logger.trace("getCalendarEntries: {}/{}", pi, year);
 
@@ -162,6 +176,10 @@ public class CalendarResource {
     @jakarta.ws.rs.Path(RECORDS_CALENDAR_MONTHS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records" }, summary = "Get all year-month combinations that have calendar entries")
+    @ApiResponse(responseCode = "200", description = "JSON array of YYYY-MM strings for months with calendar entries")
+    // 400 is returned by the constructor when the PI fails validation (BadRequestException)
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "404", description = "Record not found for the given identifier")
     public Response getAvailableMonths() throws PresentationException, IndexUnreachableException {
         logger.trace("getAvailableMonths: {}", pi);
 

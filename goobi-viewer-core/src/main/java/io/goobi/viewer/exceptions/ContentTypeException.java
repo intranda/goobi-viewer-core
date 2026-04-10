@@ -21,6 +21,10 @@
  */
 package io.goobi.viewer.exceptions;
 
+/**
+ * Thrown when a content type is unsupported, unrecognised, or cannot be processed by the
+ * requested operation.
+ */
 public class ContentTypeException extends PresentationException {
 
     public ContentTypeException(String string, Object... args) {

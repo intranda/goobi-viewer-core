@@ -31,12 +31,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Manages concurrent view limits and access condition caches for individual records.
+ * Tracks active record locks per session and caches Solr-derived access conditions to avoid redundant queries.
+ */
 public class RecordLockManager {
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(RecordLockManager.class);
 
-    /** Currently viewed records */
+    /** Currently viewed records. */
     private final Map<String, Set<RecordLock>> loadedRecordMap = new ConcurrentHashMap<>();
     /**
      * Cache for record access conditions. Null value means the record is not yet cached, while empty list means the record has no access conditions.
@@ -52,11 +56,11 @@ public class RecordLockManager {
      * @param pi Record identifier
      * @param sessionId HTTP session ID
      * @param limit Optional number of concurrent views for the record
+     * @return a {@link LockRecordResult}, indicating that either a lock has been set, the lock limit was exceeded or that no action was necessary
      * @throws IllegalArgumentException if the given pi is null
      * @should add record lock to map correctly
      * @should do nothing if limit null
      * @should do nothing if session id already in list
-     * @return a {@link LockRecordResult}, indicating that either a lock has been set, the lock limit was exceeded or that no action was necessary
      */
     public synchronized LockRecordResult lockRecord(String pi, String sessionId, Integer limit) {
         logger.trace("lockRecord: {}", pi);
@@ -115,8 +119,8 @@ public class RecordLockManager {
 
     /**
      *
-     * @param pi
-     * @param sessionId
+     * @param pi persistent identifier of the locked record
+     * @param sessionId HTTP session ID holding the lock
      * @return true if lock removed successfully; false otherwise
      */
     public synchronized boolean removeLockForPiAndSessionId(String pi, String sessionId) {
@@ -143,7 +147,7 @@ public class RecordLockManager {
      * Removes all record locks that are older that <code>maxAge</code> milliseconds. Can be used to periodically clean up locks that might have been
      * missed by the web socket mechanism.
      *
-     * @param maxAge
+     * @param maxAge maximum age of locks in milliseconds before removal
      * @return Number of removed locks
      * @should remove locks older than maxAge
      */
@@ -183,16 +187,14 @@ public class RecordLockManager {
         return count;
     }
 
-    /**
-     * @return the loadedRecordMap
-     */
+    
     Map<String, Set<RecordLock>> getLoadedRecordMap() {
         return loadedRecordMap;
     }
 
     /**
      *
-     * @param pi
+     * @param pi persistent identifier of the record to clear from cache
      */
     public void emptyCacheForRecord(String pi) {
         if (pi == null) {
@@ -203,16 +205,12 @@ public class RecordLockManager {
         recordLimitsCache.remove(pi);
     }
 
-    /**
-     * @return the recordAccessConditionsCache
-     */
+    
     public Map<String, List<String>> getRecordAccessConditionsCache() {
         return recordAccessConditionsCache;
     }
 
-    /**
-     * @return the recordLimitsCache
-     */
+    
     public Map<String, List<String>> getRecordLimitsCache() {
         return recordLimitsCache;
     }

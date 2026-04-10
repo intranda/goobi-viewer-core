@@ -49,7 +49,7 @@ public class JsonLdDefinitionsResource {
      * Returns a service context for the size information service for viewer collections: Number of direct child-collections and of total contained
      * works.
      *
-     * @return a {@link de.intranda.api.services.CollectionExtentDefinition} object.
+     * @return the JSON-LD context definition for the collection extent service
      */
     @GET
     @Path(CollectionExtentDefinition.URI_PATH)

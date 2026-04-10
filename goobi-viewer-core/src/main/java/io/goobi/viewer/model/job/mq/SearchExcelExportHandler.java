@@ -31,6 +31,10 @@ import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.model.job.TaskType;
 
+/**
+ * Message handler stub for asynchronous search result Excel export tasks.
+ * This handler currently acts as a placeholder and returns immediately with a finished status.
+ */
 public class SearchExcelExportHandler implements MessageHandler<MessageStatus> {
 
     private static final Logger logger = LogManager.getLogger(SearchExcelExportHandler.class);

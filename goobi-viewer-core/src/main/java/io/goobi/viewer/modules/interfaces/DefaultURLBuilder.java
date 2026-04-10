@@ -41,9 +41,7 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
 /**
- * <p>
- * DefaultURLBuilder class.
- * </p>
+ * Default implementation of the URL builder interface, constructing standard viewer page URLs.
  *
  * @author Florian Alpers
  */
@@ -51,9 +49,6 @@ public class DefaultURLBuilder implements IURLBuilder {
 
     private static final Logger logger = LogManager.getLogger(DefaultURLBuilder.class);
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.modules.interfaces.IURLBuilder#generateURL(io.goobi.viewer.model.search.BrowseElement)
-     */
     /**
      * {@inheritDoc}
      * 
@@ -172,12 +167,10 @@ public class DefaultURLBuilder implements IURLBuilder {
     }
 
     /**
-     * <p>
      * getPageType.
-     * </p>
      *
-     * @param ele a {@link io.goobi.viewer.model.search.BrowseElement} object.
-     * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
+     * @param ele browse element whose page type to determine
+     * @return the PageType appropriate for the given browse element, adjusted for UGC and TEI records
      */
     protected PageType getPageType(BrowseElement ele) {
         PageType pageType = ele.determinePageType();
@@ -191,13 +184,11 @@ public class DefaultURLBuilder implements IURLBuilder {
     }
 
     /**
-     * <p>
      * buildSearchUrl.
-     * </p>
      *
-     * @param fieldName a {@link java.lang.String} object.
-     * @param fieldValue a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param fieldName Solr field name to search in
+     * @param fieldValue field value to search for
+     * @return the viewer search URL for the given Solr field and value
      */
     protected String buildSearchUrl(String fieldName, String fieldValue) {
         StringBuilder sb = new StringBuilder();

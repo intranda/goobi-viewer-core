@@ -22,7 +22,9 @@
 package io.goobi.viewer.model.viewer;
 
 /**
+ * Builder for {@link PhysicalElement} instances.
  *
+ * <p>Use the fluent setter methods to configure all physical page properties, then call {@link #build()} to create the element.
  */
 public class PhysicalElementBuilder {
 
@@ -49,15 +51,13 @@ public class PhysicalElementBuilder {
         return new PhysicalElement(physId, filePath, order, orderLabel, urn, purlPart, pi, mimeType, dataRepository);
     }
 
-    /**
-     * @return the pi
-     */
+    
     public String getPi() {
         return pi;
     }
 
     /**
-     * @param pi the pi to set
+     * @param pi the persistent identifier of the record this page belongs to
      * @return this
      */
     public PhysicalElementBuilder setPi(String pi) {
@@ -65,15 +65,13 @@ public class PhysicalElementBuilder {
         return this;
     }
 
-    /**
-     * @return the filePath
-     */
+    
     public String getFilePath() {
         return filePath;
     }
 
     /**
-     * @param filePath the filePath to set
+     * @param filePath the relative file path to the primary media file
      * @return this
      */
     public PhysicalElementBuilder setFilePath(String filePath) {
@@ -81,15 +79,13 @@ public class PhysicalElementBuilder {
         return this;
     }
 
-    /**
-     * @return the order
-     */
+    
     public int getOrder() {
         return order;
     }
 
     /**
-     * @param order the order to set
+     * @param order the physical sequence order number of this page
      * @return this
      */
     public PhysicalElementBuilder setOrder(int order) {
@@ -97,15 +93,13 @@ public class PhysicalElementBuilder {
         return this;
     }
 
-    /**
-     * @return the orderLabel
-     */
+    
     public String getOrderLabel() {
         return orderLabel;
     }
 
     /**
-     * @param orderLabel the orderLabel to set
+     * @param orderLabel the human-readable label for the page order (e.g. page number)
      * @return this
      */
     public PhysicalElementBuilder setOrderLabel(String orderLabel) {
@@ -113,15 +107,13 @@ public class PhysicalElementBuilder {
         return this;
     }
 
-    /**
-     * @return the physId
-     */
+    
     public String getPhysId() {
         return physId;
     }
 
     /**
-     * @param physId the physId to set
+     * @param physId the physical identifier of this page as given in the source document
      * @return this
      */
     public PhysicalElementBuilder setPhysId(String physId) {
@@ -129,15 +121,13 @@ public class PhysicalElementBuilder {
         return this;
     }
 
-    /**
-     * @return the urn
-     */
+    
     public String getUrn() {
         return urn;
     }
 
     /**
-     * @param urn the urn to set
+     * @param urn the URN identifier of this page
      * @return this
      */
     public PhysicalElementBuilder setUrn(String urn) {
@@ -145,15 +135,13 @@ public class PhysicalElementBuilder {
         return this;
     }
 
-    /**
-     * @return the purlPart
-     */
+    
     public String getPurlPart() {
         return purlPart;
     }
 
     /**
-     * @param purlPart the purlPart to set
+     * @param purlPart the persistent URL fragment for this page
      * @return this
      */
     public PhysicalElementBuilder setPurlPart(String purlPart) {
@@ -161,15 +149,13 @@ public class PhysicalElementBuilder {
         return this;
     }
 
-    /**
-     * @return the mimeType
-     */
+    
     public String getMimeType() {
         return mimeType;
     }
 
     /**
-     * @param mimeType the mimeType to set
+     * @param mimeType the MIME type of the primary media file for this page
      * @return this
      */
     public PhysicalElementBuilder setMimeType(String mimeType) {
@@ -177,15 +163,13 @@ public class PhysicalElementBuilder {
         return this;
     }
 
-    /**
-     * @return the dataRepository
-     */
+    
     public String getDataRepository() {
         return dataRepository;
     }
 
     /**
-     * @param dataRepository the dataRepository to set
+     * @param dataRepository the data repository name where the media files are stored
      * @return this
      */
     public PhysicalElementBuilder setDataRepository(String dataRepository) {

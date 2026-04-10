@@ -54,7 +54,7 @@ import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Context;
 
 /**
- * A rest resource for delivering video and audio files.
+ * REST resource for accessing and delivering audio and video media files associated with digitized records.
  *
  * @author Florian Alpers
  */
@@ -75,13 +75,11 @@ public class MediaResource {
     }
 
     /**
-     * <p>
      * serveMediaContent.
-     * </p>
      *
-     * @param format a {@link java.lang.String} object.
-     * @param filename a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param format audio MIME subtype (e.g. mp3, ogg)
+     * @param filename name of the audio resource file
+     * @return the streamed audio content as a string response
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
@@ -102,13 +100,11 @@ public class MediaResource {
     }
 
     /**
-     * <p>
      * serveMediaContent.
-     * </p>
      *
-     * @param format a {@link java.lang.String} object.
-     * @param filename a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param format video MIME subtype (e.g. mp4, webm)
+     * @param filename name of the video resource file
+     * @return the streamed video content as a string response
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
@@ -156,13 +152,11 @@ public class MediaResource {
     }
 
     /**
-     * <p>
      * checkAccess.
-     * </p>
      *
-     * @param action a {@link java.lang.String} object.
-     * @param pi a {@link java.lang.String} object.
-     * @param contentFilename a {@link java.lang.String} object.
+     * @param action media type used as access action key (e.g. audio, video)
+     * @param pi persistent identifier of the record
+     * @param contentFilename filename of the requested media file
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
      */
     public void checkAccess(String action, String pi, String contentFilename) throws WebApplicationException {

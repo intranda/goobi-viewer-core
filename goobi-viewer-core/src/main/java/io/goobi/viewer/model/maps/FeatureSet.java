@@ -43,6 +43,10 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
 
+/**
+ * Abstract JPA base entity representing a set of geo-map features with a marker style and optional name,
+ * persisted in a single table with subclass-specific discriminator values.
+ */
 @Entity
 @Table(name = "cms_geomap_featureset")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -88,16 +92,12 @@ public abstract class FeatureSet implements Serializable {
 
     public abstract boolean isQueryResultSet();
 
-    /**
-     * @return the marker
-     */
+    
     public String getMarker() {
         return Optional.ofNullable(this.marker).orElse(DEFAULT_MARKER_NAME);
     }
 
-    /**
-     * @param marker the marker to set
-     */
+    
     public void setMarker(String marker) {
         this.marker = marker;
     }

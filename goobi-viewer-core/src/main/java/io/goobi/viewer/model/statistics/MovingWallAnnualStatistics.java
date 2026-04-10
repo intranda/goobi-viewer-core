@@ -46,7 +46,7 @@ public class MovingWallAnnualStatistics {
 
     /**
      * 
-     * @param year
+     * @param year the year for which to collect statistics
      */
     public MovingWallAnnualStatistics(int year) {
         this.year = year;
@@ -63,7 +63,7 @@ public class MovingWallAnnualStatistics {
     }
 
     /**
-     * @param separator
+     * @param separator the column separator character for the CSV output
      * @return CSV {@link String}
      * @throws PresentationException
      * @throws IndexUnreachableException

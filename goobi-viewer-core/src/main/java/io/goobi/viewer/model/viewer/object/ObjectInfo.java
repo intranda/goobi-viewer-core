@@ -28,9 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * <p>
- * ObjectInfo class.
- * </p>
+ * Aggregates metadata and resource URLs for a 3D object file to be displayed in the viewer.
  *
  * @author Florian Alpers
  */
@@ -44,11 +42,9 @@ public class ObjectInfo {
     private Map<URI, Long> resourceSizes = new HashMap<>();
 
     /**
-     * <p>
-     * Constructor for ObjectInfo.
-     * </p>
+     * Creates a new ObjectInfo instance.
      *
-     * @param uri a {@link java.net.URI} object.
+     * @param uri URI pointing to the 3D object file.
      */
     public ObjectInfo(URI uri) {
         this.uri = uri;
@@ -57,11 +53,9 @@ public class ObjectInfo {
     }
 
     /**
-     * <p>
-     * Constructor for ObjectInfo.
-     * </p>
+     * Creates a new ObjectInfo instance.
      *
-     * @param uri a {@link java.lang.String} object.
+     * @param uri URI string pointing to the 3D object file.
      * @throws java.net.URISyntaxException if any.
      */
     public ObjectInfo(String uri) throws URISyntaxException {
@@ -71,110 +65,90 @@ public class ObjectInfo {
     }
 
     /**
-     * <p>
      * Getter for the field <code>format</code>.
-     * </p>
      *
-     * @return the type
+     * @return the 3D object format type
      */
     public ObjectFormat getFormat() {
         return format;
     }
 
     /**
-     * <p>
      * Setter for the field <code>format</code>.
-     * </p>
      *
-     * @param format a {@link io.goobi.viewer.model.viewer.object.ObjectFormat} object.
+     * @param format object format to assign to this resource.
      */
     public void setFormat(ObjectFormat format) {
         this.format = format;
     }
 
     /**
-     * <p>
      * Getter for the field <code>uri</code>.
-     * </p>
      *
-     * @return the uri
+     * @return the URI of the primary 3D object resource
      */
     public URI getUri() {
         return uri;
     }
 
     /**
-     * <p>
      * Setter for the field <code>uri</code>.
-     * </p>
      *
-     * @param uri the uri to set
+     * @param uri the URI of the primary 3D object resource
      */
     public void setUri(URI uri) {
         this.uri = uri;
     }
 
     /**
-     * <p>
      * Getter for the field <code>center</code>.
-     * </p>
      *
-     * @return the center
+     * @return the 3D center point of the object for viewer positioning
      */
     public Point3D getCenter() {
         return center;
     }
 
     /**
-     * <p>
      * Setter for the field <code>center</code>.
-     * </p>
      *
-     * @param center the center to set
+     * @param center the 3D center point of the object for viewer positioning
      */
     public void setCenter(Point3D center) {
         this.center = center;
     }
 
     /**
-     * <p>
      * Getter for the field <code>rotation</code>.
-     * </p>
      *
-     * @return the rotation
+     * @return the initial rotation angles of the 3D object in the viewer
      */
     public Point3D getRotation() {
         return rotation;
     }
 
     /**
-     * <p>
      * Setter for the field <code>rotation</code>.
-     * </p>
      *
-     * @param rotation the rotation to set
+     * @param rotation the initial rotation angles of the 3D object in the viewer
      */
     public void setRotation(Point3D rotation) {
         this.rotation = rotation;
     }
 
     /**
-     * <p>
      * Getter for the field <code>resources</code>.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return list of additional resource URIs.
      */
     public List<URI> getResources() {
         return resources;
     }
 
     /**
-     * <p>
      * Setter for the field <code>resources</code>.
-     * </p>
      *
-     * @param resources a {@link java.util.List} object.
+     * @param resources list of additional resource URIs to set.
      */
     public void setResources(List<URI> resources) {
         this.resources = resources;

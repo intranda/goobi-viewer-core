@@ -45,6 +45,10 @@ import org.xml.sax.SAXException;
 
 import de.unigoettingen.sub.commons.util.PathConverter;
 
+/**
+ * Reads and exposes configuration values from an ActiveMQ XML configuration file, such as the broker
+ * connector URI, admin credentials, and the scheduler directory.
+ */
 public class ActiveMQConfig {
 
     private static final Logger logger = LogManager.getLogger(ActiveMQConfig.class);

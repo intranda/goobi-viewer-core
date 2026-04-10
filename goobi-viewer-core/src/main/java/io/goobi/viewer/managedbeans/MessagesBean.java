@@ -35,6 +35,11 @@ import org.jsoup.safety.Safelist;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
+/**
+ * JSF request-scoped backing bean providing utility methods for message key generation,
+ * translation lookup, HTML sanitization, and message parameter substitution for use in
+ * Facelets templates.
+ */
 @Named
 @RequestScoped
 public class MessagesBean {
@@ -64,8 +69,8 @@ public class MessagesBean {
 
     /**
      * 
-     * @param msg
-     * @param params
+     * @param msg message template containing {0}, {1}, ... placeholders
+     * @param params values to substitute into the template
      * @return msg with params
      */
     public String addMessageParams(final String msg, String... params) {

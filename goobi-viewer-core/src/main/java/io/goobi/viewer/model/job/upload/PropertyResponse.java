@@ -23,20 +23,22 @@ package io.goobi.viewer.model.job.upload;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+/**
+ * Represents a single name/value process property returned as part of a
+ * {@link ProcessStatusResponse} from the Goobi workflow REST API.
+ */
 @JsonPropertyOrder({ "title", "value" })
 public class PropertyResponse {
     private String title;
     private String value;
 
-    /**
-     * @return the title
-     */
+    
     public String getTitle() {
         return title;
     }
 
     /**
-     * @param title the title to set
+     * @param title the property title/name to set
      * @return this;
      */
     public PropertyResponse setTitle(String title) {
@@ -44,15 +46,13 @@ public class PropertyResponse {
         return this;
     }
 
-    /**
-     * @return the value
-     */
+    
     public String getValue() {
         return value;
     }
 
     /**
-     * @param value the value to set
+     * @param value the property value to set
      * @return this
      */
     public PropertyResponse setValue(String value) {

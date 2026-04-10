@@ -46,16 +46,16 @@ public class SearchResultGroup implements Serializable {
     /** BrowseElement list for the current search result page. */
     private final List<SearchHit> hits = new ArrayList<>();
 
-    /** List of geo-locations found by the last search */
+    /** List of geo-locations found by the last search. */
     private List<Location> hitLocationList = new ArrayList<>();
 
     private boolean hasGeoLocationHits = false;
 
     /**
      * 
-     * @param name
-     * @param query
-     * @param previewHitCount
+     * @param name name/identifier of this result group
+     * @param query Solr query to filter results for this group
+     * @param previewHitCount number of preview hits to show; -1 for unlimited
      */
     public SearchResultGroup(String name, String query, int previewHitCount) {
         this.name = name;
@@ -64,9 +64,9 @@ public class SearchResultGroup implements Serializable {
     }
 
     /**
-     * Create a copy of the given SearchResultGroup, without any search results
+     * Creates a copy of the given SearchResultGroup, without any search results.
      * 
-     * @param blueprint
+     * @param blueprint the SearchResultGroup to copy structure from
      */
     public SearchResultGroup(SearchResultGroup blueprint) {
         this.name = blueprint.name;
@@ -83,7 +83,7 @@ public class SearchResultGroup implements Serializable {
     }
 
     /**
-     * @param query
+     * @param query Solr query to assign to the default group
      * @return Created {@link SearchResultGroup}
      */
     public static SearchResultGroup createDefaultGroup(String query) {
@@ -119,72 +119,52 @@ public class SearchResultGroup implements Serializable {
         return !StringConstants.DEFAULT_NAME.equals(name) && hitsCount > previewHitCount;
     }
 
-    /**
-     * @return the name
-     */
+    
     public String getName() {
         return name;
     }
 
-    /**
-     * @return the query
-     */
+    
     public String getQuery() {
         return query;
     }
 
-    /**
-     * @return the previewHitCount
-     */
+    
     public int getPreviewHitCount() {
         return previewHitCount;
     }
 
-    /**
-     * @return the hitsCount
-     */
+    
     public long getHitsCount() {
         return hitsCount;
     }
 
-    /**
-     * @param hitsCount the hitsCount to set
-     */
+    
     public void setHitsCount(long hitsCount) {
         this.hitsCount = hitsCount;
     }
 
-    /**
-     * @return the hitLocationList
-     */
+    
     public List<Location> getHitLocationList() {
         return hitLocationList;
     }
 
-    /**
-     * @param hitLocationList the hitLocationList to set
-     */
+    
     public void setHitLocationList(List<Location> hitLocationList) {
         this.hitLocationList = hitLocationList;
     }
 
-    /**
-     * @return the hasGeoLocationHits
-     */
+    
     public boolean isHasGeoLocationHits() {
         return hasGeoLocationHits;
     }
 
-    /**
-     * @param hasGeoLocationHits the hasGeoLocationHits to set
-     */
+    
     public void setHasGeoLocationHits(boolean hasGeoLocationHits) {
         this.hasGeoLocationHits = hasGeoLocationHits;
     }
 
-    /**
-     * @return the hits
-     */
+    
     public List<SearchHit> getHits() {
         return hits;
     }

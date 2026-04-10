@@ -82,8 +82,7 @@ import io.goobi.viewer.solr.SolrTools;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class IIIFPresentation2ResourceBuilder {
 
@@ -103,10 +102,10 @@ public class IIIFPresentation2ResourceBuilder {
     }
 
     /**
-     * 
-     * @param pi
-     * @param pagesToInclude
-     * @param mode
+     *
+     * @param pi persistent identifier of the record to build
+     * @param pagesToInclude list of page orders to include; empty means all pages
+     * @param mode build mode controlling which resources are included
      * @return {@link IPresentationModelElement}
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -144,9 +143,9 @@ public class IIIFPresentation2ResourceBuilder {
     }
 
     /**
-     * 
-     * @param pi
-     * @param logId
+     *
+     * @param pi persistent identifier of the record to search
+     * @param logId logical struct ID identifying the target range
      * @return {@link Range2}
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -168,10 +167,10 @@ public class IIIFPresentation2ResourceBuilder {
     }
 
     /**
-     * 
-     * @param pi
-     * @param buildMode
-     * @param preferedViewName
+     *
+     * @param pi persistent identifier of the record to build
+     * @param buildMode build mode controlling which resources are included
+     * @param preferedViewName name of the preferred page type for canvas links
      * @return {@link Sequence}
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -203,7 +202,7 @@ public class IIIFPresentation2ResourceBuilder {
     }
 
     /**
-     * @param preferredViewName
+     * @param preferredViewName view name string to resolve to a page type
      * @return Preferred {@link PageType} for given preferredViewName
      */
     public PageType getPreferedPageTypeForCanvas(String preferredViewName) {
@@ -218,9 +217,9 @@ public class IIIFPresentation2ResourceBuilder {
     }
 
     /**
-     * 
-     * @param pi
-     * @param typeName
+     *
+     * @param pi persistent identifier of the record
+     * @param typeName annotation type name used to select the layer content
      * @return {@link Layer}
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -255,8 +254,8 @@ public class IIIFPresentation2ResourceBuilder {
     }
 
     /**
-     * @param pi
-     * @param pageNo
+     * @param pi persistent identifier of the record
+     * @param pageNo physical page number of the canvas to retrieve
      * @return {@link IPresentationModelElement}
      * @throws ViewerConfigurationException
      * @throws URISyntaxException
@@ -290,11 +289,9 @@ public class IIIFPresentation2ResourceBuilder {
     }
 
     /**
-     * <p>
      * Getter for the field <code>manifestBuilder</code>.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.model.iiif.presentation.v2.builder.ManifestBuilder} object.
+     * @return the ManifestBuilder used to construct IIIF manifests
      */
     public ManifestBuilder getManifestBuilder() {
         if (this.manifestBuilder == null) {
@@ -304,11 +301,9 @@ public class IIIFPresentation2ResourceBuilder {
     }
 
     /**
-     * <p>
      * Getter for the field <code>sequenceBuilder</code>.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.model.iiif.presentation.v2.builder.SequenceBuilder} object.
+     * @return the SequenceBuilder used to construct IIIF sequences of canvases
      */
     public SequenceBuilder getSequenceBuilder() {
         if (this.sequenceBuilder == null) {
@@ -318,11 +313,9 @@ public class IIIFPresentation2ResourceBuilder {
     }
 
     /**
-     * <p>
      * Getter for the field <code>layerBuilder</code>.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.model.iiif.presentation.v2.builder.LayerBuilder} object.
+     * @return the LayerBuilder used to construct IIIF annotation layers
      */
     public LayerBuilder getLayerBuilder() {
         if (this.layerBuilder == null) {
@@ -336,9 +329,9 @@ public class IIIFPresentation2ResourceBuilder {
      * collections. Child collections may be accessed following the links in the @id properties in the member-collections Requires passing a language
      * to set the language for all metadata values
      *
-     * @param collectionField a {@link java.lang.String} object.
-     * @param ignore
-     * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
+     * @param collectionField Solr field name that holds the collection values
+     * @param ignore list of collection names to exclude from the result
+     * @return the IIIF Presentation v2 Collection containing all top-level collections for the given Solr field
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws java.net.URISyntaxException if any.
@@ -355,10 +348,10 @@ public class IIIFPresentation2ResourceBuilder {
      * collections. Child collections may be accessed following the links in the @id properties in the member-collections Requires passing a language
      * to set the language for all metadata values
      *
-     * @param collectionField a {@link java.lang.String} object.
-     * @param ignore
-     * @param groupingField
-     * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
+     * @param collectionField Solr field name that holds the collection values
+     * @param ignore list of collection names to exclude from the result
+     * @param groupingField Solr field used to group collections within the response
+     * @return the IIIF Presentation v2 Collection containing all top-level collections grouped by the given Solr field
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws java.net.URISyntaxException if any.
@@ -381,10 +374,10 @@ public class IIIFPresentation2ResourceBuilder {
      * the direct child collections. Collections further down the hierarchy may be accessed following the links in the @id properties in the
      * member-collections Requires passing a language to set the language for all metadata values
      *
-     * @param collectionField a {@link java.lang.String} object.
-     * @param topElement a {@link java.lang.String} object.
-     * @param ignore
-     * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
+     * @param collectionField Solr field name that holds the collection values
+     * @param topElement name of the root collection to use as the response root
+     * @param ignore list of collection names to exclude from the result
+     * @return the IIIF Presentation v2 Collection rooted at the given top-level collection element
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -398,11 +391,11 @@ public class IIIFPresentation2ResourceBuilder {
     }
 
     /**
-     * 
-     * @param query
-     * @param sortFields
-     * @param first
-     * @param rows
+     *
+     * @param query Solr query string to select matching records
+     * @param sortFields comma-separated Solr sort field expressions
+     * @param first zero-based offset of the first result to return
+     * @param rows maximum number of results to return
      * @return List<IPresentationModelElement>
      * @throws DAOException
      * @throws PresentationException
@@ -481,11 +474,11 @@ public class IIIFPresentation2ResourceBuilder {
      * direct child collections. Collections further down the hierarchy may be accessed following the links in the @id properties in the
      * member-collections Requires passing a language to set the language for all metadata values
      *
-     * @param collectionField a {@link java.lang.String} object.
-     * @param topElement a {@link java.lang.String} object.
-     * @param facetField
-     * @param ignore
-     * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
+     * @param collectionField Solr field name that holds the collection values
+     * @param topElement name of the root collection to use as the response root
+     * @param facetField Solr field used for grouping/faceting within the collection
+     * @param ignore list of collection names to exclude from the result
+     * @return the IIIF Presentation v2 Collection rooted at the given top-level element, with sub-collections grouped by the facet field
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -505,11 +498,9 @@ public class IIIFPresentation2ResourceBuilder {
     }
 
     /**
-     * <p>
      * Getter for the field <code>collectionBuilder</code>.
-     * </p>
      *
-     * @return the manifestBuilder
+     * @return the {@link CollectionBuilder} instance used to build IIIF collection responses
      */
     public CollectionBuilder getCollectionBuilder() {
         if (this.collectionBuilder == null) {

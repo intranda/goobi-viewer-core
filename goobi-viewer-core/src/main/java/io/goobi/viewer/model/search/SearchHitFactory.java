@@ -59,6 +59,10 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrTools;
 
+/**
+ * Factory class that constructs {@link SearchHit} objects from Solr documents, enriching them with metadata,
+ * thumbnails, child hits, and access permission information.
+ */
 public class SearchHitFactory {
 
     private static final Logger logger = LogManager.getLogger(SearchHitFactory.class);
@@ -85,12 +89,12 @@ public class SearchHitFactory {
 
     /**
      * 
-     * @param searchTerms
-     * @param sortFields
-     * @param exportFields
-     * @param proximitySearchDistance
-     * @param thumbnailHandler
-     * @param locale
+     * @param searchTerms map of Solr field names to sets of search terms for highlighting
+     * @param sortFields list of sort fields to append as metadata
+     * @param exportFields list of Solr field names to include in export metadata
+     * @param proximitySearchDistance word distance for proximity/fuzzy search
+     * @param thumbnailHandler handler used to build thumbnail URLs
+     * @param locale locale for label translation and message resolution
      */
     public SearchHitFactory(Map<String, Set<String>> searchTerms, List<StringPair> sortFields, List<String> exportFields, int proximitySearchDistance,
             ThumbnailHandler thumbnailHandler, Locale locale) {
@@ -103,15 +107,13 @@ public class SearchHitFactory {
     }
 
     /**
-     * <p>
      * createSearchHit.
-     * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param ownerDoc a {@link org.apache.solr.common.SolrDocument} object.
      * @param fulltext Optional fulltext (page docs only).
      * @param overrideType a {@link io.goobi.viewer.model.search.HitType} object.
-     * @return a {@link io.goobi.viewer.model.search.SearchHit} object.
+     * @return the SearchHit built from the given Solr document, with metadata and fulltext fragments
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws DAOException
@@ -256,7 +258,7 @@ public class SearchHitFactory {
     }
 
     /**
-     * @param additionalMetadataListType the additionalMetadataListType to set
+     * @param additionalMetadataListType the key of the metadata list type to use for additional metadata on search hits
      * @return this
      */
     public SearchHitFactory setAdditionalMetadataListType(String additionalMetadataListType) {
@@ -267,7 +269,7 @@ public class SearchHitFactory {
     /**
      * 
      * @param user the user for whom access conditions of the search hits should be calculated. If ommitted, the user is fetched from the jsfContext
-     *            if one exists
+     *            If one exists
      * @return this
      */
     public SearchHitFactory setUser(User user) {
@@ -276,10 +278,10 @@ public class SearchHitFactory {
     }
 
     /**
-     * replaces any terms with a fuzzy search token with the matching strings found in the values of fields
+     * Replaces any terms with a fuzzy search token with the matching strings found in the values of fields.
      *
-     * @param origTerms
-     * @param resultFields
+     * @param origTerms original search terms map, may contain fuzzy tokens
+     * @param resultFields field values from the matched Solr document
      * @return Map<String, Set<String>>
      */
     private static Map<String, Set<String>> getActualSearchTerms(Map<String, Set<String>> origTerms, Map<String, List<String>> resultFields) {
@@ -318,8 +320,8 @@ public class SearchHitFactory {
      * @param availableMetadata Additional available metadata to check for matches
      * @param searchTerms Search terms
      * @param existingMetadataFields Metadata field names that are already added to the search hit and should be skipped
-     * @param iddoc
-     * @param searchHitLabel
+     * @param iddoc internal document identifier used when building Metadata objects
+     * @param searchHitLabel label value of the hit, used to skip duplicate values
      * @return List<MetadataWrapper>
      * @should add metadata fields that match search terms
      * @should not add duplicates from default terms
@@ -576,39 +578,29 @@ public class SearchHitFactory {
         return ret;
     }
 
-    /**
-     * @return the additionalMetadataIgnoreFields
-     */
+    
     public Set<String> getAdditionalMetadataIgnoreFields() {
         return additionalMetadataIgnoreFields;
     }
 
-    /**
-     * @return the additionalMetadataTranslateFields
-     */
+    
     public Set<String> getAdditionalMetadataTranslateFields() {
         return additionalMetadataTranslateFields;
     }
 
-    /**
-     * @return the additionalMetadataOneLineFields
-     */
+    
     public Set<String> getAdditionalMetadataOneLineFields() {
         return
 
         additionalMetadataOneLineFields;
     }
 
-    /**
-     * @return the additionalMetadataSnippetFields
-     */
+    
     public Set<String> getAdditionalMetadataSnippetFields() {
         return additionalMetadataSnippetFields;
     }
 
-    /**
-     * @return the additionalMetadataNoHighlightFields
-     */
+    
     public Set<String> getAdditionalMetadataNoHighlightFields() {
         return additionalMetadataNoHighlightFields;
     }

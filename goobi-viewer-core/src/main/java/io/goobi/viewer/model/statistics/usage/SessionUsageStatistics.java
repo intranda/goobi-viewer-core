@@ -42,17 +42,16 @@ import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.Table;
 
 /**
- * Persistence class containing request counts for a single http session
+ * Persistence class containing request counts for a single http session.
  * 
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "session_statistics")
 public class SessionUsageStatistics {
 
     /**
-     * Persistence context unique identifier
+     * Persistence context unique identifier.
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,25 +59,25 @@ public class SessionUsageStatistics {
     private Long id;
 
     /**
-     * Http session identifier of the session tracked
+     * Http session identifier of the session tracked.
      */
     @Column(name = "session_id")
     private String sessionId;
 
     /**
-     * User-Agent header content of the first request counted from the http session
+     * User-Agent header content of the first request counted from the http session.
      */
     @Column(name = "user_agent")
     private String userAgent;
 
     /**
-     * Client IP of the first request counted from the http session
+     * Client IP of the first request counted from the http session.
      */
     @Column(name = "client_ip")
     private String clientIP;
 
     /**
-     * Holds a collection of stingyfied {@link SessionRequestCounts} mapped to requested record identifiers
+     * Holds a collection of stingyfied {@link SessionRequestCounts} mapped to requested record identifiers.
      */
     @ElementCollection
     @CollectionTable(name = "session_statistics_record_requests",
@@ -88,14 +87,14 @@ public class SessionUsageStatistics {
     private Map<String, String> recordRequests = new HashMap<>();
 
     /**
-     * Empty constructor for persistence context initialization
+     * Empty constructor for persistence context initialization.
      */
     public SessionUsageStatistics() {
 
     }
 
     /**
-     * Initialize instance for a session
+     * Initializes instance for a session.
      * 
      * @param sessionId http session identifier
      * @param userAgent User-Agent header content
@@ -108,9 +107,9 @@ public class SessionUsageStatistics {
     }
 
     /**
-     * Cloning constructor
+     * Cloning constructor.
      * 
-     * @param orig
+     * @param orig the session statistics to copy from
      */
     public SessionUsageStatistics(SessionUsageStatistics orig) {
         this.sessionId = orig.sessionId;
@@ -150,7 +149,7 @@ public class SessionUsageStatistics {
     }
 
     /**
-     * Get number of requests for a given {@link RequestType} and record identifier
+     * Gets number of requests for a given {@link RequestType} and record identifier.
      * 
      * @param type the type of the request
      * @param recordIdentifier the record identifier
@@ -163,7 +162,7 @@ public class SessionUsageStatistics {
     }
 
     /**
-     * Get number of requests for a given {@link RequestType}
+     * Get number of requests for a given {@link RequestType}.
      * 
      * @param type the type of the request
      * @return the number of requests for the type
@@ -173,11 +172,11 @@ public class SessionUsageStatistics {
     }
 
     /**
-     * Return the number of requests of a given {@link RequestType} for the record identifiers included in identifiersToInclude
+     * Returns the number of requests of a given {@link RequestType} for the record identifiers included in identifiersToInclude.
      * 
      * @param type the type of the request
      * @param identifiersToInclude record identifiers for which the number of requests should be counted
-     * @return a long
+     * @return the total number of requests of the given type for the given record identifiers in this session
      */
     public long getTotalRequestCount(RequestType type, List<String> identifiersToInclude) {
         Collection<String> requestValues = getRequestedCounts(identifiersToInclude);
@@ -188,7 +187,7 @@ public class SessionUsageStatistics {
     }
 
     /**
-     * Get number of record identifiers which were requested with a given {@link RequestType}
+     * Get number of record identifiers which were requested with a given {@link RequestType}.
      * 
      * @param type the type of the request
      * @return the number of record identifiers requested at least once for the type
@@ -203,7 +202,7 @@ public class SessionUsageStatistics {
     }
 
     /**
-     * Set total count of requests for a {@link RequestType} and record identifier to the given number
+     * Sets total count of requests for a {@link RequestType} and record identifier to the given number.
      * 
      * @param count request count to set
      * @param type the type of the request
@@ -218,7 +217,7 @@ public class SessionUsageStatistics {
     }
 
     /**
-     * Increment the total count of requests for a {@link RequestType} and record identifier by one
+     * Increment the total count of requests for a {@link RequestType} and record identifier by one.
      * 
      * @param type the type of the request
      * @param recordIdentifier the identifier of the requested record
@@ -231,7 +230,7 @@ public class SessionUsageStatistics {
     }
 
     /**
-     * Get a list of all record identifiers contained in {@link #recordRequests}
+     * Get a list of all record identifiers contained in {@link #recordRequests}.
      * 
      * @return list of record identifiers
      */
@@ -248,7 +247,7 @@ public class SessionUsageStatistics {
 
     /**
      * 
-     * @param identifiersToInclude
+     * @param identifiersToInclude list of record identifiers to filter by
      * @return Collection<String> (immutable!)
      */
     private Collection<String> getRequestedCounts(List<String> identifiersToInclude) {

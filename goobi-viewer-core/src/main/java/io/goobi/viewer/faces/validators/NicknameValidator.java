@@ -48,9 +48,6 @@ public class NicknameValidator implements Validator<String> {
     private static final String REGEX = "^[\\wäáàâöóòôüúùûëéèêßñ\\-. ]+$"; //NOSONAR input size is limited
     private static final Pattern PATTERN = Pattern.compile(REGEX);
 
-    /* (non-Javadoc)
-     * @see jakarta.faces.validator.Validator#validate(jakarta.faces.context.FacesContext, jakarta.faces.component.UIComponent, java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {
@@ -73,14 +70,12 @@ public class NicknameValidator implements Validator<String> {
     }
 
     /**
-     * <p>
      * validateEmailAddress.
-     * </p>
      *
-     * @param name a {@link java.lang.String} object.
+     * @param name nickname string to check against the allowed character pattern
      * @should match correct name
      * @should not match invalid name
-     * @return a boolean.
+     * @return true if the given nickname is empty or matches the allowed character pattern, false otherwise
      */
     public static boolean validate(String name) {
         if (StringUtils.isEmpty(name)) {
@@ -94,7 +89,7 @@ public class NicknameValidator implements Validator<String> {
     }
 
     /**
-     * @param nick
+     * @param nick nickname to check for uniqueness
      * @return true if the given email is not already used by a different user; false otherwise
      * @throws DAOException
      */

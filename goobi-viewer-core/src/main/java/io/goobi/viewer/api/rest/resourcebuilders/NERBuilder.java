@@ -54,8 +54,7 @@ import io.goobi.viewer.solr.SolrTools;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class NERBuilder {
 
@@ -81,10 +80,10 @@ public class NERBuilder {
 
     /**
      *
-     * @param request
+     * @param request HTTP servlet request for context information
      * @param query must return a set of PAGE documents within a single topStruct
-     * @param typeString
-     * @param rangeSize
+     * @param typeString NER tag type label to filter (e.g. "PERSON", "LOCATION")
+     * @param rangeSize number of pages to include in each NER result group
      * @return {@link DocumentReference}
      * @throws PresentationException if there is an error parsing the alto documents or if the search doesn't result in PAGE documents from a single
      *             topStruct
@@ -111,8 +110,9 @@ public class NERBuilder {
                 for (SolrDocument solrDoc : rangeList) {
                     String altoFileName = (String) solrDoc.getFieldValue(SolrConstants.FILENAME_ALTO);
                     if (altoFileName == null) {
-                        logger.error("{}, page {} has no {} value.", topStructPi, solrDoc.getFieldValue(SolrConstants.ORDER),
-                                SolrConstants.FILENAME_ALTO);
+                        // Downgraded to WARN: missing FILENAME_ALTO is a data issue (record has no ALTO indexed), not a code error
+                        logger.warn("{}, page {} ({}={}) has no {} value.", topStructPi, solrDoc.getFieldValue(SolrConstants.ORDER),
+                                SolrConstants.FILENAME, solrDoc.getFieldValue(SolrConstants.FILENAME), SolrConstants.FILENAME_ALTO);
                         continue;
                     }
 
@@ -181,7 +181,7 @@ public class NERBuilder {
     }
 
     /**
-     * @param solrDoc
+     * @param solrDoc Solr document representing a PAGE from which to extract the order
      * @return Page order from given solrDoc
      */
     private static Integer getPageOrderFromSolrDoc(SolrDocument solrDoc) {

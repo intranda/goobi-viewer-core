@@ -104,8 +104,7 @@ import jakarta.jms.TextMessage;
  * {@link ViewerMessage} and calls a {@link MessageHandler} instance to process the message, returning a {@link MessageStatus} result. #handle may
  * either be called directly to handle the message instantly, or from a {@link MessageQueue}
  * 
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Singleton
 @Startup
@@ -172,9 +171,9 @@ public class MessageQueueManager {
     }
 
     /**
-     * Add the message to the internal message queue to be handled later.
+     * Adds the message to the internal message queue to be handled later.
      * 
-     * @param message
+     * @param message message to add to the queue
      * @return Message ID
      * @throws MessageQueueException
      */
@@ -210,7 +209,7 @@ public class MessageQueueManager {
     }
 
     /**
-     * Send a notification to the "messageQueueState" WebSocket to update message lists in the admin backend.
+     * Sends a notification to the "messageQueueState" WebSocket to update message lists in the admin backend.
      */
     public static void notifyMessageQueueStateUpdate() {
         MessageQueueBean mqBean = (MessageQueueBean) BeanUtils.getBeanByName("messageQueueBean", MessageQueueBean.class);
@@ -222,7 +221,7 @@ public class MessageQueueManager {
     /**
      * Finds the appropriate MessageHandler for a message, lets the handler handle the message and update the message in the database.
      * 
-     * @param message
+     * @param message message to dispatch to its handler
      * @return the result of the handler calling the message
      */
     public MessageStatus handle(ViewerMessage message) {
@@ -438,7 +437,7 @@ public class MessageQueueManager {
     }
 
     /**
-     * Check if the queue has been successfully initialized.
+     * Checks if the queue has been successfully initialized.
      * 
      * @return true if the queue is running
      */
@@ -635,7 +634,8 @@ public class MessageQueueManager {
 
     /**
      * Builds a JMS message selector expression for a given message ID.
-     * Single quotes in the ID are escaped by doubling them (JMS selector syntax,
+     *
+     * <p>Single quotes in the ID are escaped by doubling them (JMS selector syntax,
      * identical to SQL string literal escaping) to prevent selector injection.
      *
      * @param messageId the raw JMS message ID, possibly containing single quotes
@@ -649,7 +649,8 @@ public class MessageQueueManager {
 
     /**
      * Builds a JMS message selector expression for a given message type.
-     * Single quotes in the type are escaped by doubling them (JMS selector syntax,
+     *
+     * <p>Single quotes in the type are escaped by doubling them (JMS selector syntax,
      * identical to SQL string literal escaping) to prevent selector injection.
      *
      * @param messageType the JMS message type string, possibly containing single quotes

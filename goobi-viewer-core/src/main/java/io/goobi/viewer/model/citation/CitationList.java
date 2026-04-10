@@ -28,9 +28,9 @@ import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
 import io.goobi.viewer.model.viewer.ViewManager;
 
 /**
- * Contains a list of {@link CitationLink}s along with a viewManager state wich tracks current page number and logId The method
+ * Contains a list of {@link CitationLink}s along with a viewManager state which tracks current page number and logId The method
  * {@link #isCurrent(ViewManager)} checks whether this list reflects to same state as the given {@link ViewManager} regarding the
- * {@link CitationLinkLevel level} of the included citation links
+ * {@link CitationLinkLevel level} of the included citation links.
  */
 public class CitationList {
 
@@ -40,7 +40,7 @@ public class CitationList {
     private final int page;
 
     /**
-     * Constructor creating state from a {@link ViewManager}
+     * Constructor creating state from a {@link ViewManager}.
      * 
      * @param list the list of citation links
      * @param level the level this list pertains to
@@ -51,7 +51,7 @@ public class CitationList {
     }
 
     /**
-     * Constructor creating state from individual properties
+     * Constructor creating state from individual properties.
      * 
      * @param list the list of citation links
      * @param level the level this list pertains to
@@ -66,7 +66,7 @@ public class CitationList {
     }
 
     /**
-     * get the actual list of citation links
+     * Get the actual list of citation links.
      * 
      * @return a list of {@link CitationLink}s
      */
@@ -75,9 +75,9 @@ public class CitationList {
     }
 
     /**
-     * Check whether the state of this list reflects the same state as the given ViewManager regarding the level for which the list was created
+     * Checks whether the state of this list reflects the same state as the given ViewManager regarding the level for which the list was created.
      * 
-     * @param viewManager
+     * @param viewManager ViewManager for the current record
      * @return true if the state of this list reflects the same state as the given ViewManager regarding the level for which the list was created;
      *         false otherwise
      */

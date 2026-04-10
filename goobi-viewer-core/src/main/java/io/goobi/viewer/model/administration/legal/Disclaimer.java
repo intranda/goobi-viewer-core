@@ -40,8 +40,7 @@ import io.goobi.viewer.model.translations.TranslatedText;
 /**
  * Class to persist settings for the disclaimer modal. Only one instance of this class should be persisted in the database
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "disclaimer")
@@ -61,7 +60,7 @@ public class Disclaimer {
     private TranslatedText text = new TranslatedText();
 
     /**
-     * set if the disclaimer should be shown at all
+     * set if the disclaimer should be shown at all.
      */
     @Column(name = "active")
     private boolean active = false;
@@ -74,30 +73,30 @@ public class Disclaimer {
     private LocalDateTime requiresConsentAfter = LocalDateTime.now();
 
     /**
-     * The scope within which accepting the disclaimer modal is valid for any user
+     * The scope within which accepting the disclaimer modal is valid for any user.
      */
     @Column(name = "acceptance_scope", nullable = false)
     @Convert(converter = ConsentScopeConverter.class)
     private ConsentScope acceptanceScope = new ConsentScope();
 
     /**
-     * The scope within which accepting the disclaimer modal is valid for any user
+     * The scope within which accepting the disclaimer modal is valid for any user.
      */
     @Column(name = "display_scope", nullable = true)
     @Convert(converter = DisplayScopeConverter.class)
     private DisplayScope displayScope = new DisplayScope(PageScope.RECORD, "");
 
     /**
-     * Empty default constructor
+     * Empty default constructor.
      */
     public Disclaimer() {
 
     }
 
     /**
-     * cloning constructor
+     * Cloning constructor.
      * 
-     * @param orig
+     * @param orig disclaimer instance to clone
      */
     public Disclaimer(Disclaimer orig) {
         this.active = orig.active;
@@ -109,43 +108,43 @@ public class Disclaimer {
     }
 
     /**
-     * database id
-     * 
-     * @return the id
+     * Database id.
+     *
+     * @return the database primary key of this disclaimer
      */
     public Long getId() {
         return id;
     }
 
     /**
-     * set the database id
-     * 
-     * @param id the id to set
+     * Set the database id.
+     *
+     * @param id the database primary key of this disclaimer
      */
     public void setId(Long id) {
         this.id = id;
     }
 
     /**
-     * the text to show in the disclaimer
-     * 
-     * @return the text
+     * The text to show in the disclaimer.
+     *
+     * @return the translated text displayed in the disclaimer
      */
     public TranslatedText getText() {
         return text;
     }
 
     /**
-     * set the disclaimer text
-     * 
-     * @param text the text to set
+     * Set the disclaimer text.
+     *
+     * @param text the translated text to display in the disclaimer
      */
     public void setText(TranslatedText text) {
         this.text = text;
     }
 
     /**
-     * get if the disclaimer is active
+     * Get if the disclaimer is active.
      * 
      * @return true if the disclaimer is to be shown at all
      */
@@ -154,16 +153,16 @@ public class Disclaimer {
     }
 
     /**
-     * set the disclaimer to active/inactive state
-     * 
-     * @param active the active to set
+     * Set the disclaimer to active/inactive state.
+     *
+     * @param active true to enable display of the disclaimer, false to hide it
      */
     public void setActive(boolean active) {
         this.active = active;
     }
 
     /**
-     * get the date after which acceptance of the disclaimer must have happened to be valid
+     * Get the date after which acceptance of the disclaimer must have happened to be valid.
      * 
      * @return a date
      */
@@ -172,9 +171,9 @@ public class Disclaimer {
     }
 
     /**
-     * set the date after which acceptance of the disclaimer must have happened to be valid
-     * 
-     * @param requiresConsentAfter the requiresConsentAfter to set
+     * Set the date after which acceptance of the disclaimer must have happened to be valid.
+     *
+     * @param requiresConsentAfter the cutoff date; prior acceptances are no longer considered valid
      */
     public void setRequiresConsentAfter(LocalDateTime requiresConsentAfter) {
         this.requiresConsentAfter = requiresConsentAfter;
@@ -189,7 +188,7 @@ public class Disclaimer {
     }
 
     /**
-     * get the {@link #acceptanceScope} of the disclaimer
+     * Get the {@link #acceptanceScope} of the disclaimer.
      * 
      * @return the {@link ConsentScope}
      */
@@ -198,7 +197,7 @@ public class Disclaimer {
     }
 
     /**
-     * set the {@link #acceptanceScope} of the disclaimer
+     * Set the {@link #acceptanceScope} of the disclaimer.
      * 
      * @param acceptanceScope a {@link ConsentScope}
      */

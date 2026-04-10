@@ -29,8 +29,7 @@ import org.json.JSONObject;
 /**
  * Determines the visible area of a {@link GeoMap}. Consists of a zoom factor and a center point
  * 
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class View {
 
@@ -39,8 +38,8 @@ public class View {
 
     /**
      * 
-     * @param zoom
-     * @param center
+     * @param zoom map zoom level
+     * @param center geographic center point of the view
      */
     public View(double zoom, Point center) {
         this.zoom = zoom;
@@ -49,9 +48,9 @@ public class View {
 
     /**
      * 
-     * @param zoom
-     * @param lng
-     * @param lat
+     * @param zoom map zoom level
+     * @param lng longitude of the center point
+     * @param lat latitude of the center point
      */
     public View(double zoom, double lng, double lat) {
         this(zoom, new Point(lng, lat));

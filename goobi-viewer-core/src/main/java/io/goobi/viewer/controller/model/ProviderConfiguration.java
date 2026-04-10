@@ -34,10 +34,9 @@ import io.goobi.viewer.model.variables.NoopVariableReplacer;
 import io.goobi.viewer.model.variables.VariableReplacer;
 
 /**
- * This class bundles provider configurations for IIIF manifests int a s single object
+ * Bundles provider configurations for IIIF manifests into a single object.
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class ProviderConfiguration {
 
@@ -48,8 +47,8 @@ public class ProviderConfiguration {
 
     /**
      * 
-     * @param uri
-     * @param label
+     * @param uri URI of the provider
+     * @param label display label of the provider
      * @throws PresentationException
      */
     public ProviderConfiguration(String uri, String label) throws PresentationException {
@@ -65,7 +64,7 @@ public class ProviderConfiguration {
 
     /**
      * 
-     * @param config
+     * @param config XML configuration node for the provider
      * @throws PresentationException
      */
     public ProviderConfiguration(HierarchicalConfiguration<ImmutableNode> config) throws PresentationException {
@@ -74,8 +73,8 @@ public class ProviderConfiguration {
 
     /**
      * 
-     * @param config
-     * @param vr
+     * @param config XML configuration node for the provider
+     * @param vr variable replacer for resolving placeholders in config values
      * @throws PresentationException
      */
     public ProviderConfiguration(HierarchicalConfiguration<ImmutableNode> config, VariableReplacer vr) throws PresentationException {
@@ -93,30 +92,22 @@ public class ProviderConfiguration {
 
     }
 
-    /**
-     * @return the uri
-     */
+    
     public URI getUri() {
         return uri;
     }
 
-    /**
-     * @return the label
-     */
+    
     public String getLabel() {
         return label;
     }
 
-    /**
-     * @return the logos
-     */
+    
     public List<URI> getLogos() {
         return logos;
     }
 
-    /**
-     * @return the homepages
-     */
+    
     public List<WebResourceConfiguration> getHomepages() {
         return homepages;
     }

@@ -517,6 +517,17 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchFacets#isHasWrongLanguageCode(String,String)
+     * @verifies return false if language code different but active facet selected
+     */
+    @Test
+    void isHasWrongLanguageCode_shouldReturnFalseIfLanguageCodeDifferentButActiveFacetSelected() {
+        SearchFacets facets = new SearchFacets();
+        facets.getActiveFacets().add(new FacetItem("MD_TITLE_LANG_DE:somevalue", false));
+        Assertions.assertFalse(facets.isHasWrongLanguageCode("MD_TITLE_LANG_DE", "en"));
+    }
+
+    /**
      * @see SearchFacets#updateFacetItem(String,String,List,boolean)
      * @verifies update facet item correctly
      */
@@ -670,6 +681,59 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
 
         facets.setActiveFacetString("FIELD:foo;;FIELD:bar;;");
         Assertions.assertFalse(facets.isUnselectedValuesAvailable());
+    }
+
+    /**
+     * @see SearchFacets#getAvailableFacetsListSizeForField(String)
+     * @verifies return zero for unknown field
+     */
+    @Test
+    void getAvailableFacetsListSizeForField_shouldReturnZeroForUnknownField() {
+        SearchFacets facets = new SearchFacets();
+        Assertions.assertEquals(0, facets.getAvailableFacetsListSizeForField("NONEXISTENT"));
+    }
+
+    /**
+     * @see SearchFacets#getAvailableFacetsListSizeForField(String)
+     * @verifies return correct size
+     */
+    @Test
+    void getAvailableFacetsListSizeForField_shouldReturnCorrectSize() {
+        SearchFacets facets = new SearchFacets();
+        facets.getAvailableFacets().put("DC", new ArrayList<>(List.of(new FacetItem("DC:a", false), new FacetItem("DC:b", false))));
+        Assertions.assertEquals(2, facets.getAvailableFacetsListSizeForField("DC"));
+    }
+
+    /**
+     * @see SearchFacets#isFacetListSizeSufficient(String)
+     * @verifies return false for unknown field
+     */
+    @Test
+    void isFacetListSizeSufficient_shouldReturnFalseForUnknownField() {
+        SearchFacets facets = new SearchFacets();
+        Assertions.assertFalse(facets.isFacetListSizeSufficient("NONEXISTENT"));
+    }
+
+    /**
+     * @see SearchFacets#isFacetListSizeSufficient(String)
+     * @verifies return false for single item field
+     */
+    @Test
+    void isFacetListSizeSufficient_shouldReturnFalseForSingleItemField() {
+        SearchFacets facets = new SearchFacets();
+        facets.getAvailableFacets().put("DC", new ArrayList<>(Collections.singletonList(new FacetItem("DC:a", false))));
+        Assertions.assertFalse(facets.isFacetListSizeSufficient("DC"));
+    }
+
+    /**
+     * @see SearchFacets#isFacetListSizeSufficient(String)
+     * @verifies return true for field with two or more items
+     */
+    @Test
+    void isFacetListSizeSufficient_shouldReturnTrueForFieldWithTwoOrMoreItems() {
+        SearchFacets facets = new SearchFacets();
+        facets.getAvailableFacets().put("DC", new ArrayList<>(List.of(new FacetItem("DC:a", false), new FacetItem("DC:b", false))));
+        Assertions.assertTrue(facets.isFacetListSizeSufficient("DC"));
     }
 
     /**

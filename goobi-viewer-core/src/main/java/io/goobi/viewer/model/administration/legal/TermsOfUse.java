@@ -42,8 +42,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "terms_of_use")
@@ -60,7 +59,7 @@ public class TermsOfUse {
     protected Long id;
 
     /**
-     * Contains texts and titles
+     * Contains texts and titles.
      */
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @PrivateOwned
@@ -75,7 +74,7 @@ public class TermsOfUse {
 
     /**
      * 
-     * @param orig
+     * @param orig the instance to copy
      * @should clone original correctly
      */
     public TermsOfUse(TermsOfUse orig) {
@@ -87,16 +86,12 @@ public class TermsOfUse {
         }
     }
 
-    /**
-     * @param active the active to set
-     */
+    
     public void setActive(boolean active) {
         this.active = active;
     }
 
-    /**
-     * @return the active
-     */
+    
     public boolean isActive() {
         return active;
     }
@@ -151,8 +146,8 @@ public class TermsOfUse {
 
     /**
      * 
-     * @param translations
-     * @param language
+     * @param translations stream of translations to filter
+     * @param language language code to filter by
      * @return Stream<TermsOfUseTranslation>
      * @should throw IllegalArgumentException if language blank
      */
@@ -168,7 +163,7 @@ public class TermsOfUse {
     }
 
     /**
-     * Remove all empty translations from the translations list.
+     * Removes all empty translations from the translations list.
      * 
      * @should clear the list
      */
@@ -185,7 +180,7 @@ public class TermsOfUse {
     /**
      * For testing.
      * 
-     * @return the translations
+
      */
     List<TermsOfUseTranslation> getTranslations() {
         return translations;

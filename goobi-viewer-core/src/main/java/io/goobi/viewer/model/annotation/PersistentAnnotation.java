@@ -63,8 +63,7 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Transient;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
@@ -106,13 +105,13 @@ public abstract class PersistentAnnotation {
     private Long generatorId;
 
     /**
-     * JSON representation of the annotation body as String
+     * JSON representation of the annotation body as String.
      */
     @Column(name = "body", columnDefinition = "LONGTEXT")
     private String body;
 
     /**
-     * JSON representation of the annotation target as String
+     * JSON representation of the annotation target as String.
      */
     @Column(name = "target", columnDefinition = "LONGTEXT")
     private String target;
@@ -134,15 +133,15 @@ public abstract class PersistentAnnotation {
     private User creator = null;
 
     /**
-     * empty constructor
+     * Empty constructor.
      */
     protected PersistentAnnotation() {
         this.dateCreated = LocalDateTime.now();
     }
 
     /**
-     * 
-     * @param source
+     *
+     * @param source annotation to copy all fields from
      */
     protected PersistentAnnotation(PersistentAnnotation source) {
         this.id = source.id;
@@ -161,12 +160,12 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * creates a new PersistentAnnotation from a WebAnnotation
+     * Creates a new PersistentAnnotation from a WebAnnotation.
      *
      * @param source a {@link de.intranda.api.annotation.wa.WebAnnotation} object.
-     * @param id
-     * @param targetPI
-     * @param targetPage
+     * @param id database ID to assign to this annotation
+     * @param targetPI persistent identifier of the target record
+     * @param targetPage physical page order of the target page
      */
     protected PersistentAnnotation(AbstractAnnotation source, Long id, String targetPI, Integer targetPage) {
         this.dateCreated = source.getCreated();
@@ -213,77 +212,63 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
-     * @return the id
+     * @return the database primary key of this annotation
      */
     public Long getId() {
         return id;
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
-     * @param id the id to set
+     * @param id the database ID to set
      */
     public void setId(Long id) {
         this.id = id;
     }
 
     /**
-     * <p>
      * Getter for the field <code>dateCreated</code>.
-     * </p>
      *
-     * @return the dateCreated
+     * @return the timestamp when this annotation was created
      */
     public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
     /**
-     * <p>
      * Setter for the field <code>dateCreated</code>.
-     * </p>
      *
-     * @param dateCreated the dateCreated to set
+     * @param dateCreated the creation timestamp to set
      */
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
 
     /**
-     * <p>
      * Getter for the field <code>dateModified</code>.
-     * </p>
      *
-     * @return the dateModified
+     * @return the timestamp when this annotation was last modified
      */
     public LocalDateTime getDateModified() {
         return dateModified;
     }
 
     /**
-     * <p>
      * Setter for the field <code>dateModified</code>.
-     * </p>
      *
-     * @param dateModified the dateModified to set
+     * @param dateModified the last-modified timestamp to set
      */
     public void setDateModified(LocalDateTime dateModified) {
         this.dateModified = dateModified;
     }
 
     /**
-     * <p>
      * getCreator.
-     * </p>
      *
-     * @return the creator
+     * @return the user who created this annotation, or null if no creator is recorded
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public User getCreator() throws DAOException {
@@ -302,11 +287,9 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * setCreator.
-     * </p>
      *
-     * @param creator the creator to set
+     * @param creator the user who created this annotation; also updates {@code creatorId}
      */
     public void setCreator(User creator) {
         this.creator = creator;
@@ -316,11 +299,9 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * getReviewer.
-     * </p>
      *
-     * @return the reviewer
+     * @return the user assigned to review this annotation, or null if no reviewer is set
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public User getReviewer() throws DAOException {
@@ -331,11 +312,9 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * setReviewer.
-     * </p>
      *
-     * @param reviewer the reviewer to set
+     * @param reviewer the user assigned to review this annotation; also updates {@code reviewerId}
      */
     public void setReviewer(User reviewer) {
         if (reviewer != null) {
@@ -344,11 +323,9 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * getGenerator.
-     * </p>
      *
-     * @return the generator
+     * @return the crowdsourcing question that generated this annotation, or null if none
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public Question getGenerator() throws DAOException {
@@ -359,187 +336,153 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * setGenerator.
-     * </p>
      *
-     * @param generator the generator to set
+     * @param generator the crowdsourcing question that generated this annotation; its ID is stored in {@code generatorId}
      */
     public void setGenerator(Question generator) {
         this.generatorId = Optional.ofNullable(generator).map(Question::getId).orElse(null);
     }
 
     /**
-     * <p>
      * Getter for the field <code>creatorId</code>.
-     * </p>
      *
-     * @return the creatorId
+     * @return the database ID of the user who created this annotation
      */
     public Long getCreatorId() {
         return creatorId;
     }
 
     /**
-     * <p>
      * Setter for the field <code>creatorId</code>.
-     * </p>
      *
-     * @param creatorId the creatorId to set
+     * @param creatorId the database ID of the user who created this annotation
      */
     public void setCreatorId(Long creatorId) {
         this.creatorId = creatorId;
     }
 
     /**
-     * <p>
      * Getter for the field <code>reviewerId</code>.
-     * </p>
      *
-     * @return the reviewerId
+     * @return the database ID of the user assigned to review this annotation
      */
     public Long getReviewerId() {
         return reviewerId;
     }
 
     /**
-     * <p>
      * Setter for the field <code>reviewerId</code>.
-     * </p>
      *
-     * @param reviewerId the reviewerId to set
+     * @param reviewerId the database ID of the user assigned to review this annotation
      */
     public void setReviewerId(Long reviewerId) {
         this.reviewerId = reviewerId;
     }
 
     /**
-     * <p>
      * Getter for the field <code>generatorId</code>.
-     * </p>
      *
-     * @return the generatorId
+     * @return the database ID of the crowdsourcing question that generated this annotation
      */
     public Long getGeneratorId() {
         return generatorId;
     }
 
     /**
-     * <p>
      * Setter for the field <code>generatorId</code>.
-     * </p>
      *
-     * @param generatorId the generatorId to set
+     * @param generatorId the database ID of the crowdsourcing question that generated this annotation
      */
     public void setGeneratorId(Long generatorId) {
         this.generatorId = generatorId;
     }
 
     /**
-     * <p>
      * Getter for the field <code>body</code>.
-     * </p>
      *
-     * @return the body
+     * @return the annotation body content (typically a JSON-LD or plain-text value)
      */
     public String getBody() {
         return body;
     }
 
     /**
-     * <p>
      * Setter for the field <code>body</code>.
-     * </p>
      *
-     * @param body the body to set
+     * @param body the annotation body content (typically a JSON-LD or plain-text value)
      */
     public void setBody(String body) {
         this.body = body;
     }
 
     /**
-     * <p>
      * Getter for the field <code>motivation</code>.
-     * </p>
      *
-     * @return the motivation
+     * @return the Web Annotation motivation URI (e.g. "commenting", "tagging")
      */
     public String getMotivation() {
         return motivation;
     }
 
     /**
-     * <p>
      * Setter for the field <code>motivation</code>.
-     * </p>
      *
-     * @param motivation the motivation to set
+     * @param motivation the Web Annotation motivation URI (e.g. "commenting", "tagging")
      */
     public void setMotivation(String motivation) {
         this.motivation = motivation;
     }
 
     /**
-     * <p>
      * Getter for the field <code>target</code>.
-     * </p>
      *
-     * @return the target
+     * @return the Web Annotation target URI identifying the resource this annotation targets
      */
     public String getTarget() {
         return target;
     }
 
     /**
-     * <p>
      * Getter for the field <code>targetPI</code>.
-     * </p>
      *
-     * @return the targetPI
+     * @return the persistent identifier of the record this annotation targets
      */
     public String getTargetPI() {
         return targetPI;
     }
 
     /**
-     * <p>
      * Getter for the field <code>targetPageOrder</code>.
-     * </p>
      *
-     * @return the targetPageOrder
+     * @return the 1-based page order number within the record this annotation targets
      */
     public Integer getTargetPageOrder() {
         return targetPageOrder;
     }
 
     /**
-     * <p>
      * Setter for the field <code>targetPI</code>.
-     * </p>
      *
-     * @param targetPI the targetPI to set
+     * @param targetPI the persistent identifier of the record this annotation targets
      */
     public void setTargetPI(String targetPI) {
         this.targetPI = targetPI;
     }
 
     /**
-     * <p>
      * Setter for the field <code>targetPageOrder</code>.
-     * </p>
      *
-     * @param targetPageOrder the targetPageOrder to set
+     * @param targetPageOrder the 1-based page order number within the target record, or null if the annotation targets the whole record
      */
     public void setTargetPageOrder(Integer targetPageOrder) {
         this.targetPageOrder = targetPageOrder;
     }
 
     /**
-     * <p>
      * Setter for the field <code>target</code>.
-     * </p>
      *
-     * @param target the target to set
+     * @param target the serialized target descriptor (URI or JSON-LD specific resource)
      */
     public void setTarget(String target) {
         this.target = target;
@@ -600,9 +543,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * getContentString.
-     * </p>
      *
      * @return Just the string value of the body document
      * @throws com.fasterxml.jackson.core.JsonParseException if any.
@@ -631,9 +572,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * getTargetLink.
-     * </p>
      *
      * @return URL string to the record view
      */
@@ -648,23 +587,16 @@ public abstract class PersistentAnnotation {
         return ret;
     }
 
-    /**
-     * @return the accessCondition
-     */
+    
     public String getAccessCondition() {
         return accessCondition;
     }
 
-    /**
-     * @param accessCondition the accessCondition to set
-     */
+    
     public void setAccessCondition(String accessCondition) {
         this.accessCondition = accessCondition;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Crowdsourcing Annotation");
@@ -695,16 +627,12 @@ public abstract class PersistentAnnotation {
         return this.creatorId != null && user != null && this.creatorId.equals(user.getId());
     }
 
-    /**
-     * @return the publicationStatus
-     */
+    
     public PublicationStatus getPublicationStatus() {
         return publicationStatus;
     }
 
-    /**
-     * @param publicationStatus the publicationStatus to set
-     */
+    
     public void setPublicationStatus(PublicationStatus publicationStatus) {
         this.publicationStatus = publicationStatus;
     }

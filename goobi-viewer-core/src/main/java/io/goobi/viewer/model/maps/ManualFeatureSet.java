@@ -40,6 +40,10 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Transient;
 
+/**
+ * A {@link FeatureSet} implementation that stores geo map features as manually entered GeoJSON
+ * strings, persisted as a collection of feature entries in the database.
+ */
 @Entity
 @DiscriminatorValue("manual")
 public class ManualFeatureSet extends FeatureSet {
@@ -70,16 +74,12 @@ public class ManualFeatureSet extends FeatureSet {
         return new ManualFeatureSet(this);
     }
 
-    /**
-     * @return the features
-     */
+    
     public List<String> getFeatures() {
         return features;
     }
 
-    /**
-     * @param features the features to set
-     */
+    
     public void setFeatures(List<String> features) {
         this.features = features;
         this.featuresAsString = null;

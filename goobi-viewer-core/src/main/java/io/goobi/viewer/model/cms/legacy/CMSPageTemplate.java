@@ -1,5 +1,4 @@
 /*
-/*
  * This file is part of the Goobi viewer - a content presentation and management
  * application for digitized objects.
  *
@@ -91,11 +90,11 @@ public class CMSPageTemplate implements Serializable {
     /**
      * Loads a page template from the given template file and returns the template object.
      *
-     * @param file a {@link java.nio.file.Path} object.
+     * @param file path to the XML template file to load
+     * @return the loaded CMSPageTemplate, or null if the file could not be read or parsed
      * @throws java.lang.IllegalArgumentException if file is null
      * @should load template correctly
      * @should throw IllegalArgumentException if file is null
-     * @return a {@link io.goobi.viewer.model.cms.legacy.CMSPageTemplate} object.
      */
     public static CMSPageTemplate loadFromXML(Path file) {
         if (file == null) {
@@ -178,9 +177,7 @@ public class CMSPageTemplate implements Serializable {
     }
 
     /**
-     * <p>
      * validate.
-     * </p>
      */
     public void validate() {
         if (StringUtils.isEmpty(id)) {
@@ -238,99 +235,81 @@ public class CMSPageTemplate implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
-     * @return the id
+     * @return the unique identifier of this CMS page template
      */
     public String getId() {
         return id;
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
-     * @param id the id to set
+     * @param id the template identifier to set
      */
     public void setId(String id) {
         this.id = id;
     }
 
     /**
-     * <p>
      * Getter for the field <code>name</code>.
-     * </p>
      *
-     * @return the name
+     * @return the display name of this CMS page template
      */
     public String getName() {
         return name;
     }
 
     /**
-     * <p>
      * Setter for the field <code>name</code>.
-     * </p>
      *
-     * @param name the name to set
+     * @param name the display name of this page template
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * <p>
      * Getter for the field <code>version</code>.
-     * </p>
      *
-     * @return the version
+     * @return the version string of this CMS page template
      */
     public String getVersion() {
         return version;
     }
 
     /**
-     * <p>
      * Setter for the field <code>version</code>.
-     * </p>
      *
-     * @param version the version to set
+     * @param version the version string of this page template
      */
     public void setVersion(String version) {
         this.version = version;
     }
 
     /**
-     * <p>
      * Getter for the field <code>description</code>.
-     * </p>
      *
-     * @return the description
+     * @return the human-readable description of this CMS page template
      */
     public String getDescription() {
         return description;
     }
 
     /**
-     * <p>
      * Setter for the field <code>description</code>.
-     * </p>
      *
-     * @param description the description to set
+     * @param description the human-readable description of this page template
      */
     public void setDescription(String description) {
         this.description = description;
     }
 
     /**
-     * <p>
      * Getter for the field <code>htmlFileName</code>.
-     * </p>
      *
-     * @return the htmlFileName
+     * @return the name of the HTML file used to render pages of this template
      */
     public String getHtmlFileName() {
         //	return "template_base.xhtml";
@@ -338,78 +317,64 @@ public class CMSPageTemplate implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>htmlFileName</code>.
-     * </p>
      *
-     * @param htmlFileName the htmlFileName to set
+     * @param htmlFileName the name of the HTML file used to render pages of this template
      */
     public void setHtmlFileName(String htmlFileName) {
         this.htmlFileName = htmlFileName;
     }
 
     /**
-     * <p>
      * Getter for the field <code>templateFileName</code>.
-     * </p>
      *
-     * @return the templateFileName
+     * @return the file name of the template descriptor (e.g. XML file)
      */
     public String getTemplateFileName() {
         return templateFileName;
     }
 
     /**
-     * <p>
      * Setter for the field <code>templateFileName</code>.
-     * </p>
      *
-     * @param templateFileName the templateFileName to set
+     * @param templateFileName the file name of the template descriptor (e.g. XML file)
      */
     public void setTemplateFileName(String templateFileName) {
         this.templateFileName = templateFileName;
     }
 
     /**
-     * <p>
      * Getter for the field <code>iconFileName</code>.
-     * </p>
      *
-     * @return the iconFileName
+     * @return the file name of the icon image representing this template
      */
     public String getIconFileName() {
         return iconFileName;
     }
 
     /**
-     * <p>
      * Setter for the field <code>iconFileName</code>.
-     * </p>
      *
-     * @param iconFileName the iconFileName to set
+     * @param iconFileName the file name of the icon image representing this template
      */
     public void setIconFileName(String iconFileName) {
         this.iconFileName = iconFileName;
     }
 
     /**
-     * <p>
      * Getter for the field <code>contentItems</code>.
-     * </p>
      *
-     * @return the contentItems
+     * @return the list of content item templates defined for this page template
      */
     public List<CMSContentItemTemplate> getContentItems() {
         return contentItems;
     }
 
     /**
-     * <p>
      * getContentItem.
-     * </p>
      *
-     * @param itemId a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.cms.legacy.CMSContentItemTemplate} object.
+     * @param itemId identifier of the content item to retrieve
+     * @return the content item template with the given ID, or null if not found
      */
     public CMSContentItemTemplate getContentItem(String itemId) {
         for (CMSContentItemTemplate item : contentItems) {
@@ -428,104 +393,84 @@ public class CMSPageTemplate implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>contentItems</code>.
-     * </p>
      *
-     * @param contentItems the contentItems to set
+     * @param contentItems the list of content item templates to assign to this page template
      */
     public void setContentItems(List<CMSContentItemTemplate> contentItems) {
         this.contentItems = contentItems;
     }
 
     /**
-     * <p>
      * isDisplaySortingField.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the sorting field should be displayed in the template UI, false otherwise
      */
     public boolean isDisplaySortingField() {
         return displaySortingField;
     }
 
     /**
-     * <p>
      * Setter for the field <code>displaySortingField</code>.
-     * </p>
      *
-     * @param displaySortingField a boolean.
+     * @param displaySortingField true to show the sorting field in the template UI
      */
     public void setDisplaySortingField(boolean displaySortingField) {
         this.displaySortingField = displaySortingField;
     }
 
     /**
-     * <p>
      * isThemeTemplate.
-     * </p>
      *
-     * @return the themeTemplate
+     * @return true if this template originates from the theme, false otherwise
      */
     public boolean isThemeTemplate() {
         return themeTemplate;
     }
 
     /**
-     * <p>
      * Setter for the field <code>themeTemplate</code>.
-     * </p>
      *
-     * @param themeTemplate the themeTemplate to set
+     * @param themeTemplate true if this template originates from the theme
      */
     public void setThemeTemplate(boolean themeTemplate) {
         this.themeTemplate = themeTemplate;
     }
 
     /**
-     * <p>
      * Setter for the field <code>appliesToExpandedUrl</code>.
-     * </p>
      *
-     * @param appliesToExpandedUrl the appliesToExpandedUrl to set
+     * @param appliesToExpandedUrl true if this template applies to expanded record URLs
      */
     public void setAppliesToExpandedUrl(boolean appliesToExpandedUrl) {
         this.appliesToExpandedUrl = appliesToExpandedUrl;
     }
 
     /**
-     * <p>
      * isAppliesToExpandedUrl.
-     * </p>
      *
-     * @return the appliesToExpandedUrl
+     * @return true if this template applies to expanded record URLs, false otherwise
      */
     public boolean isAppliesToExpandedUrl() {
         return appliesToExpandedUrl;
     }
 
-    /**
-     * @param mayHaveTopBarSlider the mayHaveTopBarSlider to set
-     */
+    
     public void setMayHaveTopBarSlider(boolean mayHaveTopBarSlider) {
         this.mayHaveTopBarSlider = mayHaveTopBarSlider;
     }
 
-    /**
-     * @return the mayHaveTopBarSlider
-     */
+    
     public boolean isMayHaveTopBarSlider() {
         return mayHaveTopBarSlider;
     }
 
     /**
-     * <p>
      * parseBoolean.
-     * </p>
      *
-     * @param text a {@link java.lang.String} object.
-     * @param defaultValue a boolean.
-     * @return a boolean.
+     * @param text string value to parse, expected "true" or "false" (case-insensitive)
+     * @param defaultValue value to return when text is neither "true" nor "false"
+     * @return true if text equals "true" (case-insensitive), false if it equals "false", or defaultValue if it matches neither
      */
     public static boolean parseBoolean(String text, boolean defaultValue) {
         if ("FALSE".equalsIgnoreCase(text)) {
@@ -538,12 +483,10 @@ public class CMSPageTemplate implements Serializable {
     }
 
     /**
-     * <p>
      * parseBoolean.
-     * </p>
      *
-     * @param text a {@link java.lang.String} object.
-     * @return a boolean.
+     * @param text string value to parse, defaults to false if unrecognized
+     * @return true if text equals "true" (case-insensitive), false otherwise
      */
     public static boolean parseBoolean(String text) {
         return parseBoolean(text, false);

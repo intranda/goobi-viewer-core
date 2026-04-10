@@ -79,33 +79,27 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getModules.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all registered viewer modules
      */
     public List<IModule> getModules() {
         return DataManager.getInstance().getModules();
     }
 
     /**
-     * <p>
      * getName.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the configured application name
      */
     public String getName() {
         return DataManager.getInstance().getConfiguration().getName();
     }
 
     /**
-     * <p>
      * isBookmarksEnabled.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the bookmarks feature is enabled in the configuration, false otherwise
      */
     public boolean isBookmarksEnabled() {
         return DataManager.getInstance().getConfiguration().isBookmarksEnabled();
@@ -116,13 +110,11 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * useTiles.
-     * </p>
      *
-     * @param pageType a {@link java.lang.String} object.
-     * @param mimeType a {@link java.lang.String} object.
-     * @return a boolean.
+     * @param pageType name of the page type to look up settings for
+     * @param mimeType MIME type of the image being displayed
+     * @return true if tiles should be used for the given page type and MIME type, false otherwise
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public boolean useTiles(String pageType, String mimeType) throws ViewerConfigurationException {
@@ -132,7 +124,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * whether to show a navigator element in the openseadragon viewe
+     * Returns whether a navigator element should be shown in the OpenSeadragon viewer.
      * 
      * @param pageType get settings for this pageType
      * @param mimeType get settings for this image type
@@ -146,12 +138,10 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getFooterHeight.
-     * </p>
      *
-     * @param pageType a {@link java.lang.String} object.
-     * @param mimeType a {@link java.lang.String} object.
+     * @param pageType name of the page type to look up settings for
+     * @param mimeType MIME type of the image being displayed
      * @return a int.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -162,13 +152,11 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getImageSizes.
-     * </p>
      *
-     * @param pageType a {@link java.lang.String} object.
-     * @param mimeType a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
+     * @param pageType name of the page type to look up settings for
+     * @param mimeType MIME type of the image being displayed
+     * @return a list of configured zoom scale values for the given page type and MIME type
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public List<String> getImageSizes(String pageType, String mimeType) throws ViewerConfigurationException {
@@ -178,13 +166,11 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getTileSizes.
-     * </p>
      *
-     * @param pageType a {@link java.lang.String} object.
-     * @param mimeType a {@link java.lang.String} object.
-     * @return a {@link java.util.Map} object.
+     * @param pageType name of the page type to look up settings for
+     * @param mimeType MIME type of the image being displayed
+     * @return a map of tile sizes (resolution) to lists of scale factors for the given page type and MIME type
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public Map<Integer, List<Integer>> getTileSizes(String pageType, String mimeType) throws ViewerConfigurationException {
@@ -194,11 +180,9 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * useTiles.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if tiles should be used for the default image view, false otherwise
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public boolean useTiles() throws ViewerConfigurationException {
@@ -206,11 +190,9 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * useTilesFullscreen.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if tiles should be used in fullscreen view, false otherwise
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public boolean useTilesFullscreen() throws ViewerConfigurationException {
@@ -218,11 +200,9 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * useTilesCrowd.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if tiles should be used in the crowdsourcing edit view, false otherwise
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public boolean useTilesCrowd() throws ViewerConfigurationException {
@@ -230,9 +210,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getFooterHeight.
-     * </p>
      *
      * @return a int.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -242,9 +220,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getFooterHeightFullscreen.
-     * </p>
      *
      * @return a int.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -254,9 +230,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getFooterHeightCrowd.
-     * </p>
      *
      * @return a int.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -266,259 +240,213 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isRememberImageZoom.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the image zoom level should be remembered across page navigation, false otherwise
      */
     public boolean isRememberImageZoom() {
         return DataManager.getInstance().getConfiguration().isRememberImageZoom();
     }
 
     /**
-     * <p>
      * isRememberImageRotation.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the image rotation angle should be remembered across page navigation, false otherwise
      */
     public boolean isRememberImageRotation() {
         return DataManager.getInstance().getConfiguration().isRememberImageRotation();
     }
 
     /**
-     * <p>
      * isDisplayStatistics.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the statistics widget should be displayed, false otherwise
      */
     public boolean isDisplayStatistics() {
         return DataManager.getInstance().getConfiguration().isDisplayStatistics();
     }
 
     /**
-     * <p>
      * isDisplaySearchRssLinks.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if RSS feed links should be displayed on search result pages, false otherwise
      */
     public boolean isDisplaySearchRssLinks() {
         return DataManager.getInstance().getConfiguration().isDisplaySearchRssLinks();
     }
 
     /**
-     * <p>
      * isAdvancedSearchEnabled.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the advanced search feature is enabled, false otherwise
      */
     public boolean isAdvancedSearchEnabled() {
         return DataManager.getInstance().getConfiguration().isAdvancedSearchEnabled();
     }
 
     /**
-     * <p>
      * isTimelineSearchEnabled.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the timeline search feature is enabled, false otherwise
      */
     public boolean isTimelineSearchEnabled() {
         return DataManager.getInstance().getConfiguration().isTimelineSearchEnabled();
     }
 
     /**
-     * <p>
      * isCalendarSearchEnabled.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the calendar search feature is enabled, false otherwise
      */
     public boolean isCalendarSearchEnabled() {
         return DataManager.getInstance().getConfiguration().isCalendarSearchEnabled();
     }
 
     /**
-     * <p>
      * isDisplayBreadcrumbs.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if breadcrumb navigation should be displayed, false otherwise
      */
     public boolean isDisplayBreadcrumbs() {
         return DataManager.getInstance().getConfiguration().getDisplayBreadcrumbs();
     }
 
     /**
-     * <p>
      * isDisplayMetadataPageLinkBlock.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the metadata page link block should be displayed, false otherwise
      */
     public boolean isDisplayMetadataPageLinkBlock() {
         return DataManager.getInstance().getConfiguration().getDisplayMetadataPageLinkBlock();
     }
 
     /**
-     * <p>
      * isPagePdfEnabled.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if PDF download for individual pages is enabled, false otherwise
      */
     public boolean isPagePdfEnabled() {
         return DataManager.getInstance().getConfiguration().isPagePdfEnabled();
     }
 
     /**
-     * <p>
      * getRssTitle.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the configured RSS feed title
      */
     public String getRssTitle() {
         return DataManager.getInstance().getConfiguration().getRssTitle();
     }
 
     /**
-     * <p>
      * isDisplayTagCloudStartpage.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the tag cloud widget should be displayed on the start page, false otherwise
      */
     public boolean isDisplayTagCloudStartpage() {
         return DataManager.getInstance().getConfiguration().isDisplayTagCloudStartpage();
     }
 
     /**
-     * <p>
      * isDisplaySearchResultNavigation.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if navigation arrows between search results should be displayed in record view, false otherwise
      */
     public boolean isDisplaySearchResultNavigation() {
         return DataManager.getInstance().getConfiguration().isDisplaySearchResultNavigation();
     }
 
     /**
-     * <p>
      * isDisplayStructType.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the document structure type label should be displayed, false otherwise
      */
     public boolean isDisplayStructType() {
         return DataManager.getInstance().getConfiguration().getDisplayStructType();
     }
 
     /**
-     * <p>
      * isDisplayCollectionBrowsing.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the collection browsing widget should be displayed, false otherwise
      */
     public boolean isDisplayCollectionBrowsing() {
         return DataManager.getInstance().getConfiguration().isDisplayCollectionBrowsing();
     }
 
     /**
-     * <p>
      * isDisplayUserNavigation.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the user account navigation links should be displayed, false otherwise
      */
     public boolean isDisplayUserNavigation() {
         return DataManager.getInstance().getConfiguration().isDisplayUserNavigation();
     }
 
     /**
-     * <p>
      * isDisplayTagCloudNavigation.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the tag cloud widget should be displayed in the navigation area, false otherwise
      */
     public boolean isDisplayTagCloudNavigation() {
         return DataManager.getInstance().getConfiguration().isDisplayTagCloudNavigation();
     }
 
     /**
-     * <p>
      * isDisplayTitlePURL.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the persistent URL should be displayed in the record title area, false otherwise
      */
     public boolean isDisplayTitlePURL() {
         return DataManager.getInstance().getConfiguration().isDisplayTitlePURL();
     }
 
     /**
-     * <p>
      * isSidebarTocWidgetVisibleInFullscreen.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the sidebar table-of-contents widget should be visible in fullscreen view, false otherwise
      */
     public boolean isSidebarTocWidgetVisibleInFullscreen() {
         return DataManager.getInstance().getConfiguration().isSidebarTocWidgetVisibleInFullscreen();
     }
 
     /**
-     * <p>
      * isSidebarOpacLinkVisible.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the OPAC link should be visible in the sidebar views widget, false otherwise
      */
     public boolean isSidebarOpacLinkVisible() {
         return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetOpacLinkVisible();
     }
 
     /**
-     * <p>
      * isSidebarTocPageNumbersVisible.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if page numbers should be visible in the sidebar table-of-contents, false otherwise
      */
     public boolean isSidebarTocPageNumbersVisible() {
         return DataManager.getInstance().getConfiguration().getSidebarTocPageNumbersVisible();
     }
 
     /**
-     * <p>
      * isSidebarPageLinkVisible.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the object view link should be visible in the sidebar views widget, false otherwise
      */
     public boolean isSidebarPageLinkVisible() {
         return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetObjectViewLinkVisible();
     }
 
     /**
-     * <p>
      * isSidebarCalendarLinkVisible.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the calendar view link should be visible in the sidebar views widget, false otherwise
      * @deprecated View has been retired
      */
     @Deprecated(since = "26.03")
@@ -527,68 +455,56 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isSidebarMetadataLinkVisible.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the metadata view link should be visible in the sidebar views widget, false otherwise
      */
     public boolean isSidebarMetadataLinkVisible() {
         return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetMetadataViewLinkVisible();
     }
 
     /**
-     * <p>
      * isSidebarThumbsLinkVisible.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the thumbnail view link should be visible in the sidebar views widget, false otherwise
      */
     public boolean isSidebarThumbsLinkVisible() {
         return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetThumbsViewLinkVisible();
     }
 
     /**
-     * <p>
      * isSidebarFulltextLinkVisible.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the full-text view link should be visible in the sidebar views widget, false otherwise
      */
     public boolean isSidebarFulltextLinkVisible() {
         return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetFulltextLinkVisible();
     }
 
     /**
-     * <p>
      * isTocTreeView.
-     * </p>
      *
-     * @param docStructType a {@link java.lang.String} object.
-     * @return a boolean.
+     * @param docStructType document structure type name to check
+     * @return true if the table-of-contents for the given document structure type should be rendered as a tree, false otherwise
      */
     public boolean isTocTreeView(String docStructType) {
         return DataManager.getInstance().getConfiguration().isTocTreeView(docStructType);
     }
 
     /**
-     * <p>
      * isSidebarTocTreeView.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the sidebar table-of-contents should be rendered as a tree, false otherwise
      */
     public boolean isSidebarTocTreeView() {
         return DataManager.getInstance().getConfiguration().isSidebarTocTreeView();
     }
 
     /**
-     * <p>
      * getSidebarTocLengthBeforeCut.
-     * </p>
      *
      * @return a int.
      */
@@ -597,29 +513,25 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * Return the layout type for TOCs of anchor records. Dafaults to 'list'
-     * 
-     * @return a string
+     * Return the layout type for TOCs of anchor records. Defaults to 'list'
+     *
+     * @return the configured TOC anchor layout type; defaults to {@code "list"}
      */
     public String getTocAnchorLayout() {
         return DataManager.getInstance().getConfiguration().getTocAnchorLayout();
     }
 
     /**
-     * <p>
      * isDisplayTitleBreadcrumbs.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if title breadcrumbs should be displayed in the record view, false otherwise
      */
     public boolean isDisplayTitleBreadcrumbs() {
         return DataManager.getInstance().getConfiguration().getDisplayTitleBreadcrumbs();
     }
 
     /**
-     * <p>
      * getTitleBreadcrumbsMaxTitleLength.
-     * </p>
      *
      * @return a int.
      */
@@ -628,33 +540,27 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isDisplayTimeMatrix.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the time matrix widget should be displayed, false otherwise
      */
     public boolean isDisplayTimeMatrix() {
         return DataManager.getInstance().getConfiguration().isDisplayTimeMatrix();
     }
 
     /**
-     * <p>
      * isDisplayCrowdsourcingModuleLinks.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if links to the crowdsourcing module should be displayed, false otherwise
      */
     public boolean isDisplayCrowdsourcingModuleLinks() {
         return DataManager.getInstance().getConfiguration().isDisplayCrowdsourcingModuleLinks();
     }
 
     /**
-     * <p>
      * getTimeMatrixStartYear.
-     * </p>
-     * 
-     * @param subTheme
+     *
+     * @param subTheme sub-theme discriminator value used to restrict the Solr query
      * @return a int.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -677,11 +583,9 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getTimeMatrixEndYear.
-     * </p>
-     * 
-     * @param subTheme
+     *
+     * @param subTheme sub-theme discriminator value used to restrict the Solr query
      * @return a int.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -704,9 +608,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getTimeMatrixHits.
-     * </p>
      *
      * @return Total hit number for the time matrix
      */
@@ -724,55 +626,45 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isPiwikTracking.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if Matomo (Piwik) tracking is enabled, false otherwise
      */
     public boolean isPiwikTrackingEnabled() {
         return DataManager.getInstance().getConfiguration().isPiwikTrackingEnabled();
     }
 
     /**
-     * <p>
      * getPiwikBaseURL.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the configured Piwik/Matomo base URL for tracking
      */
     public String getPiwikBaseURL() {
         return DataManager.getInstance().getConfiguration().getPiwikBaseURL();
     }
 
     /**
-     * <p>
      * getPiwikSiteID.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the configured Piwik/Matomo site ID for tracking
      */
     public String getPiwikSiteID() {
         return DataManager.getInstance().getConfiguration().getPiwikSiteID();
     }
 
     /**
-     * <p>
      * getAnchorThumbnailMode.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the configured anchor thumbnail display mode
      */
     public String getAnchorThumbnailMode() {
         return DataManager.getInstance().getConfiguration().getAnchorThumbnailMode();
     }
 
     /**
-     * <p>
      * getSortFields.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of configured sort field names filtered for the current user locale
      */
     public List<String> getSortFields() {
         return DataManager.getInstance()
@@ -784,9 +676,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getTocIndentation.
-     * </p>
      *
      * @return a int.
      */
@@ -795,11 +685,9 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isPageBrowseEnabled.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the page browse feature (jumping by fixed step sizes) is enabled, false otherwise
      */
     public boolean isPageBrowseEnabled() {
         return DataManager.getInstance().getConfiguration().isPageBrowseEnabled();
@@ -810,11 +698,9 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isPageBrowseStep1Visible.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the first configured page browse step is valid and should be displayed, false otherwise
      */
     public boolean isPageBrowseStep1Visible() {
         List<Integer> steps = DataManager.getInstance().getConfiguration().getPageBrowseSteps();
@@ -822,11 +708,9 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isPageBrowseStep2Visible.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the second configured page browse step is valid and should be displayed, false otherwise
      */
     public boolean isPageBrowseStep2Visible() {
         List<Integer> steps = DataManager.getInstance().getConfiguration().getPageBrowseSteps();
@@ -834,11 +718,9 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isPageBrowseStep3Visible.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the third configured page browse step is valid and should be displayed, false otherwise
      */
     public boolean isPageBrowseStep3Visible() {
         List<Integer> steps = DataManager.getInstance().getConfiguration().getPageBrowseSteps();
@@ -846,9 +728,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getPageBrowseStep1.
-     * </p>
      *
      * @return a int.
      */
@@ -861,9 +741,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getPageBrowseStep2.
-     * </p>
      *
      * @return a int.
      */
@@ -876,9 +754,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getPageBrowseStep3.
-     * </p>
      *
      * @return a int.
      */
@@ -892,137 +768,113 @@ public class ConfigurationBean implements Serializable {
 
     /**
      *
-     * @return Configured value
+     * @return the configured minimum number of pages required to display the page-select dropdown
      */
     public int getPageSelectDropdownDisplayMinPages() {
         return DataManager.getInstance().getConfiguration().getPageSelectDropdownDisplayMinPages();
     }
 
     /**
-     * <p>
      * getReCaptchaSiteKey.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the configured reCAPTCHA site key for client-side widget initialization
      */
     public String getReCaptchaSiteKey() {
         return DataManager.getInstance().getConfiguration().getReCaptchaSiteKey();
     }
 
     /**
-     * <p>
      * isUseReCaptcha.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if reCAPTCHA verification is enabled for forms, false otherwise
      */
     public boolean isUseReCaptcha() {
         return DataManager.getInstance().getConfiguration().isUseReCaptcha();
     }
 
     /**
-     * <p>
      * isTocEpubEnabled.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if EPUB download via the table-of-contents is enabled and PDF generation via message queue is active, false otherwise
      */
     public boolean isTocEpubEnabled() {
         return DataManager.getInstance().getConfiguration().isTocEpubEnabled() && isGeneratePdfInMessageQueue();
     }
 
     /**
-     * <p>
      * isGeneratePdfInTaskManager.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if PDF generation is handled via the message queue, false otherwise
      */
     public boolean isGeneratePdfInMessageQueue() {
         return DataManager.getInstance().getConfiguration().isGeneratePdfInMessageQueue();
     }
 
     /**
-     * <p>
      * isDocHierarchyPdfEnabled.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if PDF download for entire document hierarchies is enabled, false otherwise
      */
     public boolean isDocHierarchyPdfEnabled() {
         return DataManager.getInstance().getConfiguration().isDocHierarchyPdfEnabled();
     }
 
     /**
-     * <p>
      * isShowSearchInItemOnlyIfFullTextAvailable.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the in-record search feature should only be offered when full-text is available, false otherwise
      */
     public boolean isShowSearchInItemOnlyIfFullTextAvailable() {
         return DataManager.getInstance().getConfiguration().isSearchInItemOnlyIfFullTextAvailable();
     }
 
     /**
-     * <p>
      * isContentUploadEnabled.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if content upload by users is enabled, false otherwise
      */
     public boolean isContentUploadEnabled() {
         return DataManager.getInstance().getConfiguration().isContentUploadEnabled();
     }
 
     /**
-     * <p>
      * isTranskribusEnabled.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the Transkribus integration is enabled, false otherwise
      */
     public boolean isTranskribusEnabled() {
         return DataManager.getInstance().getConfiguration().isTranskribusEnabled();
     }
 
     /**
-     * <p>
      * isSearchExcelExportEnabled.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if exporting search results as an Excel file is enabled, false otherwise
      */
     public boolean isSearchExcelExportEnabled() {
         return DataManager.getInstance().getConfiguration().isSearchExcelExportEnabled();
     }
 
     /**
-     * <p>
      * isSearchRisExportEnabled.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if exporting search results in RIS format is enabled, false otherwise
      */
     public boolean isSearchRisExportEnabled() {
         return DataManager.getInstance().getConfiguration().isSearchRisExportEnabled();
     }
 
     /**
-     * <p>
      * isSitelinksEnabled.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if Wikidata Sitelinks integration is enabled, false otherwise
      */
     public boolean isSitelinksEnabled() {
         return DataManager.getInstance().getConfiguration().isSitelinksEnabled();
     }
 
     /**
-     * <p>
      * getRestApiUrl.
-     * </p>
      *
      * @return REST API URL
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -1033,18 +885,16 @@ public class ConfigurationBean implements Serializable {
 
     /**
      *
-     * @return Configured value
+     * @return the configured REST API URL for IIIF Presentation
      */
     public String getRestApiUrlForIIIFPresention() {
         return DataManager.getInstance().getRestApiManager().getIIIFDataApiUrl();
     }
 
     /**
-     * <p>
      * getIiifApiUrl.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the configured IIIF API base URL
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getIiifApiUrl() throws ViewerConfigurationException {
@@ -1059,13 +909,11 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getTranslation.
-     * </p>
      *
-     * @param language a {@link java.lang.String} object.
-     * @param locale a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param language ISO 639 language code to translate
+     * @param locale target locale code for the output language name
+     * @return the localized display name of the given language in the target locale
      */
     public String getTranslation(String language, String locale) {
         Language lang = DataManager.getInstance().getLanguageHelper().getLanguage(language);
@@ -1122,11 +970,9 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isDisplaySidebarBrowsingTerms.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the browsing terms widget should be displayed in the sidebar, false otherwise
      * @should return correct value
      */
     public boolean isDisplaySidebarBrowsingTerms() {
@@ -1134,12 +980,11 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isDisplaySidebarRssFeed.
-     * </p>
-     * s
-     * 
-     * @return a boolean.
+     *
+     * <p>s
+     *
+     * @return true if the RSS feed widget should be displayed in the sidebar, false otherwise
      * @should return correct value
      */
     public boolean isDisplaySidebarRssFeed() {
@@ -1147,22 +992,18 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isDisplaySidebarWidgetUsageCitationLinks.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if citation links should be displayed in the sidebar usage widget, false otherwise
      */
     public boolean isDisplaySidebarWidgetUsageCitationLinks() {
         return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetCitationCitationLinks();
     }
 
     /**
-     * <p>
      * isDisplaySidebarWidgetUsageCitationRecommendation.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if citation recommendations should be displayed in the sidebar usage widget, false otherwise
      */
     public boolean isDisplaySidebarWidgetUsageCitationRecommendation() {
         return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetCitationCitationRecommendation();
@@ -1189,86 +1030,82 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isSubthemeDiscriminatorFieldSet.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if a sub-theme discriminator field has been configured, false otherwise
      */
     public boolean isSubthemeDiscriminatorFieldSet() {
         return StringUtils.isNotEmpty(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
     }
 
     /**
-     * 
-     * @return a boolean.
+     *
+     * @return true if sub-theme selection via URL parameter pull is enabled, false otherwise
      */
     public boolean isPullThemeEnabled() {
         return DataManager.getInstance().getConfiguration().isPullThemeEnabled();
     }
 
     /**
-     * <p>
      * getTwitterName.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the configured Twitter/X user name for social sharing links
      */
     public String getTwitterName() {
         return DataManager.getInstance().getConfiguration().getTwitterUserName();
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return the configured copyright indicator style name
      */
     public String getCopyrightIndicatorStyle() {
         return DataManager.getInstance().getConfiguration().getCopyrightIndicatorStyle();
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return true if social media share links should be displayed, false otherwise
      */
     public boolean isDisplaySocialMediaShareLinks() {
         return DataManager.getInstance().getConfiguration().isDisplaySocialMediaShareLinks();
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return the configured MapBox API token
      */
     public String getMapBoxToken() {
         return DataManager.getInstance().getConfiguration().getMapBoxToken();
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return the configured MapBox username
      */
     public String getMapBoxUser() {
         return DataManager.getInstance().getConfiguration().getMapBoxUser();
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return the configured MapBox style ID
      */
     public String getMapBoxStyleId() {
         return DataManager.getInstance().getConfiguration().getMapBoxStyleId();
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return the configured list of selectable search hits-per-page values
      */
     public List<Integer> getSearchHitsPerPageValues() {
         return DataManager.getInstance().getConfiguration().getSearchHitsPerPageValues();
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return the configured maximum number of child hits loaded initially per search hit
      */
     public int getSearchChildHitsInitialLoadLimit() {
         return DataManager.getInstance().getConfiguration().getSearchChildHitsInitialLoadLimit();
@@ -1279,8 +1116,8 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return the configured list of e-mail recipients for user feedback messages
      */
     public List<EmailRecipient> getFeedbackEmailRecipients() {
         return DataManager.getInstance().getConfiguration().getFeedbackEmailRecipients();
@@ -1295,16 +1132,16 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return true if user-generated content should be displayed below the image, false otherwise
      */
     public boolean isDisplayUserGeneratedContentBelowImage() {
         return DataManager.getInstance().getConfiguration().isDisplayUserGeneratedContentBelowImage();
     }
 
     /**
-     * @param template
-     * @param fallbackToDefaultTemplate
+     * @param template metadata template name to look up navigation types for
+     * @param fallbackToDefaultTemplate if true, falls back to the default template when the given template has no configuration
      * @return true if docstruct navigation is enabled and properly configured; false otherwise
      */
     public boolean isDisplayDocstructNavigation(String template, boolean fallbackToDefaultTemplate) {
@@ -1313,32 +1150,32 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return true if annotation text should be displayed overlaid on the image, false otherwise
      */
     public boolean isDisplayAnnotationTextInImage() {
         return DataManager.getInstance().getConfiguration().isDisplayAnnotationTextInImage();
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return true if the address search input should be shown in map views, false otherwise
      */
     public boolean isDisplayAddressSearchInMap() {
         return DataManager.getInstance().getConfiguration().isDisplayAddressSearchInMap();
     }
 
     /**
-     * @param field
-     * @return Configured value
+     * @param field Solr sort field name
+     * @return the configured message key for the ascending sort label of the given field
      */
     public String getSearchSortingAscendingKey(String field) {
         return DataManager.getInstance().getConfiguration().getSearchSortingKeyAscending(field).orElse("searchSortingDropdown_ascending");
     }
 
     /**
-     * @param field
-     * @return Configured value
+     * @param field Solr sort field name
+     * @return the configured message key for the descending sort label of the given field
      */
     public String getSearchSortingDescendingKey(String field) {
         return DataManager.getInstance().getConfiguration().getSearchSortingKeyDescending(field).orElse("searchSortingDropdown_descending");
@@ -1385,72 +1222,72 @@ public class ConfigurationBean implements Serializable {
 
     /**
      *
-     * @param facetField
-     * @return Configured value
+     * @param facetField Solr facet field name
+     * @return true if facet field labels for the given field should be translated, false otherwise
      */
     public boolean isTranslateFacetFieldLabels(String facetField) {
         return DataManager.getInstance().getConfiguration().isTranslateFacetFieldLabels(facetField);
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return true if a heatmap should be used instead of individual markers for the map search, false otherwise
      */
     public boolean useHeatmapForMapSearch() {
         return DataManager.getInstance().getConfiguration().useHeatmapForMapSearch();
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return the configured geo map marker used for the map search
      */
     public GeoMapMarker getMarkerForMapSearch() {
         return DataManager.getInstance().getConfiguration().getMarkerForMapSearch();
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return the configured selection highlight color for the map search
      */
     public String getSelectionColorForMapSearch() {
         return DataManager.getInstance().getConfiguration().getSelectionColorForMapSearch();
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return true if a heatmap should be used instead of individual markers for geo facetting, false otherwise
      */
     public boolean useHeatmapForFacetting() {
         return DataManager.getInstance().getConfiguration().useHeatmapForFacetting();
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return the configured geo map marker used for geo facetting
      */
     public GeoMapMarker getMarkerForFacetting() {
         return DataManager.getInstance().getConfiguration().getMarkerForFacetting();
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return the configured selection highlight color for geo facetting
      */
     public String getSelectionColorForFacetting() {
         return DataManager.getInstance().getConfiguration().getSelectionColorForFacetting();
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return true if a heatmap should be used instead of individual markers for CMS map components, false otherwise
      */
     public boolean useHeatmapForCMSMaps() {
         return DataManager.getInstance().getConfiguration().useHeatmapForCMSMaps();
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return the configured default geo map marker for CMS map components, falling back to a marker named "default"
      */
     public GeoMapMarker getDefaultMarkerForCMSMaps() {
         List<GeoMapMarker> markers = DataManager.getInstance().getConfiguration().getGeoMapMarkers();
@@ -1461,8 +1298,8 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return the configured default zoom level used when centering the map on a geo annotation
      */
     public int getGeomapAnnotationZoom() {
         return DataManager.getInstance().getConfiguration().getGeomapAnnotationZoom();
@@ -1481,24 +1318,24 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return the configured tile source URL for the crowdsourcing campaign geo map
      */
     public String getCampaignGeomapTilesource() {
         return DataManager.getInstance().getConfiguration().getCrowdsourcingCampaignGeomapTilesource();
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return true if the admin configuration editor is enabled, false otherwise
      */
     public boolean isConfigEditorEnabled() {
         return DataManager.getInstance().getConfiguration().isConfigEditorEnabled();
     }
 
     /**
-     * 
-     * @return Configured value
+     *
+     * @return true if sequential hit numbers should be displayed next to search results, false otherwise
      */
     public boolean isDisplaySearchHitNumbers() {
         return DataManager.getInstance().getConfiguration().isDisplaySearchHitNumbers();
@@ -1522,9 +1359,9 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
-     * @param name
-     * @return Configured value
+     *
+     * @param name PageType name string to look up
+     * @return the configured URL path segment for the given page type name
      */
     public String getPageType(String name) {
         return DataManager.getInstance().getConfiguration().getPageType(PageType.getByName(name));
@@ -1532,8 +1369,8 @@ public class ConfigurationBean implements Serializable {
 
     /**
      *
-     * @param facetField
-     * @return Configured value
+     * @param facetField Solr facet field name
+     * @return true if a value filter input should be displayed for the given facet field, false otherwise
      */
     public boolean isFacetFieldDisplayValueFilter(String facetField) {
         return DataManager.getInstance().getConfiguration().isFacetFieldDisplayValueFilter(facetField);
@@ -1541,8 +1378,8 @@ public class ConfigurationBean implements Serializable {
 
     /**
      *
-     * @param facetField
-     * @return Configured value
+     * @param facetField Solr facet field name
+     * @return true if the given facet field is configured as a boolean field, false otherwise
      * @should return correct value
      */
     public boolean isFacetFieldTypeBoolean(String facetField) {
@@ -1550,9 +1387,9 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
-     * @param facetField
-     * @return Configured value; null if none found
+     *
+     * @param facetField Solr facet field name
+     * @return the configured message key for the description tooltip of the given facet field; null if none configured
      */
     public String getFacetFieldDescriptionKey(String facetField) {
         return DataManager.getInstance().getConfiguration().getFacetFieldDescriptionKey(facetField);
@@ -1563,12 +1400,10 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isSidebarTocViewLinkVisible.
-     * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if the table-of-contents view link should be visible in the sidebar views widget, false otherwise
      */
     public boolean isSidebarTocViewLinkVisible() {
         return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetTocViewLinkVisible();

@@ -66,19 +66,16 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
- * @author florian
+ * REST resource providing slider configuration and media items for CMS carousel components.
  *
+ * @author Florian Alpers
  */
 @Hidden
 @jakarta.ws.rs.Path("/cms/slider/{sliderId}")
 @ViewerRestServiceBinding
 public class CMSSliderResource {
 
-    /**
-     *
-     */
-
-    private static final Logger logger = LogManager.getLogger(CMSSliderResource.class);
+        private static final Logger logger = LogManager.getLogger(CMSSliderResource.class);
 
     private final CMSSlider slider;
 
@@ -116,7 +113,7 @@ public class CMSSliderResource {
     }
 
     /**
-     * @param categories
+     * @param categories list of category ID strings to retrieve pages for
      * @return List<URI>
      */
     private List<URI> getPages(List<String> categories) {
@@ -162,7 +159,7 @@ public class CMSSliderResource {
     }
 
     /**
-     * @param category
+     * @param category the CMS category whose media items are retrieved
      * @return List<CMSMediaItem>
      */
     private static List<CMSMediaItem> getMediaForCategory(CMSCategory category) {
@@ -191,9 +188,9 @@ public class CMSSliderResource {
     }
 
     /**
-     * @param solrQuery
-     * @param maxResults
-     * @param sortField
+     * @param solrQuery Solr query string to select records for the slider
+     * @param maxResults maximum number of records to return
+     * @param sortField Solr field to sort results by, or blank for default order
      * @return List<URI>
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -225,7 +222,7 @@ public class CMSSliderResource {
     }
 
     /**
-     * @param collectionNames
+     * @param collectionNames list of collection names in "field/value" format
      * @return List<URI>
      */
     private static List<URI> getCollections(List<String> collectionNames) {

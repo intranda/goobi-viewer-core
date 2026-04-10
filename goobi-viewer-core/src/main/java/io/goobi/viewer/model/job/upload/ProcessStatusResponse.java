@@ -30,6 +30,11 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+/**
+ * Response returned by the Goobi workflow REST API when querying the status of an existing
+ * process, including its title, ID, creation date, completion flag, associated workflow steps,
+ * and process properties.
+ */
 @XmlRootElement
 @JsonPropertyOrder({ "result", "title", "id", "creationDate", "processCompleted", "step", "project" })
 public class ProcessStatusResponse {
@@ -53,100 +58,72 @@ public class ProcessStatusResponse {
 
     private List<PropertyResponse> properties = new ArrayList<>();
 
-    /**
-     * @return the result
-     */
+    
     public String getResult() {
         return result;
     }
 
-    /**
-     * @param result the result to set
-     */
+    
     public void setResult(String result) {
         this.result = result;
     }
 
-    /**
-     * @return the title
-     */
+    
     public String getTitle() {
         return title;
     }
 
-    /**
-     * @param title the title to set
-     */
+    
     public void setTitle(String title) {
         this.title = title;
     }
 
-    /**
-     * @return the id
-     */
+    
     public int getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
+    
     public void setId(int id) {
         this.id = id;
     }
 
-    /**
-     * @return the processCompleted
-     */
+    
     public boolean isProcessCompleted() {
         return processCompleted;
     }
 
-    /**
-     * @param processCompleted the processCompleted to set
-     */
+    
     public void setProcessCompleted(boolean processCompleted) {
         this.processCompleted = processCompleted;
     }
 
-    /**
-     * @return the creationDate
-     */
+    
     public Date getCreationDate() {
         return creationDate;
     }
 
-    /**
-     * @param creationDate the creationDate to set
-     */
+    
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
     }
 
-    /**
-     * @return the step
-     */
+    
     public List<StepResponse> getStep() {
         return step;
     }
 
-    /**
-     * @param step the step to set
-     */
+    
     public void setStep(List<StepResponse> step) {
         this.step = step;
     }
 
-    /**
-     * @return the properties
-     */
+    
     public List<PropertyResponse> getProperties() {
         return properties;
     }
 
-    /**
-     * @param properties the properties to set
-     */
+    
     public void setProperties(List<PropertyResponse> properties) {
         this.properties = properties;
     }

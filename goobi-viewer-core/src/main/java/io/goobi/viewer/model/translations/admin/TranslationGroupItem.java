@@ -46,9 +46,9 @@ public abstract class TranslationGroupItem {
     /**
      * Factory method.
      *
-     * @param type
-     * @param key
-     * @param regex
+     * @param type the group type determining which subclass to instantiate
+     * @param key message key or regular expression for matching multiple keys
+     * @param regex if true, key is treated as a regular expression
      * @return Created {@link TranslationGroupItem}
      * @should create correct class instance by type
      */
@@ -72,8 +72,8 @@ public abstract class TranslationGroupItem {
     /**
      * Protected constructor.
      *
-     * @param key
-     * @param regex
+     * @param key message key or regular expression for matching multiple keys
+     * @param regex if true, key is treated as a regular expression
      */
     protected TranslationGroupItem(String key, boolean regex) {
         this.key = key;
@@ -148,22 +148,18 @@ public abstract class TranslationGroupItem {
         return TranslationStatus.PARTIAL;
     }
 
-    /**
-     * @return the key
-     */
+    
     public String getKey() {
         return key;
     }
 
-    /**
-     * @return the regex
-     */
+    
     public boolean isRegex() {
         return regex;
     }
 
     /**
-     * @return the messageKeys
+     * @return the list of message entries for this translation group item, loading them if not yet initialized
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -184,7 +180,7 @@ public abstract class TranslationGroupItem {
     /**
      * Checks the translation status for each of the given keys and populates <code>messageKeys</code> accordingly.
      *
-     * @param keys
+     * @param keys list of message keys to create entries for
      */
     protected void createMessageKeyStatusMap(List<String> keys) {
         if (keys == null || keys.isEmpty()) {

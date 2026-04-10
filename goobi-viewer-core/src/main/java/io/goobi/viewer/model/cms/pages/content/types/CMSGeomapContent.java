@@ -42,6 +42,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 
+/**
+ * CMS content type that embeds a configured {@link io.goobi.viewer.model.maps.GeoMap} into a
+ * CMS page, linking the content to a persisted geo map entity.
+ */
 @Entity
 @Table(name = "cms_content_geomap")
 @DiscriminatorValue("geomap")

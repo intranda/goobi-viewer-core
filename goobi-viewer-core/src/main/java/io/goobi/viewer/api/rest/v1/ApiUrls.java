@@ -28,8 +28,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class ApiUrls extends AbstractApiUrlManager {
 
@@ -262,7 +261,7 @@ public class ApiUrls extends AbstractApiUrlManager {
 
     /**
      * 
-     * @param apiUrl
+     * @param apiUrl base URL of the REST API
      */
     public ApiUrls(final String apiUrl) {
         this.apiUrl = StringUtils.isNotBlank(apiUrl) ? StringTools.removeTrailingSlashes(apiUrl) : apiUrl;

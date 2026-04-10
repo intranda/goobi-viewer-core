@@ -24,18 +24,14 @@ package io.goobi.viewer.exceptions;
 import java.io.Serializable;
 
 /**
- * <p>
- * IndexUnreachableException class.
- * </p>
+ * Thrown when the Solr search index cannot be reached or is unavailable.
  */
 public class IndexUnreachableException extends Exception implements Serializable {
 
     private static final long serialVersionUID = -5840484445206784670L;
 
     /**
-     * <p>
-     * Constructor for IndexUnreachableException.
-     * </p>
+     * Creates a new IndexUnreachableException instance.
      *
      * @param string {@link java.lang.String}
      */

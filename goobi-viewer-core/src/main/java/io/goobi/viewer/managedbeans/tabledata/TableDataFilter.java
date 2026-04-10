@@ -28,9 +28,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * <p>
- * TableDataFilter class.
- * </p>
+ * Represents a single filter criterion applied to a data table column.
  */
 public class TableDataFilter implements Serializable {
 
@@ -42,12 +40,10 @@ public class TableDataFilter implements Serializable {
     private final TableDataProvider<?> owner;
 
     /**
-     * <p>
-     * Constructor for TableDataFilter.
-     * </p>
+     * Creates a new TableDataFilter instance.
      *
-     * @param owner a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider} object.
-     * @param columns a {@link java.lang.String} object.
+     * @param owner data provider notified when the filter value changes
+     * @param columns database column names this filter applies to
      */
     public TableDataFilter(TableDataProvider<?> owner, String... columns) {
         this.columns = Arrays.asList(columns);
@@ -57,51 +53,45 @@ public class TableDataFilter implements Serializable {
     }
 
     /**
-     * <p>Constructor for TableDataFilter.</p>
+     * <p>Constructor for TableDataFilter.
      *
-     * @param columns a {@link java.lang.String} object
+     * @param columns database column names this filter applies to
      */
     public TableDataFilter(String... columns) {
         this(null, columns);
     }
 
     /**
-     * <p>
      * Getter for the field <code>column</code>.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the list of column names this filter applies to
      */
     public List<String> getColumns() {
         return columns;
     }
 
     /**
-     * <p>getName.</p>
+     * <p>getName.
      *
-     * @return a {@link java.lang.String} object
+     * @return the concatenated column names of this filter
      */
     public String getName() {
         return this.columns.stream().collect(Collectors.joining());
     }
 
     /**
-     * <p>
      * Getter for the field <code>value</code>.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the current filter value string used to match rows in the configured columns
      */
     public String getValue() {
         return value;
     }
 
     /**
-     * <p>
      * Setter for the field <code>value</code>.
-     * </p>
      *
-     * @param value a {@link java.lang.String} object.
+     * @param value filter string to match against the configured columns
      */
     public void setValue(String value) {
         this.value = value;
@@ -112,20 +102,18 @@ public class TableDataFilter implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>joinTable</code>.
-     * </p>
      *
-     * @return the joinTable
+     * @return an Optional containing the name of the table to join when filtering, or empty if no join is required
      */
     public Optional<String> getJoinTable() {
         return Optional.ofNullable(joinTable);
     }
 
     /**
-     * <p>Setter for the field <code>joinTable</code>.</p>
+     * <p>Setter for the field <code>joinTable</code>.
      *
-     * @param joinTable a {@link java.lang.String} object
+     * @param joinTable name of the table to join when filtering
      */
     public void setJoinTable(String joinTable) {
         this.joinTable = joinTable;

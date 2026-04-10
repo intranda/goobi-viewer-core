@@ -1,4 +1,4 @@
-/**
+/*
  * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
  *
  * Visit these websites for more information.
@@ -63,8 +63,9 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
- * @author florian
+ * REST resource for managing client application registrations and their access credentials.
  *
+ * @author Florian Alpers
  */
 @jakarta.ws.rs.Path(CLIENTS)
 @CORSBinding
@@ -111,11 +112,13 @@ public class ClientApplicationsResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Request access for a registered client application", tags = { "clients" })
     @ApiResponse(responseCode = "200", description = "Access status for the requesting client")
-    @ApiResponse(responseCode = "400", description = "Missing client identifier header or client not yet registered")
+    @ApiResponse(responseCode = "400", description = "Client not yet registered")
+    @ApiResponse(responseCode = "401", description = "Missing client identifier header (X-goobi-content-protection)")
     public String request() throws ContentLibException, DAOException {
         String clientIdentifier = ClientApplicationManager.getClientIdentifier(servletRequest);
         if (StringUtils.isBlank(clientIdentifier)) {
-            throw new IllegalRequestException("Missing client idenifier in header");
+            // Return 401 (Unauthorized) since the client identifier header is missing authentication credentials.
+            throw new WebApplicationException("Missing client identifier in header", Response.Status.UNAUTHORIZED);
         }
         HttpSession session = servletRequest.getSession();
         if (session == null) {
@@ -131,9 +134,9 @@ public class ClientApplicationsResource {
 
     /**
      * Change properties of an existing {@link ClientApplication}.
-     * 
-     * @param clientIdentifier
-     * @param update
+     *
+     * @param clientIdentifier unique identifier of the client to update
+     * @param update client object carrying the new property values to apply
      * @return {@link ClientApplication}
      * @throws DAOException If an error occurs accessing the database
      * @throws ContentNotFoundException If no 'id' or 'clientIdentier' values are given or if no matching client could be found
@@ -154,13 +157,23 @@ public class ClientApplicationsResource {
             description = "No authorization for access to this resource. See documentation about accessing protected resources")
     @ApiResponse(responseCode = "404", description = "No client with given clientIdentifier was found in database")
     @ApiResponse(responseCode = "500", description = "An internal error occurred")
+    // 405 can occur when special characters (e.g. semicolons) in the path parameter cause JAX-RS
+    // path matching to fail before the method is dispatched.
+    @ApiResponse(responseCode = "405", description = "Method not allowed for the given path parameters")
     public ClientApplication setClient(
-            @PathParam("id") @Parameter(description = "client identifier") String clientIdentifier,
+            // Pattern requires an alphanumeric first character to prevent values like '.' or '..'
+            // which Tomcat treats as relative path references and may normalise before dispatch.
+            @PathParam("id") @Parameter(description = "client identifier",
+                    schema = @Schema(pattern = "^[A-Za-z0-9][A-Za-z0-9_.-]*$")) String clientIdentifier,
             // Explicit @RequestBody annotation required so the OpenAPI generator includes the request
             // body schema in the spec, enabling tools like schemathesis to generate valid test cases.
+            // Schema uses ClientApplicationUpdate (writable fields only) to avoid a schemathesis 4.x
+            // bug: the examples phase fails when a schema mixes readOnly and writable properties
+            // that carry example values. The actual Jackson deserialization still targets
+            // ClientApplication because all writable fields are present in both classes.
             @RequestBody(description = "Client properties to update (only name, description, subnetMask and accessStatus are applied)",
                     required = true,
-                    content = @Content(schema = @Schema(implementation = ClientApplication.class)))
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ClientApplicationUpdate.class)))
             ClientApplication update) throws DAOException, ContentNotFoundException {
         try {
 
@@ -182,7 +195,7 @@ public class ClientApplicationsResource {
     }
 
     /**
-     * List all registered {@link ClientApplication}s.
+     * Lists all registered {@link ClientApplication}s.
      * 
      * @return All clients from the DB
      * @throws DAOException If an error occurs accessing the database
@@ -201,9 +214,9 @@ public class ClientApplicationsResource {
     }
 
     /**
-     * List all registered {@link ClientApplication}s.
-     * 
-     * @param clientIdentifier
+     * Lists all registered {@link ClientApplication}s.
+     *
+     * @param clientIdentifier unique identifier of the client to retrieve
      * @return Client with given clientIdentifier
      * @throws DAOException If an error occurs accessing the database
      * @throws ContentNotFoundException
@@ -215,11 +228,13 @@ public class ClientApplicationsResource {
     @Operation(summary = "Get the client with the given client identifier", tags = { "clients" },
             description = "The client is returned as a json object. Requires an access token in the query paramter or header field 'token'.")
     @ApiResponse(responseCode = "200", description = "Client application object")
+    @ApiResponse(responseCode = "400", description = "The requested client identifier refers to an internal resource")
     @ApiResponse(responseCode = "401",
             description = "No authorization for access to this resource. See documentation about accessing protected resources")
     @ApiResponse(responseCode = "404", description = "No client with given 'id' was found in database")
     @ApiResponse(responseCode = "500", description = "An internal error occurred")
-    public ClientApplication getClient(@PathParam("id") @Parameter(description = "client identifier") String clientIdentifier)
+    public ClientApplication getClient(@PathParam("id") @Parameter(description = "client identifier",
+            schema = @Schema(pattern = "^[A-Za-z0-9][A-Za-z0-9_.-]*$")) String clientIdentifier)
             throws DAOException, ContentNotFoundException {
         ClientApplication client = dao.getClientApplicationByClientId(clientIdentifier);
         if (client == null) {
@@ -276,8 +291,8 @@ public class ClientApplicationsResource {
     }
 
     /**
-     * @param client
-     * @param allowed
+     * @param client the client application whose status is included in the response
+     * @param allowed whether the client was granted access in this session
      * @return JSON response
      */
     private static String createRequestResponse(ClientApplication client, boolean allowed) {
@@ -288,7 +303,7 @@ public class ClientApplicationsResource {
     }
 
     /**
-     * @param client
+     * @param client the newly registered client application
      * @return JSON response
      */
     private static String createRegistrationResponse(ClientApplication client) {

@@ -46,9 +46,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 
 /**
- * <p>
- * SessionCounterFilter class.
- * </p>
+ * Servlet filter that counts and tracks active HTTP sessions for monitoring purposes.
  */
 @WebFilter
 public class SessionCounterFilter implements Filter {

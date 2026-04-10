@@ -50,8 +50,7 @@ import io.goobi.viewer.solr.SolrTools;
  * name the values are taken from Each field name/key is mapped to a list of {@link IMetadataValue} objects which may contain a single string or
  * translations in several languages Used in {@link GeoCoordinateConverter} to add translatable metadata entites to geomap features.
  * 
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class MetadataContainer {
 
@@ -65,10 +64,10 @@ public class MetadataContainer {
     }
 
     /**
-     * 
-     * @param solrId
-     * @param label
-     * @param metadata
+     *
+     * @param solrId Solr document identifier (IDDOC) for this container
+     * @param label display label for this metadata container
+     * @param metadata map of field names to their list of metadata values
      */
     public MetadataContainer(String solrId, IMetadataValue label, Map<String, List<IMetadataValue>> metadata) {
         this.solrId = solrId;
@@ -77,18 +76,18 @@ public class MetadataContainer {
     }
 
     /**
-     * 
-     * @param solrId
-     * @param label
+     *
+     * @param solrId Solr document identifier (IDDOC) for this container
+     * @param label display label for this metadata container
      */
     public MetadataContainer(String solrId, IMetadataValue label) {
         this(solrId, label, new HashMap<>());
     }
 
     /**
-     * 
-     * @param solrId
-     * @param label
+     *
+     * @param solrId Solr document identifier (IDDOC) for this container
+     * @param label display label string for this metadata container
      */
     public MetadataContainer(String solrId, String label) {
         this(solrId, new SimpleMetadataValue(label));
@@ -96,8 +95,8 @@ public class MetadataContainer {
 
     /**
      * Cloning constructor.
-     * 
-     * @param orig
+     *
+     * @param orig source container to copy
      */
     public MetadataContainer(MetadataContainer orig) {
         this.solrId = orig.solrId;
@@ -148,7 +147,7 @@ public class MetadataContainer {
     }
 
     /**
-     * Get all values of the default language (or any value of no default langauge value exists) for the given field
+     * Gets all values of the default language (or any value of no default langauge value exists) for the given field.
      * 
      * @param key the field name for which to get the metadata value
      * @return List<String>
@@ -211,46 +210,46 @@ public class MetadataContainer {
     }
 
     /**
-     * 
-     * @param key
-     * @param values
+     *
+     * @param key metadata field name to map the values to
+     * @param values list of metadata values to store for the given field
      */
     public void put(String key, List<IMetadataValue> values) {
         this.metadata.put(key, values);
     }
 
     /**
-     * 
-     * @param key
-     * @param value
+     *
+     * @param key metadata field name to add the value to
+     * @param value metadata value to append for the given field
      */
     public void add(String key, IMetadataValue value) {
         this.metadata.computeIfAbsent(key, a -> new ArrayList<>()).add(value);
     }
 
     /**
-     * 
-     * @param key
-     * @param value
+     *
+     * @param key metadata field name to add the value to
+     * @param value string value to append for the given field
      */
     public void add(String key, String value) {
         this.add(key, new SimpleMetadataValue(value));
     }
 
     /**
-     * 
-     * @param key
-     * @param values
+     *
+     * @param key metadata field name to add the values to
+     * @param values collection of metadata values to append for the given field
      */
     public void addAll(String key, Collection<IMetadataValue> values) {
         this.addAll(key, values, false);
     }
 
     /**
-     * 
-     * @param key
-     * @param values
-     * @param overwrite
+     *
+     * @param key metadata field name to add the values to
+     * @param values collection of metadata values to store for the given field
+     * @param overwrite if true, replaces existing values instead of appending
      */
     public void addAll(String key, Collection<IMetadataValue> values, boolean overwrite) {
         values.forEach(v -> {
@@ -263,8 +262,8 @@ public class MetadataContainer {
     }
 
     /**
-     * 
-     * @param key
+     *
+     * @param key metadata field name to remove from this container
      */
     public void remove(String key) {
         this.metadata.remove(key);

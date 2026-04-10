@@ -54,6 +54,7 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.solr.SolrTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
@@ -68,19 +69,16 @@ import jakarta.ws.rs.core.Response;
 
 /**
  *
- * provides listings of records in reduced iiif form.
+ * Provides listings of records in reduced iiif form.
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 @jakarta.ws.rs.Path(RECORDS_LIST)
 @ViewerRestServiceBinding
 @CORSBinding
 public class RecordsListResource {
 
-    /**
-     *
-     */
+    
     private static final int DEFAULT_MAX_ROWS = 100;
     private static final Logger logger = LogManager.getLogger(RecordsListResource.class);
     @Context
@@ -103,7 +101,8 @@ public class RecordsListResource {
             @Parameter(description = "filter for records from this date or later") @QueryParam("start") String start,
             @Parameter(description = "filter for records from this date or earlier") @QueryParam("end") String end,
             @Parameter(description = "filter for records of this subtheme") @QueryParam("subtheme") String subtheme,
-            @Parameter(description = "sort string") @QueryParam("sort") String sort)
+            @Parameter(description = "Solr field name to sort by",
+                    schema = @Schema(pattern = "^[A-Za-z_][A-Za-z0-9_]*$")) @QueryParam("sort") String sort)
             throws IndexUnreachableException, DAOException, PresentationException, URISyntaxException, ViewerConfigurationException,
             IllegalRequestException {
 
@@ -115,8 +114,12 @@ public class RecordsListResource {
         try {
             items = builder.getManifestsForQuery(finalQuery, sort, firstRow == null ? 0 : firstRow, rows == null ? DEFAULT_MAX_ROWS : rows);
         } catch (PresentationException e) {
-            // An empty or syntactically invalid query can cause Solr to reject the request.
-            if (SolrTools.isQuerySyntaxError(e)) {
+            // An empty or syntactically invalid query, or an invalid sort field, can cause Solr to reject the request.
+            // Also handle "sort param field can't be found" which Solr returns when the sort field name is valid syntax
+            // but does not exist in the index schema (e.g. GET /records/list?sort=A).
+            if (SolrTools.isQuerySyntaxError(e)
+                    || (e.getMessage() != null && e.getMessage().contains("sort param could not be parsed"))
+                    || (e.getMessage() != null && e.getMessage().contains("sort param field can't be found"))) {
                 throw new IllegalRequestException("Invalid query parameters: " + e.getMessage());
             }
             throw e;
@@ -141,7 +144,11 @@ public class RecordsListResource {
     @Operation(tags = { "records", "json" }, summary = "List record metadata as JSON. Solr query and field mapping are configured statically.")
     @ApiResponse(responseCode = "200", description = "Record metadata as JSON array")
     @ApiResponse(responseCode = "400", description = "Missing template name")
-    public Response getRecordMetadataAsJson(@PathParam("template") String template) throws IndexUnreachableException, PresentationException {
+    @ApiResponse(responseCode = "404", description = "Template configuration not found")
+    public Response getRecordMetadataAsJson(
+            @Parameter(description = "Template name for the JSON configuration",
+                    schema = @Schema(pattern = "^[A-Za-z0-9_,.-]+$")) @PathParam("template") String template)
+            throws IndexUnreachableException, PresentationException {
         logger.trace("getRecordMetadataAsJson: {}", template);
         if (template == null) {
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "Template name required").build();
@@ -157,7 +164,8 @@ public class RecordsListResource {
             String t = templateSplit[i].trim();
             JsonMetadataConfiguration config = DataManager.getInstance().getConfiguration().getWebApiFields(t);
             if (config == null) {
-                return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "Template configuration not found: " + t).build();
+                // Template name is syntactically valid but no such configuration exists → 404 (not 400)
+                return Response.status(Response.Status.NOT_FOUND.getStatusCode(), "Template configuration not found: " + t).build();
             }
 
             SolrDocumentList docs =
@@ -177,10 +185,10 @@ public class RecordsListResource {
     }
 
     /**
-     * @param query
-     * @param start
-     * @param end
-     * @param subtheme
+     * @param query base Solr query string to filter records
+     * @param start start year for date range filter (inclusive)
+     * @param end end year for date range filter (inclusive)
+     * @param subtheme subtheme discriminator value for filtering
      * @return Generated query
      */
     private String createQuery(String query, final String start, final String end, String subtheme) {

@@ -37,8 +37,7 @@ import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Named
 @ViewScoped
@@ -47,7 +46,7 @@ public class CmsSliderBean implements Serializable {
     private static final long serialVersionUID = -2204866565916114208L;
 
     /**
-     * We actually only need a filter String, but we use a complete {@link TableDataFilter} so we can utilize the dataTableColumnFilter component
+     * We actually only need a filter String, but we use a complete {@link TableDataFilter} so we can utilize the dataTableColumnFilter component.
      */
     private TableDataFilter filter = new TableDataFilter("name_description");
 
@@ -88,9 +87,7 @@ public class CmsSliderBean implements Serializable {
         return DataManager.getInstance().getDao().deleteSlider(slider);
     }
 
-    /**
-     * @return the filter
-     */
+    
     public TableDataFilter getFilter() {
         return filter;
     }

@@ -39,6 +39,8 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.intranda.api.iiif.discovery.Activity;
 import de.intranda.api.iiif.discovery.OrderedCollection;
@@ -55,17 +57,18 @@ import io.goobi.viewer.solr.SolrTools;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Path(RECORDS_CHANGES)
 @CORSBinding
 @ViewerRestServiceBinding
 public class ChangeDiscoveryResource {
 
+    private static final Logger logger = LogManager.getLogger(ChangeDiscoveryResource.class);
     private static final String[] CONTEXT = { "http://iiif.io/api/discovery/0/context.json", "https://www.w3.org/ns/activitystreams" };
 
     @Context
@@ -78,7 +81,8 @@ public class ChangeDiscoveryResource {
     /**
      * Provides a view of the entire list of all activities by linking to the first and last page of the collection. The pages contain the actual
      * activity entries and are provided by {@link #getPage(int, String startDate, String filterQuery) /iiif/discovery/activities/&lt;pageNo&gt;/}.
-     * This resource also contains a count of the total number of activities
+     *
+     * <p>This resource also contains a count of the total number of activities
      * 
      * @param startDate If not null, must have the form 'yyyy-MM-dd'. Then only activities at or after this date will be listed
      * @param filterQuery If not null or empty, must be a valid SOLR query string which is used to filter the results
@@ -95,19 +99,33 @@ public class ChangeDiscoveryResource {
     @ApiResponse(responseCode = "400", description = "Invalid date format for 'start' parameter (expected yyyy-MM-dd)")
     @ApiResponse(responseCode = "500", description = "An internal error occurred, possibly due to an unreachable Solr index")
     public OrderedCollection<Activity> getAllChanges(
-            @Parameter(description = "Optional date in the form 'yyyy-MM-dd' of the oldest changes to return") @QueryParam("start") String startDate,
-            @Parameter(description = "Optional Solr query to filter results") @QueryParam("filter") String filterQuery)
+            @Parameter(description = "Optional date in the form 'yyyy-MM-dd' of the oldest changes to return",
+                    schema = @Schema(pattern = "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$")) @QueryParam("start") String startDate,
+            @Parameter(description = "Optional Solr query to filter results",
+                    schema = @Schema(pattern = "^[ -~]*$")) @QueryParam("filter") String filterQuery)
             throws PresentationException, IndexUnreachableException, IllegalRequestException {
         ActivityCollectionBuilder builder = new ActivityCollectionBuilder(apiUrlManager, DataManager.getInstance().getSearchIndex(),
                 DataManager.getInstance().getConfiguration().getIIIFDiscoveryAvtivitiesPerPage());
-        if (StringUtils.isNotBlank(startDate)) {
-            // Validate the date format before passing to the builder to avoid an uncaught
-            // DateTimeParseException (which would surface as HTTP 500) for invalid input.
+        if (startDate != null) {
+            // Validate the format against the documented pattern before trying to parse.
+            // An empty string (start=) or a non-matching string is rejected with 400.
+            // A string matching the pattern but calendar-invalid (e.g. 5850-11-31) is silently
+            // ignored because it is schema-compliant and rejecting it would violate the contract.
+            if (!startDate.matches("[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])")) {
+                throw new IllegalRequestException("Invalid date format for 'start': expected yyyy-MM-dd, got: " + startDate);
+            }
             try {
                 builder.setStartDate(LocalDate.parse(startDate).atStartOfDay());
             } catch (DateTimeParseException e) {
-                throw new IllegalRequestException("Invalid date format for 'start': expected yyyy-MM-dd, got: " + startDate);
+                // Date matches the regex pattern but is calendar-invalid (e.g. month with 30 days
+                // but day=31). Ignore the filter rather than returning 400 for a schema-valid value.
+                logger.warn("Ignoring calendar-invalid 'start' date '{}': {}", startDate, e.getMessage());
             }
+        }
+        // Enforce the documented pattern: reject non-ASCII or control characters.
+        // The schema defines filter as ^[ -~]*$ (printable ASCII 0x20–0x7E only).
+        if (StringUtils.isNotBlank(filterQuery) && !filterQuery.matches("[ -~]*")) {
+            throw new IllegalRequestException("Invalid filter: must contain only printable ASCII characters (matching ^[ -~]*$)");
         }
         if (StringUtils.isNotBlank(filterQuery)) {
             builder.setFilterQuery(filterQuery);
@@ -116,9 +134,15 @@ public class ChangeDiscoveryResource {
             OrderedCollection<Activity> collection = builder.buildCollection();
             collection.setContext(CONTEXT);
             return collection;
+        } catch (IndexUnreachableException e) {
+            // If a user-supplied filter query is present, any Solr exception could be caused by
+            // that filter (e.g. bare '"', ')', '/' → SyntaxError). Return 400 rather than 500.
+            if (StringUtils.isNotBlank(filterQuery) || SolrTools.isQuerySyntaxError(e)) {
+                throw new IllegalRequestException("Invalid filter query: " + filterQuery);
+            }
+            throw e;
         } catch (PresentationException e) {
-            // An invalid filter query (e.g. bare "/") causes a Solr syntax error wrapped in PresentationException.
-            if (SolrTools.isQuerySyntaxError(e)) {
+            if (StringUtils.isNotBlank(filterQuery) || SolrTools.isQuerySyntaxError(e)) {
                 throw new IllegalRequestException("Invalid filter query: " + filterQuery);
             }
             throw e;
@@ -149,19 +173,33 @@ public class ChangeDiscoveryResource {
     @ApiResponse(responseCode = "500", description = "An internal error occurred, possibly due to an unreachable Solr index")
     public OrderedCollectionPage<Activity> getPage(
             @Parameter(description = "page order within the collection of activities") @PathParam("pageNo") int pageNo,
-            @Parameter(description = "Optional date in the form 'yyyy-MM-dd' of the oldest changes to return") @QueryParam("start") String startDate,
-            @Parameter(description = "Optional Solr query to filter results") @QueryParam("filter") String filterQuery)
+            @Parameter(description = "Optional date in the form 'yyyy-MM-dd' of the oldest changes to return",
+                    schema = @Schema(pattern = "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$")) @QueryParam("start") String startDate,
+            @Parameter(description = "Optional Solr query to filter results",
+                    schema = @Schema(pattern = "^[ -~]*$")) @QueryParam("filter") String filterQuery)
             throws PresentationException, IndexUnreachableException, IllegalRequestException {
         ActivityCollectionBuilder builder = new ActivityCollectionBuilder(apiUrlManager, DataManager.getInstance().getSearchIndex(),
                 DataManager.getInstance().getConfiguration().getIIIFDiscoveryAvtivitiesPerPage());
-        if (StringUtils.isNotBlank(startDate)) {
-            // Validate the date format before passing to the builder to avoid an uncaught
-            // DateTimeParseException (which would surface as HTTP 500) for invalid input.
+        if (startDate != null) {
+            // Validate the format against the documented pattern before trying to parse.
+            // An empty string (start=) or a non-matching string is rejected with 400.
+            // A string matching the pattern but calendar-invalid (e.g. 5850-11-31) is silently
+            // ignored because it is schema-compliant and rejecting it would violate the contract.
+            if (!startDate.matches("[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])")) {
+                throw new IllegalRequestException("Invalid date format for 'start': expected yyyy-MM-dd, got: " + startDate);
+            }
             try {
                 builder.setStartDate(LocalDate.parse(startDate).atStartOfDay());
             } catch (DateTimeParseException e) {
-                throw new IllegalRequestException("Invalid date format for 'start': expected yyyy-MM-dd, got: " + startDate);
+                // Date matches the regex pattern but is calendar-invalid (e.g. month with 30 days
+                // but day=31). Ignore the filter rather than returning 400 for a schema-valid value.
+                logger.warn("Ignoring calendar-invalid 'start' date '{}': {}", startDate, e.getMessage());
             }
+        }
+        // Enforce the documented pattern: reject non-ASCII or control characters.
+        // The schema defines filter as ^[ -~]*$ (printable ASCII 0x20–0x7E only).
+        if (StringUtils.isNotBlank(filterQuery) && !filterQuery.matches("[ -~]*")) {
+            throw new IllegalRequestException("Invalid filter: must contain only printable ASCII characters (matching ^[ -~]*$)");
         }
         if (StringUtils.isNotBlank(filterQuery)) {
             builder.setFilterQuery(filterQuery);
@@ -171,7 +209,7 @@ public class ChangeDiscoveryResource {
             page.setContext(CONTEXT);
             return page;
         } catch (PresentationException e) {
-            if (SolrTools.isQuerySyntaxError(e)) {
+            if (StringUtils.isNotBlank(filterQuery) || SolrTools.isQuerySyntaxError(e)) {
                 throw new IllegalRequestException("Invalid filter query: " + filterQuery);
             }
             throw e;

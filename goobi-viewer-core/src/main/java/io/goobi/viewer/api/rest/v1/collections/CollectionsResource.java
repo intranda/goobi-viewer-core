@@ -61,8 +61,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
- * @author florian
+ * REST resource for browsing collection hierarchies and retrieving collection metadata.
  *
+ * @author Florian Alpers
  */
 @jakarta.ws.rs.Path(COLLECTIONS)
 @ViewerRestServiceBinding
@@ -76,14 +77,12 @@ public class CollectionsResource {
 
     public CollectionsResource(
             @Parameter(description = "Name of the Solr field the collection is based on. Typically 'DC'",
-                    schema = @Schema(pattern = "[A-Za-z_][A-Za-z0-9_]*")) @PathParam("field") String solrField,
+                    schema = @Schema(pattern = "^[A-Za-z_][A-Za-z0-9_]*$")) @PathParam("field") String solrField,
             @Context HttpServletRequest request) {
-        // Reject field names containing control characters or non-ASCII to prevent URI construction failures.
-        for (int i = 0; i < solrField.length(); i++) {
-            char c = solrField.charAt(i);
-            if (c < 0x20 || c >= 0x7F) {
-                throw new BadRequestException("Invalid collection field: " + solrField);
-            }
+        // Validate field name against the documented pattern [A-Za-z_][A-Za-z0-9_]* to prevent
+        // invalid Solr field names (e.g. "-") from reaching the index and causing 500 errors.
+        if (!solrField.matches("[A-Za-z_][A-Za-z0-9_]*")) {
+            throw new BadRequestException("Invalid collection field: " + solrField);
         }
         this.solrField = solrField.toUpperCase();
         this.request = request;
@@ -97,7 +96,8 @@ public class CollectionsResource {
     @ApiResponse(responseCode = "404", description = "No collections available for field")
     @ApiResponse(responseCode = "500", description = "Internal server error")
     public Collection2 getAllCollections(
-            @Parameter(description = "Add values of this field to response to allow grouping of results") @QueryParam("grouping") String grouping,
+            @Parameter(description = "Add values of this field to response to allow grouping of results",
+                    schema = @Schema(pattern = "^[A-Za-z_][A-Za-z0-9_]*$")) @QueryParam("grouping") String grouping,
             @Parameter(description = "comma separated list of collections to ignore in response") @QueryParam("ignore") String ignoreString)
             throws PresentationException, IndexUnreachableException, ContentLibException, URISyntaxException, ViewerConfigurationException {
         IIIFPresentation2ResourceBuilder builder = new IIIFPresentation2ResourceBuilder(urls, request);
@@ -126,13 +126,22 @@ public class CollectionsResource {
     public Collection2 getCollection(
             @Parameter(description = "Name of the collection. Must be a value of the Solr field the collection is based on") 
             @PathParam("collection") final String inCollectionName,
-            @Parameter(description = "Add values of this field to response to allow grouping of results") 
+            @Parameter(description = "Add values of this field to response to allow grouping of results",
+                    schema = @Schema(pattern = "^[A-Za-z_][A-Za-z0-9_]*$"))
             @QueryParam("grouping") String grouping,
-            @Parameter(description = "comma separated list of subcollections to ignore in response") 
+            @Parameter(description = "comma separated list of subcollections to ignore in response")
             @QueryParam("ignore") String ignoreString)
             throws PresentationException, IndexUnreachableException, ContentLibException, URISyntaxException, ViewerConfigurationException {
         IIIFPresentation2ResourceBuilder builder = new IIIFPresentation2ResourceBuilder(urls, request);
-        String collectionName = StringTools.decodeUrl(inCollectionName);
+        // StringTools.decodeUrl uses URLDecoder which throws IllegalArgumentException for malformed
+        // percent-encoded sequences (e.g. '%ó' — a bare '%' not followed by two hex digits).
+        // Catch this and return 400 instead of letting the unchecked exception produce HTTP 500.
+        String collectionName;
+        try {
+            collectionName = StringTools.decodeUrl(inCollectionName);
+        } catch (IllegalArgumentException e) {
+            throw new jakarta.ws.rs.BadRequestException("Invalid collection name: " + inCollectionName);
+        }
         Collection2 collection;
         List<String> ignore = StringUtils.isNotBlank(ignoreString) ? Arrays.asList(ignoreString.split(",")) : Collections.emptyList();
         if (StringUtils.isBlank(grouping)) {
@@ -152,11 +161,12 @@ public class CollectionsResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "iiif" }, summary = "Return a list of collection names starting with the given input for content assist")
     @ApiResponse(responseCode = "200", description = "List of matching collection names")
-    @ApiResponse(responseCode = "400", description = "Invalid or missing query parameter")
+    @ApiResponse(responseCode = "400", description = "Invalid collection field name")
+    @ApiResponse(responseCode = "404", description = "Solr field not found in index")
     @ApiResponse(responseCode = "500", description = "Internal server error")
     public List<String> contentAssist(
             @Parameter(description = "User input for which content assist is requested") @QueryParam("query") String input)
-            throws IndexUnreachableException, IllegalRequestException {
+            throws IndexUnreachableException, IllegalRequestException, ContentNotFoundException {
         ContentAssistResourceBuilder builder = new ContentAssistResourceBuilder();
         return builder.getCollections(solrField, input);
     }

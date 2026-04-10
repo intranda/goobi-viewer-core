@@ -24,6 +24,10 @@ package io.goobi.viewer.api.rest.model;
 import io.goobi.viewer.api.rest.model.tasks.TaskParameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+/**
+ * Request parameters for the {@code PRERENDER_PDF} task, specifying the record identifier,
+ * an optional ContentServer configuration variant, and whether existing PDF files should be overwritten.
+ */
 @Schema(name = "PrerenderPdfsRequestParameters", description = "additional parameters to prerender single page pdfs", requiredProperties = { "pi" })
 public class PrerenderPdfsRequestParameters extends TaskParameter {
 

@@ -87,20 +87,18 @@ public class MetadataBean {
     /**
      * Required setter for ManagedProperty injection.
      *
-     * @param activeDocumentBean the activeDocumentBean to set
+     * @param activeDocumentBean the ActiveDocumentBean instance to inject
      */
     public void setActiveDocumentBean(ActiveDocumentBean activeDocumentBean) {
         this.activeDocumentBean = activeDocumentBean;
     }
 
     /**
-     * <p>
      * loadMetadata.
-     * </p>
      *
-     * @param index
-     * @param locale
-     * @return a {@link java.lang.String} object.
+     * @param index Metadata view index to load
+     * @param locale Locale used for translating metadata values
+     * @return navigation outcome string for the metadata view
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -155,12 +153,10 @@ public class MetadataBean {
     }
 
     /**
-     * <p>
      * Getter for the field <code>metadataElementList</code>.
-     * </p>
      *
-     * @param index
-     * @return the metadataElementList
+     * @param index Metadata view index to retrieve
+     * @return the list of metadata elements for the given view index
      */
     public List<MetadataElement> getMetadataElementList(int index) {
         return getMetadataElementList(index, false);
@@ -197,7 +193,7 @@ public class MetadataBean {
     /**
      * Returns given {@link MetadataElement}s as an {@link ArrayList}. Used for supplying a custom list of elements for the metadata sidebar widget.
      * 
-     * @param elements
+     * @param elements Vararg metadata elements to wrap in a list
      * @return List<MetadataElement>
      * @should return empty list given null
      * @should return given elements as list
@@ -211,12 +207,10 @@ public class MetadataBean {
     }
 
     /**
-     * <p>
      * getTopMetadataElement.
-     * </p>
      *
      * @param index Metadata view index
-     * @return a {@link io.goobi.viewer.model.metadata.MetadataElement} object.
+     * @return the top MetadataElement at the given view index, or null if none is available
      */
     public MetadataElement getTopMetadataElement(int index) {
         List<MetadataElement> metadataElementList = getMetadataElementList(index);
@@ -231,8 +225,8 @@ public class MetadataBean {
      * The main metadata element is the first element which isn't an anchor if any such elements are in the metadata element list. Otherwise it is
      * just the first (anchor) metadata element
      * 
-     * @param index
-     * @return a {@link MetadataElement} object
+     * @param index Metadata view index to retrieve
+     * @return the main MetadataElement (first non-anchor) for the given view index, or null if none is available
      */
     public MetadataElement getMainMetadataElement(int index) {
         List<MetadataElement> metadataElementList = getMetadataElementList(index);
@@ -250,7 +244,7 @@ public class MetadataBean {
      * times per page
      *
      * @param metadataViewIndex Metadata view index
-     * @return a {@link io.goobi.viewer.model.metadata.MetadataElement} object.
+     * @return the bottom MetadataElement with sidebar metadata for the given view index, or null if none is available
      */
     public MetadataElement getBottomMetadataElement(int metadataViewIndex) {
         List<MetadataElement> metadataElementList = getMetadataElementList(metadataViewIndex);
@@ -268,8 +262,7 @@ public class MetadataBean {
 
     /**
      * 
-     * 
-     * @param metadataViewIndex
+     * @param metadataViewIndex Metadata view index to retrieve
      * @return List<MetadataElement>
      * @should return empty list if bottom element missing
      * @should return empty list if bottom element contains no sidebar metadata
@@ -313,44 +306,36 @@ public class MetadataBean {
     }
 
     /**
-     * <p>
      * Getter for the field <code>events</code>.
-     * </p>
      *
-     * @return the events
+     * @return the list of LIDO event elements for the current record
      */
     public List<EventElement> getEvents() {
         return events;
     }
 
     /**
-     * <p>
      * Setter for the field <code>events</code>.
-     * </p>
      *
-     * @param events the events to set
+     * @param events LIDO event elements to display
      */
     public void setEvents(List<EventElement> events) {
         this.events = events;
     }
 
     /**
-     * <p>
      * displayChildStructs.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if child structural elements should be displayed in the metadata view, false otherwise
      */
     public boolean displayChildStructs() {
         return true;
     }
 
     /**
-     * <p>
      * setSelectedRecordLanguage.
-     * </p>
      *
-     * @param selectedRecordLanguage a {@link java.lang.String} object.
+     * @param selectedRecordLanguage ISO language code to use for multi-language fields
      */
     public void setSelectedRecordLanguage(String selectedRecordLanguage) {
         for (Entry<Integer, List<MetadataElement>> entry : metadataElementMap.entrySet()) {
@@ -369,15 +354,13 @@ public class MetadataBean {
         return DataManager.getInstance().getConfiguration().getMetadataViews();
     }
 
-    /**
-     * @return the metadataViewUrl
-     */
+    
     public String getMetadataViewUrl() {
         return metadataViewUrl;
     }
 
     /**
-     * @param metadataViewUrl the metadataViewUrl to set
+     * @param metadataViewUrl URL segment identifying the metadata view to activate
      */
     public void setMetadataViewUrl(String metadataViewUrl) {
         logger.debug("setMetadataViewUrl({})", metadataViewUrl);
@@ -425,15 +408,13 @@ public class MetadataBean {
         activeMetadataView = null;
     }
 
-    /**
-     * @return the activeMetadataView
-     */
+    
     public MetadataView getActiveMetadataView() {
         return activeMetadataView;
     }
 
     /**
-     * @param activeMetadataView the activeMetadataView to set
+     * @param activeMetadataView metadata view configuration to make active
      */
     public void setActiveMetadataView(MetadataView activeMetadataView) {
         this.activeMetadataView = activeMetadataView;
@@ -441,7 +422,7 @@ public class MetadataBean {
 
     /**
      * 
-     * @param fields
+     * @param fields Vararg Solr field names to convert to a list
      * @return Given strings as List<String>
      */
     public List<String> getComplexMetadataFieldsToList(String... fields) {
@@ -502,7 +483,7 @@ public class MetadataBean {
     }
 
     /**
-     * Returns the first {@link String} values for <code>subFieldName</code> of a grouped metadata field <code>mainFieldName</code>
+     * Returns the first {@link String} values for <code>subFieldName</code> of a grouped metadata field <code>mainFieldName</code>.
      * 
      * @param metadataViewIndex Index of the requested metadataView where the requested metadata is configured
      * @param mainFieldName Main metadata field
@@ -520,7 +501,7 @@ public class MetadataBean {
     }
 
     /**
-     * Returns a list of {@link String} values for <code>subFieldName</code> of a grouped metadata field <code>mainFieldName</code>
+     * Returns a list of {@link String} values for <code>subFieldName</code> of a grouped metadata field <code>mainFieldName</code>.
      * 
      * @param metadataViewIndex Index of the requested metadataView where the requested metadata is configured
      * @param mainFieldName Main metadata field
@@ -581,7 +562,7 @@ public class MetadataBean {
     /**
      * Getter for unit tests.
      * 
-     * @return the metadataElementMap
+
      */
     Map<Integer, List<MetadataElement>> getMetadataElementMap() {
         return metadataElementMap;

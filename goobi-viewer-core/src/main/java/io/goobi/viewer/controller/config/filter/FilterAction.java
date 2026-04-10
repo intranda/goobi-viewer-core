@@ -31,11 +31,11 @@ import org.apache.commons.lang3.StringUtils;
  */
 public enum FilterAction {
     /**
-     * Block objects meeting a filter's condition
+     * Block objects meeting a filter's condition.
      */
     HIDE,
     /**
-     * Pass objects meeting a filter's condition
+     * Pass objects meeting a filter's condition.
      */
     SHOW;
 

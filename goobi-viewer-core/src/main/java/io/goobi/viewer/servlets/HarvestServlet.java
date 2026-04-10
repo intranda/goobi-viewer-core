@@ -66,9 +66,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
     private static final String ERROR_DB = "Database error";
 
     /**
-     * <p>
-     * Constructor for HarvestServlet.
-     * </p>
+     * Creates a new HarvestServlet instance.
      *
      * @see HttpServlet#HttpServlet()
      */
@@ -492,13 +490,11 @@ public class HarvestServlet extends HttpServlet implements Serializable {
     }
 
     /**
-     * <p>
      * convertToJSON.
-     * </p>
      *
-     * @param totalCount a long.
-     * @param objects a {@link java.util.List} object.
-     * @return a {@link org.json.JSONArray} object.
+     * @param totalCount total number of matching records
+     * @param objects harvestable items to serialize
+     * @return a JSON array with the total count as first element followed by one object per harvestable item
      */
     protected static JSONArray convertToJSON(long totalCount, List<? extends Harvestable> objects) {
         JSONArray jsonArray = new JSONArray();

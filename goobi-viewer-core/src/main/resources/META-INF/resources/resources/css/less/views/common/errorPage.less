@@ -1,10 +1,10 @@
 /* ==============================================================
-   Error App
+   Error Page
    style declarations for error.xhtml (application errors)
    ==============================================================*/
-/* ERROR APP */
+/* ERROR CARD */
 /* BLOCK */
-.view-error-app {
+.view-error-card {
     border: 1px solid #ccc;
     border-radius: 3px;
     background: #fff;
@@ -75,30 +75,35 @@
 }
 
 /* DARK MODE (triggered by viewer theme toggle) */
-.color-theme-dark .view-error-app {
+.color-theme-dark .view-error-card {
     background: #253044;
     color: #e3e4e7;
-    border-right-color: rgba(255, 255, 255, 0.15);
-    border-bottom-color: rgba(255, 255, 255, 0.15);
-    border-left-color: rgba(255, 255, 255, 0.15);
-    .view-error-app__title {
+    border-color: transparent;
+    border-radius: 3px;
+    &.view-error-card--warning {
+        border-top-color: @yellowBar;
+    }
+    &.view-error-card--danger {
+        border-top-color: @redBar;
+    }
+    .view-error-card__title {
         color: #e3e4e7;
     }
-    .view-error-app__message {
+    .view-error-card__message {
         color: #d8d9dd;
         a {
             color: #93c5fd;
         }
     }
-    .view-error-app__divider {
-        border-top-color: rgba(255, 255, 255, 0.15);
+    .view-error-card__divider {
+        border-top-color: transparent;
     }
-    .view-error-app__details-label {
+    .view-error-card__details-label {
         color: #d8d9dd;
     }
-    .view-error-app__details-block {
+    .view-error-card__details-block {
         background: #000e29;
-        border-color: rgba(255, 255, 255, 0.15);
+        border-color: transparent;
         color: #e3e4e7;
     }
 }
@@ -113,7 +118,7 @@
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
-    .view-error-app {
+    .view-error-card {
         padding: 1.5rem;
         &__title {
             font-size: @fontLarge;
@@ -123,7 +128,7 @@
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
-    .view-error-app {
+    .view-error-card {
         padding: 1.2rem;
         &__title {
             font-size: @fontNormal;

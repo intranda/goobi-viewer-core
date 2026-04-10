@@ -37,9 +37,7 @@ import io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement;
 import io.goobi.viewer.model.viewer.collections.SimpleBrowseElementInfo;
 
 /**
- * <p>
- * CompoundLabeledLink class.
- * </p>
+ * A labeled link composed of a primary and a secondary link component.
  *
  * @author Florian Alpers
  */
@@ -53,14 +51,12 @@ public class CompoundLabeledLink extends LabeledLink {
     protected final List<String> hierarchy;
 
     /**
-     * <p>
-     * Constructor for CompoundLabeledLink.
-     * </p>
+     * Creates a new CompoundLabeledLink instance.
      *
-     * @param name a {@link java.lang.String} object.
-     * @param url a {@link java.lang.String} object.
-     * @param weight a int.
-     * @param field a {@link java.lang.String} object.
+     * @param name display label for the link
+     * @param url target URL for the link
+     * @param weight sort weight of the link
+     * @param field Solr field name for the collection
      */
     public CompoundLabeledLink(String name, String url, String field, int weight) {
         super(name, url, weight);
@@ -69,15 +65,13 @@ public class CompoundLabeledLink extends LabeledLink {
     }
 
     /**
-     * <p>
-     * Constructor for CompoundLabeledLink.
-     * </p>
+     * Creates a new CompoundLabeledLink instance.
      *
-     * @param name a {@link java.lang.String} object.
-     * @param url a {@link java.lang.String} object.
-     * @param field a {@link java.lang.String} object.
-     * @param hierarchy a {@link java.util.List} object.
-     * @param weight a int.
+     * @param name display label for the link
+     * @param url target URL for the link
+     * @param field Solr field name for the collection
+     * @param hierarchy ordered list of ancestor collection names
+     * @param weight sort weight of the link
      */
     public CompoundLabeledLink(String name, String url, String field, List<String> hierarchy, int weight) {
         super(name, url, weight);
@@ -86,9 +80,7 @@ public class CompoundLabeledLink extends LabeledLink {
     }
 
     /**
-     * <p>
      * getSubLinks.
-     * </p>
      *
      * @return List of labeled links, one for each hierarchy level
      */

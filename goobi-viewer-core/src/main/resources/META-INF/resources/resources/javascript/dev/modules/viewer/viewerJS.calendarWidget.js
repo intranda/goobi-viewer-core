@@ -23,7 +23,7 @@
  */
 var viewerJS = (function (viewer) {
     'use strict';
- 
+
     viewer.calendarWidget = {
         /**
          * Initialize the calendar widget.
@@ -33,7 +33,7 @@ var viewerJS = (function (viewer) {
          * @param {string} config.currentYear - Year to display initially
          * @param {string} [config.locale] - Locale string (e.g. 'de')
          * @param {string} [config.appUrl] - Application base URL
-         * @param {string} [config.currentLogId] - LogId of the currently viewed issue
+         * @param {string} [config.currentIssueDate] - ISO date (YYYY-MM-DD) of the currently viewed issue
          * @returns {Object|null} State object with destroy() method, or null if config invalid
          */
         init: function (config) {
@@ -46,7 +46,7 @@ var viewerJS = (function (viewer) {
                 config: config,
                 dateEntriesMap: {},
                 calendarInstance: null,
-                currentIssueDate: null,
+                currentIssueDate: config.currentIssueDate || null,
                 activePopover: null,
                 popoverTrigger: null,
                 boundOnDocClick: null,
@@ -161,7 +161,6 @@ var viewerJS = (function (viewer) {
     }
 
     function _fetchYearData(state, year) {
-        state.currentIssueDate = null;
         var url = state.config.appUrl + 'api/v1/records/' + state.config.anchorPi + '/calendar/' + year;
 
         return fetch(url)
@@ -178,11 +177,7 @@ var viewerJS = (function (viewer) {
                         dates.push(entry.date);
                     }
                     var entryUrl = state.config.appUrl + entry.url.replace(/^\//, '');
-                    var logId = entry.url.split('/').filter(Boolean).pop();
-                    state.dateEntriesMap[entry.date].push({ label: entry.label, url: entryUrl, logId: logId });
-                    if (logId === state.config.currentLogId) {
-                        state.currentIssueDate = entry.date;
-                    }
+                    state.dateEntriesMap[entry.date].push({ label: entry.label, url: entryUrl, date: entry.date });
                 });
                 return dates;
             })
@@ -288,7 +283,7 @@ var viewerJS = (function (viewer) {
             var link = document.createElement('a');
             link.href = entry.url;
             link.className = 'widget-calendar__popover-item';
-            if (entry.logId === state.config.currentLogId) {
+            if (entry.date === state.currentIssueDate) {
                 link.classList.add('-active-');
                 link.setAttribute('aria-current', 'page');
             }

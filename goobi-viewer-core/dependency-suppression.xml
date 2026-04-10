@@ -164,6 +164,18 @@
     </suppress>
 
 
+    <!-- CVE-2025-48734 is matched against rewrite-config-prettyfaces because its JAR contains an embedded
+         pom.xml referencing commons-beanutils 1.9.4 as metadata. The actual commons-beanutils runtime
+         dependency is provided by ICS at 1.11.0 (fixed version); this is a scanner false positive. -->
+    <suppress>
+        <notes><![CDATA[
+        file name: rewrite-config-prettyfaces-10.0.2.Final.jar - embedded pom.xml references commons-beanutils 1.9.4 as metadata only, not a runtime dependency
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/commons\-beanutils/commons\-beanutils@1\.9\.4$</packageUrl>
+        <cve>CVE-2025-48734</cve>
+    </suppress>
+
+
     <!-- ZooKeeper 3.9.4 is a transitive dependency of solr-solrj-zookeeper and cannot be upgraded
          independently without risking incompatibility with the Solr client. To be re-evaluated when
          Solr ships a version that includes a fixed ZooKeeper release. -->

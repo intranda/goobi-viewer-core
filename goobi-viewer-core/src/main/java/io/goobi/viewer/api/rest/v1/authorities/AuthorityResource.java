@@ -62,10 +62,9 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 
 /**
- * Resolver for normdata authority resources identified by their escaped url.
+ * REST resource for resolving authority records and retrieving metadata from linked data sources.
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 @jakarta.ws.rs.Path(AUTHORITY)
 @ViewerRestServiceBinding
@@ -204,8 +203,8 @@ public class AuthorityResource {
 
     /**
      * 
-     * @param normData
-     * @param locale
+     * @param normData normdata entry containing key and values
+     * @param locale locale for translating field keys
      * @return {@link JSONObject}
      */
     static JSONObject addNormDataValuesToJSON(NormData normData, Locale locale) {

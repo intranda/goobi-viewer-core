@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.configuration2.HierarchicalConfiguration;
 import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.logging.log4j.LogManager;
@@ -60,6 +61,8 @@ import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.maps.GeomapItemFilter;
 import io.goobi.viewer.model.metadata.Metadata;
+import io.goobi.viewer.model.metadata.MetadataListElement;
+import io.goobi.viewer.model.metadata.MetadataListSeparator;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
@@ -613,6 +616,15 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getPageLoaderThreshold_shouldReturnCorrectValue() {
         assertEquals(1000, DataManager.getInstance().getConfiguration().getPageLoaderThreshold());
+    }
+
+    /**
+     * @see Configuration#getDataRepositoryCacheTTL()
+     * @verifies return correct value
+     */
+    @Test
+    void getDataRepositoryCacheTTL_shouldReturnCorrectValue() {
+        assertEquals(10, DataManager.getInstance().getConfiguration().getDataRepositoryCacheTTL());
     }
 
     /**
@@ -1872,6 +1884,19 @@ class ConfigurationTest extends AbstractTest {
         assertEquals("views", result.get(0));
         assertEquals("copyright", result.get(1));
         assertEquals("search-in-current-item", result.get(2));
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetsForView(String)
+     * @verifies fall back to view name prefix if no exact match found
+     */
+    @Test
+    void getSidebarWidgetsForView_shouldFallBackToViewNamePrefixIfNoExactMatchFound() {
+        // "metadata_codicological" has no explicit sidebar config, should fall back to "metadata"
+        List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetsForView("metadata_codicological");
+        assertEquals(2, result.size());
+        assertEquals("views", result.get(0));
+        assertEquals("copyright", result.get(1));
     }
 
     /**
@@ -3771,5 +3796,24 @@ class ConfigurationTest extends AbstractTest {
         assertEquals("testinsitution", url0Header.get("accountId"));
         assertEquals("Wobblewock", url0Header.get("x-api-key"));
         assertEquals("Bearer $SYS(DNB_DOWNLOAD_KEY)", url0Header.get("Authorization"));
+    }
+
+    @Test
+    void test_getMainMetadataListItemsForTemplate() {
+        List<MetadataListElement> items = DataManager.getInstance().getConfiguration().getMainMetadataListItemsForTemplate(0, "_DEFAULT");
+        List<Metadata> metadata = DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(0, "_DEFAULT");
+
+        assertEquals(items.size() - 1, metadata.size());
+
+        List<Metadata> metadataFromItems = items.stream().filter(item -> item instanceof Metadata).map(item -> (Metadata) item).toList();
+
+        assertTrue(CollectionUtils.isEqualCollection(metadata, metadataFromItems));
+
+        MetadataListSeparator fold =
+                items.stream().filter(item -> item instanceof MetadataListSeparator).map(item -> (MetadataListSeparator) item).findAny().orElse(null);
+
+        assertNotNull(fold);
+        assertEquals(4, items.indexOf(fold));
+
     }
 }

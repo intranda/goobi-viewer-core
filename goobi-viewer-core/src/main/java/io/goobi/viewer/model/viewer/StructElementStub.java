@@ -74,7 +74,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     protected boolean volume = false;
     /** True if this element represents a CMS page. */
     protected boolean cmsPage = false;
-    /** Number of contained volumes (anchors only) */
+    /** Number of contained volumes (anchors only). */
     protected long numVolumes = 0;
     /** Volume label of this element (only for records that are part of a multi-volume record). */
     protected String volumeNo = null;
@@ -94,20 +94,16 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     protected Map<String, List<String>> metadataFields = new HashMap<>();
 
     /**
-     * <p>
-     * Constructor for StructElementStub.
-     * </p>
+     * Creates a new StructElementStub instance.
      */
     public StructElementStub() {
         this.luceneId = UUID.randomUUID().toString();
     }
 
     /**
-     * <p>
-     * Constructor for StructElementStub.
-     * </p>
+     * Creates a new StructElementStub instance.
      *
-     * @param luceneId a long.
+     * @param luceneId IDDOC of the Solr document for this element
      */
     public StructElementStub(String luceneId) {
         this.luceneId = luceneId;
@@ -120,11 +116,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>
      * getDisplayLabel.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the best available display label (LABEL, TITLE, or docstruct type) for this element
      */
     public String getDisplayLabel() {
         String localLabel = getMetadataValue(SolrConstants.LABEL);
@@ -142,133 +136,107 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>
      * isWork.
-     * </p>
      *
-     * @return the work
+     * @return true if this element represents a top-level work record, false otherwise
      */
     public boolean isWork() {
         return work;
     }
 
     /**
-     * <p>
      * Setter for the field <code>work</code>.
-     * </p>
      *
-     * @param work the work to set
+     * @param work true if this element represents a top-level work record
      */
     public void setWork(boolean work) {
         this.work = work;
     }
 
     /**
-     * <p>
      * isAnchor.
-     * </p>
      *
-     * @return the anchor
+     * @return true if this element represents a multi-volume anchor record, false otherwise
      */
     public boolean isAnchor() {
         return anchor;
     }
 
     /**
-     * <p>
      * Setter for the field <code>anchor</code>.
-     * </p>
      *
-     * @param anchor the anchor to set
+     * @param anchor true if this element represents a multi-volume anchor record
      */
     public void setAnchor(boolean anchor) {
         this.anchor = anchor;
     }
 
     /**
-     * <p>
      * isVolume.
-     * </p>
      *
-     * @return the volume
+     * @return true if this element represents a volume within a multi-volume work, false otherwise
      */
     public boolean isVolume() {
         return volume;
     }
 
     /**
-     * <p>
      * Setter for the field <code>volume</code>.
-     * </p>
      *
-     * @param volume the volume to set
+     * @param volume true if this element represents a volume within a multi-volume work
      */
     public void setVolume(boolean volume) {
         this.volume = volume;
     }
 
-    /**
-     * @return the cmsPage
-     */
+    
     public boolean isCmsPage() {
         return cmsPage;
     }
 
-    /**
-     * @param cmsPage the cmsPage to set
-     */
+    
     public void setCmsPage(boolean cmsPage) {
         this.cmsPage = cmsPage;
     }
 
     /**
-     * <p>
      * Getter for the field <code>numVolumes</code>.
-     * </p>
      *
-     * @return the numVolumes
+     * @return the number of volumes contained in this anchor record
      */
     public long getNumVolumes() {
         return numVolumes;
     }
 
     /**
-     * <p>
      * isGroup.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this struct element stub represents a group record (DocType GROUP), false otherwise
      */
     public boolean isGroup() {
         return DocType.GROUP.equals(docType);
     }
 
     /**
-     * <p>
      * Getter for the field <code>pi</code>.
-     * </p>
      *
-     * @return the pi
+     * @return the persistent identifier of the record
      */
     public String getPi() {
         return pi;
     }
 
     /**
-     * <p>
      * Setter for the field <code>pi</code>.
-     * </p>
      *
-     * @param pi the pi to set
+     * @param pi the persistent identifier of the record
      */
     public void setPi(String pi) {
         this.pi = pi;
     }
 
     /**
-     * <p>
      * Getter for the field <code>luceneId</code>.
-     * </p>
      *
      * @return a long.
      */
@@ -277,135 +245,109 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>
      * Getter for the field <code>logid</code>.
-     * </p>
      *
-     * @return the logid
+     * @return the logical structure identifier from the source document
      */
     public String getLogid() {
         return logid;
     }
 
     /**
-     * <p>
      * Setter for the field <code>logid</code>.
-     * </p>
      *
-     * @param logid the logid to set
+     * @param logid the logical structure identifier from the source document
      */
     public void setLogid(String logid) {
         this.logid = logid;
     }
 
     /**
-     * <p>
      * Getter for the field <code>docStructType</code>.
-     * </p>
      *
-     * @return the docStructType
+     * @return the document structure type (e.g. Monograph, Chapter)
      */
     public String getDocStructType() {
         return docStructType;
     }
 
     /**
-     * <p>
      * Setter for the field <code>docStructType</code>.
-     * </p>
      *
-     * @param docStructType the docStructType to set
+     * @param docStructType the document structure type (e.g. Monograph, Chapter)
      */
     public void setDocStructType(String docStructType) {
         this.docStructType = docStructType;
     }
 
-    /**
-     * @return the docType
-     */
+    
     public DocType getDocType() {
         return docType;
     }
 
-    /**
-     * @param docType the docType to set
-     */
+    
     public void setDocType(DocType docType) {
         this.docType = docType;
     }
 
     /**
-     * <p>
      * Getter for the field <code>imageNumber</code>.
-     * </p>
      *
-     * @return the imageNumber
+     * @return the representative image order number for this element
      */
     public int getImageNumber() {
         return imageNumber;
     }
 
     /**
-     * <p>
      * Setter for the field <code>imageNumber</code>.
-     * </p>
      *
-     * @param imageNumber the imageNumber to set
+     * @param imageNumber the representative image order number for this element
      */
     public void setImageNumber(int imageNumber) {
         this.imageNumber = imageNumber;
     }
 
     /**
-     * <p>
      * Getter for the field <code>volumeNo</code>.
-     * </p>
      *
-     * @return the volumeNo
+     * @return the volume number string within a multi-volume work
      */
     public String getVolumeNo() {
         return volumeNo;
     }
 
     /**
-     * <p>
      * Setter for the field <code>volumeNo</code>.
-     * </p>
      *
-     * @param volumeNo the volumeNo to set
+     * @param volumeNo the volume number string for sorting within a multi-volume work
      */
     public void setVolumeNo(String volumeNo) {
         this.volumeNo = volumeNo;
     }
 
     /**
-     * <p>
      * Getter for the field <code>volumeNoSort</code>.
-     * </p>
      *
-     * @return the volumeNoSort
+     * @return the sortable volume number string for ordering volumes
      */
     public String getVolumeNoSort() {
         return volumeNoSort;
     }
 
     /**
-     * <p>
      * Setter for the field <code>volumeNoSort</code>.
-     * </p>
      *
-     * @param volumeNoSort the volumeNoSort to set
+     * @param volumeNoSort the sortable volume number string for ordering volumes
      */
     public void setVolumeNoSort(String volumeNoSort) {
         this.volumeNoSort = volumeNoSort;
     }
 
     /**
-     * <p>
      * getUrl.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the viewer URL for this struct element using the appropriate page type
      */
     public String getUrl() {
         PageType pageType = PageType.determinePageType(docStructType, null, anchor || isGroup(), isHasImages(), false);
@@ -421,7 +363,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Returns a URL to this element (but for the metadata view).
      *
-     * @return a {@link java.lang.String} object.
+     * @return the viewer URL for this struct element in the metadata view
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public String getMetadataUrl() throws PresentationException {
@@ -429,12 +371,10 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>
      * getUrl.
-     * </p>
      *
-     * @param pageTypeName a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param pageTypeName name of the target page type
+     * @return the viewer URL for this struct element pointing to the named page type
      */
     public String getUrl(String pageTypeName) {
         PageType pageType = PageType.getByName(pageTypeName);
@@ -445,12 +385,10 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>
      * getUrl.
-     * </p>
      *
-     * @param pageType a {@link io.goobi.viewer.model.viewer.PageType} object.
-     * @return a {@link java.lang.String} object.
+     * @param pageType target viewer page type
+     * @return the viewer URL for this struct element pointing to the given page type
      */
     public String getUrl(final PageType pageType) {
         PageType usePageType = pageType;
@@ -469,11 +407,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>
      * isLidoRecord.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this record was imported from a LIDO source document, false otherwise
      */
     public boolean isLidoRecord() {
         return SolrConstants.SOURCEDOCFORMAT_LIDO.equals(sourceDocFormat);
@@ -515,44 +451,36 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>
      * Getter for the field <code>partnerId</code>.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the partner identifier associated with this struct element
      */
     public String getPartnerId() {
         return partnerId;
     }
 
     /**
-     * <p>
      * Setter for the field <code>partnerId</code>.
-     * </p>
      *
-     * @param partnerId a {@link java.lang.String} object.
+     * @param partnerId identifier of the partner institution
      */
     public void setPartnerId(String partnerId) {
         this.partnerId = partnerId;
     }
 
     /**
-     * <p>
      * Getter for the field <code>sourceDocFormat</code>.
-     * </p>
      *
-     * @return the sourceDocFormat
+     * @return the format of the source document (e.g. METS, LIDO)
      */
     public String getSourceDocFormat() {
         return sourceDocFormat;
     }
 
     /**
-     * <p>
      * Setter for the field <code>sourceDocFormat</code>.
-     * </p>
      *
-     * @param sourceDocFormat the sourceDocFormat to set
+     * @param sourceDocFormat the format of the source document (e.g. METS, LIDO)
      */
     public void setSourceDocFormat(String sourceDocFormat) {
         // logger.trace("setSourceDocFormat: {}", sourceDocFormat);  //NOSONAR Debug
@@ -560,11 +488,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>
      * Getter for the field <code>label</code>.
-     * </p>
      *
-     * @return the label
+     * @return the display label (title) of this structural element
      */
     public String getLabel() {
         return getLabel(null);
@@ -573,7 +499,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Returns a language specific version of MD_TITLE, if available. If not available or if locale is null, the regular label is returned.
      *
-     * @param language a {@link java.lang.String} object.
+     * @param language ISO 639-1 language code, or null for default label
      * @return Locale-specific version of MD_TITLE if requested and found; label otherwise
      * @should return locale specific title if so requested
      * @should return label if no locale specific title found
@@ -592,55 +518,45 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>
      * Setter for the field <code>label</code>.
-     * </p>
      *
-     * @param label the label to set
+     * @param label the display label (title) of this structural element
      */
     public void setLabel(String label) {
         this.label = label;
     }
 
     /**
-     * <p>
      * Getter for the field <code>dataRepository</code>.
-     * </p>
      *
-     * @return the dataRepository
+     * @return the data repository name where this record's files are stored
      */
     public String getDataRepository() {
         return dataRepository;
     }
 
     /**
-     * <p>
      * Setter for the field <code>dataRepository</code>.
-     * </p>
      *
-     * @param dataRepository the dataRepository to set
+     * @param dataRepository the data repository name where this record's files are stored
      */
     public void setDataRepository(String dataRepository) {
         this.dataRepository = dataRepository;
     }
 
     /**
-     * <p>
      * Getter for the field <code>metadataFields</code>.
-     * </p>
      *
-     * @return the metadataFields
+     * @return map of Solr field names to their indexed values for this element
      */
     public Map<String, List<String>> getMetadataFields() {
         return metadataFields;
     }
 
     /**
-     * <p>
      * Setter for the field <code>metadataFields</code>.
-     * </p>
      *
-     * @param metadataFields the metadataFields to set
+     * @param metadataFields map of Solr field names to their indexed values for this element
      */
     public void setMetadataFields(Map<String, List<String>> metadataFields) {
         this.metadataFields = metadataFields;
@@ -652,7 +568,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      *
      * @param fieldName Solr field name
      * @param language ISO 639-1 language code
-     * @return a {@link java.lang.String} object.
+     * @return the first metadata value for the language-specific Solr field, falling back to the generic field
      */
     public String getMetadataValueForLanguage(String fieldName, String language) {
         if (StringUtils.isNotEmpty(language)) {
@@ -669,7 +585,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      * Returns the first metadata value for the given field name.
      *
      * @param fieldName Solr field name.
-     * @return a {@link java.lang.String} object.
+     * @return the first metadata value for the given Solr field name, or null if not found
      */
     public String getMetadataValue(String fieldName) {
         List<String> values = getMetadataValues(fieldName);
@@ -685,8 +601,8 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Returns all metadata values for the given field name.
      *
-     * @param fieldName Field Name of Lucene
-     * @return a {@link java.util.List} object.
+     * @param fieldName Solr field name to look up
+     * @return a list of all metadata values stored under the given Solr field name
      */
     public List<String> getMetadataValues(String fieldName) {
         List<String> values = metadataFields.get(fieldName);
@@ -700,11 +616,11 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * Generates a ContextObject (for a COinS <span> element) containing metadata from this <code>StructElement</code>.
+     * Generates a ContextObject (for a COinS &lt;span&gt; element) containing metadata from this <code>StructElement</code>.
      *
-     * @param currentUrl a {@link java.lang.String} object.
+     * @param currentUrl URL of the current page, appended as rft.id
      * @param topStruct StructElementStub representing the top structure element.
-     * @return a {@link java.lang.String} object.
+     * @return the COinS context object string for embedding bibliographic metadata in a &lt;span&gt; element
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @should generate string element correctly
      * @should return unknown format if topstruct null
@@ -776,12 +692,10 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>
      * getMultiLanguageMetadataValue.
-     * </p>
      *
-     * @param fieldName a {@link java.lang.String} object.
-     * @return a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
+     * @param fieldName Solr field name to retrieve values for
+     * @return the multilingual metadata value aggregated from all language variants of the given field
      */
     public IMetadataValue getMultiLanguageMetadataValue(String fieldName) {
         List<String> fieldNames = this.getMetadataFields()
@@ -808,15 +722,13 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>
      * getKEVForField.
-     * </p>
      *
-     * @param se a {@link io.goobi.viewer.model.viewer.StructElementStub} object.
-     * @param solrField a {@link java.lang.String} object.
-     * @param targetField a {@link java.lang.String} object.
-     * @param prefix a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param se struct element to read the field value from
+     * @param solrField Solr source field name to read
+     * @param targetField KEV key name in the output string
+     * @param prefix string to prepend before the key-value pair
+     * @return a KEV (Key-Encoded Value) formatted string for the given Solr field, or an empty string if the field has no value
      */
     public static String getKEVForField(StructElementStub se, String solrField, String targetField, String prefix) {
         if (se == null) {

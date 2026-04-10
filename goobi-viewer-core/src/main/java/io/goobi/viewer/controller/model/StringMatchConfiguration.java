@@ -30,10 +30,9 @@ import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * A matcher read from a configuration node which matches strings based on certain criteria
+ * A matcher read from a configuration node which matches strings based on certain criteria.
  * 
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class StringMatchConfiguration implements Predicate<String> {
 
@@ -42,10 +41,10 @@ public class StringMatchConfiguration implements Predicate<String> {
     private final List<String> allowedValues;
 
     /**
-     * 
-     * @param includeRegex
-     * @param excludeRegex
-     * @param allowedValues
+     *
+     * @param includeRegex regex a string must match to be accepted; blank means no restriction
+     * @param excludeRegex regex a string must not match to be accepted; blank means no restriction
+     * @param allowedValues explicit list of accepted values; empty means no restriction
      */
     public StringMatchConfiguration(String includeRegex, String excludeRegex, List<String> allowedValues) {
         this.includeRegex = includeRegex;
@@ -54,25 +53,25 @@ public class StringMatchConfiguration implements Predicate<String> {
     }
 
     /**
-     * 
-     * @param allowedValues
+     *
+     * @param allowedValues explicit list of accepted values; no regex filtering applied
      */
     public StringMatchConfiguration(List<String> allowedValues) {
         this("", "", allowedValues);
     }
 
     /**
-     * 
-     * @param includeRegex
-     * @param excludeRegex
+     *
+     * @param includeRegex regex a string must match to be accepted; blank means no restriction
+     * @param excludeRegex regex a string must not match to be accepted; blank means no restriction
      */
     public StringMatchConfiguration(String includeRegex, String excludeRegex) {
         this(includeRegex, excludeRegex, Collections.emptyList());
     }
 
     /**
-     * 
-     * @param includeRegex
+     *
+     * @param includeRegex regex a string must match to be accepted; blank means no restriction
      */
     public StringMatchConfiguration(String includeRegex) {
         this(includeRegex, "", Collections.emptyList());
@@ -89,7 +88,7 @@ public class StringMatchConfiguration implements Predicate<String> {
 
     /**
      * 
-     * @param config
+     * @param config configuration node containing regex and allowed-values sub-elements
      * @return {@link StringMatchConfiguration}
      */
     public static StringMatchConfiguration fromConfig(HierarchicalConfiguration<ImmutableNode> config) {

@@ -50,8 +50,7 @@ import io.goobi.viewer.solr.SolrSearchIndex;
  * the indexing progress and deletes the {@link DailySessionUsageStatistics} for each day once a STATISTICS_USAGE document exists in the index for
  * that day. Should run in its own thread
  * 
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class StatisticsIndexTask {
 
@@ -65,7 +64,7 @@ public class StatisticsIndexTask {
     private final SolrSearchIndex solrIndex;
 
     /**
-     * Default constructor
+     * Default constructor.
      * 
      * @param dao the DAO from which to collect the usage statistics
      * @param indexer the {@link StatisticsIndexer} to use for indexing
@@ -78,7 +77,7 @@ public class StatisticsIndexTask {
     }
 
     /**
-     * Constructor using instances from {@link DataManager}
+     * Constructor using instances from {@link DataManager}.
      * 
      * @throws DAOException
      */
@@ -89,7 +88,7 @@ public class StatisticsIndexTask {
     }
 
     /**
-     * Start the indexint
+     * Starts the indexint.
      * 
      * @throws DAOException
      * @throws IOException

@@ -30,9 +30,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 /**
- * An Annotation class to store annotation in a database
+ * An Annotation class to store annotation in a database.
  *
- * @author florian
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "annotations_crowdsourcing")
@@ -40,25 +40,23 @@ public class CrowdsourcingAnnotation extends PersistentAnnotation {
 
     public static final Set<String> VALID_COLUMNS_FOR_ORDER_BY = new HashSet<>(Arrays.asList("id", "dateCreated", "dateModified"));
 
-    /**
-     *
-     */
+    
     public CrowdsourcingAnnotation() {
         super();
     }
 
     /**
-     * @param source
+     * @param source persistent annotation to copy from
      */
     public CrowdsourcingAnnotation(PersistentAnnotation source) {
         super(source);
     }
 
     /**
-     * @param source
-     * @param id
-     * @param targetPI
-     * @param targetPage
+     * @param source abstract annotation to copy from
+     * @param id database id for the new annotation
+     * @param targetPI persistent identifier of the target record
+     * @param targetPage target page number within the record
      */
     public CrowdsourcingAnnotation(AbstractAnnotation source, Long id, String targetPI, Integer targetPage) {
         super(source, id, targetPI, targetPage);

@@ -24,45 +24,37 @@ package io.goobi.viewer.api.rest.model.ner;
 import java.util.List;
 
 /**
- * <p>
- * TagGroup interface.
- * </p>
+ * Common interface for NER result containers that group {@link TagCount} entries by page scope — either a single page ({@link PageReference})
+ * or a contiguous page range ({@link MultiPageReference}).
+ * Extends {@link Comparable} so that groups can be sorted by page order.
  */
 public interface TagGroup extends Comparable<TagGroup> {
 
     /**
-     * <p>
      * getPageOrder.
-     * </p>
      *
      * @return the page order of the first (or only) page in this group
      */
     public Integer getPageOrder();
 
     /**
-     * <p>
      * getPages.
-     * </p>
      *
      * @return the number of pages in this group
      */
     public int getPages();
 
     /**
-     * <p>
      * addTags.
-     * </p>
      *
-     * @param tags a {@link java.util.List} object.
+     * @param tags list of tag counts to add to this group
      */
     public void addTags(List<TagCount> tags);
 
     /**
-     * <p>
      * getTags.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of NER tag counts contained in this group
      */
     public List<TagCount> getTags();
 }

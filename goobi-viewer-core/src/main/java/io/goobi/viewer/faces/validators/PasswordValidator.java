@@ -45,9 +45,6 @@ public class PasswordValidator implements Validator<String> {
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(PasswordValidator.class);
 
-    /* (non-Javadoc)
-     * @see jakarta.faces.validator.Validator#validate(jakarta.faces.context.FacesContext, jakarta.faces.component.UIComponent, java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {
@@ -59,17 +56,15 @@ public class PasswordValidator implements Validator<String> {
     }
 
     /**
-     * <p>
      * validatePassword.
-     * </p>
      *
-     * @param password a {@link java.lang.String} object.
+     * @param password plain-text password to validate for length constraints
      * @should return true if password good
      * @should return false if password empty
      * @should return false if password blank
      * @should return false if password too short
      * @should return false if password too long
-     * @return a boolean.
+     * @return true if the given password is empty (no update) or meets the length requirements, false otherwise
      */
     public static boolean validatePassword(String password) {
         /**

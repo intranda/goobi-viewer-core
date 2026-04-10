@@ -292,7 +292,7 @@
 
             <script>
                 <!--  JUMP TO LAST SAVED FOCUS ELEMENT -->
-                if (sessionStorage.getItem('focusElement') != null) {
+                if (sessionStorage.getItem('focusElement')) {
                     var lastFocusElement = sessionStorage.getItem('focusElement');
                     var lastFocusElementEscaped = lastFocusElement.replace(/:/g, '\\:');
                     $('#' + lastFocusElementEscaped).focus();
@@ -303,7 +303,10 @@
         <script>
             // REMEMBER FOCUS AFTER AJAX FUNCTIONALITY //
             $(document).on('focus', 'button, a', function () {
-                sessionStorage.setItem('focusElement', this.id);
+                // Only store id if the element actually has one, to prevent empty selectors later
+                if (this.id) {
+                    sessionStorage.setItem('focusElement', this.id);
+                }
             });
 
             // REMOVE TOOLTIPS AFTER AJAX ONCE SO IT IS NOT STUCK ON SCREEN BECAUSE COLLAPSE ALL BUTTON IDENTITY IS DESTROYED DUE TO THE CALL

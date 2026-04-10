@@ -85,9 +85,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
- * <p>
- * AuthenticationEndpoint class.
- * </p>
+ * REST endpoint handling user authentication, login/logout flows, and OAuth-based API token management.
  */
 @Path(ApiUrls.AUTH)
 public class AuthenticationEndpoint {
@@ -110,13 +108,11 @@ public class AuthenticationEndpoint {
     private static Future<Boolean> redirected = null;
 
     /**
-     * <p>
      * authenticateUser.
-     * </p>
      *
-     * @param email a {@link java.lang.String} object.
-     * @param password a {@link java.lang.String} object.
-     * @return a {@link jakarta.ws.rs.core.Response} object.
+     * @param email user email address for authentication
+     * @param password user password for authentication
+     * @return the HTTP response containing the authentication token on success, or a 403/500 status on failure
      */
     @POST
     @Produces(MediaType.APPLICATION_JSON)
@@ -148,8 +144,8 @@ public class AuthenticationEndpoint {
 
     /**
      *
-     * @param email
-     * @param password
+     * @param email user email address
+     * @param password user password
      * @throws AuthenticationException
      * @throws DAOException
      */
@@ -162,7 +158,7 @@ public class AuthenticationEndpoint {
 
     /**
      *
-     * @param email
+     * @param email user email address
      * @return email
      */
     private static String issueToken(String email) {
@@ -174,8 +170,8 @@ public class AuthenticationEndpoint {
     }
 
     /**
-     * 
-     * @param redirectUrl
+     *
+     * @param redirectUrl optional URL to redirect to after login
      * @return {@link Response}
      * @should return status 403 if redirectUrl external
      * @should return status 403 if no httpHeader type provider configured
@@ -269,11 +265,11 @@ public class AuthenticationEndpoint {
     }
 
     /**
-     * 
-     * @param error
-     * @param authCode
-     * @param accessToken
-     * @param state
+     *
+     * @param error error code returned by the OpenID provider on failure
+     * @param authCode authorization code from the OpenID provider
+     * @param accessToken ID token passed directly by the provider
+     * @param state state value to match against the registered provider
      * @return {@link Response}
      * @throws IOException
      */
@@ -295,33 +291,43 @@ public class AuthenticationEndpoint {
     }
 
     /**
-     * 
-     * @param error
-     * @param authCode
-     * @param state
+     * OpenID Connect POST callback. Parameters are read from the request body via
+     * {@link jakarta.servlet.http.HttpServletRequest#getParameter(String)} to avoid
+     * Jersey throwing {@link IllegalStateException} when Content-Type is absent.
+     *
      * @return {@link Response}
      * @throws IOException
      */
     @POST
     @Path(ApiUrls.AUTH_OAUTH)
+    // @Consumes documents the expected content type for OpenID Connect POST callbacks.
+    // Parameters are read via HttpServletRequest.getParameter() instead of @FormParam to avoid
+    // Jersey throwing IllegalStateException when the request has no Content-Type header
+    // (e.g. automated tools like schemathesis that omit the header).
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Operation(summary = "OpenID Connect callback (POST method)", description = "Verifies an openID claim and starts a session for the user")
     @ApiResponse(responseCode = "200", description = "OK")
     @ApiResponse(responseCode = "400", description = "Bad request")
     @ApiResponse(responseCode = "403", description = "Forbidden - OpenID authentication failed or denied")
     @ApiResponse(responseCode = "500", description = "Internal error")
     @Tag(name = "login")
-    public Response openIdLoginPOST(@FormParam("error") String error, @FormParam("code") String authCode, @FormParam("state") String state)
-            throws IOException {
+    public Response openIdLoginPOST() throws IOException {
         logger.trace("openIdLoginPOST");
+        // Read parameters via the injected HttpServletRequest rather than @FormParam.
+        // @FormParam triggers IllegalStateException in Jersey when Content-Type is missing or wrong,
+        // which propagates as HTTP 500. getParameter() is lenient and returns null safely.
+        String error = servletRequest.getParameter("error");
+        String authCode = servletRequest.getParameter("code");
+        String state = servletRequest.getParameter("state");
         return openIdLogin(state, error, authCode, null);
     }
 
     /**
-     * 
-     * @param state
-     * @param error
-     * @param authCode
-     * @param accessToken
+     *
+     * @param state state value to match against the registered OpenID provider
+     * @param error error code returned by the OpenID provider on failure
+     * @param authCode authorization code from the OpenID provider
+     * @param accessToken ID token passed directly by the provider, or null
      * @return {@link Response}
      * @throws IOException
      */
@@ -428,14 +434,21 @@ public class AuthenticationEndpoint {
     }
 
     /**
-     * 
-     * @param token
-     * @param jwksUri
-     * @param issuer
+     *
+     * @param token encoded JWT ID token to verify
+     * @param jwksUri URL of the JWKS endpoint for public key retrieval
+     * @param issuer expected issuer claim value
      * @return {@link DecodedJWT}
      */
     static DecodedJWT verifyOpenIdToken(String token, String jwksUri, String issuer) {
         // logger.trace(token);
+        // Guard against missing JWKS URI, which can happen if neither jwksUri attribute is configured
+        // nor the OpenID discovery endpoint was reachable/returned a jwks_uri value
+        if (jwksUri == null) {
+            logger.error("Cannot verify OpenID token: JWKS URI is not configured for this provider."
+                    + " Please set the jwksUri attribute or ensure the discoveryUri is reachable and returns a jwks_uri.");
+            return null;
+        }
         RSAKeyProvider keyProvider = null;
         try {
             final JwkProvider provider = new UrlJwkProvider(new URI(jwksUri).toURL());

@@ -41,12 +41,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
- * Return basic information about cms pages. Used for sliders
+ * REST resource for retrieving CMS page content and metadata.
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
-
 @Hidden
 @jakarta.ws.rs.Path("/cms/pages/{pageId}")
 @ViewerRestServiceBinding

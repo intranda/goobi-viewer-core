@@ -31,24 +31,25 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 
+/**
+ * A {@link TranslationGroupItem} whose keys are Solr field names, resolved either as a literal
+ * field name or as a regular expression matched against all known Solr fields.
+ */
 public class SolrFieldNameTranslationGroupItem extends TranslationGroupItem {
 
-    /** Logger for this class */
+    /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(SolrFieldNameTranslationGroupItem.class);
 
     /**
      * Protected constructor.
      *
-     * @param key
-     * @param regex
+     * @param key the Solr field name or pattern
+     * @param regex whether the key is a regular expression
      */
     protected SolrFieldNameTranslationGroupItem(String key, boolean regex) {
         super(key, regex);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.admin.TranslationGroupItem#loadEntries()
-     */
     @Override
     protected void loadEntries() throws IndexUnreachableException {
         List<String> keys;

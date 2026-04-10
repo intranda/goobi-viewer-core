@@ -24,9 +24,7 @@ package io.goobi.viewer.model.calendar;
 import java.io.Serializable;
 
 /**
- * <p>
- * CalendarItemDay class.
- * </p>
+ * Calendar browsing item representing a single day.
  */
 public class CalendarItemDay extends AbstractCalendarItem implements Serializable {
 
@@ -39,79 +37,65 @@ public class CalendarItemDay extends AbstractCalendarItem implements Serializabl
     private String dayOfWeek;
 
     /**
-     * <p>
-     * Constructor for CalendarItemDay.
-     * </p>
+     * Creates a new CalendarItemDay instance.
      *
-     * @param name a {@link java.lang.String} object.
-     * @param value a int.
-     * @param hits a int.
+     * @param name display label for the day
+     * @param value numeric day value (1–31)
+     * @param hits number of search hits for this day
      */
     public CalendarItemDay(String name, int value, int hits) {
         super(name, value, hits);
     }
 
     /**
-     * <p>
      * Getter for the field <code>query</code>.
-     * </p>
      *
-     * @return the query
+     * @return the Solr query string used to retrieve hits for this calendar day
      */
     public String getQuery() {
         return query;
     }
 
     /**
-     * <p>
      * Setter for the field <code>query</code>.
-     * </p>
      *
-     * @param query the query to set
+     * @param query the Solr query string used to retrieve hits for this calendar day
      */
     public void setQuery(String query) {
         this.query = query;
     }
 
     /**
-     * <p>
      * Getter for the field <code>singleResultUrl</code>.
-     * </p>
      *
-     * @return the singleResultUrl
+     * @return the URL to navigate to when exactly one hit exists for this calendar day
      */
     public String getSingleResultUrl() {
         return singleResultUrl;
     }
 
     /**
-     * <p>
      * Setter for the field <code>singleResultUrl</code>.
-     * </p>
      *
-     * @param singleResultUrl the singleResultUrl to set
+     * @param singleResultUrl the URL to navigate to when exactly one hit exists for this day
      */
     public void setSingleResultUrl(String singleResultUrl) {
         this.singleResultUrl = singleResultUrl;
     }
 
     /**
-     * <p>
      * Getter for the field <code>dayOfWeek</code>.
-     * </p>
      *
-     * @return the dayOfWeek
+     * @return the localised name of the day of the week (e.g. "Monday")
      */
     public String getDayOfWeek() {
         return dayOfWeek;
     }
 
     /**
-     * <p>
      * Setter for the field <code>dayOfWeek</code>.
-     * </p>
      *
-     * @param dayOfWeek the dayOfWeek to set
+     * @param dayOfWeek the localised name of the day of the week (e.g. "Monday")
      */
     public void setDayOfWeek(String dayOfWeek) {
         this.dayOfWeek = dayOfWeek;

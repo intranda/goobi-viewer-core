@@ -44,6 +44,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.iiif.presentation.v3.builder.RangeBuilder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -55,8 +56,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 @jakarta.ws.rs.Path(RECORDS_SECTIONS)
 @ViewerRestServiceBinding
@@ -87,6 +87,9 @@ public class RecordSectionsResource {
     @jakarta.ws.rs.Path(RECORDS_SECTIONS_RANGE)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "IIIF 3.0 range of the section")
+    @ApiResponse(responseCode = "200", description = "IIIF 3.0 range for the given section")
+    @ApiResponse(responseCode = "403", description = "Record found but access is restricted")
+    @ApiResponse(responseCode = "404", description = "Record or section not found")
     @IIIFPresentationBinding
     public Range3 getRange()
             throws IndexUnreachableException, URISyntaxException, ViewerConfigurationException,

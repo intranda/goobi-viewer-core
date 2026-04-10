@@ -58,14 +58,11 @@ var viewerJS = (function (viewer) {
                 part: 'Teil',
                 fileSize: 'Größe',
             },
-            reCaptchaText:
-                'Um die Generierung von Dokumenten durch Suchmaschinen zu verhindern bestätigen Sie bitte das reCAPTCHA.',
+            reCaptchaText: 'Um die Generierung von Dokumenten durch Suchmaschinen zu verhindern bestätigen Sie bitte das reCAPTCHA.',
             rcInvalid: 'Die Überprüfung war nicht erfolgreich. Bitte bestätigen Sie die reCAPTCHA Anfrage.',
             rcValid: 'Vielen Dank. Sie können nun ihre ausgewählte Datei generieren lassen.',
-            eMailText:
-                'Um per E-Mail informiert zu werden sobald der Download zur Verfügung steht, können Sie hier optional Ihre E-Mail Adresse hinterlassen',
-            eMailTextLoggedIn:
-                'Sie werden über Ihre registrierte E-Mail Adresse von uns über den Fortschritt des Downloads informiert.',
+            eMailText: 'Um per E-Mail informiert zu werden sobald der Download zur Verfügung steht, können Sie hier optional Ihre E-Mail Adresse hinterlassen',
+            eMailTextLoggedIn: 'Sie werden über Ihre registrierte E-Mail Adresse von uns über den Fortschritt des Downloads informiert.',
             eMail: '',
         },
     };
@@ -195,14 +192,10 @@ var viewerJS = (function (viewer) {
                     var rcWidget = grecaptcha.render('reCaptchaWrapper', {
                         sitekey: _defaults.reCaptchaSiteKey,
                         callback: function () {
-                            var rcWidgetResponse = viewer.downloadModal.validateReCaptcha(
-                                grecaptcha.getResponse(rcWidget)
-                            );
+                            var rcWidgetResponse = viewer.downloadModal.validateReCaptcha(grecaptcha.getResponse(rcWidget));
 
                             if (rcWidgetResponse) {
-                                $('#modalAlerts').append(
-                                    viewer.helper.renderAlert('alert-success', _defaults.messages.rcValid, true)
-                                );
+                                $('#modalAlerts').append(viewer.helper.renderAlert('alert-success', _defaults.messages.rcValid, true));
 
                                 // enable submit button
                                 $('#submitModal')
@@ -223,9 +216,7 @@ var viewerJS = (function (viewer) {
                                             .then((response) => (window.location.href = response.url));
                                     });
                             } else {
-                                $('#modalAlerts').append(
-                                    viewer.helper.renderAlert('alert-danger', _defaults.messages.rcInvalid, true)
-                                );
+                                $('#modalAlerts').append(viewer.helper.renderAlert('alert-danger', _defaults.messages.rcInvalid, true));
                             }
                         },
                     });
@@ -239,13 +230,7 @@ var viewerJS = (function (viewer) {
                         .on('click', function () {
                             _defaults.userEmail = $('#recallEMail').val();
 
-                            _defaults.apiUrl = viewer.downloadModal.buildAPICall(
-                                _defaults.path,
-                                _defaults.dataType,
-                                _defaults.dataPi,
-                                _defaults.dataId,
-                                _defaults.userEmail
-                            );
+                            _defaults.apiUrl = viewer.downloadModal.buildAPICall(_defaults.path, _defaults.dataType, _defaults.dataPi, _defaults.dataId, _defaults.userEmail);
 
                             fetch(_defaults.apiUrl, { method: 'PUT' })
                                 .then((response) => response.json())
@@ -284,7 +269,7 @@ var viewerJS = (function (viewer) {
                 modalBody += '<h3 class="modal__title">';
                 modalBody +=
                     '<span class="icon-wrapper modal__title-icon" aria-hidden="true">' +
-                    '<svg class="icon" focusable="false"><use href="' +
+                    '<svg class="icon-svg" focusable="false"><use href="' +
                     _defaults.path +
                     'resources/icons/outline/file-type-pdf.svg#icon"></use></svg>' +
                     '</span>PDF-Download: ';
@@ -293,7 +278,7 @@ var viewerJS = (function (viewer) {
                 modalBody += '<h3 class="modal__title">';
                 modalBody +=
                     '<span class="icon-wrapper modal__title-icon" aria-hidden="true">' +
-                    '<svg class="icon" focusable="false"><use href="' +
+                    '<svg class="icon-svg" focusable="false"><use href="' +
                     _defaults.path +
                     'resources/icons/outline/file-text.svg#icon"></use></svg>' +
                     '</span>ePub-Download: ';
@@ -327,10 +312,7 @@ var viewerJS = (function (viewer) {
             modalBody += '<label for="recallEMail">' + _defaults.messages.eMail + '</label>';
             if (_defaults.userEmail != undefined) {
                 modalBody += '<p class="help-block">' + _defaults.messages.eMailTextLoggedIn + '</p>';
-                modalBody +=
-                    '<input type="email" class="form-control" id="recallEMail" value="' +
-                    _defaults.userEmail +
-                    '" disabled="disabled" />';
+                modalBody += '<input type="email" class="form-control" id="recallEMail" value="' + _defaults.userEmail + '" disabled="disabled" />';
             } else {
                 modalBody += '<p class="help-block">' + _defaults.messages.eMailText + ':</p>';
                 modalBody += '<input type="email" class="form-control" id="recallEMail" />';

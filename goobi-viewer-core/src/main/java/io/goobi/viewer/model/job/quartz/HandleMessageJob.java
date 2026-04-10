@@ -36,10 +36,9 @@ import io.goobi.viewer.model.job.ITaskType;
 import io.goobi.viewer.model.job.TaskType;
 
 /**
- * Cronjob
+ * Cronjob.
  * 
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class HandleMessageJob extends AbstractViewerJob implements IViewerJob, Job {
 

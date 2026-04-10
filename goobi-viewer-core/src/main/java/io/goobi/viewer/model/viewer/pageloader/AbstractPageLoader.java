@@ -53,9 +53,7 @@ import io.goobi.viewer.solr.SolrTools;
 import jakarta.faces.model.SelectItem;
 
 /**
- * <p>
- * Abstract AbstractPageLoader class.
- * </p>
+ * Abstract base class for page loaders that retrieve page metadata for a digitized record from the index.
  */
 public abstract class AbstractPageLoader implements IPageLoader {
 
@@ -141,7 +139,7 @@ public abstract class AbstractPageLoader implements IPageLoader {
 
     /**
      * 
-     * @param topStructElement
+     * @param topStructElement top-level structure element of the record
      * @param pageNosToLoad List of page numbers to load; empty list means all pages
      * @param forceEagerLoading set to true to ensure an {@link EagerPageLoader} is used
      * @return Appropriate page loader implementation for the given record topStructElement
@@ -163,11 +161,11 @@ public abstract class AbstractPageLoader implements IPageLoader {
     /**
      * Replaces the static variable placeholders (the ones that don't change depending on the page) of the given label format with values.
      *
-     * @param format a {@link java.lang.String} object.
-     * @param locale a {@link java.util.Locale} object.
+     * @param format label format string with placeholders such as {numpages}
+     * @param locale locale used to resolve message key placeholders
      * @should replace numpages correctly
      * @should replace message keys correctly
-     * @return a {@link java.lang.String} object.
+     * @return the label format string with static placeholders resolved
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     protected String buildPageLabelTemplate(String format, Locale locale) throws IndexUnreachableException {
@@ -185,13 +183,11 @@ public abstract class AbstractPageLoader implements IPageLoader {
     }
 
     /**
-     * <p>
      * loadPage.
-     * </p>
      *
-     * @param topElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @param page a int.
-     * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @param topElement top-level struct element of the record
+     * @param page page order number to load
+     * @return the PhysicalElement at the given page order, or null if the record has no pages
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -229,9 +225,7 @@ public abstract class AbstractPageLoader implements IPageLoader {
     }
 
     /**
-     * <p>
      * loadPageFromDoc.
-     * </p>
      *
      * @param doc Solr document from which to construct the page
      * @param pi Record identifier

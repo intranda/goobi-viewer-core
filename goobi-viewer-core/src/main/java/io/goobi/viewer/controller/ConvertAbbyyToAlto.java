@@ -43,9 +43,7 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 /**
- * <p>
- * ConvertAbbyyToAlto class.
- * </p>
+ * Utility class for converting ABBYY FineReader recognition output to ALTO XML format.
  */
 public class ConvertAbbyyToAlto {
 
@@ -73,12 +71,10 @@ public class ConvertAbbyyToAlto {
     private int pageBlockCount = 0;
 
     /**
-     * <p>
      * convert.
-     * </p>
      *
-     * @param input a {@link java.io.File} object.
-     * @return a {@link org.jdom2.Element} object.
+     * @param input ABBYY XML file to convert
+     * @return the root ALTO XML element produced from the ABBYY input file
      * @throws org.jdom2.JDOMException if any.
      * @throws java.io.IOException if any.
      */
@@ -98,12 +94,10 @@ public class ConvertAbbyyToAlto {
     }
 
     /**
-     * <p>
      * convert.
-     * </p>
      *
-     * @param abbyyDoc a {@link org.jdom2.Document} object.
-     * @return a {@link org.jdom2.Element} object.
+     * @param abbyyDoc parsed ABBYY XML document to convert
+     * @return the root ALTO XML element produced from the ABBYY document
      */
     public Element convert(Document abbyyDoc) {
         abbyy = abbyyDoc.getRootElement();
@@ -113,9 +107,9 @@ public class ConvertAbbyyToAlto {
     }
 
     /**
-     * Add ALTO Layout Element
-     * 
-     * @param alto
+     * Adds ALTO Layout Element.
+     *
+     * @param alto the ALTO root element to add the Layout to
      * @return {@link Element}
      */
     private Element addLayout(Element alto) {
@@ -138,9 +132,9 @@ public class ConvertAbbyyToAlto {
     }
 
     /**
-     * 
-     * @param abbyypage
-     * @param altopage
+     *
+     * @param abbyypage ABBYY page element to extract blocks from
+     * @param altopage ALTO page element to add the PrintSpace to
      */
     private void addPrintSpace(Element abbyypage, Element altopage) {
         List<Element> abbyyPageBlocks = abbyypage.getChildren("block", abbyyNamespace);
@@ -209,9 +203,9 @@ public class ConvertAbbyyToAlto {
     }
 
     /**
-     * 
-     * @param altoTextBlock
-     * @param abbyyPageBlock
+     *
+     * @param altoTextBlock ALTO TextBlock element to add text lines to
+     * @param abbyyPageBlock ABBYY block element containing text paragraphs
      */
     private void addTextBlocks(Element altoTextBlock, Element abbyyPageBlock) {
         List<Element> abbyyPars = new ArrayList<>();
@@ -255,9 +249,9 @@ public class ConvertAbbyyToAlto {
     }
 
     /**
-     * 
-     * @param altoTextBlock
-     * @param abbyyPageBlock
+     *
+     * @param altoTextBlock ALTO TextBlock element to add table content to
+     * @param abbyyPageBlock ABBYY block element containing table rows and cells
      */
     private void addTableBlocks(Element altoTextBlock, Element abbyyPageBlock) {
 
@@ -373,9 +367,9 @@ public class ConvertAbbyyToAlto {
     }
 
     /**
-     * 
-     * @param altoTextLine
-     * @param abbyyLine
+     *
+     * @param altoTextLine ALTO TextLine element to add String elements to
+     * @param abbyyLine ABBYY line element containing character parameters
      */
     private void addStrings(Element altoTextLine, Element abbyyLine) {
         List<Element> abbyyCharParams = getLineChildren(abbyyLine);
@@ -567,11 +561,9 @@ public class ConvertAbbyyToAlto {
     }
 
     /**
-     * <p>
      * main.
-     * </p>
      *
-     * @param args an array of {@link java.lang.String} objects.
+     * @param args command-line arguments: input path, output path
      * @throws java.io.IOException if any.
      * @throws org.jdom2.JDOMException if any.
      */
@@ -617,44 +609,36 @@ public class ConvertAbbyyToAlto {
     }
 
     /**
-     * <p>
      * Getter for the field <code>inputfilename</code>.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the name of the ABBYY input file
      */
     public String getInputfilename() {
         return inputfilename;
     }
 
     /**
-     * <p>
      * Setter for the field <code>inputfilename</code>.
-     * </p>
      *
-     * @param inputfilename a {@link java.lang.String} object.
+     * @param inputfilename name of the ABBYY input file
      */
     public void setInputfilename(String inputfilename) {
         this.inputfilename = inputfilename;
     }
 
     /**
-     * <p>
      * Getter for the field <code>creationtime</code>.
-     * </p>
      *
-     * @return a {@link java.time.LocalDateTime} object.
+     * @return the document creation timestamp embedded in the ALTO header
      */
     public LocalDateTime getCreationtime() {
         return creationtime;
     }
 
     /**
-     * <p>
      * Setter for the field <code>creationtime</code>.
-     * </p>
      *
-     * @param creationtime a {@link java.time.LocalDateTime} object.
+     * @param creationtime document creation timestamp to embed in ALTO header
      */
     public void setCreationtime(LocalDateTime creationtime) {
         this.creationtime = creationtime;

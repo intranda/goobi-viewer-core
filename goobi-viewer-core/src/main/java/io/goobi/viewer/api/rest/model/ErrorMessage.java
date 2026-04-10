@@ -24,9 +24,8 @@ package io.goobi.viewer.api.rest.model;
 import io.goobi.viewer.exceptions.RestApiException;
 
 /**
- * <p>
- * ErrorMessage class.
- * </p>
+ * REST API response model that carries an HTTP status code, a human-readable error description, and an optional stack trace.
+ * Implements {@link IResponseMessage} and is serialized as JSON for error responses.
  *
  * @author Florian Alpers
  */
@@ -43,12 +42,10 @@ public class ErrorMessage implements IResponseMessage {
     }
 
     /**
-     * <p>
-     * Constructor for ErrorMessage.
-     * </p>
+     * Creates a new ErrorMessage instance.
      *
-     * @param status a int.
-     * @param message a {@link java.lang.String} object.
+     * @param status HTTP status code of the error response
+     * @param message human-readable error description
      */
     public ErrorMessage(int status, String message) {
         super();
@@ -58,13 +55,11 @@ public class ErrorMessage implements IResponseMessage {
     }
 
     /**
-     * <p>
-     * Constructor for ErrorMessage.
-     * </p>
+     * Creates a new ErrorMessage instance.
      *
-     * @param status a int.
-     * @param message a {@link java.lang.String} object.
-     * @param stackTrace a {@link java.lang.String} object.
+     * @param status HTTP status code of the error response
+     * @param message human-readable error description
+     * @param stackTrace stack trace string for diagnostic purposes
      */
     public ErrorMessage(int status, String message, String stackTrace) {
         super();
@@ -74,11 +69,9 @@ public class ErrorMessage implements IResponseMessage {
     }
 
     /**
-     * <p>
-     * Constructor for ErrorMessage.
-     * </p>
+     * Creates a new ErrorMessage instance.
      *
-     * @param exception a {@link io.goobi.viewer.exceptions.RestApiException} object.
+     * @param exception REST API exception carrying status code and message
      */
     public ErrorMessage(RestApiException exception) {
         this.status = exception.getStatusCode();
@@ -88,22 +81,18 @@ public class ErrorMessage implements IResponseMessage {
     }
 
     /**
-     * <p>
      * Getter for the field <code>status</code>.
-     * </p>
      *
-     * @return the status
+     * @return the HTTP status code of this error response
      */
     public int getStatus() {
         return status;
     }
 
     /**
-     * <p>
      * Getter for the field <code>message</code>.
-     * </p>
      *
-     * @return the message
+     * @return the human-readable error description
      */
     @Override
     public String getMessage() {
@@ -111,11 +100,9 @@ public class ErrorMessage implements IResponseMessage {
     }
 
     /**
-     * <p>
      * Getter for the field <code>stackTrace</code>.
-     * </p>
      *
-     * @return the stackTrace
+     * @return the stack trace string for diagnostic purposes, or null if not set
      */
     public String getStackTrace() {
         return stackTrace;

@@ -1,4 +1,4 @@
-/**
+/*
  * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
  *
  * Visit these websites for more information.
@@ -16,8 +16,7 @@
 package io.goobi.viewer.model.job.download;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class AbstractTaskManagerRequest {
 
@@ -43,86 +42,62 @@ public class AbstractTaskManagerRequest {
         return type;
     }
 
-    /**
-     * @return the goobiId
-     */
+    
     public String getGoobiId() {
         return goobiId;
     }
 
-    /**
-     * @param goobiId the goobiId to set
-     */
+    
     public void setGoobiId(String goobiId) {
         this.goobiId = goobiId;
     }
 
-    /**
-     * @return the sourceDir
-     */
+    
     public String getSourceDir() {
         return sourceDir;
     }
 
-    /**
-     * @param sourceDir the sourceDir to set
-     */
+    
     public void setSourceDir(String sourceDir) {
         this.sourceDir = sourceDir;
     }
 
-    /**
-     * @return the targetDir
-     */
+    
     public String getTargetDir() {
         return targetDir;
     }
 
-    /**
-     * @param targetDir the targetDir to set
-     */
+    
     public void setTargetDir(String targetDir) {
         this.targetDir = targetDir;
     }
 
-    /**
-     * @return the pi
-     */
+    
     public String getPi() {
         return pi;
     }
 
-    /**
-     * @param pi the pi to set
-     */
+    
     public void setPi(String pi) {
         this.pi = pi;
     }
 
-    /**
-     * @return the logId
-     */
+    
     public String getLogId() {
         return logId;
     }
 
-    /**
-     * @param logId the logId to set
-     */
+    
     public void setLogId(String logId) {
         this.logId = logId;
     }
 
-    /**
-     * @return the language
-     */
+    
     public String getLanguage() {
         return language;
     }
 
-    /**
-     * @param language the language to set
-     */
+    
     public void setLanguage(String language) {
         this.language = language;
     }

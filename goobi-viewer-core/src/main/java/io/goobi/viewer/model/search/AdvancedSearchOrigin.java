@@ -23,7 +23,8 @@ package io.goobi.viewer.model.search;
 
 /**
  * Holds information about the record from which an advanced search was triggered (e.g. from the TOC view).
- * Used to provide a back-link to the originating record on the search results page.
+ *
+ * <p>Used to provide a back-link to the originating record on the search results page.
  */
 public class AdvancedSearchOrigin {
 
@@ -42,23 +43,17 @@ public class AdvancedSearchOrigin {
         this.docstrct = docstrct;
     }
 
-    /**
-     * @return the pi
-     */
+    
     public String getPi() {
         return pi;
     }
 
-    /**
-     * @return the label
-     */
+    
     public String getLabel() {
         return label;
     }
 
-    /**
-     * @return the docstrct
-     */
+    
     public String getDocstrct() {
         return docstrct;
     }

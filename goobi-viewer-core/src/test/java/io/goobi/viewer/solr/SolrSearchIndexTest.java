@@ -265,7 +265,7 @@ class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      */
     @Test
     void findDataRepositoryName_shouldReturnValueFromMapIfAvailable() throws Exception {
-        DataManager.getInstance().getSearchIndex().getDataRepositoryNames().put("PPN123", "superrepo");
+        DataManager.getInstance().getSearchIndex().updateDataRepositoryNames("PPN123", "superrepo");
         Assertions.assertEquals("superrepo", DataManager.getInstance().getSearchIndex().findDataRepositoryName("PPN123"));
     }
 

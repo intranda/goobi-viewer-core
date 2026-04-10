@@ -40,7 +40,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * An authentication provider using the local login provided by the viewer database
+ * An authentication provider using the local login provided by the viewer database.
  *
  * @author Florian Alpers
  */
@@ -49,7 +49,7 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(LocalAuthenticationProvider.class);
 
-    /** Constant <code>TYPE_LOCAL="local"</code> */
+    /** Constant <code>TYPE_LOCAL="local"</code>. */
     public static final String TYPE_LOCAL = "local";
     private final String name;
     protected List<String> addUserToGroups;
@@ -57,19 +57,14 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
     private BCrypt bcrypt = new BCrypt();
 
     /**
-     * <p>
-     * Constructor for LocalAuthenticationProvider.
-     * </p>
+     * Creates a new LocalAuthenticationProvider instance.
      *
-     * @param name a {@link java.lang.String} object.
+     * @param name display name of this provider instance
      */
     public LocalAuthenticationProvider(String name) {
         this.name = name;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#login()
-     */
     /** {@inheritDoc} */
     @Override
     public CompletableFuture<LoginResult> login(String email, String password) throws AuthenticationProviderException {
@@ -111,36 +106,24 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
         return CompletableFuture.completedFuture(new LoginResult(request, response, Optional.empty(), true));
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#logout()
-     */
     /** {@inheritDoc} */
     @Override
     public void logout() throws AuthenticationProviderException {
         //noop
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsPasswordChange()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean allowsPasswordChange() {
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#getProviderName()
-     */
     /** {@inheritDoc} */
     @Override
     public String getName() {
         return name;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#getType()
-     */
     /** {@inheritDoc} */
     @Override
     public String getType() {
@@ -148,44 +131,32 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
     }
 
     /**
-     * Set custom bcrypt for testing
+     * Set custom bcrypt for testing.
      *
-     * @param bcrypt the bcrypt to set
+
      */
     protected void setBcrypt(BCrypt bcrypt) {
         this.bcrypt = bcrypt;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsNicknameChange()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean allowsNicknameChange() {
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsEmailChange()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean allowsEmailChange() {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#getAddUserToGroups()
-     */
     /** {@inheritDoc} */
     @Override
     public List<String> getAddUserToGroups() {
         return addUserToGroups;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#setAddUserToGroups(java.util.List)
-     */
     /** {@inheritDoc} */
     @Override
     public void setAddUserToGroups(List<String> addUserToGroups) {

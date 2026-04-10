@@ -42,9 +42,6 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 @FacesValidator("piInSolrValidator")
 public class PIInSolrValidator implements Validator<String> {
 
-    /* (non-Javadoc)
-     * @see jakarta.faces.validator.Validator#validate(jakarta.faces.context.FacesContext, jakarta.faces.component.UIComponent, java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {
@@ -64,8 +61,8 @@ public class PIInSolrValidator implements Validator<String> {
     /**
      * Checks if the given pi matches a known PI in the solr index. If the pi is empty, true is returned to allow not setting any pi
      *
+     * @param pi persistent identifier to look up in the Solr index
      * @return false if no current collection is set, the pi does not match any known work
-     * @param pi a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @should return true if pi exists

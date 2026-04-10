@@ -46,9 +46,8 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
 
 /**
- * <p>
- * Forwards requests to IIIF image resources referencing a image number (Solr-field "ORDER") to a requests with the appropriate filename.
- * </p>
+ * JAX-RS request filter for IIIF Image Information API requests. Forwards requests referencing a page order number (Solr field {@code ORDER}) to the
+ * request with the appropriate filename resolved from the index.
  */
 @Provider
 @ContentServerImageInfoBinding
@@ -83,13 +82,11 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
     }
 
     /**
-     * <p>
      * forwardToCanonicalUrl.
-     * </p>
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param imageName a {@link java.lang.String} object.
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param pi persistent identifier of the record
+     * @param imageName numeric page order number to resolve to a filename
+     * @param request incoming HTTP request to update with resolved filename
      * @return the redirect URI if a redirect is needed, or null otherwise.
      * @throws java.io.IOException if any.
      */

@@ -41,9 +41,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * <p>
- * LanguageHelper class.
- * </p>
+ * Provides language metadata loaded from ISO 639 definitions for display and selection purposes.
  */
 public class LanguageHelper {
 
@@ -54,11 +52,9 @@ public class LanguageHelper {
     private ScheduledExecutorService executorService;
 
     /**
-     * <p>
-     * Constructor for LanguageHelper.
-     * </p>
+     * Creates a new LanguageHelper instance.
      *
-     * @param configFilePath a {@link java.lang.String} object.
+     * @param configFilePath path to the languages XML configuration file
      */
     public LanguageHelper(String configFilePath) {
         try {
@@ -136,10 +132,10 @@ public class LanguageHelper {
     }
 
     /**
-     * Gets the language data for the given iso-code 639-1 or 639-2B
+     * Gets the language data for the given iso-code 639-1 or 639-2B.
      *
-     * @param inIsoCode a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.translations.language.Language} object.
+     * @param inIsoCode ISO 639-1 or 639-2/B language code to look up
+     * @return the Language data for the given ISO code, or null if not found
      */
     public Language getLanguage(final String inIsoCode) {
         if (inIsoCode == null) {
@@ -174,7 +170,7 @@ public class LanguageHelper {
     }
 
     /**
-     * @param languageConfig
+     * @param languageConfig XML configuration node for a single language entry
      * @return Created {@link Language}
      */
     public Language createLanguage(HierarchicalConfiguration<ImmutableNode> languageConfig) {

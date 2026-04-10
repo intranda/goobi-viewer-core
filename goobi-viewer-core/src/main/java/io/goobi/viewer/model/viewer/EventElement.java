@@ -64,13 +64,11 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     private List<Metadata> searchHitMetadata;
 
     /**
-     * <p>
-     * Constructor for EventElement.
-     * </p>
+     * Creates a new EventElement instance.
      *
      * @param doc Event Solr document
-     * @param locale a {@link java.util.Locale} object.
-     * @param forSearchHit
+     * @param locale locale for metadata translations
+     * @param forSearchHit true to populate search hit metadata; false for full metadata
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @should fill in missing dateStart from displayDate
@@ -135,11 +133,6 @@ public class EventElement implements Comparable<EventElement>, Serializable {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public int compareTo(EventElement o) {
@@ -161,9 +154,9 @@ public class EventElement implements Comparable<EventElement>, Serializable {
 
     /**
      *
-     * @param metadata
-     * @param doc
-     * @param locale
+     * @param metadata list of metadata fields to populate
+     * @param doc Solr document containing the event data
+     * @param locale locale for translations/formatting
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -206,11 +199,9 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>displayDate</code>.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the formatted date range string for display, combining start and end date if available
      */
     public String getDisplayDate() {
         if (StringUtils.isNotEmpty(displayDate)) {
@@ -228,11 +219,9 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     }
 
     /**
-     * <p>
      * getLabel.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the event type label for this event element
      * @should include type
      * @should not include date
      */
@@ -246,77 +235,63 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>type</code>.
-     * </p>
      *
-     * @return the type
+     * @return the event type string (e.g. from MODS/LIDO metadata)
      */
     public String getType() {
         return type;
     }
 
     /**
-     * <p>
      * Setter for the field <code>type</code>.
-     * </p>
      *
-     * @param type the type to set
+     * @param type the event type string (e.g. from MODS/LIDO metadata)
      */
     public void setType(String type) {
         this.type = type;
     }
 
     /**
-     * <p>
      * Getter for the field <code>dateStart</code>.
-     * </p>
      *
-     * @return the dateStart
+     * @return the start date and time of this event
      */
     public LocalDateTime getDateStart() {
         return dateStart;
     }
 
     /**
-     * <p>
      * Setter for the field <code>dateStart</code>.
-     * </p>
      *
-     * @param dateStart the dateStart to set
+     * @param dateStart the start date and time of this event
      */
     public void setDateStart(LocalDateTime dateStart) {
         this.dateStart = dateStart;
     }
 
     /**
-     * <p>
      * Getter for the field <code>dateEnd</code>.
-     * </p>
      *
-     * @return the dateEnd
+     * @return the end date and time of this event
      */
     public LocalDateTime getDateEnd() {
         return dateEnd;
     }
 
     /**
-     * <p>
      * Setter for the field <code>dateEnd</code>.
-     * </p>
      *
-     * @param dateEnd the dateEnd to set
+     * @param dateEnd the end date and time of this event
      */
     public void setDateEnd(LocalDateTime dateEnd) {
         this.dateEnd = dateEnd;
     }
 
     /**
-     * <p>
      * Getter for the field <code>metadata</code>.
-     * </p>
      *
-     * @return the metadata
+     * @return the list of metadata entries for this event, filtered by current display language
      */
     public List<Metadata> getMetadata() {
         ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
@@ -328,11 +303,9 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     }
 
     /**
-     * <p>
      * hasMetadata.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this event element has at least one non-blank metadata entry, false otherwise
      */
     public boolean isHasMetadata() {
         if (metadata != null) {
@@ -343,11 +316,9 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     }
 
     /**
-     * <p>
      * hasSidebarMetadata.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this event element has at least one non-blank sidebar metadata entry, false otherwise
      */
     public boolean isHasSidebarMetadata() {
         if (sidebarMetadata != null) {
@@ -358,26 +329,22 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>sidebarMetadata</code>.
-     * </p>
      *
-     * @return the sidebarMetadata
+     * @return the list of metadata entries displayed in the sidebar for this event
      */
     public List<Metadata> getSidebarMetadata() {
         return sidebarMetadata;
     }
 
-    /**
-     * @return the searchHitMetadata
-     */
+    
     public List<Metadata> getSearchHitMetadata() {
         return searchHitMetadata;
     }
 
     /**
      * 
-     * @param locale
+     * @param locale locale to filter metadata fields by
      * @return searchHitMetadata minus any fields that don't match the given locale
      */
     public List<Metadata> getSearchHitListForLocale(Locale locale) {

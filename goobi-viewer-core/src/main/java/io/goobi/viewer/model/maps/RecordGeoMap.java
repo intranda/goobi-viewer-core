@@ -57,10 +57,9 @@ import io.goobi.viewer.model.translations.TranslatedText;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
- * Contains data to create a geomap for a record containing complex metadata (metadata documents) with geo coordinates
+ * Contains data to create a geomap for a record containing complex metadata (metadata documents) with geo coordinates.
  * 
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class RecordGeoMap {
 
@@ -73,8 +72,9 @@ public class RecordGeoMap {
 
     /**
      * Create a new geomap with features from the given StructElement and related documents.
-     * 
-     * @param struct
+     *
+     * @param struct top-level structure element of the record
+     * @throws DAOException if a database error occurs while loading geo map configuration
      */
     public RecordGeoMap(StructElement struct) throws DAOException {
         this(struct, DataManager.getInstance().getDao(),
@@ -84,9 +84,9 @@ public class RecordGeoMap {
     /**
      * Create a new geomap with features from the given StructElement and related documents.
      * 
-     * @param struct
-     * @param dao
-     * @param featureSetConfigs
+     * @param struct top-level structure element of the record
+     * @param dao data access object for annotation queries
+     * @param featureSetConfigs feature set configurations for the geo map
      */
     public RecordGeoMap(StructElement struct, IDAO dao, List<FeatureSetConfiguration> featureSetConfigs) {
         this.dao = dao;
@@ -96,7 +96,7 @@ public class RecordGeoMap {
     }
 
     /**
-     * empty geomap without features
+     * Empty geomap without features.
      */
     public RecordGeoMap() {
         this.dao = null;

@@ -38,9 +38,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
- * <p>
- * CMSStaticPage class.
- * </p>
+ * Maps a CMS page to a static viewer page URL, allowing CMS content to replace built-in viewer pages.
  */
 @Entity
 @Table(name = "cms_static_pages")
@@ -63,9 +61,7 @@ public class CMSStaticPage implements Serializable {
     private Optional<CMSPage> cmsPage = Optional.empty();
 
     /**
-     * <p>
-     * Constructor for CMSStaticPage.
-     * </p>
+     * Creates a new CMSStaticPage instance.
      */
     public CMSStaticPage() {
         this.id = null;
@@ -73,11 +69,9 @@ public class CMSStaticPage implements Serializable {
     }
 
     /**
-     * <p>
-     * Constructor for CMSStaticPage.
-     * </p>
+     * Creates a new CMSStaticPage instance.
      *
-     * @param name a {@link java.lang.String} object.
+     * @param name internal page name identifying this static page
      * @throws java.lang.NullPointerException if the given name is null
      */
     public CMSStaticPage(String name) {
@@ -89,11 +83,9 @@ public class CMSStaticPage implements Serializable {
     }
 
     /**
-     * <p>
      * getCmsPageOptional.
-     * </p>
      *
-     * @return the cmsPage
+     * @return the associated CMS page wrapped in an Optional, or an empty Optional if no page is assigned
      */
     public Optional<CMSPage> getCmsPageOptional() {
         if (!cmsPage.isPresent()) {
@@ -103,22 +95,18 @@ public class CMSStaticPage implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>cmsPage</code>.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
+     * @return the associated CMS page, or null if none is set
      */
     public CMSPage getCmsPage() {
         return getCmsPageOptional().orElse(null);
     }
 
     /**
-     * <p>
      * Setter for the field <code>cmsPage</code>.
-     * </p>
      *
-     * @param cmsPage the cmsPage to set
+     * @param cmsPage the CMS page to associate with this static page; also updates the stored page ID
      */
     public void setCmsPage(CMSPage cmsPage) {
         this.cmsPage = Optional.ofNullable(cmsPage);
@@ -126,34 +114,28 @@ public class CMSStaticPage implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
-     * @return the id
+     * @return the database primary key of this static page mapping
      */
     public Long getId() {
         return id;
     }
 
     /**
-     * <p>
      * Getter for the field <code>pageName</code>.
-     * </p>
      *
-     * @return the pageName
+     * @return the internal page name identifying this static page
      */
     public String getPageName() {
         return pageName;
     }
 
     /**
-     * <p>
      * isLanguageComplete.
-     * </p>
      *
-     * @param locale a {@link java.util.Locale} object.
-     * @return a boolean.
+     * @param locale locale to check for completeness
+     * @return true if the associated CMS page is complete for the given locale, false otherwise
      */
     public boolean isLanguageComplete(Locale locale) {
         if (getCmsPageOptional().isPresent()) {
@@ -163,9 +145,7 @@ public class CMSStaticPage implements Serializable {
     }
 
     /**
-     * <p>
      * isHasCmsPage.
-     * </p>
      *
      * @return true only if isUseCmsPage == true and cmsPage != null
      */
@@ -174,22 +154,18 @@ public class CMSStaticPage implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>cmsPageId</code>.
-     * </p>
      *
-     * @return the cmsPageId
+     * @return the database ID of the associated CMS page wrapped in an Optional, or an empty Optional if no page is assigned
      */
     public Optional<Long> getCmsPageId() {
         return Optional.ofNullable(cmsPageId);
     }
 
     /**
-     * <p>
      * Setter for the field <code>cmsPageId</code>.
-     * </p>
      *
-     * @param cmsPageId the cmsPageId to set
+     * @param cmsPageId the database ID of the associated CMS page; triggers a page lookup if changed
      */
     public void setCmsPageId(Long cmsPageId) {
         this.cmsPageId = cmsPageId;
@@ -209,18 +185,12 @@ public class CMSStaticPage implements Serializable {
         });
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return getPageName().hashCode();
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {

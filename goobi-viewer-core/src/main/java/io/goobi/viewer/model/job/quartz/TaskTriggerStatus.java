@@ -22,6 +22,14 @@
 
 package io.goobi.viewer.model.job.quartz;
 
+/**
+ * Indicates whether a Quartz task trigger is currently active or suspended.
+ *
+ * <ul>
+ *   <li>{@code RUNNING} – the trigger is active and will fire according to its schedule</li>
+ *   <li>{@code PAUSED} – the trigger has been suspended and will not fire until resumed</li>
+ * </ul>
+ */
 public enum TaskTriggerStatus {
 
     RUNNING,

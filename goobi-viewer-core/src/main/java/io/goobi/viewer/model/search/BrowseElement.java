@@ -97,7 +97,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     private IMetadataValue labelShort = new SimpleMetadataValue();
     /** Type of the index document. */
     private DocType docType;
-    /** Type of grouped metadata document (person, etc.) */
+    /** Type of grouped metadata document (person, etc.). */
     @JsonIgnore
     private MetadataGroupType metadataGroupType = null;
     /** Name of the grouped metadata field. */
@@ -164,14 +164,14 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     private List<String> recordLanguages;
 
     /**
-     * Constructor for unit tests and special instances.
+     * Creates a new unit tests and special instances instance.
      *
-     * @param pi
-     * @param imageNo
-     * @param label
-     * @param fulltext
-     * @param locale
-     * @param dataRepository
+     * @param pi persistent identifier of the record
+     * @param imageNo representative image page number
+     * @param label display label for the element
+     * @param fulltext full-text content for the element
+     * @param locale locale for translations
+     * @param dataRepository data repository name for the record
      * @param url Injected URL, overrides URL generation
      *
      * @should build overview page url correctly
@@ -195,11 +195,11 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
      * Constructor.
      *
      * @param structElement {@link StructElement}
-     * @param metadataListMap
-     * @param locale
-     * @param fulltext
-     * @param searchTerms
-     * @param thumbs
+     * @param metadataListMap map of metadata list type names to metadata lists
+     * @param locale locale for translations
+     * @param fulltext full-text content for the element
+     * @param searchTerms map of field names to sets of search terms for highlighting
+     * @param thumbs thumbnail handler for generating thumbnail URLs
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -214,11 +214,11 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
      * Constructor.
      *
      * @param structElement {@link StructElement}
-     * @param metadataListMap
-     * @param locale
-     * @param fulltext
-     * @param searchTerms
-     * @param thumbs
+     * @param metadataListMap map of metadata list type names to metadata lists
+     * @param locale locale for translations
+     * @param fulltext full-text content for the element
+     * @param searchTerms map of field names to sets of search terms for highlighting
+     * @param thumbs thumbnail handler for generating thumbnail URLs
      * @param user The user for whom the thumbnail accessCondition is calculated. If null, it is fetched from the jsfContext if one exists
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -462,13 +462,13 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     }
 
     /**
-     * 
-     * @param metadataList
-     * @param structElement
-     * @param anchorStructElement
-     * @param searchTerms
-     * @param length
-     * @param locale
+     *
+     * @param metadataList list of metadata objects to populate
+     * @param structElement structure element to read metadata values from
+     * @param anchorStructElement parent anchor structure element, or null
+     * @param searchTerms map of field names to sets of search terms for highlighting
+     * @param length maximum length of individual metadata values
+     * @param locale locale for translations
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -525,12 +525,10 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     }
 
     /**
-     * <p>
      * createMultiLanguageLabel.
-     * </p>
      *
-     * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @return a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
+     * @param structElement structure element to generate the label from
+     * @return the multilingual label derived from the structure element's metadata fields
      */
     public IMetadataValue createMultiLanguageLabel(StructElement structElement) {
         MultiLanguageMetadataValue value = new MultiLanguageMetadataValue();
@@ -552,7 +550,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
 
     /**
      *
-     * @param structElement
+     * @param structElement structure element to read sort field values from
      * @param sortFields If manual sorting was used, display the sorting fields
      * @param ignoreFields Fields to be skipped
      * @should add sort fields correctly
@@ -614,7 +612,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     }
 
     /**
-     * @param filename
+     * @param filename file name whose extension is used to determine the MIME type
      * @return Mime type for the given filename
      * @should return empty string for unknown file extensions
      */
@@ -629,8 +627,8 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
 
     /**
      *
-     * @param se
-     * @param locale
+     * @param se structure element to generate the label for
+     * @param locale locale for translations
      * @return Generated label
      */
     private String generateLabel(StructElement se, Locale locale) {
@@ -711,8 +709,8 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
 
     /**
      *
-     * @param se
-     * @param locale
+     * @param se structure element to generate the label for
+     * @param locale locale for translations
      * @return Generated label
      * @should translate docstruct label
      */
@@ -766,89 +764,73 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     }
 
     /**
-     * <p>
      * Getter for the field <code>label</code>.
-     * </p>
      *
-     * @return the label
+     * @return the translated label for the current locale, falling back to the default value or an empty string
      */
     public String getLabel() {
         return label.getValue(BeanUtils.getLocale()).orElse(label.getValue().orElse(""));
     }
 
     /**
-     * <p>
      * Getter for the field <code>label</code>.
-     * </p>
      *
-     * @param locale a {@link java.util.Locale} object.
-     * @return a {@link java.lang.String} object.
+     * @param locale locale used to select the translated label
+     * @return the display label for this search result in the given locale
      */
     public String getLabel(Locale locale) {
         return label.getValue(locale).orElse("");
     }
 
     /**
-     * <p>
      * getLabelAsMetadataValue.
-     * </p>
      *
-     * @return a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
+     * @return the multilingual label of this browse element
      */
     public IMetadataValue getLabelAsMetadataValue() {
         return label;
     }
 
     /**
-     * <p>
      * Getter for the field <code>labelShort</code>.
-     * </p>
      *
-     * @return the labelShort
+     * @return the abbreviated label for the current locale, falling back to the default value or an empty string
      */
     public String getLabelShort() {
         return labelShort.getValue(BeanUtils.getLocale()).orElse(labelShort.getValue().orElse(""));
     }
 
     /**
-     * <p>
      * Setter for the field <code>labelShort</code>.
-     * </p>
      *
-     * @param labelShort the labelShort to set
+     * @param labelShort the abbreviated label value to display in compact search result views
      */
     public void setLabelShort(IMetadataValue labelShort) {
         this.labelShort = labelShort;
     }
 
     /**
-     * <p>
      * Getter for the field <code>docStructType</code>.
-     * </p>
      *
-     * @return the type
+     * @return the document structure type identifier (e.g. "monograph", "chapter") for this browse element
      */
     public String getDocStructType() {
         return docStructType;
     }
 
     /**
-     * <p>
      * Getter for the field <code>iddoc</code>.
-     * </p>
      *
-     * @return the iddoc
+     * @return the internal Solr document ID for this browse element
      */
     public String getIddoc() {
         return iddoc;
     }
 
     /**
-     * <p>
      * Getter for the field <code>thumbnailUrl</code>.
-     * </p>
      *
-     * @return the thumbnailUrl
+     * @return the URL of the thumbnail image for this browse element
      */
     public String getThumbnailUrl() {
         //        logger.trace("thumbnailUrl {}", thumbnailUrl); //NOSONAR Debug
@@ -858,9 +840,9 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Called from HTML.
      *
-     * @param width a {@link java.lang.String} object.
-     * @param height a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param width desired thumbnail width in pixels
+     * @param height desired thumbnail height in pixels
+     * @return the thumbnail URL for this search result scaled to the given dimensions
      */
     public String getThumbnailUrl(String width, String height) {
         synchronized (this) {
@@ -885,9 +867,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     }
 
     /**
-     * <p>
      * Getter for the field <code>imageNo</code>.
-     * </p>
      *
      * @return a int.
      */
@@ -895,19 +875,15 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         return imageNo;
     }
 
-    /**
-     * @param imageNo the imageNo to set
-     */
+    
     public void setImageNo(int imageNo) {
         this.imageNo = imageNo;
     }
 
     /**
-     * <p>
      * Getter for the field <code>structElements</code>.
-     * </p>
      *
-     * @return the structElements
+     * @return the list of structure element stubs from the record hierarchy (outermost first)
      */
     public List<StructElementStub> getStructElements() {
         return structElements;
@@ -926,30 +902,24 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         return structElements.get(structElements.size() - 1);
     }
 
-    /**
-     * @return the events
-     */
+    
     public List<EventElement> getEvents() {
         return events;
     }
 
     /**
-     * <p>
      * Setter for the field <code>fulltext</code>.
-     * </p>
      *
-     * @param fulltext the fulltext to set
+     * @param fulltext the full-text content associated with this browse element
      */
     public void setFulltext(String fulltext) {
         this.fulltext = fulltext;
     }
 
     /**
-     * <p>
      * Getter for the field <code>fulltext</code>.
-     * </p>
      *
-     * @return the fulltext
+     * @return the full-text content associated with this browse element
      */
     public String getFulltext() {
         return fulltext;
@@ -975,22 +945,18 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     }
 
     /**
-     * <p>
      * Getter for the field <code>volumeNo</code>.
-     * </p>
      *
-     * @return the volumeNo
+     * @return the volume number string for this browse element
      */
     public String getVolumeNo() {
         return volumeNo;
     }
 
     /**
-     * <p>
      * Setter for the field <code>volumeNo</code>.
-     * </p>
      *
-     * @param volumeNo the volumeNo to set
+     * @param volumeNo the volume number string for this browse element
      */
     public void setVolumeNo(String volumeNo) {
         this.volumeNo = volumeNo;
@@ -1021,88 +987,68 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         return DocType.ARCHIVE.equals(docType);
     }
 
-    /**
-     * @return the cmsPage
-     */
+    
     public boolean isCmsPage() {
         return cmsPage;
     }
 
-    /**
-     * @param cmsPage the cmsPage to set
-     */
+    
     public void setCmsPage(boolean cmsPage) {
         this.cmsPage = cmsPage;
     }
 
-    /**
-     * @return the work
-     */
+    
     public boolean isWork() {
         return work;
     }
 
-    /**
-     * @param work the work to set
-     */
+    
     public void setWork(boolean work) {
         this.work = work;
     }
 
     /**
-     * <p>
      * isAnchor.
-     * </p>
      *
-     * @return the anchor
+     * @return true if this element represents an anchor document, false otherwise
      */
     public boolean isAnchor() {
         return anchor;
     }
 
     /**
-     * <p>
      * Setter for the field <code>anchor</code>.
-     * </p>
      *
-     * @param anchor the anchor to set
+     * @param anchor true if this element represents an anchor document; false otherwise
      */
     public void setAnchor(boolean anchor) {
         this.anchor = anchor;
     }
 
     /**
-     * <p>
      * isHasImages.
-     * </p>
      *
-     * @return the hasImages
+     * @return true if this element has associated image content, false otherwise
      */
     public boolean isHasImages() {
         return hasImages;
     }
 
     /**
-     * <p>
      * Setter for the field <code>hasImages</code>.
-     * </p>
      *
-     * @param hasImages the hasImages to set
+     * @param hasImages true if this element has associated image content; false otherwise
      */
     public void setHasImages(boolean hasImages) {
         this.hasImages = hasImages;
     }
 
-    /**
-     * @return the hasTeiFiles
-     */
+    
     public boolean isHasTeiFiles() {
         return hasTeiFiles;
     }
 
-    /**
-     * @param hasTeiFiles the hasTeiFiles to set
-     */
+    
     public void setHasTeiFiles(boolean hasTeiFiles) {
         this.hasTeiFiles = hasTeiFiles;
     }
@@ -1116,33 +1062,27 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     }
 
     /**
-     * <p>
      * Getter for the field <code>numVolumes</code>.
-     * </p>
      *
-     * @return the numVolumes
+     * @return the number of volumes contained in this anchor record
      */
     public long getNumVolumes() {
         return numVolumes;
     }
 
     /**
-     * <p>
      * Setter for the field <code>pi</code>.
-     * </p>
      *
-     * @param pi the identifier to set
+     * @param pi the persistent identifier of the record associated with this browse element
      */
     public void setPi(String pi) {
         this.pi = pi;
     }
 
     /**
-     * <p>
      * Getter for the field <code>pi</code>.
-     * </p>
      *
-     * @return the identifier
+     * @return the persistent identifier of the record associated with this browse element
      */
     public String getPi() {
         return pi;
@@ -1151,29 +1091,25 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Returns the search hint URL (without the application root!).
      *
-     * @return the url
+     * @return the relative URL for this browse element's detail page
      */
     public String getUrl() {
         return url;
     }
 
     /**
-     * <p>
      * Getter for the field <code>sidebarPrevUrl</code>.
-     * </p>
      *
-     * @return the sidebarPrevUrl
+     * @return the URL for navigating to the previous search hit in the sidebar
      */
     public String getSidebarPrevUrl() {
         return sidebarPrevUrl;
     }
 
     /**
-     * <p>
      * Getter for the field <code>sidebarNextUrl</code>.
-     * </p>
      *
-     * @return the sidebarNextUrl
+     * @return the URL for navigating to the next search hit in the sidebar
      */
     public String getSidebarNextUrl() {
         return sidebarNextUrl;
@@ -1190,7 +1126,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     /**
      * Important: hits have to have 4 Pretty parameters (e.g. /image/nextHit/PPN123/1/LOG_0001/)
      *
-     * @param type
+     * @param type navigation type token used in the URL (e.g. "prevHit", "nextHit")
      * @return Generated URL
      */
     private String generateSidebarUrl(String type) {
@@ -1292,9 +1228,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         return sb.toString();
     }
 
-    /**
-     * @return the risExport
-     */
+    
     public String getRisExport() {
         return risExport;
     }
@@ -1313,11 +1247,9 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     }
 
     /**
-     * <p>
      * Getter for the field <code>metadataList</code>.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of metadata entries configured for the search hit display
      */
     public List<Metadata> getMetadataList() {
         return metadataListMap.get(Configuration.METADATA_LIST_TYPE_SEARCH_HIT);
@@ -1339,9 +1271,9 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     }
 
     /**
-     * 
-     * @param field
-     * @param locale
+     *
+     * @param field metadata field name to filter by
+     * @param locale locale for language-specific filtering
      * @return List<Metadata>
      */
     public List<Metadata> getMetadataListForLocale(String field, Locale locale) {
@@ -1353,7 +1285,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
      *
      * @param field Requested field name
      * @param locale Requested locale
-     * @param metadataListType
+     * @param metadataListType key of the metadata list to query (e.g. search hit or secondary)
      * @return List<Metadata>
      */
     public List<Metadata> getMetadataListForLocale(String field, Locale locale, String metadataListType) {
@@ -1361,21 +1293,19 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     }
 
     /**
-     * <p>
      * getMetadataListForLocale.
-     * </p>
      *
-     * @param locale a {@link java.util.Locale} object.
-     * @return a {@link java.util.List} object.
+     * @param locale locale used to filter language-specific metadata
+     * @return a list of metadata entries for the search hit display filtered to the given locale
      */
     public List<Metadata> getMetadataListForLocale(Locale locale) {
         return getMetadataListForLocale(locale, Configuration.METADATA_LIST_TYPE_SEARCH_HIT);
     }
 
     /**
-     * 
-     * @param locale
-     * @param metadataListType
+     *
+     * @param locale locale for language-specific filtering
+     * @param metadataListType key of the metadata list to query (e.g. search hit or secondary)
      * @return List<Metadata>
      */
     public List<Metadata> getMetadataListForLocale(Locale locale, String metadataListType) {
@@ -1383,11 +1313,9 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     }
 
     /**
-     * <p>
      * getMetadataListForCurrentLocale.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of metadata entries for the search hit display filtered to the current request locale
      */
     public List<Metadata> getMetadataListForCurrentLocale() {
         return getMetadataListForLocale(BeanUtils.getLocale());
@@ -1409,31 +1337,25 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         return Collections.emptyList();
     }
 
-    /**
-     * @return the existingMetadataFields
-     */
+    
     public Set<String> getExistingMetadataFields() {
         return existingMetadataFields;
     }
 
     /**
-     * <p>
      * Getter for the field <code>metadataGroupType</code>.
-     * </p>
      *
-     * @return the metadataGroupType
+     * @return the metadata group type classifying the kind of grouped metadata this element represents
      */
     public MetadataGroupType getMetadataGroupType() {
         return metadataGroupType;
     }
 
     /**
-     * <p>
      * Getter for the field <code>metadataList</code>.
-     * </p>
      *
-     * @param metadataLabel a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
+     * @param metadataLabel label key to filter metadata entries by
+     * @return a list of metadata entries from the search hit list whose label matches the given key
      */
     public List<Metadata> getMetadataList(String metadataLabel) {
         List<Metadata> list = new ArrayList<>();
@@ -1446,45 +1368,37 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     }
 
     /**
-     * <p>
      * Getter for the field <code>foundMetadataList</code>.
-     * </p>
      *
-     * @return the foundMetadataList
+     * @return the list of metadata entries that matched the search query
      */
     public List<Metadata> getFoundMetadataList() {
         return foundMetadataList;
     }
 
     /**
-     * <p>
      * Getter for the field <code>dataRepository</code>.
-     * </p>
      *
-     * @return the dataRepository
+     * @return the name of the data repository storing the content files for this record
      */
     public String getDataRepository() {
         return dataRepository;
     }
 
-    /**
-     * @return the accessPermissionThumbnail
-     */
+    
     public AccessPermission getAccessPermissionThumbnail() {
         return accessPermissionThumbnail;
     }
 
-    /**
-     * @param accessPermissionThumbnail the accessPermissionThumbnail to set
-     */
+    
     public void setAccessPermissionThumbnail(AccessPermission accessPermissionThumbnail) {
         this.accessPermissionThumbnail = accessPermissionThumbnail;
     }
 
     /**
-     * Returns the ContextObject value for a COinS element using the docstruct hierarchy for this search hit..
+     * Returns the ContextObject value for a COinS element using the docstruct hierarchy for this search hit.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the COinS context object string for embedding bibliographic metadata in a &lt;span&gt; element
      */
     public String getContextObject() {
         if (contextObject == null && !structElements.isEmpty()) {
@@ -1503,84 +1417,68 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     }
 
     /**
-     * <p>
      * Getter for the field <code>recordLanguages</code>.
-     * </p>
      *
-     * @return the recordLanguages
+     * @return the list of language codes in which the record content is available
      */
     public List<String> getRecordLanguages() {
         return recordLanguages;
     }
 
     /**
-     * <p>
      * Setter for the field <code>hasMedia</code>.
-     * </p>
      *
-     * @param hasMedia the hasMedia to set
+     * @param hasMedia true if this element has associated non-image media content; false otherwise
      */
     public void setHasMedia(boolean hasMedia) {
         this.hasMedia = hasMedia;
     }
 
     /**
-     * <p>
      * isHasMedia.
-     * </p>
      *
-     * @return the hasMedia
+     * @return true if this element has associated non-image media content, false otherwise
      */
     public boolean isHasMedia() {
         return hasMedia;
     }
 
     /**
-     * <p>
      * Getter for the field <code>originalFieldName</code>.
-     * </p>
      *
-     * @return the originalFieldName
+     * @return the original Solr field name from which this browse element's label was derived
      */
     public String getOriginalFieldName() {
         return originalFieldName;
     }
 
     /**
-     * <p>
      * determinePageType.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
+     * @return the PageType appropriate for this browse element based on its document structure and MIME type
      */
     public PageType determinePageType() {
         return PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages || hasMedia, false);
     }
 
     /**
-     * <p>
      * Getter for the field <code>logId</code>.
-     * </p>
      *
-     * @return the logId
+     * @return the logical structure element ID (LOG_ID) of the record associated with this browse element
      */
     public String getLogId() {
         return logId;
     }
 
-    /**
-     * @param logId the logId to set
-     */
+    
     public void setLogId(String logId) {
         this.logId = logId;
     }
 
     /**
-     * <p>
      * Getter for the field <code>docType</code>.
-     * </p>
      *
-     * @return the docType
+     * @return the document type of this browse element (e.g. DOCSTRCT, UGC, CMS)
      */
     public DocType getDocType() {
         return docType;

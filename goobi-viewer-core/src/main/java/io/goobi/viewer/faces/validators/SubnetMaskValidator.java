@@ -37,9 +37,6 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 @FacesValidator("subnetMaskValidator")
 public class SubnetMaskValidator implements Validator<String> {
 
-    /* (non-Javadoc)
-     * @see jakarta.faces.validator.Validator#validate(jakarta.faces.context.FacesContext, jakarta.faces.component.UIComponent, java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {

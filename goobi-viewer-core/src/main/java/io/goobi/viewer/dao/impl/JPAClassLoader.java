@@ -45,18 +45,16 @@ import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
 
 /**
- * <p>
- * JPAClassLoader class.
- * </p>
+ * Custom class loader used to resolve JPA entity classes from the configured persistence unit.
  */
 public class JPAClassLoader extends ClassLoader {
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(JPAClassLoader.class);
 
-    /** Constant <code>PERSISTENCE_XML="META-INF/persistence.xml"</code> */
+    /** Constant <code>PERSISTENCE_XML="META-INF/persistence.xml"</code>. */
     public static final String PERSISTENCE_XML = "META-INF/persistence.xml";
-    /** Constant <code>PERSISTENCE_XML_MODULE="META-INF/persistence-module.xml"</code> */
+    /** Constant <code>PERSISTENCE_XML_MODULE="META-INF/persistence-module.xml"</code>. */
     public static final String PERSISTENCE_XML_MODULE = "META-INF/persistence-module.xml";
     //    private static final String MASTER_URL_SUFFIX = "Viewer/build/classes/" + PERSISTENCE_XML;
     //    private static final String MODULE_URL_SUFFIX = ".jar!/" + PERSISTENCE_XML;
@@ -83,11 +81,9 @@ public class JPAClassLoader extends ClassLoader {
     //    }
 
     /**
-     * <p>
-     * Constructor for JPAClassLoader.
-     * </p>
+     * Creates a new JPAClassLoader instance.
      *
-     * @param parent a {@link java.lang.ClassLoader} object.
+     * @param parent parent class loader to delegate non-persistence resources to
      */
     public JPAClassLoader(final ClassLoader parent) {
         super(parent);
@@ -133,8 +129,8 @@ public class JPAClassLoader extends ClassLoader {
 
     /**
      *
-     * @param masterFileUrl
-     * @param moduleUrls
+     * @param masterFileUrl URL of the master persistence.xml file
+     * @param moduleUrls list of module persistence.xml URLs to merge in
      * @return {@link Document containing merged and module persistence.xml
      * @throws IOException
      * @throws JDOMException

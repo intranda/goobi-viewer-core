@@ -67,9 +67,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.WebApplicationException;
 
 /**
- * <p>
- * DownloadBean class.
- * </p>
+ * JSF backing bean for managing file download requests from the viewer, tracking download status and links.
  */
 @Named
 @ViewScoped
@@ -91,9 +89,7 @@ public class DownloadBean implements Serializable {
     private String email = BeanUtils.getUserBean().getEmail();
 
     /**
-     * <p>
      * reset.
-     * </p>
      */
     public void reset() {
         synchronized (this) {
@@ -103,11 +99,9 @@ public class DownloadBean implements Serializable {
     }
 
     /**
-     * <p>
      * openDownloadAction.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the message ID of the located download job
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws PresentationException
      */
@@ -135,9 +129,7 @@ public class DownloadBean implements Serializable {
     }
 
     /**
-     * <p>
      * getQueuePosition.
-     * </p>
      *
      * @return a int
      */
@@ -150,20 +142,16 @@ public class DownloadBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>message</code>.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.controller.mq.ViewerMessage} object
+     * @return the ViewerMessage associated with the current download job
      */
     public ViewerMessage getMessage() {
         return message;
     }
 
     /**
-     * <p>
      * downloadFileAction.
-     * </p>
      *
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.DownloadException if any.
@@ -224,11 +212,9 @@ public class DownloadBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>downloadIdentifier</code>.
-     * </p>
      *
-     * @return the downloadIdentifier
+     * @return the identifier used to locate and serve the requested download resource
      */
     public String getDownloadIdentifier() {
         return downloadIdentifier;
@@ -243,11 +229,9 @@ public class DownloadBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>downloadIdentifier</code>.
-     * </p>
      *
-     * @param downloadIdentifier the downloadIdentifier to set
+     * @param downloadIdentifier the persistent identifier of the record whose download job is being managed
      */
     public void setDownloadIdentifier(String downloadIdentifier) {
         this.downloadIdentifier = downloadIdentifier;

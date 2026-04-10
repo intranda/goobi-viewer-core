@@ -114,25 +114,25 @@ public final class SearchHelper {
 
     private static final Logger logger = LogManager.getLogger(SearchHelper.class);
 
-    /** Constant <code>PARAM_NAME_FILTER_QUERY_SUFFIX="filterQuerySuffix"</code> */
+    /** Constant <code>PARAM_NAME_FILTER_QUERY_SUFFIX="filterQuerySuffix"</code>. */
     public static final String PARAM_NAME_FILTER_QUERY_SUFFIX = "filterQuerySuffix";
-    /** Constant <code>SEARCH_TERM_SPLIT_REGEX</code> */
+    /** Constant <code>SEARCH_TERM_SPLIT_REGEX</code>. */
     public static final String SEARCH_QUERY_SPLIT_REGEX = "[ ,・]";
     /** Regex for splitting search values (including colons). */
     public static final String SEARCH_TERM_SPLIT_REGEX = "[ ,・:]";
-    /** Constant <code>PLACEHOLDER_HIGHLIGHTING_START="##HLS##"</code> */
+    /** Constant <code>PLACEHOLDER_HIGHLIGHTING_START="##HLS##"</code>. */
     public static final String PLACEHOLDER_HIGHLIGHTING_START = "##ĦŁ$##";
-    /** Constant <code>PLACEHOLDER_HIGHLIGHTING_END="##HLE##"</code> */
+    /** Constant <code>PLACEHOLDER_HIGHLIGHTING_END="##HLE##"</code>. */
     public static final String PLACEHOLDER_HIGHLIGHTING_END = "##ĦŁȄ##";
-    /** Constant <code>SEARCH_TYPE_REGULAR=0</code> */
+    /** Constant <code>SEARCH_TYPE_REGULAR=0</code>. */
     public static final int SEARCH_TYPE_REGULAR = 0;
-    /** Constant <code>SEARCH_TYPE_ADVANCED=1</code> */
+    /** Constant <code>SEARCH_TYPE_ADVANCED=1</code>. */
     public static final int SEARCH_TYPE_ADVANCED = 1;
-    /** Constant <code>SEARCH_TYPE_CALENDAR=3</code> */
+    /** Constant <code>SEARCH_TYPE_CALENDAR=3</code>. */
     public static final int SEARCH_TYPE_CALENDAR = 3;
-    /** Constant <code>SEARCH_TYPE_TERMS=4</code> */
+    /** Constant <code>SEARCH_TYPE_TERMS=4</code>. */
     public static final int SEARCH_TYPE_TERMS = 4;
-    /** Constant <code>SEARCH_FILTER_ALL</code> */
+    /** Constant <code>SEARCH_FILTER_ALL</code>. */
     public static final SearchFilter SEARCH_FILTER_ALL = new SearchFilter("filter_ALL", "ALL", false);
     public static final String SEARCH_FILTER_ALL_FIELD = "ALL";
     public static final String TITLE_TERMS = "_TITLE_TERMS";
@@ -141,11 +141,11 @@ public final class SearchHelper {
     public static final String EMBEDDED_QUERY_TEMPLATE = "_query_:\"{0}\"";
     /** Standard Solr query for all records and anchors. */
     public static final String ALL_RECORDS_QUERY = "+(ISWORK:true ISANCHOR:true)";
-    /** Constant <code>DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY="(ISWORK:true OR ISANCHOR:true) AND NOT("{trunked}</code> */
+    /** Constant <code>DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY="(ISWORK:true OR ISANCHOR:true) AND NOT("{trunked}</code>. */
     public static final String DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY = ALL_RECORDS_QUERY + " -IDDOC_PARENT:*";
     /**
      * Constant <code>FUZZY_SEARCH_TERM_TEMPLATE_WITH_BOOST="String prefix, String suffix"</code>. {t} is the actual search term, {d} the maximal edit
-     * distance to search. {p} and {s} are prefix and suffix to be applied to the search term
+     * distance to search. {p} and {s} are prefix and suffix to be applied to the search term.
      */
     public static final String FUZZY_SEARCH_TERM_TEMPLATE_WITH_BOOST = "{p}{t}{s} {t}~{d}";
     /**
@@ -158,21 +158,21 @@ public final class SearchHelper {
 
     private static final Random RANDOM = new SecureRandom();
 
-    /** Regex pattern for negations in brackets */
+    /** Regex pattern for negations in brackets. */
     private static final Pattern PATTERN_NOT_BRACKETS = Pattern.compile("NOT\\([^()]*\\)");
-    /** Regex pattern for negations not followed by brackets */
+    /** Regex pattern for negations not followed by brackets. */
     private static final Pattern PATTERN_NOT = Pattern.compile("NOT [a-zA-Z_]+:[a-zA-Z0-9\\*]+");
     /** Constant that matches strings enclosed by double quotes (and optional replacement tags @). May contain escaped double quotes. */
     public static final String REGEX_QUOTATION_MARKS = "@?+\"(?:[^()\"\\\\]|\\\\.)*\"@?+"; //NOSONAR Supposedly safe?
-    /** Constant <code>PATTERN_FIELD_PHRASE</code> */
+    /** Constant <code>PATTERN_FIELD_PHRASE</code>. */
     private static final Pattern PATTERN_FIELD_PHRASE = Pattern.compile("[\\w]++:" + REGEX_QUOTATION_MARKS); //NOSONAR Checked and fixed potential CB
-    /** Constant <code>PATTERN_PHRASE</code> */
+    /** Constant <code>PATTERN_PHRASE</code>. */
     private static final Pattern PATTERN_PHRASE = Pattern.compile("^" + REGEX_QUOTATION_MARKS + "(~\\d+)?$");
-    /** Constant <code>PATTERN_PROXIMITY_SEARCH_TOKEN</code> */
+    /** Constant <code>PATTERN_PROXIMITY_SEARCH_TOKEN</code>. */
     private static final Pattern PATTERN_PROXIMITY_SEARCH_TOKEN = Pattern.compile("(?<=\")~(\\d+)");
-    /** Constant <code>PATTERN_YEAR_RANGE</code> */
+    /** Constant <code>PATTERN_YEAR_RANGE</code>. */
     private static final Pattern PATTERN_YEAR_RANGE = Pattern.compile("\\[\\d+ TO \\d+\\]");
-    /** Constant <code>PATTERN_HYPHEN_LINK</code> */
+    /** Constant <code>PATTERN_HYPHEN_LINK</code>. */
     private static final Pattern PATTERN_HYPHEN_LINK = Pattern.compile("(<a (?:(?!<\\/a>).)*<\\/a>)");
 
     //No danger of catastrophic backtracking, because the ':' separator is not matched by \w
@@ -199,9 +199,7 @@ public final class SearchHelper {
     private static final Pattern PATTERN_RANGE_PAIRS =
             Pattern.compile("(\\w++:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]++ TO [\\wäáàâöóòôüúùûëéèêßñ]++\\]\\))"); //NOSONAR
 
-    /**
-     *
-     */
+    
     private SearchHelper() {
         //
     }
@@ -209,17 +207,17 @@ public final class SearchHelper {
     /**
      * Main search method for flat search.
      *
-     * @param query {@link java.lang.String} Solr search query. Merges full-text and metadata hits into their corresponding docstructs.
-     * @param first {@link java.lang.Integer} First row index
-     * @param rows {@link java.lang.Integer} Number of rows to return
-     * @param sortFields a {@link java.util.List} object.
-     * @param resultFields a {@link java.util.List} object.
-     * @param filterQueries a {@link java.util.List} object.
-     * @param params a {@link java.util.Map} object.
-     * @param searchTerms a {@link java.util.Map} object.
-     * @param exportFields a {@link java.util.List} object.
-     * @param locale a {@link java.util.Locale} object.
-     * @param proximitySearchDistance
+     * @param query Solr search query; merges full-text and metadata hits into their corresponding docstructs
+     * @param first index of the first result (pagination)
+     * @param rows number of results to return
+     * @param sortFields list of sort field/direction pairs
+     * @param resultFields Solr field names to include in results
+     * @param filterQueries Solr filter query strings
+     * @param params additional Solr query parameters
+     * @param searchTerms map of field names to sets of search terms for highlighting
+     * @param exportFields field names to include in export metadata
+     * @param locale language locale for translation
+     * @param proximitySearchDistance word distance for proximity search
      * @return List of <code>StructElement</code>s containing the search hits.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -237,18 +235,18 @@ public final class SearchHelper {
     /**
      * Main search method for flat search.
      *
-     * @param query {@link java.lang.String} Solr search query. Merges full-text and metadata hits into their corresponding docstructs.
-     * @param first {@link java.lang.Integer} von
-     * @param rows {@link java.lang.Integer} bis
-     * @param sortFields a {@link java.util.List} object.
-     * @param resultFields a {@link java.util.List} object.
-     * @param filterQueries a {@link java.util.List} object.
-     * @param params a {@link java.util.Map} object.
-     * @param searchTerms a {@link java.util.Map} object.
-     * @param exportFields a {@link java.util.List} object.
-     * @param locale a {@link java.util.Locale} object.
-     * @param keepSolrDoc
-     * @param proximitySearchDistance
+     * @param query Solr search query; merges full-text and metadata hits into their corresponding docstructs
+     * @param first index of the first result (pagination)
+     * @param rows number of results to return
+     * @param sortFields list of sort field/direction pairs
+     * @param resultFields Solr field names to include in results
+     * @param filterQueries Solr filter query strings
+     * @param params additional Solr query parameters
+     * @param searchTerms map of field names to sets of search terms for highlighting
+     * @param exportFields field names to include in export metadata
+     * @param locale language locale for translation
+     * @param keepSolrDoc if true, the raw Solr document is retained in the search hit
+     * @param proximitySearchDistance word distance for proximity search
      * @return List of <code>StructElement</code>s containing the search hits.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -264,18 +262,18 @@ public final class SearchHelper {
     /**
      * Main search method for flat search.
      *
-     * @param query {@link java.lang.String} Solr search query. Merges full-text and metadata hits into their corresponding docstructs.
-     * @param first {@link java.lang.Integer} von
-     * @param rows {@link java.lang.Integer} bis
-     * @param sortFields a {@link java.util.List} object.
-     * @param resultFields a {@link java.util.List} object.
-     * @param filterQueries a {@link java.util.List} object.
-     * @param params a {@link java.util.Map} object.
-     * @param searchTerms a {@link java.util.Map} object.
-     * @param exportFields a {@link java.util.List} object.
-     * @param locale a {@link java.util.Locale} object.
-     * @param keepSolrDoc
-     * @param proximitySearchDistance
+     * @param query Solr search query; merges full-text and metadata hits into their corresponding docstructs
+     * @param first index of the first result (pagination)
+     * @param rows number of results to return
+     * @param sortFields list of sort field/direction pairs
+     * @param resultFields Solr field names to include in results
+     * @param filterQueries Solr filter query strings
+     * @param params additional Solr query parameters
+     * @param searchTerms map of field names to sets of search terms for highlighting
+     * @param exportFields field names to include in export metadata
+     * @param locale language locale for translation
+     * @param keepSolrDoc if true, the raw Solr document is retained in the search hit
+     * @param proximitySearchDistance word distance for proximity search
      * @param user The user performing the search. Used for calculating thumbnail access conditions. If null, it is fetched from the jsfContext if one
      *            exists
      * @return List of <code>StructElement</code>s containing the search hits.
@@ -366,19 +364,19 @@ public final class SearchHelper {
     /**
      * Main search method for aggregated search.
      *
-     * @param query {@link java.lang.String} Solr search query. Merges full-text and metadata hits into their corresponding docstructs.
-     * @param first {@link java.lang.Integer} First hit index
-     * @param rows {@link java.lang.Integer} Number of hits to return
-     * @param sortFields a {@link java.util.List} object.
-     * @param resultFields a {@link java.util.List} object.
-     * @param filterQueries a {@link java.util.List} object.
-     * @param params a {@link java.util.Map} object.
-     * @param searchTerms a {@link java.util.Map} object.
-     * @param exportFields a {@link java.util.List} object.
+     * @param query Solr search query; merges full-text and metadata hits into their corresponding docstructs
+     * @param first index of the first result (pagination)
+     * @param rows number of results to return
+     * @param sortFields list of sort field/direction pairs
+     * @param resultFields Solr field names to include in results
+     * @param filterQueries Solr filter query strings
+     * @param params additional Solr query parameters
+     * @param searchTerms map of field names to sets of search terms for highlighting
+     * @param exportFields field names to include in export metadata
      * @param additionalMetadataListType Optional addtional metadata list type, to be used on alternative search hit views, etc.
-     * @param locale a {@link java.util.Locale} object.
-     * @param keepSolrDoc
-     * @param proximitySearchDistance
+     * @param locale language locale for translation
+     * @param keepSolrDoc if true, the raw Solr document is retained in the search hit
+     * @param proximitySearchDistance word distance for proximity search
      * @return List of <code>StructElement</code>s containing the search hits.
      * @should return all hits
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -397,19 +395,19 @@ public final class SearchHelper {
     /**
      * Main search method for aggregated search.
      *
-     * @param query {@link java.lang.String} Solr search query. Merges full-text and metadata hits into their corresponding docstructs.
-     * @param first {@link java.lang.Integer} First hit index
-     * @param rows {@link java.lang.Integer} Number of hits to return
-     * @param sortFields a {@link java.util.List} object.
-     * @param resultFields a {@link java.util.List} object.
-     * @param filterQueries a {@link java.util.List} object.
-     * @param params a {@link java.util.Map} object.
-     * @param searchTerms a {@link java.util.Map} object.
-     * @param exportFields a {@link java.util.List} object.
+     * @param query Solr search query; merges full-text and metadata hits into their corresponding docstructs
+     * @param first index of the first result (pagination)
+     * @param rows number of results to return
+     * @param sortFields list of sort field/direction pairs
+     * @param resultFields Solr field names to include in results
+     * @param filterQueries Solr filter query strings
+     * @param params additional Solr query parameters
+     * @param searchTerms map of field names to sets of search terms for highlighting
+     * @param exportFields field names to include in export metadata
      * @param additionalMetadataListType Optional addtional metadata list type, to be used on alternative search hit views, etc.
-     * @param locale a {@link java.util.Locale} object.
-     * @param keepSolrDoc
-     * @param proximitySearchDistance
+     * @param locale language locale for translation
+     * @param keepSolrDoc if true, the raw Solr document is retained in the search hit
+     * @param proximitySearchDistance word distance for proximity search
      * @param user The user performing the search. Used for calculating thumbnail access conditions. If null, it is fetched from the jsfContext if one
      *            exists
      * @return List of <code>StructElement</code>s containing the search hits.
@@ -509,11 +507,11 @@ public final class SearchHelper {
     }
 
     /**
-     * 
-     * @param docs
-     * @param mainIdDoc
-     * @param searchTerms
-     * @param factory
+     *
+     * @param docs list of child Solr documents to filter
+     * @param mainIdDoc IDDOC of the main parent document
+     * @param searchTerms map of search terms per field
+     * @param factory factory used for search hit creation and term matching
      * @return {@link SolrDocumentList}
      */
     private static SolrDocumentList filterChildDocs(SolrDocumentList docs, String mainIdDoc, Map<String, Set<String>> searchTerms,
@@ -569,7 +567,7 @@ public final class SearchHelper {
      * Return the {@link HitType} matching the {@link io.goobi.viewer.solr.SolrConstants#DOCTYPE} of the given document. In case the document is of
      * type 'UGC', return the type matching {@link io.goobi.viewer.solr.SolrConstants#UGCTYPE} instead
      *
-     * @param doc
+     * @param doc Solr document to determine the hit type for
      * @return {@link HitType} for doc
      */
     public static HitType getHitType(SolrDocument doc) {
@@ -591,7 +589,7 @@ public final class SearchHelper {
     /**
      * Returns all suffixes relevant to search filtering.
      *
-     * @return a {@link java.lang.String} object.
+     * @return generated Solr query suffix string
      */
     public static String getAllSuffixes() {
         return getAllSuffixes(BeanUtils.getRequest(), true, true);
@@ -600,9 +598,9 @@ public final class SearchHelper {
     /**
      * Returns all suffixes relevant to search filtering.
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @param addStaticQuerySuffix a boolean.
-     * @param addCollectionBlacklistSuffix a boolean.
+     * @param request current HTTP servlet request
+     * @param addStaticQuerySuffix if true, append the configured static query suffix
+     * @param addCollectionBlacklistSuffix if true, append collection blacklist filter
      * @return Generated Solr query suffix
      */
     public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix) {
@@ -611,9 +609,9 @@ public final class SearchHelper {
 
     /**
      * 
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @param addStaticQuerySuffix a boolean.
-     * @param addCollectionBlacklistSuffix a boolean.
+     * @param request current HTTP servlet request
+     * @param addStaticQuerySuffix if true, append the configured static query suffix
+     * @param addCollectionBlacklistSuffix if true, append collection blacklist filter
      * @param privilege Privilege to check (Connector checks a different privilege)
      * @return Generated Solr query suffix
      */
@@ -625,9 +623,9 @@ public final class SearchHelper {
     /**
      * Returns all suffixes relevant to search filtering.
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @param addArchiveFilterSuffix a boolean.
-     * @param addCollectionBlacklistSuffix a boolean.
+     * @param request current HTTP servlet request
+     * @param addArchiveFilterSuffix if true, append a filter excluding archive documents
+     * @param addCollectionBlacklistSuffix if true, append collection blacklist filter
      * @param privilege Privilege to check (Connector checks a different privilege)
      * @param addStaticQuerySuffix if true, add the configured static query suffix to the query
      * @return Generated Solr query suffix
@@ -665,7 +663,7 @@ public final class SearchHelper {
     /**
      * Returns all suffixes relevant to search filtering.
      *
-     * @return a {@link java.lang.String} object.
+     * @return generated Solr query suffix string without the collection blacklist filter
      */
     public static String getAllSuffixesExceptCollectionBlacklist() {
         return getAllSuffixes(BeanUtils.getRequest(), true, false);
@@ -675,17 +673,17 @@ public final class SearchHelper {
      * Returns the <code>BrowseElement</code> constructed from the search hit at <code>index</code> from the search hit list for the given
      * <code>query</code>.
      *
-     * @param query a {@link java.lang.String} object.
-     * @param index a int.
-     * @param sortFields a {@link java.util.List} object.
-     * @param params a {@link java.util.Map} object.
-     * @param searchTerms a {@link java.util.Map} object.
-     * @param locale a {@link java.util.Locale} object.
-     * @param proximitySearchDistance
+     * @param query Solr search query string
+     * @param index zero-based index of the desired hit in the result list
+     * @param sortFields list of sort field/direction pairs
+     * @param params additional Solr query parameters
+     * @param searchTerms map of field names to sets of search terms for highlighting
+     * @param locale language locale for translation
+     * @param proximitySearchDistance word distance for proximity search
      * @should return correct hit for non-aggregated search
      * @should return correct hit for aggregated search
-     * @param filterQueries a {@link java.util.List} object.
-     * @return a {@link io.goobi.viewer.model.search.BrowseElement} object.
+     * @param filterQueries Solr filter query strings
+     * @return the BrowseElement for the search result at the given index, or null if no results are found
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -710,15 +708,13 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
      * getFirstRecordMetadataWithFieldValue.
-     * </p>
      *
-     * @param luceneField a {@link java.lang.String} object.
-     * @param value a {@link java.lang.String} object.
-     * @param filterForWhitelist a boolean.
-     * @param filterForBlacklist a boolean.
-     * @param splittingChar a {@link java.lang.String} object.
+     * @param luceneField Solr field name to search in
+     * @param value field value to match
+     * @param filterForWhitelist if true, restrict results to whitelisted document structures
+     * @param filterForBlacklist if true, exclude blacklisted collection values
+     * @param splittingChar character used to separate hierarchy levels in collection values
      * @return StringPair containing the PI and the target page type of the first record.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -795,12 +791,12 @@ public final class SearchHelper {
      * available for current HttpRequest
      *
      * @param luceneField the SOLR field over which to build the collections (typically "DC")
-     * @param groupingField
+     * @param groupingField optional Solr field used to group collection results
      * @param filterQuery An addition solr-query to filer collections by.
-     * @param filterForWhitelist a boolean.
-     * @param filterForBlacklist a boolean.
+     * @param filterForWhitelist if true, restrict results to whitelisted document structures
+     * @param filterForBlacklist if true, exclude blacklisted collection values
      * @param splittingChar Character used for separating collection hierarchy levels within a collection name (typically ".")
-     * @return a {@link java.util.Map} object.
+     * @return map of collection names to their aggregated result counts
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @should find all collections
      */
@@ -859,8 +855,8 @@ public final class SearchHelper {
 
     /**
      *
-     * @param facetResults
-     * @param splittingChar
+     * @param facetResults Solr facet field containing collection value counts
+     * @param splittingChar character used to separate hierarchy levels in collection names
      * @return Map<String, CollectionResult>
      */
     private static Map<String, CollectionResult> createCollectionResults(FacetField facetResults, String splittingChar) {
@@ -899,10 +895,10 @@ public final class SearchHelper {
 
     /**
      *
-     * @param ret
-     * @param luceneField
-     * @param groupResults
-     * @param filterQuery
+     * @param ret map of collection results to update with grouping information
+     * @param luceneField Solr field used for collection values
+     * @param groupResults Solr facet field containing grouping value counts
+     * @param filterQuery Solr filter query applied when resolving group facets
      */
     private static void addGrouping(Map<String, CollectionResult> ret, String luceneField, FacetField groupResults, String filterQuery) {
         if (groupResults != null) {
@@ -937,9 +933,9 @@ public final class SearchHelper {
     }
 
     /**
-     * @param collectionName
-     * @param splittingChar
-     * @param includeSelf
+     * @param collectionName collection name from which to derive all ancestor names
+     * @param splittingChar character used to separate hierarchy levels in collection names
+     * @param includeSelf if true, include the collection itself in the result
      * @return Collection<String>
      */
     private static Collection<String> getAllParentCollections(final String collectionName, String splittingChar, boolean includeSelf) {
@@ -964,14 +960,14 @@ public final class SearchHelper {
     /**
      * Matches given collection name against the given collection blacklist. Also matches wildcards and child collections.
      *
-     * @param dc a {@link java.lang.String} object.
-     * @param blacklist a {@link java.util.Set} object.
-     * @param splittingChar a {@link java.lang.String} object.
+     * @param dc collection name to check
+     * @param blacklist set of blacklisted collection name patterns
+     * @param splittingChar character used to separate hierarchy levels in collection names
      * @should match simple collections correctly
      * @should match subcollections correctly
      * @should throw IllegalArgumentException if dc is null
      * @should throw IllegalArgumentException if blacklist is null
-     * @return a boolean.
+     * @return true if dc matches any entry in the blacklist; false otherwise
      */
     protected static boolean checkCollectionInBlacklist(String dc, Set<String> blacklist, String splittingChar) {
         if (dc == null) {
@@ -1002,15 +998,13 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
      * searchCalendar.
-     * </p>
      *
-     * @param query a {@link java.lang.String} object.
-     * @param facetFields a {@link java.util.List} object.
-     * @param facetMinCount a int.
-     * @param getFieldStatistics a boolean.
-     * @return a {@link org.apache.solr.client.solrj.response.QueryResponse} object.
+     * @param query Solr search query string
+     * @param facetFields list of field names to facet on
+     * @param facetMinCount minimum document count for a facet value to be included
+     * @param getFieldStatistics if true, request field statistics in the response
+     * @return Solr query response with facets and optional statistics
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -1025,11 +1019,9 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
      * getMinMaxYears.
-     * </p>
      *
-     * @param subQuery a {@link java.lang.String} object.
+     * @param subQuery optional additional Solr query to filter results
      * @return int[]
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -1064,17 +1056,17 @@ public final class SearchHelper {
     }
 
     /**
-     * search method for auto suggestion
+     * Search method for auto suggestion.
      *
-     * <li>First search in field "DEFAULT" and analyze values tokenized, check with startsWith</li>
+     * <p><li>First search in field "DEFAULT" and analyze values tokenized, check with startsWith</li>
      * <li>Then search in field "TITLE" and check with contains</li>
      *
-     * @param suggest the search string
-     * @param currentFacets a {@link java.util.List} object.
+     * @param suggest the search string to suggest completions for
+     * @param currentFacets active facet items used to narrow the suggestion scope
      * @should return autosuggestions correctly
      * @should filter by collection correctly
      * @should filter by facet correctly
-     * @return a {@link java.util.List} object.
+     * @return list of matching suggestion strings
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public static List<String> searchAutosuggestion(final String suggest, List<IFacetItem> currentFacets) throws IndexUnreachableException {
@@ -1131,8 +1123,8 @@ public final class SearchHelper {
     /**
      * Returns a Solr query suffix that filters out collections defined in the collection blacklist.
      *
-     * @param field a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param field Solr field name whose blacklisted values should be filtered
+     * @return Solr query suffix excluding blacklisted values
      */
     public static String getCollectionBlacklistFilterSuffix(String field) {
         return generateCollectionBlacklistFilterSuffix(field);
@@ -1142,9 +1134,9 @@ public final class SearchHelper {
      * Generates a Solr query suffix that filters out values for the given field that are configured as blacklisted. This isn't an expensive method,
      * so the suffix is generated anew upon every call and not persisted.
      *
-     * @param field a {@link java.lang.String} object.
+     * @param field Solr field name whose blacklisted values should be filtered
      * @should construct suffix correctly
-     * @return a {@link java.lang.String} object.
+     * @return Solr query suffix excluding blacklisted values for the given field
      */
     protected static String generateCollectionBlacklistFilterSuffix(String field) {
         // logger.trace("Generating blacklist suffix for field '{}'...", field); //NOSONAR Debug
@@ -1162,15 +1154,13 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
      * getDiscriminatorFieldFilterSuffix.
-     * </p>
      *
-     * @param discriminatorField a {@link java.lang.String} object.
+     * @param discriminatorField Solr field name used as the sub-theme discriminator
      * @should construct subquery correctly
      * @should return empty string if discriminator value is empty or hyphen
-     * @param nh a {@link io.goobi.viewer.managedbeans.NavigationHelper} object.
-     * @return a {@link java.lang.String} object.
+     * @param nh navigation helper used to retrieve the current discriminator value
+     * @return Solr query suffix restricting results to the current discriminator value
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public static String getDiscriminatorFieldFilterSuffix(NavigationHelper nh, String discriminatorField) throws IndexUnreachableException {
@@ -1193,7 +1183,7 @@ public final class SearchHelper {
     /**
      * Updates the calling agent's session with a personalized filter sub-query.
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param request current HTTP servlet request whose session is updated
      * @param privilege Privilege to check (Connector checks a different privilege)
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -1220,12 +1210,12 @@ public final class SearchHelper {
     /**
      * Constructs a personal search query filter suffix for the given user and IP address.
      *
-     * @param licenseTypes
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
-     * @param ipAddress a {@link java.lang.String} object.
-     * @param client
+     * @param licenseTypes list of all configured license types to evaluate
+     * @param user the currently authenticated user, or null for anonymous access
+     * @param ipAddress IP address of the requesting client
+     * @param client optional client application making the request
      * @param privilege Privilege to check (Connector checks a different privilege)
-     * @return a {@link java.lang.String} object.
+     * @return Solr query suffix restricting results to records the user may access
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1316,13 +1306,13 @@ public final class SearchHelper {
     /**
      * TODO This method might be quite expensive.
      *
-     * @param searchTerms a {@link java.util.Set} object.
-     * @param inFulltext a {@link java.lang.String} object.
+     * @param searchTerms set of terms to find and highlight in the full-text
+     * @param inFulltext complete full-text string to extract fragments from
      * @param targetFragmentLength Desired (approximate) length of the text fragment.
      * @param firstMatchOnly If true, only the fragment for the first match will be returned
      * @param addFragmentIfNoMatches If true, a fragment will be added even if no term was matched
-     * @param proximitySearchDistance
-     * @return a {@link java.util.List} object.
+     * @param proximitySearchDistance word distance for proximity search
+     * @return list of text fragments with highlighted search term occurrences
      * @should not add prefix and suffix to text
      * @should truncate string to 200 chars if no terms are given
      * @should truncate string to 200 chars if no term has been found
@@ -1503,11 +1493,11 @@ public final class SearchHelper {
 
     /**
      *
-     * @param m
-     * @param fulltext
-     * @param searchTerm
-     * @param targetFragmentLength
-     * @param ret
+     * @param m regex matcher positioned at the current match
+     * @param fulltext complete full-text string
+     * @param searchTerm matched search term used for highlighting
+     * @param targetFragmentLength desired approximate length of the text fragment
+     * @param ret list to add the generated fragment to
      * @return Last index of text fragment
      */
     private static int createFulltextFragment(Matcher m, String fulltext, String searchTerm, int targetFragmentLength, List<String> ret) {
@@ -1553,9 +1543,9 @@ public final class SearchHelper {
     /**
      * Adds highlighting markup for all given terms to the phrase.
      *
-     * @param phrase a {@link java.lang.String} object.
-     * @param terms a {@link java.util.Set} object.
-     * @return a {@link java.lang.String} object.
+     * @param phrase text to apply highlighting to
+     * @param terms set of search terms to highlight within the phrase
+     * @return phrase with highlighting markup around all matched terms
      * @should apply highlighting for all terms
      * @should skip single character terms
      */
@@ -1594,9 +1584,9 @@ public final class SearchHelper {
      * if maxDistance &lt;= 0, or either phrase or term is blank, simply return {@link StringUtils#contains(phrase, term)}. Otherwise check if the
      * phrase contains a word which has a Damerau-Levenshtein distance of at most maxDistance to the term
      *
-     * @param phrase
-     * @param term
-     * @param maxDistance
+     * @param phrase text to search within
+     * @param term search term to look for in the phrase
+     * @param maxDistance maximum allowed Damerau-Levenshtein edit distance (0 = exact match)
      * @return true if phrase contains term within maxDistance; false otherwise
      */
     public static boolean contains(String phrase, String term, int maxDistance) {
@@ -1620,8 +1610,8 @@ public final class SearchHelper {
     /**
      * Recursively adds highlighting markup to all occurrences of the given term in the given phrase.
      *
-     * @param phrase
-     * @param term
+     * @param phrase text to apply highlighting to
+     * @param term search term to highlight within the phrase
      * @return phrase with highlighting markup around term
      * @should apply highlighting to all occurrences of term
      * @should ignore special characters
@@ -1659,9 +1649,9 @@ public final class SearchHelper {
     }
 
     /**
-     * Remove any diacritic characters and replace any non.letter and non-digit characters with space
+     * Remove any diacritic characters and replace any non.letter and non-digit characters with space.
      *
-     * @param string
+     * @param string input string to normalize
      * @return Normalized string
      * @should preserve digits
      * @should preserve latin chars
@@ -1698,7 +1688,7 @@ public final class SearchHelper {
 
     /**
      *
-     * @param term
+     * @param term text to wrap with highlighting placeholder markup
      * @return term with highlighting markup
      * @should add span correctly
      */
@@ -1707,12 +1697,10 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
      * replaceHighlightingPlaceholders.
-     * </p>
      *
-     * @param phrase a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param phrase text containing highlighting placeholder markup
+     * @return phrase with placeholders replaced by HTML mark tags
      * @should replace placeholders with html tags
      */
     public static String replaceHighlightingPlaceholders(String phrase) {
@@ -1722,7 +1710,7 @@ public final class SearchHelper {
 
     /**
      *
-     * @param phrase
+     * @param phrase text containing highlighting placeholder markup
      * @return phrase without highlighting placeholders
      * @should replace placeholders with empty strings
      */
@@ -1731,11 +1719,11 @@ public final class SearchHelper {
     }
 
     /**
-     * @param fulltext
-     * @param targetFragmentLength
-     * @param fulltextFragment
-     * @param searchTerm
-     * @param indexOfTerm
+     * @param fulltext complete full-text string
+     * @param targetFragmentLength desired approximate length of the text fragment
+     * @param fulltextFragment current fragment; returns unmodified if non-empty
+     * @param searchTerm matched search term
+     * @param indexOfTerm character index of the matched term in the full-text
      * @return Text fragment
      */
     @SuppressWarnings("unused")
@@ -1758,10 +1746,10 @@ public final class SearchHelper {
     }
 
     /**
-     * @param fulltext
-     * @param searchTerm
-     * @param indexOfTerm
-     * @param fragmentLength
+     * @param fulltext complete full-text string
+     * @param searchTerm matched search term used to anchor the fragment
+     * @param indexOfTerm character index of the matched term in the full-text
+     * @param fragmentLength desired length of the returned text fragment
      * @return Text fragment
      */
     private static String getTextFragmentRandomized(String fulltext, String searchTerm, int indexOfTerm, int fragmentLength) {
@@ -1778,10 +1766,10 @@ public final class SearchHelper {
     }
 
     /**
-     * @param fulltext
-     * @param searchTerm
-     * @param indexOfTerm
-     * @param fragmentLength
+     * @param fulltext complete full-text string
+     * @param searchTerm matched search term used to anchor the fragment
+     * @param indexOfTerm character index of the matched term in the full-text
+     * @param fragmentLength desired length of the returned text fragment
      * @return Text fragment
      */
     @SuppressWarnings("unused")
@@ -1802,10 +1790,10 @@ public final class SearchHelper {
     /**
      * Returns a list of values for a given facet field and the given query.
      *
-     * @param query a {@link java.lang.String} object.
-     * @param facetFieldName a {@link java.lang.String} object.
-     * @param facetMinCount a int.
-     * @return a {@link java.util.List} object.
+     * @param query Solr search query string
+     * @param facetFieldName Solr field name to collect facet values from
+     * @param facetMinCount minimum document count for a facet value to be included
+     * @return list of facet value strings
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -1818,12 +1806,12 @@ public final class SearchHelper {
     /**
      * Returns a list of values for a given facet field and the given query.
      *
-     * @param query a {@link java.lang.String} object.
-     * @param facetFieldName a {@link java.lang.String} object.
+     * @param query Solr search query string
+     * @param facetFieldName Solr field name to collect facet values from
      * @param facetPrefix The facet field value must start with these characters. Ignored if null or blank
-     * @param facetMinCount a int.
-     * @param params
-     * @return a {@link java.util.List} object.
+     * @param facetMinCount minimum document count for a facet value to be included
+     * @param params additional Solr query parameters
+     * @return list of facet value strings
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @should return correct values via json response
@@ -1877,10 +1865,10 @@ public final class SearchHelper {
 
     /**
      *
-     * @param bmfc
-     * @param startsWith
-     * @param filterQuery
-     * @param language
+     * @param bmfc browsing menu field configuration to query
+     * @param startsWith optional prefix to filter terms by first character(s)
+     * @param filterQuery optional additional Solr filter query
+     * @param language language code for language-specific fields
      * @return Number of found terms
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -1924,9 +1912,9 @@ public final class SearchHelper {
     /**
      * Generates starting character filters for term browsing, using facets.
      * 
-     * @param bmfc
-     * @param filterQuery
-     * @param locale
+     * @param bmfc browsing menu field configuration to query
+     * @param filterQuery optional additional Solr filter query
+     * @param locale locale used to select language-specific fields
      * @return List<String>
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -2014,14 +2002,14 @@ public final class SearchHelper {
      * Returns a list of index terms for the given field name. This method uses the slower doc search instead of term search, but can be filtered with
      * a query.
      *
-     * @param bmfc a {@link io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig} object.
-     * @param startsWith a {@link java.lang.String} object.
-     * @param filterQuery a {@link java.lang.String} object.
-     * @param start
-     * @param rows
-     * @param comparator a {@link java.util.Comparator} object.
-     * @param language Language for language-specific fields
-     * @return a {@link java.util.List} object.
+     * @param bmfc browsing menu field configuration defining the field to browse
+     * @param startsWith optional prefix to filter terms by first character(s)
+     * @param filterQuery optional additional Solr filter query
+     * @param start index of the first result (pagination)
+     * @param rows maximum number of results to return
+     * @param comparator comparator used to sort the resulting browse terms
+     * @param language language code for language-specific fields
+     * @return list of browse terms matching the given criteria
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @should be thread safe when counting terms
@@ -2103,13 +2091,13 @@ public final class SearchHelper {
 
     /**
      *
-     * @param bmfc
-     * @param startsWith
-     * @param filterQuery
-     * @param sortFields
-     * @param start
-     * @param rows
-     * @param language
+     * @param bmfc browsing menu field configuration to query
+     * @param startsWith optional prefix to filter terms by first character(s)
+     * @param filterQuery optional additional Solr filter query
+     * @param sortFields list of sort field/order pairs
+     * @param start index of the first result (pagination)
+     * @param rows maximum number of results to return
+     * @param language language code for language-specific fields
      * @return {@link QueryResponse}
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -2202,12 +2190,12 @@ public final class SearchHelper {
      * Extracts terms from the given Solr document and adds them to the terms map, if applicable. Can be executed in parallel, provided
      * <code>terms</code> and <code>usedTerms</code> are synchronized.
      *
-     * @param doc
-     * @param bmfc
-     * @param startsWith
+     * @param doc Solr document to extract browse terms from
+     * @param bmfc browsing menu field configuration defining the field to extract
+     * @param startsWith optional prefix to filter terms by first character(s)
      * @param terms Map of terms collected so far.
-     * @param aggregateHits
-     * @param language
+     * @param aggregateHits if true, count each record only once per term
+     * @param language language code for language-specific fields
      */
     private static void processSolrResult(SolrDocument doc, BrowsingMenuFieldConfig bmfc, String startsWith,
             ConcurrentMap<String, BrowseTerm> terms, boolean aggregateHits, String language) {
@@ -2295,9 +2283,9 @@ public final class SearchHelper {
     /**
      * Parses the given Solr query for field values and returns them as a set of strings.
      *
-     * @param query a {@link java.lang.String} object.
-     * @param discriminatorValue a {@link java.lang.String} object.
-     * @return a {@link java.util.Map} object.
+     * @param query Solr query string to parse for field:value pairs
+     * @param discriminatorValue current sub-theme discriminator value to exclude from terms
+     * @return map of Solr field names to sets of extracted search terms
      * @should extract all values from query except from NOT blocks
      * @should handle multiple phrases in query correctly
      * @should handle escaped double quotes correctly
@@ -2486,7 +2474,7 @@ public final class SearchHelper {
     /**
      * Removes outer double quotes from the given value.
      * 
-     * @param value
+     * @param value the string value to unquote
      * @param containsEscapedDoubleQuotes Use true if inner double quotes are already backslash-escaped, false otherwise
      * @return value without surrounding quotation marks
      * @should return value if blank
@@ -2512,10 +2500,10 @@ public final class SearchHelper {
 
     /**
      *
-     * @param query
-     * @param facetString
+     * @param query Solr search query string to parse
+     * @param facetString serialized facet selection string
      * @param template Advanced search fields template
-     * @param language
+     * @param language language code for field labels
      * @return Parsed {@link SearchQueryGroup}
      * @should parse phrase search query correctly
      * @should parse regular search query correctly
@@ -2739,9 +2727,9 @@ public final class SearchHelper {
     }
 
     /**
-     * Remove '*' at the start or end of the given value
+     * Removes '*' at the start or end of the given value.
      *
-     * @param value
+     * @param value search term possibly containing leading or trailing wildcards
      * @return value without truncation
      */
     public static String removeTruncation(final String value) {
@@ -2764,12 +2752,10 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
      * generateQueryParams.
-     * </p>
      *
-     * @param termQuery
-     * @return a {@link java.util.Map} object.
+     * @param termQuery term query used to construct the boost query
+     * @return map of Solr query parameters including the boost query
      */
     public static Map<String, String> generateQueryParams(String termQuery) {
         Map<String, String> params = new HashMap<>();
@@ -2786,12 +2772,10 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
      * facetifyList.
-     * </p>
      *
-     * @param sourceList a {@link java.util.List} object.
-     * @return a {@link java.util.List} object. * @should facetify correctly
+     * @param sourceList list of Solr field names to convert to facet field names
+     * @return list of facetified field names * @should facetify correctly
      */
     public static List<String> facetifyList(List<String> sourceList) {
         if (sourceList == null) {
@@ -2810,12 +2794,10 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
      * facetifyField.
-     * </p>
      *
-     * @param fieldName a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param fieldName Solr field name to convert to a facet field name
+     * @return field name with the FACET_ prefix applied
      * @should facetify correctly
      * @should leave bool fields unaltered
      * @should leave year month day fields unaltered
@@ -2834,12 +2816,10 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
      * sortifyField.
-     * </p>
      *
-     * @param fieldName a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param fieldName Solr field name to convert to a sort field name
+     * @return field name with the SORT_ prefix applied
      * @should sortify correctly
      */
     public static String sortifyField(String fieldName) {
@@ -2847,12 +2827,10 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
      * boolifyField.
-     * </p>
      *
-     * @param fieldName a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param fieldName Solr field name to convert to a boolean field name
+     * @return field name with the BOOL_ prefix applied
      */
     public static String boolifyField(String fieldName) {
         return adaptField(fieldName, SolrConstants.PREFIX_BOOL);
@@ -2860,7 +2838,7 @@ public final class SearchHelper {
 
     /**
      *
-     * @param fieldName
+     * @param fieldName Solr field name to normalize by removing known prefixes and suffixes
      * @return Normalized fieldName
      */
     public static String normalizeField(String fieldName) {
@@ -2869,8 +2847,8 @@ public final class SearchHelper {
 
     /**
      *
-     * @param fieldName
-     * @param prefix
+     * @param fieldName Solr field name to adapt
+     * @param prefix target prefix to apply (e.g. "FACET_", "SORT_")
      * @return modified field name
      * @should apply prefix correctly
      * @should not apply prefix to regular fields if empty
@@ -2911,8 +2889,8 @@ public final class SearchHelper {
 
     /**
      *
-     * @param fieldName
-     * @param prefix
+     * @param fieldName Solr field name to modify
+     * @param prefix prefix to apply by replacing the existing field type prefix
      * @return fieldName with prefix
      * @should apply prefix correctly
      */
@@ -2957,12 +2935,10 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
      * defacetifyField.
-     * </p>
      *
-     * @param fieldName a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param fieldName facetified Solr field name to convert back to its base field name
+     * @return base field name without the FACET_ prefix
      * @should defacetify correctly
      */
     public static String defacetifyField(String fieldName) {
@@ -3004,10 +2980,10 @@ public final class SearchHelper {
     /**
      * Creates a Solr expand query string out of lists of fields and terms.
      *
-     * @param fields a {@link java.util.List} object.
-     * @param searchTerms a {@link java.util.Map} object.
-     * @param proximitySearchDistance
-     * @return a {@link java.lang.String} object.
+     * @param fields list of Solr field names to include in the expand query
+     * @param searchTerms map of field names to sets of search terms for highlighting
+     * @param proximitySearchDistance word distance for proximity search
+     * @return Solr expand query string
      * @should generate query correctly
      * @should return empty string if no fields match
      * @should skip reserved fields
@@ -3102,9 +3078,9 @@ public final class SearchHelper {
     /**
      * Creates a Solr expand query string out of advanced search query item groups.
      *
-     * @param group
-     * @param allowFuzzySearch
-     * @return a {@link java.lang.String} object.
+     * @param group advanced search query group containing the query items
+     * @param allowFuzzySearch if true, fuzzy search tokens are included in the query
+     * @return Solr expand query string
      * @should generate query correctly
      * @should skip reserved fields
      * @should switch to OR operator on fulltext items
@@ -3200,15 +3176,13 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
      * getExpandQueryFieldList.
-     * </p>
      *
-     * @param searchType a int.
-     * @param searchFilter a {@link io.goobi.viewer.model.search.SearchFilter} object.
-     * @param queryGroup a {@link SearchQueryGroup} object.
-     * @param additionalFields Optinal additional fields to return
-     * @return a {@link java.util.List} object.
+     * @param searchType integer constant identifying the search type (regular, advanced, calendar, etc.)
+     * @param searchFilter active search filter determining which fields to expand into
+     * @param queryGroup advanced search query group containing the query items
+     * @param additionalFields optional additional fields to append to the result
+     * @return list of Solr field names to use in the expand query
      */
     public static List<String> getExpandQueryFieldList(int searchType, SearchFilter searchFilter, SearchQueryGroup queryGroup,
             List<String> additionalFields) {
@@ -3291,12 +3265,10 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
      * prepareQuery.
-     * </p>
      *
-     * @param query a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param query raw search query string to prepare
+     * @return prepared query string wrapped in parentheses, or a fallback record-listing query
      * @should wrap query correctly
      */
     public static String prepareQuery(String query) {
@@ -3320,9 +3292,9 @@ public final class SearchHelper {
     /**
      * Puts non-empty queries into parentheses and replaces empty queries with a top level record-only query (for collection listing).
      *
-     * @param query a {@link java.lang.String} object.
-     * @param docstructWhitelistFilterQuery a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param query raw search query string to prepare
+     * @param docstructWhitelistFilterQuery fallback filter query for record listing when query is empty
+     * @return prepared query string wrapped in parentheses, or the whitelist filter query
      * @should prepare non-empty queries correctly
      * @should prepare empty queries correctly
      */
@@ -3345,7 +3317,7 @@ public final class SearchHelper {
 
     /**
      *
-     * @param searchTerms
+     * @param searchTerms collection of search terms to combine into a query
      * @return Term query from searchTerms
      */
     public static String buildTermQuery(Collection<String> searchTerms) {
@@ -3354,8 +3326,8 @@ public final class SearchHelper {
 
     /**
      *
-     * @param searchTerms
-     * @param addOperators
+     * @param searchTerms collection of search terms to combine into a query
+     * @param addOperators if true, AND operators are inserted between terms
      * @return Term query from searchTerms
      */
     public static String buildTermQuery(Collection<String> searchTerms, boolean addOperators) {
@@ -3387,12 +3359,11 @@ public final class SearchHelper {
     /**
      * Constructs the complete query using the raw query and adding all available suffixes.
      *
-     * @param rawQuery a {@link java.lang.String} object.
+     * @param rawQuery raw search query string before suffixes are applied
      * @param boostTopLevelDocstructs If true, query elements for boosting will be added
      * @param aggregationType {@link SearchAggregationType}
-     * @return a {@link java.lang.String} object.
+     * @return complete Solr query string with all suffixes
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     *
      */
     public static String buildFinalQuery(String rawQuery, boolean boostTopLevelDocstructs, SearchAggregationType aggregationType) {
         return buildFinalQuery(rawQuery, boostTopLevelDocstructs, null, aggregationType);
@@ -3401,11 +3372,11 @@ public final class SearchHelper {
     /**
      * Constructs the complete query using the raw query and adding all available suffixes.
      *
-     * @param rawQuery a {@link java.lang.String} object.
+     * @param rawQuery raw search query string before suffixes are applied
      * @param boostTopLevelDocstructs If true, query elements for boosting will be added
-     * @param request
+     * @param request HTTP servlet request used to retrieve filter query suffix
      * @param aggregationType {@link SearchAggregationType}
-     * @return a {@link java.lang.String} object.
+     * @return complete Solr query string with all suffixes
      * @should add embedded query template if boostTopLevelDocstructs true
      * @should add query prefix if boostTopLevelDocstructs true and termQuery not empty
      * @should escape quotation marks in embedded query
@@ -3451,7 +3422,7 @@ public final class SearchHelper {
     }
 
     /**
-     * @param request
+     * @param request HTTP servlet request whose session holds the filter query suffix
      * @param privilege Privilege to check (Connector checks a different privilege)
      * @return Filter query suffix string from the HTTP session
      */
@@ -3485,19 +3456,17 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
      * exportSearchAsExcel.
-     * </p>
      *
      * @param wb {@link SXSSFWorkbook} to populate
      * @param finalQuery Complete query with suffixes.
      * @param exportQuery Query constructed from the user's input, without any secret suffixes.
-     * @param sortFields a {@link java.util.List} object.
-     * @param filterQueries a {@link java.util.List} object.
-     * @param params a {@link java.util.Map} object.
-     * @param searchTerms a {@link java.util.Map} object.
-     * @param locale a {@link java.util.Locale} object.
-     * @param proximitySearchDistance
+     * @param sortFields list of sort field/direction pairs
+     * @param filterQueries Solr filter query strings
+     * @param params additional Solr query parameters
+     * @param searchTerms map of field names to sets of search terms for highlighting
+     * @param locale language locale for column header translation
+     * @param proximitySearchDistance word distance for proximity search
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -3572,13 +3541,11 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
      * parseSortString.
-     * </p>
      *
-     * @param sortString a {@link java.lang.String} object.
-     * @param navigationHelper a {@link io.goobi.viewer.managedbeans.NavigationHelper} object.
-     * @return a {@link java.util.List} object.
+     * @param sortString semicolon-separated sort field string, prefix '!' for descending
+     * @param navigationHelper navigation helper used to resolve language-specific sort fields
+     * @return list of sort field/direction pairs
      * @should parse string correctly
      */
     public static List<StringPair> parseSortString(String sortString, NavigationHelper navigationHelper) {
@@ -3700,8 +3667,8 @@ public final class SearchHelper {
 
     /**
      *
-     * @param accessCondition
-     * @param escapeAccessCondition
+     * @param accessCondition access condition value to query for
+     * @param escapeAccessCondition if true, special URL characters in the value are escaped
      * @return Constructed Solr query
      * @should build escaped query correctly
      * @should build not escaped query correctly
@@ -3717,8 +3684,8 @@ public final class SearchHelper {
      * Adds a fuzzy search token to the given term. The maximal Damerau-Levenshtein is calculated from term length
      *
      * @param term the search term
-     * @param prefix
-     * @param suffix
+     * @param prefix string to prepend to the term in the fuzzy template
+     * @param suffix string to append to the term in the fuzzy template
      * @return the given term with a fuzzy search token appended
      */
     public static String addFuzzySearchToken(String term, String prefix, String suffix) {
@@ -3729,8 +3696,8 @@ public final class SearchHelper {
     /**
      * @param term the search term. Must be a single word
      * @param distance the maximum Damerau-Levenshtein distance to a matching word. Must be from 0 to 2, where 0 means no fuzzy search
-     * @param prefix
-     * @param suffix
+     * @param prefix string to prepend to the term in the fuzzy template
+     * @param suffix string to append to the term in the fuzzy template
      * @return term with fuzzy search token
      */
     public static String addFuzzySearchToken(String term, int distance, String prefix, String suffix) {
@@ -3752,8 +3719,8 @@ public final class SearchHelper {
 
     /**
      *
-     * @param term
-     * @param distance
+     * @param term search phrase to append the proximity token to
+     * @param distance maximum word distance between terms in a proximity search
      * @return {@link String}
      * @should term with proximity search token
      */
@@ -3806,7 +3773,7 @@ public final class SearchHelper {
 
     /**
      *
-     * @param query
+     * @param query Solr query string possibly containing a proximity search token
      * @return Extracted search distance
      * @should return 0 if query empty
      * @should return 0 if query does not contain token
@@ -3858,9 +3825,9 @@ public final class SearchHelper {
 
     /**
      * Separate leading and trailing wildcard token ('*') from the actual term and return an array of length 3 with the values [leadingWildCard,
-     * tokenWithoutWildcards, trailingWildcard] If leading/trailing wildcards are missing, the corresponding array entries are empty strings
+     * tokenWithoutWildcards, trailingWildcard] If leading/trailing wildcards are missing, the corresponding array entries are empty strings.
      *
-     * @param term
+     * @param term search term possibly containing leading and/or trailing wildcard characters
      * @return array of prefix, token, suffix
      */
     public static String[] getWildcardsTokens(String term) {
@@ -3873,7 +3840,7 @@ public final class SearchHelper {
     /**
      * Constructs an expand query from given facet queries. Constrains the query to DOCSTRCT doc types only.
      *
-     * @param allFacetQueries
+     * @param allFacetQueries list of facet query strings to include in the expand query
      * @param allowedFacetQueryRegexes Optional list containing regexes for allowed facet queries
      * @return Expand query
      * @should return empty string if list null or empty

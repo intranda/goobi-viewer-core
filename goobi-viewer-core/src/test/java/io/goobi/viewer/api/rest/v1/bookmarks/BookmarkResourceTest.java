@@ -60,15 +60,19 @@ class BookmarkResourceTest extends AbstractRestApiTest {
      * The success path (201 Created) requires authentication and is verified at the source level
      * in BookmarkResource.addBookmarkList() which wraps the result in Response.status(CREATED).
      */
+    /**
+     * Verify that POST /bookmarks returns 409 when called without a logged-in user.
+     * Session users already have exactly one temporary bookmark list and may not add more.
+     */
     @Test
-    void testAddBookmarkList_returns400WhenNotLoggedIn() {
+    void testAddBookmarkList_returns409WhenNotLoggedIn() {
         BookmarkList list = new BookmarkList();
         list.setName("Test List");
         try (Response response = target(USERS_BOOKMARKS)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .post(Entity.entity(list, MediaType.APPLICATION_JSON))) {
-            assertEquals(400, response.getStatus(), "POST /bookmarks without login should return 400 Bad Request");
+            assertEquals(409, response.getStatus(), "POST /bookmarks without login should return 409 Conflict");
         }
     }
 
@@ -77,6 +81,33 @@ class BookmarkResourceTest extends AbstractRestApiTest {
      * This guards against NumberFormatException when a client sends the literal string "null"
      * as the value of the max query parameter.
      */
+    /**
+     * requireValidListId() is private but enforced in all list-specific endpoints.
+     * A listId of 0 must be rejected with HTTP 400 before any business logic runs.
+     */
+    @Test
+    void getBookmarkList_zeroListId_returns400() {
+        try (Response response = target(USERS_BOOKMARKS + "/0")
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(400, response.getStatus(), "listId=0 should be rejected with HTTP 400");
+        }
+    }
+
+    /**
+     * Negative listIds must also be rejected with HTTP 400.
+     */
+    @Test
+    void getBookmarkList_negativeListId_returns400() {
+        try (Response response = target(USERS_BOOKMARKS + "/-1")
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(400, response.getStatus(), "listId=-1 should be rejected with HTTP 400");
+        }
+    }
+
     @Test
     void testParseMaxHits() {
         // null input → null output

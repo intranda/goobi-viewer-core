@@ -667,6 +667,7 @@
 				<metadata label="MD_CREATOR" value="">
 					<param type="field" key="MD_CREATOR" />
 				</metadata>
+				<fold/>
 				<metadata label="MD_CATALOGIDSOURCE" value="LINK_CATALOGIDSOURCE" separator="; " topstructOnly="true">
 					<param type="field" key="MD_CATALOGIDSOURCE" />
 					<param type="field" key="MD_CATALOGIDSOURCE" />
@@ -1032,6 +1033,10 @@
                 <displayWidget name="search-in-current-item" />
             </view>
             <view name="toc">
+                <displayWidget name="views" />
+                <displayWidget name="copyright" />
+            </view>
+            <view name="metadata">
                 <displayWidget name="views" />
                 <displayWidget name="copyright" />
             </view>

@@ -40,19 +40,26 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+/**
+ * JPA entity that stores per-language placeholder information (e.g. description text and an optional
+ * CMS media image) for a {@link LicenseType}, persisted in the {@code license_type_placeholder_info} table.
+ */
 @Entity
 @Table(name = "license_type_placeholder_info")
 public class LicenseTypePlaceholderInfo extends Translation implements CMSMediaHolder, Serializable {
 
     private static final long serialVersionUID = -6171783524157218760L;
 
+    /**
+     * Specifies how the placeholder image for a {@link LicenseType} is sourced.
+     */
     public enum LicenseTypeImageMode {
         DEFAULT,
         UPLOADED_IMAGE;
 
         /**
          * 
-         * @param name
+         * @param name name to look up
          * @return {@link LicenseTypeImageMode} matchin name; otherwise null
          */
         public static LicenseTypeImageMode getByName(String name) {
@@ -86,9 +93,9 @@ public class LicenseTypePlaceholderInfo extends Translation implements CMSMediaH
 
     /**
      * 
-     * @param language
-     * @param tag
-     * @param owner
+     * @param language language code for this translation entry
+     * @param tag translation tag identifying the text field
+     * @param owner the owning LicenseType
      */
     public LicenseTypePlaceholderInfo(String language, String tag, LicenseType owner) {
         super();
@@ -128,23 +135,17 @@ public class LicenseTypePlaceholderInfo extends Translation implements CMSMediaH
         return Optional.ofNullable(getMediaItem()).map(item -> item.getIconURI(0, 0).toString()).orElse(null);
     }
 
-    /**
-     * @return the owner
-     */
+    
     public LicenseType getOwner() {
         return owner;
     }
 
-    /**
-     * @param owner the owner to set
-     */
+    
     public void setOwner(LicenseType owner) {
         this.owner = owner;
     }
 
-    /**
-     * @return the imageMode
-     */
+    
     public LicenseTypeImageMode getImageMode() {
         if (imageMode == null) {
             imageMode = LicenseTypeImageMode.DEFAULT;
@@ -152,9 +153,7 @@ public class LicenseTypePlaceholderInfo extends Translation implements CMSMediaH
         return imageMode;
     }
 
-    /**
-     * @param imageMode the imageMode to set
-     */
+    
     public void setImageMode(LicenseTypeImageMode imageMode) {
         this.imageMode = imageMode;
     }

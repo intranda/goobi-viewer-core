@@ -308,9 +308,14 @@ var viewerJS = (function (viewer) {
 
             // (re)-enable BS tooltips
 
-            /* The manually determine when an item should show and hide a tool tip. */
+            /* Manually determine when an item should show and hide a tooltip.
+             * Call .off() with namespaced events before .on() to prevent handlers
+             * from stacking up across multiple initBsFeatures() invocations (e.g.
+             * after each JSF AJAX update).
+             */
             $('[data-toggle="tooltip"]')
                 .tooltip({ trigger: 'manual' })
+                .off('mouseenter.tooltip mouseleave.tooltip')  // prevent accumulation
                 .on('mouseenter.tooltip', (event) => {
                     $('[data-toggle="tooltip"]').tooltip('hide');
                     $(event.currentTarget).tooltip('show');
@@ -325,10 +330,11 @@ var viewerJS = (function (viewer) {
                 })
 
                 // show tooltips on (keyboard) focus
-                .focus((event) => {
+                .off('focus.tooltip blur.tooltip')
+                .on('focus.tooltip', (event) => {
                     $(event.currentTarget).tooltip('show');
                 })
-                .blur((event) => {
+                .on('blur.tooltip', (event) => {
                     $(event.currentTarget).tooltip('hide');
                 });
 

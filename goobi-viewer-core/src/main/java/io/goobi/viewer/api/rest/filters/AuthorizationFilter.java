@@ -41,9 +41,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 
 /**
- * <p>
- * Allows requests authorized by an authrization token.
- * </p>
+ * JAX-RS request filter that performs token-based authentication and authorization checks for protected API endpoints.
  */
 @Provider
 @AuthorizationBinding
@@ -78,9 +76,9 @@ public class AuthorizationFilter implements ContainerRequestFilter {
 
     /**
      *
-     * @param ip
-     * @param token
-     * @param pathInfo
+     * @param ip the client IP address
+     * @param token the bearer token from the request
+     * @param pathInfo the request path info
      * @return Whether or not access is granted
      */
     private static boolean checkPermissions(String ip, String token, String pathInfo) {

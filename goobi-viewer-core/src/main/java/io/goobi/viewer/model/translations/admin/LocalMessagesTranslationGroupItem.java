@@ -30,23 +30,19 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
  * Group item for local messages.
- *
  */
 public class LocalMessagesTranslationGroupItem extends TranslationGroupItem {
 
     /**
      * Protected constructor.
      *
-     * @param key
-     * @param regex
+     * @param key the message key or pattern
+     * @param regex whether the key is a regular expression
      */
     protected LocalMessagesTranslationGroupItem(String key, boolean regex) {
         super(key, regex);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.admin.TranslationGroupItem#loadEntries()
-     */
     @Override
     protected void loadEntries() {
         List<String> keys;

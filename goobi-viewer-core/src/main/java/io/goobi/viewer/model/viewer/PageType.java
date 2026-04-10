@@ -36,9 +36,7 @@ import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
 
 /**
- * <p>
- * PageType class.
- * </p>
+ * Enum of the viewer page types (e.g. viewImage, viewToc, search) used for URL mapping and navigation.
  */
 public enum PageType {
 
@@ -211,11 +209,9 @@ public enum PageType {
     }
 
     /**
-     * <p>
      * Getter for the field <code>handling</code>.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.model.viewer.PageType.PageTypeHandling} object.
+     * @return the handling mode determining whether this page type is handled by CMS or the core viewer
      */
     public PageTypeHandling getHandling() {
         return this.handling;
@@ -226,22 +222,18 @@ public enum PageType {
     }
 
     /**
-     * <p>
      * isHandledWithCms.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this page type is handled via the CMS system, false otherwise
      */
     public boolean isHandledWithCms() {
         return PageTypeHandling.cms.equals(this.handling);
     }
 
     /**
-     * <p>
      * isCmsPage.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this page type represents a CMS-managed document view page, false otherwise
      */
     public boolean isCmsPage() {
         try {
@@ -267,11 +259,9 @@ public enum PageType {
     }
 
     /**
-     * <p>
      * isDocumentPage.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if this page type represents a document view page, false otherwise
      */
     public boolean isDocumentPage() {
         try {
@@ -298,11 +288,9 @@ public enum PageType {
     }
 
     /**
-     * <p>
      * getTypesHandledByCms.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of page types that are handled by the CMS system
      */
     public static List<PageType> getTypesHandledByCms() {
         Set<PageType> all = EnumSet.allOf(PageType.class);
@@ -316,12 +304,10 @@ public enum PageType {
     }
 
     /**
-     * <p>
      * getByName.
-     * </p>
      *
-     * @param name a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
+     * @param name page type name to look up
+     * @return the PageType matching the given name, or {@link #other} if not found
      * @should return correct type for raw names
      * @should return correct type for mapped names
      * @should return correct type for enum names
@@ -352,20 +338,16 @@ public enum PageType {
     }
 
     /**
-     * <p>
      * getRawName.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the raw (internal) name of this page type as defined in configuration
      */
     public String getRawName() {
         return path;
     }
 
     /**
-     * <p>
      * Getter for the field <code>name</code>.
-     * </p>
      *
      * @return Mapped alternative name, if available; raw name otherwise
      */
@@ -388,12 +370,10 @@ public enum PageType {
     }
 
     /**
-     * <p>
      * getPageTypeForDocStructType.
-     * </p>
      *
-     * @param docStructType a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
+     * @param docStructType logical document structure type name
+     * @return the configured PageType for the given docstruct type, or null if none is configured
      */
     public static PageType getPageTypeForDocStructType(String docStructType) {
         // First choice: Use preferred target page type for this publication type, if configured
@@ -421,21 +401,19 @@ public enum PageType {
     }
 
     /**
-     * <p>
      * determinePageType.
-     * </p>
      *
-     * @param docStructType a {@link java.lang.String} object.
-     * @param mimeType a {@link java.lang.String} object.
-     * @param anchorOrGroup a boolean.
-     * @param hasImages a boolean.
+     * @param docStructType logical document structure type name
+     * @param mimeType MIME type of the record's primary content
+     * @param anchorOrGroup true if the record is an anchor or group element
+     * @param hasImages true if the record has associated images
      * @param pageResolverUrl If this page type is for a page resolver url, ignore certain preferences
      * @should return configured page type correctly
      * @should return metadata page type for application mime type
      * @should return toc page type for anchors
      * @should return image page type correctly
      * @should return medatata page type if nothing else matches
-     * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
+     * @return the most appropriate PageType for the given record characteristics
      */
     public static PageType determinePageType(String docStructType, String mimeType, Boolean anchorOrGroup, boolean hasImages,
             boolean pageResolverUrl) {
@@ -462,11 +440,9 @@ public enum PageType {
     }
 
     /**
-     * <p>
      * matches.
-     * </p>
      *
-     * @param pagePath a {@link java.lang.String} object.
+     * @param pagePath URL path segment to match against this page type
      * @return true if the given path equals either the intrinsic or configured name of this pageType Leading and trailing slashes are ignored.
      *         PageType other is never matched
      */
@@ -479,11 +455,9 @@ public enum PageType {
     }
 
     /**
-     * <p>
      * matches.
-     * </p>
      *
-     * @param pagePath a {@link java.net.URI} object.
+     * @param pagePath URI whose path is matched against this page type
      * @return true if the given path starts with either the intrinsic or configured name of this pageType Leading and trailing slashes are ignored.
      *         PageType other is never matched
      */

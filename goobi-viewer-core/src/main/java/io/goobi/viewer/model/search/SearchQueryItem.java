@@ -59,6 +59,9 @@ public class SearchQueryItem implements Serializable {
 
     private static final long serialVersionUID = -367323410132252816L;
 
+    /**
+     * Enumerates the logical operators (AND, OR, NOT) available for combining values within a single search query item.
+     */
     public enum SearchItemOperator {
         AND,
         OR,
@@ -95,24 +98,18 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * @param template
+     * @param template advanced search template name for field configuration lookup
      */
     public SearchQueryItem(String template) {
         this.template = template;
         this.lines.add(new SearchQueryItemLine());
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         return Objects.hash(field, template, lines);
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -130,23 +127,19 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>
      * getAvailableOperators.
-     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of search item operators available for this query item (AND, OR, NOT)
      */
     public List<SearchItemOperator> getAvailableOperators() {
         return Arrays.asList(SearchItemOperator.AND, SearchItemOperator.OR, SearchItemOperator.NOT);
     }
 
     /**
-     * <p>
      * getSelectItems.
-     * </p>
      *
-     * @param language a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
+     * @param language locale language code for label translation.
+     * @return a list of label-value pairs for the select dropdown of this query item's field
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -185,7 +178,7 @@ public class SearchQueryItem implements Serializable {
 
     /**
      * 
-     * @param language
+     * @param language locale language code for label translation
      * @param additionalValues 0-n additional, manually added values
      * @return List&lt;CheckboxSelectable&lt;String&gt;&gt;
      * @throws DAOException
@@ -211,9 +204,7 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>
      * reset.
-     * </p>
      */
     public void reset() {
         displaySelectItems = false;
@@ -224,16 +215,16 @@ public class SearchQueryItem implements Serializable {
 
     /**
      * 
-     * @param lineIndex
-     * @return a boolean
+     * @param lineIndex zero-based index of the line to check
+     * @return true if multiple items are allowed and the given line is the last one, false otherwise
      */
     public boolean isDisplayAddNewItemButton(int lineIndex) {
         return isAllowMultipleItems() && isLastLine(lineIndex);
     }
 
     /**
-     * 
-     * @param lineIndex
+     *
+     * @param lineIndex zero-based index of the line to check
      * @return true if given line is first in list; false otherwise
      */
     public boolean isFirstLine(int lineIndex) {
@@ -241,8 +232,8 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * 
-     * @param lineIndex
+     *
+     * @param lineIndex zero-based index of the line to check
      * @return true if given line is last in list; false otherwise
      */
     public boolean isLastLine(int lineIndex) {
@@ -250,8 +241,8 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * 
-     * @param afterIndex
+     *
+     * @param afterIndex index after which to insert the new line; -1 to append
      * @return true if new line successfully added; false otherwise
      */
     public boolean addNewLine(int afterIndex) {
@@ -271,14 +262,12 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>
      * removeLine.
-     * </p>
      *
-     * @param line a {@link io.goobi.viewer.model.search.SearchQueryItemLine} object.
+     * @param line query item line to remove from this item.
      * @should remove line correctly
      * @should not remove last remaining line
-     * @return a boolean.
+     * @return true if the line was removed successfully, false if it could not be removed (e.g. it is the last remaining line)
      */
     public boolean removeLine(SearchQueryItemLine line) {
         if (lines.size() > 1) {
@@ -289,9 +278,7 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>
      * isHierarchical.
-     * </p>
      *
      * @return true or false
      */
@@ -300,9 +287,7 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>
      * isRange.
-     * </p>
      *
      * @return true or false
      */
@@ -318,9 +303,7 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>
      * isUntokenizeForPhraseSearch.
-     * </p>
      *
      * @return true or false
      */
@@ -329,7 +312,7 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * @return a boolean
+     * @return true if multiple search values are allowed for this query item, false otherwise
      */
     public boolean isAllowMultipleItems() {
         return DataManager.getInstance().getConfiguration().isAdvancedSearchFieldAllowMultipleItems(field, template, false);
@@ -351,29 +334,23 @@ public class SearchQueryItem implements Serializable {
         return DataManager.getInstance().getConfiguration().getAdvancedSearchFieldDisplaySelectItemsThreshold(field, template, false);
     }
 
-    /**
-     * @return the selectType
-     */
+    
     public String getSelectType() {
         return DataManager.getInstance().getConfiguration().getAdvancedSearchFieldSelectType(field, template, false);
     }
 
-    /**
-     * @return the replaceRegex
-     */
+    
     public String getReplaceRegex() {
         return DataManager.getInstance().getConfiguration().getAdvancedSearchFieldReplaceRegex(field, template, false);
     }
 
-    /**
-     * @return the replaceWith
-     */
+    
     public String getReplaceWith() {
         return DataManager.getInstance().getConfiguration().getAdvancedSearchFieldReplaceWith(field, template, false);
     }
 
     /**
-     * @return the label
+     * @return the display label for this search query item, or the field name if no label is set
      * @should return field if label empty
      */
     public String getLabel() {
@@ -385,7 +362,7 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * @param label the label to set
+     * @param label the display label for this search query item
      * @return this
      */
     public SearchQueryItem setLabel(String label) {
@@ -394,31 +371,25 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>field</code>.
-     * </p>
      *
-     * @return the field
+     * @return the Solr field name to search in for this query item
      */
     public String getField() {
         return field;
     }
 
     /**
-     * <p>
      * Setter for the field <code>field</code>.
-     * </p>
      *
-     * @param field the field to set
+     * @param field the Solr field name to search in for this query item
      */
     public void setField(String field) {
         this.field = field;
         toggleDisplaySelectItems();
     }
 
-    /**
-     * @return the lines
-     */
+    
     public List<SearchQueryItemLine> getLines() {
         return lines;
     }
@@ -434,8 +405,8 @@ public class SearchQueryItem implements Serializable {
 
     /**
      * Convenience setter.
-     * 
-     * @param operator
+     *
+     * @param operator operator to set on the first line
      */
     public void setOperator(SearchItemOperator operator) {
         lines.get(0).setOperator(operator);
@@ -444,7 +415,7 @@ public class SearchQueryItem implements Serializable {
     /**
      * Backwards compatibility getter.
      *
-     * @return the value
+     * @return the search value of the first query line, or null if no lines exist
      */
     public String getValue() {
         if (!lines.isEmpty()) {
@@ -457,7 +428,7 @@ public class SearchQueryItem implements Serializable {
     /**
      * Backwards compatibility setter.
      *
-     * @param value the value to set
+     * @param value the search value to set on the first query line
      */
     public void setValue(final String value) {
         // logger.trace("setValue: {}", value); //NOSONAR Debug
@@ -468,8 +439,8 @@ public class SearchQueryItem implements Serializable {
 
     /**
      * Backwards compatibility method.
-     * 
-     * @param value
+     *
+     * @param value value to look up in the first line's values list
      * @return true if values contains given value; false otherwise
      */
     public boolean isValueSet(String value) {
@@ -491,8 +462,8 @@ public class SearchQueryItem implements Serializable {
 
     /**
      * Backwards compatibility method.
-     * 
-     * @return the value2
+     *
+     * @return the upper bound value of the first query line for range searches, or null if no lines exist
      */
     public String getValue2() {
         return !lines.isEmpty() ? lines.get(0).getValue2() : null;
@@ -500,8 +471,8 @@ public class SearchQueryItem implements Serializable {
 
     /**
      * Backwards compatibility method.
-     * 
-     * @param value2 the value2 to set
+     *
+     * @param value2 the upper bound value to set on the first query line (used for range searches)
      */
     public void setValue2(final String value2) {
         if (!lines.isEmpty()) {
@@ -510,11 +481,9 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>
      * isDisplaySelectItems.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if the field should display a select list instead of a free-text input, false otherwise
      */
     public boolean isDisplaySelectItems() {
         return displaySelectItems;
@@ -522,8 +491,8 @@ public class SearchQueryItem implements Serializable {
 
     /**
      * Setter for unit tets.
-     * 
-     * @param displaySelectItems the displaySelectItems to set
+     *
+     * @param displaySelectItems true if the field should show a select list instead of a free-text input; false otherwise
      */
     public void setDisplaySelectItems(boolean displaySelectItems) {
         this.displaySelectItems = displaySelectItems;
@@ -532,17 +501,15 @@ public class SearchQueryItem implements Serializable {
     /**
      * This is called after <code>setField</code>, so no point in calling <code>toggleDisplaySelectItems</code> here.
      *
-     * @param ev a {@link jakarta.faces.event.ValueChangeEvent} object.
+     * @param ev JSF value change event from the field selector.
      */
     public void selectOneMenuListener(ValueChangeEvent ev) {
         //
     }
 
     /**
-     * <p>
      * toggleDisplaySelectItems.
-     * </p>
-     * 
+     *
      * @should set displaySelectItems false if searching in all fields
      * @should set displaySelectItems false if searching in fulltext
      * @should set displaySelectItems true if value count below threshold
@@ -596,10 +563,10 @@ public class SearchQueryItem implements Serializable {
     /**
      * Generates the advanced query part for this item.
      *
-     * @param searchTerms a {@link java.util.Set} object.
-     * @param aggregateHits a boolean.
+     * @param searchTerms set collecting all search terms encountered during query building.
+     * @param aggregateHits if true, SUPER fields are included for aggregated hit results.
      * @param allowFuzzySearch If true, search terms will be augmented by fuzzy search tokens
-     * @return a {@link java.lang.String} object.
+     * @return the Solr query string generated from this advanced search query item
      * @should generate query correctly
      * @should escape reserved characters
      * @should always use OR operator if searching in all fields
@@ -902,16 +869,12 @@ public class SearchQueryItem implements Serializable {
         return proximitySearchDistance;
     }
 
-    /**
-     * @return the preselectValue
-     */
+    
     public String getPreselectValue() {
         return preselectValue;
     }
 
-    /**
-     * @param preselectValue the preselectValue to set
-     */
+    
     public void setPreselectValue(String preselectValue) {
         this.preselectValue = preselectValue;
     }

@@ -55,15 +55,15 @@
                 or type == 'download'
                 or type == 'viewExpired'}" />
 
-            <div class="view-error-app #{isWarning ? 'view-error-app--warning' : 'view-error-app--danger'}">
+            <div class="view-error-card #{isWarning ? 'view-error-card--warning' : 'view-error-card--danger'}">
                 <!-- Record not found -->
                 <h:panelGroup
                     layout="block"
                     rendered="#{type == 'recordNotFound'}">
-                    <h1 class="view-error-app__title">
+                    <h1 class="view-error-card__title">
                         <h:outputText value="#{msg.errRecordNotFoundTitle}" />
                     </h1>
-                    <p class="view-error-app__message">
+                    <p class="view-error-card__message">
                         <h:outputText
                             value="#{msg.errRecordNotFoundDescription}"
                             escape="false" />
@@ -74,10 +74,10 @@
                 <h:panelGroup
                     layout="block"
                     rendered="#{type == 'recordDeleted'}">
-                    <h1 class="view-error-app__title">
+                    <h1 class="view-error-card__title">
                         <h:outputText value="#{msg.errRecordDeletedTitle}" />
                     </h1>
-                    <p class="view-error-app__message">
+                    <p class="view-error-card__message">
                         <h:outputText
                             value="#{msg.errRecordDeletedDescription}"
                             escape="false" />
@@ -88,10 +88,10 @@
                 <h:panelGroup
                     layout="block"
                     rendered="#{type == 'errRecordLimitExceeded'}">
-                    <h1 class="view-error-app__title">
+                    <h1 class="view-error-card__title">
                         <h:outputText value="#{msg.errRecordLimitExceededTitle}" />
                     </h1>
-                    <p class="view-error-app__message">
+                    <p class="view-error-card__message">
                         <h:outputText
                             value="#{msg.errRecordLimitExceededDescription}"
                             escape="false" />
@@ -102,10 +102,10 @@
                 <h:panelGroup
                     layout="block"
                     rendered="#{type == 'download'}">
-                    <h1 class="view-error-app__title">
+                    <h1 class="view-error-card__title">
                         <h:outputText value="#{msg.errDownloadExceptionTitle}" />
                     </h1>
-                    <p class="view-error-app__message">
+                    <p class="view-error-card__message">
                         <h:outputText
                             value="#{msg.errDownloadDescription}"
                             escape="false" />
@@ -116,10 +116,10 @@
                 <h:panelGroup
                     layout="block"
                     rendered="#{type == 'viewExpired'}">
-                    <h1 class="view-error-app__title">
+                    <h1 class="view-error-card__title">
                         <h:outputText value="#{msg.sessionExpiredTitle}" />
                     </h1>
-                    <p class="view-error-app__message">
+                    <p class="view-error-card__message">
                         <h:outputText
                             value="#{msg.sessionExpired}"
                             escape="false" />
@@ -130,10 +130,10 @@
                 <h:panelGroup
                     layout="block"
                     rendered="#{type == 'general' or type == 'general_no_url'}">
-                    <h1 class="view-error-app__title">
+                    <h1 class="view-error-card__title">
                         <h:outputText value="#{msg.failure}" />
                     </h1>
-                    <p class="view-error-app__message">
+                    <p class="view-error-card__message">
                         <h:outputText
                             value="#{msg.generalError}"
                             escape="false" />
@@ -144,10 +144,10 @@
                 <h:panelGroup
                     layout="block"
                     rendered="#{type == 'indexUnreachable'}">
-                    <h1 class="view-error-app__title">
+                    <h1 class="view-error-card__title">
                         <h:outputText value="#{msg.errIndexUnreachableTitle}" />
                     </h1>
-                    <p class="view-error-app__message">
+                    <p class="view-error-card__message">
                         <h:outputText
                             value="#{msg.errIndexUnreachableMsg}"
                             escape="false" />
@@ -158,10 +158,10 @@
                 <h:panelGroup
                     layout="block"
                     rendered="#{type == 'dao'}">
-                    <h1 class="view-error-app__title">
+                    <h1 class="view-error-card__title">
                         <h:outputText value="#{msg.errDAOExceptionTitle}" />
                     </h1>
-                    <p class="view-error-app__message">
+                    <p class="view-error-card__message">
                         <h:outputText
                             value="#{msg.errDAOExceptionMsg}"
                             escape="false" />
@@ -172,10 +172,10 @@
                 <h:panelGroup
                     layout="block"
                     rendered="#{type == 'configuration'}">
-                    <h1 class="view-error-app__title">
+                    <h1 class="view-error-card__title">
                         <h:outputText value="#{msg.errViewerConfigurationExceptionTitle}" />
                     </h1>
-                    <p class="view-error-app__message">
+                    <p class="view-error-card__message">
                         <h:outputText
                             value="#{msg.errViewerConfigurationExceptionMsg}"
                             escape="false" />
@@ -183,13 +183,13 @@
                 </h:panelGroup>
 
                 <!-- DIVIDER -->
-                <hr class="view-error-app__divider" />
+                <hr class="view-error-card__divider" />
 
                 <!-- TECHNICAL DETAILS -->
-                <div class="view-error-app__details-label">
+                <div class="view-error-card__details-label">
                     <h:outputText value="#{msg.errTechnicalDetails}" />
                 </div>
-                <dl class="view-error-app__details-block">
+                <dl class="view-error-card__details-block">
                     <ui:fragment rendered="#{!empty header['referer']}">
                         <dt>URL</dt>
                         <dd>
@@ -235,7 +235,7 @@
                 </dl>
 
                 <!-- ACTION -->
-                <div class="view-error-app__actions">
+                <div class="view-error-card__actions">
                     <h:outputLink
                         value="#{navigationHelper.applicationUrl}"
                         styleClass="btn btn--full">

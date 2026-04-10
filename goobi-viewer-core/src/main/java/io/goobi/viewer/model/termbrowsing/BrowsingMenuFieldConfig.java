@@ -32,9 +32,7 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
 /**
- * <p>
- * BrowsingMenuFieldConfig class.
- * </p>
+ * Configuration for a single field entry in the alphabetical browsing menu, specifying the Solr field and display options.
  */
 public class BrowsingMenuFieldConfig implements Serializable {
 
@@ -50,9 +48,9 @@ public class BrowsingMenuFieldConfig implements Serializable {
     /**
      * Constructor.
      *
-     * @param field a {@link java.lang.String} object.
-     * @param sortField a {@link java.lang.String} object.
-     * @param filterQuery a {@link java.lang.String} object.
+     * @param field Solr field name to browse.
+     * @param sortField Solr field used for sorting the terms.
+     * @param filterQuery optional Solr filter query to restrict results.
      * @should add doctype filter if field MD or MD2
      */
     public BrowsingMenuFieldConfig(String field, String sortField, String filterQuery) {
@@ -92,11 +90,9 @@ public class BrowsingMenuFieldConfig implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>field</code>.
-     * </p>
      *
-     * @return the field
+     * @return the Solr field name used for term browsing
      */
     public String getField() {
         return field;
@@ -104,7 +100,7 @@ public class BrowsingMenuFieldConfig implements Serializable {
 
     /**
      * 
-     * @param language
+     * @param language the language code to substitute into the field name
      * @return Language specific variant of field if it contains a placeholder; otherwise unaltered field
      */
     public String getFieldForLanguage(String language) {
@@ -115,36 +111,30 @@ public class BrowsingMenuFieldConfig implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>sortField</code>.
-     * </p>
      *
-     * @return the sortField
+     * @return the Solr field used for sorting browse terms
      */
     public String getSortField() {
         return sortField;
     }
 
     /**
-     * <p>
      * Getter for the field <code>filterQueries</code>.
-     * </p>
      *
-     * @return the filterQueries
+     * @return the list of Solr filter queries applied when browsing this field
      */
     public List<String> getFilterQueries() {
         return filterQueries;
     }
 
-    /**
-     * @return the translate
-     */
+    
     public boolean isTranslate() {
         return translate;
     }
 
     /**
-     * @param translate the translate to set
+     * @param translate true if browse term values should be translated via message keys
      * @return this
      */
     public BrowsingMenuFieldConfig setTranslate(boolean translate) {
@@ -152,15 +142,13 @@ public class BrowsingMenuFieldConfig implements Serializable {
         return this;
     }
 
-    /**
-     * @return the alwaysApplyFilter
-     */
+    
     public boolean isAlwaysApplyFilter() {
         return alwaysApplyFilter;
     }
 
     /**
-     * @param alwaysApplyFilter the alwaysApplyFilter to set
+     * @param alwaysApplyFilter true if a filter query should always be applied when browsing this field
      * @return this
      */
     public BrowsingMenuFieldConfig setAlwaysApplyFilter(boolean alwaysApplyFilter) {
@@ -168,15 +156,13 @@ public class BrowsingMenuFieldConfig implements Serializable {
         return this;
     }
 
-    /**
-     * @return the skipInWidget
-     */
+    
     public boolean isSkipInWidget() {
         return skipInWidget;
     }
 
     /**
-     * @param skipInWidget the skipInWidget to set
+     * @param skipInWidget true if this field should be excluded from the browse widget display
      * @return this;
      */
     public BrowsingMenuFieldConfig setSkipInWidget(boolean skipInWidget) {
@@ -194,7 +180,7 @@ public class BrowsingMenuFieldConfig implements Serializable {
 
     /**
      *
-     * @param recordsAndAnchorsOnly
+     * @param recordsAndAnchorsOnly if true, adds a filter query restricting results to records and anchors only
      * @return this
      * @should create filter query correctly
      */

@@ -68,22 +68,15 @@
                             <ul
                                 data-target="entityDropdown"
                                 class="search-advanced__entity-tabs-dropdown">
-                                <li class="search-advanced__entity-tabs-dropdown-list-entry">
-                                    <h:outputLink
-                                        styleClass="search-advanced__entity-tabs-dropdown-link -result-group-standard #{searchBean.advancedSearchFieldTemplate == '-' ? '-active' : ''}"
-                                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/">
-                                        #{msg.search__search_default_all_group}
-                                    </h:outputLink>
-                                </li>
                                 <ui:repeat
-                                    value="#{configurationBean.searchResultGroupNames}"
-                                    var="groupName"
+                                    value="#{configurationBean.advancedSearchTemplateNames}"
+                                    var="template"
                                     varStatus="status">
                                     <li class="search-advanced__entity-tabs-dropdown-list-entry">
                                         <h:outputLink
-                                            styleClass="search-advanced__entity-tabs-dropdown-link -result-group-#{groupName} #{groupName == searchBean.advancedSearchFieldTemplate ? '-active' : ''}"
-                                            value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{groupName}/-/">
-                                            #{msg[groupName]}
+                                            styleClass="search-advanced__entity-tabs-dropdown-link -result-group-#{template} #{template == searchBean.advancedSearchFieldTemplate ? '-active' : ''}"
+                                            value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{template}/-/">
+                                            #{msg[template]}
                                         </h:outputLink>
                                     </li>
                                 </ui:repeat>

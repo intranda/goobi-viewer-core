@@ -1,3 +1,24 @@
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package io.goobi.viewer.model.administration;
 
 import java.util.List;
@@ -8,6 +29,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+/**
+ * JPA entity that stores a single language-specific translation of a {@link MaintenanceMode} text field.
+ * Each instance is linked to an owning {@link MaintenanceMode} and inherits the generic translation
+ * infrastructure from {@link io.goobi.viewer.model.translations.Translation}.
+ */
 @Entity
 @Table(name = "maintenance_mode_translations")
 public class MaintenanceModeTranslation extends Translation {
@@ -18,23 +44,19 @@ public class MaintenanceModeTranslation extends Translation {
     private MaintenanceMode owner;
     
     /**
-     * <p>
      * Default constructor.
-     * </p>
      */
     public MaintenanceModeTranslation() {
         super();
     }
 
     /**
-     * <p>
-     * Constructor for MaintenanceModeTranslation.
-     * </p>
+     * Creates a new MaintenanceModeTranslation instance.
      *
-     * @param language a {@link java.lang.String} object.
-     * @param tag a {@link java.lang.String} object.
-     * @param value a {@link java.lang.String} object.
-     * @param owner
+     * @param language BCP 47 language code for this translation
+     * @param tag key identifying the translated field
+     * @param value translated text value
+     * @param owner owning MaintenanceMode entity
      */
     public MaintenanceModeTranslation(String language, String tag, String value, MaintenanceMode owner) {
         super(language, tag, value);
@@ -42,15 +64,13 @@ public class MaintenanceModeTranslation extends Translation {
     }
 
     /**
-     * <p>
      * setTranslation.
-     * </p>
      *
-     * @param translations a {@link java.util.List} object.
-     * @param lang a {@link java.lang.String} object.
-     * @param value a {@link java.lang.String} object.
-     * @param tag a {@link java.lang.String} object.
-     * @param owner a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
+     * @param translations mutable list of existing translations to update
+     * @param lang BCP 47 language code to set or add
+     * @param value translated text to assign
+     * @param tag key identifying the translated field
+     * @param owner maintenance mode entity to assign when creating a new translation
      */
     public static void setTranslation(List<MaintenanceModeTranslation> translations, String lang, String value, String tag, MaintenanceMode owner) {
         if (lang == null) {
@@ -69,16 +89,12 @@ public class MaintenanceModeTranslation extends Translation {
         translations.add(new MaintenanceModeTranslation(lang, tag, value, owner));
     }
 
-    /**
-     * @return the owner
-     */
+    
     public MaintenanceMode getOwner() {
         return owner;
     }
 
-    /**
-     * @param owner the owner to set
-     */
+    
     public void setOwner(MaintenanceMode owner) {
         this.owner = owner;
     }

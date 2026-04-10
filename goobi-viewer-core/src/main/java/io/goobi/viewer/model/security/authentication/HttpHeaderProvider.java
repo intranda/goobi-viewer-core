@@ -42,11 +42,15 @@ import io.goobi.viewer.model.security.user.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+/**
+ * Authentication provider that authenticates users by reading a user identifier from an HTTP
+ * request header (or parameter), then looking up or creating the corresponding {@link User} account.
+ */
 public class HttpHeaderProvider extends HttpAuthenticationProvider {
 
     private static final Logger logger = LogManager.getLogger(HttpHeaderProvider.class);
 
-    /** Constant <code>TYPE_OPENID="openId"</code> */
+    /** Constant <code>TYPE_OPENID="openId"</code>. */
     public static final String TYPE_HTTP_HEADER = "httpHeader";
 
     public static final String PARAMETER_TYPE_HEADER = "header";
@@ -57,19 +61,19 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
     private volatile LoginResult loginResult = null; //NOSONAR   LoginResult is immutable, so thread-savety is guaranteed
 
     /**
-     * Lock to be opened once login is completed
+     * Locks to be opened once login is completed.
      */
     private Object responseLock = new Object();
 
     /**
-     * 
-     * @param name
-     * @param label
-     * @param url
-     * @param image
-     * @param timeoutMillis
-     * @param parameterType
-     * @param parameterName
+     *
+     * @param name unique provider name/identifier
+     * @param label display label shown in the UI
+     * @param url redirect URL for the authentication endpoint
+     * @param image path to the provider icon image
+     * @param timeoutMillis maximum wait time in milliseconds for the login response
+     * @param parameterType type of the incoming parameter (e.g. "header")
+     * @param parameterName name of the header or request parameter carrying the user identifier
      */
     public HttpHeaderProvider(String name, String label, String url, String image, long timeoutMillis, String parameterType, String parameterName) {
         super(name, label, TYPE_HTTP_HEADER, url, image, timeoutMillis);
@@ -108,8 +112,8 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
     }
 
     /**
-     * 
-     * @param parameterValue
+     *
+     * @param parameterValue the value of the user-identifying parameter to look up
      * @return {@link User} if found; otherwise null
      */
     public User loadUser(String parameterValue) {
@@ -134,7 +138,7 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
      * @param ssoId User identifier
      * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
-     * @return a {@link java.util.concurrent.Future} object.
+     * @return a Future resolving to true if login succeeded, false otherwise
      */
     public Future<Boolean> completeLogin(String ssoId, HttpServletRequest request, HttpServletResponse response) {
         logger.trace("completeLogin: {}", ssoId);
@@ -216,16 +220,12 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
 
     }
 
-    /**
-     * @return the parameterType
-     */
+    
     public String getParameterType() {
         return parameterType;
     }
 
-    /**
-     * @return the parameterName
-     */
+    
     public String getParameterName() {
         return parameterName;
     }

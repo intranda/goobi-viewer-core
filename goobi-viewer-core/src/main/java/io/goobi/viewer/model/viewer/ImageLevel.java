@@ -24,9 +24,7 @@ package io.goobi.viewer.model.viewer;
 import java.awt.Dimension;
 
 /**
- * <p>
- * ImageLevel class.
- * </p>
+ * Represents the zoom levels available for image display in the viewer.
  */
 public class ImageLevel implements Comparable<ImageLevel> {
 
@@ -35,12 +33,10 @@ public class ImageLevel implements Comparable<ImageLevel> {
     private int rotation;
 
     /**
-     * <p>
-     * Constructor for ImageLevel.
-     * </p>
+     * Creates a new ImageLevel instance.
      *
-     * @param url a {@link java.lang.String} object.
-     * @param size a {@link java.awt.Dimension} object.
+     * @param url URL of the image resource
+     * @param size pixel dimensions of the image
      */
     public ImageLevel(String url, Dimension size) {
         super();
@@ -50,13 +46,11 @@ public class ImageLevel implements Comparable<ImageLevel> {
     }
 
     /**
-     * <p>
-     * Constructor for ImageLevel.
-     * </p>
+     * Creates a new ImageLevel instance.
      *
-     * @param url a {@link java.lang.String} object.
-     * @param width a int.
-     * @param height a int.
+     * @param url URL of the image resource
+     * @param width image width in pixels
+     * @param height image height in pixels
      */
     public ImageLevel(String url, int width, int height) {
         super();
@@ -66,13 +60,11 @@ public class ImageLevel implements Comparable<ImageLevel> {
     }
 
     /**
-     * <p>
-     * Constructor for ImageLevel.
-     * </p>
+     * Creates a new ImageLevel instance.
      *
-     * @param url a {@link java.lang.String} object.
-     * @param size a {@link java.awt.Dimension} object.
-     * @param currentRotate a int.
+     * @param url URL of the image resource
+     * @param size pixel dimensions of the image
+     * @param currentRotate current rotation angle in degrees
      */
     public ImageLevel(String url, Dimension size, int currentRotate) {
         super();
@@ -82,22 +74,18 @@ public class ImageLevel implements Comparable<ImageLevel> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>url</code>.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the URL for this image resolution level
      */
     public String getUrl() {
         return url;
     }
 
     /**
-     * <p>
      * Getter for the field <code>size</code>.
-     * </p>
      *
-     * @return a {@link java.awt.Dimension} object.
+     * @return the width and height of the image, accounting for 90-degree rotations
      */
     public Dimension getSize() {
         if (rotation % 180 == 0) {
@@ -107,9 +95,7 @@ public class ImageLevel implements Comparable<ImageLevel> {
     }
 
     /**
-     * <p>
      * getWidth.
-     * </p>
      *
      * @return a int.
      */
@@ -118,9 +104,7 @@ public class ImageLevel implements Comparable<ImageLevel> {
     }
 
     /**
-     * <p>
      * getHeight.
-     * </p>
      *
      * @return a int.
      */

@@ -55,7 +55,7 @@ import io.goobi.viewer.model.viewer.ViewManager;
 public enum FileType {
 
     /**
-     * abstract type comprising all types which are viewable in object view
+     * Abstract type comprising all types which are viewable in object view.
      */
     MEDIA,
     IMAGE,
@@ -140,7 +140,7 @@ public enum FileType {
     }
 
     /**
-     * Attempt to determine mimetype of a filename by suffix analysis only, without filesystem access
+     * Attempt to determine mimetype of a filename by suffix analysis only, without filesystem access.
      * 
      * @param filename the filename to parse
      * @return the appropriate mimetype. May be an empty String if the filename is blank or has no suffix; but is never null

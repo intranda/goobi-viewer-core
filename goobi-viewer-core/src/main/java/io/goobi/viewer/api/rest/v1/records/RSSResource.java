@@ -39,11 +39,11 @@ import io.goobi.viewer.model.rss.RSSFeed;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Path(ApiUrls.RECORDS_RSS)
 @CORSBinding
@@ -69,11 +69,13 @@ public class RSSResource {
             @QueryParam("subtheme") String subtheme,
             @Parameter(description = "Language of the returned metadata labels and values (optional)") 
             @QueryParam("lang") String language,
-            @Parameter(description = "Limit for results to return (optional)") @QueryParam("max") Integer maxHits,
+            @Parameter(description = "Limit for results to return (optional)",
+                    schema = @Schema(minimum = "0", maximum = "2147483647")) @QueryParam("max") Integer maxHits,
             @Parameter(description = "Search query to filter results (optional)") @QueryParam("query") String query,
             @Parameter(description = "Facet query. Several queries may be entered as ';;' separated list (optional)") 
             @QueryParam("facets") String facets,
-            @Parameter(description = "The solr field to sort the results by. Default is 'DATECERATED' (optional)") 
+            @Parameter(description = "The solr field to sort the results by. Default is 'DATECERATED' (optional)",
+                    schema = @Schema(pattern = "^[A-Za-z_][A-Za-z0-9_]*$"))
             @QueryParam("sortField") String sortField,
             @Parameter(description = "Set to 'false' to sort entries in ascending order. Default is 'true' (optional)") 
             @QueryParam("sortDescending") Boolean sortDescending)
@@ -97,11 +99,13 @@ public class RSSResource {
             @Parameter(description = "Subtheme: Results are filtered to values within the given subtheme (optional)") 
             @QueryParam("subtheme") String subtheme,
             @Parameter(description = "Language of the returned metadata labels and values (optional)") @QueryParam("lang") String language,
-            @Parameter(description = "Limit for results to return (optional)") @QueryParam("max") Integer maxHits,
+            @Parameter(description = "Limit for results to return (optional)",
+                    schema = @Schema(minimum = "0", maximum = "2147483647")) @QueryParam("max") Integer maxHits,
             @Parameter(description = "Search query to filter results (optional)") @QueryParam("query") String query,
             @Parameter(description = "Facet query. Several queries may be entered as ';;' separated list (optional)") 
             @QueryParam("facets") String facets,
-            @Parameter(description = "The solr field to sort the results by. Default is 'DATECERATED' (optional)") 
+            @Parameter(description = "The solr field to sort the results by. Default is 'DATECERATED' (optional)",
+                    schema = @Schema(pattern = "^[A-Za-z_][A-Za-z0-9_]*$"))
             @QueryParam("sortField") String sortField,
             @Parameter(description = "Set to 'false' to sort entries in ascending order. Default is 'true' (optional)") 
             @QueryParam("sortDescending") Boolean sortDescending)

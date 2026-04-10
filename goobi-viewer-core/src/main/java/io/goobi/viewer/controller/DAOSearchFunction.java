@@ -26,6 +26,11 @@ import java.util.Map;
 
 import io.goobi.viewer.exceptions.DAOException;
 
+/**
+ * Functional interface for paginated, sorted, and filtered DAO search operations that return a list of entities.
+ *
+ * @param <T> the type of entity returned by the search
+ */
 @FunctionalInterface
 public interface DAOSearchFunction<T> {
     List<T> apply(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException;

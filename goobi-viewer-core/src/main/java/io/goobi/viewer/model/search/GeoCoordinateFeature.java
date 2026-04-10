@@ -35,8 +35,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class GeoCoordinateFeature {
 
@@ -71,11 +70,11 @@ public class GeoCoordinateFeature {
     }
 
     /**
-     * Initialize as a polygon feature with the given points as vertices
+     * Initializes as a polygon feature with the given points as vertices.
      * 
-     * @param points
-     * @param predicate
-     * @param shape
+     * @param points array of coordinate pairs [lon, lat] forming the polygon vertices
+     * @param predicate Solr field or predicate identifying the coordinate source
+     * @param shape GeoJSON geometry type (e.g. "Polygon")
      * @param distError maximal distance between points for them to be considered overlapping
      */
     public GeoCoordinateFeature(double[][] points, String predicate, String shape, double distError) {
@@ -195,25 +194,16 @@ public class GeoCoordinateFeature {
         return getVertices().length > 0;
     }
 
-    /**
-     * 
-     * @return the shape
-     */
+    
     public String getShape() {
         return this.shape;
     }
 
-    /**
-     * 
-     * @return the predicate
-     */
+    
     public String getPredicate() {
         return this.predicate;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (obj != null && obj.getClass().equals(this.getClass())) {

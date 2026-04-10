@@ -31,14 +31,18 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.statistics.usage.RequestTypeSummary;
 import io.goobi.viewer.model.statistics.usage.StatisticsSummary;
 
+/**
+ * REST response object for usage statistics requests, containing an aggregated summary and a list
+ * of per-date statistics entries that can also be serialized as CSV.
+ */
 public class UsageStatisticsResponse {
 
     private final StatisticsSummary summary;
     private final List<StatisticsSummary> values;
 
     /**
-     * @param summary
-     * @param values
+     * @param summary aggregated summary across all date entries
+     * @param values list of individual date-based statistics summaries
      */
     public UsageStatisticsResponse(StatisticsSummary summary, List<StatisticsSummary> values) {
         super();
@@ -46,16 +50,12 @@ public class UsageStatisticsResponse {
         this.values = values;
     }
 
-    /**
-     * @return the summary
-     */
+    
     public StatisticsSummary getSummary() {
         return summary;
     }
 
-    /**
-     * @return the values
-     */
+    
     public List<StatisticsSummary> getValues() {
         return values;
     }

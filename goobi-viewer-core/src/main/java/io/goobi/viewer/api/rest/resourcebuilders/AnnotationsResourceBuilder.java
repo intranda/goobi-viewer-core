@@ -41,6 +41,7 @@ import de.intranda.api.annotation.wa.collection.AnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationCollectionBuilder;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.presentation.v2.AnnotationList;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
@@ -59,8 +60,7 @@ import io.goobi.viewer.solr.SolrConstants;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class AnnotationsResourceBuilder {
 
@@ -101,7 +101,7 @@ public class AnnotationsResourceBuilder {
 
     /**
      *
-     * @param page
+     * @param page 1-based page number within the annotation collection
      * @return {@link AnnotationPage}
      * @throws IllegalRequestException
      * @throws DAOException
@@ -110,7 +110,9 @@ public class AnnotationsResourceBuilder {
         if (page == null || page < 1) {
             throw new IllegalRequestException("Page number must be at least 1");
         }
-        int first = (page - 1) * MAX_ANNOTATIONS_PER_PAGE;
+        // Use long arithmetic to prevent integer overflow when page is large (e.g. Integer.MAX_VALUE).
+        // Stream.skip() accepts long, so this is safe.
+        long first = (long) (page - 1) * MAX_ANNOTATIONS_PER_PAGE;
         String sortField = "id";
 
         List<IAnnotation> annotations = DataManager.getInstance()
@@ -129,8 +131,8 @@ public class AnnotationsResourceBuilder {
     }
 
     /**
-     * @param anno
-     * @param request
+     * @param anno the annotation to check access for
+     * @param request the current HTTP request carrying session/user context
      * @return true if session has access permission to given annotation; false otherwise
      */
     private boolean isAccessible(CrowdsourcingAnnotation anno, HttpServletRequest request) {
@@ -148,8 +150,8 @@ public class AnnotationsResourceBuilder {
     }
 
     /**
-     * @param pi
-     * @param uri
+     * @param pi persistent identifier of the record
+     * @param uri base URI for the annotation collection
      * @return {@link AnnotationCollection}
      * @throws DAOException
      */
@@ -173,9 +175,9 @@ public class AnnotationsResourceBuilder {
 
     /**
      *
-     * @param pi
-     * @param pageNo
-     * @param uri
+     * @param pi persistent identifier of the record
+     * @param pageNo physical page number within the record
+     * @param uri base URI for the annotation collection
      * @return {@link AnnotationCollection}
      * @throws DAOException
      */
@@ -198,8 +200,8 @@ public class AnnotationsResourceBuilder {
     }
 
     /**
-     * @param pi
-     * @param uri
+     * @param pi persistent identifier of the record
+     * @param uri base URI for the annotation list
      * @return {@link AnnotationList}
      * @throws DAOException
      */
@@ -211,9 +213,9 @@ public class AnnotationsResourceBuilder {
     }
 
     /**
-     * @param pi
-     * @param pageNo
-     * @param uri
+     * @param pi persistent identifier of the record
+     * @param pageNo physical page number within the record
+     * @param uri base URI for the annotation list
      * @return {@link IAnnotationCollection}
      * @throws DAOException
      */
@@ -225,9 +227,9 @@ public class AnnotationsResourceBuilder {
     }
 
     /**
-     * @param pi
-     * @param uri
-     * @param page
+     * @param pi persistent identifier of the record
+     * @param uri base URI for the annotation collection
+     * @param page 1-based page number within the annotation collection
      * @return {@link AnnotationPage}
      * @throws DAOException
      * @throws IllegalRequestException
@@ -247,10 +249,10 @@ public class AnnotationsResourceBuilder {
 
     /**
      *
-     * @param pi
-     * @param pageNo
-     * @param uri
-     * @param page
+     * @param pi persistent identifier of the record
+     * @param pageNo physical page number within the record
+     * @param uri base URI for the annotation collection
+     * @param page 1-based page number within the annotation collection
      * @return {@link AnnotationPage}
      * @throws DAOException
      * @throws IllegalRequestException
@@ -269,8 +271,8 @@ public class AnnotationsResourceBuilder {
     }
 
     /**
-     * @param pi
-     * @param uri
+     * @param pi persistent identifier of the record
+     * @param uri base URI for the annotation collection
      * @return {@link AnnotationCollection}
      * @throws DAOException
      */
@@ -282,7 +284,7 @@ public class AnnotationsResourceBuilder {
         if (!data.isEmpty()) {
             try {
                 collection.setFirst(getWebAnnotationPageForRecordComments(pi, uri, 1));
-            } catch (IllegalRequestException e) {
+            } catch (IllegalRequestException | ContentNotFoundException e) {
                 //no items
             }
         }
@@ -294,9 +296,9 @@ public class AnnotationsResourceBuilder {
     }
 
     /**
-     * @param pi
-     * @param pageNo
-     * @param uri
+     * @param pi persistent identifier of the record
+     * @param pageNo physical page number within the record
+     * @param uri base URI for the annotation collection
      * @return {@link AnnotationCollection}
      * @throws DAOException
      */
@@ -317,20 +319,23 @@ public class AnnotationsResourceBuilder {
 
     /**
      *
-     * @param pi
-     * @param uri
-     * @param page
+     * @param pi persistent identifier of the record
+     * @param uri base URI for the annotation collection
+     * @param page 1-based page number within the annotation collection
      * @return {@link AnnotationPage}
      * @throws DAOException
      * @throws IllegalRequestException
      */
-    public AnnotationPage getWebAnnotationPageForRecordComments(String pi, URI uri, Integer page) throws DAOException, IllegalRequestException {
+    public AnnotationPage getWebAnnotationPageForRecordComments(String pi, URI uri, Integer page)
+            throws DAOException, IllegalRequestException, ContentNotFoundException {
         if (page == null || page < 1) {
             throw new IllegalRequestException("Page number must be at least 1");
         }
         List<Comment> data = DataManager.getInstance().getDao().getCommentsForWork(pi);
         if (data.isEmpty()) {
-            throw new IllegalRequestException("Page number is out of bounds");
+            // Record doesn't exist or has no comments; return 404 rather than 400 so that
+            // schema-valid requests (syntactically correct pi + page) are not rejected with 400.
+            throw new ContentNotFoundException("No comments found for record: " + pi);
         }
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
         return builder.setItemsPerPage(data.size())
@@ -361,8 +366,8 @@ public class AnnotationsResourceBuilder {
 
     /**
      *
-     * @param pi
-     * @param uri
+     * @param pi persistent identifier of the record
+     * @param uri base URI for the annotation list
      * @return {@link AnnotationList}
      * @throws DAOException
      */
@@ -376,9 +381,9 @@ public class AnnotationsResourceBuilder {
 
     /**
      *
-     * @param pi
-     * @param pageNo
-     * @param uri
+     * @param pi persistent identifier of the record
+     * @param pageNo physical page number within the record
+     * @param uri base URI for the annotation list
      * @return {@link AnnotationList}
      * @throws DAOException
      */
@@ -392,9 +397,9 @@ public class AnnotationsResourceBuilder {
 
     /**
      *
-     * @param pi
-     * @param pageNo
-     * @param uri
+     * @param pi persistent identifier of the record
+     * @param pageNo physical page number within the record
+     * @param uri base URI for the annotation page
      * @return {@link AnnotationPage}
      * @throws DAOException
      */
@@ -410,7 +415,7 @@ public class AnnotationsResourceBuilder {
     }
 
     /**
-     * @param id
+     * @param id database ID of the annotation
      * @return Optional<WebAnnotation>
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -422,7 +427,7 @@ public class AnnotationsResourceBuilder {
 
     /**
      *
-     * @param id
+     * @param id database ID of the comment
      * @return Optional<WebAnnotation>
      * @throws DAOException
      */
@@ -432,7 +437,7 @@ public class AnnotationsResourceBuilder {
     }
 
     /**
-     * @param id
+     * @param id database ID of the annotation
      * @return Optional<OpenAnnotation>
      * @throws IndexUnreachableException
      * @throws PresentationException

@@ -80,9 +80,7 @@ import jakarta.inject.Named;
 import jakarta.ws.rs.core.UriBuilder;
 
 /**
- * <p>
- * CmsPageEditBean class.
- * </p>
+ * JSF backing bean for creating and editing CMS pages including content and metadata.
  */
 @Named
 @ViewScoped
@@ -120,9 +118,7 @@ public class CmsPageEditBean implements Serializable {
     private boolean templateLockComponents = false;
 
     /**
-     * <p>
      * setup.
-     * </p>
      */
     @PostConstruct
     public void setup() {
@@ -174,9 +170,7 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>
      * savePageAndForwardToEdit.
-     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -193,7 +187,7 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * Adds the current page to the database, if it doesn't exist or updates it otherwise
+     * Adds the current page to the database, if it doesn't exist or updates it otherwise.
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -348,8 +342,8 @@ public class CmsPageEditBean implements Serializable {
 
     /**
      * 
-     * @param page
-     * @param pageId
+     * @param page CMS page whose index entry is to be deleted
+     * @param pageId Numeric ID of the CMS page
      */
     static void deletePageMetadataFromIndex(CMSPage page, Long pageId) {
         if (page == null) {
@@ -374,11 +368,9 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>selectedPage</code>.
-     * </p>
      *
-     * @param currentPage a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
+     * @param currentPage CMS page to select; null clears the selection
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void setSelectedPage(CMSPage currentPage) throws DAOException {
@@ -398,9 +390,7 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>
      * getSelectedPageId.
-     * </p>
      *
      * @return ID of selectedPage
      */
@@ -413,11 +403,9 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>
      * setSelectedPageId.
-     * </p>
      *
-     * @param id a {@link java.lang.String} object
+     * @param id string representation of the CMS page database ID
      * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void setSelectedPageId(String id) throws DAOException {
@@ -427,11 +415,9 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>selectedPage</code>.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.model.cms.pages.CMSPage} object
+     * @return the CMS page currently selected for editing
      */
     public CMSPage getSelectedPage() {
         return selectedPage;
@@ -442,7 +428,7 @@ public class CmsPageEditBean implements Serializable {
      *
      * @param title The title to be used for the current locale, optional
      * @param relatedPI The PI of a related work, optional
-     * @return a {@link java.lang.String} object.
+     * @return the absolute URL to the new CMS page creation view with optional title and PI query parameters
      */
     public String createAndOpenNewPage(String title, String relatedPI) {
 
@@ -465,53 +451,43 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>sidebarWidgets</code>.
-     * </p>
      *
-     * @return a {@link java.util.Map} object
+     * @return a map of sidebar widget display elements to their selection state
      */
     public Map<WidgetDisplayElement, Boolean> getSidebarWidgets() {
         return sidebarWidgets;
     }
 
     /**
-     * <p>
      * Setter for the field <code>sidebarWidgets</code>.
-     * </p>
      *
-     * @param sidebarWidgets a {@link java.util.Map} object
+     * @param sidebarWidgets map of widgets to their selection state
      */
     public void setSidebarWidgets(Map<WidgetDisplayElement, Boolean> sidebarWidgets) {
         this.sidebarWidgets = sidebarWidgets;
     }
 
     /**
-     * <p>
      * getSelectedWidgets.
-     * </p>
      *
-     * @return a {@link java.util.List} object
+     * @return a list of sidebar widget display elements that are currently selected for the CMS page
      */
     public List<WidgetDisplayElement> getSelectedWidgets() {
         return this.sidebarWidgets.entrySet().stream().filter(Entry::getValue).map(Map.Entry::getKey).collect(Collectors.toList());
     }
 
     /**
-     * <p>
      * resetSelectedWidgets.
-     * </p>
      */
     public void resetSelectedWidgets() {
         this.sidebarWidgets.entrySet().forEach(e -> e.setValue(false));
     }
 
     /**
-     * <p>
      * getAndResetSelectedWidgets.
-     * </p>
      *
-     * @return a {@link java.util.List} object
+     * @return a list of the currently selected sidebar widgets, after which all selections are cleared
      */
     public List<WidgetDisplayElement> getAndResetSelectedWidgets() {
         List<WidgetDisplayElement> selected = getSelectedWidgets();
@@ -520,34 +496,28 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>selectedComponent</code>.
-     * </p>
      *
-     * @return a {@link java.lang.String} object
+     * @return the template filename of the selected component to add
      */
     public String getSelectedComponent() {
         return selectedComponent;
     }
 
     /**
-     * <p>
      * Setter for the field <code>selectedComponent</code>.
-     * </p>
      *
-     * @param selectedComponent a {@link java.lang.String} object
+     * @param selectedComponent template filename of the component to add
      */
     public void setSelectedComponent(String selectedComponent) {
         this.selectedComponent = selectedComponent;
     }
 
     /**
-     * <p>
      * getAvailableComponents.
-     * </p>
      *
-     * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object
-     * @return a {@link java.util.List} object
+     * @param page CMS page used to filter out incompatible paged components
+     * @return a list of select items representing CMS components available for the given page, grouped by type
      */
     public List<SelectItem> getAvailableComponents(CMSPage page) {
         Stream<CMSComponent> stream = templateManager.getContentManager().getComponents().stream();
@@ -582,12 +552,10 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>
      * mayRemoveCategoryFromPage.
-     * </p>
      *
+     * @param cat category whose removal eligibility is being checked
      * @return false only if the user has limited privileges for categories and only one category is set for the selected page
-     * @param cat a {@link io.goobi.viewer.model.cms.CMSCategory} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean mayRemoveCategoryFromPage(CMSCategory cat) throws DAOException {
@@ -600,42 +568,34 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>
      * isEditMode.
-     * </p>
      *
-     * @return a boolean.
+     * @return true if an existing CMS page is being edited (as opposed to creating a new one), false otherwise
      */
     public boolean isEditMode() {
         return editMode;
     }
 
     /**
-     * <p>
      * Setter for the field <code>editMode</code>.
-     * </p>
      *
-     * @param editMode a boolean.
+     * @param editMode true when editing an existing page; false for new pages
      */
     public void setEditMode(boolean editMode) {
         this.editMode = editMode;
     }
 
     /**
-     * <p>
      * setNewSelectedPage.
-     * </p>
      */
     public void setNewSelectedPage() {
         this.selectedPage = new CMSPage();
     }
 
     /**
-     * <p>
      * setNewSelectedPage.
-     * </p>
      *
-     * @param templateId a {@link java.lang.Long} object
+     * @param templateId database ID of the page template to base the new page on
      */
     public void setNewSelectedPage(Long templateId) {
         CMSPageTemplate template = loadTemplate(templateId);
@@ -663,43 +623,35 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>pageEditState</code>.
-     * </p>
      *
-     * @return a {@link io.goobi.viewer.model.cms.pages.CMSPageEditState} object
+     * @return the current state of the CMS page edit UI
      */
     public CMSPageEditState getPageEditState() {
         return pageEditState;
     }
 
     /**
-     * <p>
      * Setter for the field <code>pageEditState</code>.
-     * </p>
      *
-     * @param pageEditState a {@link io.goobi.viewer.model.cms.pages.CMSPageEditState} object
+     * @param pageEditState active section of the page edit UI
      */
     public void setPageEditState(CMSPageEditState pageEditState) {
         this.pageEditState = pageEditState;
     }
 
     /**
-     * <p>
      * deleteComponent.
-     * </p>
      *
-     * @param component a {@link io.goobi.viewer.model.cms.pages.content.CMSComponent} object
-     * @return a boolean
+     * @param component CMS component to remove from the selected page
+     * @return true if the component was successfully removed from the page, false otherwise
      */
     public boolean deleteComponent(CMSComponent component) {
         return this.selectedPage.removeComponent(component);
     }
 
     /**
-     * <p>
      * addComponent.
-     * </p>
      */
     public void addComponent() {
         if (addComponent(getSelectedPage(), getSelectedComponent())) {
@@ -729,10 +681,10 @@ public class CmsPageEditBean implements Serializable {
 
     /**
      * Fills all properties of the page with values for which the user has privileges - but only if the user has restricted privileges for that
-     * property
+     * property.
      *
-     * @param page
-     * @param user
+     * @param page CMS page whose restricted fields are to be set
+     * @param user User whose privilege constraints are applied
      * @throws PresentationException
      * @throws DAOException
      */
@@ -756,44 +708,36 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>saveAsTemplate</code>.
-     * </p>
      *
-     * @param saveAsTemplate a boolean
+     * @param saveAsTemplate true to save the current page as a template after saving
      */
     public void setSaveAsTemplate(boolean saveAsTemplate) {
         this.saveAsTemplate = saveAsTemplate;
     }
 
     /**
-     * <p>
      * isSaveAsTemplate.
-     * </p>
      *
-     * @return a boolean
+     * @return true if the current page should be saved as a template, false otherwise
      */
     public boolean isSaveAsTemplate() {
         return saveAsTemplate;
     }
 
     /**
-     * <p>
      * Setter for the field <code>templateName</code>.
-     * </p>
      *
-     * @param templateName a {@link java.lang.String} object
+     * @param templateName display name for the template to be created
      */
     public void setTemplateName(String templateName) {
         this.templateName = templateName;
     }
 
     /**
-     * <p>
      * Getter for the field <code>templateName</code>.
-     * </p>
      *
-     * @return a {@link java.lang.String} object
+     * @return the template name, falling back to the selected page title if blank
      */
     public String getTemplateName() {
         if (StringUtils.isBlank(this.templateName)) {
@@ -803,22 +747,18 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>
      * isTemplateLockComponents.
-     * </p>
      *
-     * @return a boolean
+     * @return true if components are locked when the page template is applied, false otherwise
      */
     public boolean isTemplateLockComponents() {
         return templateLockComponents;
     }
 
     /**
-     * <p>
      * Setter for the field <code>templateLockComponents</code>.
-     * </p>
      *
-     * @param templateLockComponents a boolean
+     * @param templateLockComponents true to prevent component editing in pages based on this template
      */
     public void setTemplateLockComponents(boolean templateLockComponents) {
         this.templateLockComponents = templateLockComponents;
@@ -827,7 +767,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Getter for unit tests.
      * 
-     * @return the dao
+
      */
     IDAO getDao() {
         return dao;
@@ -836,7 +776,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Setter for unit tests.
      * 
-     * @param dao the dao to set
+
      */
     void setDao(IDAO dao) {
         this.dao = dao;
@@ -845,7 +785,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Setter for unit tests.
      * 
-     * @param templateManager the templateManager to set
+
      */
     void setTemplateManager(CMSTemplateManager templateManager) {
         this.templateManager = templateManager;
@@ -854,7 +794,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Setter for unit tests.
      * 
-     * @param userBean the userBean to set
+
      */
     void setUserBean(UserBean userBean) {
         this.userBean = userBean;
@@ -863,7 +803,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Setter for unit tests.
      * 
-     * @param widgetsBean the widgetsBean to set
+
      */
     void setWidgetsBean(CMSSidebarWidgetsBean widgetsBean) {
         this.widgetsBean = widgetsBean;
@@ -872,7 +812,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Getter for unit tests.
      * 
-     * @return the collectionViewBean
+
      */
     CollectionViewBean getCollectionViewBean() {
         return collectionViewBean;
@@ -881,7 +821,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Setter for unit tests.
      * 
-     * @param collectionViewBean the collectionViewBean to set
+
      */
     void setCollectionViewBean(CollectionViewBean collectionViewBean) {
         this.collectionViewBean = collectionViewBean;
@@ -890,7 +830,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Setter for unit tests.
      * 
-     * @param facesContext the facesContext to set
+
      */
     void setFacesContext(FacesContext facesContext) {
         this.facesContext = facesContext;

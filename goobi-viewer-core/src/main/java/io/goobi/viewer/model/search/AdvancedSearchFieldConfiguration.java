@@ -55,15 +55,13 @@ public class AdvancedSearchFieldConfiguration {
         this.field = field;
     }
 
-    /**
-     * @return the field
-     */
+    
     public String getField() {
         return field;
     }
 
     /**
-     * @return the label
+     * @return the display label for this search field configuration, or the field name if no label is set
      * @should return field if label null
      */
     public String getLabel() {
@@ -74,7 +72,7 @@ public class AdvancedSearchFieldConfiguration {
     }
 
     /**
-     * @param label the label to set
+     * @param label the display label for this search field configuration
      * @return this object
      */
     public AdvancedSearchFieldConfiguration setLabel(String label) {
@@ -82,15 +80,13 @@ public class AdvancedSearchFieldConfiguration {
         return this;
     }
 
-    /**
-     * @return the hierarchical
-     */
+    
     public boolean isHierarchical() {
         return hierarchical;
     }
 
     /**
-     * @param hierarchical the hierarchical to set
+     * @param hierarchical true if the field should be displayed hierarchically; false otherwise
      * @return this object
      */
     public AdvancedSearchFieldConfiguration setHierarchical(boolean hierarchical) {
@@ -98,15 +94,13 @@ public class AdvancedSearchFieldConfiguration {
         return this;
     }
 
-    /**
-     * @return the range
-     */
+    
     public boolean isRange() {
         return range;
     }
 
     /**
-     * @param range the range to set
+     * @param range true if the field should be displayed as a range input; false otherwise
      * @return this object
      */
     public AdvancedSearchFieldConfiguration setRange(boolean range) {
@@ -114,15 +108,13 @@ public class AdvancedSearchFieldConfiguration {
         return this;
     }
 
-    /**
-     * @return the datepicker
-     */
+    
     public boolean isDatepicker() {
         return datepicker;
     }
 
     /**
-     * @param datepicker the datepicker to set
+     * @param datepicker true if the field should use a datepicker UI control; false otherwise
      * @return this object
      */
     public AdvancedSearchFieldConfiguration setDatepicker(boolean datepicker) {
@@ -130,15 +122,13 @@ public class AdvancedSearchFieldConfiguration {
         return this;
     }
 
-    /**
-     * @return the untokenizeForPhraseSearch
-     */
+    
     public boolean isUntokenizeForPhraseSearch() {
         return untokenizeForPhraseSearch;
     }
 
     /**
-     * @param untokenizeForPhraseSearch the untokenizeForPhraseSearch to set
+     * @param untokenizeForPhraseSearch true if the field value should be untokenized when used in phrase search queries; false otherwise
      * @return this object
      */
     public AdvancedSearchFieldConfiguration setUntokenizeForPhraseSearch(boolean untokenizeForPhraseSearch) {
@@ -146,15 +136,13 @@ public class AdvancedSearchFieldConfiguration {
         return this;
     }
 
-    /**
-     * @return the disabled
-     */
+    
     public boolean isDisabled() {
         return disabled;
     }
 
     /**
-     * @param disabled the disabled to set
+     * @param disabled true if this search field configuration should be disabled; false otherwise
      * @return this object
      */
     public AdvancedSearchFieldConfiguration setDisabled(boolean disabled) {
@@ -162,22 +150,18 @@ public class AdvancedSearchFieldConfiguration {
         return this;
     }
 
-    /**
-     * @return the visible
-     */
+    
     public boolean isVisible() {
         return visible;
     }
 
-    /**
-     * @return the allowMultipleItems
-     */
+    
     public boolean isAllowMultipleItems() {
         return allowMultipleItems;
     }
 
     /**
-     * @param allowMultipleItems the allowMultipleItems to set
+     * @param allowMultipleItems true if multiple search items may be added for this field; false otherwise
      * @return this
      */
     public AdvancedSearchFieldConfiguration setAllowMultipleItems(boolean allowMultipleItems) {
@@ -186,7 +170,7 @@ public class AdvancedSearchFieldConfiguration {
     }
 
     /**
-     * @param visible the visible to set
+     * @param visible true if this field configuration should be visible to the user; false otherwise
      * @return this
      */
     public AdvancedSearchFieldConfiguration setVisible(boolean visible) {
@@ -194,15 +178,13 @@ public class AdvancedSearchFieldConfiguration {
         return this;
     }
 
-    /**
-     * @return the displaySelectItemsThreshold
-     */
+    
     public int getDisplaySelectItemsThreshold() {
         return displaySelectItemsThreshold;
     }
 
     /**
-     * @param displaySelectItemsThreshold the displaySelectItemsThreshold to set
+     * @param displaySelectItemsThreshold maximum number of available values below which a select widget is displayed instead of a text input
      * @return this
      */
     public AdvancedSearchFieldConfiguration setDisplaySelectItemsThreshold(int displaySelectItemsThreshold) {
@@ -210,15 +192,13 @@ public class AdvancedSearchFieldConfiguration {
         return this;
     }
 
-    /**
-     * @return the selectType
-     */
+    
     public String getSelectType() {
         return selectType;
     }
 
     /**
-     * @param selectType the selectType to set
+     * @param selectType the type of select widget to use for this field (e.g. dropdown, checkboxes)
      * @return this
      */
     public AdvancedSearchFieldConfiguration setSelectType(String selectType) {
@@ -226,15 +206,13 @@ public class AdvancedSearchFieldConfiguration {
         return this;
     }
 
-    /**
-     * @return the replaceRegex
-     */
+    
     public String getReplaceRegex() {
         return replaceRegex;
     }
 
     /**
-     * @param replaceRegex the replaceRegex to set
+     * @param replaceRegex the regular expression pattern applied to field values before display
      * @return this
      */
     public AdvancedSearchFieldConfiguration setReplaceRegex(String replaceRegex) {
@@ -242,15 +220,13 @@ public class AdvancedSearchFieldConfiguration {
         return this;
     }
 
-    /**
-     * @return the replaceWith
-     */
+    
     public String getReplaceWith() {
         return replaceWith;
     }
 
     /**
-     * @param replaceWith the replaceWith to set
+     * @param replaceWith the replacement string substituted for matches of the replaceRegex pattern
      * @return this
      */
     public AdvancedSearchFieldConfiguration setReplaceWith(String replaceWith) {
@@ -258,15 +234,13 @@ public class AdvancedSearchFieldConfiguration {
         return this;
     }
 
-    /**
-     * @return the preselectValue
-     */
+    
     public String getPreselectValue() {
         return preselectValue;
     }
 
     /**
-     * @param preselectValue the preselectValue to set
+     * @param preselectValue the value that should be pre-selected in the search field by default
      * @return this
      */
     public AdvancedSearchFieldConfiguration setPreselectValue(String preselectValue) {

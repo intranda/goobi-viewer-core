@@ -78,8 +78,7 @@ import io.goobi.viewer.messages.Messages;
 /**
  * Upload of resouces for DC record creation. Files uploaded here are directly written to a subfolder of the viewer hotfolder
  *
- * @author florian
- *
+ * @author Florian Alpers
  */
 @Hidden
 @jakarta.ws.rs.Path(TEMP_MEDIA_FILES)
@@ -98,11 +97,11 @@ public class TempMediaFileResource {
     /**
      * Upload a file to the hotfolder.
      *
-     * @param foldername
-     * @param enabled
-     * @param filename
-     * @param uploadedInputStream
-     * @param fileDetail
+     * @param foldername target subfolder name in the temp media directory
+     * @param enabled whether the upload is enabled (form parameter)
+     * @param filename desired name for the uploaded file
+     * @param uploadedInputStream input stream of the uploaded file data
+     * @param fileDetail multipart content disposition metadata for the upload
      * @return a json response with a result message
      */
     @POST
@@ -173,9 +172,9 @@ public class TempMediaFileResource {
     }
 
     /**
-     * Get a filename list of all uploaded files in the media directory of the given folder.
+     * Gets a filename list of all uploaded files in the media directory of the given folder.
      *
-     * @param folder
+     * @param folder name of the target subfolder to list
      * @return a filename list of all uploaded files in the media folder
      */
     @GET
@@ -222,9 +221,9 @@ public class TempMediaFileResource {
     }
 
     /**
-     * Delete all files uploaded for the given folder.
+     * Deletes all files uploaded for the given folder.
      *
-     * @param folder
+     * @param folder name of the target subfolder whose files are deleted
      * @return a 200 response if deletion was successful, otherwise 500
      */
     @DELETE
@@ -277,9 +276,9 @@ public class TempMediaFileResource {
     }
 
     /**
-     * Get the appropriate media subfolder for foldername in the viewer hotfolder.
+     * Gets the appropriate media subfolder for foldername in the viewer hotfolder.
      *
-     * @param foldername
+     * @param foldername name of the target subfolder
      * @return the folder for upload
      * @throws IOException
      */
@@ -290,7 +289,7 @@ public class TempMediaFileResource {
     }
 
     /**
-     * @param file
+     * @param file path to the uploaded file
      * @return {@link URI}
      */
     private URI getIiifUri(Path file) {

@@ -29,6 +29,10 @@ import mil.nga.sf.geojson.LineString;
 import mil.nga.sf.geojson.Point;
 import mil.nga.sf.geojson.Polygon;
 
+/**
+ * {@link ICoordinateReader} implementation that parses WKT polygon strings of the form
+ * {@code POLYGON((x1 y1, x2 y2, ...))} into a {@link mil.nga.sf.geojson.Polygon} geometry.
+ */
 public class WKTPolygonReader implements ICoordinateReader {
 
     private static final String POLYGON_REGEX =

@@ -26,8 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author florian
- *
+ * @author Florian Alpers
  */
 public class DynamicContent implements Serializable {
 
@@ -40,45 +39,35 @@ public class DynamicContent implements Serializable {
 
     /**
      * 
-     * @param type
-     * @param componentFilename
+     * @param type the type of dynamic content
+     * @param componentFilename the filename of the JSF component
      */
     public DynamicContent(DynamicContentType type, String componentFilename) {
         this.type = type;
         this.componentFilename = componentFilename;
     }
 
-    /**
-     * @return the id
-     */
+    
     public String getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
+    
     public void setId(String id) {
         this.id = id;
     }
 
-    /**
-     * @return the attributes
-     */
+    
     public Map<String, Object> getAttributes() {
         return attributes;
     }
 
-    /**
-     * @param attributes the attributes to set
-     */
+    
     public void setAttributes(Map<String, Object> attributes) {
         this.attributes = attributes;
     }
 
-    /**
-     * @return the type
-     */
+    
     public DynamicContentType getType() {
         return type;
     }

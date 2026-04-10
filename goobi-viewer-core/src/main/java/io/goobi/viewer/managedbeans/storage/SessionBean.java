@@ -25,7 +25,9 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 
 /**
- * @author florian Store variables in session scope
+ * JSF backing bean for storing variables in session scope.
+ *
+ * @author Florian Alpers
  */
 @Named
 @SessionScoped

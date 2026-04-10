@@ -31,6 +31,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+/**
+ * Manages per-session exclusive edit locks for configuration files in the config editor, preventing
+ * concurrent modifications by different HTTP sessions.
+ */
 public class FileLocks {
 
     private static final Logger logger = LogManager.getLogger(FileLocks.class);
@@ -38,9 +42,9 @@ public class FileLocks {
     private final Map<Path, String> locks = new ConcurrentHashMap<>();
 
     /**
-     * 
-     * @param file
-     * @param sessionId
+     *
+     * @param file the file path to lock
+     * @param sessionId the HTTP session identifier acquiring the lock
      * @return true if file locked successfully; false otherwise
      */
     public synchronized boolean lockFile(Path file, String sessionId) {
@@ -54,9 +58,9 @@ public class FileLocks {
     }
 
     /**
-     * 
-     * @param file
-     * @param sessionId
+     *
+     * @param file the file path to unlock
+     * @param sessionId the HTTP session identifier releasing the lock
      * @return true if file unlocked successfully; false otherwise
      */
     public synchronized boolean unlockFile(Path file, String sessionId) {
@@ -70,8 +74,8 @@ public class FileLocks {
 
     /**
      * 
-     * @param file
-     * @param sessionId
+     * @param file path to the file to check
+     * @param sessionId current HTTP session ID to compare against the lock holder
      * @return true if file locked by different session; false otherwise
      * @should return true if file locked by different session id
      * @should return false if file locked by own session id
@@ -82,8 +86,8 @@ public class FileLocks {
     }
 
     /**
-     * 
-     * @param sessionId
+     *
+     * @param sessionId the HTTP session identifier whose locks should be released
      */
     public void clearLocksForSessionId(String sessionId) {
         Set<Path> toClear = new HashSet<>();

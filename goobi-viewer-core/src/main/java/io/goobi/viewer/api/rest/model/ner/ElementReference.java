@@ -28,9 +28,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * <p>
- * ElementReference class.
- * </p>
+ * REST API model referencing a single named-entity element within a page of a digitized document.
+ * Holds the element's XML ID, bounding-box coordinates, text content, optional URI, and the page order number on which it appears.
  */
 public class ElementReference {
 
@@ -42,9 +41,7 @@ public class ElementReference {
     private int page;
 
     /**
-     * <p>
-     * Constructor for ElementReference.
-     * </p>
+     * Creates a new ElementReference instance.
      */
     public ElementReference() {
         super();
@@ -55,13 +52,11 @@ public class ElementReference {
     }
 
     /**
-     * <p>
-     * Constructor for ElementReference.
-     * </p>
+     * Creates a new ElementReference instance.
      *
-     * @param id a {@link java.lang.String} object.
-     * @param coordinates a {@link java.awt.Rectangle} object.
-     * @param content a {@link java.lang.String} object.
+     * @param id XML element ID of the referenced NER token
+     * @param coordinates bounding box of the element on the page
+     * @param content text content of the NER element
      * @param uri Value of the URI attribute
      */
     public ElementReference(String id, Rectangle coordinates, String content, String uri) {
@@ -73,33 +68,27 @@ public class ElementReference {
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the identifier of this element reference
      */
     public String getId() {
         return id;
     }
 
     /**
-     * <p>
      * Getter for the field <code>coordinates</code>.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the bounding box coordinates of this element as a string
      */
     public String getCoordinates() {
         return getAsString(coordinates);
     }
 
     /**
-     * <p>
      * getCoordinatesAsRect.
-     * </p>
      *
-     * @return a {@link java.awt.Rectangle} object.
+     * @return the bounding box of the element on the page as a Rectangle
      */
     @JsonIgnore
     public Rectangle getCoordinatesAsRect() {
@@ -107,76 +96,62 @@ public class ElementReference {
     }
 
     /**
-     * <p>
      * Setter for the field <code>coordinates</code>.
-     * </p>
      *
-     * @param coordinates a {@link java.awt.Rectangle} object.
+     * @param coordinates bounding box of the element on the page
      */
     public void setCoordinates(Rectangle coordinates) {
         this.coordinates = coordinates;
     }
 
     /**
-     * <p>
      * Getter for the field <code>content</code>.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the text content of this NER element
      */
     public String getContent() {
         return content;
     }
 
     /**
-     * <p>
      * Setter for the field <code>content</code>.
-     * </p>
      *
-     * @param content a {@link java.lang.String} object.
+     * @param content text content of the NER element
      */
     public void setContent(String content) {
         this.content = content;
     }
 
-    /**
-     * @return the uri
-     */
+    
     public String getUri() {
         return uri;
     }
 
-    /**
-     * @param uri the uri to set
-     */
+    
     public void setUri(String uri) {
         this.uri = uri;
     }
 
     /**
-     * <p>
      * Getter for the field <code>page</code>.
-     * </p>
      *
-     * @return the pageNo
+     * @return the 1-based page order number of the referenced element
      */
     public int getPage() {
         return page;
     }
 
     /**
-     * <p>
      * Setter for the field <code>page</code>.
-     * </p>
      *
-     * @param pageNo the pageNo to set
+     * @param pageNo 1-based page order number of the referenced element
      */
     public void setPage(int pageNo) {
         this.page = pageNo;
     }
 
     /**
-     * @param rect
+     * @param rect rectangle to convert to string
      * @return A String representation of the rectangle in the form of x1,y1,x2,y2
      */
     private static String getAsString(Rectangle rect) {

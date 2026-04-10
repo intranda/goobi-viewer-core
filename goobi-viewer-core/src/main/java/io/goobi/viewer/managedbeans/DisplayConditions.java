@@ -63,9 +63,8 @@ import jakarta.servlet.http.HttpSession;
  * <li>{@link #matchRecord(String)}</li>
  * <li>{@link #matchPage(String)}</li>
  * </ul>
- * The methods check against properties of the record and of the current page respectively. Both that a pseudo-json string as an agument that is
+ * The methods check against properties of the record and of the current page respectively. Both take a pseudo-json string as an argument that is
  * explained in more detail in the documentation of both methods.
- * 
  */
 @Named
 @SessionScoped
@@ -88,7 +87,7 @@ public class DisplayConditions implements Serializable {
      * Called with a string in form of a modified json object. The object may not contain any quotation marks and values may be preceded by a '!'
      * indicating a negation of the check for this value. A typical form is
      * 
-     * <pre>{@code
+     * <p><pre>{@code
      * { 
      *     contentType:[IMAGE, AUDIO, VIDEO, MODEL], 
      *     accessCondition: VIEW_IMAGES, 
@@ -97,10 +96,10 @@ public class DisplayConditions implements Serializable {
      * }
      * }</pre>
      * 
-     * The object may contain the following properties. Each given property is checked against the current view, request and record:
+     * <p>The object may contain the following properties. Each given property is checked against the current view, request and record:
      * <ul>
      * 
-     * <li>
+     * <p><li>
      * <dl>
      * <dt>contentType</dt>
      * <dd><i>Possible values:</i> An array of one or more of the following: IMAGE, AUDIO, VIDEO, MODEL, ALTO, TEI, PDF, EPUB</dd>
@@ -109,7 +108,7 @@ public class DisplayConditions implements Serializable {
      * </dl>
      * </li>
      * 
-     * <li>
+     * <p><li>
      * <dl>
      * <dt>mimeType</dt>
      * <dd><i>Possible values:</i> An array of one or more of the following: image, video, audio, application, text, model (3D-Objekt), other</dd>
@@ -118,7 +117,7 @@ public class DisplayConditions implements Serializable {
      * </dl>
      * </li>
      * 
-     * <li>
+     * <p><li>
      * <dl>
      * <dt>accessCondition</dt>
      * <dd><i>Possible values:</i> An array of any of the string values of the 'PRIV_' constants defined in {@link IPrivilegeHolder}, which is the
@@ -128,7 +127,7 @@ public class DisplayConditions implements Serializable {
      * </dl>
      * </li>
      * 
-     * <li>
+     * <p><li>
      * <dl>
      * <dt>pageType</dt>
      * <dd><i>Possible values:</i> An array of one or more of the following: viewToc, viewThumbs, viewMetadata, viewFulltext, viewFullscreen,
@@ -138,7 +137,7 @@ public class DisplayConditions implements Serializable {
      * </dl>
      * </li>
      * 
-     * <li>
+     * <p><li>
      * <dl>
      * <dt>sourceFormat</dt>
      * <dd><i>Possible values:</i> An array of one or more of the following: METS, LIDO, DUBLINCORE, METS_MARC, DENKXWEB</dd>
@@ -147,7 +146,7 @@ public class DisplayConditions implements Serializable {
      * </dl>
      * </li>
      * 
-     * <li>
+     * <p><li>
      * <dl>
      * <dt>docType</dt>
      * <dd><i>Possible values:</i> An array of one or more doc struct types from the SOLR field 'DOCSTRCT' and some additional values document
@@ -158,7 +157,7 @@ public class DisplayConditions implements Serializable {
      * </dl>
      * </li>
      * 
-     * <li>
+     * <p><li>
      * <dl>
      * <dt>numPages</dt>
      * <dd><i>Possible values:</i> The number of pages within the current record. An integer equals '0' or larger</dd>
@@ -166,7 +165,7 @@ public class DisplayConditions implements Serializable {
      * </dl>
      * </li>
      * 
-     * <li>
+     * <p><li>
      * <dl>
      * <dt>tocSize</dt>
      * <dd><i>Possible values:</i> The number of elements within the record's table of content. An integer equals '1' or larger</dd>
@@ -176,17 +175,18 @@ public class DisplayConditions implements Serializable {
      * </li>
      * </ul>
      * 
-     * A '!' character preceding a string value means that the condition should not match the value for the check to return true; preceding an array,
+     * <p>A '!' character preceding a string value means that the condition should not match the value for the check to return true; preceding an
+     * array,
      * it means that none of the values within the list should match the record. Preceding a number, the '!' means that the actual value must be less
      * than the given number for the condition to return true. Values for contentType and accessCondition are cached per http session and record
      * 
-     * @param json
+     * @param json JSON string describing the visibility conditions to check
      * @return true if the given conditions are met by the current record, false otherwise
-     * @throws IOException An exception occured file system resources
-     * @throws IndexUnreachableException An exception occured communicating the the viewer data index (SOLR)
-     * @throws DAOException An exception occured communicating with the viewer sql database
+     * @throws IOException An exception occurred accessing file system resources
+     * @throws IndexUnreachableException An exception occurred communicating with the viewer data index (Solr)
+     * @throws DAOException An exception occurred communicating with the viewer SQL database
      * @throws RecordNotFoundException The current record could not be found in the viewer data index when checking access conditions
-     * @throws PresentationException Any other exception encountered while checking file system resources or the SOLR database
+     * @throws PresentationException Any other exception encountered while checking file system resources or the Solr database
      * @throws ViewerConfigurationException
      */
     public boolean matchRecord(String json)
@@ -202,7 +202,7 @@ public class DisplayConditions implements Serializable {
      * Called with a string in form of a modified json object. The object may not contain any quotation marks and values may be preceded by a '!'
      * indicating a negation of the check for this value. A typical form is
      * 
-     * <pre>{@code
+     * <p><pre>{@code
      * { 
      *     contentType:[IMAGE, AUDIO, VIDEO, MODEL], 
      *     accessCondition: VIEW_IMAGES, 
@@ -210,10 +210,10 @@ public class DisplayConditions implements Serializable {
      * }
      * }</pre>
      * 
-     * The object may contain the following properties. Each given property is checked against the current view, request and record:
+     * <p>The object may contain the following properties. Each given property is checked against the current view, request and record:
      * <ul>
      * 
-     * <li>
+     * <p><li>
      * <dl>
      * <dt>contentType</dt>
      * <dd><i>Possible values:</i> An array of one or more of the following: IMAGE, AUDIO, VIDEO, MODEL, ALTO, TEI, PDF, EPUB</dd>
@@ -221,7 +221,7 @@ public class DisplayConditions implements Serializable {
      * </dl>
      * </li>
      * 
-     * <li>
+     * <p><li>
      * <dl>
      * <dt>mimeType</dt>
      * <dd><i>Possible values:</i> An array of one or more of the following: image, video, audio, application, text, model (3D-Objekt), other</dd>
@@ -229,7 +229,7 @@ public class DisplayConditions implements Serializable {
      * </dl>
      * </li>
      * 
-     * <li>
+     * <p><li>
      * <dl>
      * <dt>accessCondition</dt>
      * <dd><i>Possible values:</i> An array of any of the string values of the 'PRIV_' constants defined in {@link IPrivilegeHolder}, which is the
@@ -240,7 +240,7 @@ public class DisplayConditions implements Serializable {
      * </dl>
      * </li>
      * 
-     * <li>
+     * <p><li>
      * <dl>
      * <dt>pageType</dt>
      * <dd><i>Possible values:</i> An array of one or more of the following: viewToc, viewThumbs, viewMetadata, viewFulltext, viewFullscreen,
@@ -249,18 +249,20 @@ public class DisplayConditions implements Serializable {
      * given array</dd>
      * </dl>
      * </li>
-     * 
-     * A '!' character preceding a string value means that the condition should not match the value for the check to return true; preceding an array,
+     * </ul>
+     *
+     * <p>A '!' character preceding a string value means that the condition should not match the value for the check to return true; preceding an
+     * array,
      * it means that none of the values within the list should match the page. Values for contentType and accessCondition are cached per http session
      * and page
      * 
-     * @param json
+     * @param json JSON string describing the visibility conditions to check
      * @return true if the given conditions are met by the current page, false otherwise
-     * @throws IOException An exception occured file system resources
-     * @throws IndexUnreachableException An exception occured communicating the the viewer data index (SOLR)
-     * @throws DAOException An exception occured communicating with the viewer sql database
+     * @throws IOException An exception occurred accessing file system resources
+     * @throws IndexUnreachableException An exception occurred communicating with the viewer data index (Solr)
+     * @throws DAOException An exception occurred communicating with the viewer SQL database
      * @throws RecordNotFoundException The current record could not be found in the viewer data index when checking access conditions
-     * @throws PresentationException Any other exception encountered while checking file system resources or the SOLR database
+     * @throws PresentationException Any other exception encountered while checking file system resources or the Solr database
      */
     public boolean matchPage(String json)
             throws IOException, IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException {
@@ -279,7 +281,7 @@ public class DisplayConditions implements Serializable {
     }
 
     /**
-     * Get the {@link PageType} of the current page
+     * Gets the {@link PageType} of the current page.
      * 
      * @return A {@link PageType}
      */
@@ -291,7 +293,7 @@ public class DisplayConditions implements Serializable {
      * Get {@link UIComponentHelper} for the {@link UIComponent} with the given identifier within the composite component from which the method is
      * called. This is used to count the number of rendered jsf-components with a specific attribute within said UIComponent.
      *
-     * @param id
+     * @param id identifier of the child UIComponent to look up
      * @return a {@link UIComponentHelper} for the {@link UIComponent} with the given id. If no such component exists, the current component
      */
     public UIComponentHelper getTag(String id) {
@@ -394,9 +396,9 @@ public class DisplayConditions implements Serializable {
 
         /**
          * Check if the given element is a ui:repeat. If so and if its value has no elements, return false. Otherwise true
-         * 
-         * @param c
-         * @return
+         *
+         * @param c the UI component to check
+         * @return false if the component is a UIRepeat with an empty collection value, true otherwise
          */
         private static boolean isHasValuesIfRepeat(UIComponent c) {
             if ("UIRepeat".equals(c.getClass().getSimpleName())) { //NOSONAR Doing this to avoid using com.sun.* classes

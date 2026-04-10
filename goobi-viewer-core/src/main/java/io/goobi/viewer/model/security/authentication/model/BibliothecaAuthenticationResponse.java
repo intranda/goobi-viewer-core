@@ -45,8 +45,8 @@ public class BibliothecaAuthenticationResponse {
     /**
      * Parses and evaluates the given XML response from X-Service.
      *
-     * @param xml a {@link java.lang.String} object.
-     * @param encoding a {@link java.lang.String} object.
+     * @param xml XML response string from Bibliotheca to parse
+     * @param encoding character encoding of the XML string
      * @throws org.jdom2.JDOMException if any.
      * @throws java.io.IOException if any.
      */
@@ -70,9 +70,7 @@ public class BibliothecaAuthenticationResponse {
     }
 
     /**
-     * <p>
      * isValid.
-     * </p>
      *
      * @return true if all relevant data indicates the account is valid; false otherwise
      */
@@ -80,40 +78,30 @@ public class BibliothecaAuthenticationResponse {
         return StringUtils.isNotEmpty(userid) && !expired;
     }
 
-    /**
-     * @return the userid
-     */
+    
     public String getUserid() {
         return userid;
     }
 
-    /**
-     * @param userid the userid to set
-     */
+    
     public void setUserid(String userid) {
         this.userid = userid;
     }
 
-    /**
-     * @return the fsk
-     */
+    
     public String getFsk() {
         return fsk;
     }
 
-    /**
-     * @param fsk the fsk to set
-     */
+    
     public void setFsk(String fsk) {
         this.fsk = fsk;
     }
 
     /**
-     * <p>
      * isExpired.
-     * </p>
      *
-     * @return the expired
+     * @return true if the authentication session has expired, false otherwise
      */
     public boolean isExpired() {
         return expired;

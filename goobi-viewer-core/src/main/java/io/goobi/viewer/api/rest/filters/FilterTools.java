@@ -46,6 +46,11 @@ import io.goobi.viewer.solr.SolrTools;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
+/**
+ * Utility class providing shared helper methods for JAX-RS request filters. Handles access
+ * control checks such as concurrent view limits, image size restrictions, and record-level
+ * permission evaluation against the Solr index.
+ */
 public final class FilterTools {
 
     private static final Logger logger = LogManager.getLogger(FilterTools.class);
@@ -67,11 +72,11 @@ public final class FilterTools {
     /**
      * Set a lock for the given record pi and the request's session if possible.
      * 
-     * @param pi
-     * @param request
-     * @throws RecordNotFoundException if no record was found
+     * @param pi persistent identifier of the record
+     * @param request HTTP servlet request containing the session
      * @return false if the view limit is already exceeded and the record may not be viewed, true otherwise
      * @should throw exception if record not found
+     * @throws RecordNotFoundException if no record was found
      */
     public static boolean checkForConcurrentViewLimit(String pi, HttpServletRequest request) {
         // logger.trace("filterForConcurrentViewLimit: {}", request.getSession().getId()); //NOSONAR Debug
@@ -117,10 +122,8 @@ public final class FilterTools {
     }
 
     /**
-     * <p>
-     * Check if the request contains a size and region parameter (and is this a IIIF image request) and if so wether they describe a request for a
+     * Check if the request contains a size and region parameter (and is this a IIIF image request) and if so whether they describe a request for a
      * full image not larger than {@link Configuration#getThumbnailImageAccessMaxWidth()}.
-     * </p>
      *
      * @param servletRequest The servlet request for the resource
      * @return true if the request is for a IIIF image resource which is considered a thumbnail

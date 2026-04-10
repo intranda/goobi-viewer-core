@@ -111,6 +111,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
@@ -128,8 +129,9 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 
 /**
- * @author florian
+ * REST resource providing record metadata, IIIF manifests, full-text, and various export formats for digitized records.
  *
+ * @author Florian Alpers
  */
 @jakarta.ws.rs.Path(RECORDS_RECORD)
 @ViewerRestServiceBinding
@@ -150,7 +152,8 @@ public class RecordResource {
     private static Thread deleteRecordThread = null;
 
     public RecordResource(@Context HttpServletRequest request,
-            @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) {
+            @Parameter(description = "Persistent identifier of the record",
+                    schema = @Schema(pattern = "^[A-Za-z0-9][A-Za-z0-9_.-]*$")) @PathParam("pi") String pi) {
         // Reject PIs that contain characters illegal in file-system URI paths before any
         // file-system access occurs, to prevent ContentLib path injection (e.g. space, pipe,
         // null byte via double-encoding). BadRequestException (HTTP 400) is an unchecked
@@ -178,11 +181,9 @@ public class RecordResource {
     }
 
     /**
-     * <p>
      * getRISAsText.
-     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return the RIS citation for the record as plain text
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
@@ -225,6 +226,7 @@ public class RecordResource {
     @Operation(tags = { "records", "annotations" }, summary = "List annotations for a record")
     @ApiResponse(responseCode = "200", description = "Annotation collection for the record")
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public IAnnotationCollection getAnnotationsForRecord(
             @Parameter(
                     description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations,"
@@ -246,6 +248,7 @@ public class RecordResource {
     @Operation(tags = { "records", "annotations" }, summary = "List comments for a record")
     @ApiResponse(responseCode = "200", description = "Annotation collection of comments for the record")
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public IAnnotationCollection getCommentsForRecord(
             @Parameter(
                     description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations,"
@@ -267,10 +270,13 @@ public class RecordResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Get a page of comments for a record", tags = { "records", "annotations" })
     @ApiResponse(responseCode = "200", description = "Annotation page containing comments")
-    @ApiResponse(responseCode = "400", description = "If the page number is out of bounds")
-    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
-    public AnnotationPage getCommentPageForRecord(@PathParam("page") Integer page)
-            throws DAOException, IllegalRequestException {
+    @ApiResponse(responseCode = "400", description = "If the page number is less than 1")
+    @ApiResponse(responseCode = "404", description = "No record found or no comments for the given identifier")
+    public AnnotationPage getCommentPageForRecord(
+            // Page numbers are 1-based; document minimum in schema so clients and schemathesis know 0 is invalid
+            @Parameter(description = "Page number (1-based)",
+                    schema = @Schema(minimum = "1", maximum = "2147483647")) @PathParam("page") Integer page)
+            throws DAOException, IllegalRequestException, ContentNotFoundException {
 
         URI uri = URI.create(urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(pi).build());
         return new AnnotationsResourceBuilder(urls, servletRequest).getWebAnnotationPageForRecordComments(pi, uri, page);
@@ -281,6 +287,7 @@ public class RecordResource {
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get record metadata source file")
     @ApiResponse(responseCode = "200", description = "Metadata source file content")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "404", description = "No source file found for the given record")
     public StreamingOutput getSource() throws ContentNotFoundException, PresentationException, IndexUnreachableException {
 
@@ -314,6 +321,7 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_MANIFEST)
     @Produces({ MediaType.APPLICATION_JSON })
     @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 manifest for the record")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     // 403 is returned by AccessConditionRequestFilter when the record is not found in the Solr index
     @ApiResponse(responseCode = "403", description = "Access denied or record not accessible (e.g. record not found in index)")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
@@ -373,9 +381,12 @@ public class RecordResource {
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public DocumentReference getNERTags(
-            @Parameter(description = "First page to get tags for") @QueryParam("start") Integer start,
-            @Parameter(description = "Last page to get tags for") @QueryParam("end") Integer end,
-            @Parameter(description = "Number of pages to combine into each group") @QueryParam("step") Integer stepSize,
+            @Parameter(description = "First page to get tags for",
+                    schema = @Schema(minimum = "1", maximum = "2147483647")) @QueryParam("start") Integer start,
+            @Parameter(description = "Last page to get tags for",
+                    schema = @Schema(minimum = "1", maximum = "2147483647")) @QueryParam("end") Integer end,
+            @Parameter(description = "Number of pages to combine into each group",
+                    schema = @Schema(minimum = "1", maximum = "2147483647")) @QueryParam("step") Integer stepSize,
             @Parameter(description = "Tag type to consider (person, corporation, event or location)") @QueryParam("type") String type)
             throws PresentationException, IndexUnreachableException {
         NERBuilder b = new NERBuilder();
@@ -463,6 +474,7 @@ public class RecordResource {
             description = "If possible, directly read a CMDI file associated with the record")
     @ApiResponse(responseCode = "200", description = "CMDI record file in the requested language")
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or language code")
+    @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
     @ApiResponse(responseCode = "404", description = "No CMDI file found for the given record")
     public String getCmdiLanguage(
             @Parameter(description = "preferred language for the TEI file, in ISO-639 format") @PathParam("lang") final String language)
@@ -483,6 +495,7 @@ public class RecordResource {
             description = "If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
     @ApiResponse(responseCode = "200", description = "TEI record file in the requested language")
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or language code")
+    @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
     @ApiResponse(responseCode = "404", description = "No TEI file found for the given record")
     public String getTeiLanguage(
             @Parameter(description = "preferred language for the TEI file, in ISO-639 format") @PathParam("lang") final String language)
@@ -503,6 +516,7 @@ public class RecordResource {
             description = "If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
     @ApiResponse(responseCode = "200", description = "Record text in TEI format")
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public String getTei() throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
         checkFulltextAccessConditions(pi);
@@ -577,17 +591,15 @@ public class RecordResource {
     }
 
     /**
-     * <p>
      * autoCompleteInManifest.
-     * </p>
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param query a {@link java.lang.String} object.
-     * @param motivation a {@link java.lang.String} object.
-     * @param date a {@link java.lang.String} object.
-     * @param user a {@link java.lang.String} object.
-     * @param page a {@link java.lang.Integer} object.
-     * @return a {@link de.intranda.api.iiif.search.AutoSuggestResult} object.
+     * @param pi persistent identifier of the record to search
+     * @param query partial query string for auto-completion
+     * @param motivation space-separated list of annotation motivations to filter
+     * @param date date filter (not supported; passed to 'ignored' property)
+     * @param user user filter (not supported; passed to 'ignored' property)
+     * @param page result page number; defaults to 1 if absent
+     * @return the IIIF AutoSuggest result containing auto-completion candidates for the given query
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
@@ -614,7 +626,7 @@ public class RecordResource {
     }
 
     /**
-     * @param mode
+     * @param mode build mode string (e.g. "simple", "thumbs", "iiif")
      * @return {@link BuildMode}
      */
     public static BuildMode getBuildeMode(String mode) {
@@ -637,11 +649,9 @@ public class RecordResource {
     }
 
     /**
-     * <p>
      * deleteRecord.
-     * </p>
      *
-     * @param createTraceDocument
+     * @param createTraceDocument if true, a trace document is written after deletion
      * @return Short summary of files deleted
      */
     @DELETE
@@ -650,8 +660,11 @@ public class RecordResource {
     @CORSBinding
     @AuthorizationBinding
     @ApiResponse(responseCode = "200", description = "Record deletion accepted")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "401", description = "No authorization token provided or token is invalid")
     @ApiResponse(responseCode = "403", description = "Deletion not allowed because child volumes are still present")
+    // 404 is returned when the PI is valid but the record does not exist in the index
+    @ApiResponse(responseCode = "404", description = "Record not found for the given identifier")
     @ApiResponse(responseCode = "500", description = "Internal server error during deletion")
     @ApiResponse(responseCode = "503", description = "A deletion operation is already in progress")
     @Operation(tags = { "records" }, summary = "Delete the record from the Solr database",
@@ -723,8 +736,8 @@ public class RecordResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "json" }, summary = "List record metadata as JSON. Solr query and field mapping are configured statically.")
     @ApiResponse(responseCode = "200", description = "Record metadata as JSON")
-    @ApiResponse(responseCode = "400", description = "Missing record identifier or template configuration not found")
-    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
+    @ApiResponse(responseCode = "400", description = "Missing record identifier")
+    @ApiResponse(responseCode = "404", description = "No record found for the given identifier or template configuration not found")
     public Response getRecordMetadataAsJson(@PathParam("pi") String pi, @PathParam("template") String template)
             throws IndexUnreachableException, PresentationException {
         logger.trace("getRecordMetadataAsJson: {}/{}", pi, template);
@@ -733,7 +746,8 @@ public class RecordResource {
         }
         JsonMetadataConfiguration config = DataManager.getInstance().getConfiguration().getWebApiFields(template);
         if (config == null) {
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "Template not found: " + template).build();
+            // Template name is syntactically valid but no such configuration exists → 404 (not 400)
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode(), "Template not found: " + template).build();
         }
 
         String query = "+" + SolrConstants.PI + ":\"" + pi + "\"";
@@ -753,7 +767,7 @@ public class RecordResource {
     }
 
     /**
-     * @param pi
+     * @param pi persistent identifier of the record
      * @return {@link StructElement} constructed out of given pi
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -772,9 +786,9 @@ public class RecordResource {
     }
 
     /**
-     * Throw an AccessDenied error if the request doesn't satisfy the access conditions
+     * Throw an AccessDenied error if the request doesn't satisfy the access conditions.
      *
-     * @param pi
+     * @param pi persistent identifier of the record to check access for
      * @throws ServiceNotAllowedException
      */
     private void checkFulltextAccessConditions(String pi) throws ServiceNotAllowedException {
@@ -795,7 +809,8 @@ public class RecordResource {
 
     /**
      * Validates the PI path parameter using {@link PIValidator#validatePi(String)}.
-     * Delegates to the central PI validator to keep validation logic in one place.
+     *
+     * <p>Delegates to the central PI validator to keep validation logic in one place.
      * Throws BadRequestException (HTTP 400, unchecked WebApplicationException) so that
      * Jersey maps it to a 400 response regardless of where it is thrown (constructor or method).
      *
