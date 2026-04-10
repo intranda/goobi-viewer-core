@@ -478,7 +478,8 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
                 }
                 return uri;
             } catch (URISyntaxException e) {
-                logger.error("Unable to create uri from {}", getLink());
+                // Log at WARN level only — this is a data quality issue (user entered non-URI text), not a system error
+                logger.warn("Unable to create uri from {}", getLink());
                 return null;
             }
         }

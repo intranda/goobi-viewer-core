@@ -279,6 +279,8 @@
                                     value="#{media.link}"
                                     validator="URISyntaxValidator"
                                     styleClass="form-control">
+                                    <!-- Activate URI syntax validation so free-text descriptions cannot be saved as link -->
+                                    <f:attribute name="validator_active" value="true" />
                                     <f:passThroughAttribute
                                         name="aria-label"
                                         value="#{msg.admin__media_links_to}" />
