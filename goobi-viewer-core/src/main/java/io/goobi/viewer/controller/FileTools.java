@@ -761,6 +761,7 @@ public final class FileTools {
      * @should remove everything but the file name from given path
      * @should throw IllegalArgumentException given invalid file name
      * @should accept file names containing Unicode characters
+     * @should accept file names containing common punctuation characters
      */
     public static String sanitizeFileName(String fileName) {
         if (StringUtils.isBlank(fileName)) {
@@ -771,7 +772,11 @@ public final class FileTools {
         // Use (?U) to enable Unicode-aware \w so that file names with non-ASCII
         // letters (e.g. umlauts like ü) are accepted. Without (?U), \w only
         // matches [a-zA-Z_0-9] and rejects valid Unicode file names.
-        if (sanitizedFileName == null || !sanitizedFileName.matches("(?U)[\\w.,\\- ]+")) {
+        // Allow !, (, ), ' in addition to word chars and basic punctuation because
+        // these characters appear in real document/newspaper titles (e.g. "Nieder mit
+        // Spartakus!") and are safe for filesystem use after path components have
+        // already been stripped by Paths.get().getFileName() above.
+        if (sanitizedFileName == null || !sanitizedFileName.matches("(?U)[\\w.,\\-!()' ]+")) {
             throw new IllegalArgumentException("Illegal fileName: " + fileName);
         }
 
