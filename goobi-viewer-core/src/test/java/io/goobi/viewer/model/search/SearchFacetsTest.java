@@ -33,6 +33,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -748,5 +752,43 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
 
         facets.setActiveFacetString("FIELD:foo;;");
         Assertions.assertFalse(facets.isUnselectedValuesAvailable());
+    }
+
+    /**
+     * Regression guard for the replacement of Collections.synchronizedMap with ConcurrentHashMap.
+     * Verifies that concurrent reads and writes to availableFacets do not throw
+     * ConcurrentModificationException or any other concurrency error.
+     *
+     * @see SearchFacets#getAvailableFacets()
+     * @verifies not throw under concurrent reads and writes
+     */
+    @Test
+    void availableFacets_shouldNotThrowUnderConcurrentAccess() throws Exception {
+        SearchFacets facets = new SearchFacets();
+        int threads = 20;
+        ExecutorService executor = Executors.newFixedThreadPool(threads);
+        List<Future<?>> futures = new ArrayList<>();
+
+        // 10 writers
+        for (int i = 0; i < 10; i++) {
+            final int idx = i;
+            futures.add(executor.submit(() -> {
+                facets.getAvailableFacets().put("FIELD_" + idx, new ArrayList<>());
+            }));
+        }
+        // 10 readers iterating the full entry set
+        for (int i = 0; i < 10; i++) {
+            futures.add(executor.submit(() -> {
+                new ArrayList<>(facets.getAvailableFacets().entrySet());
+            }));
+        }
+
+        executor.shutdown();
+        executor.awaitTermination(5, TimeUnit.SECONDS);
+
+        // f.get() rethrows any ExecutionException wrapping ConcurrentModificationException
+        for (Future<?> f : futures) {
+            f.get();
+        }
     }
 }
