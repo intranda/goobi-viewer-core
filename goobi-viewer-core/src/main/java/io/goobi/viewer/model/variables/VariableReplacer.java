@@ -81,6 +81,10 @@ public class VariableReplacer {
     private static final String REPLACEMENT_GROUP_REGEX = "\\{([\\w-]+)\\}";
     private static final String REPLACEMENT_GROUP_WITH_NAMESPACE_REGEX = "\\{([\\w-]+)\\.([\\w-]+)\\}";
 
+    // Compiled once at class load; reused across all replace() calls
+    private static final Pattern REPLACEMENT_PATTERN = Pattern.compile(REPLACEMENT_REGEX);
+    private static final Pattern REPLACEMENT_GROUP_WITH_NAMESPACE_PATTERN = Pattern.compile(REPLACEMENT_GROUP_WITH_NAMESPACE_REGEX);
+
     private final Map<String, Map<String, List<String>>> replacementsMap;
 
     /**
@@ -277,8 +281,7 @@ public class VariableReplacer {
         if (StringUtils.isBlank(template)) {
             return List.of("");
         }
-        Pattern pattern = Pattern.compile(REPLACEMENT_REGEX);
-        Matcher matcher = pattern.matcher(template);
+        Matcher matcher = REPLACEMENT_PATTERN.matcher(template);
         List<String> replacementStrings = new ArrayList<>();
         while (matcher.find()) {
             replacementStrings.add(matcher.group());
@@ -290,7 +293,7 @@ public class VariableReplacer {
         if (replacementString.matches(REPLACEMENT_GROUP_REGEX)) {
             return new String[] { "", replacementString.replaceAll(REPLACEMENT_GROUP_REGEX, "$1") };
         } else if (replacementString.matches(REPLACEMENT_GROUP_WITH_NAMESPACE_REGEX)) {
-            Matcher m = Pattern.compile(REPLACEMENT_GROUP_WITH_NAMESPACE_REGEX).matcher(replacementString);
+            Matcher m = REPLACEMENT_GROUP_WITH_NAMESPACE_PATTERN.matcher(replacementString);
             if (m.find()) {
                 String namespace = m.group(1);
                 String term = m.group(2);
