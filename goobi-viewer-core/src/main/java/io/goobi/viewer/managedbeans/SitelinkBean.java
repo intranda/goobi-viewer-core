@@ -24,7 +24,12 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
@@ -91,7 +96,8 @@ public class SitelinkBean implements Serializable {
 
         String[] fields = { SolrConstants.PI, SolrConstants.PI_PARENT, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT,
                 SolrConstants.MIMETYPE, SolrConstants.CURRENTNO };
-        String[] anchorFields = { SolrConstants.LABEL, SolrConstants.TITLE };
+        // PI is included so buildAnchorDocMap can key the returned documents by identifier
+        String[] anchorFields = { SolrConstants.PI, SolrConstants.LABEL, SolrConstants.TITLE };
         String query = SearchHelper.buildFinalQuery(field + ":\"" + value + '"' + (filterQuery != null ? " AND " + filterQuery : ""), false,
                 SearchAggregationType.NO_AGGREGATION);
         logger.trace("q: {}", query);
@@ -99,14 +105,16 @@ public class SitelinkBean implements Serializable {
         SolrDocumentList docList = DataManager.getInstance().getSearchIndex().search(query, Arrays.asList(fields));
         if (docList != null && !docList.isEmpty()) {
             hits = new ArrayList<>(docList.size());
+            // Batch-fetch all anchor labels in a single query instead of one query per result.
+            // Previously, each result with a PI_PARENT triggered an individual Solr lookup,
+            // causing N+1 queries for year views with many volumes (e.g. newspapers).
+            Map<String, SolrDocument> anchorDocsByPi = buildAnchorDocMap(docList, anchorFields);
             for (SolrDocument doc : docList) {
                 StringBuilder sbLabel = new StringBuilder();
                 String anchorPi = (String) doc.getFieldValue(SolrConstants.PI_PARENT);
                 if (anchorPi != null) {
-                    SolrDocumentList anchorDocList =
-                            DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":" + anchorPi, Arrays.asList(anchorFields));
-                    if (!anchorDocList.isEmpty()) {
-                        SolrDocument anchorDoc = anchorDocList.get(0);
+                    SolrDocument anchorDoc = anchorDocsByPi.get(anchorPi);
+                    if (anchorDoc != null) {
                         sbLabel.append(anchorDoc.getFieldValue(SolrConstants.LABEL));
                     }
                 }
@@ -174,5 +182,51 @@ public class SitelinkBean implements Serializable {
      */
     public List<StringPair> getHits() {
         return hits;
+    }
+
+    /**
+     * Collects all unique PI_PARENT values from {@code docList} and fetches the corresponding
+     * anchor documents in a single batched Solr query ({@code PI:(val1 OR val2 OR ...)}).
+     * <p>
+     * This replaces the previous N+1 pattern where each result with a PI_PARENT triggered
+     * an individual Solr lookup. For a year view with 300 newspaper volumes, this reduces
+     * the anchor-label lookups from 300 queries to one.
+     * </p>
+     *
+     * @param docList result documents from the main sitelinks query
+     * @param anchorFields Solr fields to retrieve for each anchor document
+     * @return map of PI → SolrDocument for all found anchors; empty map if none exist
+     * @throws PresentationException if Solr returns an error response
+     * @throws IndexUnreachableException if Solr cannot be reached
+     */
+    private Map<String, SolrDocument> buildAnchorDocMap(SolrDocumentList docList, String[] anchorFields)
+            throws PresentationException, IndexUnreachableException {
+        Set<String> anchorPis = new LinkedHashSet<>();
+        for (SolrDocument doc : docList) {
+            String anchorPi = (String) doc.getFieldValue(SolrConstants.PI_PARENT);
+            if (anchorPi != null) {
+                anchorPis.add(anchorPi);
+            }
+        }
+        if (anchorPis.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        // PI:(val1 OR val2 OR ...) — a single round-trip for all anchors regardless of count
+        String batchQuery = SolrConstants.PI + ":(" + String.join(" OR ", anchorPis) + ")";
+        SolrDocumentList anchorDocList = DataManager.getInstance().getSearchIndex()
+                .search(batchQuery, Arrays.asList(anchorFields));
+        if (anchorDocList == null || anchorDocList.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        Map<String, SolrDocument> map = new HashMap<>(anchorDocList.size());
+        for (SolrDocument anchorDoc : anchorDocList) {
+            String pi = (String) anchorDoc.getFieldValue(SolrConstants.PI);
+            if (pi != null) {
+                map.put(pi, anchorDoc);
+            }
+        }
+        return map;
     }
 }
