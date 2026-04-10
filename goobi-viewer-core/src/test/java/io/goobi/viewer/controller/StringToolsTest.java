@@ -395,4 +395,51 @@ class StringToolsTest {
     void replaceLast_shouldReplaceTargetWithReplacementCorrectly() {
         assertEquals("lorem ipsum dolor stand amet", StringTools.replaceLast("lorem ipsum dolor sit amet", "sit", "stand"));
     }
+
+    /**
+     * @see StringTools#sanitizeFilenameToAscii(String)
+     * @verifies return null for null input
+     */
+    @Test
+    void sanitizeFilenameToAscii_shouldReturnNullForNullInput() {
+        Assertions.assertNull(StringTools.sanitizeFilenameToAscii(null));
+    }
+
+    /**
+     * @see StringTools#sanitizeFilenameToAscii(String)
+     * @verifies preserve ascii filenames unchanged
+     */
+    @Test
+    void sanitizeFilenameToAscii_shouldPreserveAsciiFilenamesUnchanged() {
+        assertEquals("Screenshot 2026-02-18 ZLB.png", StringTools.sanitizeFilenameToAscii("Screenshot 2026-02-18 ZLB.png"));
+    }
+
+    /**
+     * @see StringTools#sanitizeFilenameToAscii(String)
+     * @verifies replace en dash with hyphen
+     */
+    @Test
+    void sanitizeFilenameToAscii_shouldReplaceEnDashWithHyphen() {
+        // En-dash (U+2013) in filename causes Tomcat to reject the Content-Location header
+        assertEquals("Crawl Workflows - ZLB.png", StringTools.sanitizeFilenameToAscii("Crawl Workflows \u2013 ZLB.png"));
+    }
+
+    /**
+     * @see StringTools#sanitizeFilenameToAscii(String)
+     * @verifies strip combining diacritical marks
+     */
+    @Test
+    void sanitizeFilenameToAscii_shouldStripCombiningDiacriticalMarks() {
+        assertEquals("Uber die Alpen.png", StringTools.sanitizeFilenameToAscii("\u00dcber die Alpen.png"));
+    }
+
+    /**
+     * @see StringTools#sanitizeFilenameToAscii(String)
+     * @verifies collapse consecutive hyphens
+     */
+    @Test
+    void sanitizeFilenameToAscii_shouldCollapseConsecutiveHyphens() {
+        // Two non-ASCII characters adjacent produce two hyphens which are collapsed to one
+        assertEquals("a-b.png", StringTools.sanitizeFilenameToAscii("a\u2013\u2014b.png"));
+    }
 }
