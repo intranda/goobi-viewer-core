@@ -154,22 +154,26 @@ public class VisibilityCondition {
             docTypesLocal.add("subStruct");
         }
 
-        Collection<FileType> existingFileTypes = properties.getFileTypesForRecord(viewManager, true);
-
         PageType usePageType = pageType != null ? pageType : PageType.other;
         MimeType baseMimeType = viewManager.getMediaType();
-        return checkAccess(viewManager, request, properties)
-                && this.fileTypes.matches(existingFileTypes)
+
+        // Evaluate cheap, in-memory conditions first so that expensive Solr operations
+        // (fileTypes query via getFilenamesByMimeType, access-condition checks, TOC build)
+        // are short-circuited when earlier conditions already fail.
+        return this.views.matches(List.of(Optional.ofNullable(usePageType).orElse(PageType.other)))
+                && this.docTypes.matches(docTypesLocal)
                 && this.sourceFormat.matches(Optional.ofNullable(viewManager)
                         .map(ViewManager::getTopStructElement)
                         .map(StructElement::getSourceDocFormat)
                         .map(List::of)
                         .orElse(Collections.emptyList()))
                 && this.mimeType.matches(List.of(baseMimeType.getType()))
-                && this.views.matches(List.of(Optional.ofNullable(usePageType).orElse(PageType.other)))
-                && this.docTypes.matches(docTypesLocal)
                 && this.numPages.matches(viewManager.getPageLoader().getNumPages())
-                && this.tocSize.matches(getToc(viewManager).getTocElements().size());
+                // fileTypes check triggers a Solr query (getFilenamesByMimeType); skip when condition is absent
+                && (this.fileTypes.isEmpty() || this.fileTypes.matches(properties.getFileTypesForRecord(viewManager, true)))
+                && checkAccess(viewManager, request, properties)
+                // tocSize triggers a full TOC build; keep it last
+                && (this.tocSize.isEmpty() || this.tocSize.matches(getToc(viewManager).getTocElements().size()));
     }
 
     protected TOC getToc(ViewManager viewManager)
@@ -207,12 +211,12 @@ public class VisibilityCondition {
             return false;
         }
 
-        Collection<FileType> existingFileTypes = properties.getFileTypesForPage(page, true);
         MimeType baseMimeType = page.getMediaType();
-        return checkAccess(page, request, properties)
-                && this.fileTypes.matches(existingFileTypes)
+        // Evaluate cheap conditions first; defer fileType and access checks.
+        return this.views.matches(List.of(Optional.ofNullable(pageType).orElse(PageType.other)))
                 && this.mimeType.matches(List.of(baseMimeType.getType()))
-                && this.views.matches(List.of(Optional.ofNullable(pageType).orElse(PageType.other)));
+                && (this.fileTypes.isEmpty() || this.fileTypes.matches(properties.getFileTypesForPage(page, true)))
+                && checkAccess(page, request, properties);
     }
 
     public boolean checkAccess(PhysicalElement page, HttpServletRequest request, RecordPropertyCache properties)
