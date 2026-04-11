@@ -14,6 +14,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.toc.TOC;
 import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.PageType;
@@ -86,6 +87,58 @@ class VisibilityConditionTest {
         infoDocType.setDocType(List.of("subStruct"));
         VisibilityCondition condDocType = new VisibilityCondition(infoDocType);
         Assertions.assertTrue(condDocType.matchesRecord(PageType.viewImage, viewManager, request, cache));
+    }
+
+    /**
+     * When the pageType condition does not match the current view, no access-condition check should
+     * be performed. Previously, checkAccess() ran before views.matches(), so a Solr query was
+     * issued even when the pageType alone would have disqualified the condition.
+     */
+    @Test
+    void test_matchesRecord_noAccessCheckWhenPageTypeFails()
+            throws IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException, ViewerConfigurationException {
+
+        RecordPropertyCache cache = Mockito.spy(new RecordPropertyCache());
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        ViewManager viewManager = createRecord();
+
+        // Condition requires viewFulltext — but current view is viewObject
+        VisibilityConditionInfo info = new VisibilityConditionInfo();
+        info.setPageType(List.of("viewFulltext"));
+        info.setAccessCondition("VIEW_FULLTEXT");
+        VisibilityCondition condition = new VisibilityCondition(info);
+
+        boolean result = condition.matchesRecord(PageType.viewObject, viewManager, request, cache);
+
+        Assertions.assertFalse(result, "Condition should fail because pageType does not match");
+        // getPermissionForRecord must NOT have been called since pageType short-circuits first
+        Mockito.verify(cache, Mockito.never()).getPermissionForRecord(Mockito.any(), Mockito.any(), Mockito.any());
+    }
+
+    /**
+     * When no contentType condition is specified, getFileTypesForRecord() must not be called,
+     * avoiding an unnecessary Solr query for all page filenames.
+     */
+    @Test
+    void test_matchesRecord_noFileTypeQueryWhenConditionAbsent()
+            throws IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException, ViewerConfigurationException {
+
+        RecordPropertyCache cache = Mockito.spy(new RecordPropertyCache());
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        ViewManager viewManager = createRecord();
+
+        // Condition has no contentType — only accessCondition
+        VisibilityConditionInfo info = new VisibilityConditionInfo();
+        info.setAccessCondition("DOWNLOAD_PDF");
+        VisibilityCondition condition = new VisibilityCondition(info);
+
+        // Mock the access permission so we can reach the fileTypes check
+        Mockito.doReturn(AccessPermission.granted()).when(cache).getPermissionForRecord(Mockito.any(), Mockito.any(), Mockito.any());
+
+        condition.matchesRecord(PageType.viewObject, viewManager, request, cache);
+
+        // getFileTypesForRecord must NOT have been called since no contentType condition exists
+        Mockito.verify(cache, Mockito.never()).getFileTypesForRecord(Mockito.any(), Mockito.anyBoolean());
     }
 
     protected ViewManager createRecord() throws IndexUnreachableException, PresentationException, DAOException {

@@ -93,6 +93,7 @@ import io.goobi.viewer.model.maps.GeoMapFeature;
 import io.goobi.viewer.model.maps.ManualFeatureSet;
 import io.goobi.viewer.model.maps.RecordGeoMap;
 import io.goobi.viewer.model.maps.coordinates.CoordinateReaderProvider;
+import io.goobi.viewer.controller.FileSizeCalculator;
 import io.goobi.viewer.model.pdf.PdfSizeCalculator;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -219,6 +220,8 @@ public class ActiveDocumentBean implements Serializable {
 
     private Dataset recordDataset;
     private PdfSizeCalculator pdfSizes;
+    // Cached full-record PDF size estimate derived from Solr MDNUM_FILESIZE fields
+    private String cachedFullPdfSize = null;
 
     /**
      * Empty constructor.
@@ -299,6 +302,10 @@ public class ActiveDocumentBean implements Serializable {
             prevDocstructUrlCache.clear();
             nextDocstructUrlCache.clear();
             lastReceivedIdentifier = null;
+            // Reset per-record caches so they are recalculated for the next record
+            recordDataset = null;
+            pdfSizes = null;
+            cachedFullPdfSize = null;
 
             // Any cleanup modules need to do when a record is unloaded
             for (IModule module : DataManager.getInstance().getModules()) {
@@ -407,8 +414,10 @@ public class ActiveDocumentBean implements Serializable {
             boolean doublePageMode = isDoublePageUrl();
             // Do these steps only if a new document has been loaded
             boolean mayChangeHitIndex = false;
-            if (viewManager == null || viewManager.getTopStructElement() == null
-                    || !viewManager.getTopStructElementIddoc().equals(topDocumentIddoc)) {
+            boolean vmNull = viewManager == null;
+            boolean vmTopNull = !vmNull && viewManager.getTopStructElement() == null;
+            boolean iddocMismatch = !vmNull && !vmTopNull && !viewManager.getTopStructElementIddoc().equals(topDocumentIddoc);
+            if (vmNull || vmTopNull || iddocMismatch) {
                 anchor = false;
                 volume = false;
                 group = false;
@@ -484,8 +493,9 @@ public class ActiveDocumentBean implements Serializable {
                 PageNavigation pageNavigation = this.calculateCurrentPageNavigation(pageType);
                 boolean showThumbnailGallery =
                         DataManager.getInstance().getConfiguration().showImageThumbnailGallery(new ViewAttributes(viewManager, pageType));
+                boolean useEagerLoader = PageNavigation.SEQUENCE.equals(pageNavigation) || showThumbnailGallery;
                 viewManager = new ViewManager(topStructElement,
-                        AbstractPageLoader.create(topStructElement, true, PageNavigation.SEQUENCE.equals(pageNavigation) || showThumbnailGallery),
+                        AbstractPageLoader.create(topStructElement, true, useEagerLoader),
                         topDocumentIddoc,
                         logid, topStructElement.getMetadataValue(SolrConstants.MIMETYPE), imageDelivery);
                 viewManager.setPageNavigation(pageNavigation);
@@ -1770,22 +1780,60 @@ public class ActiveDocumentBean implements Serializable {
         return null;
     }
 
-    public String getPdfSize() throws PresentationException {
+    public String getPdfSize() {
         return getPdfSize(null);
     }
 
-    public synchronized String getPdfSize(String logId) throws PresentationException {
-
-        try {
-            if (this.pdfSizes == null) {
-                this.pdfSizes = new PdfSizeCalculator(getRecordDataset());
+    public synchronized String getPdfSize(String logId) {
+        if (StringUtils.isNotBlank(logId)) {
+            // Section-level PDF size: delegate to PdfSizeCalculator which reads the METS
+            // file to resolve which pages belong to the given logical section (logId).
+            // This path is only triggered by user interaction (TOC clicks), not on page load.
+            try {
+                if (this.pdfSizes == null) {
+                    this.pdfSizes = new PdfSizeCalculator(getRecordDataset());
+                }
+                return this.pdfSizes.getPdfSize(logId);
+            } catch (PresentationException | IndexUnreachableException | IOException | RecordNotFoundException | NullPointerException e) {
+                logger.error("Error getting pdf file sizes for logId '{}': {}", logId, e.toString());
+                return "";
             }
-            return this.pdfSizes.getPdfSize(logId);
-        } catch (PresentationException | IndexUnreachableException | IOException | RecordNotFoundException | NullPointerException e) {
-            logger.error("Error getting pdf file sizes", e.toString());
-            return "unknown";
         }
 
+        // Full-record PDF size: sum MDNUM_FILESIZE from Solr — avoids the content server's
+        // GetMetsPageCountAction.getPdfInfo() which does filesystem I/O for every page
+        // (22+ seconds for 7000-page records due to per-page NFS stat calls).
+        if (cachedFullPdfSize != null) {
+            return cachedFullPdfSize;
+        }
+        String currentPi = null;
+        try {
+            currentPi = viewManager != null ? viewManager.getPi() : null;
+        } catch (IndexUnreachableException e) {
+            logger.warn("Could not resolve PI for pdf size calculation: {}", e.toString());
+        }
+        if (StringUtils.isBlank(currentPi)) {
+            return "";
+        }
+        try {
+            String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + currentPi + " +" + SolrConstants.DOCTYPE + ":PAGE";
+            List<SolrDocument> pageDocs = DataManager.getInstance().getSearchIndex()
+                    .getDocs(query, List.of(SolrConstants.MDNUM_FILESIZE));
+            long totalBytes = 0;
+            if (pageDocs != null) {
+                for (SolrDocument doc : pageDocs) {
+                    Object size = doc.getFieldValue(SolrConstants.MDNUM_FILESIZE);
+                    if (size instanceof Number) {
+                        totalBytes += ((Number) size).longValue();
+                    }
+                }
+            }
+            cachedFullPdfSize = totalBytes > 0 ? FileSizeCalculator.formatSize(totalBytes) : "";
+            return cachedFullPdfSize;
+        } catch (IndexUnreachableException | PresentationException e) {
+            logger.error("Error calculating pdf size from Solr for PI '{}': {}", currentPi, e.toString());
+            return "";
+        }
     }
 
     public Path getMetsFilePath() throws IndexUnreachableException {

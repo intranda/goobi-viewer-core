@@ -39,6 +39,7 @@ import java.io.PipedOutputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -2776,6 +2777,9 @@ public class ViewManager implements Serializable {
      * @throws PresentationException
      */
     public Map<String, List<String>> getFilenamesByMimeType(boolean localFilesOnly) throws IndexUnreachableException, PresentationException {
+        // Fetch both FILENAME and MIMETYPE from Solr — using the pre-indexed MIMETYPE
+        // field avoids calling getMimeTypeViaFileName() for every page, which would invoke
+        // Files.probeContentType() (potentially filesystem I/O per file) 7000+ times.
         List<SolrDocument> pageDocs = DataManager.getInstance()
                 .getSearchIndex()
                 .getDocs(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
@@ -2787,17 +2791,31 @@ public class ViewManager implements Serializable {
                         .append(" +")
                         .append(SolrConstants.FILENAME)
                         .append(":*")
-                        .toString(), List.of(SolrConstants.FILENAME));
+                        .toString(), List.of(SolrConstants.FILENAME, SolrConstants.MIMETYPE));
         return Optional.ofNullable(pageDocs)
                 .orElse(Collections.emptyList())
                 .stream()
-                .map(doc -> doc.getFieldValue(SolrConstants.FILENAME))
-                .map(Object::toString)
-                .filter(path -> !localFilesOnly || !path.matches("(?i)^https?:.*"))
-                .collect(Collectors.toMap(
-                        this::getMimeTypeViaFileName,
-                        List::of,
-                        (set1, set2) -> new ArrayList<>(CollectionUtils.union(set1, set2))));
+                .filter(doc -> doc.getFieldValue(SolrConstants.FILENAME) != null)
+                .filter(doc -> {
+                    String filename = doc.getFieldValue(SolrConstants.FILENAME).toString();
+                    return !localFilesOnly || !filename.matches("(?i)^https?:.*");
+                })
+                // Use groupingBy instead of toMap+merger to avoid O(n²) list copying when many
+                // documents share the same MIME type (e.g. 7034 pages all returning image/png).
+                // The old toMap merger called CollectionUtils.union() on an ever-growing list for
+                // each collision, resulting in ~n²/2 total element copies and multi-second delays.
+                .collect(Collectors.groupingBy(
+                        doc -> {
+                            // Prefer MIMETYPE from Solr index; fall back to extension-based detection
+                            String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
+                            if (StringUtils.isNotBlank(mimeType)) {
+                                return mimeType;
+                            }
+                            return getMimeTypeViaFileName(doc.getFieldValue(SolrConstants.FILENAME).toString());
+                        },
+                        Collectors.mapping(
+                                doc -> doc.getFieldValue(SolrConstants.FILENAME).toString(),
+                                Collectors.toList())));
     }
 
     /**
@@ -2806,11 +2824,33 @@ public class ViewManager implements Serializable {
      * @return {@link String}
      */
     public String getMimeTypeViaFileName(String filename) {
-        try {
-            return FileTools.getMimeTypeFromFile(Path.of(filename));
-        } catch (IOException e) {
-            return "unknown";
+        // Use extension-based detection only — avoids FileTools.getMimeTypeFromFile() which
+        // calls Files.probeContentType() (filesystem/JNI overhead). When this method is
+        // invoked for thousands of Solr page documents the per-call cost multiplies to seconds.
+        String ext = filename.contains(".")
+                ? filename.substring(filename.lastIndexOf('.') + 1).toLowerCase()
+                : "";
+        // URLConnection.guessContentTypeFromName is a pure in-memory extension lookup
+        String mimeType = URLConnection.guessContentTypeFromName("x." + ext);
+        if (StringUtils.isNotBlank(mimeType)) {
+            return mimeType;
         }
+        // Fallback for formats not in URLConnection's built-in table
+        return switch (ext) {
+            case "tif", "tiff" -> "image/tiff";
+            case "jp2", "jpx", "j2k" -> "image/jp2";
+            case "pdf" -> "application/pdf";
+            case "epub" -> "application/epub+zip";
+            case "mp3" -> "audio/mpeg";
+            case "mp4" -> "video/mp4";
+            case "ogg" -> "audio/ogg";
+            case "webm" -> "video/webm";
+            case "xml", "alto" -> "application/xml";
+            case "mxf" -> "video/mxf";
+            case "obj", "ply", "stl", "fbx", "gltf", "glb" -> "object/" + ext;
+            case "x3d", "x3dv", "x3db" -> "model/x3d+XXX";
+            default -> "application/octet-stream";
+        };
     }
 
     public MimeType getMediaType() {
