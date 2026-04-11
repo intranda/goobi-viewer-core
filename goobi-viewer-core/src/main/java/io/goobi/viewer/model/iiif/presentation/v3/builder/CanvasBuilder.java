@@ -85,13 +85,16 @@ public class CanvasBuilder extends AbstractBuilder {
     private final ImageHandler images;
     private final AbstractApiUrlManager imageUrlManager = DataManager.getInstance().getRestApiManager().getIIIFContentApiManager();
 
+    private PagePermissions pagePermissions = PagePermissions.EMPTY;
+
     /**
-     * Pre-fetched access permissions for all pages of the current record.
-     * Set by {@link #preparePagePermissions(String)} before the manifest page loop.
-     * Package-private visibility allows direct injection in unit tests.
+     * Injects pre-fetched page permissions; package-private to allow test injection without reflection.
+     *
+     * @param pagePermissions pre-fetched permissions to use instead of per-page Solr queries
      */
-    // package-private for testing
-    PagePermissions pagePermissions = PagePermissions.EMPTY;
+    void setPagePermissions(PagePermissions pagePermissions) {
+        this.pagePermissions = pagePermissions;
+    }
 
     /**
      * @param apiUrlManager URL manager providing API endpoint paths

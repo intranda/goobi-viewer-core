@@ -101,11 +101,11 @@ class CanvasBuilderTest extends AbstractSolrEnabledTest {
         Mockito.when(element.getMediaType()).thenReturn(new MimeType("image/tiff"));
         Mockito.when(element.getMimeType()).thenReturn("image/tiff");
 
-        // Inject non-empty pre-fetched permissions (package-private field, same package as test)
-        builder.pagePermissions = new PagePermissions(
+        // Inject non-empty pre-fetched permissions via package-private setter
+        builder.setPagePermissions(new PagePermissions(
                 Map.of(1, AccessPermission.granted()),
                 Map.of(1, AccessPermission.granted()),
-                Map.of(1, AccessPermission.granted()));
+                Map.of(1, AccessPermission.granted())));
 
         builder.build(element);
 
