@@ -106,8 +106,16 @@ public class SequenceBuilder extends AbstractBuilder {
     protected ImageDeliveryBean imageDelivery = BeanUtils.getImageDeliveryBean();
     private BuildMode buildMode = BuildMode.IIIF;
     private PageType preferedView = PageType.viewObject;
-    // package-private for testing: holds pre-fetched per-page access permissions to avoid O(n) Solr queries
-    PagePermissions pagePermissions = PagePermissions.EMPTY;
+    private PagePermissions pagePermissions = PagePermissions.EMPTY;
+
+    /**
+     * Injects pre-fetched page permissions; package-private to allow test injection without reflection.
+     *
+     * @param pagePermissions pre-fetched permissions to use instead of per-page Solr queries
+     */
+    void setPagePermissions(PagePermissions pagePermissions) {
+        this.pagePermissions = pagePermissions;
+    }
 
     /**
      * Creates a new SequenceBuilder instance.
