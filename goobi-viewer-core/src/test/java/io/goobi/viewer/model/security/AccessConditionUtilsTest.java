@@ -44,10 +44,12 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
+import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.servlet.http.HttpSession;
 
 class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -495,5 +497,53 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     void testAddSessionPermission_nullSession() {
         assertFalse(AccessConditionUtils.addSessionPermission("PRIV_TEST", "value", null));
+    }
+
+    /**
+     * @see AccessConditionUtils#retrieveUserFromContext(HttpSession)
+     * @verifies return null for null session
+     */
+    @Test
+    void retrieveUserFromContext_shouldReturnNullForNullSession() {
+        Assertions.assertNull(AccessConditionUtils.retrieveUserFromContext(null));
+    }
+
+    /**
+     * @see AccessConditionUtils#retrieveUserFromContext(HttpSession)
+     * @verifies return user from standard userBean session attribute
+     */
+    @Test
+    void retrieveUserFromContext_shouldReturnUserFromDirectSessionAttribute() {
+        User user = new User();
+        UserBean userBean = new UserBean();
+        userBean.setUser(user);
+
+        HttpSession session = Mockito.mock(HttpSession.class);
+        Mockito.when(session.getAttribute("userBean")).thenReturn(userBean);
+
+        Assertions.assertEquals(user, AccessConditionUtils.retrieveUserFromContext(session));
+    }
+
+    /**
+     * @see AccessConditionUtils#retrieveUserFromContext(HttpSession)
+     * @verifies find user via session attribute scan when stored under non-standard key
+     *
+     * In CDI/Weld environments, session-scoped beans may be stored under a generated key rather than
+     * the EL name "userBean". This test verifies that the fallback scan (findInstanceInSessionAttributes)
+     * correctly locates the UserBean in that case.
+     */
+    @Test
+    void retrieveUserFromContext_shouldReturnUserViaSessionScanWhenStoredUnderNonStandardKey() {
+        User user = new User();
+        UserBean userBean = new UserBean();
+        userBean.setUser(user);
+
+        HttpSession session = Mockito.mock(HttpSession.class);
+        // Standard key returns nothing — simulates CDI storing the bean under a generated key
+        Mockito.when(session.getAttribute("userBean")).thenReturn(null);
+        Mockito.when(session.getAttributeNames()).thenReturn(Collections.enumeration(List.of("weld_generated_key")));
+        Mockito.when(session.getAttribute("weld_generated_key")).thenReturn(userBean);
+
+        Assertions.assertEquals(user, AccessConditionUtils.retrieveUserFromContext(session));
     }
 }

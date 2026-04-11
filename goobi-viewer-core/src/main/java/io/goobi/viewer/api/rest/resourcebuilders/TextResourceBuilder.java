@@ -78,6 +78,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.UncheckedPresentationException;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
@@ -585,6 +586,9 @@ public class TextResourceBuilder {
             HttpServletRequest request) throws IOException {
 
         List<java.nio.file.Path> files = new ArrayList<>();
+        // Resolve the current user once for all access checks in this method to avoid
+        // repeated expensive session attribute scans (findInstanceInSessionAttributes) per file.
+        User currentUser = AccessConditionUtils.retrieveUserFromContext(request != null ? request.getSession() : null);
 
         if (folder != null && Files.isDirectory(folder)) {
             try (Stream<java.nio.file.Path> paths = Files.list(folder)
@@ -594,7 +598,7 @@ public class TextResourceBuilder {
                             return AccessConditionUtils
                                     .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null,
                                             p.getParent().getFileName().toString(), p.getFileName().toString(),
-                                            IPrivilegeHolder.PRIV_VIEW_FULLTEXT, NetTools.getIpAddress(request))
+                                            IPrivilegeHolder.PRIV_VIEW_FULLTEXT, NetTools.getIpAddress(request), currentUser)
                                     .isGranted();
                         } catch (IndexUnreachableException | DAOException e) {
                             logger.error(e.getMessage());
@@ -615,7 +619,7 @@ public class TextResourceBuilder {
                             return AccessConditionUtils
                                     .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null,
                                             p.getParent().getFileName().toString(), p.getFileName().toString(),
-                                            IPrivilegeHolder.PRIV_VIEW_FULLTEXT, NetTools.getIpAddress(request))
+                                            IPrivilegeHolder.PRIV_VIEW_FULLTEXT, NetTools.getIpAddress(request), currentUser)
                                     .isGranted();
                         } catch (IndexUnreachableException | DAOException e) {
                             logger.error(e.getMessage());
