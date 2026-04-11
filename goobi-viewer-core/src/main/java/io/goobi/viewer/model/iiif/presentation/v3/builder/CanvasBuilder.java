@@ -65,6 +65,8 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
 import io.goobi.viewer.model.iiif.presentation.v3.builder.LinkingProperty.LinkingTarget;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.PagePermissions;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -84,12 +86,32 @@ public class CanvasBuilder extends AbstractBuilder {
     private final AbstractApiUrlManager imageUrlManager = DataManager.getInstance().getRestApiManager().getIIIFContentApiManager();
 
     /**
+     * Pre-fetched access permissions for all pages of the current record.
+     * Set by {@link #preparePagePermissions(String)} before the manifest page loop.
+     * Package-private visibility allows direct injection in unit tests.
+     */
+    // package-private for testing
+    PagePermissions pagePermissions = PagePermissions.EMPTY;
+
+    /**
      * @param apiUrlManager URL manager providing API endpoint paths
      * @param request current HTTP servlet request
      */
     public CanvasBuilder(AbstractApiUrlManager apiUrlManager, HttpServletRequest request) {
         super(apiUrlManager, request);
         this.images = new ImageHandler(urls);
+    }
+
+    /**
+     * Pre-fetches access permissions for all pages of the given record in one Solr query.
+     * Must be called before the page loop (from
+     * {@link ManifestBuilder}) to enable O(1) per-page lookups instead of O(n) Solr queries.
+     *
+     * @param pi persistent identifier of the record whose pages to pre-fetch
+     */
+    public void preparePagePermissions(String pi) {
+        // Single batch fetch instead of one Solr query per page per privilege type
+        this.pagePermissions = AccessConditionUtils.fetchPagePermissions(pi, this.request);
     }
 
     /**
@@ -196,7 +218,9 @@ public class CanvasBuilder extends AbstractBuilder {
         if (page.isFulltextAvailable()) {
             URI annoPageUri = this.urls.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_TEXT).params(page.getPi(), page.getOrder()).buildURI();
             AnnotationPage ret = new AnnotationPage(annoPageUri, false);
-            if (!page.isAccessPermissionFulltext()) {
+            // Use pre-fetched permissions when available; fall back to per-page check for single-canvas builds
+            if (!(pagePermissions.isEmpty() ? page.isAccessPermissionFulltext()
+                    : pagePermissions.isFulltextGranted(page.getOrder()))) {
                 // Add auth services
                 for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getAltoFileName())) {
                     ret.addService(service);
@@ -297,7 +321,9 @@ public class CanvasBuilder extends AbstractBuilder {
                 String escFilename = StringTools.encodeUrl(filename);
                 String imageId = imageUrlManager.path(ApiUrls.RECORDS_FILES_IMAGE).params(page.getPi(), escFilename).build();
                 ImageResource imageResource = new ImageResource(imageId, thumbWidth, thumbHeight);
-                boolean access = page.isAccessPermissionImage();
+                // Use pre-fetched permissions when available; fall back to per-page check for single-canvas builds
+                boolean access = pagePermissions.isEmpty() ? page.isAccessPermissionImage()
+                        : pagePermissions.isImageGranted(page.getOrder());
                 if (!access) {
                     for (ImageInformation ii : imageResource.getServices()) {
                         for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getFileName())) {
@@ -343,7 +369,9 @@ public class CanvasBuilder extends AbstractBuilder {
             LinkingProperty pdf =
                     new LinkingProperty(LinkingTarget.PDF, createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPDF()));
             LabeledResource resource = pdf.getResource(uri);
-            if (!page.isAccessPermissionFulltext()) {
+            // Use pre-fetched permissions when available; fall back to per-page check for single-canvas builds
+            if (!(pagePermissions.isEmpty() ? page.isAccessPermissionFulltext()
+                    : pagePermissions.isFulltextGranted(page.getOrder()))) {
                 resource.addService(AuthorizationFlowTools.getAuthServices("/pdf/" + page.getPi() + "/" + page.getAltoFileName() + "/").get(0));
                 logger.trace("Added auth services for PDF.");
             }
@@ -355,7 +383,9 @@ public class CanvasBuilder extends AbstractBuilder {
             LinkingProperty alto =
                     new LinkingProperty(LinkingTarget.ALTO, createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingAlto()));
             LabeledResource resource = alto.getResource(uri);
-            if (!page.isAccessPermissionFulltext()) {
+            // Use pre-fetched permissions when available; fall back to per-page check for single-canvas builds
+            if (!(pagePermissions.isEmpty() ? page.isAccessPermissionFulltext()
+                    : pagePermissions.isFulltextGranted(page.getOrder()))) {
                 // Add auth services
                 for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getAltoFileName())) {
                     resource.addService(service);
@@ -376,7 +406,9 @@ public class CanvasBuilder extends AbstractBuilder {
             LinkingProperty text = new LinkingProperty(LinkingTarget.PLAINTEXT,
                     createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPlaintext()));
             LabeledResource resource = text.getResource(uri);
-            if (!page.isAccessPermissionFulltext()) {
+            // Use pre-fetched permissions when available; fall back to per-page check for single-canvas builds
+            if (!(pagePermissions.isEmpty() ? page.isAccessPermissionFulltext()
+                    : pagePermissions.isFulltextGranted(page.getOrder()))) {
                 // Add auth services
                 for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getAltoFileName())) {
                     resource.addService(service);

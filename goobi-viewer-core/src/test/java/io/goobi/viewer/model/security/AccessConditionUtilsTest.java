@@ -546,4 +546,43 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
 
         Assertions.assertEquals(user, AccessConditionUtils.retrieveUserFromContext(session));
     }
+
+    // --- fetchPagePermissions ---
+
+    /**
+     * @see AccessConditionUtils#fetchPagePermissions(String, jakarta.servlet.http.HttpServletRequest)
+     * @verifies return EMPTY for blank pi
+     */
+    @Test
+    void fetchPagePermissions_shouldReturnEmptyForBlankPi() {
+        PagePermissions result = AccessConditionUtils.fetchPagePermissions("", null);
+        assertTrue(result.isEmpty());
+    }
+
+    /**
+     * @see AccessConditionUtils#fetchPagePermissions(String, jakarta.servlet.http.HttpServletRequest)
+     * @verifies return EMPTY for null pi
+     */
+    @Test
+    void fetchPagePermissions_shouldReturnEmptyForNullPi() {
+        PagePermissions result = AccessConditionUtils.fetchPagePermissions(null, null);
+        assertTrue(result.isEmpty());
+    }
+
+    /**
+     * @see AccessConditionUtils#fetchPagePermissions(String, jakarta.servlet.http.HttpServletRequest)
+     * @verifies return granted permissions for open access record
+     */
+    @Test
+    void fetchPagePermissions_shouldReturnGrantedPermissionsForOpenAccessRecord() {
+        // PPN517154005 is an OPENACCESS record in the test Solr index; page order 1 always exists
+        PagePermissions result = AccessConditionUtils.fetchPagePermissions(PI_KLEIUNIV, null);
+        assertFalse(result.isEmpty(), "Expected non-empty PagePermissions for open-access record " + PI_KLEIUNIV);
+        assertTrue(result.isImageGranted(1),
+                "Expected image access granted for page 1 of open-access record");
+        assertTrue(result.isFulltextGranted(1),
+                "Expected fulltext access granted for page 1 of open-access record");
+        assertTrue(result.isPdfGranted(1),
+                "Expected PDF access granted for page 1 of open-access record");
+    }
 }

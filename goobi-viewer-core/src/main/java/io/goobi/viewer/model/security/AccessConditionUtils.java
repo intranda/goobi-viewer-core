@@ -365,6 +365,80 @@ public final class AccessConditionUtils {
     }
 
     /**
+     * Fetches and pre-evaluates access permissions for all pages of a record in a single batch
+     * Solr query, avoiding O(n) per-page Solr queries during IIIF manifest generation.
+     *
+     * <p>Steps:
+     * <ol>
+     *   <li>One Solr query: {@code +PI_TOPSTRUCT:pi +DOCTYPE:PAGE} (fields: ORDER, ACCESSCONDITION)</li>
+     *   <li>One DAO call: {@code getRecordLicenseTypes()}</li>
+     *   <li>One user + IP resolution from {@code request}</li>
+     *   <li>In-memory evaluation of VIEW_IMAGES, VIEW_FULLTEXT, DOWNLOAD_PAGE_PDF per page</li>
+     * </ol>
+     *
+     * @param pi persistent identifier of the record
+     * @param request HTTP servlet request for user and client IP resolution; may be null
+     * @return populated {@link PagePermissions};
+     *         {@link PagePermissions#EMPTY} when pi is blank, when no pages are found,
+     *         or when a Solr/DAO error occurs (logged at WARN)
+     */
+    public static PagePermissions fetchPagePermissions(String pi, HttpServletRequest request) {
+        if (StringUtils.isBlank(pi)) {
+            return PagePermissions.EMPTY;
+        }
+
+        // Single Solr query for all pages of this record – avoids O(n) per-page queries
+        String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi
+                + " +" + SolrConstants.DOCTYPE + ":" + DocType.PAGE;
+        try {
+            SolrDocumentList pageDocs = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(query, SolrSearchIndex.MAX_HITS, null,
+                            Arrays.asList(SolrConstants.ORDER, SolrConstants.ACCESSCONDITION));
+            if (pageDocs == null || pageDocs.isEmpty()) {
+                return PagePermissions.EMPTY;
+            }
+
+            // Resolve shared context once – reused across all pages to avoid repeated lookups
+            List<LicenseType> licenseTypes = DataManager.getInstance().getDao().getRecordLicenseTypes();
+            User user = retrieveUserFromContext(request != null ? request.getSession() : null);
+            String ipAddress = NetTools.getIpAddress(request);
+            Optional<ClientApplication> client = ClientApplicationManager.getClientFromRequest(request);
+
+            Map<Integer, AccessPermission> imageMap = HashMap.newHashMap(pageDocs.size());
+            Map<Integer, AccessPermission> fulltextMap = HashMap.newHashMap(pageDocs.size());
+            Map<Integer, AccessPermission> pdfMap = HashMap.newHashMap(pageDocs.size());
+
+            for (SolrDocument doc : pageDocs) {
+                Object orderObj = doc.getFieldValue(SolrConstants.ORDER);
+                if (orderObj == null) {
+                    continue;
+                }
+                int order = ((Number) orderObj).intValue();
+
+                Collection<Object> acValues = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
+                Set<String> accessConditions = acValues != null
+                        ? acValues.stream().map(Object::toString).collect(Collectors.toSet())
+                        : Collections.emptySet();
+
+                // Evaluate all three privilege types against this page's access conditions
+                imageMap.put(order, checkAccessPermission(licenseTypes, accessConditions,
+                        IPrivilegeHolder.PRIV_VIEW_IMAGES, user, ipAddress, client, query));
+                fulltextMap.put(order, checkAccessPermission(licenseTypes, accessConditions,
+                        IPrivilegeHolder.PRIV_VIEW_FULLTEXT, user, ipAddress, client, query));
+                pdfMap.put(order, checkAccessPermission(licenseTypes, accessConditions,
+                        IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF, user, ipAddress, client, query));
+            }
+
+            return new PagePermissions(imageMap, fulltextMap, pdfMap);
+
+        } catch (PresentationException | IndexUnreachableException | DAOException e) {
+            logger.warn("Failed to prefetch page permissions for PI '{}': {}", pi, e.getMessage());
+            return PagePermissions.EMPTY;
+        }
+    }
+
+    /**
      * Checks whether the client may access an image (by PI + file name).
      *
      * @param request Calling HttpServiceRequest.
