@@ -40,7 +40,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -149,8 +148,13 @@ public class GeoCoordinateConverter {
             List<SolrDocument> children = entry.getValue();
             for (String field : coordinateFields) {
                 features.addAll(getGeojsonPoints(doc, field, markerTitleField));
-                Map<String, List<SolrDocument>> metadataDocs =
-                        children.stream().collect(Collectors.toMap(SolrTools::getReferenceId, List::of, ListUtils::union));
+                // Group children by reference ID using computeIfAbsent (O(n)) instead of
+                // toMap+ListUtils::union (O(n²) due to repeated list copies on duplicate keys).
+                // HashMap handles null keys (documents without MD_REFID and IDDOC) safely.
+                Map<String, List<SolrDocument>> metadataDocs = new HashMap<>();
+                for (SolrDocument child : children) {
+                    metadataDocs.computeIfAbsent(SolrTools.getReferenceId(child), k -> new ArrayList<>()).add(child);
+                }
                 for (List<SolrDocument> childDocs : metadataDocs.values()) {
                     Collection<GeoMapFeature> tempFeatures = getGeojsonPoints(doc, childDocs, field, markerTitleField);
                     features.addAll(tempFeatures);
@@ -203,9 +207,15 @@ public class GeoCoordinateConverter {
                             params);
             SolrDocumentList expandDocs = expandResponse.getResults();
 
-            Map<String, List<SolrDocument>> expandedResults = expandDocs.stream()
-                    .collect(Collectors.toMap(doc -> SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI_TOPSTRUCT), List::of,
-                            ListUtils::union));
+            // Group expand results by PI_TOPSTRUCT using computeIfAbsent (O(n)) instead of
+            // toMap+ListUtils::union (O(n²)). Null keys (docs without PI_TOPSTRUCT) are handled
+            // safely by HashMap.
+            Map<String, List<SolrDocument>> expandedResults = new HashMap<>();
+            for (SolrDocument expDoc : expandDocs) {
+                expandedResults.computeIfAbsent(
+                        SolrTools.getSingleFieldStringValue(expDoc, SolrConstants.PI_TOPSTRUCT),
+                        k -> new ArrayList<>()).add(expDoc);
+            }
 
             return docs.stream()
                     .collect(Collectors.toMap(doc -> doc,
