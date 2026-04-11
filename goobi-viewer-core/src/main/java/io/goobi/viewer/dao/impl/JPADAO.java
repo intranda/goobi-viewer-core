@@ -6691,7 +6691,7 @@ public class JPADAO implements IDAO {
             commitTransaction(em);
             return true;
         } catch (PersistenceException e) {
-            logger.error("Error saving disclaimer", e);
+            logger.error("Error saving client application", e);
             handleException(em);
             return false;
         } finally {
@@ -6778,7 +6778,7 @@ public class JPADAO implements IDAO {
             commitTransaction(em);
             return true;
         } catch (PersistenceException e) {
-            logger.error("Error saving disclaimer", e);
+            logger.error("Error saving usage statistics", e);
             handleException(em);
             return false;
         } finally {
@@ -6797,7 +6797,7 @@ public class JPADAO implements IDAO {
             commitTransaction(em);
             return true;
         } catch (PersistenceException e) {
-            logger.error("Error saving disclaimer", e);
+            logger.error("Error saving usage statistics", e);
             handleException(em);
             return false;
         } finally {

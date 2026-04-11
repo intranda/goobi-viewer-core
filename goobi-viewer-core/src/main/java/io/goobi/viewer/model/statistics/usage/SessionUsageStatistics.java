@@ -66,8 +66,9 @@ public class SessionUsageStatistics {
 
     /**
      * User-Agent header content of the first request counted from the http session.
+     * Length set to 2048 to accommodate long User-Agent strings from bots and crawlers.
      */
-    @Column(name = "user_agent")
+    @Column(name = "user_agent", length = 2048)
     private String userAgent;
 
     /**
