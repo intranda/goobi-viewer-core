@@ -326,10 +326,13 @@ public final class AccessConditionUtils {
             }
 
             Map<String, AccessPermission> ret = HashMap.newHashMap(requiredAccessConditions.size());
+            // Resolve user once before the loop to avoid repeated expensive session attribute scans
+            // (findInstanceInSessionAttributes) when requiredAccessConditions has multiple entries.
+            User resolvedUser = user != null ? user : retrieveUserFromContext(session);
             for (Entry<String, Set<String>> entry : requiredAccessConditions.entrySet()) {
                 Set<String> pageAccessConditions = entry.getValue();
                 AccessPermission access = checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), pageAccessConditions,
-                        privilegeName, user == null ? retrieveUserFromContext(session) : user, ipAddress,
+                        privilegeName, resolvedUser, ipAddress,
                         ClientApplicationManager.getClientFromSession(session), query);
                 ret.put(entry.getKey(), access);
             }
