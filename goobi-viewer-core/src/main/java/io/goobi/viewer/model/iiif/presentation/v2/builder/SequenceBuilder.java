@@ -84,6 +84,8 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.LinkingProperty.LinkingTarget;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.PagePermissions;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -104,6 +106,8 @@ public class SequenceBuilder extends AbstractBuilder {
     protected ImageDeliveryBean imageDelivery = BeanUtils.getImageDeliveryBean();
     private BuildMode buildMode = BuildMode.IIIF;
     private PageType preferedView = PageType.viewObject;
+    // package-private for testing: holds pre-fetched per-page access permissions to avoid O(n) Solr queries
+    PagePermissions pagePermissions = PagePermissions.EMPTY;
 
     /**
      * Creates a new SequenceBuilder instance.
@@ -145,6 +149,8 @@ public class SequenceBuilder extends AbstractBuilder {
 
         if (BuildMode.IIIF.equals(buildMode) || BuildMode.THUMBS.equals(buildMode)) {
             IPageLoader pageLoader = AbstractPageLoader.create(doc, pagesToInclude);
+            // Pre-fetch all page permissions in one batch before the loop to avoid O(n) Solr queries.
+            this.pagePermissions = AccessConditionUtils.fetchPagePermissions(doc.getPi(), request);
 
             Map<Integer, Canvas2> canvasMap = new HashMap<>();
             for (int i = pageLoader.getFirstPageOrder(); i <= pageLoader.getLastPageOrder(); ++i) {
@@ -335,7 +341,9 @@ public class SequenceBuilder extends AbstractBuilder {
                     if (IIIFUrlResolver.isIIIFImageUrl(thumbnailUrl)) {
                         URI imageInfoURI = new URI(IIIFUrlResolver.getIIIFImageBaseUrl(thumbnailUrl));
                         ImageInformation imageInfo = new ImageInformation(imageInfoURI.toString());
-                        if (!page.isAccessPermissionImage()) {
+                        // Use pre-fetched permissions if available; fall back to per-page Solr query otherwise.
+                        if (!(pagePermissions.isEmpty() ? page.isAccessPermissionImage()
+                                : pagePermissions.isImageGranted(page.getOrder()))) {
                             for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getFileName())) {
                                 imageInfo.addService(service);
                             }

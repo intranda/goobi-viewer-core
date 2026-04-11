@@ -30,6 +30,9 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,6 +49,9 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.security.AccessPermission;
+import io.goobi.viewer.model.security.PagePermissions;
+import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 
@@ -85,6 +91,44 @@ class SequenceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
         ObjectWriter writer = mapper.writer().forType(AnnotationList.class);
         String json = writer.writeValueAsString(fulltext);
         Assertions.assertTrue(StringUtils.isNotBlank(json));
+    }
+
+    /**
+     * When a non-empty PagePermissions is stored on the builder before generateCanvas is called,
+     * page.isAccessPermissionImage() must NOT be invoked — the pre-fetched map is used instead.
+     */
+    @Test
+    void testGenerateCanvas_usesPrefetchedPermissionsWithoutCallingPageMethod()
+            throws URISyntaxException, ViewerConfigurationException, IndexUnreachableException,
+            PresentationException, DAOException {
+
+        SequenceBuilder sequenceBuilder = new SequenceBuilder(new ApiUrls("https://viewer.goobi.io/rest/"));
+
+        PhysicalElement page = Mockito.mock(PhysicalElement.class);
+        Mockito.when(page.getPi()).thenReturn("PI_01");
+        Mockito.when(page.getOrder()).thenReturn(1);
+        Mockito.when(page.getOrderLabel()).thenReturn("1");
+        Mockito.when(page.getFileName()).thenReturn("00000001.tif");
+        Mockito.when(page.getFilepath()).thenReturn("00000001.tif");
+        Mockito.when(page.getMediaType()).thenReturn(new MimeType("image/tiff"));
+        Mockito.when(page.getMimeType()).thenReturn("image/tiff");
+        Mockito.when(page.getDisplayMimeType()).thenReturn("image/tiff");
+        // Provide non-zero dimensions so getSize() skips the imageDelivery fallback
+        Mockito.when(page.getImageWidth()).thenReturn(1000);
+        Mockito.when(page.getImageHeight()).thenReturn(800);
+        Mockito.when(page.getThumbnailUrl()).thenReturn(
+                "https://viewer.goobi.io/api/v1/records/PI_01/files/images/00000001.tif/full/80,/0/default.jpg");
+
+        // Inject non-empty pre-fetched permissions (package-private field, same package as test)
+        sequenceBuilder.pagePermissions = new PagePermissions(
+                Map.of(1, AccessPermission.granted()),
+                Map.of(1, AccessPermission.granted()),
+                Map.of(1, AccessPermission.granted()));
+
+        sequenceBuilder.generateCanvas("PI_01", page);
+
+        // With pre-fetched permissions, the per-page access-check method must NOT be called
+        verify(page, never()).isAccessPermissionImage();
     }
 
 }
