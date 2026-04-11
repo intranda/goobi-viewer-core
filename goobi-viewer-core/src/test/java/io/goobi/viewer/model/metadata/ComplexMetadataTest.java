@@ -26,6 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.solr.common.SolrDocument;
 import org.junit.jupiter.api.Test;
@@ -102,6 +104,57 @@ class ComplexMetadataTest {
         assertEquals(MDTYPE, md.getType());
         assertEquals(TITLE_DE, md.getFirstValue(SolrConstants.TITLE, Locale.GERMAN));
         assertEquals(TITLE_EN, md.getFirstValue(SolrConstants.TITLE, Locale.ENGLISH));
+    }
+
+    /**
+     * Verify that multiple Solr documents sharing the same MD_REFID are grouped into a single
+     * translated ComplexMetadata entry, even when the number of duplicates is large.
+     * This guards against O(n²) list-copy behaviour in the grouping implementation.
+     */
+    @Test
+    void testGetMetadataFromDocumentsMergesDocumentsWithSameRefId() {
+        // 100 language-variant docs all belonging to the same logical metadata value (REFID="1")
+        List<SolrDocument> docs = IntStream.range(0, 100).mapToObj(i -> {
+            SolrDocument doc = new SolrDocument();
+            doc.setField(SolrConstants.PI_TOPSTRUCT, PI);
+            doc.setField(SolrConstants.IDDOC, String.valueOf(400 + i));
+            doc.setField(SolrConstants.IDDOC_OWNER, IDDOC_OWNER);
+            doc.setField("MD_REFID", "1");
+            doc.setField(SolrConstants.DOCTYPE, SolrConstants.DocType.METADATA.name());
+            doc.setField(SolrConstants.LABEL, "MD_TITLE_LANG_DE");
+            doc.setField(SolrConstants.METADATATYPE, MDTYPE);
+            doc.setField("MD_VALUE", "Titel " + i);
+            return doc;
+        }).collect(Collectors.toList());
+
+        // Only one logical metadata entity should result (all docs belong to the same REFID group)
+        List<ComplexMetadata> result = ComplexMetadata.getMetadataFromDocuments(docs);
+        assertEquals(1, result.size(), "100 docs with the same REFID must yield exactly 1 ComplexMetadata entry");
+    }
+
+    /**
+     * Verify that documents without MD_REFID (null key) are each treated as an independent
+     * untranslated ComplexMetadata entry rather than being merged into a single group.
+     */
+    @Test
+    void testGetMetadataFromDocumentsKeepsNullRefIdDocumentsAsSeparateEntries() {
+        List<SolrDocument> docs = new ArrayList<>();
+        for (String value : List.of("Alpha", "Beta", "Gamma")) {
+            SolrDocument doc = new SolrDocument();
+            doc.setField(SolrConstants.PI_TOPSTRUCT, PI);
+            doc.setField(SolrConstants.IDDOC, IDDOC);
+            doc.setField(SolrConstants.IDDOC_OWNER, IDDOC_OWNER);
+            // no MD_REFID → null key → untranslated path
+            doc.setField(SolrConstants.DOCTYPE, SolrConstants.DocType.METADATA.name());
+            doc.setField(SolrConstants.LABEL, "MD_TITLE");
+            doc.setField(SolrConstants.METADATATYPE, MDTYPE);
+            doc.setField("MD_VALUE", value);
+            docs.add(doc);
+        }
+
+        List<ComplexMetadata> result = ComplexMetadata.getMetadataFromDocuments(docs);
+        // Each null-REFID doc must produce its own ComplexMetadata (not merged into one multilang group)
+        assertEquals(3, result.size(), "Each document without MD_REFID must produce a separate ComplexMetadata entry");
     }
 
     @Test
