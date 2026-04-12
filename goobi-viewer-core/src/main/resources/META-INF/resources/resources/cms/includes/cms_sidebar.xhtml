@@ -10,23 +10,24 @@
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
     <div id="sidebarGroup">
         <c:if test="#{cmsBean.currentPage.published or userBean.hasAdminBackendAccess}">
-            <!-- CUSTOM SIDEBAR -->
-            <c:if test="#{!cmsBean.currentPage.useDefaultSidebar}">
-                <h:panelGroup binding="#{cmsSidebarWidgetsBean.sidebarGroup}" />
+            <!-- WORK: isCmsWorkPageContext() checks currentWorkPi (set by URL injection before JSF lifecycle)
+                 AND currentPage.relatedPI (from DB, session-safe). No checked exceptions, safe for c:if. -->
+            <c:if test="#{cmsBean.cmsWorkPageContext}">
+                <viewerComponent:record_sidebar />
             </c:if>
 
-            <!-- DEFAULT SIDEBAR -->
-            <c:if test="#{cmsBean.currentPage.useDefaultSidebar}">
-                <!-- GLOBAL -->
-                <c:if test="#{!cmsBean.relatedWorkLoaded}">
+            <!-- NO WORK: plain CMS page — follow useDefaultSidebar setting -->
+            <c:if test="#{!cmsBean.cmsWorkPageContext}">
+                <!-- CUSTOM SIDEBAR -->
+                <c:if test="#{!cmsBean.currentPage.useDefaultSidebar}">
+                    <h:panelGroup binding="#{cmsSidebarWidgetsBean.sidebarGroup}" />
+                </c:if>
+
+                <!-- DEFAULT SIDEBAR -->
+                <c:if test="#{cmsBean.currentPage.useDefaultSidebar}">
                     <c:if test="#{browseBean.browsingMenuEnabled}">
                         <widgetComponent:widget_browsing />
                     </c:if>
-                </c:if>
-
-                <!-- WORK -->
-                <c:if test="#{cmsBean.relatedWorkLoaded}">
-                    <viewerComponent:record_sidebar />
                 </c:if>
             </c:if>
         </c:if>
