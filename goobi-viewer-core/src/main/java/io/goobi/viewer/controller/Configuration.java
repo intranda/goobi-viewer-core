@@ -5659,6 +5659,7 @@ public class Configuration extends AbstractConfiguration {
      * @param value field value to match against configured entries
      * @return the configured copyright indicator license matching the given field value, or null if not found
      * @should return correct value
+     * @should return empty icon list when no icons configured
      */
     public CopyrightIndicatorLicense getCopyrightIndicatorLicenseForValue(String value) {
         if (value == null) {

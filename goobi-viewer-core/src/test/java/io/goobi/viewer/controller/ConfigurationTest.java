@@ -3666,6 +3666,20 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getCopyrightIndicatorLicenseForValue(String)
+     * @verifies return empty icon list when no icons configured
+     */
+    @Test
+    void getCopyrightIndicatorLicenseForValue_shouldReturnEmptyIconListWhenNoIconsConfigured() {
+        // Apache Commons Configuration returns [""] when a <value> element has no <icon> children;
+        // the method must filter these out so the caller never sees empty strings in the list.
+        CopyrightIndicatorLicense result = DataManager.getInstance().getConfiguration().getCopyrightIndicatorLicenseForValue("NO_ICONS");
+        assertNotNull(result);
+        assertEquals("COPYRIGHT_DESCRIPTION_NO_ICONS", result.getDescription());
+        assertTrue(result.getIcons().isEmpty(), "Icons list must be empty when no <icon> elements are configured");
+    }
+
+    /**
      * @see Configuration#isProxyEnabled()
      * @verifies return correct value
      */

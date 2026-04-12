@@ -96,11 +96,9 @@
                     </ui:fragment>
 
                     <c:forEach
-                        var="icon"
-                        items="#{activeDocumentBean.viewManager.copyrightIndicatorLicense.icons}">
-                        <c:if test="#{not empty icon}">
-                            <ui:include src="#{navigationHelper.getResource('images/licence/'.concat(icon))}" />
-                        </c:if>
+                        var="iconPath"
+                        items="#{navigationHelper.getLicenceIconResources(activeDocumentBean.viewManager.copyrightIndicatorLicense.icons)}">
+                        <ui:include src="#{iconPath}" />
                     </c:forEach>
                 </div>
             </div>

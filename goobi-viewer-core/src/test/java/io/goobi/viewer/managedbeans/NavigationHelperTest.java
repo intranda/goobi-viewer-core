@@ -23,8 +23,11 @@ package io.goobi.viewer.managedbeans;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -287,6 +290,61 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
 
         nh.setCurrentPageForError("viewExpired");
         assertEquals("viewExpired", nh.getCurrentPage());
+    }
+
+    /**
+     * @see NavigationHelper#getLicenceIconResources(List)
+     * @verifies return empty list for null input
+     */
+    @Test
+    void getLicenceIconResources_shouldReturnEmptyListForNullInput() {
+        NavigationHelper nh = new NavigationHelper();
+        assertTrue(nh.getLicenceIconResources(null).isEmpty());
+    }
+
+    /**
+     * @see NavigationHelper#getLicenceIconResources(List)
+     * @verifies return empty list for blank icons
+     */
+    @Test
+    void getLicenceIconResources_shouldReturnEmptyListForBlankIcons() {
+        // Blank/empty icon names must be filtered before getResource is called,
+        // preventing ui:include from receiving a directory path like /resources/themes/x/images/licence/
+        NavigationHelper nh = new NavigationHelper();
+        List<String> icons = Arrays.asList("", "   ", "\t");
+        assertTrue(nh.getLicenceIconResources(icons).isEmpty());
+    }
+
+    /**
+     * @see NavigationHelper#getLicenceIconResources(List)
+     * @verifies filter out paths resolving to directories
+     */
+    @Test
+    void getLicenceIconResources_shouldFilterOutPathsResolvingToDirectories() {
+        // Simulate the production scenario: getResource returns a directory URI (ending in '/')
+        // when called with an empty icon name that slips through the Java-side blank filter.
+        // The trailing-slash guard in getLicenceIconResources must prevent such paths from reaching ui:include.
+        NavigationHelper nh = new NavigationHelper() {
+            @Override
+            public String getResource(String path) {
+                // Mimic getResource("images/licence/") returning a directory URI
+                return path.endsWith("/") ? "/resources/themes/test/" + path : "/resources/" + path;
+            }
+        };
+        // Blank icons are filtered before getResource is called, so this list results in no calls to getResource.
+        List<String> blankIcons = Arrays.asList("", "  ");
+        assertTrue(nh.getLicenceIconResources(blankIcons).isEmpty());
+
+        // A non-blank icon that somehow causes getResource to return a directory path must also be filtered.
+        // We simulate this by overriding getResource to return a path ending in '/'.
+        NavigationHelper nhBadPath = new NavigationHelper() {
+            @Override
+            public String getResource(String path) {
+                return "/resources/themes/test/images/licence/";
+            }
+        };
+        assertTrue(nhBadPath.getLicenceIconResources(Collections.singletonList("brokenIcon")).isEmpty(),
+                "Directory path (ending in '/') must not reach ui:include");
     }
 
 }

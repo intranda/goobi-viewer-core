@@ -1865,10 +1865,15 @@ public class NavigationHelper implements Serializable {
      * @return Resource path
      */
     public String getResource(String path, List<String> alternativeSuffixes) {
+        if (StringUtils.isBlank(path)) {
+            logger.warn("getResource called with blank path");
+            return "";
+        }
         FileResourceManager fileResourceManager = DataManager.getInstance().getFileResourceManager();
         if (fileResourceManager != null) {
             Path themePath = fileResourceManager.getThemeResourcePath(path);
-            if (Files.exists(themePath)) {
+            // Use isRegularFile instead of exists to avoid returning directory paths
+            if (Files.isRegularFile(themePath)) {
                 String ret = fileResourceManager.getThemeResourceURI(path).toString();
                 return ret;
             } else if (!alternativeSuffixes.isEmpty()) {
@@ -1882,6 +1887,29 @@ public class NavigationHelper implements Serializable {
             return fileResourceManager.getCoreResourceURI(path).toString();
         }
         return "";
+    }
+
+    /**
+     * Resolves a list of licence icon names to their resource URIs, filtering out any icons whose resolved path is blank or a
+     * directory (trailing slash). This method is intended for use in Facelets templates that pass the result directly to
+     * {@code <ui:include>}, where an invalid path would cause a {@code TagAttributeException} at view-build time.
+     *
+     * @param icons list of icon file names (e.g. "cc0.svg"); blank entries are ignored
+     * @return ordered list of resolved resource URIs suitable for use as {@code <ui:include src="...">} values
+     * @should return empty list for blank icons
+     * @should return empty list for null input
+     * @should filter out paths resolving to directories
+     */
+    public List<String> getLicenceIconResources(List<String> icons) {
+        if (icons == null || icons.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return icons.stream()
+                .filter(icon -> icon != null && !icon.isBlank())
+                .map(icon -> getResource("images/licence/" + icon))
+                // Exclude blank results and directory paths (ending with '/') that would crash ui:include
+                .filter(path -> path != null && !path.isBlank() && !path.endsWith("/"))
+                .collect(Collectors.toList());
     }
 
     private Optional<String> findResource(String path, Path themePath, String suffix) {
