@@ -465,6 +465,21 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchFacets#isHasRangeFacets()
+     * @verifies not throw NPE when map value is null due to concurrent clear
+     */
+    @Test
+    void isHasRangeFacets_shouldNotThrowNPEWhenMapValueIsNull() throws Exception {
+        // Simulates the race condition where resetSliderRange() clears the map between
+        // containsKey() and get(), leaving the key with a null value in the map.
+        SearchFacets facets = new SearchFacets();
+        facets.getMinValues().put(SolrConstants.YEAR, null);
+        facets.getMaxValues().put(SolrConstants.YEAR, null);
+        Assertions.assertDoesNotThrow(facets::isHasRangeFacets);
+        Assertions.assertFalse(facets.isHasRangeFacets());
+    }
+
+    /**
      * @see SearchFacets#generateHierarchicalFacetFilterQuery()
      * @verifies generate query correctly
      */
