@@ -27,7 +27,8 @@ import java.util.List;
 
 /**
  * Holds the file-system paths and ordered file lists for a single digitised record (dataset),
- * including its metadata file, image folder, PDF folder, ALTO folder, and corresponding file lists.
+ * including its metadata file, image folder, PDF folder, ALTO folder, and the ordered media and
+ * PDF file lists.
  */
 public class Dataset {
 
@@ -51,9 +52,6 @@ public class Dataset {
 
     /** ordered pdf file list. */
     private List<Path> pdfFiles;
-
-    /** ordered alto file list. */
-    private List<Path> altoFiles;
 
     public String getPi() {
         return pi;
@@ -109,14 +107,6 @@ public class Dataset {
 
     public void setPdfFiles(List<Path> pdfFiles) {
         this.pdfFiles = pdfFiles;
-    }
-
-    public List<Path> getAltoFiles() {
-        return altoFiles;
-    }
-
-    public void setAltoFiles(List<Path> altoFiles) {
-        this.altoFiles = altoFiles;
     }
 
 }

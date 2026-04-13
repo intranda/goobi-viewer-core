@@ -439,6 +439,119 @@ public final class AccessConditionUtils {
     }
 
     /**
+     * Fetches the list of filenames accessible to the current user for a given record and Solr
+     * filename field, using a single batch Solr query. Permissions are evaluated in memory —
+     * no further Solr queries are issued per file.
+     *
+     * <p>Steps:
+     * <ol>
+     *   <li>One Solr query: {@code +PI_TOPSTRUCT:pi +DOCTYPE:PAGE +filenameField:[* TO *]}</li>
+     *   <li>One DAO call: {@code getRecordLicenseTypes()}</li>
+     *   <li>One user + IP resolution from {@code request}</li>
+     *   <li>In-memory evaluation of {@code privilegeType} per page document</li>
+     * </ol>
+     *
+     * <p>Only bare filenames are returned (e.g. {@code 00000001.xml}), not full Solr paths
+     * (e.g. {@code alto/PI/00000001.xml}). Results are ordered by page {@code ORDER}.
+     *
+     * @param pi persistent identifier of the record; blank input returns an empty list immediately
+     * @param filenameField Solr field to query, e.g. {@code SolrConstants.FILENAME_ALTO}
+     * @param privilegeType privilege to check, e.g. {@code IPrivilegeHolder.PRIV_VIEW_FULLTEXT}
+     * @param request HTTP servlet request for user and IP resolution; {@code null} = anonymous
+     * @return ordered list of accessible bare filenames; empty list on any error (fail-safe)
+     * @should return empty list for blank pi
+     * @should return empty list for null pi
+     * @should return filenames for open access record
+     * @should return empty list for record with no files indexed
+     * @should return empty list for restricted record when anonymous
+     * @should return bare filenames not full paths
+     * @should work for fulltext field
+     */
+    public static List<String> fetchAccessibleFileNames(String pi, String filenameField,
+            String privilegeType, HttpServletRequest request) {
+        if (StringUtils.isBlank(pi)) {
+            return Collections.emptyList();
+        }
+
+        // Single Solr query for all pages that have a value in filenameField
+        String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi
+                + " +" + SolrConstants.DOCTYPE + ":" + DocType.PAGE
+                + " +" + filenameField + ":[* TO *]";
+
+        // Separate query for permission evaluation — omits the filename-field filter so that
+        // moving-wall licence types are evaluated against the full page set, consistent with
+        // the approach used in fetchPagePermissions.
+        String permissionQuery = "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi
+                + " +" + SolrConstants.DOCTYPE + ":" + DocType.PAGE;
+        try {
+            SolrDocumentList docs = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(query, SolrSearchIndex.MAX_HITS, null,
+                            Arrays.asList(filenameField, SolrConstants.ACCESSCONDITION,
+                                    SolrConstants.ORDER));
+            if (docs == null || docs.isEmpty()) {
+                return Collections.emptyList();
+            }
+
+            // Resolve shared context once — reused for every page to avoid repeated lookups
+            List<LicenseType> licenseTypes = DataManager.getInstance().getDao().getRecordLicenseTypes();
+            User user = retrieveUserFromContext(request != null ? request.getSession() : null);
+            String ipAddress = NetTools.getIpAddress(request);
+            Optional<ClientApplication> client = ClientApplicationManager.getClientFromRequest(request);
+
+            // Sort by ORDER to preserve canonical reading order; docs without ORDER are excluded
+            // (consistent with fetchPagePermissions which skips null-ORDER documents)
+            docs.sort((a, b) -> {
+                Object ao = a.getFieldValue(SolrConstants.ORDER);
+                Object bo = b.getFieldValue(SolrConstants.ORDER);
+                if (ao == null && bo == null) {
+                    return 0;
+                }
+                if (ao == null) {
+                    return 1; // null sorts last, to be skipped
+                }
+                if (bo == null) {
+                    return -1;
+                }
+                return Integer.compare(((Number) ao).intValue(), ((Number) bo).intValue());
+            });
+
+            List<String> result = new ArrayList<>();
+            for (SolrDocument doc : docs) {
+                if (doc.getFieldValue(SolrConstants.ORDER) == null) {
+                    continue;
+                }
+                Object rawValue = doc.getFieldValue(filenameField);
+                if (rawValue == null) {
+                    continue;
+                }
+                // Strip any leading path component (e.g. "alto/PI/00000001.xml" → "00000001.xml")
+                String bareFilename = FilenameUtils.getName(rawValue.toString());
+
+                Collection<Object> acValues = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
+                Set<String> accessConditions = acValues != null
+                        ? acValues.stream().map(Object::toString).collect(Collectors.toSet())
+                        : Collections.emptySet();
+
+                // checkAccessPermission is a pure in-memory evaluation — no further Solr call.
+                // permissionQuery (page-scoped, without filename-field filter) is used for
+                // moving-wall licence-type evaluation, consistent with fetchPagePermissions.
+                AccessPermission access = checkAccessPermission(licenseTypes, accessConditions,
+                        privilegeType, user, ipAddress, client, permissionQuery);
+                if (access.isGranted()) {
+                    result.add(bareFilename);
+                }
+            }
+            return result;
+
+        } catch (PresentationException | IndexUnreachableException | DAOException e) {
+            logger.warn("Failed to fetch accessible file names for PI '{}', field '{}': {}",
+                    pi, filenameField, e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    /**
      * Checks whether the client may access an image (by PI + file name).
      *
      * @param request Calling HttpServiceRequest.
