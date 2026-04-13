@@ -100,6 +100,22 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see ActiveDocumentBean#update()
+     * @verifies set TOC on ViewManager after update
+     */
+    @Test
+    void update_shouldSetTocOnViewManagerAfterUpdate() throws Exception {
+        // TOC is now built outside the synchronized block (post-lock, via tocTarget).
+        // Verify that the resulting TOC is published to the ViewManager before update() returns.
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        adb.setImageToShow("1");
+        adb.update();
+        Assertions.assertNotNull(adb.getViewManager());
+        Assertions.assertNotNull(adb.getViewManager().getToc(),
+                "ViewManager.getToc() must be non-null after update() completes");
+    }
+
+    /**
+     * @see ActiveDocumentBean#update()
      * @verifies update ViewManager correctly if LOGID has changed
      */
     @Test

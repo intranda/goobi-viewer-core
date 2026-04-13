@@ -398,6 +398,11 @@ public class ActiveDocumentBean implements Serializable {
      */
     public void update() throws PresentationException, IndexUnreachableException, RecordNotFoundException, RecordDeletedException, DAOException,
             ViewerConfigurationException, IDDOCNotFoundException, NumberFormatException, RecordLimitExceededException {
+        // Tracks the ViewManager that needs a TOC built after the synchronized block.
+        // Building the TOC (which fires N Solr queries) outside the monitor prevents
+        // the entire session thread pool from blocking on one slow document load.
+        ViewManager tocTarget = null;
+
         synchronized (this) {
             if (topDocumentIddoc == null) {
                 try {
@@ -502,9 +507,11 @@ public class ActiveDocumentBean implements Serializable {
                         topDocumentIddoc,
                         logid, topStructElement.getMetadataValue(SolrConstants.MIMETYPE), imageDelivery);
                 newViewManager.setPageNavigation(pageNavigation);
-                newViewManager.setToc(createTOC());
                 newViewManager.setRecordAccessTicketRequired(accessTicketRequired);
+                // Publish the new ViewManager before TOC generation so concurrent readers
+                // are unblocked. TOC is set after the synchronized block via tocTarget.
                 viewManager = newViewManager;
+                tocTarget = newViewManager;
 
                 HttpSession session = BeanUtils.getSession();
                 // Release all locks for this session except the current record
@@ -564,8 +571,9 @@ public class ActiveDocumentBean implements Serializable {
                             subElementIddoc, logid, viewManager.getMimeType(), imageDelivery);
                     newLogidViewManager.setPageNavigation(pageNavigation);
                     newLogidViewManager.setFirstPageOrientation(firstPageOrientation);
-                    newLogidViewManager.setToc(createTOC());
+                    // Publish before TOC generation; tocTarget tracks what needs a TOC.
                     viewManager = newLogidViewManager;
+                    tocTarget = newLogidViewManager;
                 } else {
                     logger.warn("{} not found for LOGID '{}'.", SolrConstants.IDDOC, logid);
                 }
@@ -634,8 +642,15 @@ public class ActiveDocumentBean implements Serializable {
                     bookmarkBean.prepareItemForBookmarkList();
                 }
             }
-        }
+        } // end synchronized(this)
 
+        // Build the TOC outside the monitor. createTOC() reads this.viewManager (volatile),
+        // which already points to tocTarget at this point. If another thread concurrently
+        // replaces viewManager, the setToc() write lands on the now-stale tocTarget which
+        // nobody reads anymore — a benign race.
+        if (tocTarget != null) {
+            tocTarget.setToc(createTOC());
+        }
     }
 
     /**
@@ -683,62 +698,69 @@ public class ActiveDocumentBean implements Serializable {
     public String open()
             throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException, ViewerConfigurationException,
             RecordLimitExceededException {
-        synchronized (this) {
-            logger.trace("open()");
-            try {
-                update();
-                if (navigationHelper == null || viewManager == null) {
-                    return "";
-                }
-
-                //update usage statistics
-                DataManager.getInstance()
-                        .getUsageStatisticsRecorder()
-                        .recordRequest(RequestType.RECORD_VIEW, viewManager.getPi(), BeanUtils.getRequest());
-
-                IMetadataValue name = viewManager.getTopStructElement().getMultiLanguageDisplayLabel();
-                HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-                URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
-                List<String> languages = new ArrayList<>(name.getLanguages()); //temporary variable to avoid ConcurrentModificationException
-                Map<String, String> truncatedNames = new HashMap<>();
-                for (String language : languages) {
-                    String translation = name.getValue(language).orElse(getPersistentIdentifier());
-                    if (translation != null && translation.length() > DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()) {
-                        translation =
-                                new StringBuilder(translation.substring(0, DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()))
-                                        .append("...")
-                                        .toString();
-                        truncatedNames.put(language, translation);
-                    }
-                }
-                // Replace translation outside of the loop
-                if (!truncatedNames.isEmpty()) {
-                    for (Entry<String, String> entry : truncatedNames.entrySet()) {
-                        name.setValue(entry.getValue(), entry.getKey());
-                    }
-                }
-                // Fallback using the identifier as the label
-                if (name.isEmpty()) {
-                    name.setValue(getPersistentIdentifier());
-                }
-                logger.trace("topdocument label: {} ", name.getValue());
-                if (!PrettyContext.getCurrentInstance(request).getRequestURL().toURL().contains("/crowd")) {
-                    breadcrumbBean.addRecordBreadcrumbs(viewManager, name, url);
-                }
-            } catch (PresentationException e) {
-                logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage(), e);
-                Messages.error(e.getMessage());
-            } catch (IDDOCNotFoundException e) {
-                try {
-                    return reload(lastReceivedIdentifier);
-                } catch (PresentationException e1) {
-                    logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage(), e);
-                }
+        // update() handles its own synchronization. Removing the outer synchronized
+        // block here is essential so that the post-lock TOC generation in update()
+        // actually runs without a monitor, allowing concurrent session threads to
+        // proceed through setPersistentIdentifier() and update() Phase 1 while the
+        // TOC is being built.
+        logger.trace("open()");
+        try {
+            update();
+            // Capture the published ViewManager once via volatile read; all subsequent
+            // operations in this method use this local reference so they are consistent
+            // even if another thread concurrently replaces viewManager.
+            ViewManager vm = this.viewManager;
+            if (navigationHelper == null || vm == null) {
+                return "";
             }
 
-            reloads = 0;
-            return "";
+            //update usage statistics
+            DataManager.getInstance()
+                    .getUsageStatisticsRecorder()
+                    .recordRequest(RequestType.RECORD_VIEW, vm.getPi(), BeanUtils.getRequest());
+
+            IMetadataValue name = vm.getTopStructElement().getMultiLanguageDisplayLabel();
+            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+            URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
+            List<String> languages = new ArrayList<>(name.getLanguages()); //temporary variable to avoid ConcurrentModificationException
+            Map<String, String> truncatedNames = new HashMap<>();
+            for (String language : languages) {
+                String translation = name.getValue(language).orElse(vm.getPi());
+                if (translation != null && translation.length() > DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()) {
+                    translation =
+                            new StringBuilder(translation.substring(0, DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()))
+                                    .append("...")
+                                    .toString();
+                    truncatedNames.put(language, translation);
+                }
+            }
+            // Replace translation outside of the loop
+            if (!truncatedNames.isEmpty()) {
+                for (Entry<String, String> entry : truncatedNames.entrySet()) {
+                    name.setValue(entry.getValue(), entry.getKey());
+                }
+            }
+            // Fallback using the identifier as the label
+            if (name.isEmpty()) {
+                name.setValue(vm.getPi());
+            }
+            logger.trace("topdocument label: {} ", name.getValue());
+            if (!PrettyContext.getCurrentInstance(request).getRequestURL().toURL().contains("/crowd")) {
+                breadcrumbBean.addRecordBreadcrumbs(vm, name, url);
+            }
+        } catch (PresentationException e) {
+            logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage(), e);
+            Messages.error(e.getMessage());
+        } catch (IDDOCNotFoundException e) {
+            try {
+                return reload(lastReceivedIdentifier);
+            } catch (PresentationException e1) {
+                logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage(), e);
+            }
         }
+
+        reloads = 0;
+        return "";
     }
 
     /**
@@ -1043,23 +1065,37 @@ public class ActiveDocumentBean implements Serializable {
      */
     public void setPersistentIdentifier(String persistentIdentifier)
             throws PresentationException, RecordNotFoundException, IndexUnreachableException {
-        synchronized (this) {
-            logger.trace("setPersistentIdentifier: {}", StringTools.stripPatternBreakingChars(persistentIdentifier));
-            if (!PIValidator.validatePi(persistentIdentifier)) {
-                logger.warn("Invalid identifier '{}'.", persistentIdentifier);
+        logger.trace("setPersistentIdentifier: {}", StringTools.stripPatternBreakingChars(persistentIdentifier));
+        if (!PIValidator.validatePi(persistentIdentifier)) {
+            logger.warn("Invalid identifier '{}'.", persistentIdentifier);
+            synchronized (this) {
                 reset();
-                return;
             }
+            return;
+        }
+
+        // Perform the Solr IDDOC lookup outside the monitor so the lock is not held
+        // during I/O. The volatile read of viewManager is safe here; the subsequent
+        // write to topDocumentIddoc is protected by the synchronized block below.
+        String id = null;
+        ViewManager vm = viewManager;
+        if (!"-".equals(persistentIdentifier) && (vm == null || !persistentIdentifier.equals(vm.getPi()))) {
+            id = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(persistentIdentifier);
+            if (id == null) {
+                logger.warn("No IDDOC for identifier '{}' found.", persistentIdentifier);
+            }
+        }
+
+        synchronized (this) {
             lastReceivedIdentifier = persistentIdentifier;
+            // Re-check with the lock held in case viewManager was concurrently replaced
             if (!"-".equals(persistentIdentifier) && (viewManager == null || !persistentIdentifier.equals(viewManager.getPi()))) {
-                String id = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(persistentIdentifier);
                 if (id != null) {
                     if (!id.equals(topDocumentIddoc)) {
                         topDocumentIddoc = id;
                         logger.trace("IDDOC found for {}: {}", persistentIdentifier, id);
                     }
                 } else {
-                    logger.warn("No IDDOC for identifier '{}' found.", persistentIdentifier);
                     reset();
                     // Restore the identifier after reset so that update() can include it in the RecordNotFoundException message
                     lastReceivedIdentifier = persistentIdentifier;
