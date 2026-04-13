@@ -173,15 +173,16 @@ public class ActiveDocumentBean implements Serializable {
     private BreadcrumbBean breadcrumbBean;
 
     /** URL parameter 'action'. */
-    private String action = "";
+    private volatile String action = "";
     /** URL parameter 'imageToShow'. */
     private String imageToShow = "1";
     /** URL parameter 'logid'. */
-    private String logid = "";
+    private volatile String logid = "";
     /** URL parameter 'tocCurrentPage'. */
-    private int tocCurrentPage = 1;
+    private volatile int tocCurrentPage = 1;
 
-    private ViewManager viewManager;
+    // volatile ensures the safely-published ViewManager reference is immediately visible to all threads
+    private volatile ViewManager viewManager;
     private boolean anchor = false;
     private boolean volume = false;
     private boolean group = false;
@@ -219,9 +220,9 @@ public class ActiveDocumentBean implements Serializable {
     private PushContext tocUpdateChannel;
 
     private Dataset recordDataset;
-    private PdfSizeCalculator pdfSizes;
+    private volatile PdfSizeCalculator pdfSizes;
     // Cached full-record PDF size estimate derived from Solr MDNUM_FILESIZE fields
-    private String cachedFullPdfSize = null;
+    private volatile String cachedFullPdfSize = null;
 
     /**
      * Empty constructor.
@@ -494,13 +495,16 @@ public class ActiveDocumentBean implements Serializable {
                 boolean showThumbnailGallery =
                         DataManager.getInstance().getConfiguration().showImageThumbnailGallery(new ViewAttributes(viewManager, pageType));
                 boolean useEagerLoader = PageNavigation.SEQUENCE.equals(pageNavigation) || showThumbnailGallery;
-                viewManager = new ViewManager(topStructElement,
+                // Build in a local variable; publish via single volatile write after full init
+                // so that concurrent readers never observe a half-initialized ViewManager.
+                ViewManager newViewManager = new ViewManager(topStructElement,
                         AbstractPageLoader.create(topStructElement, true, useEagerLoader),
                         topDocumentIddoc,
                         logid, topStructElement.getMetadataValue(SolrConstants.MIMETYPE), imageDelivery);
-                viewManager.setPageNavigation(pageNavigation);
-                viewManager.setToc(createTOC());
-                viewManager.setRecordAccessTicketRequired(accessTicketRequired);
+                newViewManager.setPageNavigation(pageNavigation);
+                newViewManager.setToc(createTOC());
+                newViewManager.setRecordAccessTicketRequired(accessTicketRequired);
+                viewManager = newViewManager;
 
                 HttpSession session = BeanUtils.getSession();
                 // Release all locks for this session except the current record
@@ -552,14 +556,16 @@ public class ActiveDocumentBean implements Serializable {
                 // TODO check whether creating a new ViewManager can be avoided here
                 if (!docList.isEmpty()) {
                     subElementIddoc = (String) docList.get(0).getFieldValue(SolrConstants.IDDOC);
-                    // Re-initialize ViewManager with the new current element
+                    // Re-initialize ViewManager with the new current element.
+                    // Build in local variable; publish via single volatile write after full init.
                     PageOrientation firstPageOrientation = viewManager.getFirstPageOrientation();
                     PageNavigation pageNavigation = viewManager.getPageNavigation();
-                    viewManager = new ViewManager(viewManager.getTopStructElement(), viewManager.getPageLoader(), subElementIddoc, logid,
-                            viewManager.getMimeType(), imageDelivery);
-                    viewManager.setPageNavigation(pageNavigation);
-                    viewManager.setFirstPageOrientation(firstPageOrientation);
-                    viewManager.setToc(createTOC());
+                    ViewManager newLogidViewManager = new ViewManager(viewManager.getTopStructElement(), viewManager.getPageLoader(),
+                            subElementIddoc, logid, viewManager.getMimeType(), imageDelivery);
+                    newLogidViewManager.setPageNavigation(pageNavigation);
+                    newLogidViewManager.setFirstPageOrientation(firstPageOrientation);
+                    newLogidViewManager.setToc(createTOC());
+                    viewManager = newLogidViewManager;
                 } else {
                     logger.warn("{} not found for LOGID '{}'.", SolrConstants.IDDOC, logid);
                 }
@@ -931,13 +937,12 @@ public class ActiveDocumentBean implements Serializable {
      * @return the LOGID of the current structural element, or "-" if at top-level document
      */
     public String getLogid() {
-        synchronized (this) {
-            if (StringUtils.isEmpty(logid)) {
-                return "-";
-            }
-
-            return logid;
+        // logid is volatile; String is immutable — no lock needed for a read
+        if (StringUtils.isEmpty(logid)) {
+            return "-";
         }
+
+        return logid;
     }
 
     /**
@@ -982,9 +987,8 @@ public class ActiveDocumentBean implements Serializable {
      * @return the navigation action string (e.g. "nextHit", "prevHit"), or null if none set
      */
     public String getAction() {
-        synchronized (this) {
-            return action;
-        }
+        // action is volatile; no lock needed for a single-field read
+        return action;
     }
 
     /**
@@ -1072,12 +1076,12 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getPersistentIdentifier() throws IndexUnreachableException {
-        synchronized (this) {
-            if (viewManager != null) {
-                return viewManager.getPi();
-            }
-            return "-";
+        // Capture volatile reference once; ViewManager.getPi() is immutable after construction
+        ViewManager vm = viewManager;
+        if (vm != null) {
+            return vm.getPi();
         }
+        return "-";
     }
 
     // navigation in work
@@ -1608,9 +1612,8 @@ public class ActiveDocumentBean implements Serializable {
      * @return a int.
      */
     public String getTocCurrentPage() {
-        synchronized (this) {
-            return Integer.toString(tocCurrentPage);
-        }
+        // tocCurrentPage is volatile; no lock needed for a single-field read
+        return Integer.toString(tocCurrentPage);
     }
 
     /**
@@ -1705,7 +1708,7 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public synchronized String getTitleBarLabel(String language)
+    public String getTitleBarLabel(String language)
             throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         if (navigationHelper == null) {
             return null;
@@ -1784,7 +1787,8 @@ public class ActiveDocumentBean implements Serializable {
         return getPdfSize(null);
     }
 
-    public synchronized String getPdfSize(String logId) {
+    public String getPdfSize(String logId) {
+        // pdfSizes and cachedFullPdfSize are volatile; benign double-init race acceptable for display
         if (StringUtils.isNotBlank(logId)) {
             // Section-level PDF size: delegate to PdfSizeCalculator which reads the METS
             // file to resolve which pages belong to the given logical section (logId).
@@ -1981,9 +1985,9 @@ public class ActiveDocumentBean implements Serializable {
      * @return a int.
      */
     public int getCurrentThumbnailPage() {
-        synchronized (this) {
-            return viewManager != null ? viewManager.getCurrentThumbnailPage() : 1;
-        }
+        // Capture volatile reference once; ViewManager is fully initialized before publication
+        ViewManager vm = viewManager;
+        return vm != null ? vm.getCurrentThumbnailPage() : 1;
     }
 
     /**
@@ -2101,20 +2105,21 @@ public class ActiveDocumentBean implements Serializable {
      * @return true if the current user has permission to download an EPUB of the current record, false otherwise
      */
     public boolean isAccessPermissionEpub() {
-        synchronized (this) {
-            try {
-                if ((navigationHelper != null && !isEnabled(EpubDownloadJob.TYPE, navigationHelper.getCurrentPage())) || viewManager == null
-                        || !ocrFolderExists(viewManager.getPi())) {
-                    return false;
-                }
-            } catch (IndexUnreachableException e) {
-                logger.error("Error checking EPUB resources: {}", e.getMessage());
+        // Capture volatile reference once; access permission is lazily cached in ViewManager
+        // and not affected by the post-publication mutations in update()
+        ViewManager vm = viewManager;
+        try {
+            if ((navigationHelper != null && !isEnabled(EpubDownloadJob.TYPE, navigationHelper.getCurrentPage())) || vm == null
+                    || !ocrFolderExists(vm.getPi())) {
                 return false;
             }
-
-            // TODO EPUB privilege type
-            return viewManager.isAccessPermissionPdf();
+        } catch (IndexUnreachableException e) {
+            logger.error("Error checking EPUB resources: {}", e.getMessage());
+            return false;
         }
+
+        // TODO EPUB privilege type
+        return vm.isAccessPermissionPdf();
     }
 
     private boolean ocrFolderExists(String pi) {
@@ -2133,13 +2138,14 @@ public class ActiveDocumentBean implements Serializable {
      * @return true if the current user has permission to download a PDF of the current record, false otherwise
      */
     public boolean isAccessPermissionPdf() {
-        synchronized (this) {
-            if ((navigationHelper != null && !isEnabled(PdfDownloadJob.TYPE, navigationHelper.getCurrentPage())) || viewManager == null) {
-                return false;
-            }
-
-            return viewManager.isAccessPermissionPdf();
+        // Capture volatile reference once; access permission is lazily cached in ViewManager
+        // and not affected by the post-publication mutations in update()
+        ViewManager vm = viewManager;
+        if ((navigationHelper != null && !isEnabled(PdfDownloadJob.TYPE, navigationHelper.getCurrentPage())) || vm == null) {
+            return false;
         }
+
+        return vm.isAccessPermissionPdf();
     }
 
     /**

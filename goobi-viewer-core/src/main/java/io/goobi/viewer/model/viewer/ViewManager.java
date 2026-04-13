@@ -212,8 +212,11 @@ public class ViewManager implements Serializable {
     private String dropdownSelected = "";
     private int currentThumbnailPage = 1;
     private String pi;
-    private Boolean accessPermissionPdf = null;
-    private Boolean allowUserComments = null;
+    // volatile ensures the lazily-computed access-permission cache is visible across threads
+    // that now call isAccessPermissionPdf() concurrently after the bean's synchronized guard
+    // was removed (see ActiveDocumentBean Task 6/7).
+    private volatile Boolean accessPermissionPdf = null;
+    private volatile Boolean allowUserComments = null;
     /** True if an access ticket is required before anything in this record may be viewed.. Value is set during the access permission check. */
     private boolean recordAccessTicketRequired = false;
     private List<StructElementStub> docHierarchy = null;

@@ -476,4 +476,49 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         // Must not throw NullPointerException
         Assertions.assertDoesNotThrow(() -> adb.getFullscreenImageUrl());
     }
+
+    /**
+     * Verify that unsynchronized read-only getters do not throw under concurrent access
+     * after a record has been loaded.
+     *
+     * @see ActiveDocumentBean#getPersistentIdentifier()
+     * @see ActiveDocumentBean#getTocCurrentPage()
+     * @see ActiveDocumentBean#getLogid()
+     * @see ActiveDocumentBean#getAction()
+     * @see ActiveDocumentBean#getCurrentThumbnailPage()
+     */
+    @Test
+    void getters_shouldBeThreadSafeAfterRecordLoad() throws Exception {
+        adb.setNavigationHelper(navigationHelper);
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        adb.setImageToShow("1");
+        adb.update();
+
+        int threadCount = 10;
+        java.util.concurrent.ExecutorService exec = java.util.concurrent.Executors.newFixedThreadPool(threadCount);
+        java.util.List<java.util.concurrent.Future<String>> futures = new java.util.ArrayList<>();
+
+        for (int i = 0; i < threadCount; i++) {
+            futures.add(exec.submit(() -> {
+                // These must all return consistent, non-null values concurrently
+                String pi = adb.getPersistentIdentifier();
+                String tocPage = adb.getTocCurrentPage();
+                String logid = adb.getLogid();
+                String action = adb.getAction();
+                int thumbPage = adb.getCurrentThumbnailPage();
+                return pi + "|" + tocPage + "|" + logid + "|" + action + "|" + thumbPage;
+            }));
+        }
+
+        exec.shutdown();
+        exec.awaitTermination(10, java.util.concurrent.TimeUnit.SECONDS);
+
+        for (java.util.concurrent.Future<String> f : futures) {
+            String result = f.get(); // propagates any exceptions thrown in reader threads
+            Assertions.assertTrue(result.startsWith(PI_KLEIUNIV + "|"),
+                    "getPersistentIdentifier() must return the loaded PI; got: " + result);
+            Assertions.assertTrue(result.contains("|1|"),
+                    "getTocCurrentPage() must return '1'; got: " + result);
+        }
+    }
 }
