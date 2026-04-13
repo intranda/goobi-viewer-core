@@ -22,6 +22,7 @@
 package io.goobi.viewer.managedbeans;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -555,5 +556,62 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             Assertions.assertTrue(result.contains("|1|"),
                     "getTocCurrentPage() must return '1'; got: " + result);
         }
+    }
+
+    /**
+     * @see ActiveDocumentBean#getRelativeUrlTags()
+     * @verifies generate canonical URL without page number for first page
+     */
+    @Test
+    void getRelativeUrlTags_shouldGenerateCanonicalWithoutPageNumberForFirstPage() throws Exception {
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        adb.setImageToShow("1");
+        adb.update();
+        assertTrue(adb.isRecordLoaded());
+
+        // Use a real NavigationHelper so getCurrentView() returns a consistent value
+        NavigationHelper nh = new NavigationHelper();
+        // viewImage page type; getName() returns the configured or raw name ("image")
+        nh.setCurrentView(PageType.viewImage.getName());
+        adb.setNavigationHelper(nh);
+
+        String result = adb.getRelativeUrlTags();
+        String linkCanonical = "\n<link rel=\"canonical\" href=\"";
+        String linkEnd = "\" />";
+        assertTrue(result.contains(linkCanonical), "Expected a canonical link tag in result, got: " + result);
+
+        int start = result.indexOf(linkCanonical) + linkCanonical.length();
+        int end = result.indexOf(linkEnd, start);
+        String canonicalHref = result.substring(start, end);
+        // Page 1 canonical must contain the PI but must not append the page number
+        assertTrue(canonicalHref.contains(PI_KLEIUNIV), "Canonical URL must contain the PI");
+        assertFalse(canonicalHref.endsWith("/1/"), "Canonical URL for page 1 must not end with /1/");
+    }
+
+    /**
+     * @see ActiveDocumentBean#getRelativeUrlTags()
+     * @verifies generate canonical URL with page number for non-first page
+     */
+    @Test
+    void getRelativeUrlTags_shouldGenerateCanonicalWithPageNumberForNonFirstPage() throws Exception {
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        adb.setImageToShow("3");
+        adb.update();
+        assertTrue(adb.isRecordLoaded());
+
+        NavigationHelper nh = new NavigationHelper();
+        nh.setCurrentView(PageType.viewImage.getName());
+        adb.setNavigationHelper(nh);
+
+        String result = adb.getRelativeUrlTags();
+        String linkCanonical = "\n<link rel=\"canonical\" href=\"";
+        String linkEnd = "\" />";
+        assertTrue(result.contains(linkCanonical), "Expected a canonical link tag in result, got: " + result);
+
+        int start = result.indexOf(linkCanonical) + linkCanonical.length();
+        int end = result.indexOf(linkEnd, start);
+        String canonicalHref = result.substring(start, end);
+        // Page 3 canonical must end with the page number
+        assertTrue(canonicalHref.endsWith("/3/"), "Canonical URL for page 3 must end with /3/, got: " + canonicalHref);
     }
 }

@@ -183,9 +183,11 @@ public class ActiveDocumentBean implements Serializable {
 
     // volatile ensures the safely-published ViewManager reference is immediately visible to all threads
     private volatile ViewManager viewManager;
-    private boolean anchor = false;
+    // volatile so that reads outside synchronized(this) in getRelativeUrlTags() see the value written
+    // inside the synchronized update() block without needing the full monitor
+    private volatile boolean anchor = false;
     private boolean volume = false;
-    private boolean group = false;
+    private volatile boolean group = false;
     protected String topDocumentIddoc = null;
 
     // TODO move to SearchBean
@@ -2329,8 +2331,12 @@ public class ActiveDocumentBean implements Serializable {
      * @should return empty string if navigationHelper null
      * @should generate tags correctly
      */
-    public synchronized String getRelativeUrlTags() throws IndexUnreachableException, DAOException, PresentationException {
-        if (!isRecordLoaded() || navigationHelper == null) {
+    public String getRelativeUrlTags() throws IndexUnreachableException, DAOException, PresentationException {
+        // Single volatile read to avoid TOCTOU race with reset()/update() on concurrent threads.
+        // Using a local reference ensures consistency for all subsequent field accesses even if
+        // another thread calls reset() and sets this.viewManager to null mid-execution.
+        ViewManager vm = this.viewManager;
+        if (vm == null || navigationHelper == null) {
             return "";
         }
         if (logger.isTraceEnabled()) {
@@ -2343,22 +2349,24 @@ public class ActiveDocumentBean implements Serializable {
 
         PageType currentPageType = PageType.getByName(navigationHelper.getCurrentView());
         PageType defaultPageTypeForRecord =
-                PageType.determinePageType(viewManager.getTopStructElement().getDocStructType(), viewManager.getMimeType(),
-                        isAnchor() || isGroup(), viewManager.isHasPages(), false);
+                PageType.determinePageType(vm.getTopStructElement().getDocStructType(), vm.getMimeType(),
+                        isAnchor() || isGroup(), vm.isHasPages(), false);
 
         StringBuilder sb = new StringBuilder();
 
         // Add resolver links if current view matches resolved view for this record
         if (defaultPageTypeForRecord != null && defaultPageTypeForRecord.equals(currentPageType)) {
-            if (viewManager.getCurrentPage() != null) {
+            if (vm.getCurrentPage() != null) {
                 // URN resolver URL (alternate)
-                if (StringUtils.isNotEmpty(viewManager.getCurrentPage().getUrn())) {
-                    String urnResolverUrl = DataManager.getInstance().getConfiguration().getUrnResolverUrl() + viewManager.getCurrentPage().getUrn();
+                if (StringUtils.isNotEmpty(vm.getCurrentPage().getUrn())) {
+                    String urnResolverUrl = DataManager.getInstance().getConfiguration().getUrnResolverUrl() + vm.getCurrentPage().getUrn();
                     sb.append(linkAlternate).append(urnResolverUrl).append(linkEnd);
                 }
-                // PI resolver URL (alternate)
-                if (viewManager.getCurrentPage().equals(viewManager.getRepresentativePage())) {
-                    String piResolverUrl = navigationHelper.getApplicationUrl() + "piresolver?id=" + viewManager.getPi();
+                // PI resolver URL (alternate): getRepresentativePage() may trigger a single lazy Solr
+                // load on the first call; subsequent calls return the cached PhysicalElement. A benign
+                // double-init race between two threads is acceptable (idempotent, same result).
+                if (vm.getCurrentPage().equals(vm.getRepresentativePage())) {
+                    String piResolverUrl = navigationHelper.getApplicationUrl() + "piresolver?id=" + vm.getPi();
                     sb.append(linkAlternate).append(piResolverUrl).append(linkEnd);
                 }
             }
@@ -2367,9 +2375,9 @@ public class ActiveDocumentBean implements Serializable {
             logger.trace("page type: {}", currentPageType);
             // logger.trace("current url: {}", navigationHelper.getCurrentUrl()); //NOSONAR Debug
 
-            int page = viewManager.getCurrentImageOrder();
-            String urlRoot = navigationHelper.getApplicationUrl() + currentPageType.getName() + "/" + viewManager.getPi() + "/";
-            String urlRootExplicit = navigationHelper.getApplicationUrl() + "!" + currentPageType.getName() + "/" + viewManager.getPi() + "/";
+            int page = vm.getCurrentImageOrder();
+            String urlRoot = navigationHelper.getApplicationUrl() + currentPageType.getName() + "/" + vm.getPi() + "/";
+            String urlRootExplicit = navigationHelper.getApplicationUrl() + "!" + currentPageType.getName() + "/" + vm.getPi() + "/";
             switch (currentPageType) {
                 case viewFullscreen:
                 case viewImage:
