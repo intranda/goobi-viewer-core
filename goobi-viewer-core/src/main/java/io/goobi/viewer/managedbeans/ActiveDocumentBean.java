@@ -205,7 +205,9 @@ public class ActiveDocumentBean implements Serializable {
 
     private String clearCacheMode;
 
-    private Map<String, RecordGeoMap> geoMaps = new HashMap<>();
+    // volatile so that the reference swap in getRecordGeoMap() (geoMaps = singletonMap(...))
+    // is immediately visible to all threads without requiring the ADB monitor
+    private volatile Map<String, RecordGeoMap> geoMaps = new HashMap<>();
 
     private int reloads = 0;
 
@@ -2520,7 +2522,9 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
-    public synchronized GeoMap getGeoMap() throws DAOException, IndexUnreachableException {
+    public GeoMap getGeoMap() throws DAOException, IndexUnreachableException {
+        // No synchronization needed: getRecordGeoMap() reads/writes the volatile geoMaps
+        // reference; a benign double-init race is acceptable (idempotent construction).
         return getRecordGeoMap().getGeoMap();
     }
 
@@ -2532,6 +2536,12 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public RecordGeoMap getRecordGeoMap() throws DAOException, IndexUnreachableException {
+        // getPersistentIdentifier() and getTopDocument() each capture viewManager independently.
+        // A reset() between the two reads is tolerated: worst case we cache an empty RecordGeoMap
+        // or skip caching entirely — no invariant is violated (see class-level thread-safety note).
+        // A concurrent double-init race (two threads both see null) is benign: RecordGeoMap
+        // construction is pure (configuration only, no external state), the last writer wins,
+        // and the unused instance becomes GC-eligible.
         RecordGeoMap map = this.geoMaps.get(getPersistentIdentifier());
         if (map == null) {
             StructElement topDocument = getTopDocument();
@@ -2756,8 +2766,11 @@ public class ActiveDocumentBean implements Serializable {
      * @return true if user comments are allowed for the current record, false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException
      */
-    public synchronized boolean isAllowUserComments() throws DAOException {
-        if (viewManager == null) {
+    public boolean isAllowUserComments() throws DAOException {
+        // Single volatile read to avoid TOCTOU race with reset()/update() on concurrent threads.
+        // DAO and Solr I/O now run without holding the ADB monitor.
+        ViewManager vm = this.viewManager;
+        if (vm == null) {
             return false;
         }
 
@@ -2768,25 +2781,27 @@ public class ActiveDocumentBean implements Serializable {
         }
         if (!commentGroupAll.isEnabled()) {
             logger.trace("User comments disabled globally.");
-            viewManager.setAllowUserComments(false);
+            vm.setAllowUserComments(false);
             return false;
         }
 
-        if (viewManager.isAllowUserComments() == null) {
+        if (vm.isAllowUserComments() == null) {
+            // A concurrent double-init race (two threads both see null) is benign: same Solr
+            // query, same result, idempotent write to volatile Boolean in ViewManager.
             try {
                 if (StringUtils.isNotEmpty(commentGroupAll.getSolrQuery()) && DataManager.getInstance()
                         .getSearchIndex()
                         .getHitCount(new StringBuilder("+").append(SolrConstants.PI)
                                 .append(':')
-                                .append(viewManager.getPi())
+                                .append(vm.getPi())
                                 .append(" +(")
                                 .append(commentGroupAll.getSolrQuery())
                                 .append(')')
                                 .toString()) == 0) {
-                    viewManager.setAllowUserComments(false);
+                    vm.setAllowUserComments(false);
                     logger.trace("User comments are not allowed for this record.");
                 } else {
-                    viewManager.setAllowUserComments(true);
+                    vm.setAllowUserComments(true);
                 }
             } catch (IndexUnreachableException e) {
                 logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
@@ -2797,7 +2812,10 @@ public class ActiveDocumentBean implements Serializable {
             }
         }
 
-        return viewManager.isAllowUserComments();
+        // Null-safe unboxing: resetAllowUserComments() on a concurrent thread can set the volatile
+        // Boolean back to null between our set above and this read. Boolean.TRUE.equals() treats
+        // null as false — the correct conservative default (next call will re-evaluate).
+        return Boolean.TRUE.equals(vm.isAllowUserComments());
     }
 
     /**

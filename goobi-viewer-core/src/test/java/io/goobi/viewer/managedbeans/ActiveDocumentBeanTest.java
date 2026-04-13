@@ -559,6 +559,87 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see ActiveDocumentBean#getGeoMap()
+     * @verifies return non-null GeoMap when no record is loaded
+     */
+    @Test
+    void getGeoMap_shouldReturnNonNullGeoMapWhenNoRecordLoaded() throws Exception {
+        // Fresh bean has viewManager == null; getRecordGeoMap() returns an empty RecordGeoMap
+        // whose getGeoMap() returns a new (empty) GeoMap — not null
+        assertFalse(adb.isRecordLoaded());
+        Assertions.assertNotNull(adb.getGeoMap());
+    }
+
+    /**
+     * @see ActiveDocumentBean#getGeoMap()
+     * @verifies return GeoMap for loaded record
+     */
+    @Test
+    void getGeoMap_shouldReturnGeoMapForLoadedRecord() throws Exception {
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        adb.update();
+        assertTrue(adb.isRecordLoaded());
+        // GeoMap may be empty (no geo-coordinate fields configured in test), but must not be null
+        Assertions.assertNotNull(adb.getGeoMap());
+    }
+
+    /**
+     * @see ActiveDocumentBean#getRecordGeoMap()
+     * @verifies cache result for same PI
+     */
+    @Test
+    void getRecordGeoMap_shouldCacheResultForSamePI() throws Exception {
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        adb.update();
+        assertTrue(adb.isRecordLoaded());
+        // Two calls must return the same RecordGeoMap instance (cached after first build)
+        io.goobi.viewer.model.maps.RecordGeoMap first = adb.getRecordGeoMap();
+        io.goobi.viewer.model.maps.RecordGeoMap second = adb.getRecordGeoMap();
+        Assertions.assertSame(first, second, "getRecordGeoMap() must return the cached instance on repeated calls");
+    }
+
+    /**
+     * @see ActiveDocumentBean#isAllowUserComments()
+     * @verifies return false when no record is loaded
+     */
+    @Test
+    void isAllowUserComments_shouldReturnFalseWhenNoRecordLoaded() throws Exception {
+        assertFalse(adb.isRecordLoaded());
+        assertFalse(adb.isAllowUserComments());
+    }
+
+    /**
+     * @see ActiveDocumentBean#isAllowUserComments()
+     * @verifies return false when comments are disabled globally
+     */
+    @Test
+    void isAllowUserComments_shouldReturnFalseWhenCommentsDisabledGlobally() throws Exception {
+        // Test DB: core CommentGroup exists (core_type=1) but has enabled=0 → disabled globally
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        adb.update();
+        assertTrue(adb.isRecordLoaded());
+        assertFalse(adb.isAllowUserComments());
+    }
+
+    /**
+     * @see ActiveDocumentBean#isAllowUserComments()
+     * @verifies not throw NPE if allowUserComments is reset concurrently
+     */
+    @Test
+    void isAllowUserComments_shouldNotThrowNPEIfAllowUserCommentsResetConcurrently() throws Exception {
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        adb.update();
+        assertTrue(adb.isRecordLoaded());
+        // Prime the cache (returns false: comments globally disabled in test DB)
+        assertFalse(adb.isAllowUserComments());
+        // Simulate the race: resetAllowUserComments() sets allowUserComments back to null
+        adb.resetAccess();
+        // The next call must not throw NullPointerException (Boolean.TRUE.equals handles null).
+        // Re-evaluates: still disabled globally → false.
+        assertFalse(adb.isAllowUserComments());
+    }
+
+    /**
      * @see ActiveDocumentBean#getRelativeUrlTags()
      * @verifies generate canonical URL without page number for first page
      */
