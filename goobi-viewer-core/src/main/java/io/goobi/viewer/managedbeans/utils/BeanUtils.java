@@ -97,6 +97,13 @@ public final class BeanUtils {
      * @return the current HTTP servlet request, or null if unavailable
      */
     public static HttpServletRequest getRequest() {
+        // Check FacesContext first — it is a cheap thread-local lookup with no CDI overhead.
+        // CDI/SessionBean fallback is only needed outside JSF request threads (e.g. async tasks).
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        if (facesContext != null) {
+            return getRequest(facesContext);
+        }
+
         SessionBean sb = getSessionBean();
         try {
             return sb.getRequest();
@@ -104,8 +111,7 @@ public final class BeanUtils {
             // logger.trace(e.getMessage()); //NOSONAR Debug
         }
 
-        FacesContext context = FacesContext.getCurrentInstance();
-        return getRequest(context);
+        return null;
     }
 
     /**
