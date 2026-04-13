@@ -1654,9 +1654,21 @@ public class ActiveDocumentBean implements Serializable {
         if (vm == null) {
             return null;
         }
+        // Fast path: TOC already built — single volatile read, no lock needed.
+        TOC existing = vm.getToc();
+        if (existing != null) {
+            return existing;
+        }
+        // Slow path: build TOC *outside* the ViewManager monitor to eliminate the B1 pattern.
+        // Previously, holding the VM lock during createTOC() (which performs Solr I/O via
+        // CountDownLatch) caused BLOCKED threads in production whenever two requests for the
+        // same record arrived concurrently. Multiple threads may now race through here and each
+        // build a TOC; only the first to acquire the lock will publish its result — the extra
+        // work is bounded (at most one build per concurrent caller) and acceptable.
+        TOC fresh = createTOC();
         synchronized (vm) {
             if (vm.getToc() == null) {
-                vm.setToc(createTOC());
+                vm.setToc(fresh);
             }
             return vm.getToc();
         }

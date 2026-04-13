@@ -43,6 +43,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
 import io.goobi.viewer.exceptions.IllegalUrlParameterException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
+import io.goobi.viewer.model.toc.TOC;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.ViewManager;
 
@@ -113,6 +114,29 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertNotNull(adb.getViewManager());
         Assertions.assertNotNull(adb.getViewManager().getToc(),
                 "ViewManager.getToc() must be non-null after update() completes");
+    }
+
+    /**
+     * @see ActiveDocumentBean#getToc()
+     * @verifies rebuild TOC via slow path when ViewManager TOC is null and cache result
+     */
+    @Test
+    void getToc_shouldRebuildAndCacheTocWhenViewManagerTocIsNull() throws Exception {
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        adb.setImageToShow("1");
+        adb.update();
+        Assertions.assertNotNull(adb.getViewManager());
+
+        // Simulate a state where the TOC was cleared (e.g. after a page-navigation
+        // that does not trigger a full update()). The slow path in getToc() must
+        // rebuild it via createTOC() without holding the ViewManager monitor.
+        adb.getViewManager().setToc(null);
+
+        TOC rebuilt = adb.getToc();
+        Assertions.assertNotNull(rebuilt, "getToc() must rebuild a non-null TOC via the slow path");
+
+        // Fast path: subsequent call must return the same cached instance (no rebuild)
+        Assertions.assertSame(rebuilt, adb.getToc(), "getToc() must return the cached TOC on the second call");
     }
 
     /**
