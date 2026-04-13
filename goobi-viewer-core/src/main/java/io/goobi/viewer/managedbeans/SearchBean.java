@@ -514,9 +514,14 @@ public class SearchBean implements SearchInterface, Serializable {
     public void resetSearchResults() {
         logger.trace("resetSearchResults");
         currentHitIndex = -1;
-        if (currentSearch != null) {
-            currentSearch.setHitsCount(0);
-            currentSearch.getHits().clear();
+        // Capture a local reference first to avoid a TOCTOU race condition: SearchBean is
+        // @SessionScoped and may be accessed by multiple request threads simultaneously
+        // (e.g. two browser tabs). Without the local variable, another thread could set
+        // currentSearch to null between our null-check and the subsequent field access.
+        Search localSearch = currentSearch;
+        if (localSearch != null) {
+            localSearch.setHitsCount(0);
+            localSearch.getHits().clear();
             currentSearch = null; //to indicate that no search results are expected. search is initially null anyway
         }
         // Only reset available facets here, not selected facets!

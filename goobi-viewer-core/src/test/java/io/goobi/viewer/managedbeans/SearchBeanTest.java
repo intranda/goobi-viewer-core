@@ -29,6 +29,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
@@ -1044,5 +1049,44 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         sb.setHitsPerPageNoTrigger(5);
         Assertions.assertFalse(sb.isHitsPerPageSetterCalled());
+    }
+
+    /**
+     * @see SearchBean#resetSearchResults()
+     * @verifies not throw NullPointerException under concurrent access
+     */
+    @Test
+    void resetSearchResults_shouldNotThrowNPEWhenCalledConcurrently() throws Exception {
+        // SearchBean is @SessionScoped: multiple request threads (e.g. two browser tabs)
+        // share the same instance. Before the fix, a TOCTOU race between the null-check
+        // and the field access in resetSearchResults() caused a NullPointerException.
+        int threadCount = 10;
+        AtomicReference<Throwable> caught = new AtomicReference<>();
+        CountDownLatch ready = new CountDownLatch(threadCount);
+        CountDownLatch start = new CountDownLatch(1);
+        ExecutorService pool = Executors.newFixedThreadPool(threadCount);
+
+        searchBean.setCurrentSearch(new Search());
+
+        for (int i = 0; i < threadCount; i++) {
+            pool.submit(() -> {
+                ready.countDown();
+                try {
+                    start.await();
+                    // Reset and immediately re-set currentSearch to keep the race alive.
+                    searchBean.setCurrentSearch(new Search());
+                    searchBean.resetSearchResults();
+                } catch (Throwable t) {
+                    caught.compareAndSet(null, t);
+                }
+            });
+        }
+
+        ready.await();
+        start.countDown();
+        pool.shutdown();
+        pool.awaitTermination(5, TimeUnit.SECONDS);
+
+        Assertions.assertNull(caught.get(), "resetSearchResults() must not throw under concurrent access");
     }
 }
