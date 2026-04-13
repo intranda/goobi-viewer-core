@@ -640,6 +640,33 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see ActiveDocumentBean#setRepresentativeImage()
+     * @verifies use default image "1" when no identifier is set
+     */
+    @Test
+    void setRepresentativeImage_shouldUseDefaultImageWhenNoIdentifierSet() throws Exception {
+        // lastReceivedIdentifier is null → skip Solr, image stays "1"
+        Mockito.when(navigationHelper.getCurrentPageType()).thenReturn(io.goobi.viewer.model.viewer.PageType.viewImage);
+        adb.setNavigationHelper(navigationHelper);
+        adb.setRepresentativeImage();
+        assertEquals("1", adb.getImageToShow());
+    }
+
+    /**
+     * @see ActiveDocumentBean#setRepresentativeImage()
+     * @verifies use default image "1" when identifier is the dash sentinel
+     */
+    @Test
+    void setRepresentativeImage_shouldUseDefaultImageWhenIdentifierIsDashSentinel() throws Exception {
+        // lastReceivedIdentifier == "-" is treated as "no record" → skip Solr, image stays "1"
+        Mockito.when(navigationHelper.getCurrentPageType()).thenReturn(io.goobi.viewer.model.viewer.PageType.viewImage);
+        adb.setNavigationHelper(navigationHelper);
+        adb.setLastReceivedIdentifier("-");
+        adb.setRepresentativeImage();
+        assertEquals("1", adb.getImageToShow());
+    }
+
+    /**
      * @see ActiveDocumentBean#getRelativeUrlTags()
      * @verifies generate canonical URL without page number for first page
      */

@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -195,7 +196,8 @@ public class ActiveDocumentBean implements Serializable {
     private BrowseElement nextHit;
 
     /** This persists the last value given to setPersistentIdentifier() and is used for handling a RecordNotFoundException. */
-    private String lastReceivedIdentifier;
+    // volatile so that setRepresentativeImage() sees the latest value without holding any lock during Solr I/O
+    private volatile String lastReceivedIdentifier;
     /** Available languages for this record. */
     private List<String> recordLanguages;
     /** Currently selected language for multilingual records. */
@@ -223,7 +225,8 @@ public class ActiveDocumentBean implements Serializable {
     @Push
     private PushContext tocUpdateChannel;
 
-    private Dataset recordDataset;
+    // volatile for double-checked locking in getRecordDataset()
+    private volatile Dataset recordDataset;
     private volatile PdfSizeCalculator pdfSizes;
     // Cached full-record PDF size estimate derived from Solr MDNUM_FILESIZE fields
     private volatile String cachedFullPdfSize = null;
@@ -903,18 +906,28 @@ public class ActiveDocumentBean implements Serializable {
     public void setRepresentativeImage()
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IllegalUrlParameterException {
         logger.trace("setRepresentativeImage"); //NOSONAR Debug
+        // Capture the volatile field once so we can do Solr I/O outside the lock and later verify
+        // consistency: if a concurrent request replaced lastReceivedIdentifier in the meantime
+        // (e.g. two tabs opened simultaneously), we discard this result rather than overwriting the
+        // correct value that the other thread will set.
+        String identifier = this.lastReceivedIdentifier;
+        String image = "1";
+        if (StringUtils.isNotEmpty(identifier) && !"-".equals(identifier)) {
+            SolrDocument doc = DataManager.getInstance()
+                    .getSearchIndex()
+                    .getFirstDoc(SolrConstants.PI + ":" + identifier, Collections.singletonList(SolrConstants.THUMBPAGENO));
+            if (doc != null && doc.getFieldValue(SolrConstants.THUMBPAGENO) != null) {
+                image = String.valueOf(doc.getFieldValue(SolrConstants.THUMBPAGENO));
+                logger.trace("{} found: {}", SolrConstants.THUMBPAGENO, image);
+            } else {
+                logger.trace("{}  not found, using {}", SolrConstants.THUMBPAGENO, image);
+            }
+        }
         synchronized (lock) {
-            String image = "1";
-            if (StringUtils.isNotEmpty(lastReceivedIdentifier) && !"-".equals(lastReceivedIdentifier)) {
-                SolrDocument doc = DataManager.getInstance()
-                        .getSearchIndex()
-                        .getFirstDoc(SolrConstants.PI + ":" + lastReceivedIdentifier, Collections.singletonList(SolrConstants.THUMBPAGENO));
-                if (doc != null && doc.getFieldValue(SolrConstants.THUMBPAGENO) != null) {
-                    image = String.valueOf(doc.getFieldValue(SolrConstants.THUMBPAGENO));
-                    logger.trace("{} found: {}", SolrConstants.THUMBPAGENO, image);
-                } else {
-                    logger.trace("{}  not found, using {}", SolrConstants.THUMBPAGENO, image);
-                }
+            // Consistency check: bail out if a concurrent navigation replaced the identifier while
+            // we were doing Solr I/O. The other thread will set the correct value for its record.
+            if (!Objects.equals(identifier, this.lastReceivedIdentifier)) {
+                return;
             }
             boolean isDoublePageNavigation = Optional.ofNullable(this.viewManager)
                     .map(ViewManager::getPageNavigation)
@@ -2886,17 +2899,26 @@ public class ActiveDocumentBean implements Serializable {
         }
     }
 
-    private synchronized Dataset getRecordDataset() throws PresentationException, IndexUnreachableException, RecordNotFoundException, IOException {
-        if (this.recordDataset == null) {
-            // Capture the volatile field once to avoid the "-" sentinel that getPersistentIdentifier()
-            // returns when viewManager is null. If viewManager was reset concurrently, bail out early
-            // instead of sending an invalid "PI:-" query to Solr.
-            ViewManager vm = viewManager;
-            if (vm == null) {
-                throw new RecordNotFoundException("No active record");
+    private Dataset getRecordDataset() throws PresentationException, IndexUnreachableException, RecordNotFoundException, IOException {
+        // Double-checked locking: volatile field guarantees safe publication without holding the
+        // ADB monitor during Solr I/O. PI validation prevents returning a stale dataset if
+        // reset() fires between the cache-miss check and the Solr call.
+        Dataset cached = this.recordDataset;
+        ViewManager vm = this.viewManager;
+        if (vm == null) {
+            throw new RecordNotFoundException("No active record");
+        }
+        String currentPi = StringTools.cleanUserGeneratedData(vm.getPi());
+        if (cached != null && currentPi.equals(cached.getPi())) {
+            return cached;
+        }
+        // Solr I/O outside any lock — benign double-init race is acceptable (idempotent query)
+        Dataset fresh = new ProcessDataResolver().getDataset(currentPi);
+        synchronized (this) {
+            // Only publish if the PI hasn't changed (i.e. reset() hasn't loaded a different record)
+            if (this.recordDataset == null || !currentPi.equals(this.recordDataset.getPi())) {
+                this.recordDataset = fresh;
             }
-            String cleanedPi = StringTools.cleanUserGeneratedData(vm.getPi());
-            this.recordDataset = new ProcessDataResolver().getDataset(cleanedPi);
         }
         return this.recordDataset;
     }
