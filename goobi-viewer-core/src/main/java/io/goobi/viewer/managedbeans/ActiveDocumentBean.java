@@ -672,13 +672,16 @@ public class ActiveDocumentBean implements Serializable {
      */
     private TOC createTOC() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         TOC toc = new TOC();
-        synchronized (toc) {
-            if (viewManager != null) {
-                toc.generate(viewManager.getTopStructElement(), viewManager.isListAllVolumesInTOC(), viewManager.getMimeType(), tocCurrentPage);
-                // The TOC object will correct values that are too high, so update the local value, if necessary
-                if (toc.getCurrentPage() != this.tocCurrentPage) {
-                    this.tocCurrentPage = toc.getCurrentPage();
-                }
+        // Single volatile read to avoid TOCTOU race: reset() on another thread may set
+        // this.viewManager to null between a null-check and the subsequent field accesses.
+        // synchronized(toc) was removed — toc is a local variable, no other thread can
+        // acquire its monitor, so it provided no thread safety.
+        ViewManager vm = this.viewManager;
+        if (vm != null) {
+            toc.generate(vm.getTopStructElement(), vm.isListAllVolumesInTOC(), vm.getMimeType(), tocCurrentPage);
+            // The TOC object will correct values that are too high, so update the local value, if necessary
+            if (toc.getCurrentPage() != this.tocCurrentPage) {
+                this.tocCurrentPage = toc.getCurrentPage();
             }
         }
         return toc;

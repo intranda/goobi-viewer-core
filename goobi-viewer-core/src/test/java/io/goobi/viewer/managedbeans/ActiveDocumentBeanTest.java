@@ -457,6 +457,25 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see ActiveDocumentBean#createTOC()
+     * @verifies return empty TOC without NPE when viewManager is null
+     */
+    @Test
+    void createTOC_shouldReturnEmptyTocWhenViewManagerIsNull() throws Exception {
+        // createTOC() reads this.viewManager once into a local variable (TOCTOU fix).
+        // Before the fix, reset() on another thread could null out viewManager between
+        // the null-check and getMimeType() access, causing an NPE.  We cannot reproduce
+        // that race deterministically, but we verify the boundary condition: with
+        // viewManager == null (as it would be after reset()), createTOC() must return a
+        // non-null empty TOC rather than throw.
+        java.lang.reflect.Method m = ActiveDocumentBean.class.getDeclaredMethod("createTOC");
+        m.setAccessible(true);
+        // viewManager is null on a fresh bean — the condition after a concurrent reset()
+        Object result = m.invoke(adb);
+        Assertions.assertNotNull(result, "createTOC() must return a non-null empty TOC when viewManager is null");
+    }
+
+    /**
      * @see ActiveDocumentBean#setTocCurrentPage(String)
      * @verifies throw IllegalUrlParameterException for non-numeric value
      */
