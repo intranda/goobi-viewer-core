@@ -1749,31 +1749,34 @@ public class ActiveDocumentBean implements Serializable {
         if (navigationHelper == null) {
             return null;
         }
+        // Capture once to avoid a race where another thread calls reset() between the null-check
+        // and the subsequent direct field accesses (which would cause a NullPointerException).
+        ViewManager vm = getViewManager();
         if (navigationHelper.getCurrentPage() != null && PageType.getByName(navigationHelper.getCurrentPage()) != null
-                && PageType.getByName(navigationHelper.getCurrentPage()).isDocumentPage() && getViewManager() != null) {
+                && PageType.getByName(navigationHelper.getCurrentPage()).isDocumentPage() && vm != null) {
             // Prefer the label of the current TOC element
             TOC toc = getToc();
             if (toc != null && toc.getTocElements() != null && !toc.getTocElements().isEmpty()) {
                 String label = null;
                 String labelTemplate = StringConstants.DEFAULT_NAME;
-                if (viewManager.getTopStructElement() != null) {
-                    labelTemplate = viewManager.getTopStructElement().getDocStructType();
+                if (vm.getTopStructElement() != null) {
+                    labelTemplate = vm.getTopStructElement().getDocStructType();
                 }
                 if (DataManager.getInstance().getConfiguration().isDisplayAnchorLabelInTitleBar(labelTemplate)
-                        && StringUtils.isNotBlank(viewManager.getAnchorPi())) {
+                        && StringUtils.isNotBlank(vm.getAnchorPi())) {
                     String prefix = DataManager.getInstance().getConfiguration().getAnchorLabelInTitleBarPrefix(labelTemplate);
                     String suffix = DataManager.getInstance().getConfiguration().getAnchorLabelInTitleBarSuffix(labelTemplate);
                     prefix = ViewerResourceBundle.getTranslation(prefix, Locale.forLanguageTag(language)).replace("_SPACE_", " ");
                     suffix = ViewerResourceBundle.getTranslation(suffix, Locale.forLanguageTag(language)).replace("_SPACE_", " ");
-                    label = prefix + toc.getLabel(viewManager.getAnchorPi(), language) + suffix + toc.getLabel(viewManager.getPi(), language);
+                    label = prefix + toc.getLabel(vm.getAnchorPi(), language) + suffix + toc.getLabel(vm.getPi(), language);
                 } else {
-                    label = toc.getLabel(viewManager.getPi(), language);
+                    label = toc.getLabel(vm.getPi(), language);
                 }
                 if (label != null) {
                     return label;
                 }
             }
-            String label = viewManager.getTopStructElement().getLabel(selectedRecordLanguage.getIsoCodeOld());
+            String label = vm.getTopStructElement().getLabel(selectedRecordLanguage.getIsoCodeOld());
             if (StringUtils.isNotEmpty(label)) {
                 return label;
             }
@@ -2162,7 +2165,11 @@ public class ActiveDocumentBean implements Serializable {
         try {
             Path altoFolder = getRecordDataset().getAltoFolderPath();
             return altoFolder != null && Files.isDirectory(altoFolder);
-        } catch (PresentationException | IndexUnreachableException | RecordNotFoundException | IOException e) {
+        } catch (RecordNotFoundException e) {
+            // viewManager was reset concurrently before the dataset could be loaded; not an error
+            logger.debug("Record not available when checking ALTO folder for {}: {}", pi, e.getMessage());
+            return false;
+        } catch (PresentationException | IndexUnreachableException | IOException e) {
             logger.error("Error finding alto folder for {}", pi, e);
             return false;
         }
@@ -2852,7 +2859,14 @@ public class ActiveDocumentBean implements Serializable {
 
     private synchronized Dataset getRecordDataset() throws PresentationException, IndexUnreachableException, RecordNotFoundException, IOException {
         if (this.recordDataset == null) {
-            String cleanedPi = StringTools.cleanUserGeneratedData(getPersistentIdentifier());
+            // Capture the volatile field once to avoid the "-" sentinel that getPersistentIdentifier()
+            // returns when viewManager is null. If viewManager was reset concurrently, bail out early
+            // instead of sending an invalid "PI:-" query to Solr.
+            ViewManager vm = viewManager;
+            if (vm == null) {
+                throw new RecordNotFoundException("No active record");
+            }
+            String cleanedPi = StringTools.cleanUserGeneratedData(vm.getPi());
             this.recordDataset = new ProcessDataResolver().getDataset(cleanedPi);
         }
         return this.recordDataset;
