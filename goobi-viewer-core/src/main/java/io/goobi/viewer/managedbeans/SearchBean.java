@@ -210,12 +210,13 @@ public class SearchBean implements SearchInterface, Serializable {
     /** Origin record from which the search was triggered (for back-link to TOC view). Null if not searching within a record. */
     private AdvancedSearchOrigin advancedSearchOrigin;
     /** Group of query item clusters for the advanced search. */
-    private SearchQueryGroup advancedSearchQueryGroup =
-            new SearchQueryGroup(
-                    DataManager.getInstance()
-                            .getConfiguration()
-                            .getAdvancedSearchFields(advancedSearchFieldTemplate, true, BeanUtils.getLocale().getLanguage()),
-                    advancedSearchFieldTemplate);
+    // Initialised without a CDI call to avoid a circular dependency: NavigationHelper now injects
+    // SearchBean via @Inject, and Weld creates a SearchBean proxy during NavigationHelper construction.
+    // The proxy constructor runs field initialisers, so any CDI call here (BeanUtils.getLocale())
+    // would try to instantiate NavigationHelper which in turn requests SearchBean → infinite recursion.
+    // @PostConstruct init() calls resetAdvancedSearchParameters() which reinitialises this group with
+    // the correct locale-aware field list.
+    private SearchQueryGroup advancedSearchQueryGroup = new SearchQueryGroup(Collections.emptyList(), advancedSearchFieldTemplate);
     /** Human-readable representation of the advanced search query for displaying. */
     private String advancedSearchQueryInfo;
     /** Current search object. Contains the results and can be used to persist search parameters in the DB. */
