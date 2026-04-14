@@ -338,6 +338,10 @@ public class SolrSearchIndex implements java.io.Closeable {
             } else if (e.getMessage().startsWith("IOException occured when talking to server") || e.getMessage().contains("Timeout")) {
                 logger.warn("Solr communication timeout; Query: {}", solrQuery.getQuery());
                 throw new IndexUnreachableException(e.getMessage());
+            } else if (e.getMessage().contains("is stopped")) {
+                // HttpClient stopped (e.g. Solr client not yet started or already shut down)
+                logger.warn("Solr client stopped; Query: {}", solrQuery.getQuery());
+                throw new IndexUnreachableException(e.getMessage());
             }
             logger.error("Bad query: {}", solrQuery.getQuery());
             logger.error(e.getMessage(), e);

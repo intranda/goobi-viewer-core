@@ -287,7 +287,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                     }
                 }
             }
-        } catch (PresentationException e) {
+        } catch (PresentationException | IndexUnreachableException e) {
             // Catch exception to skip the rest of the code block, but do not do anything (already logged elsewhere)
             logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
         }
