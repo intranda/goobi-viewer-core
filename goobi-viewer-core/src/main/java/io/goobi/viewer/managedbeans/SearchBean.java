@@ -1560,6 +1560,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @should not replace query items already in use
      * @should not add identical hierarchical query items
      * @should change nothing if facet already exists in query items
+     * @should not throw NPE when queryItems contains null elements
      */
     public void mirrorAdvancedSearchCurrentHierarchicalFacets() {
         logger.trace("mirrorAdvancedSearchCurrentHierarchicalFacets");
@@ -1567,6 +1568,10 @@ public class SearchBean implements SearchInterface, Serializable {
         if (facets.isActiveFacetsEmpty()) {
             // Reset hierarchical query items if no active facets selected
             List<SearchQueryItem> queryItems = new ArrayList<>(advancedSearchQueryGroup.getQueryItems());
+            // Defensive: a concurrent init() call can race with the ArrayList copy constructor —
+            // clear() nulls backing-array slots before resetting size, so the copy may capture
+            // null elements. Remove them before iterating to prevent NullPointerException.
+            queryItems.removeIf(item -> item == null);
             for (SearchQueryItem item : queryItems) {
                 if (item.isHierarchical()) {
                     logger.trace("resetting current field value in advanced search: {}", item.getField());
@@ -1591,7 +1596,10 @@ public class SearchBean implements SearchInterface, Serializable {
             // (e.g. two browser tabs). Iterating the live list while another thread (or a prior
             // outer-loop iteration) adds a new item via getQueryItems().add() would trigger a
             // ConcurrentModificationException in ArrayList's fail-fast iterator.
+            // Additionally filter out null elements: init()'s clear() nulls backing-array slots
+            // before resetting size, so a concurrent copy can capture nulls (see removeIf above).
             List<SearchQueryItem> queryItemsSnapshot = new ArrayList<>(advancedSearchQueryGroup.getQueryItems());
+            queryItemsSnapshot.removeIf(item -> item == null);
 
             // First try to match item with exact field
             for (SearchQueryItem queryItem : queryItemsSnapshot) {

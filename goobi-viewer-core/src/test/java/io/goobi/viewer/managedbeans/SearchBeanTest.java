@@ -353,6 +353,22 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchBean#mirrorAdvancedSearchCurrentHierarchicalFacets()
+     * @verifies not throw NPE when queryItems contains null elements
+     */
+    @Test
+    void mirrorAdvancedSearchCurrentHierarchicalFacets_shouldNotThrowNPEWhenQueryItemsContainsNullElements() {
+        searchBean.resetAdvancedSearchParameters();
+        // Simulate the race condition in which init()'s clear() races with the ArrayList copy
+        // constructor: clear() nulls backing-array slots before resetting size, so a concurrent
+        // new ArrayList<>(list) can capture null elements. Inject one directly to reproduce the
+        // failure path without needing actual thread-timing.
+        searchBean.getAdvancedSearchQueryGroup().getQueryItems().add(null);
+        searchBean.getFacets().setActiveFacetString("DC:a");
+        Assertions.assertDoesNotThrow(() -> searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets());
+    }
+
+    /**
      * @see SearchBean#generateSimpleSearchString(String)
      * @verifies generate phrase search query without filter correctly
      */
