@@ -1291,38 +1291,42 @@ public class ActiveDocumentBean implements Serializable {
      * @should return correct range in double page mode if current page double image
      * @should return correct range in double page mode if currently showing two pages
      * @should return correct range in double page mode if currently showing one page
+     * @should not throw NPE when viewManager is null
      */
     public String getPageUrlRelativeToCurrentPage(int step) throws IndexUnreachableException {
         // logger.trace("getPageUrl: {}", step); //NOSONAR Debug
-        if (viewManager == null) {
+        // Single volatile read to avoid TOCTOU race: reset() on another thread may set
+        // this.viewManager to null between the null-check and any subsequent field read.
+        final ViewManager vm = this.viewManager;
+        if (vm == null) {
             return getPageUrl(imageToShow);
         }
 
-        if (!viewManager.isDoublePageMode()) {
-            int number = viewManager.getCurrentImageOrder() + step;
+        if (!vm.isDoublePageMode()) {
+            int number = vm.getCurrentImageOrder() + step;
             return getPageUrl(String.valueOf(number));
         }
 
         int number;
 
-        // Capture once to avoid TOCTOU: concurrent reset() can null out pageLoader between
-        // the null-check call and the isDoubleImage() call if getCurrentPage() is invoked twice.
-        PhysicalElement currentPage = viewManager.getCurrentPage();
+        // Capture getCurrentPage() once to avoid a secondary TOCTOU: concurrent reset() can
+        // null out the pageLoader between the null-check and the isDoubleImage() call.
+        PhysicalElement currentPage = vm.getCurrentPage();
         if (currentPage != null && currentPage.isDoubleImage()) {
             // logger.trace("{} is double page", currentPage.getOrder()); //NOSONAR Debug
             if (step < 0) {
-                number = viewManager.getCurrentImageOrder() + 2 * step;
+                number = vm.getCurrentImageOrder() + 2 * step;
             } else {
-                number = viewManager.getCurrentImageOrder() + step;
+                number = vm.getCurrentImageOrder() + step;
             }
             return getPageUrl(number + "-" + (number + 1));
         }
 
         // Use current left/right page as a point of reference, if available (opposite when in right-to-left navigation)
         Optional<PhysicalElement> currentLeftPage =
-                viewManager.getTopStructElement().isRtl() ? viewManager.getCurrentRightPage() : viewManager.getCurrentLeftPage();
+                vm.getTopStructElement().isRtl() ? vm.getCurrentRightPage() : vm.getCurrentLeftPage();
         Optional<PhysicalElement> currentRightPage =
-                viewManager.getTopStructElement().isRtl() ? viewManager.getCurrentLeftPage() : viewManager.getCurrentRightPage();
+                vm.getTopStructElement().isRtl() ? vm.getCurrentLeftPage() : vm.getCurrentRightPage();
 
         // Only go back one step unit at first
         if (currentLeftPage.isPresent()) {
@@ -1333,18 +1337,18 @@ public class ActiveDocumentBean implements Serializable {
             // logger.trace("{} is right page", currentRightPage.get().getOrder()); //NOSONAR Debug
             number = currentRightPage.get().getOrder();
         } else {
-            number = viewManager.getCurrentImageOrder() + step;
+            number = vm.getCurrentImageOrder() + step;
         }
 
         // Target image candidate contains two pages
-        Optional<PhysicalElement> nextPage = viewManager.getPage(number);
+        Optional<PhysicalElement> nextPage = vm.getPage(number);
         if (nextPage.isPresent() && nextPage.get().isDoubleImage()) {
             return getPageUrl(String.valueOf(number) + "-" + number);
         }
         // If the immediate neighbor is not a double image, add another step
         number += step;
 
-        nextPage = viewManager.getPage(number);
+        nextPage = vm.getPage(number);
         if (nextPage.isPresent() && nextPage.get().isDoubleImage()) {
             return getPageUrl(String.valueOf(number) + "-" + number);
         }
