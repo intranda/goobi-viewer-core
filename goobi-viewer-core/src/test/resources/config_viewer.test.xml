@@ -1112,6 +1112,9 @@
                     <value content="VGWORT" description="COPYRIGHT_DESCRIPTION_VGWORT">
                         <icon>paragraph50.svg</icon>
                     </value>
+                    <value content="NO_ICONS" description="COPYRIGHT_DESCRIPTION_NO_ICONS">
+                        <!-- No icon elements: Apache Commons Configuration returns [""] here, which must be filtered -->
+                    </value>
                 </license>
             </widget>
             

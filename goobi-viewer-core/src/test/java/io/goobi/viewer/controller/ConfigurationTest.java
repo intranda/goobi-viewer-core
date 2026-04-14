@@ -619,6 +619,15 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getDataRepositoryCacheTTL()
+     * @verifies return correct value
+     */
+    @Test
+    void getDataRepositoryCacheTTL_shouldReturnCorrectValue() {
+        assertEquals(10, DataManager.getInstance().getConfiguration().getDataRepositoryCacheTTL());
+    }
+
+    /**
      * @see Configuration#getDatabaseConnectionAttempts()
      * @verifies return correct value
      */
@@ -3654,6 +3663,20 @@ class ConfigurationTest extends AbstractTest {
         assertEquals("COPYRIGHT_DESCRIPTION_VGWORT", result.getDescription());
         assertEquals(1, result.getIcons().size());
         assertEquals("paragraph50.svg", result.getIcons().get(0));
+    }
+
+    /**
+     * @see Configuration#getCopyrightIndicatorLicenseForValue(String)
+     * @verifies return empty icon list when no icons configured
+     */
+    @Test
+    void getCopyrightIndicatorLicenseForValue_shouldReturnEmptyIconListWhenNoIconsConfigured() {
+        // Apache Commons Configuration returns [""] when a <value> element has no <icon> children;
+        // the method must filter these out so the caller never sees empty strings in the list.
+        CopyrightIndicatorLicense result = DataManager.getInstance().getConfiguration().getCopyrightIndicatorLicenseForValue("NO_ICONS");
+        assertNotNull(result);
+        assertEquals("COPYRIGHT_DESCRIPTION_NO_ICONS", result.getDescription());
+        assertTrue(result.getIcons().isEmpty(), "Icons list must be empty when no <icon> elements are configured");
     }
 
     /**

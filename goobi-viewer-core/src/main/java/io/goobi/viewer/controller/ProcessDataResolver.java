@@ -552,13 +552,6 @@ public class ProcessDataResolver {
                 work.setPdfFiles(pdfs);
             }
         }
-        if (work.getAltoFolderPath() != null && Files.exists(work.getAltoFolderPath())) {
-            try (Stream<Path> stream = Files.list(work.getAltoFolderPath())) {
-                List<Path> alto = stream.sorted().collect(Collectors.toList());
-                work.setAltoFiles(alto);
-            }
-        }
-
         return work;
     }
 

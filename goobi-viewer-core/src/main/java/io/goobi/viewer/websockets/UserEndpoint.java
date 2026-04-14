@@ -137,4 +137,14 @@ public class UserEndpoint {
         sessionClearTimers.put(sessionId, timer);
         timer.schedule(task, delay);
     }
+
+    /**
+     * Cancels all pending session-clear timers and clears the map. Called by
+     * {@link io.goobi.viewer.ContextListener} during application shutdown to prevent timer
+     * threads from outliving the application context.
+     */
+    public static void shutdown() {
+        sessionClearTimers.values().forEach(Timer::cancel);
+        sessionClearTimers.clear();
+    }
 }

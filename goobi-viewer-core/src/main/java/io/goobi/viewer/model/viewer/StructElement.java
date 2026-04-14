@@ -260,11 +260,11 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                         }
                     }
                 }
-                // Use a separate if (not else if) so that a field configured in both
-                // ancestorIdentifierFields and recordGroupIdentifierFields (e.g. GROUPID_NEWSPAPER)
-                // is correctly recognized as a group membership, enabling the calendar widget
-                // for newspapers indexed without a traditional PI_ANCHOR structure.
-                if (DataManager.getInstance().getConfiguration().getRecordGroupIdentifierFields().contains(fieldName)) {
+                // Use a separate if (not else if) so that a GROUPID_ field configured in
+                // ancestorIdentifierFields (e.g. GROUPID_NEWSPAPER) is correctly recognized
+                // as a group membership, enabling the calendar widget for newspapers indexed
+                // without a traditional PI_ANCHOR structure.
+                if (fieldName.startsWith(SolrConstants.PREFIX_GROUPID)) {
                     groupMemberships.put(fieldName, (String) doc.getFieldValue(fieldName));
                 }
             }
@@ -287,7 +287,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                     }
                 }
             }
-        } catch (PresentationException e) {
+        } catch (PresentationException | IndexUnreachableException e) {
             // Catch exception to skip the rest of the code block, but do not do anything (already logged elsewhere)
             logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
         }

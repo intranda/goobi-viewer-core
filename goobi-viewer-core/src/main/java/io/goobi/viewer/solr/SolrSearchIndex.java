@@ -101,6 +101,8 @@ public class SolrSearchIndex implements java.io.Closeable {
 
     /** Application-scoped map containing already looked up data repository names of records. */
     private Map<String, String> dataRepositoryNames = new HashMap<>();
+    /** Timestamps of when each data repository name was last fetched from Solr. */
+    private Map<String, Long> dataRepositoryTimestamps = new HashMap<>();
 
     private SolrClient client;
 
@@ -335,6 +337,10 @@ public class SolrSearchIndex implements java.io.Closeable {
                 throw new IndexUnreachableException(e.getMessage());
             } else if (e.getMessage().startsWith("IOException occured when talking to server") || e.getMessage().contains("Timeout")) {
                 logger.warn("Solr communication timeout; Query: {}", solrQuery.getQuery());
+                throw new IndexUnreachableException(e.getMessage());
+            } else if (e.getMessage().contains("is stopped")) {
+                // HttpClient stopped (e.g. Solr client not yet started or already shut down)
+                logger.warn("Solr client stopped; Query: {}", solrQuery.getQuery());
                 throw new IndexUnreachableException(e.getMessage());
             }
             logger.error("Bad query: {}", solrQuery.getQuery());
@@ -811,9 +817,12 @@ public class SolrSearchIndex implements java.io.Closeable {
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @should return value from map if available
+     * @should re-fetch from Solr after TTL expires
      */
     public String findDataRepositoryName(String pi) throws PresentationException, IndexUnreachableException {
-        if (!dataRepositoryNames.containsKey(pi)) {
+        Long lastFetched = dataRepositoryTimestamps.get(pi);
+        long ttlMs = DataManager.getInstance().getConfiguration().getDataRepositoryCacheTTL() * 60L * 1000;
+        if (lastFetched == null || System.currentTimeMillis() - lastFetched > ttlMs) {
             String dataRepositoryName = findDataRepository(pi);
             updateDataRepositoryNames(pi, dataRepositoryName);
         }
@@ -829,6 +838,7 @@ public class SolrSearchIndex implements java.io.Closeable {
      */
     public void updateDataRepositoryNames(String pi, String dataRepositoryName) {
         dataRepositoryNames.put(pi, dataRepositoryName);
+        dataRepositoryTimestamps.put(pi, System.currentTimeMillis());
     }
 
     /**

@@ -28,6 +28,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -434,7 +435,9 @@ public class SearchFacets implements Serializable {
      */
     public boolean isHasRangeFacets() throws PresentationException, IndexUnreachableException {
         for (String rangeField : DataManager.getInstance().getConfiguration().getRangeFacetFields()) {
-            if (!getAbsoluteMinRangeValue(rangeField).equals(getAbsoluteMaxRangeValue(rangeField))) {
+            // Use Objects.equals for null-safe comparison in case getAbsoluteMinRangeValue/getAbsoluteMaxRangeValue
+            // return null due to a concurrent map clear between containsKey() and get().
+            if (!Objects.equals(getAbsoluteMinRangeValue(rangeField), getAbsoluteMaxRangeValue(rangeField))) {
                 return true;
             }
         }
@@ -761,10 +764,11 @@ public class SearchFacets implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getAbsoluteMinRangeValue(String field) throws PresentationException, IndexUnreachableException {
-        if (!minValues.containsKey(field)) {
-            return "0";
-        }
-        return minValues.get(field);
+        // Use a single get() call instead of containsKey() + get() to avoid a race condition
+        // where another thread clears the map (resetSliderRange) between the two calls,
+        // causing get() to return null even though containsKey() returned true.
+        String value = minValues.get(field);
+        return value != null ? value : "0";
     }
 
     /**
@@ -776,10 +780,11 @@ public class SearchFacets implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getAbsoluteMaxRangeValue(String field) throws PresentationException, IndexUnreachableException {
-        if (!maxValues.containsKey(field)) {
-            return "0";
-        }
-        return maxValues.get(field);
+        // Use a single get() call instead of containsKey() + get() to avoid a race condition
+        // where another thread clears the map (resetSliderRange) between the two calls,
+        // causing get() to return null even though containsKey() returned true.
+        String value = maxValues.get(field);
+        return value != null ? value : "0";
     }
 
     /**

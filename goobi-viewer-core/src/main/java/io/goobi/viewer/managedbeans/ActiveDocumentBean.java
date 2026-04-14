@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -173,18 +174,21 @@ public class ActiveDocumentBean implements Serializable {
     private BreadcrumbBean breadcrumbBean;
 
     /** URL parameter 'action'. */
-    private String action = "";
+    private volatile String action = "";
     /** URL parameter 'imageToShow'. */
     private String imageToShow = "1";
     /** URL parameter 'logid'. */
-    private String logid = "";
+    private volatile String logid = "";
     /** URL parameter 'tocCurrentPage'. */
-    private int tocCurrentPage = 1;
+    private volatile int tocCurrentPage = 1;
 
-    private ViewManager viewManager;
-    private boolean anchor = false;
+    // volatile ensures the safely-published ViewManager reference is immediately visible to all threads
+    private volatile ViewManager viewManager;
+    // volatile so that reads outside synchronized(this) in getRelativeUrlTags() see the value written
+    // inside the synchronized update() block without needing the full monitor
+    private volatile boolean anchor = false;
     private boolean volume = false;
-    private boolean group = false;
+    private volatile boolean group = false;
     protected String topDocumentIddoc = null;
 
     // TODO move to SearchBean
@@ -192,7 +196,8 @@ public class ActiveDocumentBean implements Serializable {
     private BrowseElement nextHit;
 
     /** This persists the last value given to setPersistentIdentifier() and is used for handling a RecordNotFoundException. */
-    private String lastReceivedIdentifier;
+    // volatile so that setRepresentativeImage() sees the latest value without holding any lock during Solr I/O
+    private volatile String lastReceivedIdentifier;
     /** Available languages for this record. */
     private List<String> recordLanguages;
     /** Currently selected language for multilingual records. */
@@ -202,7 +207,9 @@ public class ActiveDocumentBean implements Serializable {
 
     private String clearCacheMode;
 
-    private Map<String, RecordGeoMap> geoMaps = new HashMap<>();
+    // volatile so that the reference swap in getRecordGeoMap() (geoMaps = singletonMap(...))
+    // is immediately visible to all threads without requiring the ADB monitor
+    private volatile Map<String, RecordGeoMap> geoMaps = new HashMap<>();
 
     private int reloads = 0;
 
@@ -218,10 +225,11 @@ public class ActiveDocumentBean implements Serializable {
     @Push
     private PushContext tocUpdateChannel;
 
-    private Dataset recordDataset;
-    private PdfSizeCalculator pdfSizes;
+    // volatile for double-checked locking in getRecordDataset()
+    private volatile Dataset recordDataset;
+    private volatile PdfSizeCalculator pdfSizes;
     // Cached full-record PDF size estimate derived from Solr MDNUM_FILESIZE fields
-    private String cachedFullPdfSize = null;
+    private volatile String cachedFullPdfSize = null;
 
     /**
      * Empty constructor.
@@ -397,6 +405,11 @@ public class ActiveDocumentBean implements Serializable {
      */
     public void update() throws PresentationException, IndexUnreachableException, RecordNotFoundException, RecordDeletedException, DAOException,
             ViewerConfigurationException, IDDOCNotFoundException, NumberFormatException, RecordLimitExceededException {
+        // Tracks the ViewManager that needs a TOC built after the synchronized block.
+        // Building the TOC (which fires N Solr queries) outside the monitor prevents
+        // the entire session thread pool from blocking on one slow document load.
+        ViewManager tocTarget = null;
+
         synchronized (this) {
             if (topDocumentIddoc == null) {
                 try {
@@ -494,13 +507,18 @@ public class ActiveDocumentBean implements Serializable {
                 boolean showThumbnailGallery =
                         DataManager.getInstance().getConfiguration().showImageThumbnailGallery(new ViewAttributes(viewManager, pageType));
                 boolean useEagerLoader = PageNavigation.SEQUENCE.equals(pageNavigation) || showThumbnailGallery;
-                viewManager = new ViewManager(topStructElement,
+                // Build in a local variable; publish via single volatile write after full init
+                // so that concurrent readers never observe a half-initialized ViewManager.
+                ViewManager newViewManager = new ViewManager(topStructElement,
                         AbstractPageLoader.create(topStructElement, true, useEagerLoader),
                         topDocumentIddoc,
                         logid, topStructElement.getMetadataValue(SolrConstants.MIMETYPE), imageDelivery);
-                viewManager.setPageNavigation(pageNavigation);
-                viewManager.setToc(createTOC());
-                viewManager.setRecordAccessTicketRequired(accessTicketRequired);
+                newViewManager.setPageNavigation(pageNavigation);
+                newViewManager.setRecordAccessTicketRequired(accessTicketRequired);
+                // Publish the new ViewManager before TOC generation so concurrent readers
+                // are unblocked. TOC is set after the synchronized block via tocTarget.
+                viewManager = newViewManager;
+                tocTarget = newViewManager;
 
                 HttpSession session = BeanUtils.getSession();
                 // Release all locks for this session except the current record
@@ -552,14 +570,17 @@ public class ActiveDocumentBean implements Serializable {
                 // TODO check whether creating a new ViewManager can be avoided here
                 if (!docList.isEmpty()) {
                     subElementIddoc = (String) docList.get(0).getFieldValue(SolrConstants.IDDOC);
-                    // Re-initialize ViewManager with the new current element
+                    // Re-initialize ViewManager with the new current element.
+                    // Build in local variable; publish via single volatile write after full init.
                     PageOrientation firstPageOrientation = viewManager.getFirstPageOrientation();
                     PageNavigation pageNavigation = viewManager.getPageNavigation();
-                    viewManager = new ViewManager(viewManager.getTopStructElement(), viewManager.getPageLoader(), subElementIddoc, logid,
-                            viewManager.getMimeType(), imageDelivery);
-                    viewManager.setPageNavigation(pageNavigation);
-                    viewManager.setFirstPageOrientation(firstPageOrientation);
-                    viewManager.setToc(createTOC());
+                    ViewManager newLogidViewManager = new ViewManager(viewManager.getTopStructElement(), viewManager.getPageLoader(),
+                            subElementIddoc, logid, viewManager.getMimeType(), imageDelivery);
+                    newLogidViewManager.setPageNavigation(pageNavigation);
+                    newLogidViewManager.setFirstPageOrientation(firstPageOrientation);
+                    // Publish before TOC generation; tocTarget tracks what needs a TOC.
+                    viewManager = newLogidViewManager;
+                    tocTarget = newLogidViewManager;
                 } else {
                     logger.warn("{} not found for LOGID '{}'.", SolrConstants.IDDOC, logid);
                 }
@@ -628,8 +649,15 @@ public class ActiveDocumentBean implements Serializable {
                     bookmarkBean.prepareItemForBookmarkList();
                 }
             }
-        }
+        } // end synchronized(this)
 
+        // Build the TOC outside the monitor. createTOC() reads this.viewManager (volatile),
+        // which already points to tocTarget at this point. If another thread concurrently
+        // replaces viewManager, the setToc() write lands on the now-stale tocTarget which
+        // nobody reads anymore — a benign race.
+        if (tocTarget != null) {
+            tocTarget.setToc(createTOC());
+        }
     }
 
     /**
@@ -651,13 +679,16 @@ public class ActiveDocumentBean implements Serializable {
      */
     private TOC createTOC() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         TOC toc = new TOC();
-        synchronized (toc) {
-            if (viewManager != null) {
-                toc.generate(viewManager.getTopStructElement(), viewManager.isListAllVolumesInTOC(), viewManager.getMimeType(), tocCurrentPage);
-                // The TOC object will correct values that are too high, so update the local value, if necessary
-                if (toc.getCurrentPage() != this.tocCurrentPage) {
-                    this.tocCurrentPage = toc.getCurrentPage();
-                }
+        // Single volatile read to avoid TOCTOU race: reset() on another thread may set
+        // this.viewManager to null between a null-check and the subsequent field accesses.
+        // synchronized(toc) was removed — toc is a local variable, no other thread can
+        // acquire its monitor, so it provided no thread safety.
+        ViewManager vm = this.viewManager;
+        if (vm != null) {
+            toc.generate(vm.getTopStructElement(), vm.isListAllVolumesInTOC(), vm.getMimeType(), tocCurrentPage);
+            // The TOC object will correct values that are too high, so update the local value, if necessary
+            if (toc.getCurrentPage() != this.tocCurrentPage) {
+                this.tocCurrentPage = toc.getCurrentPage();
             }
         }
         return toc;
@@ -677,62 +708,69 @@ public class ActiveDocumentBean implements Serializable {
     public String open()
             throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException, ViewerConfigurationException,
             RecordLimitExceededException {
-        synchronized (this) {
-            logger.trace("open()");
-            try {
-                update();
-                if (navigationHelper == null || viewManager == null) {
-                    return "";
-                }
-
-                //update usage statistics
-                DataManager.getInstance()
-                        .getUsageStatisticsRecorder()
-                        .recordRequest(RequestType.RECORD_VIEW, viewManager.getPi(), BeanUtils.getRequest());
-
-                IMetadataValue name = viewManager.getTopStructElement().getMultiLanguageDisplayLabel();
-                HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-                URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
-                List<String> languages = new ArrayList<>(name.getLanguages()); //temporary variable to avoid ConcurrentModificationException
-                Map<String, String> truncatedNames = new HashMap<>();
-                for (String language : languages) {
-                    String translation = name.getValue(language).orElse(getPersistentIdentifier());
-                    if (translation != null && translation.length() > DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()) {
-                        translation =
-                                new StringBuilder(translation.substring(0, DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()))
-                                        .append("...")
-                                        .toString();
-                        truncatedNames.put(language, translation);
-                    }
-                }
-                // Replace translation outside of the loop
-                if (!truncatedNames.isEmpty()) {
-                    for (Entry<String, String> entry : truncatedNames.entrySet()) {
-                        name.setValue(entry.getValue(), entry.getKey());
-                    }
-                }
-                // Fallback using the identifier as the label
-                if (name.isEmpty()) {
-                    name.setValue(getPersistentIdentifier());
-                }
-                logger.trace("topdocument label: {} ", name.getValue());
-                if (!PrettyContext.getCurrentInstance(request).getRequestURL().toURL().contains("/crowd")) {
-                    breadcrumbBean.addRecordBreadcrumbs(viewManager, name, url);
-                }
-            } catch (PresentationException e) {
-                logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage(), e);
-                Messages.error(e.getMessage());
-            } catch (IDDOCNotFoundException e) {
-                try {
-                    return reload(lastReceivedIdentifier);
-                } catch (PresentationException e1) {
-                    logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage(), e);
-                }
+        // update() handles its own synchronization. Removing the outer synchronized
+        // block here is essential so that the post-lock TOC generation in update()
+        // actually runs without a monitor, allowing concurrent session threads to
+        // proceed through setPersistentIdentifier() and update() Phase 1 while the
+        // TOC is being built.
+        logger.trace("open()");
+        try {
+            update();
+            // Capture the published ViewManager once via volatile read; all subsequent
+            // operations in this method use this local reference so they are consistent
+            // even if another thread concurrently replaces viewManager.
+            ViewManager vm = this.viewManager;
+            if (navigationHelper == null || vm == null) {
+                return "";
             }
 
-            reloads = 0;
-            return "";
+            //update usage statistics
+            DataManager.getInstance()
+                    .getUsageStatisticsRecorder()
+                    .recordRequest(RequestType.RECORD_VIEW, vm.getPi(), BeanUtils.getRequest());
+
+            IMetadataValue name = vm.getTopStructElement().getMultiLanguageDisplayLabel();
+            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+            URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
+            List<String> languages = new ArrayList<>(name.getLanguages()); //temporary variable to avoid ConcurrentModificationException
+            Map<String, String> truncatedNames = new HashMap<>();
+            for (String language : languages) {
+                String translation = name.getValue(language).orElse(vm.getPi());
+                if (translation != null && translation.length() > DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()) {
+                    translation =
+                            new StringBuilder(translation.substring(0, DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()))
+                                    .append("...")
+                                    .toString();
+                    truncatedNames.put(language, translation);
+                }
+            }
+            // Replace translation outside of the loop
+            if (!truncatedNames.isEmpty()) {
+                for (Entry<String, String> entry : truncatedNames.entrySet()) {
+                    name.setValue(entry.getValue(), entry.getKey());
+                }
+            }
+            // Fallback using the identifier as the label
+            if (name.isEmpty()) {
+                name.setValue(vm.getPi());
+            }
+            logger.trace("topdocument label: {} ", name.getValue());
+            if (!PrettyContext.getCurrentInstance(request).getRequestURL().toURL().contains("/crowd")) {
+                breadcrumbBean.addRecordBreadcrumbs(vm, name, url);
+            }
+        } catch (PresentationException e) {
+            logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage(), e);
+            Messages.error(e.getMessage());
+        } catch (IDDOCNotFoundException e) {
+            try {
+                return reload(lastReceivedIdentifier);
+            } catch (PresentationException e1) {
+                logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage(), e);
+            }
         }
+
+        reloads = 0;
+        return "";
     }
 
     /**
@@ -868,18 +906,28 @@ public class ActiveDocumentBean implements Serializable {
     public void setRepresentativeImage()
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IllegalUrlParameterException {
         logger.trace("setRepresentativeImage"); //NOSONAR Debug
+        // Capture the volatile field once so we can do Solr I/O outside the lock and later verify
+        // consistency: if a concurrent request replaced lastReceivedIdentifier in the meantime
+        // (e.g. two tabs opened simultaneously), we discard this result rather than overwriting the
+        // correct value that the other thread will set.
+        String identifier = this.lastReceivedIdentifier;
+        String image = "1";
+        if (StringUtils.isNotEmpty(identifier) && !"-".equals(identifier)) {
+            SolrDocument doc = DataManager.getInstance()
+                    .getSearchIndex()
+                    .getFirstDoc(SolrConstants.PI + ":" + identifier, Collections.singletonList(SolrConstants.THUMBPAGENO));
+            if (doc != null && doc.getFieldValue(SolrConstants.THUMBPAGENO) != null) {
+                image = String.valueOf(doc.getFieldValue(SolrConstants.THUMBPAGENO));
+                logger.trace("{} found: {}", SolrConstants.THUMBPAGENO, image);
+            } else {
+                logger.trace("{}  not found, using {}", SolrConstants.THUMBPAGENO, image);
+            }
+        }
         synchronized (lock) {
-            String image = "1";
-            if (StringUtils.isNotEmpty(lastReceivedIdentifier) && !"-".equals(lastReceivedIdentifier)) {
-                SolrDocument doc = DataManager.getInstance()
-                        .getSearchIndex()
-                        .getFirstDoc(SolrConstants.PI + ":" + lastReceivedIdentifier, Collections.singletonList(SolrConstants.THUMBPAGENO));
-                if (doc != null && doc.getFieldValue(SolrConstants.THUMBPAGENO) != null) {
-                    image = String.valueOf(doc.getFieldValue(SolrConstants.THUMBPAGENO));
-                    logger.trace("{} found: {}", SolrConstants.THUMBPAGENO, image);
-                } else {
-                    logger.trace("{}  not found, using {}", SolrConstants.THUMBPAGENO, image);
-                }
+            // Consistency check: bail out if a concurrent navigation replaced the identifier while
+            // we were doing Solr I/O. The other thread will set the correct value for its record.
+            if (!Objects.equals(identifier, this.lastReceivedIdentifier)) {
+                return;
             }
             boolean isDoublePageNavigation = Optional.ofNullable(this.viewManager)
                     .map(ViewManager::getPageNavigation)
@@ -931,13 +979,12 @@ public class ActiveDocumentBean implements Serializable {
      * @return the LOGID of the current structural element, or "-" if at top-level document
      */
     public String getLogid() {
-        synchronized (this) {
-            if (StringUtils.isEmpty(logid)) {
-                return "-";
-            }
-
-            return logid;
+        // logid is volatile; String is immutable — no lock needed for a read
+        if (StringUtils.isEmpty(logid)) {
+            return "-";
         }
+
+        return logid;
     }
 
     /**
@@ -982,9 +1029,8 @@ public class ActiveDocumentBean implements Serializable {
      * @return the navigation action string (e.g. "nextHit", "prevHit"), or null if none set
      */
     public String getAction() {
-        synchronized (this) {
-            return action;
-        }
+        // action is volatile; no lock needed for a single-field read
+        return action;
     }
 
     /**
@@ -1039,23 +1085,37 @@ public class ActiveDocumentBean implements Serializable {
      */
     public void setPersistentIdentifier(String persistentIdentifier)
             throws PresentationException, RecordNotFoundException, IndexUnreachableException {
-        synchronized (this) {
-            logger.trace("setPersistentIdentifier: {}", StringTools.stripPatternBreakingChars(persistentIdentifier));
-            if (!PIValidator.validatePi(persistentIdentifier)) {
-                logger.warn("Invalid identifier '{}'.", persistentIdentifier);
+        logger.trace("setPersistentIdentifier: {}", StringTools.stripPatternBreakingChars(persistentIdentifier));
+        if (!PIValidator.validatePi(persistentIdentifier)) {
+            logger.warn("Invalid identifier '{}'.", persistentIdentifier);
+            synchronized (this) {
                 reset();
-                return;
             }
+            return;
+        }
+
+        // Perform the Solr IDDOC lookup outside the monitor so the lock is not held
+        // during I/O. The volatile read of viewManager is safe here; the subsequent
+        // write to topDocumentIddoc is protected by the synchronized block below.
+        String id = null;
+        ViewManager vm = viewManager;
+        if (!"-".equals(persistentIdentifier) && (vm == null || !persistentIdentifier.equals(vm.getPi()))) {
+            id = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(persistentIdentifier);
+            if (id == null) {
+                logger.warn("No IDDOC for identifier '{}' found.", persistentIdentifier);
+            }
+        }
+
+        synchronized (this) {
             lastReceivedIdentifier = persistentIdentifier;
+            // Re-check with the lock held in case viewManager was concurrently replaced
             if (!"-".equals(persistentIdentifier) && (viewManager == null || !persistentIdentifier.equals(viewManager.getPi()))) {
-                String id = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(persistentIdentifier);
                 if (id != null) {
                     if (!id.equals(topDocumentIddoc)) {
                         topDocumentIddoc = id;
                         logger.trace("IDDOC found for {}: {}", persistentIdentifier, id);
                     }
                 } else {
-                    logger.warn("No IDDOC for identifier '{}' found.", persistentIdentifier);
                     reset();
                     // Restore the identifier after reset so that update() can include it in the RecordNotFoundException message
                     lastReceivedIdentifier = persistentIdentifier;
@@ -1072,12 +1132,12 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getPersistentIdentifier() throws IndexUnreachableException {
-        synchronized (this) {
-            if (viewManager != null) {
-                return viewManager.getPi();
-            }
-            return "-";
+        // Capture volatile reference once; ViewManager.getPi() is immutable after construction
+        ViewManager vm = viewManager;
+        if (vm != null) {
+            return vm.getPi();
         }
+        return "-";
     }
 
     // navigation in work
@@ -1111,13 +1171,16 @@ public class ActiveDocumentBean implements Serializable {
         int page = pages[0];
         int page2 = pages[1];
 
-        // Guard against null pageLoader: ViewManager may exist but not yet have a page loader initialized
-        if (viewManager != null && viewManager.getPageLoader() != null) {
-            page = Math.max(page, viewManager.getPageLoader().getFirstPageOrder());
-            page = Math.min(page, viewManager.getPageLoader().getLastPageOrder());
+        // Capture both viewManager and pageLoader once to avoid TOCTOU with concurrent reset():
+        // viewManager is volatile, so each direct field read can yield null after another thread calls reset().
+        ViewManager vm = this.viewManager;
+        var loader = vm != null ? vm.getPageLoader() : null;
+        if (loader != null) {
+            page = Math.max(page, loader.getFirstPageOrder());
+            page = Math.min(page, loader.getLastPageOrder());
             if (page2 != Integer.MAX_VALUE) {
-                page2 = Math.max(page2, viewManager.getPageLoader().getFirstPageOrder());
-                page2 = Math.min(page2, viewManager.getPageLoader().getLastPageOrder());
+                page2 = Math.max(page2, loader.getFirstPageOrder());
+                page2 = Math.min(page2, loader.getLastPageOrder());
             }
         }
 
@@ -1242,9 +1305,11 @@ public class ActiveDocumentBean implements Serializable {
 
         int number;
 
-        // Current image contains two pages - guard against null when page loader hasn't populated the current page yet
-        if (viewManager.getCurrentPage() != null && viewManager.getCurrentPage().isDoubleImage()) {
-            // logger.trace("{} is double page", viewManager.getCurrentPage().getOrder()); //NOSONAR Debug
+        // Capture once to avoid TOCTOU: concurrent reset() can null out pageLoader between
+        // the null-check call and the isDoubleImage() call if getCurrentPage() is invoked twice.
+        PhysicalElement currentPage = viewManager.getCurrentPage();
+        if (currentPage != null && currentPage.isDoubleImage()) {
+            // logger.trace("{} is double page", currentPage.getOrder()); //NOSONAR Debug
             if (step < 0) {
                 number = viewManager.getCurrentImageOrder() + 2 * step;
             } else {
@@ -1472,13 +1537,17 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getFullscreenImageUrl() throws IndexUnreachableException {
-        // Guard against null when page loader hasn't populated the current page yet
-        if (viewManager != null && viewManager.isDoublePageMode()
-                && viewManager.getCurrentPage() != null && !viewManager.getCurrentPage().isDoubleImage()) {
-            Optional<PhysicalElement> currentLeftPage = viewManager.getCurrentLeftPage();
-            Optional<PhysicalElement> currentRightPage = viewManager.getCurrentRightPage();
-            if (currentLeftPage.isPresent() && currentRightPage.isPresent()) {
-                return getPageUrl(PageType.viewFullscreen.getName(), currentLeftPage.get().getOrder() + "-" + currentRightPage.get().getOrder());
+        // Capture vm once so that a concurrent reset() cannot null the volatile field mid-method.
+        // Also capture getCurrentPage() once to avoid TOCTOU between the null check and isDoubleImage().
+        ViewManager vm = this.viewManager;
+        if (vm != null && vm.isDoublePageMode()) {
+            PhysicalElement currentPage = vm.getCurrentPage();
+            if (currentPage != null && !currentPage.isDoubleImage()) {
+                Optional<PhysicalElement> currentLeftPage = vm.getCurrentLeftPage();
+                Optional<PhysicalElement> currentRightPage = vm.getCurrentRightPage();
+                if (currentLeftPage.isPresent() && currentRightPage.isPresent()) {
+                    return getPageUrl(PageType.viewFullscreen.getName(), currentLeftPage.get().getOrder() + "-" + currentRightPage.get().getOrder());
+                }
             }
         }
 
@@ -1594,9 +1663,21 @@ public class ActiveDocumentBean implements Serializable {
         if (vm == null) {
             return null;
         }
+        // Fast path: TOC already built — single volatile read, no lock needed.
+        TOC existing = vm.getToc();
+        if (existing != null) {
+            return existing;
+        }
+        // Slow path: build TOC *outside* the ViewManager monitor to eliminate the B1 pattern.
+        // Previously, holding the VM lock during createTOC() (which performs Solr I/O via
+        // CountDownLatch) caused BLOCKED threads in production whenever two requests for the
+        // same record arrived concurrently. Multiple threads may now race through here and each
+        // build a TOC; only the first to acquire the lock will publish its result — the extra
+        // work is bounded (at most one build per concurrent caller) and acceptable.
+        TOC fresh = createTOC();
         synchronized (vm) {
             if (vm.getToc() == null) {
-                vm.setToc(createTOC());
+                vm.setToc(fresh);
             }
             return vm.getToc();
         }
@@ -1608,9 +1689,8 @@ public class ActiveDocumentBean implements Serializable {
      * @return a int.
      */
     public String getTocCurrentPage() {
-        synchronized (this) {
-            return Integer.toString(tocCurrentPage);
-        }
+        // tocCurrentPage is volatile; no lock needed for a single-field read
+        return Integer.toString(tocCurrentPage);
     }
 
     /**
@@ -1705,36 +1785,39 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public synchronized String getTitleBarLabel(String language)
+    public String getTitleBarLabel(String language)
             throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         if (navigationHelper == null) {
             return null;
         }
+        // Capture once to avoid a race where another thread calls reset() between the null-check
+        // and the subsequent direct field accesses (which would cause a NullPointerException).
+        ViewManager vm = getViewManager();
         if (navigationHelper.getCurrentPage() != null && PageType.getByName(navigationHelper.getCurrentPage()) != null
-                && PageType.getByName(navigationHelper.getCurrentPage()).isDocumentPage() && getViewManager() != null) {
+                && PageType.getByName(navigationHelper.getCurrentPage()).isDocumentPage() && vm != null) {
             // Prefer the label of the current TOC element
             TOC toc = getToc();
             if (toc != null && toc.getTocElements() != null && !toc.getTocElements().isEmpty()) {
                 String label = null;
                 String labelTemplate = StringConstants.DEFAULT_NAME;
-                if (viewManager.getTopStructElement() != null) {
-                    labelTemplate = viewManager.getTopStructElement().getDocStructType();
+                if (vm.getTopStructElement() != null) {
+                    labelTemplate = vm.getTopStructElement().getDocStructType();
                 }
                 if (DataManager.getInstance().getConfiguration().isDisplayAnchorLabelInTitleBar(labelTemplate)
-                        && StringUtils.isNotBlank(viewManager.getAnchorPi())) {
+                        && StringUtils.isNotBlank(vm.getAnchorPi())) {
                     String prefix = DataManager.getInstance().getConfiguration().getAnchorLabelInTitleBarPrefix(labelTemplate);
                     String suffix = DataManager.getInstance().getConfiguration().getAnchorLabelInTitleBarSuffix(labelTemplate);
                     prefix = ViewerResourceBundle.getTranslation(prefix, Locale.forLanguageTag(language)).replace("_SPACE_", " ");
                     suffix = ViewerResourceBundle.getTranslation(suffix, Locale.forLanguageTag(language)).replace("_SPACE_", " ");
-                    label = prefix + toc.getLabel(viewManager.getAnchorPi(), language) + suffix + toc.getLabel(viewManager.getPi(), language);
+                    label = prefix + toc.getLabel(vm.getAnchorPi(), language) + suffix + toc.getLabel(vm.getPi(), language);
                 } else {
-                    label = toc.getLabel(viewManager.getPi(), language);
+                    label = toc.getLabel(vm.getPi(), language);
                 }
                 if (label != null) {
                     return label;
                 }
             }
-            String label = viewManager.getTopStructElement().getLabel(selectedRecordLanguage.getIsoCodeOld());
+            String label = vm.getTopStructElement().getLabel(selectedRecordLanguage.getIsoCodeOld());
             if (StringUtils.isNotEmpty(label)) {
                 return label;
             }
@@ -1784,7 +1867,8 @@ public class ActiveDocumentBean implements Serializable {
         return getPdfSize(null);
     }
 
-    public synchronized String getPdfSize(String logId) {
+    public String getPdfSize(String logId) {
+        // pdfSizes and cachedFullPdfSize are volatile; benign double-init race acceptable for display
         if (StringUtils.isNotBlank(logId)) {
             // Section-level PDF size: delegate to PdfSizeCalculator which reads the METS
             // file to resolve which pages belong to the given logical section (logId).
@@ -1981,9 +2065,9 @@ public class ActiveDocumentBean implements Serializable {
      * @return a int.
      */
     public int getCurrentThumbnailPage() {
-        synchronized (this) {
-            return viewManager != null ? viewManager.getCurrentThumbnailPage() : 1;
-        }
+        // Capture volatile reference once; ViewManager is fully initialized before publication
+        ViewManager vm = viewManager;
+        return vm != null ? vm.getCurrentThumbnailPage() : 1;
     }
 
     /**
@@ -2101,27 +2185,32 @@ public class ActiveDocumentBean implements Serializable {
      * @return true if the current user has permission to download an EPUB of the current record, false otherwise
      */
     public boolean isAccessPermissionEpub() {
-        synchronized (this) {
-            try {
-                if ((navigationHelper != null && !isEnabled(EpubDownloadJob.TYPE, navigationHelper.getCurrentPage())) || viewManager == null
-                        || !ocrFolderExists(viewManager.getPi())) {
-                    return false;
-                }
-            } catch (IndexUnreachableException e) {
-                logger.error("Error checking EPUB resources: {}", e.getMessage());
+        // Capture volatile reference once; access permission is lazily cached in ViewManager
+        // and not affected by the post-publication mutations in update()
+        ViewManager vm = viewManager;
+        try {
+            if ((navigationHelper != null && !isEnabled(EpubDownloadJob.TYPE, navigationHelper.getCurrentPage())) || vm == null
+                    || !ocrFolderExists(vm.getPi())) {
                 return false;
             }
-
-            // TODO EPUB privilege type
-            return viewManager.isAccessPermissionPdf();
+        } catch (IndexUnreachableException e) {
+            logger.error("Error checking EPUB resources: {}", e.getMessage());
+            return false;
         }
+
+        // TODO EPUB privilege type
+        return vm.isAccessPermissionPdf();
     }
 
     private boolean ocrFolderExists(String pi) {
         try {
             Path altoFolder = getRecordDataset().getAltoFolderPath();
             return altoFolder != null && Files.isDirectory(altoFolder);
-        } catch (PresentationException | IndexUnreachableException | RecordNotFoundException | IOException e) {
+        } catch (RecordNotFoundException e) {
+            // viewManager was reset concurrently before the dataset could be loaded; not an error
+            logger.debug("Record not available when checking ALTO folder for {}: {}", pi, e.getMessage());
+            return false;
+        } catch (PresentationException | IndexUnreachableException | IOException e) {
             logger.error("Error finding alto folder for {}", pi, e);
             return false;
         }
@@ -2133,13 +2222,14 @@ public class ActiveDocumentBean implements Serializable {
      * @return true if the current user has permission to download a PDF of the current record, false otherwise
      */
     public boolean isAccessPermissionPdf() {
-        synchronized (this) {
-            if ((navigationHelper != null && !isEnabled(PdfDownloadJob.TYPE, navigationHelper.getCurrentPage())) || viewManager == null) {
-                return false;
-            }
-
-            return viewManager.isAccessPermissionPdf();
+        // Capture volatile reference once; access permission is lazily cached in ViewManager
+        // and not affected by the post-publication mutations in update()
+        ViewManager vm = viewManager;
+        if ((navigationHelper != null && !isEnabled(PdfDownloadJob.TYPE, navigationHelper.getCurrentPage())) || vm == null) {
+            return false;
         }
+
+        return vm.isAccessPermissionPdf();
     }
 
     /**
@@ -2277,8 +2367,12 @@ public class ActiveDocumentBean implements Serializable {
      * @should return empty string if navigationHelper null
      * @should generate tags correctly
      */
-    public synchronized String getRelativeUrlTags() throws IndexUnreachableException, DAOException, PresentationException {
-        if (!isRecordLoaded() || navigationHelper == null) {
+    public String getRelativeUrlTags() throws IndexUnreachableException, DAOException, PresentationException {
+        // Single volatile read to avoid TOCTOU race with reset()/update() on concurrent threads.
+        // Using a local reference ensures consistency for all subsequent field accesses even if
+        // another thread calls reset() and sets this.viewManager to null mid-execution.
+        ViewManager vm = this.viewManager;
+        if (vm == null || navigationHelper == null) {
             return "";
         }
         if (logger.isTraceEnabled()) {
@@ -2291,22 +2385,24 @@ public class ActiveDocumentBean implements Serializable {
 
         PageType currentPageType = PageType.getByName(navigationHelper.getCurrentView());
         PageType defaultPageTypeForRecord =
-                PageType.determinePageType(viewManager.getTopStructElement().getDocStructType(), viewManager.getMimeType(),
-                        isAnchor() || isGroup(), viewManager.isHasPages(), false);
+                PageType.determinePageType(vm.getTopStructElement().getDocStructType(), vm.getMimeType(),
+                        isAnchor() || isGroup(), vm.isHasPages(), false);
 
         StringBuilder sb = new StringBuilder();
 
         // Add resolver links if current view matches resolved view for this record
         if (defaultPageTypeForRecord != null && defaultPageTypeForRecord.equals(currentPageType)) {
-            if (viewManager.getCurrentPage() != null) {
+            if (vm.getCurrentPage() != null) {
                 // URN resolver URL (alternate)
-                if (StringUtils.isNotEmpty(viewManager.getCurrentPage().getUrn())) {
-                    String urnResolverUrl = DataManager.getInstance().getConfiguration().getUrnResolverUrl() + viewManager.getCurrentPage().getUrn();
+                if (StringUtils.isNotEmpty(vm.getCurrentPage().getUrn())) {
+                    String urnResolverUrl = DataManager.getInstance().getConfiguration().getUrnResolverUrl() + vm.getCurrentPage().getUrn();
                     sb.append(linkAlternate).append(urnResolverUrl).append(linkEnd);
                 }
-                // PI resolver URL (alternate)
-                if (viewManager.getCurrentPage().equals(viewManager.getRepresentativePage())) {
-                    String piResolverUrl = navigationHelper.getApplicationUrl() + "piresolver?id=" + viewManager.getPi();
+                // PI resolver URL (alternate): getRepresentativePage() may trigger a single lazy Solr
+                // load on the first call; subsequent calls return the cached PhysicalElement. A benign
+                // double-init race between two threads is acceptable (idempotent, same result).
+                if (vm.getCurrentPage().equals(vm.getRepresentativePage())) {
+                    String piResolverUrl = navigationHelper.getApplicationUrl() + "piresolver?id=" + vm.getPi();
                     sb.append(linkAlternate).append(piResolverUrl).append(linkEnd);
                 }
             }
@@ -2315,9 +2411,9 @@ public class ActiveDocumentBean implements Serializable {
             logger.trace("page type: {}", currentPageType);
             // logger.trace("current url: {}", navigationHelper.getCurrentUrl()); //NOSONAR Debug
 
-            int page = viewManager.getCurrentImageOrder();
-            String urlRoot = navigationHelper.getApplicationUrl() + currentPageType.getName() + "/" + viewManager.getPi() + "/";
-            String urlRootExplicit = navigationHelper.getApplicationUrl() + "!" + currentPageType.getName() + "/" + viewManager.getPi() + "/";
+            int page = vm.getCurrentImageOrder();
+            String urlRoot = navigationHelper.getApplicationUrl() + currentPageType.getName() + "/" + vm.getPi() + "/";
+            String urlRootExplicit = navigationHelper.getApplicationUrl() + "!" + currentPageType.getName() + "/" + vm.getPi() + "/";
             switch (currentPageType) {
                 case viewFullscreen:
                 case viewImage:
@@ -2460,7 +2556,9 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
-    public synchronized GeoMap getGeoMap() throws DAOException, IndexUnreachableException {
+    public GeoMap getGeoMap() throws DAOException, IndexUnreachableException {
+        // No synchronization needed: getRecordGeoMap() reads/writes the volatile geoMaps
+        // reference; a benign double-init race is acceptable (idempotent construction).
         return getRecordGeoMap().getGeoMap();
     }
 
@@ -2472,6 +2570,12 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public RecordGeoMap getRecordGeoMap() throws DAOException, IndexUnreachableException {
+        // getPersistentIdentifier() and getTopDocument() each capture viewManager independently.
+        // A reset() between the two reads is tolerated: worst case we cache an empty RecordGeoMap
+        // or skip caching entirely — no invariant is violated (see class-level thread-safety note).
+        // A concurrent double-init race (two threads both see null) is benign: RecordGeoMap
+        // construction is pure (configuration only, no external state), the last writer wins,
+        // and the unused instance becomes GC-eligible.
         RecordGeoMap map = this.geoMaps.get(getPersistentIdentifier());
         if (map == null) {
             StructElement topDocument = getTopDocument();
@@ -2696,8 +2800,11 @@ public class ActiveDocumentBean implements Serializable {
      * @return true if user comments are allowed for the current record, false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException
      */
-    public synchronized boolean isAllowUserComments() throws DAOException {
-        if (viewManager == null) {
+    public boolean isAllowUserComments() throws DAOException {
+        // Single volatile read to avoid TOCTOU race with reset()/update() on concurrent threads.
+        // DAO and Solr I/O now run without holding the ADB monitor.
+        ViewManager vm = this.viewManager;
+        if (vm == null) {
             return false;
         }
 
@@ -2708,25 +2815,27 @@ public class ActiveDocumentBean implements Serializable {
         }
         if (!commentGroupAll.isEnabled()) {
             logger.trace("User comments disabled globally.");
-            viewManager.setAllowUserComments(false);
+            vm.setAllowUserComments(false);
             return false;
         }
 
-        if (viewManager.isAllowUserComments() == null) {
+        if (vm.isAllowUserComments() == null) {
+            // A concurrent double-init race (two threads both see null) is benign: same Solr
+            // query, same result, idempotent write to volatile Boolean in ViewManager.
             try {
                 if (StringUtils.isNotEmpty(commentGroupAll.getSolrQuery()) && DataManager.getInstance()
                         .getSearchIndex()
                         .getHitCount(new StringBuilder("+").append(SolrConstants.PI)
                                 .append(':')
-                                .append(viewManager.getPi())
+                                .append(vm.getPi())
                                 .append(" +(")
                                 .append(commentGroupAll.getSolrQuery())
                                 .append(')')
                                 .toString()) == 0) {
-                    viewManager.setAllowUserComments(false);
+                    vm.setAllowUserComments(false);
                     logger.trace("User comments are not allowed for this record.");
                 } else {
-                    viewManager.setAllowUserComments(true);
+                    vm.setAllowUserComments(true);
                 }
             } catch (IndexUnreachableException e) {
                 logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
@@ -2737,7 +2846,10 @@ public class ActiveDocumentBean implements Serializable {
             }
         }
 
-        return viewManager.isAllowUserComments();
+        // Null-safe unboxing: resetAllowUserComments() on a concurrent thread can set the volatile
+        // Boolean back to null between our set above and this read. Boolean.TRUE.equals() treats
+        // null as false — the correct conservative default (next call will re-evaluate).
+        return Boolean.TRUE.equals(vm.isAllowUserComments());
     }
 
     /**
@@ -2808,10 +2920,26 @@ public class ActiveDocumentBean implements Serializable {
         }
     }
 
-    private synchronized Dataset getRecordDataset() throws PresentationException, IndexUnreachableException, RecordNotFoundException, IOException {
-        if (this.recordDataset == null) {
-            String cleanedPi = StringTools.cleanUserGeneratedData(getPersistentIdentifier());
-            this.recordDataset = new ProcessDataResolver().getDataset(cleanedPi);
+    private Dataset getRecordDataset() throws PresentationException, IndexUnreachableException, RecordNotFoundException, IOException {
+        // Double-checked locking: volatile field guarantees safe publication without holding the
+        // ADB monitor during Solr I/O. PI validation prevents returning a stale dataset if
+        // reset() fires between the cache-miss check and the Solr call.
+        Dataset cached = this.recordDataset;
+        ViewManager vm = this.viewManager;
+        if (vm == null) {
+            throw new RecordNotFoundException("No active record");
+        }
+        String currentPi = StringTools.cleanUserGeneratedData(vm.getPi());
+        if (cached != null && currentPi.equals(cached.getPi())) {
+            return cached;
+        }
+        // Solr I/O outside any lock — benign double-init race is acceptable (idempotent query)
+        Dataset fresh = new ProcessDataResolver().getDataset(currentPi);
+        synchronized (this) {
+            // Only publish if the PI hasn't changed (i.e. reset() hasn't loaded a different record)
+            if (this.recordDataset == null || !currentPi.equals(this.recordDataset.getPi())) {
+                this.recordDataset = fresh;
+            }
         }
         return this.recordDataset;
     }

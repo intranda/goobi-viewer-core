@@ -219,4 +219,110 @@ class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals(SolrConstants.SORT_RANDOM, fields.get(1));
     }
 
+    /**
+     * @see CmsBean#determineWorkDefaultView(String, String, boolean, boolean)
+     * @verifies return object when work has images
+     */
+    @Test
+    void determineWorkDefaultView_shouldReturnObjectWhenWorkHasImages() {
+        String result = CmsBean.determineWorkDefaultView("monograph", "image/jpeg", false, true);
+        Assertions.assertEquals("object", result);
+    }
+
+    /**
+     * @see CmsBean#determineWorkDefaultView(String, String, boolean, boolean)
+     * @verifies return metadata when work has no images
+     */
+    @Test
+    void determineWorkDefaultView_shouldReturnMetadataWhenWorkHasNoImages() {
+        String result = CmsBean.determineWorkDefaultView("monograph", "application/pdf", false, false);
+        Assertions.assertEquals("metadata", result);
+    }
+
+    /**
+     * @see CmsBean#determineWorkDefaultView(String, String, boolean, boolean)
+     * @verifies return toc for anchor work
+     */
+    @Test
+    void determineWorkDefaultView_shouldReturnTocForAnchorWork() {
+        String result = CmsBean.determineWorkDefaultView("periodical", "image/jpeg", true, true);
+        Assertions.assertEquals("toc", result);
+    }
+
+    /**
+     * @see CmsBean#getRelatedWorkDefaultView()
+     * @verifies return current navigation view when no related work is loaded
+     */
+    @Test
+    void getRelatedWorkDefaultView_shouldReturnCurrentNavigationViewWhenNoRelatedWorkLoaded() throws Exception {
+        NavigationHelper nav = new NavigationHelper();
+        CmsBean bean = new CmsBean(templateManager, nav);
+        CMSPage page = new CMSPage();
+        bean.setCurrentPage(page);
+        String result = bean.getRelatedWorkDefaultView();
+        Assertions.assertEquals(nav.getCurrentView(), result);
+    }
+
+    /**
+     * @see CmsBean#getEffectiveSidebarView()
+     * @verifies return null when no current page
+     */
+    @Test
+    void getEffectiveSidebarView_shouldReturnNullWhenNoCurrentPage() {
+        CmsBean bean = new CmsBean(templateManager, navigationHelper);
+        Assertions.assertNull(bean.getEffectiveSidebarView());
+    }
+
+    /**
+     * @see CmsBean#getEffectiveSidebarView()
+     * @verifies return null when page has no related work
+     */
+    @Test
+    void getEffectiveSidebarView_shouldReturnNullWhenPageHasNoRelatedWork() {
+        CmsBean bean = new CmsBean(templateManager, navigationHelper);
+        CMSPage page = new CMSPage();
+        bean.setCurrentPage(page);
+        Assertions.assertNull(bean.getEffectiveSidebarView());
+    }
+
+    /**
+     * @see CmsBean#isCmsWorkPageContext()
+     * @verifies return false when current work pi is blank
+     */
+    @Test
+    void isCmsWorkPageContext_shouldReturnFalseWhenCurrentWorkPiIsBlank() {
+        CmsBean bean = new CmsBean(templateManager, navigationHelper);
+        CMSPage page = new CMSPage();
+        page.setRelatedPI("PI123");
+        bean.setCurrentPage(page);
+        Assertions.assertFalse(bean.isCmsWorkPageContext());
+    }
+
+    /**
+     * @see CmsBean#isCmsWorkPageContext()
+     * @verifies return true when current work pi matches related PI
+     */
+    @Test
+    void isCmsWorkPageContext_shouldReturnTrueWhenCurrentWorkPiMatchesRelatedPI() {
+        CmsBean bean = new CmsBean(templateManager, navigationHelper);
+        bean.setCurrentWorkPi("PI123");
+        CMSPage page = new CMSPage();
+        page.setRelatedPI("PI123");
+        bean.setCurrentPage(page);
+        Assertions.assertTrue(bean.isCmsWorkPageContext());
+    }
+
+    /**
+     * @see CmsBean#isCmsWorkPageContext()
+     * @verifies return false when current work pi does not match related PI
+     */
+    @Test
+    void isCmsWorkPageContext_shouldReturnFalseWhenCurrentWorkPiDoesNotMatchRelatedPI() {
+        CmsBean bean = new CmsBean(templateManager, navigationHelper);
+        bean.setCurrentWorkPi("PI123");
+        CMSPage page = new CMSPage();
+        bean.setCurrentPage(page);
+        Assertions.assertFalse(bean.isCmsWorkPageContext());
+    }
+
 }

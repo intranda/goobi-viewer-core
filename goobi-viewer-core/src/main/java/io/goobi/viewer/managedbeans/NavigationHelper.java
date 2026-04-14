@@ -125,6 +125,15 @@ public class NavigationHelper implements Serializable {
     private BreadcrumbBean breadcrumbBean;
     @Inject
     private CmsBean cmsBean;
+    // Injected directly to avoid per-call CDI bean lookup via BeanUtils (Weld StackWalker overhead)
+    @Inject
+    private ActiveDocumentBean activeDocumentBean;
+    @Inject
+    private BrowseBean browseBean;
+    @Inject
+    private SearchBean searchBean;
+    @Inject
+    private CalendarBean calendarBean;
 
     /** Constant <code>KEY_CURRENT_VIEW="currentView"</code>. */
     protected static final String KEY_CURRENT_VIEW = "currentView";
@@ -173,6 +182,26 @@ public class NavigationHelper implements Serializable {
 
     public void setCmsBean(CmsBean cmsBean) {
         this.cmsBean = cmsBean;
+    }
+
+    /** Setter for testing — allows injecting a mock ActiveDocumentBean without CDI. */
+    public void setActiveDocumentBean(ActiveDocumentBean activeDocumentBean) {
+        this.activeDocumentBean = activeDocumentBean;
+    }
+
+    /** Setter for testing — allows injecting a mock BrowseBean without CDI. */
+    public void setBrowseBean(BrowseBean browseBean) {
+        this.browseBean = browseBean;
+    }
+
+    /** Setter for testing — allows injecting a mock SearchBean without CDI. */
+    public void setSearchBean(SearchBean searchBean) {
+        this.searchBean = searchBean;
+    }
+
+    /** Setter for testing — allows injecting a mock CalendarBean without CDI. */
+    public void setCalendarBean(CalendarBean calendarBean) {
+        this.calendarBean = calendarBean;
     }
 
     /**
@@ -708,11 +737,11 @@ public class NavigationHelper implements Serializable {
 
         // Make sure browsing terms are reloaded, so that locale-specific sorting can be applied
         if (SEARCH_TERM_LIST_PAGE.equals(getCurrentPage())) {
-            BrowseBean bb = BeanUtils.getBrowseBean();
-            if (bb != null) {
-                bb.resetTerms();
+            // Use injected field instead of per-call BeanUtils CDI lookup
+            if (browseBean != null) {
+                browseBean.resetTerms();
                 try {
-                    bb.searchTerms();
+                    browseBean.searchTerms();
                 } catch (IndexUnreachableException | PresentationException e) {
                     logger.error(e.getMessage(), e);
                 } catch (RedirectException e) {
@@ -723,15 +752,15 @@ public class NavigationHelper implements Serializable {
 
         // Also set ActiveDocumentBean.selectedRecordLanguage, so that multilingual metadata
         // values etc. are displayed in the selected language as well
-        ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
-        if (adb != null) {
-            adb.setSelectedRecordLanguage(inLocale);
+        // Use injected field instead of per-call BeanUtils CDI lookup
+        if (activeDocumentBean != null) {
+            activeDocumentBean.setSelectedRecordLanguage(inLocale);
         }
 
         // Reset advanced search parameters so that the SearchQueryItems have correct language fields
-        SearchBean sb = BeanUtils.getSearchBean();
-        if (sb != null && sb.getActiveSearchType() == SearchHelper.SEARCH_TYPE_ADVANCED) {
-            sb.resetAdvancedSearchParameters();
+        // Use injected field instead of per-call BeanUtils CDI lookup
+        if (searchBean != null && searchBean.getActiveSearchType() == SearchHelper.SEARCH_TYPE_ADVANCED) {
+            searchBean.resetAdvancedSearchParameters();
         }
     }
 
@@ -1010,7 +1039,7 @@ public class NavigationHelper implements Serializable {
         String subThemeDiscriminatorValue = "";
         String discriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
         if (StringUtils.isNotBlank(discriminatorField)) {
-            ActiveDocumentBean activeDocumentBean = BeanUtils.getActiveDocumentBean();
+            // Use injected field instead of per-call BeanUtils CDI lookup
             ViewManager viewManager = activeDocumentBean != null ? activeDocumentBean.getViewManager() : null;
             if (viewManager != null && getCurrentPageType().isDocumentPage()) {
                 // If a record is loaded, get the value from the record's value
@@ -1047,11 +1076,10 @@ public class NavigationHelper implements Serializable {
         statusMap.put(KEY_SUBTHEME_DISCRIMINATOR_VALUE, subThemeDiscriminatorValue);
         if ((StringUtils.isBlank(subThemeDiscriminatorValue) && StringUtils.isNotBlank(previousSubThemeDiscriminatorValue)
                 || (StringUtils.isNotBlank(subThemeDiscriminatorValue) && !subThemeDiscriminatorValue.equals(previousSubThemeDiscriminatorValue)))) {
-            BrowseBean browseBean = BeanUtils.getBrowseBean();
+            // Use injected fields instead of per-call BeanUtils CDI lookup
             if (browseBean != null) {
                 browseBean.resetAllLists();
             }
-            CalendarBean calendarBean = BeanUtils.getCalendarBean();
             if (calendarBean != null) {
                 try {
                     calendarBean.resetYears();
@@ -1431,8 +1459,10 @@ public class NavigationHelper implements Serializable {
     /**
      * Purges all traces of the currently loaded record from ActiveDocumentBean.
      */
-    private static void resetCurrentDocument() {
-        ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
+    // Converted from static to instance method to use injected activeDocumentBean
+    // instead of per-call BeanUtils CDI lookup (Weld StackWalker overhead)
+    private void resetCurrentDocument() {
+        ActiveDocumentBean adb = activeDocumentBean;
         if (adb != null) {
             if (!adb.isRecordLoaded()) {
                 logger.trace("No record loaded, no need to reset.");
@@ -1865,10 +1895,15 @@ public class NavigationHelper implements Serializable {
      * @return Resource path
      */
     public String getResource(String path, List<String> alternativeSuffixes) {
+        if (StringUtils.isBlank(path)) {
+            logger.warn("getResource called with blank path");
+            return "";
+        }
         FileResourceManager fileResourceManager = DataManager.getInstance().getFileResourceManager();
         if (fileResourceManager != null) {
             Path themePath = fileResourceManager.getThemeResourcePath(path);
-            if (Files.exists(themePath)) {
+            // Use isRegularFile instead of exists to avoid returning directory paths
+            if (Files.isRegularFile(themePath)) {
                 String ret = fileResourceManager.getThemeResourceURI(path).toString();
                 return ret;
             } else if (!alternativeSuffixes.isEmpty()) {
@@ -1882,6 +1917,29 @@ public class NavigationHelper implements Serializable {
             return fileResourceManager.getCoreResourceURI(path).toString();
         }
         return "";
+    }
+
+    /**
+     * Resolves a list of licence icon names to their resource URIs, filtering out any icons whose resolved path is blank or a
+     * directory (trailing slash). This method is intended for use in Facelets templates that pass the result directly to
+     * {@code <ui:include>}, where an invalid path would cause a {@code TagAttributeException} at view-build time.
+     *
+     * @param icons list of icon file names (e.g. "cc0.svg"); blank entries are ignored
+     * @return ordered list of resolved resource URIs suitable for use as {@code <ui:include src="...">} values
+     * @should return empty list for blank icons
+     * @should return empty list for null input
+     * @should filter out paths resolving to directories
+     */
+    public List<String> getLicenceIconResources(List<String> icons) {
+        if (icons == null || icons.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return icons.stream()
+                .filter(icon -> icon != null && !icon.isBlank())
+                .map(icon -> getResource("images/licence/" + icon))
+                // Exclude blank results and directory paths (ending with '/') that would crash ui:include
+                .filter(path -> path != null && !path.isBlank() && !path.endsWith("/"))
+                .collect(Collectors.toList());
     }
 
     private Optional<String> findResource(String path, Path themePath, String suffix) {
@@ -1939,12 +1997,15 @@ public class NavigationHelper implements Serializable {
      * @param language language code used to look up the configured default sort field
      * @return {@link ViewerPath}
      */
-    private static ViewerPath setupRandomSearchSeed(ViewerPath path, String language) {
+    // Converted from static to instance method to use injected searchBean
+    // instead of per-call BeanUtils CDI lookup (Weld StackWalker overhead)
+    private ViewerPath setupRandomSearchSeed(ViewerPath path, String language) {
         String defaultSortField = DataManager.getInstance().getConfiguration().getDefaultSortField(language);
         if (SolrConstants.SORT_RANDOM.equalsIgnoreCase(defaultSortField)) {
             String parameterPath = path.getParameterPath().toString();
             if (StringUtils.isBlank(parameterPath) || parameterPath.matches("\\/?-\\/-\\/\\d+\\/-\\/-\\/?")) {
-                SearchBean sb = BeanUtils.getSearchBean();
+                // Use injected field instead of per-call BeanUtils CDI lookup
+                SearchBean sb = searchBean;
                 if (sb != null) {
                     String pageUrl = PrettyUrlTools.getRelativePageUrl("newSearch5",
                             sb.getActiveContext(),

@@ -4454,6 +4454,15 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * Returns the TTL (in minutes) for cached data repository name lookups.
+     *
+     * @return TTL in minutes; default is 10
+     */
+    public int getDataRepositoryCacheTTL() {
+        return getLocalInt("performance.dataRepositoryCacheTTL", 10);
+    }
+
+    /**
      * isPreventProxyCaching.
      *
      * @should return correct value
@@ -4797,8 +4806,10 @@ public class Configuration extends AbstractConfiguration {
      * getRecordGroupIdentifierFields.
      *
      * @should return all configured values
-     * @return a list of configured Solr field names used to identify record groups
+     * @return a {@link java.util.List} object.
+     * @deprecated Group identifier fields are now detected implicitly via the {@code GROUPID_} prefix. This config is no longer needed.
      */
+    @Deprecated(since = "26.04")
     public List<String> getRecordGroupIdentifierFields() {
         return getLocalList("toc.recordGroupIdentifierFields.field");
     }
@@ -5648,6 +5659,7 @@ public class Configuration extends AbstractConfiguration {
      * @param value field value to match against configured entries
      * @return the configured copyright indicator license matching the given field value, or null if not found
      * @should return correct value
+     * @should return empty icon list when no icons configured
      */
     public CopyrightIndicatorLicense getCopyrightIndicatorLicenseForValue(String value) {
         if (value == null) {

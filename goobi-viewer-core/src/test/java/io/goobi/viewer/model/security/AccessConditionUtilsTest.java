@@ -37,11 +37,15 @@ import java.util.Set;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+
+import org.apache.solr.common.SolrDocumentList;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.managedbeans.UserBean;
@@ -526,6 +530,30 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see AccessConditionUtils#retrieveUserFromContext(HttpSession)
+     * @verifies return null without session scan when CDI returns userBean with null user
+     *
+     * When CDI is active and returns a UserBean with null user (anonymous visitor), the method must
+     * return null directly without falling through to the expensive O(N) session scan.
+     */
+    @Test
+    void retrieveUserFromContext_shouldReturnNullWithoutSessionScanWhenCdiReturnsNullUser() {
+        UserBean userBean = new UserBean(); // user field is null — anonymous visitor
+
+        HttpSession session = Mockito.mock(HttpSession.class);
+
+        try (MockedStatic<BeanUtils> mockedBeanUtils = Mockito.mockStatic(BeanUtils.class)) {
+            mockedBeanUtils.when(BeanUtils::getUserBean).thenReturn(userBean);
+
+            User result = AccessConditionUtils.retrieveUserFromContext(session);
+
+            Assertions.assertNull(result);
+            // The session must not be scanned — getAttributeNames() is the entry point of the scan
+            Mockito.verify(session, Mockito.never()).getAttributeNames();
+        }
+    }
+
+    /**
+     * @see AccessConditionUtils#retrieveUserFromContext(HttpSession)
      * @verifies find user via session attribute scan when stored under non-standard key
      *
      * In CDI/Weld environments, session-scoped beans may be stored under a generated key rather than
@@ -545,6 +573,111 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
         Mockito.when(session.getAttribute("weld_generated_key")).thenReturn(userBean);
 
         Assertions.assertEquals(user, AccessConditionUtils.retrieveUserFromContext(session));
+    }
+
+    // --- fetchAccessibleFileNames ---
+
+    /**
+     * @see AccessConditionUtils#fetchAccessibleFileNames(String,String,String,HttpServletRequest)
+     * @verifies return empty list for blank pi
+     */
+    @Test
+    void fetchAccessibleFileNames_shouldReturnEmptyListForBlankPi() throws Exception {
+        Assertions.assertTrue(
+                AccessConditionUtils.fetchAccessibleFileNames("", SolrConstants.FILENAME_ALTO,
+                        IPrivilegeHolder.PRIV_VIEW_FULLTEXT, null).isEmpty());
+        Assertions.assertTrue(
+                AccessConditionUtils.fetchAccessibleFileNames("   ", SolrConstants.FILENAME_ALTO,
+                        IPrivilegeHolder.PRIV_VIEW_FULLTEXT, null).isEmpty());
+    }
+
+    /**
+     * @see AccessConditionUtils#fetchAccessibleFileNames(String,String,String,HttpServletRequest)
+     * @verifies return empty list for null pi
+     */
+    @Test
+    void fetchAccessibleFileNames_shouldReturnEmptyListForNullPi() throws Exception {
+        Assertions.assertTrue(
+                AccessConditionUtils.fetchAccessibleFileNames(null, SolrConstants.FILENAME_ALTO,
+                        IPrivilegeHolder.PRIV_VIEW_FULLTEXT, null).isEmpty());
+    }
+
+    /**
+     * @see AccessConditionUtils#fetchAccessibleFileNames(String,String,String,HttpServletRequest)
+     * @verifies return filenames for open access record
+     */
+    @Test
+    void fetchAccessibleFileNames_shouldReturnFilenamesForOpenAccessRecord() throws Exception {
+        List<String> result = AccessConditionUtils.fetchAccessibleFileNames(
+                "306653648_1892", SolrConstants.FILENAME_ALTO,
+                IPrivilegeHolder.PRIV_VIEW_FULLTEXT, null);
+        Assertions.assertFalse(result.isEmpty());
+    }
+
+    /**
+     * @see AccessConditionUtils#fetchAccessibleFileNames(String,String,String,HttpServletRequest)
+     * @verifies return empty list for record with no files indexed
+     */
+    @Test
+    void fetchAccessibleFileNames_shouldReturnEmptyListForRecordWithNoFilesIndexed() throws Exception {
+        // PPN517154005 (PI_KLEIUNIV) is indexed without FILENAME_ALTO, so result must be empty
+        List<String> result = AccessConditionUtils.fetchAccessibleFileNames(
+                PI_KLEIUNIV, SolrConstants.FILENAME_ALTO,
+                IPrivilegeHolder.PRIV_VIEW_FULLTEXT, null);
+        Assertions.assertTrue(result.isEmpty());
+    }
+
+    /**
+     * @see AccessConditionUtils#fetchAccessibleFileNames(String,String,String,HttpServletRequest)
+     * @verifies return empty list for restricted record when anonymous
+     */
+    @Test
+    void fetchAccessibleFileNames_shouldReturnEmptyListForRestrictedRecordAnonymous() throws Exception {
+        // Confirm the test Solr has FILENAME_ALTO docs for this PI; skip if data is missing
+        // to distinguish "no documents found" from "access denied"
+        SolrDocumentList docs = DataManager.getInstance().getSearchIndex()
+                .search("+PI_TOPSTRUCT:34115495_1940 +DOCTYPE:PAGE +FILENAME_ALTO:[* TO *]",
+                        10, null, Arrays.asList("FILENAME_ALTO", "ACCESSCONDITION"));
+        org.junit.jupiter.api.Assumptions.assumeTrue(docs != null && !docs.isEmpty(),
+                "Skipping: 34115495_1940 has no FILENAME_ALTO pages in the test Solr");
+
+        // 34115495_1940 has access condition "fulltext_locked" — anonymous access must be denied
+        List<String> result = AccessConditionUtils.fetchAccessibleFileNames(
+                "34115495_1940", SolrConstants.FILENAME_ALTO,
+                IPrivilegeHolder.PRIV_VIEW_FULLTEXT, null);
+        Assertions.assertTrue(result.isEmpty());
+    }
+
+    /**
+     * @see AccessConditionUtils#fetchAccessibleFileNames(String,String,String,HttpServletRequest)
+     * @verifies return bare filenames not full paths
+     */
+    @Test
+    void fetchAccessibleFileNames_shouldReturnBareFilenamesNotFullPaths() throws Exception {
+        List<String> result = AccessConditionUtils.fetchAccessibleFileNames(
+                "306653648_1892", SolrConstants.FILENAME_ALTO,
+                IPrivilegeHolder.PRIV_VIEW_FULLTEXT, null);
+        Assertions.assertFalse(result.isEmpty());
+        // Results must be ordered by Solr page ORDER — first file corresponds to page 1
+        Assertions.assertEquals("00000001.xml", result.get(0),
+                "First result should be page-1 file (ORDER=1)");
+        for (String filename : result) {
+            Assertions.assertFalse(filename.contains("/"),
+                    "Expected bare filename without path separator, got: " + filename);
+        }
+    }
+
+    /**
+     * @see AccessConditionUtils#fetchAccessibleFileNames(String,String,String,HttpServletRequest)
+     * @verifies work for fulltext field
+     */
+    @Test
+    void fetchAccessibleFileNames_shouldWorkForFulltextField() throws Exception {
+        // khi_escidoc_7101 is OPENACCESS with FILENAME_FULLTEXT entries in the test Solr
+        List<String> result = AccessConditionUtils.fetchAccessibleFileNames(
+                "khi_escidoc_7101", SolrConstants.FILENAME_FULLTEXT,
+                IPrivilegeHolder.PRIV_VIEW_FULLTEXT, null);
+        Assertions.assertFalse(result.isEmpty());
     }
 
     // --- fetchPagePermissions ---

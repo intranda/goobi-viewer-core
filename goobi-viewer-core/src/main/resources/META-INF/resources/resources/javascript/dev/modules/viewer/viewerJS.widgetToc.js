@@ -69,6 +69,34 @@ var viewerJS = (function (viewer) {
 
             _scrollToActive(container);
         },
+
+        /**
+         * @description Updates the currently active TOC element: swaps the 'active' class,
+         * ensures the target element is visible by expanding ancestors, and scrolls the TOC
+         * so the element is in view. Called from the push-based updateToc handler.
+         * @param {string} iddoc - The iddoc of the new active element (without 'iddoc_' prefix).
+         * @method setActive
+         */
+        setActive: function (iddoc) {
+            var container = document.getElementById('widgetToc');
+            if (!container) return;
+
+            var li = container.querySelector("[data-iddoc='iddoc_" + iddoc + "']");
+            if (!li) return;
+
+            container.querySelectorAll('.widget-toc__element.active, .widget-toc__element .active').forEach(function (el) {
+                el.classList.remove('active');
+            });
+
+            li.classList.add('active');
+            var link = li.querySelector('.widget-toc__element-link');
+            if (link) {
+                link.classList.add('active');
+            }
+
+            _ensureVisible(li);
+            _scrollToActive(container);
+        },
     };
 
     /**

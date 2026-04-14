@@ -169,7 +169,9 @@ public class TextResourceBuilder {
         String zipFileName = pi + "_alto.zip";
         String foldername = DataManager.getInstance().getConfiguration().getAltoFolder();
         String crowdsourcingFolderName = DataManager.getInstance().getConfiguration().getAltoCrowdsourcingFolder();
-        List<Path> files = getFiles(pi, foldername, crowdsourcingFolderName, null, request);
+        // Replaced filesystem iteration with single Solr batch query to avoid O(n) per-file
+        // permission checks and to exclude legacy filenames no longer known to the index.
+        List<Path> files = getFilesFromSolr(pi, SolrConstants.FILENAME_ALTO, foldername, crowdsourcingFolderName, request);
 
         // Return 404 if no ALTO files exist for this record instead of letting
         // FileTools.compressZipFile throw an IllegalArgumentException
@@ -184,7 +186,8 @@ public class TextResourceBuilder {
             throws IOException, PresentationException, IndexUnreachableException {
         String foldername = DataManager.getInstance().getConfiguration().getAltoFolder();
         String crowdsourcingFolderName = DataManager.getInstance().getConfiguration().getAltoCrowdsourcingFolder();
-        List<Path> files = getFiles(pi, foldername, crowdsourcingFolderName, null, request);
+        // Replaced filesystem iteration with single Solr batch query (see getAltoAsZip).
+        List<Path> files = getFilesFromSolr(pi, SolrConstants.FILENAME_ALTO, foldername, crowdsourcingFolderName, request);
 
         StringBuilder sb = new StringBuilder();
         for (Path path : files) {
@@ -494,8 +497,10 @@ public class TextResourceBuilder {
     public Map<java.nio.file.Path, String> getFulltextMap(String pi, HttpServletRequest request)
             throws IOException, PresentationException, IndexUnreachableException {
         Map<java.nio.file.Path, String> ret = new TreeMap<>();
-        List<java.nio.file.Path> fulltextFiles = getFiles(pi, DataManager.getInstance().getConfiguration().getFulltextCrowdsourcingFolder(),
-                DataManager.getInstance().getConfiguration().getFulltextFolder(), "(i?).*\\.txt", request);
+        // Replaced filesystem iteration with single Solr batch query for fulltext files.
+        List<java.nio.file.Path> fulltextFiles = getFilesFromSolr(pi, SolrConstants.FILENAME_FULLTEXT,
+                DataManager.getInstance().getConfiguration().getFulltextCrowdsourcingFolder(),
+                DataManager.getInstance().getConfiguration().getFulltextFolder(), request);
 
         Map<java.nio.file.Path, String> fileMapFromPlaintext = null;
         if (!fulltextFiles.isEmpty()) {
@@ -511,8 +516,10 @@ public class TextResourceBuilder {
         }
 
         Map<java.nio.file.Path, String> fileMapFromAlto = null;
-        List<java.nio.file.Path> altoFiles = getFiles(pi, DataManager.getInstance().getConfiguration().getAltoFolder(),
-                DataManager.getInstance().getConfiguration().getAltoFolder(), "(i?).*\\.(alto|xml)", request);
+        // Replaced filesystem iteration with single Solr batch query for ALTO-derived fulltext.
+        List<java.nio.file.Path> altoFiles = getFilesFromSolr(pi, SolrConstants.FILENAME_ALTO,
+                DataManager.getInstance().getConfiguration().getAltoFolder(),
+                DataManager.getInstance().getConfiguration().getAltoFolder(), request);
         if (!altoFiles.isEmpty()) {
             logger.debug("Converting ALTO files from {}", altoFiles.get(0).getParent().toAbsolutePath());
             fileMapFromAlto = altoFiles.stream()
@@ -551,25 +558,38 @@ public class TextResourceBuilder {
     }
 
     /**
-     * getFiles.
+     * Fetches the accessible file paths for a record by querying Solr for canonical filenames,
+     * evaluating access conditions in memory (one batch Solr query total), and resolving each
+     * bare filename to a filesystem {@link java.nio.file.Path}.
      *
-     * @param pi persistent identifier used to locate the data directory
-     * @param foldername primary folder name to search for files
-     * @param altFoldername fallback folder name if primary is missing
-     * @param filter optional filename regex pattern; null matches all files
+     * <p>Files present in Solr but absent from disk are silently skipped.
+     * Legacy filenames on disk that are absent from Solr are never returned.
+     *
+     * @param pi persistent identifier of the record
+     * @param filenameField Solr field to query, e.g. {@code SolrConstants.FILENAME_ALTO}
+     * @param foldername primary data folder name (e.g. alto, fulltext)
+     * @param altFoldername fallback folder name (e.g. alto_crowdsourcing)
      * @param request current HTTP servlet request for access checking
-     * @return sorted, access-filtered list of matching file paths
-     * @throws java.io.IOException if any.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @return accessible file paths ordered by Solr page ORDER; empty list if none accessible
      */
-    private static List<java.nio.file.Path> getFiles(String pi, String foldername, String altFoldername, String filter, HttpServletRequest request)
-            throws IOException, PresentationException, IndexUnreachableException {
-
-        java.nio.file.Path folder1 = DataFileTools.getDataFilePath(pi, foldername, null, null);
-        java.nio.file.Path folder2 = DataFileTools.getDataFilePath(pi, altFoldername, null, null);
-
-        return getFiles(folder1, folder2, filter, request);
+    private static List<java.nio.file.Path> getFilesFromSolr(String pi, String filenameField,
+            String foldername, String altFoldername, HttpServletRequest request) {
+        List<String> filenames = AccessConditionUtils.fetchAccessibleFileNames(
+                pi, filenameField, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, request);
+        List<java.nio.file.Path> result = new ArrayList<>(filenames.size());
+        for (String filename : filenames) {
+            try {
+                java.nio.file.Path path = DataFileTools.getDataFilePath(pi, foldername, altFoldername, filename);
+                // Skip files that Solr knows about but which no longer exist on disk
+                if (path != null && Files.isRegularFile(path)) {
+                    result.add(path);
+                }
+            } catch (PresentationException | IndexUnreachableException e) {
+                // Log and skip individual files that cannot be resolved; do not abort the whole list
+                logger.error("Error resolving data file path for {}/{}: {}", pi, filename, e.getMessage());
+            }
+        }
+        return result;
     }
 
     /**

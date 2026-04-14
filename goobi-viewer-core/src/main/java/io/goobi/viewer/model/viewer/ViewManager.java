@@ -201,8 +201,8 @@ public class ViewManager implements Serializable {
     private IPageLoader pageLoader;
     private PhysicalElement representativePage;
 
-    /** Table of contents object. */
-    private TOC toc;
+    /** Table of contents object. Volatile so that the post-lock write in ActiveDocumentBean.update() is immediately visible to all threads. */
+    private volatile TOC toc;
 
     private int rotate = 0;
     private int zoomSlider;
@@ -212,8 +212,11 @@ public class ViewManager implements Serializable {
     private String dropdownSelected = "";
     private int currentThumbnailPage = 1;
     private String pi;
-    private Boolean accessPermissionPdf = null;
-    private Boolean allowUserComments = null;
+    // volatile ensures the lazily-computed access-permission cache is visible across threads
+    // that now call isAccessPermissionPdf() concurrently after the bean's synchronized guard
+    // was removed (see ActiveDocumentBean Task 6/7).
+    private volatile Boolean accessPermissionPdf = null;
+    private volatile Boolean allowUserComments = null;
     /** True if an access ticket is required before anything in this record may be viewed.. Value is set during the access permission check. */
     private boolean recordAccessTicketRequired = false;
     private List<StructElementStub> docHierarchy = null;
@@ -3225,7 +3228,11 @@ public class ViewManager implements Serializable {
     public List<String> getVersionHistory() throws PresentationException, IndexUnreachableException {
         logger.trace("getVersionHistory");
         if (versionHistory == null) {
-            versionHistory = new ArrayList<>();
+            // Build into a local list first, then assign atomically. This prevents
+            // ArrayIndexOutOfBoundsException caused by two threads (e.g. multiple browser tabs)
+            // concurrently writing into the same non-thread-safe ArrayList when versionHistory
+            // was assigned before population was complete.
+            List<String> result = new ArrayList<>();
 
             String versionLabelField = DataManager.getInstance().getConfiguration().getVersionLabelField();
 
@@ -3256,7 +3263,7 @@ public class ViewManager implements Serializable {
                     }
                 }
                 Collections.reverse(next);
-                versionHistory.addAll(next);
+                result.addAll(next);
             }
 
             // This version
@@ -3268,7 +3275,7 @@ public class ViewManager implements Serializable {
             jsonObj.put("id", getPi());
             jsonObj.put("year", topStructElement.getMetadataValue(SolrConstants.MD_YEARPUBLISH));
             jsonObj.put("order", "0"); // "0" identifies the currently loaded version
-            versionHistory.add(jsonObj.toString());
+            result.add(jsonObj.toString());
 
             String prevVersionIdentifierField = DataManager.getInstance().getConfiguration().getPreviousVersionIdentifierField();
             if (StringUtils.isNotEmpty(prevVersionIdentifierField)) {
@@ -3299,8 +3306,10 @@ public class ViewManager implements Serializable {
                         break;
                     }
                 }
-                versionHistory.addAll(previous);
+                result.addAll(previous);
             }
+
+            versionHistory = result;
         }
 
         //		logger.trace("Version history size: {}", versionHistory.size()); //NOSONAR Debug

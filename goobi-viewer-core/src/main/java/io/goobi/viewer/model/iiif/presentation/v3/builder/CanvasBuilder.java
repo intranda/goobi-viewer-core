@@ -27,11 +27,14 @@ import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_FILES_IMAGE;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_FILES_IMAGE_PDF;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_FILES_PLAINTEXT;
 
+import java.awt.Dimension;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -67,6 +70,9 @@ import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
 import io.goobi.viewer.model.iiif.presentation.v3.builder.LinkingProperty.LinkingTarget;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.PagePermissions;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -86,6 +92,9 @@ public class CanvasBuilder extends AbstractBuilder {
     private final AbstractApiUrlManager imageUrlManager = DataManager.getInstance().getRestApiManager().getIIIFContentApiManager();
 
     private PagePermissions pagePermissions = PagePermissions.EMPTY;
+    // Cached page dimensions keyed by ORDER; populated by preparePageDimensions() before the page loop.
+    // Empty map means no batch data available — falls back to per-page disk I/O in addImageResource().
+    private Map<Integer, Dimension> pageDimensions = Map.of();
 
     /**
      * Injects pre-fetched page permissions; package-private to allow test injection without reflection.
@@ -94,6 +103,15 @@ public class CanvasBuilder extends AbstractBuilder {
      */
     void setPagePermissions(PagePermissions pagePermissions) {
         this.pagePermissions = pagePermissions;
+    }
+
+    /**
+     * Injects pre-fetched page dimensions; package-private to allow test injection without reflection.
+     *
+     * @param pageDimensions map of page ORDER to Dimension, replacing the per-page disk I/O fallback
+     */
+    void setPageDimensions(Map<Integer, Dimension> pageDimensions) {
+        this.pageDimensions = pageDimensions;
     }
 
     /**
@@ -115,6 +133,46 @@ public class CanvasBuilder extends AbstractBuilder {
     public void preparePagePermissions(String pi) {
         // Single batch fetch instead of one Solr query per page per privilege type
         this.pagePermissions = AccessConditionUtils.fetchPagePermissions(pi, this.request);
+    }
+
+    /**
+     * Pre-fetches image dimensions (WIDTH, HEIGHT) for all pages of the given record in one Solr
+     * query. Must be called before the page loop (from {@link ManifestBuilder}) to avoid O(n)
+     * disk reads via ImageHandler.getImageInformation() in addImageResource().
+     *
+     * @param pi persistent identifier of the record whose page dimensions to pre-fetch
+     */
+    public void preparePageDimensions(String pi) {
+        if (org.apache.commons.lang3.StringUtils.isBlank(pi)) {
+            return;
+        }
+        String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi
+                + " +" + SolrConstants.DOCTYPE + ":" + DocType.PAGE;
+        try {
+            org.apache.solr.common.SolrDocumentList docs = DataManager.getInstance().getSearchIndex()
+                    .search(query, SolrSearchIndex.MAX_HITS, null,
+                            List.of(SolrConstants.ORDER, SolrConstants.WIDTH, SolrConstants.HEIGHT));
+            if (docs == null || docs.isEmpty()) {
+                return;
+            }
+            Map<Integer, Dimension> map = new HashMap<>();
+            for (org.apache.solr.common.SolrDocument doc : docs) {
+                Object orderObj = doc.getFieldValue(SolrConstants.ORDER);
+                Object widthObj = doc.getFieldValue(SolrConstants.WIDTH);
+                Object heightObj = doc.getFieldValue(SolrConstants.HEIGHT);
+                if (orderObj == null || widthObj == null || heightObj == null) {
+                    continue;
+                }
+                int w = ((Number) widthObj).intValue();
+                int h = ((Number) heightObj).intValue();
+                if (w > 0 && h > 0) {
+                    map.put(((Number) orderObj).intValue(), new Dimension(w, h));
+                }
+            }
+            this.pageDimensions = map;
+        } catch (IndexUnreachableException | PresentationException e) {
+            logger.warn("Failed to pre-fetch page dimensions for {}: {}", pi, e.getMessage());
+        }
     }
 
     /**
@@ -304,12 +362,20 @@ public class CanvasBuilder extends AbstractBuilder {
             canvas.setWidth(page.getImageWidth());
             canvas.setHeight(page.getImageHeight());
         } else {
-            try {
-                ImageInformation info = images.getImageInformation(page);
-                canvas.setWidth(info.getWidth());
-                canvas.setHeight(info.getHeight());
-            } catch (ContentLibException e) {
-                logger.warn("Cannot set canvas size", e);
+            // Use pre-fetched dimension cache before falling back to per-page disk I/O.
+            // The cache is populated by preparePageDimensions() before the manifest page loop.
+            Dimension cached = pageDimensions.get(page.getOrder());
+            if (cached != null) {
+                canvas.setWidth(cached.width);
+                canvas.setHeight(cached.height);
+            } else {
+                try {
+                    ImageInformation info = images.getImageInformation(page);
+                    canvas.setWidth(info.getWidth());
+                    canvas.setHeight(info.getHeight());
+                } catch (ContentLibException e) {
+                    logger.warn("Cannot set canvas size", e);
+                }
             }
         }
 

@@ -386,9 +386,14 @@ public class CollectionView implements Serializable {
      * @param element collection element whose children to make visible
      */
     public void showChildren(HierarchicalBrowseDcElement element) {
-        int elementIndex = visibleCollectionList.indexOf(element);
+        // Capture the field once to avoid a TOCTOU race: calculateVisibleDcElements() on
+        // another thread may replace this.visibleCollectionList between indexOf() and
+        // addAll(), resulting in an IndexOutOfBoundsException when the replacement list
+        // is shorter than the index computed on the original list.
+        List<HierarchicalBrowseDcElement> list = this.visibleCollectionList;
+        int elementIndex = list.indexOf(element);
         if (elementIndex > -1) {
-            visibleCollectionList.addAll(elementIndex + 1, element.getChildrenAndVisibleDescendants());
+            list.addAll(elementIndex + 1, element.getChildrenAndVisibleDescendants());
             element.setShowSubElements(true);
             // associateElementsWithCMSData();
         }

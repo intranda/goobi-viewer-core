@@ -22,6 +22,7 @@
 package io.goobi.viewer.managedbeans;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -42,7 +43,9 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
 import io.goobi.viewer.exceptions.IllegalUrlParameterException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
+import io.goobi.viewer.model.toc.TOC;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.ViewManager;
 
 class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -96,6 +99,45 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertNotNull(adb.getViewManager().getCurrentStructElement());
         assertEquals(adb.getCurrentElement(), adb.getViewManager().getCurrentStructElement());
         assertEquals("", adb.getViewManager().getLogId());
+    }
+
+    /**
+     * @see ActiveDocumentBean#update()
+     * @verifies set TOC on ViewManager after update
+     */
+    @Test
+    void update_shouldSetTocOnViewManagerAfterUpdate() throws Exception {
+        // TOC is now built outside the synchronized block (post-lock, via tocTarget).
+        // Verify that the resulting TOC is published to the ViewManager before update() returns.
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        adb.setImageToShow("1");
+        adb.update();
+        Assertions.assertNotNull(adb.getViewManager());
+        Assertions.assertNotNull(adb.getViewManager().getToc(),
+                "ViewManager.getToc() must be non-null after update() completes");
+    }
+
+    /**
+     * @see ActiveDocumentBean#getToc()
+     * @verifies rebuild TOC via slow path when ViewManager TOC is null and cache result
+     */
+    @Test
+    void getToc_shouldRebuildAndCacheTocWhenViewManagerTocIsNull() throws Exception {
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        adb.setImageToShow("1");
+        adb.update();
+        Assertions.assertNotNull(adb.getViewManager());
+
+        // Simulate a state where the TOC was cleared (e.g. after a page-navigation
+        // that does not trigger a full update()). The slow path in getToc() must
+        // rebuild it via createTOC() without holding the ViewManager monitor.
+        adb.getViewManager().setToc(null);
+
+        TOC rebuilt = adb.getToc();
+        Assertions.assertNotNull(rebuilt, "getToc() must rebuild a non-null TOC via the slow path");
+
+        // Fast path: subsequent call must return the same cached instance (no rebuild)
+        Assertions.assertSame(rebuilt, adb.getToc(), "getToc() must return the cached TOC on the second call");
     }
 
     /**
@@ -441,6 +483,25 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see ActiveDocumentBean#createTOC()
+     * @verifies return empty TOC without NPE when viewManager is null
+     */
+    @Test
+    void createTOC_shouldReturnEmptyTocWhenViewManagerIsNull() throws Exception {
+        // createTOC() reads this.viewManager once into a local variable (TOCTOU fix).
+        // Before the fix, reset() on another thread could null out viewManager between
+        // the null-check and getMimeType() access, causing an NPE.  We cannot reproduce
+        // that race deterministically, but we verify the boundary condition: with
+        // viewManager == null (as it would be after reset()), createTOC() must return a
+        // non-null empty TOC rather than throw.
+        java.lang.reflect.Method m = ActiveDocumentBean.class.getDeclaredMethod("createTOC");
+        m.setAccessible(true);
+        // viewManager is null on a fresh bean — the condition after a concurrent reset()
+        Object result = m.invoke(adb);
+        Assertions.assertNotNull(result, "createTOC() must return a non-null empty TOC when viewManager is null");
+    }
+
+    /**
      * @see ActiveDocumentBean#setTocCurrentPage(String)
      * @verifies throw IllegalUrlParameterException for non-numeric value
      */
@@ -475,5 +536,244 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         // Must not throw NullPointerException
         Assertions.assertDoesNotThrow(() -> adb.getFullscreenImageUrl());
+    }
+
+    /**
+     * @see ActiveDocumentBean#getPageUrlRelativeToCurrentPage(int)
+     * @verifies not throw NPE when getCurrentPage returns null in double page mode
+     */
+    @Test
+    void getPageUrlRelativeToCurrentPage_shouldNotThrowNPEWhenCurrentPageIsNull() throws Exception {
+        // Simulate a ViewManager in double-page mode where the page loader hasn't populated
+        // the current page yet (getCurrentPage() == null). This reproduces the TOCTOU scenario
+        // where reset() nulls the pageLoader between the first and second getCurrentPage() calls.
+        ViewManager mockViewManager = Mockito.mock(ViewManager.class);
+        Mockito.when(mockViewManager.isDoublePageMode()).thenReturn(true);
+        Mockito.when(mockViewManager.getCurrentPage()).thenReturn(null);
+        StructElement mockStructElement = Mockito.mock(StructElement.class);
+        Mockito.when(mockViewManager.getTopStructElement()).thenReturn(mockStructElement);
+        Mockito.when(mockStructElement.isRtl()).thenReturn(false);
+        Mockito.when(mockViewManager.getCurrentLeftPage()).thenReturn(java.util.Optional.empty());
+        Mockito.when(mockViewManager.getCurrentRightPage()).thenReturn(java.util.Optional.empty());
+        Mockito.when(mockViewManager.getCurrentImageOrder()).thenReturn(1);
+        Mockito.when(mockViewManager.getPage(Mockito.anyInt())).thenReturn(java.util.Optional.empty());
+
+        adb.setNavigationHelper(navigationHelper);
+        java.lang.reflect.Field vmField = ActiveDocumentBean.class.getDeclaredField("viewManager");
+        vmField.setAccessible(true);
+        vmField.set(adb, mockViewManager);
+
+        // Must not throw NullPointerException
+        Assertions.assertDoesNotThrow(() -> adb.getPageUrlRelativeToCurrentPage(1));
+    }
+
+    /**
+     * Verify that unsynchronized read-only getters do not throw under concurrent access
+     * after a record has been loaded.
+     *
+     * @see ActiveDocumentBean#getPersistentIdentifier()
+     * @see ActiveDocumentBean#getTocCurrentPage()
+     * @see ActiveDocumentBean#getLogid()
+     * @see ActiveDocumentBean#getAction()
+     * @see ActiveDocumentBean#getCurrentThumbnailPage()
+     */
+    @Test
+    void getters_shouldBeThreadSafeAfterRecordLoad() throws Exception {
+        adb.setNavigationHelper(navigationHelper);
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        adb.setImageToShow("1");
+        adb.update();
+
+        int threadCount = 10;
+        java.util.concurrent.ExecutorService exec = java.util.concurrent.Executors.newFixedThreadPool(threadCount);
+        java.util.List<java.util.concurrent.Future<String>> futures = new java.util.ArrayList<>();
+
+        for (int i = 0; i < threadCount; i++) {
+            futures.add(exec.submit(() -> {
+                // These must all return consistent, non-null values concurrently
+                String pi = adb.getPersistentIdentifier();
+                String tocPage = adb.getTocCurrentPage();
+                String logid = adb.getLogid();
+                String action = adb.getAction();
+                int thumbPage = adb.getCurrentThumbnailPage();
+                return pi + "|" + tocPage + "|" + logid + "|" + action + "|" + thumbPage;
+            }));
+        }
+
+        exec.shutdown();
+        exec.awaitTermination(10, java.util.concurrent.TimeUnit.SECONDS);
+
+        for (java.util.concurrent.Future<String> f : futures) {
+            String result = f.get(); // propagates any exceptions thrown in reader threads
+            Assertions.assertTrue(result.startsWith(PI_KLEIUNIV + "|"),
+                    "getPersistentIdentifier() must return the loaded PI; got: " + result);
+            Assertions.assertTrue(result.contains("|1|"),
+                    "getTocCurrentPage() must return '1'; got: " + result);
+        }
+    }
+
+    /**
+     * @see ActiveDocumentBean#getGeoMap()
+     * @verifies return non-null GeoMap when no record is loaded
+     */
+    @Test
+    void getGeoMap_shouldReturnNonNullGeoMapWhenNoRecordLoaded() throws Exception {
+        // Fresh bean has viewManager == null; getRecordGeoMap() returns an empty RecordGeoMap
+        // whose getGeoMap() returns a new (empty) GeoMap — not null
+        assertFalse(adb.isRecordLoaded());
+        Assertions.assertNotNull(adb.getGeoMap());
+    }
+
+    /**
+     * @see ActiveDocumentBean#getGeoMap()
+     * @verifies return GeoMap for loaded record
+     */
+    @Test
+    void getGeoMap_shouldReturnGeoMapForLoadedRecord() throws Exception {
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        adb.update();
+        assertTrue(adb.isRecordLoaded());
+        // GeoMap may be empty (no geo-coordinate fields configured in test), but must not be null
+        Assertions.assertNotNull(adb.getGeoMap());
+    }
+
+    /**
+     * @see ActiveDocumentBean#getRecordGeoMap()
+     * @verifies cache result for same PI
+     */
+    @Test
+    void getRecordGeoMap_shouldCacheResultForSamePI() throws Exception {
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        adb.update();
+        assertTrue(adb.isRecordLoaded());
+        // Two calls must return the same RecordGeoMap instance (cached after first build)
+        io.goobi.viewer.model.maps.RecordGeoMap first = adb.getRecordGeoMap();
+        io.goobi.viewer.model.maps.RecordGeoMap second = adb.getRecordGeoMap();
+        Assertions.assertSame(first, second, "getRecordGeoMap() must return the cached instance on repeated calls");
+    }
+
+    /**
+     * @see ActiveDocumentBean#isAllowUserComments()
+     * @verifies return false when no record is loaded
+     */
+    @Test
+    void isAllowUserComments_shouldReturnFalseWhenNoRecordLoaded() throws Exception {
+        assertFalse(adb.isRecordLoaded());
+        assertFalse(adb.isAllowUserComments());
+    }
+
+    /**
+     * @see ActiveDocumentBean#isAllowUserComments()
+     * @verifies return false when comments are disabled globally
+     */
+    @Test
+    void isAllowUserComments_shouldReturnFalseWhenCommentsDisabledGlobally() throws Exception {
+        // Test DB: core CommentGroup exists (core_type=1) but has enabled=0 → disabled globally
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        adb.update();
+        assertTrue(adb.isRecordLoaded());
+        assertFalse(adb.isAllowUserComments());
+    }
+
+    /**
+     * @see ActiveDocumentBean#isAllowUserComments()
+     * @verifies not throw NPE if allowUserComments is reset concurrently
+     */
+    @Test
+    void isAllowUserComments_shouldNotThrowNPEIfAllowUserCommentsResetConcurrently() throws Exception {
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        adb.update();
+        assertTrue(adb.isRecordLoaded());
+        // Prime the cache (returns false: comments globally disabled in test DB)
+        assertFalse(adb.isAllowUserComments());
+        // Simulate the race: resetAllowUserComments() sets allowUserComments back to null
+        adb.resetAccess();
+        // The next call must not throw NullPointerException (Boolean.TRUE.equals handles null).
+        // Re-evaluates: still disabled globally → false.
+        assertFalse(adb.isAllowUserComments());
+    }
+
+    /**
+     * @see ActiveDocumentBean#setRepresentativeImage()
+     * @verifies use default image "1" when no identifier is set
+     */
+    @Test
+    void setRepresentativeImage_shouldUseDefaultImageWhenNoIdentifierSet() throws Exception {
+        // lastReceivedIdentifier is null → skip Solr, image stays "1"
+        Mockito.when(navigationHelper.getCurrentPageType()).thenReturn(io.goobi.viewer.model.viewer.PageType.viewImage);
+        adb.setNavigationHelper(navigationHelper);
+        adb.setRepresentativeImage();
+        assertEquals("1", adb.getImageToShow());
+    }
+
+    /**
+     * @see ActiveDocumentBean#setRepresentativeImage()
+     * @verifies use default image "1" when identifier is the dash sentinel
+     */
+    @Test
+    void setRepresentativeImage_shouldUseDefaultImageWhenIdentifierIsDashSentinel() throws Exception {
+        // lastReceivedIdentifier == "-" is treated as "no record" → skip Solr, image stays "1"
+        Mockito.when(navigationHelper.getCurrentPageType()).thenReturn(io.goobi.viewer.model.viewer.PageType.viewImage);
+        adb.setNavigationHelper(navigationHelper);
+        adb.setLastReceivedIdentifier("-");
+        adb.setRepresentativeImage();
+        assertEquals("1", adb.getImageToShow());
+    }
+
+    /**
+     * @see ActiveDocumentBean#getRelativeUrlTags()
+     * @verifies generate canonical URL without page number for first page
+     */
+    @Test
+    void getRelativeUrlTags_shouldGenerateCanonicalWithoutPageNumberForFirstPage() throws Exception {
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        adb.setImageToShow("1");
+        adb.update();
+        assertTrue(adb.isRecordLoaded());
+
+        // Use a real NavigationHelper so getCurrentView() returns a consistent value
+        NavigationHelper nh = new NavigationHelper();
+        // viewImage page type; getName() returns the configured or raw name ("image")
+        nh.setCurrentView(PageType.viewImage.getName());
+        adb.setNavigationHelper(nh);
+
+        String result = adb.getRelativeUrlTags();
+        String linkCanonical = "\n<link rel=\"canonical\" href=\"";
+        String linkEnd = "\" />";
+        assertTrue(result.contains(linkCanonical), "Expected a canonical link tag in result, got: " + result);
+
+        int start = result.indexOf(linkCanonical) + linkCanonical.length();
+        int end = result.indexOf(linkEnd, start);
+        String canonicalHref = result.substring(start, end);
+        // Page 1 canonical must contain the PI but must not append the page number
+        assertTrue(canonicalHref.contains(PI_KLEIUNIV), "Canonical URL must contain the PI");
+        assertFalse(canonicalHref.endsWith("/1/"), "Canonical URL for page 1 must not end with /1/");
+    }
+
+    /**
+     * @see ActiveDocumentBean#getRelativeUrlTags()
+     * @verifies generate canonical URL with page number for non-first page
+     */
+    @Test
+    void getRelativeUrlTags_shouldGenerateCanonicalWithPageNumberForNonFirstPage() throws Exception {
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        adb.setImageToShow("3");
+        adb.update();
+        assertTrue(adb.isRecordLoaded());
+
+        NavigationHelper nh = new NavigationHelper();
+        nh.setCurrentView(PageType.viewImage.getName());
+        adb.setNavigationHelper(nh);
+
+        String result = adb.getRelativeUrlTags();
+        String linkCanonical = "\n<link rel=\"canonical\" href=\"";
+        String linkEnd = "\" />";
+        assertTrue(result.contains(linkCanonical), "Expected a canonical link tag in result, got: " + result);
+
+        int start = result.indexOf(linkCanonical) + linkCanonical.length();
+        int end = result.indexOf(linkEnd, start);
+        String canonicalHref = result.substring(start, end);
+        // Page 3 canonical must end with the page number
+        assertTrue(canonicalHref.endsWith("/3/"), "Canonical URL for page 3 must end with /3/, got: " + canonicalHref);
     }
 }

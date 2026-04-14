@@ -195,7 +195,7 @@ public final class TocMaker {
                     .add(new TOCElement(label, null, null, String.valueOf(structElement.getLuceneId()), null, level, structElement.getPi(), null,
                             false, true, false, mimeType, docstruct, footerId));
             // ++level;
-            buildGroupToc(ret.get(StringConstants.DEFAULT_NAME), DataManager.getInstance().getConfiguration().getRecordGroupIdentifierFields(),
+            buildGroupToc(ret.get(StringConstants.DEFAULT_NAME), new ArrayList<>(structElement.getGroupMemberships().keySet()),
                     structElement.getPi(), sourceFormatPdfAllowed, mimeType);
         } else if (structElement.isAnchor()) {
             // MultiVolume
@@ -490,7 +490,7 @@ public final class TocMaker {
 
         List<String> volumeFieldList = getSolrFieldsToFetch("_VOLUMES");
         //add group fields to display connections to groups (convolutes, series,...)
-        volumeFieldList.addAll(DataManager.getInstance().getConfiguration().getRecordGroupIdentifierFields());
+        volumeFieldList.add(SolrConstants.PREFIX_GROUPID + "*");
         // Add TOC volume grouping field for the given volume docstruct type to the list of fields to return
         String tocGroupField = DataManager.getInstance().getConfiguration().getTocVolumeGroupFieldForTemplate(anchorDocstructType);
         if (tocGroupField != null) {
