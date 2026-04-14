@@ -1302,9 +1302,11 @@ public class ActiveDocumentBean implements Serializable {
 
         int number;
 
-        // Current image contains two pages - guard against null when page loader hasn't populated the current page yet
-        if (viewManager.getCurrentPage() != null && viewManager.getCurrentPage().isDoubleImage()) {
-            // logger.trace("{} is double page", viewManager.getCurrentPage().getOrder()); //NOSONAR Debug
+        // Capture once to avoid TOCTOU: concurrent reset() can null out pageLoader between
+        // the null-check call and the isDoubleImage() call if getCurrentPage() is invoked twice.
+        PhysicalElement currentPage = viewManager.getCurrentPage();
+        if (currentPage != null && currentPage.isDoubleImage()) {
+            // logger.trace("{} is double page", currentPage.getOrder()); //NOSONAR Debug
             if (step < 0) {
                 number = viewManager.getCurrentImageOrder() + 2 * step;
             } else {
@@ -1532,13 +1534,17 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getFullscreenImageUrl() throws IndexUnreachableException {
-        // Guard against null when page loader hasn't populated the current page yet
-        if (viewManager != null && viewManager.isDoublePageMode()
-                && viewManager.getCurrentPage() != null && !viewManager.getCurrentPage().isDoubleImage()) {
-            Optional<PhysicalElement> currentLeftPage = viewManager.getCurrentLeftPage();
-            Optional<PhysicalElement> currentRightPage = viewManager.getCurrentRightPage();
-            if (currentLeftPage.isPresent() && currentRightPage.isPresent()) {
-                return getPageUrl(PageType.viewFullscreen.getName(), currentLeftPage.get().getOrder() + "-" + currentRightPage.get().getOrder());
+        // Capture vm once so that a concurrent reset() cannot null the volatile field mid-method.
+        // Also capture getCurrentPage() once to avoid TOCTOU between the null check and isDoubleImage().
+        ViewManager vm = this.viewManager;
+        if (vm != null && vm.isDoublePageMode()) {
+            PhysicalElement currentPage = vm.getCurrentPage();
+            if (currentPage != null && !currentPage.isDoubleImage()) {
+                Optional<PhysicalElement> currentLeftPage = vm.getCurrentLeftPage();
+                Optional<PhysicalElement> currentRightPage = vm.getCurrentRightPage();
+                if (currentLeftPage.isPresent() && currentRightPage.isPresent()) {
+                    return getPageUrl(PageType.viewFullscreen.getName(), currentLeftPage.get().getOrder() + "-" + currentRightPage.get().getOrder());
+                }
             }
         }
 

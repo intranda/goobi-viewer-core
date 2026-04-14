@@ -45,6 +45,7 @@ import io.goobi.viewer.exceptions.IllegalUrlParameterException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.toc.TOC;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.ViewManager;
 
 class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -535,6 +536,35 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         // Must not throw NullPointerException
         Assertions.assertDoesNotThrow(() -> adb.getFullscreenImageUrl());
+    }
+
+    /**
+     * @see ActiveDocumentBean#getPageUrlRelativeToCurrentPage(int)
+     * @verifies not throw NPE when getCurrentPage returns null in double page mode
+     */
+    @Test
+    void getPageUrlRelativeToCurrentPage_shouldNotThrowNPEWhenCurrentPageIsNull() throws Exception {
+        // Simulate a ViewManager in double-page mode where the page loader hasn't populated
+        // the current page yet (getCurrentPage() == null). This reproduces the TOCTOU scenario
+        // where reset() nulls the pageLoader between the first and second getCurrentPage() calls.
+        ViewManager mockViewManager = Mockito.mock(ViewManager.class);
+        Mockito.when(mockViewManager.isDoublePageMode()).thenReturn(true);
+        Mockito.when(mockViewManager.getCurrentPage()).thenReturn(null);
+        StructElement mockStructElement = Mockito.mock(StructElement.class);
+        Mockito.when(mockViewManager.getTopStructElement()).thenReturn(mockStructElement);
+        Mockito.when(mockStructElement.isRtl()).thenReturn(false);
+        Mockito.when(mockViewManager.getCurrentLeftPage()).thenReturn(java.util.Optional.empty());
+        Mockito.when(mockViewManager.getCurrentRightPage()).thenReturn(java.util.Optional.empty());
+        Mockito.when(mockViewManager.getCurrentImageOrder()).thenReturn(1);
+        Mockito.when(mockViewManager.getPage(Mockito.anyInt())).thenReturn(java.util.Optional.empty());
+
+        adb.setNavigationHelper(navigationHelper);
+        java.lang.reflect.Field vmField = ActiveDocumentBean.class.getDeclaredField("viewManager");
+        vmField.setAccessible(true);
+        vmField.set(adb, mockViewManager);
+
+        // Must not throw NullPointerException
+        Assertions.assertDoesNotThrow(() -> adb.getPageUrlRelativeToCurrentPage(1));
     }
 
     /**
