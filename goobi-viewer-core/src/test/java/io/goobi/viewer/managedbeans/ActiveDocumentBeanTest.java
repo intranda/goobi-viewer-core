@@ -568,6 +568,21 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see ActiveDocumentBean#getPageUrlRelativeToCurrentPage(int)
+     * @verifies not throw NPE when viewManager is null
+     */
+    @Test
+    void getPageUrlRelativeToCurrentPage_shouldNotThrowNPEWhenViewManagerIsNull() throws Exception {
+        // A fresh bean has viewManager == null, which is the state after a concurrent reset().
+        // Before the single-volatile-read fix, calling this method with a null viewManager
+        // would either throw NPE (if no null-check existed) or still be racy (if the volatile
+        // field was read twice: once for the null-check and once for field access).
+        adb.setNavigationHelper(navigationHelper);
+        // viewManager is null on a fresh bean — assert no NPE
+        Assertions.assertDoesNotThrow(() -> adb.getPageUrlRelativeToCurrentPage(1));
+    }
+
+    /**
      * Verify that unsynchronized read-only getters do not throw under concurrent access
      * after a record has been loaded.
      *
