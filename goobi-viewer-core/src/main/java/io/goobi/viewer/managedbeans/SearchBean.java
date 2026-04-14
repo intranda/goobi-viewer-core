@@ -1586,8 +1586,15 @@ public class SearchBean implements SearchInterface, Serializable {
 
             SearchQueryItem match = null;
 
+            // Take a defensive snapshot of the current query items for this facet's lookup loops.
+            // SearchBean is @SessionScoped and may be accessed by multiple request threads simultaneously
+            // (e.g. two browser tabs). Iterating the live list while another thread (or a prior
+            // outer-loop iteration) adds a new item via getQueryItems().add() would trigger a
+            // ConcurrentModificationException in ArrayList's fail-fast iterator.
+            List<SearchQueryItem> queryItemsSnapshot = new ArrayList<>(advancedSearchQueryGroup.getQueryItems());
+
             // First try to match item with exact field
-            for (SearchQueryItem queryItem : advancedSearchQueryGroup.getQueryItems()) {
+            for (SearchQueryItem queryItem : queryItemsSnapshot) {
                 if (!populatedQueryItems.contains(queryItem)
                         && (facetItem.getField().equals(queryItem.getField()) && facetItem.getValue().equals(queryItem.getValue()))) {
                     match = queryItem;
@@ -1598,7 +1605,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
             // Match same field with no value selected
             if (match == null) {
-                for (SearchQueryItem queryItem : advancedSearchQueryGroup.getQueryItems()) {
+                for (SearchQueryItem queryItem : queryItemsSnapshot) {
                     if (!populatedQueryItems.contains(queryItem)
                             && facetItem.getField().equals(queryItem.getField())
                             && StringUtils.isEmpty(queryItem.getValue())) {
@@ -1612,7 +1619,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
             // If no exact field match found, try to re-purpose an unused item
             if (match == null) {
-                for (SearchQueryItem queryItem : advancedSearchQueryGroup.getQueryItems()) {
+                for (SearchQueryItem queryItem : queryItemsSnapshot) {
                     // field:value pair already exists
                     if (!populatedQueryItems.contains(queryItem) && (queryItem.getField() == null || StringUtils.isEmpty(queryItem.getValue()))) {
                         match = queryItem;
