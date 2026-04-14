@@ -21,11 +21,14 @@
  */
 package io.goobi.viewer.model.iiif.presentation.v2.builder;
 
+import java.awt.Dimension;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
@@ -129,6 +132,39 @@ class SequenceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
 
         // With pre-fetched permissions, the per-page access-check method must NOT be called
         verify(page, never()).isAccessPermissionImage();
+    }
+
+    /**
+     * @see SequenceBuilder#getSize(PhysicalElement)
+     * @verifies use prefetched dimension cache without calling ImageHandler when dimensions cached
+     */
+    @Test
+    void testGenerateCanvas_usesDimensionCacheWithoutCallingImageHandler()
+            throws URISyntaxException, ViewerConfigurationException, IndexUnreachableException,
+            PresentationException, DAOException {
+
+        SequenceBuilder sequenceBuilder = new SequenceBuilder(new ApiUrls("https://viewer.goobi.io/rest/"));
+
+        PhysicalElement page = Mockito.mock(PhysicalElement.class);
+        Mockito.when(page.getPi()).thenReturn("PI_01");
+        Mockito.when(page.getOrder()).thenReturn(1);
+        Mockito.when(page.getOrderLabel()).thenReturn("1");
+        Mockito.when(page.getFileName()).thenReturn("00000001.tif");
+        Mockito.when(page.getMediaType()).thenReturn(new MimeType("image/tiff"));
+        Mockito.when(page.getDisplayMimeType()).thenReturn("image/tiff");
+        Mockito.when(page.getThumbnailUrl()).thenReturn(
+                "https://viewer.goobi.io/api/v1/records/PI_01/files/images/00000001.tif/full/80,/0/default.jpg");
+        // No individual size → would normally trigger disk I/O via getImageInformation()
+        Mockito.when(page.hasIndividualSize()).thenReturn(false);
+
+        // Inject pre-fetched dimension cache: must be used instead of disk I/O
+        sequenceBuilder.setPageDimensions(Map.of(1, new Dimension(1200, 800)));
+
+        // If the cache is consulted: canvas dimensions are set correctly, no ContentLibException thrown
+        // (getImageInformation() would fail trying to read "00000001.tif" from disk in a test env)
+        Canvas2 canvas = sequenceBuilder.generateCanvas("PI_01", page);
+        assertEquals(1200, canvas.getWidth());
+        assertEquals(800, canvas.getHeight());
     }
 
 }
