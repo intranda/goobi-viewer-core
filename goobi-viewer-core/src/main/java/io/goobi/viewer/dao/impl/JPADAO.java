@@ -117,6 +117,7 @@ import jakarta.persistence.Persistence;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
 import jakarta.persistence.RollbackException;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
@@ -4357,7 +4358,8 @@ public class JPADAO implements IDAO {
                 sbQuery.deleteCharAt(sbQuery.length() - 1);
             }
 
-            Query q = em.createQuery(sbQuery.toString());
+            // Use typed query to avoid unchecked conversion warning
+            TypedQuery<CMSArchiveConfig> q = em.createQuery(sbQuery.toString(), CMSArchiveConfig.class);
             params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
 
             return q.setFirstResult(first).setMaxResults(pageSize).setFlushMode(FlushModeType.COMMIT).getResultList();
