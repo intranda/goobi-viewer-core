@@ -353,13 +353,15 @@ public final class AccessConditionUtils {
         try {
             UserBean userBean = BeanUtils.getUserBean(); //CDI lookup, faster than scanning session
             if (userBean != null) {
-                User user = userBean.getUser();
-                if (user != null) {
-                    return user;
-                }
+                // CDI is active and authoritative for the current session. Return the user directly,
+                // even if null (anonymous). Falling through to the session scan for anonymous users
+                // is redundant: CDI and the session share the same @SessionScoped UserBean instance,
+                // so the scan cannot return a different result — only O(N) overhead over all session
+                // attributes under potential lock contention from parallel request threads.
+                return userBean.getUser();
             }
         } catch (ContextNotActiveException e) {
-            // No CDI context (background thread) - fall through to session scan
+            // No CDI context (background thread) — fall through to session scan as the only option
         }
         return BeanUtils.getUserFromSession(session); //expensive scan of whole session. Only as fallback
     }
