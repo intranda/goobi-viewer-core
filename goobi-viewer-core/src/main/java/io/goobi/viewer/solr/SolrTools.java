@@ -87,6 +87,10 @@ public final class SolrTools {
 
     private static final String MULTILANGUAGE_FIELD_REGEX = "(\\w+)_LANG_(\\w{2,3})";
     private static final String SUFFIX_LANGUAGE_REGEX = SolrConstants.MIDFIX_LANG + "([A-Z]{2,3})$";
+    // Pre-compiled patterns for language-field detection to avoid per-call Pattern.compile() overhead
+    private static final Pattern MULTILANGUAGE_FIELD_PATTERN = Pattern.compile(MULTILANGUAGE_FIELD_REGEX);
+    private static final Pattern SUFFIX_LANGUAGE_PATTERN = Pattern.compile(SUFFIX_LANGUAGE_REGEX);
+    private static final Pattern LANG_SUFFIX_PATTERN = Pattern.compile("_LANG_\\w{2,3}");
 
     /** Reusable Random object. */
     private static Random random = new SecureRandom();
@@ -451,7 +455,9 @@ public final class SolrTools {
         List<String> fieldNames =
                 doc.getFieldNames()
                         .stream()
-                        .filter(field -> field.equals(key) || field.matches(key + "_LANG_\\w{2,3}"))
+                        // Use pre-compiled LANG_SUFFIX_PATTERN instead of String.matches() to avoid per-call Pattern.compile()
+                        .filter(field -> field.equals(key)
+                                || (field.startsWith(key + "_LANG_") && LANG_SUFFIX_PATTERN.matcher(field.substring(key.length())).matches()))
                         .collect(Collectors.toList());
         Map<String, List<String>> map = new HashMap<>(fieldNames.size());
         for (String languageField : fieldNames) {
@@ -489,7 +495,8 @@ public final class SolrTools {
                     .toList();
             for (String languageField : fieldNames) {
                 String locale = null;
-                if (languageField.matches(key + "_LANG_\\w{2,3}")) {
+                // Use pre-compiled LANG_SUFFIX_PATTERN instead of String.matches() to avoid per-call Pattern.compile()
+                if (languageField.startsWith(key + "_LANG_") && LANG_SUFFIX_PATTERN.matcher(languageField.substring(key.length())).matches()) {
                     locale = languageField.substring(languageField.lastIndexOf(SolrConstants.MIDFIX_LANG) + 6).toLowerCase();
                 } else {
                     locale = MultiLanguageMetadataValue.DEFAULT_LANGUAGE;
@@ -587,7 +594,8 @@ public final class SolrTools {
      * @return true if fieldName contains _LANG_; false otherwise
      */
     public static boolean isLanguageCodedField(String fieldName) {
-        return StringUtils.isNotBlank(fieldName) && fieldName.matches(MULTILANGUAGE_FIELD_REGEX);
+        // Use pre-compiled pattern instead of String.matches() to avoid per-call Pattern.compile()
+        return StringUtils.isNotBlank(fieldName) && MULTILANGUAGE_FIELD_PATTERN.matcher(fieldName).matches();
     }
 
     /**
@@ -973,7 +981,8 @@ public final class SolrTools {
      */
     public static String getBaseFieldName(String fieldName) {
         if (StringUtils.isNotBlank(fieldName)) {
-            return fieldName.replaceAll(SUFFIX_LANGUAGE_REGEX, "");
+            // Use pre-compiled pattern instead of String.replaceAll() to avoid per-call Pattern.compile()
+            return SUFFIX_LANGUAGE_PATTERN.matcher(fieldName).replaceAll("");
         }
         return fieldName;
     }
@@ -985,7 +994,8 @@ public final class SolrTools {
      */
     public static String getLanguage(String fieldName) {
         if (StringUtils.isNotBlank(fieldName)) {
-            Matcher matcher = Pattern.compile(SUFFIX_LANGUAGE_REGEX).matcher(fieldName);
+            // Use pre-compiled pattern instead of Pattern.compile() on every call
+            Matcher matcher = SUFFIX_LANGUAGE_PATTERN.matcher(fieldName);
             if (matcher.find()) {
                 return matcher.group(1);
             }

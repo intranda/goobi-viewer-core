@@ -84,6 +84,11 @@ public final class BeanUtils {
 
     private static Locale defaultLocale = null;
 
+    // ApplicationBean is @ApplicationScoped — the same instance for the entire application lifetime.
+    // Caching it here avoids a full Weld CDI lookup (getBeanByName → BeanManager → StackWalker) on
+    // every call to getPersistentStorageBean(). volatile ensures safe publication across threads.
+    private static volatile ApplicationBean cachedApplicationBean = null;
+
     /**
      * Private constructor.
      */
@@ -97,6 +102,13 @@ public final class BeanUtils {
      * @return the current HTTP servlet request, or null if unavailable
      */
     public static HttpServletRequest getRequest() {
+        // Check FacesContext first — it is a cheap thread-local lookup with no CDI overhead.
+        // CDI/SessionBean fallback is only needed outside JSF request threads (e.g. async tasks).
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        if (facesContext != null) {
+            return getRequest(facesContext);
+        }
+
         SessionBean sb = getSessionBean();
         try {
             return sb.getRequest();
@@ -104,8 +116,7 @@ public final class BeanUtils {
             // logger.trace(e.getMessage()); //NOSONAR Debug
         }
 
-        FacesContext context = FacesContext.getCurrentInstance();
-        return getRequest(context);
+        return null;
     }
 
     /**
@@ -369,10 +380,31 @@ public final class BeanUtils {
     /**
      * getPersistentStorageBean.
      *
+     * <p>Returns the {@code @ApplicationScoped} ApplicationBean. The result is cached in a static
+     * volatile field after the first successful lookup to avoid repeated Weld CDI bean resolution
+     * (which involves a Thread.getStackTrace() call on every invocation).
+     *
      * @return the ApplicationBean managed bean
      */
     public static ApplicationBean getPersistentStorageBean() {
-        return (ApplicationBean) getBeanByName("applicationBean", ApplicationBean.class);
+        ApplicationBean cached = cachedApplicationBean;
+        if (cached != null) {
+            return cached;
+        }
+        // First call — resolve through CDI and cache for all future calls
+        ApplicationBean fresh = (ApplicationBean) getBeanByName("applicationBean", ApplicationBean.class);
+        if (fresh != null) {
+            cachedApplicationBean = fresh;
+        }
+        return fresh;
+    }
+
+    /**
+     * Clears the cached ApplicationBean instance. Call this only in tests that replace the bean
+     * with a mock, to prevent stale cache entries from leaking across test methods.
+     */
+    static void clearCachedApplicationBean() {
+        cachedApplicationBean = null;
     }
 
     /**
