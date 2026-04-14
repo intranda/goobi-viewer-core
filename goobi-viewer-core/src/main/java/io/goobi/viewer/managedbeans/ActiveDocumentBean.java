@@ -1171,13 +1171,16 @@ public class ActiveDocumentBean implements Serializable {
         int page = pages[0];
         int page2 = pages[1];
 
-        // Guard against null pageLoader: ViewManager may exist but not yet have a page loader initialized
-        if (viewManager != null && viewManager.getPageLoader() != null) {
-            page = Math.max(page, viewManager.getPageLoader().getFirstPageOrder());
-            page = Math.min(page, viewManager.getPageLoader().getLastPageOrder());
+        // Capture both viewManager and pageLoader once to avoid TOCTOU with concurrent reset():
+        // viewManager is volatile, so each direct field read can yield null after another thread calls reset().
+        ViewManager vm = this.viewManager;
+        var loader = vm != null ? vm.getPageLoader() : null;
+        if (loader != null) {
+            page = Math.max(page, loader.getFirstPageOrder());
+            page = Math.min(page, loader.getLastPageOrder());
             if (page2 != Integer.MAX_VALUE) {
-                page2 = Math.max(page2, viewManager.getPageLoader().getFirstPageOrder());
-                page2 = Math.min(page2, viewManager.getPageLoader().getLastPageOrder());
+                page2 = Math.max(page2, loader.getFirstPageOrder());
+                page2 = Math.min(page2, loader.getLastPageOrder());
             }
         }
 
