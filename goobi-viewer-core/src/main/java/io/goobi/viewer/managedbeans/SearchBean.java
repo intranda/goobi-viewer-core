@@ -1868,8 +1868,13 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public BrowseElement getNextElement() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        logger.trace("getNextElement: {}", currentHitIndex);
-        if (currentHitIndex <= -1 || currentSearch == null || currentSearch.getHits().isEmpty()) {
+        // Capture currentHitIndex in a local variable to prevent a TOCTOU race condition:
+        // SearchBean is @SessionScoped and concurrently accessed by multiple request threads
+        // (e.g. two browser tabs). Without the snapshot, a reset by another thread between
+        // the guard check and the Solr call could produce an out-of-bounds 'start' parameter.
+        final int hitIndex = currentHitIndex;
+        logger.trace("getNextElement: {}", hitIndex);
+        if (hitIndex <= -1 || currentSearch == null || currentSearch.getHits().isEmpty()) {
             return null;
         }
 
@@ -1883,11 +1888,11 @@ public class SearchBean implements SearchInterface, Serializable {
         if (StringUtils.isNotBlank(currentSearch.getCustomFilterQuery())) {
             filterQueries.add(currentSearch.getCustomFilterQuery());
         }
-        if (currentHitIndex < currentSearch.getHitsCount() - 1) {
-            return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex + 1, currentSearch.getAllSortFields(), filterQueries,
+        if (hitIndex < currentSearch.getHitsCount() - 1) {
+            return SearchHelper.getBrowseElement(searchStringInternal, hitIndex + 1, currentSearch.getAllSortFields(), filterQueries,
                     SearchHelper.generateQueryParams(termQuery), searchTerms, BeanUtils.getLocale(), proximitySearchDistance);
         }
-        return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex, currentSearch.getAllSortFields(), filterQueries,
+        return SearchHelper.getBrowseElement(searchStringInternal, hitIndex, currentSearch.getAllSortFields(), filterQueries,
                 SearchHelper.generateQueryParams(termQuery), searchTerms, BeanUtils.getLocale(), proximitySearchDistance);
     }
 
@@ -1901,8 +1906,14 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public BrowseElement getPreviousElement() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        logger.trace("getPreviousElement: {}", currentHitIndex);
-        if (currentHitIndex <= -1 || currentSearch == null || currentSearch.getHits().isEmpty()) {
+        // Capture currentHitIndex in a local variable to prevent a TOCTOU race condition:
+        // SearchBean is @SessionScoped and concurrently accessed by multiple request threads
+        // (e.g. two browser tabs). Without the snapshot, a reset by another thread between
+        // the guard check and the Solr call could produce a negative 'start' parameter,
+        // causing Solr to reject the query with "start parameter cannot be negative".
+        final int hitIndex = currentHitIndex;
+        logger.trace("getPreviousElement: {}", hitIndex);
+        if (hitIndex <= -1 || currentSearch == null || currentSearch.getHits().isEmpty()) {
             return null;
         }
 
@@ -1916,11 +1927,11 @@ public class SearchBean implements SearchInterface, Serializable {
         if (StringUtils.isNotBlank(currentSearch.getCustomFilterQuery())) {
             filterQueries.add(currentSearch.getCustomFilterQuery());
         }
-        if (currentHitIndex > 0) {
-            return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex - 1, currentSearch.getAllSortFields(), filterQueries,
+        if (hitIndex > 0) {
+            return SearchHelper.getBrowseElement(searchStringInternal, hitIndex - 1, currentSearch.getAllSortFields(), filterQueries,
                     SearchHelper.generateQueryParams(termQuery), searchTerms, BeanUtils.getLocale(), proximitySearchDistance);
         } else if (currentSearch.getHitsCount() > 0) {
-            return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex, currentSearch.getAllSortFields(), filterQueries,
+            return SearchHelper.getBrowseElement(searchStringInternal, hitIndex, currentSearch.getAllSortFields(), filterQueries,
                     SearchHelper.generateQueryParams(termQuery), searchTerms, BeanUtils.getLocale(), proximitySearchDistance);
         }
 

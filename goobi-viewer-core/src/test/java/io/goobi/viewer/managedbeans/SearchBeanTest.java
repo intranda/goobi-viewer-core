@@ -1159,4 +1159,46 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         Assertions.assertNull(caught.get(), "resetSearchResults() must not throw under concurrent access");
     }
+
+    /**
+     * @see SearchBean#getPreviousElement()
+     * @verifies return null if currentHitIndex is negative
+     */
+    @Test
+    void getPreviousElement_shouldReturnNullIfCurrentHitIndexIsNegative() throws Exception {
+        // Default state: currentHitIndex == -1 (simulates a concurrent reset)
+        Assertions.assertNull(searchBean.getPreviousElement());
+    }
+
+    /**
+     * @see SearchBean#getPreviousElement()
+     * @verifies return null if currentSearch is null
+     */
+    @Test
+    void getPreviousElement_shouldReturnNullIfCurrentSearchIsNull() throws Exception {
+        searchBean.setCurrentHitIndex(5);
+        Assertions.assertNull(searchBean.getCurrentSearch());
+        Assertions.assertNull(searchBean.getPreviousElement());
+    }
+
+    /**
+     * @see SearchBean#getNextElement()
+     * @verifies return null if currentHitIndex is negative
+     */
+    @Test
+    void getNextElement_shouldReturnNullIfCurrentHitIndexIsNegative() throws Exception {
+        // Default state: currentHitIndex == -1 (simulates a concurrent reset)
+        Assertions.assertNull(searchBean.getNextElement());
+    }
+
+    /**
+     * @see SearchBean#getNextElement()
+     * @verifies return null if currentSearch is null
+     */
+    @Test
+    void getNextElement_shouldReturnNullIfCurrentSearchIsNull() throws Exception {
+        searchBean.setCurrentHitIndex(5);
+        Assertions.assertNull(searchBean.getCurrentSearch());
+        Assertions.assertNull(searchBean.getNextElement());
+    }
 }
