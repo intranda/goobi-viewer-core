@@ -301,7 +301,7 @@ public class ImageHandler {
      * @param url a {@link java.lang.String} object.
      * @return true if the url ends with an image file suffix
      */
-    protected static boolean isImageUrl(String url, boolean displayableTypesOnly) {
+    public static boolean isImageUrl(String url, boolean displayableTypesOnly) {
         String extension = FilenameUtils.getExtension(StringTools.removeTrailingSlashes(url).toLowerCase());
         switch (extension) {
             case "jpg":
