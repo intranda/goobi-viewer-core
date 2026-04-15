@@ -582,7 +582,8 @@ public class ActiveDocumentBean implements Serializable {
                     viewManager = newLogidViewManager;
                     tocTarget = newLogidViewManager;
                 } else {
-                    logger.warn("{} not found for LOGID '{}'.", SolrConstants.IDDOC, logid);
+                    // Include PI so the warning identifies the affected record
+                    logger.warn("{} not found for LOGID '{}' in record '{}'.", SolrConstants.IDDOC, logid, viewManager.getPi());
                 }
             }
 
