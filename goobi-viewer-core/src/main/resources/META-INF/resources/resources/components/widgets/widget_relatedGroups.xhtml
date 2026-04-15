@@ -39,7 +39,7 @@
 
                 <!-- Group (convolutes, etc.) listing -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.topStructElement.groupMemberships.size() eq 1}">
-                    <div class="widget widget-related-groups__series">
+                    <div class="widget-related-groups__series">
                         <ui:param
                             name="groupMembership"
                             value="#{activeDocumentBean.viewManager.topStructElement.groupMemberships.entrySet().iterator().next().value}" />
@@ -58,7 +58,7 @@
 
                 <!-- Extra link to the anchor, if this is a volume -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.topStructElement.anchorChild}">
-                    <div class="widget widget-related-groups__anchor">
+                    <div class="widget-related-groups__anchor">
                         <div class="widget__topbar widget-related-groups__topbar">
                             <h2 class="widget__title widget-related-groups__title">
                                 <a
