@@ -47,6 +47,9 @@ import org.json.JSONObject;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+import com.ocpsoft.pretty.PrettyContext;
+import com.ocpsoft.pretty.faces.url.URL;
+
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -268,10 +271,20 @@ public class SearchFacets implements Serializable {
         try {
             return isFacetCurrentlyUsed(new FacetItem(link, false));
         } catch (IllegalArgumentException e) {
-            // Log link in quotes so empty strings are visible, and include the request URL for context
+            // Log link in quotes so empty strings are visible, and include the request URL for context.
+            // Use PrettyContext to get the original pretty URL (before internal JSF forward), falling back to the raw request URL.
             HttpServletRequest req = BeanUtils.getRequest();
-            String requestUrl = req != null ? (req.getRequestURL().toString()
-                    + (req.getQueryString() != null ? "?" + req.getQueryString() : "")) : "unknown";
+            String requestUrl = "unknown";
+            if (req != null) {
+                PrettyContext prettyContext = PrettyContext.getCurrentInstance(req);
+                URL prettyUrl = prettyContext != null ? prettyContext.getRequestURL() : null;
+                if (prettyUrl != null) {
+                    requestUrl = prettyUrl.toURL();
+                } else {
+                    requestUrl = req.getRequestURL().toString()
+                            + (req.getQueryString() != null ? "?" + req.getQueryString() : "");
+                }
+            }
             logger.warn("Field and value are not colon-separated: '{}'; requestUrl='{}'", link, requestUrl);
             return false;
         }
