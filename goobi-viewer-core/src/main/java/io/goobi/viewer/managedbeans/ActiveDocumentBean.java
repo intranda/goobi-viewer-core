@@ -1042,12 +1042,9 @@ public class ActiveDocumentBean implements Serializable {
     public void setAction(String action) {
         synchronized (this) {
             logger.trace("setAction: {}", action);
-            if ("undefined".equals(action)) {
-                action = null;
-            }
-            this.action = action;
-            if (searchBean != null && action != null) {
-                switch (action) {
+            this.action = "undefined".equals(action) ? null : action;
+            if (searchBean != null && this.action != null) {
+                switch (this.action) {
                     case "nextHit":
                         searchBean.setHitIndexOperand(1);
                         break;
