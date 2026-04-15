@@ -967,7 +967,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public void setLogid(String logid) throws IllegalUrlParameterException {
         synchronized (this) {
-            if ("-".equals(logid) || StringUtils.isEmpty(logid)) {
+            if ("-".equals(logid) || StringUtils.isEmpty(logid) || "undefined".equals(logid)) {
                 this.logid = "";
             } else if (StringUtils.isNotBlank(logid) && logid.matches("[\\w-]+")) {
                 this.logid = SolrTools.escapeSpecialCharacters(logid);
@@ -1047,9 +1047,9 @@ public class ActiveDocumentBean implements Serializable {
     public void setAction(String action) {
         synchronized (this) {
             logger.trace("setAction: {}", action);
-            this.action = action;
-            if (searchBean != null && action != null) {
-                switch (action) {
+            this.action = "undefined".equals(action) ? null : action;
+            if (searchBean != null && this.action != null) {
+                switch (this.action) {
                     case "nextHit":
                         searchBean.setHitIndexOperand(1);
                         break;

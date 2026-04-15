@@ -174,17 +174,19 @@
                     </h:panelGroup>
                     <script>
                         $(document)
-                            // "Show more": reveals full list, swaps buttons
+                            // "Show more": reveals full list, hides default block, swaps buttons
                             .on('click', '[data-trigger="expandMetadata"]', function() {
                                 var $w = $(this).closest('.metadata__wrapper');
+                                $w.find('.-visibleByDefault').addClass('-hidden');
                                 $w.find('[data-target="collapsedMetadataBlock"]').removeClass('-hidden');
                                 $(this).addClass('-hidden');
                                 $w.find('[data-trigger="collapseMetadata"]').removeClass('-hidden');
                             })
-                            // "Show less": hides full list, swaps buttons
+                            // "Show less": hides full list, restores default block, swaps buttons
                             .on('click', '[data-trigger="collapseMetadata"]', function() {
                                 var $w = $(this).closest('.metadata__wrapper');
                                 $w.find('[data-target="collapsedMetadataBlock"]').addClass('-hidden');
+                                $w.find('.-visibleByDefault').removeClass('-hidden');
                                 $(this).addClass('-hidden');
                                 $w.find('[data-trigger="expandMetadata"]').removeClass('-hidden');
                             });
