@@ -45,6 +45,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -266,7 +268,11 @@ public class SearchFacets implements Serializable {
         try {
             return isFacetCurrentlyUsed(new FacetItem(link, false));
         } catch (IllegalArgumentException e) {
-            logger.warn(e.getMessage());
+            // Log link in quotes so empty strings are visible, and include the request URL for context
+            HttpServletRequest req = BeanUtils.getRequest();
+            String requestUrl = req != null ? (req.getRequestURL().toString()
+                    + (req.getQueryString() != null ? "?" + req.getQueryString() : "")) : "unknown";
+            logger.warn("Field and value are not colon-separated: '{}'; requestUrl='{}'", link, requestUrl);
             return false;
         }
     }
