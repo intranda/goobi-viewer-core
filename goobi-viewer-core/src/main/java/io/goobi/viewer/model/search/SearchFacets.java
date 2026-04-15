@@ -794,24 +794,32 @@ public class SearchFacets implements Serializable {
      * @return sorted list of all values for the given field among available facet values
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should return empty list when field not in valueRanges
      */
     public List<Integer> getValueRange(String field) throws PresentationException, IndexUnreachableException {
-        if (!maxValues.containsKey(field)) {
+        // Guard against race: resetSliderRange() clears maxValues and valueRanges non-atomically,
+        // so check valueRanges directly instead of using maxValues as a proxy
+        SortedMap<Integer, Long> range = valueRanges.get(field);
+        if (range == null) {
             return Collections.emptyList();
         }
-        return new ArrayList<>(valueRanges.get(field).keySet());
+        return new ArrayList<>(range.keySet());
     }
 
     /**
      *
      * @param field Solr range facet field name whose value range to serialize
      * @return {@link String}
+     * @should return empty json when field not in valueRanges
      */
     public String getValueRangeAsJsonMap(String field) {
-        if (!maxValues.containsKey(field)) {
+        // Guard against race: resetSliderRange() clears maxValues and valueRanges non-atomically,
+        // so check valueRanges directly instead of using maxValues as a proxy
+        SortedMap<Integer, Long> range = valueRanges.get(field);
+        if (range == null) {
             return "[]";
         }
-        return new JSONObject(valueRanges.get(field)).toString();
+        return new JSONObject(range).toString();
     }
 
     /**
