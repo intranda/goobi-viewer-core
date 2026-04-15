@@ -605,6 +605,29 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchFacets#getValueRange(String)
+     * @verifies return empty list when field not in valueRanges
+     */
+    @Test
+    void getValueRange_shouldReturnEmptyListWhenFieldNotInValueRanges() throws Exception {
+        SearchFacets facets = new SearchFacets();
+        List<Integer> result = facets.getValueRange("NONEXISTENT_FIELD");
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.isEmpty());
+    }
+
+    /**
+     * @see SearchFacets#getValueRangeAsJsonMap(String)
+     * @verifies return empty json when field not in valueRanges
+     */
+    @Test
+    void getValueRangeAsJsonMap_shouldReturnEmptyJsonWhenFieldNotInValueRanges() {
+        SearchFacets facets = new SearchFacets();
+        String result = facets.getValueRangeAsJsonMap("NONEXISTENT_FIELD");
+        Assertions.assertEquals("[]", result);
+    }
+
+    /**
      * @verifies use configured min max values correctly
      */
     @Test
