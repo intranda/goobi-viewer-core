@@ -378,7 +378,13 @@ public class ThumbnailHandler {
     public static ImageFileFormat getImageFileFormat(PhysicalElement page, String format) {
         if ("MASTER".equalsIgnoreCase(format) && page != null) {
             logger.trace("Fetching master image format via mime type: {}", page.getMimeType());
-            return ImageFileFormat.getImageFileFormatFromMimeType(page.getMimeType());
+            ImageFileFormat iff = ImageFileFormat.getImageFileFormatFromMimeType(page.getMimeType());
+            // Fall back to file extension if the mime type is not recognized (e.g. "image/tif" instead of "image/tiff")
+            if (iff == null) {
+                logger.trace("Mime type not recognized, falling back to file extension: {}", page.getFileNameExtension());
+                iff = ImageFileFormat.getImageFileFormatFromFileExtension(page.getFileNameExtension());
+            }
+            return iff;
         }
         ImageFileFormat iff = ImageFileFormat.getImageFileFormatFromFileExtension(format);
         if (iff == null && page != null) {
