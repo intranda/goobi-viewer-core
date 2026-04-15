@@ -32,11 +32,10 @@ import io.goobi.viewer.AbstractTest;
 class ArchiveTreeTest extends AbstractTest {
 
     /**
-     * @see SolrEADParser#checkTreeFullyLoaded()
-     * @verifies set treeFullyLoaded false if tree incomplete
+     * @verifies set tree fully loaded false if tree incomplete
      */
     @Test
-    void checkTreeFullyLoaded_setTreeFullyLoadedFalseIfTreeIncomplete() throws Exception {
+    void checkTreeFullyLoaded_shouldSetTreeFullyLoadedFalseIfTreeIncomplete() throws Exception {
         ArchiveTree tree = new ArchiveTree();
         Assertions.assertTrue(tree.isTreeFullyLoaded());
 

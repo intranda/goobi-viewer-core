@@ -53,6 +53,7 @@ public class HtmlTagValidator implements Validator<String> {
      * {@inheritDoc}
      *
      * <p>Throws a {@link ValidatorException} with message key {@code validate_error_scriptTag} if {@link #validate(String)} returns false
+     * @should reject block level tags and accept inline formatting tags
      */
     @Override
     public void validate(FacesContext context, UIComponent component, String input) throws ValidatorException {

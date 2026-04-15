@@ -97,8 +97,11 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
         super.tearDown();
     }
 
+    /**
+     * @verifies return info JSON with correct id
+     */
     @Test
-    void testGetImageInformation() {
+    void getImageInformation_shouldReturnInfoJsonWithCorrectId() {
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_INFO).params(PI, FILENAME + ".tif").build();
         String id = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME + ".tif").build();
         try (Response response = target(url)
@@ -113,9 +116,12 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return info json from base url
+     */
     @Test
     @Disabled
-    void testGetImageInformationFromBaseUrl() {
+    void getImageInformation_shouldReturnInfoJsonFromBaseUrl() {
         String url = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME + ".tif/").build();
         String id = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME + ".tif/").build();
         try (Response response = target(url)
@@ -130,8 +136,11 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies handle special characters in filename
+     */
     @Test
-    void testGetImageInformationSpecialCharacters() {
+    void getImageInformation_shouldHandleSpecialCharactersInFilename() {
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_INFO)
                 .params(PI_SPECIAL_CHARACTERS, URLEncoder.encode(FILENAME_SPECIAL_CHARACTERS, StandardCharsets.UTF_8))
                 .build();
@@ -148,8 +157,11 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return image data for filename with special characters
+     */
     @Test
-    void testGetImageSpecialCharacters() {
+    void getImage_shouldReturnImageDataForFilenameWithSpecialCharacters() {
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF)
                 .params(PI_SPECIAL_CHARACTERS, URLEncoder.encode(FILENAME_SPECIAL_CHARACTERS, StandardCharsets.UTF_8), REGION, SIZE, ROTATION,
                         QUALITY, FORMAT)
@@ -168,8 +180,11 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return image data with content location
+     */
     @Test
-    void testGetImage() {
+    void getImage_shouldReturnImageDataWithContentLocation() {
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF)
                 .params(PI, FILENAME + ".tif", REGION, SIZE, ROTATION, QUALITY, FORMAT)
                 .build();
@@ -195,9 +210,10 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
      * @throws ContentLibException
      * @throws PresentationException
      * @throws IndexUnreachableException
+     * @verifies return non-empty pdf output stream
      */
     @Test
-    void testGetPdf() throws IOException, WebApplicationException, ContentLibException, PresentationException, IndexUnreachableException {
+    void getPdf_shouldReturnNonEmptyPdfOutputStream() throws IOException, WebApplicationException, ContentLibException, PresentationException, IndexUnreachableException {
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_PDF).params(PI, FILENAME).build();
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getRequestURI()).thenReturn(url);
@@ -221,8 +237,11 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return status 403 when license is closed access
+     */
     @Test
-    void testGetImageClosedLicense() throws DAOException {
+    void getImage_shouldReturnStatus403WhenLicenseIsClosedAccess() throws DAOException {
         LicenseType licenseType = new LicenseType("pdf_locked");
         licenseType.setOpenAccess(false);
         licenseType.setPrivileges(Collections.emptySet());
@@ -256,8 +275,11 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
         DataManager.getInstance().getDao().deleteLicenseType(licenseType);
     }
 
+    /**
+     * @verifies return status 200 when license is open access
+     */
     @Test
-    void testGetImageOpenLicense() throws DAOException {
+    void getImage_shouldReturnStatus200WhenLicenseIsOpenAccess() throws DAOException {
         LicenseType licenseType = new LicenseType("pdf_locked");
         licenseType.setOpenAccess(true);
         DataManager.getInstance().getDao().addLicenseType(licenseType);
@@ -290,8 +312,11 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
         DataManager.getInstance().getDao().deleteLicenseType(licenseType);
     }
 
+    /**
+     * @verifies allow thumbnail but deny full image with thumbnail-only license
+     */
     @Test
-    void testGetImageThumbnailLicense() throws DAOException {
+    void getImage_shouldAllowThumbnailButDenyFullImageWithThumbnailOnlyLicense() throws DAOException {
         LicenseType licenseType = new LicenseType("pdf_locked");
         licenseType.setOpenAccess(false);
         licenseType.setPrivileges(Collections.singleton(LicenseType.PRIV_VIEW_THUMBNAILS));

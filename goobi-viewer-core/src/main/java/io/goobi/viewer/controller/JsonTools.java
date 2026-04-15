@@ -412,8 +412,8 @@ public final class JsonTools {
      *
      * @param json JSON string
      * @return Version information as a single line string
-     * @should format string correctly
      * @should return notAvailableKey if json invalid
+     * @should concatenate application version build date and git revision from JSON into single line
      */
     public static String formatVersionString(String json) {
         final String notAvailableKey = "admin__dashboard_versions_not_available";
@@ -437,8 +437,8 @@ public final class JsonTools {
      *
      * @param json JSON string
      * @return Only version number and git hash as a single line string
-     * @should format string correctly
      * @should return notAvailableKey if json invalid
+     * @should return version and git revision in short format from JSON
      */
     public static String shortFormatVersionString(String json) {
         final String notAvailableKey = "admin__dashboard_versions_not_available";
@@ -505,6 +505,7 @@ public final class JsonTools {
      * @param json The json object to parse
      * @param key the key to find
      * @return a {@link String}. May be empty if the key is not found
+     * @should return gotcha for given input
      */
     public static String getNestedValue(JSONObject json, String key) {
         boolean found = json.has(key);
@@ -541,7 +542,7 @@ public final class JsonTools {
      * @param doc Solr doc containing the source metadata
      * @param fields Field mappings
      * @return {@link JSONObject}
-     * @should create json object correctly
+     * @should map Solr fields and constant values to JSON object according to field mapping config
      * @should throw IllegalArgumentException if args missing
      */
     public static JSONObject createJsonObjectFromSolrDoc(SolrDocument doc, List<Map<String, String>> fields) {

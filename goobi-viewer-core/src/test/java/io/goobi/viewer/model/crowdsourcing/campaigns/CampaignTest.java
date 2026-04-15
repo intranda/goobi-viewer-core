@@ -47,20 +47,19 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see Campaign#getDaysLeft()
-     * @verifies return -1 if no dateEnd
+     * @verifies return minus 1 if no date end
      */
     @Test
-    void getDaysLeft_shouldReturn1IfNoDateEnd() throws Exception {
+    void getDaysLeft_shouldReturnMinus1IfNoDateEnd() throws Exception {
         Campaign campaign = new Campaign();
         Assertions.assertEquals(-1, campaign.getDaysLeft());
     }
 
     /**
-     * @see Campaign#getDaysLeft()
-     * @verifies calculate days correctly
+     * @verifies return days until end date or zero when end date is in the past
      */
     @Test
-    void getDaysLeft_shouldCalculateDaysCorrectly() throws Exception {
+    void getDaysLeft_shouldReturnDaysUntilEndDateOrZeroWhenEndDateIsInThePast() throws Exception {
         Campaign campaign = new Campaign();
         {
             LocalDateTime later = LocalDateTime.now().plusDays(99);
@@ -76,20 +75,19 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see Campaign#getDaysBeforeStart()
-     * @verifies return -1 if no dateStart
+     * @verifies return minus 1 if no date start
      */
     @Test
-    void getDaysBeforeStart_shouldReturn1IfNoDateStart() throws Exception {
+    void getDaysBeforeStart_shouldReturnMinus1IfNoDateStart() throws Exception {
         Campaign campaign = new Campaign();
         Assertions.assertEquals(-1, campaign.getDaysBeforeStart());
     }
 
     /**
-     * @see Campaign#getDaysBeforeStart()
-     * @verifies calculate days correctly
+     * @verifies return days until start date or zero when start date is in the past
      */
     @Test
-    void getDaysBeforeStart_shouldCalculateDaysCorrectly() throws Exception {
+    void getDaysBeforeStart_shouldReturnDaysUntilStartDateOrZeroWhenStartDateIsInThePast() throws Exception {
         Campaign campaign = new Campaign();
         {
             LocalDateTime later = LocalDateTime.now().plusDays(15);
@@ -115,7 +113,6 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see Campaign#isHasEnded()
      * @verifies return true if dateEnd before now
      */
     @Test
@@ -128,7 +125,6 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see Campaign#isHasEnded()
      * @verifies return false if dateEnd after now
      */
     @Test
@@ -141,7 +137,6 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see Campaign#isHasEnded()
      * @verifies return false if timePeriodEnabled false
      */
     @Test
@@ -165,7 +160,6 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see Campaign#isHasStarted()
      * @verifies return true if dateStart equals now
      */
     @Test
@@ -177,7 +171,6 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see Campaign#isHasStarted()
      * @verifies return true if dateStart before now
      */
     @Test
@@ -190,7 +183,6 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see Campaign#isHasStarted()
      * @verifies return false if dateStart after now
      */
     @Test
@@ -203,7 +195,6 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see Campaign#isHasStarted()
      * @verifies return true if timePeriodEnabled false
      */
     @Test
@@ -216,7 +207,6 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see Campaign#isUserAllowedAction(User,CrowdsourcingStatus)
      * @verifies return true if campaign public
      */
     @Test
@@ -228,7 +218,6 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see Campaign#isUserAllowedAction(User,CrowdsourcingStatus)
      * @verifies return false if outside time period
      */
     @Test
@@ -245,7 +234,6 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see Campaign#isUserAllowedAction(User,CrowdsourcingStatus)
      * @verifies return true if user owner of group
      */
     @Test
@@ -260,7 +248,6 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see Campaign#isUserAllowedAction(User,CrowdsourcingStatus)
      * @verifies return true if user member of group
      */
     @Test
@@ -281,7 +268,6 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see Campaign#isUserAllowedAction(User,CrowdsourcingStatus)
      * @verifies return false if user not in group
      */
     @Test
@@ -294,7 +280,6 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see Campaign#isUserMayEdit(User)
      * @verifies return false if user null
      */
     @Test
@@ -308,7 +293,6 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see Campaign#isUserMayEdit(User)
      * @verifies return true if user superuser
      */
     @Test
@@ -322,7 +306,6 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see Campaign#isUserMayEdit(User)
      * @verifies return false if visibility not private
      */
     @Test
@@ -337,7 +320,6 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see Campaign#isUserMayEdit(User)
      * @verifies return false if boolean false
      */
     @Test
@@ -350,7 +332,6 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see Campaign#isUserMayEdit(User)
      * @verifies return false if userGroup not set
      */
     @Test
@@ -362,7 +343,6 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see Campaign#isUserMayEdit(User)
      * @verifies return true if user owner
      */
     @Test
@@ -376,7 +356,6 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see Campaign#isUserMayEdit(User)
      * @verifies return true if user member
      */
     @Test
@@ -396,7 +375,6 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see Campaign#isGroupLimitActive()
      * @verifies return true if boolean true and userGroup not null
      */
     @Test
@@ -408,7 +386,6 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see Campaign#isGroupLimitActive()
      * @verifies return false if boolean false
      */
     @Test
@@ -431,7 +408,6 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see Campaign#getNumRecordsForStatus(String)
      * @verifies do record-based count correctly
      */
     @Test
@@ -456,7 +432,6 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see Campaign#getNumRecordsForStatus(String)
      * @verifies do page-based count correctly
      */
     @Test
@@ -509,8 +484,11 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
         Assertions.assertEquals(1, campaign.getNumRecordsForStatus(CrowdsourcingStatus.REVIEW.name()));
     }
 
+    /**
+     * @verifies return true for given input
+     */
     @Test
-    void testIsRecordStatus() {
+    void isRecordStatus_shouldReturnTrueForGivenInput() {
         Campaign campaign = Mockito.spy(Campaign.class);
         campaign.setStatisticMode(StatisticMode.PAGE);
         Map<String, CampaignRecordStatistic> statisticsMap = new HashMap<>();

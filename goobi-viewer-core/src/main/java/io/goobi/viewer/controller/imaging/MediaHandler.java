@@ -59,6 +59,7 @@ public class MediaHandler {
      * @param filename The media filename
      * @return the url to the media file of the given pi and filename
      * @throws IllegalRequestException
+     * @should return expected value for given input
      */
     public String getMediaUrl(String type, String format, String pi, String filename) throws IllegalRequestException {
 

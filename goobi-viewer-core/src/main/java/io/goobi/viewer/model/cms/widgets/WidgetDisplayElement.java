@@ -125,6 +125,7 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
      * A description of the element.
      *
      * @return the description of this widget display element as a {@link TranslatedText}
+     * @should description from type
      */
     public TranslatedText getDescription() {
         return description;

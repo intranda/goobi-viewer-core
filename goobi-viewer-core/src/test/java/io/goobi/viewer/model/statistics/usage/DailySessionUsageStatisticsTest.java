@@ -61,8 +61,12 @@ class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest {
 
     }
     
+    /**
+     * @verifies persist and load usage statistics correctly
+     * @see DailySessionUsageStatistics#getId()
+     */
     @Test
-    void test_persistence() throws DAOException {
+    void addUsageStatistics_shouldPersistAndLoadCorrectly() throws DAOException {
         
         
         LocalDate date = LocalDate.now();
@@ -79,8 +83,11 @@ class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest {
         dao.deleteUsageStatistics(stats.getId());
     }
     
+    /**
+     * @verifies persist and update session entries correctly
+     */
     @Test
-    void test_persistenceWithEntries() throws DAOException {
+    void addUsageStatistics_shouldPersistAndUpdateSessionEntriesCorrectly() throws DAOException {
         
         LocalDate date = LocalDate.now();
         RequestType type = RequestType.RECORD_VIEW;
@@ -116,8 +123,11 @@ class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest {
         dao.deleteUsageStatistics(stats.getId());
     }
     
+    /**
+     * @verifies delete usage statistics successfully
+     */
     @Test
-    void test_persistenceDelete() throws DAOException {
+    void deleteUsageStatistics_shouldDeleteUsageStatisticsSuccessfully() throws DAOException {
         
         LocalDate date = LocalDate.now();
         RequestType type = RequestType.RECORD_VIEW;
@@ -144,8 +154,11 @@ class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest {
         
     }
     
+    /**
+     * @verifies test counting
+     */
     @Test
-    void test_testCounting() {
+    void getTotalRequestCount_shouldTestCounting() {
         
         LocalDate date = LocalDate.now();
         DailySessionUsageStatistics stats = new DailySessionUsageStatistics(date, "viewer-test");
@@ -169,8 +182,11 @@ class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest {
         assertEquals(1l, stats.getUniqueRequestCount(type, "PI_03"));
     }
     
+    /**
+     * @verifies return statistics filtered by date range
+     */
     @Test
-    void test_getDateRange() throws DAOException {
+    void getUsageStatistics_shouldReturnStatisticsFilteredByDateRange() throws DAOException {
 
         RequestType type = RequestType.RECORD_VIEW;
         

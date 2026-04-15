@@ -531,9 +531,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * 
      * @return filePath if mime type is image; alternative file path otherwise
-     * @should return filePath if mime type image
      * @should return tiff if available
-     * @should return jpeg if availabel
+     * @should return image if base mime type not found
      */
     public String getImageFilepath() {
 

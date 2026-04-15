@@ -191,6 +191,8 @@ public class Disclaimer {
      * Get the {@link #acceptanceScope} of the disclaimer.
      * 
      * @return the {@link ConsentScope}
+     * @should persist
+     * @should scope
      */
     public ConsentScope getAcceptanceScope() {
         return this.acceptanceScope;

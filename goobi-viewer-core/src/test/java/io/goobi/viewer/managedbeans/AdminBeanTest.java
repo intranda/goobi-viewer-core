@@ -42,7 +42,6 @@ import io.goobi.viewer.model.security.user.UserRole;
 class AdminBeanTest extends AbstractDatabaseEnabledTest {
 
     /**
-     * @see AdminBean#getAllUsersExcept(List)
      * @verifies return all users except given
      */
     @Test
@@ -59,11 +58,10 @@ class AdminBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see AdminBean#deleteUserAction(User,boolean)
-     * @verifies delete all user public content correctly
+     * @verifies remove user comments and campaign statistic entries when deleteContent flag is true
      */
     @Test
-    void deleteUserAction_shouldDeleteAllUserPublicContentCorrectly() throws Exception {
+    void deleteUserAction_shouldRemoveUserCommentsAndCampaignStatisticEntriesWhenDeleteContentFlagIsTrue() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(2);
         Assertions.assertNotNull(user);
         AdminBean bean = new AdminBean();
@@ -82,11 +80,10 @@ class AdminBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see AdminBean#deleteUserAction(User,boolean)
-     * @verifies anonymize all user public content correctly
+     * @verifies reassign comments and statistics to different user when deleteContent flag is false
      */
     @Test
-    void deleteUserAction_shouldAnonymizeAllUserPublicContentCorrectly() throws Exception {
+    void deleteUserAction_shouldReassignCommentsAndStatisticsToDifferentUserWhenDeleteContentFlagIsFalse() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(2);
         Assertions.assertNotNull(user);
         AdminBean bean = new AdminBean();
@@ -107,7 +104,6 @@ class AdminBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see AdminBean#addUserRoleAction()
      * @verifies add user if not yet in group
      */
     @Test
@@ -131,11 +127,10 @@ class AdminBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see AdminBean#updateUserRoles()
-     * @verifies persist UserRole correctly
+     * @verifies save dirty user roles to database so they become retrievable via DAO
      */
     @Test
-    void updateUserRoles_shouldPersistUserRoleCorrectly() throws Exception {
+    void updateUserRoles_shouldSaveDirtyUserRolesToDatabaseSoTheyBecomeRetrievableViaDAO() throws Exception {
 
         UserGroup group = DataManager.getInstance().getDao().getUserGroup(1);
         Assertions.assertNotNull(group);
@@ -163,8 +158,11 @@ class AdminBeanTest extends AbstractDatabaseEnabledTest {
         Assertions.assertFalse(DataManager.getInstance().getDao().getUserRoles(group, user, role).isEmpty());
     }
 
+    /**
+     * @verifies multiple roles added on new group
+     */
     @Test
-    void updateUserRoles_multipleRolesAddedOnNewGroup() throws Exception {
+    void updateUserRoles_shouldMultipleRolesAddedOnNewGroup() throws Exception {
         AdminBean bean = new AdminBean();
         bean.init();
 

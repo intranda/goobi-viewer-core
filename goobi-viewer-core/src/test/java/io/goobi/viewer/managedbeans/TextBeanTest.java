@@ -53,11 +53,10 @@ class TextBeanTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see TextBean#getAbstract(StructElement,String,String)
-     * @verifies return abstract correctly
+     * @verifies return non-empty HTML string starting with html tag for a TEI file with abstract
      */
     @Test
-    void getAbstract_shouldReturnAbstractCorrectly() throws Exception {
+    void getAbstract_shouldReturnNonEmptyHTMLStringStartingWithHtmlTagForATEIFileWithAbstract() throws Exception {
         Path teiFile = Paths.get(DATA_PATH_TEI + "DE_2013_Riedel_PolitikUndCo_241__248/DE_2013_Riedel_PolitikUndCo_241__248_eng.xml");
         assertTrue(Files.isRegularFile(teiFile));
 
@@ -71,8 +70,8 @@ class TextBeanTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see TextBean#getAbstract(StructElement,String,String)
      * @verifies throw IllegalArgumentException if language null
+     * @see TextBean#getAbstract(StructElement, String)
      */
     @Test
     void getAbstract_shouldThrowIllegalArgumentExceptionIfLanguageNull() throws Exception {
@@ -80,8 +79,8 @@ class TextBeanTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see TextBean#getAbstract(StructElement,String,String)
      * @verifies return null if topDocument null
+     * @see TextBean#getAbstract(StructElement, String)
      */
     @Test
     void getAbstract_shouldReturnNullIfTopDocumentNull() throws Exception {
@@ -89,7 +88,6 @@ class TextBeanTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see TextBean#getAbstract(StructElement,String,String)
      * @verifies return null if topDocument has no tei for language
      */
     @Test
@@ -154,11 +152,10 @@ class TextBeanTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see TextBean#loadTeiFulltext(String)
-     * @verifies load text correctly
+     * @verifies return non empty string when given a valid TEI file path
      */
     @Test
-    void loadTeiFulltext_shouldLoadTextCorrectly() throws Exception {
+    void loadTeiFulltext_shouldReturnNonEmptyStringWhenGivenAValidTEIFilePath() throws Exception {
         Path teiFile = Paths.get(DATA_PATH_TEI + "DE_2013_Riedel_PolitikUndCo_241__248/DE_2013_Riedel_PolitikUndCo_241__248_eng.xml");
         assertTrue(Files.isRegularFile(teiFile));
         assertTrue(StringUtils.isNotEmpty(

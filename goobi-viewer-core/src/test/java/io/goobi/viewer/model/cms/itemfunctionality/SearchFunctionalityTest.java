@@ -34,7 +34,6 @@ import io.goobi.viewer.solr.SolrTools;
 class SearchFunctionalityTest extends AbstractSolrEnabledTest {
 
     /**
-     * @see SolrTools#getFieldValueMap(SolrDocument)
      * @verifies include five parameters
      */
     @Test
@@ -53,11 +52,10 @@ class SearchFunctionalityTest extends AbstractSolrEnabledTest {
     }
     
     /**
-     * @see SolrTools#getUrlPrefix()
-     * @verifies construct url prefix correctly
+     * @verifies include active context and URL-encoded query string in prefix
      */
     @Test
-    void getUrlPrefix_shouldConstructUrlPrefixCorrectly() {
+    void getUrlPrefix_shouldIncludeActiveContextAndURLEncodedQueryStringInPrefix() {
         SearchFunctionality sf = new SearchFunctionality(null, "https://example.com/search/");
         sf.setSearchBean(new SearchBean());
         sf.setActiveContext("monographs"); // Must be a configured result group

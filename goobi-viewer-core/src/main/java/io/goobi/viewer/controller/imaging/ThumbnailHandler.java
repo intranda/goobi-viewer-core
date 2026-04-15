@@ -144,6 +144,12 @@ public class ThumbnailHandler {
      *
      * @param page physical page element to render as thumbnail
      * @return the thumbnail image URL for the given page at the configured default size
+     * @should return empty string
+     * @should page
+     * @should external iiif image url
+     * @should external iiif image info url
+     * @should thumbnail url
+     * @should c ms media thumbnail url
      */
     public String getThumbnailUrl(PhysicalElement page) {
         return getThumbnailUrl(page, DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
@@ -634,6 +640,8 @@ public class ThumbnailHandler {
      * @param page a {)@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @return the url of the entire, max-size image in the original format. If no Watermark needs to be included and forwarding images is allowed in
      *         contentServer, then this streams the original image file to the client
+     * @should return expected value for given input
+     * @should fall back to file extension
      */
     public String getFullImageUrl(PhysicalElement page) {
         return getFullImageUrl(page, Scale.MAX, "MASTER");
@@ -1149,6 +1157,8 @@ public class ThumbnailHandler {
     /**
      * @param filename CMS media file name for which to build the API URL
      * @return Generated URL
+     * @should return non null result
+     * @should return expected value for given input
      */
     public static String getCMSMediaImageApiUrl(String filename) {
         if (DataManager.getInstance().getConfiguration().isUseIIIFApiUrlForCmsMediaUrls()) {

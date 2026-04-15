@@ -142,7 +142,7 @@ public class AccessTicket {
      * 
      * @param password Password to check
      * @return true if password correct; false otherwise
-     * @should check password correctly
+     * @should return false for wrong password and true for matching password against stored hash
      */
     public boolean checkPassword(String password) {
         if (StringUtils.isEmpty(password)) {

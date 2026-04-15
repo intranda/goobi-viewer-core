@@ -55,7 +55,6 @@ class SearchSortingOptionTest extends AbstractTest {
     }
 
     /**
-     * @see SearchSortingOption#getLabel()
      * @verifies return translation of RANDOM if field RANDOM
      */
     @Test
@@ -65,7 +64,6 @@ class SearchSortingOptionTest extends AbstractTest {
     }
 
     /**
-     * @see SearchSortingOption#getLabel()
      * @verifies return translation of RANDOM if field random seed
      */
     @Test
@@ -75,7 +73,6 @@ class SearchSortingOptionTest extends AbstractTest {
     }
 
     /**
-     * @see SearchSortingOption#getLabel()
      * @verifies return translation of DEFAULT_SORT_FIELD_LABEL if field RELEVANCE
      */
     @Test

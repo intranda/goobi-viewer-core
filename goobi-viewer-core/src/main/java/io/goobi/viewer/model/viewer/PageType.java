@@ -408,10 +408,10 @@ public enum PageType {
      * @param anchorOrGroup true if the record is an anchor or group element
      * @param hasImages true if the record has associated images
      * @param pageResolverUrl If this page type is for a page resolver url, ignore certain preferences
-     * @should return configured page type correctly
+     * @should return viewToc for docstruct type Catalogue with TOC enabled
      * @should return metadata page type for application mime type
      * @should return toc page type for anchors
-     * @should return image page type correctly
+     * @should return viewObject for docstruct type Monograph with images
      * @should return medatata page type if nothing else matches
      * @return the most appropriate PageType for the given record characteristics
      */

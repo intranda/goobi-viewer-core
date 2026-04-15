@@ -177,6 +177,8 @@ public final class DataFileTools {
      * @return A Path to the data folder for the given PI
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should return correct folder if no data repository used
+     * @should return correct folder if data repository used
      */
     public static Path getDataFolder(String pi, String dataFolderName) throws PresentationException, IndexUnreachableException {
         if (pi == null) {
@@ -268,6 +270,12 @@ public final class DataFileTools {
      * @return the absolute file system path to the source file
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should return indexed_mets path with dataRepository when given and without when null
+     * @should return indexed_lido path with dataRepository when given and without when null
+     * @should return indexed_ead path with dataRepository when given and without when null
+     * @should return indexed_denkxweb path with dataRepository when given and without when null
+     * @should throw IllegalArgumentException if fileName is null
+     * @should throw IllegalArgumentException if format is unknown
      */
     public static String getSourceFilePath(String fileName, String format) throws PresentationException, IndexUnreachableException {
         String pi = FilenameUtils.getBaseName(fileName);
@@ -496,7 +504,7 @@ public final class DataFileTools {
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     * @should load tei document correctly
+     * @should return TEI XML string containing TEI namespace for given document and language
      */
     public static String loadTei(String pi, String language) throws IOException {
         logger.trace("loadTei: {}/{}", pi, language);
@@ -523,9 +531,8 @@ public final class DataFileTools {
      * @throws IOException
      * @throws PresentationException
      * @throws RecordNotFoundException
-     * @should throw RecordNotFoundException if pi not found
      * @should return null if record has no mei
-     * @should load mei document correctly
+     * @should throw record not found exception if pi not dound
      */
     public static String loadMei(String pi, HttpServletRequest servletRequest)
             throws AccessDeniedException, DAOException, IndexUnreachableException, IOException, PresentationException, RecordNotFoundException {

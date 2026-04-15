@@ -32,10 +32,10 @@ class AccessTicketTest extends AbstractTest {
 
     /**
      * @see AccessTicket#checkPassword(String)
-     * @verifies check password correctly
+     * @verifies return false for wrong password and true for matching password against stored hash
      */
     @Test
-    void checkPassword_shouldCheckPasswordCorrectly() throws Exception {
+    void checkPassword_shouldReturnFalseForWrongPasswordAndTrueForMatchingPasswordAgainstStoredHash() throws Exception {
         AccessTicket ticket = new AccessTicket();
         ticket.setPasswordHash("$2a$10$H580saN37o2P03A5myUCm.V0ac/lO.79AfkiNjVhDzljqS3RGojzO");
 
@@ -44,11 +44,10 @@ class AccessTicketTest extends AbstractTest {
     }
 
     /**
-     * @see AccessTicket#isActive()
-     * @verifies return true if ticket active
+     * @verifies return false if ticket not expired
      */
     @Test
-    void isActive_shouldReturnTrueIfTicketActive() throws Exception {
+    void isExpired_shouldReturnFalseIfTicketNotExpired() throws Exception {
         AccessTicket ticket = new AccessTicket();
         ticket.setPasswordHash("abcde");
         ticket.setExpirationDate(LocalDateTime.now().plusDays(1));
@@ -56,7 +55,6 @@ class AccessTicketTest extends AbstractTest {
     }
 
     /**
-     * @see AccessTicket#isExpired()
      * @verifies return true if expiration date before now
      */
     @Test
@@ -67,7 +65,6 @@ class AccessTicketTest extends AbstractTest {
     }
 
     /**
-     * @see AccessTicket#isExpired()
      * @verifies return false if expiration date after now
      */
     @Test

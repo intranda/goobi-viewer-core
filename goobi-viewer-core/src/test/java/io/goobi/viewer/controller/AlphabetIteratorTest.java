@@ -30,8 +30,11 @@ import org.junit.jupiter.api.Test;
  */
 class AlphabetIteratorTest {
 
+    /**
+     * @verifies iterate from a to z in 26 steps
+     */
     @Test
-    void test() {
+    void next_shouldIterateFromAToZIn26Steps() {
         AlphabetIterator abc = new AlphabetIterator();
 
         String lastValue = "";

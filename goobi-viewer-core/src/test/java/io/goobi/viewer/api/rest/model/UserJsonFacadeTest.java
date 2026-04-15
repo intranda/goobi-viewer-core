@@ -55,8 +55,11 @@ class UserJsonFacadeTest {
         //
     }
 
+    /**
+     * @verifies get correct avatar url
+     */
     @Test
-    void testGetCorrectAvatarUrl() {
+    void getAvatar_shouldGetCorrectAvatarUrl() {
 
         User user = new User("nick");
 

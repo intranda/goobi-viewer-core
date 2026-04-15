@@ -55,8 +55,11 @@ class CMSMediaImageResourceTest extends AbstractRestApiTest {
         super.tearDown();
     }
 
+    /**
+     * @verifies return 404 for uppercase file extension
+     */
     @Test
-    void testCallImageUrlCapitalSuffix() {
+    void getMediaFile_shouldReturn404ForUppercaseFileExtension() {
         String filename = "image4.JPG";
         String url = urls.path(ApiUrls.CMS_MEDIA, ApiUrls.CMS_MEDIA_FILES_FILE).params(filename).build();
         try (Response response = target(url)

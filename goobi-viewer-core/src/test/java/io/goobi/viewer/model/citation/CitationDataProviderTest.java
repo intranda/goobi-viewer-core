@@ -37,11 +37,10 @@ import io.goobi.viewer.AbstractTest;
 class CitationDataProviderTest extends AbstractTest {
 
     /**
-     * @see CitationDataProvider#addItemData(String,Map,CSLType)
-     * @verifies add item data correctly
+     * @verifies store author name parts, issued date, URL, and ISBN in CSLItemData
      */
     @Test
-    void addItemData_shouldAddItemDataCorrectly() throws Exception {
+    void addItemData_shouldStoreAuthorNamePartsIssuedDateURLAndISBNInCSLItemData() throws Exception {
         {
             Map<String, List<String>> fields = new HashMap<>();
             fields.put(CitationDataProvider.AUTHOR, Arrays.asList(new String[] { "Zahn, Timothy" }));
@@ -79,11 +78,10 @@ class CitationDataProviderTest extends AbstractTest {
     }
 
     /**
-     * @see CitationDataProvider#addItemData(String,Map,CSLType)
-     * @verifies parse years correctly
+     * @verifies parse year-only issued date into dateParts instead of raw string
      */
     @Test
-    void addItemData_shouldParseYearsCorrectly() throws Exception {
+    void addItemData_shouldParseYearOnlyIssuedDateIntoDatePartsInsteadOfRawString() throws Exception {
         Map<String, List<String>> fields = new HashMap<>();
         fields.put(CitationDataProvider.AUTHOR, Arrays.asList(new String[] { "Zahn, Timothy" }));
         fields.put(CitationDataProvider.TITLE, Collections.singletonList("Thrawn"));

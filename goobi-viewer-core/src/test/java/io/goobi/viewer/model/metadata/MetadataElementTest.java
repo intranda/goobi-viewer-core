@@ -54,7 +54,6 @@ class MetadataElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see MetadataElement#isSkip()
      * @verifies return true if all metadata fields blank
      */
     @Test
@@ -67,7 +66,6 @@ class MetadataElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see MetadataElement#isSkip()
      * @verifies return true if all metadata fields hidden
      */
     @Test
@@ -91,7 +89,6 @@ class MetadataElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see MetadataElement#isSkip()
      * @verifies return false if non hidden metadata fields exist
      */
     @Test
@@ -115,7 +112,6 @@ class MetadataElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see MetadataElement#isDisplayBoxed(int)
      * @verifies return false if at least one metadata with same type not single string
      */
     @Test
@@ -141,7 +137,6 @@ class MetadataElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see MetadataElement#isDisplayBoxed(int)
      * @verifies return true if all metadata of same type single string
      */
     @Test
@@ -190,8 +185,11 @@ class MetadataElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals("Series", me.getDocStructTypeLabel());
     }
 
+    /**
+     * @verifies get fold position
+     */
     @Test
-    void test_getFoldPosition() throws PresentationException, IndexUnreachableException {
+    void getMetadataListBeforeFold_shouldGetFoldPosition() throws PresentationException, IndexUnreachableException {
         String iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(PI_KLEIUNIV);
         Assertions.assertNotNull(iddoc);
         StructElement element = new StructElement(iddoc);

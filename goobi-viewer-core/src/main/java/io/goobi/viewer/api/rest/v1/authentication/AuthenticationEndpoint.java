@@ -176,6 +176,7 @@ public class AuthenticationEndpoint {
      * @should return status 403 if redirectUrl external
      * @should return status 403 if no httpHeader type provider configured
      * @should return status 403 if no matching provider found
+     * @should not return status 403 if redirect url host whitelisted
      */
     @GET
     @Path(ApiUrls.AUTH_HEADER)

@@ -36,7 +36,6 @@ import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
 class MessageEntryTest extends AbstractTest {
 
     /**
-     * @see MessageEntry#create(String,List)
      * @verifies create MessageEntry correctly
      */
     @Test
@@ -50,11 +49,10 @@ class MessageEntryTest extends AbstractTest {
     }
 
     /**
-     * @see MessageEntry#compareTo(MessageEntry)
-     * @verifies compare correctly
+     * @verifies order entries alphabetically by key
      */
     @Test
-    void compareTo_shouldCompareCorrectly() throws Exception {
+    void compareTo_shouldOrderEntriesAlphabeticallyByKey() throws Exception {
         MessageEntry entry1 = new MessageEntry("one", Collections.emptyList());
         MessageEntry entry2 = new MessageEntry("two", Collections.emptyList());
         Assertions.assertTrue(entry1.compareTo(entry2) < 0);
@@ -63,11 +61,10 @@ class MessageEntryTest extends AbstractTest {
     }
 
     /**
-     * @see MessageEntry#getTranslationStatus()
-     * @verifies return none status correctly
+     * @verifies return NONE when current value is empty
      */
     @Test
-    void getTranslationStatus_shouldReturnNoneStatusCorrectly() throws Exception {
+    void getTranslationStatus_shouldReturnNONEWhenCurrentValueIsEmpty() throws Exception {
         List<MessageValue> values = new ArrayList<>(2);
         values.add(new MessageValue("en", null, "value"));
         values.add(new MessageValue("de", null, "value"));
@@ -77,11 +74,10 @@ class MessageEntryTest extends AbstractTest {
     }
 
     /**
-     * @see MessageEntry#getTranslationStatus()
-     * @verifies return partial status correctly
+     * @verifies return PARTIAL when current value differs from default value
      */
     @Test
-    void getTranslationStatus_shouldReturnPartialStatusCorrectly() throws Exception {
+    void getTranslationStatus_shouldReturnPARTIALWhenCurrentValueDiffersFromDefaultValue() throws Exception {
         {
             List<MessageValue> values = new ArrayList<>(2);
             values.add(new MessageValue("en", "value", "value"));
@@ -101,11 +97,10 @@ class MessageEntryTest extends AbstractTest {
     }
 
     /**
-     * @see MessageEntry#getTranslationStatus()
-     * @verifies return full status correctly
+     * @verifies return FULL when current value matches default value
      */
     @Test
-    void getTranslationStatus_shouldReturnFullStatusCorrectly() throws Exception {
+    void getTranslationStatus_shouldReturnFULLWhenCurrentValueMatchesDefaultValue() throws Exception {
         List<MessageValue> values = new ArrayList<>(2);
         values.add(new MessageValue("en", "value", "value"));
         values.add(new MessageValue("de", "wert", "wert"));
@@ -115,8 +110,7 @@ class MessageEntryTest extends AbstractTest {
     }
 
     /**
-     * @see MessageEntry#getTranslationStatusForLanguage(String)
-     * @verifies return correct status for language
+     * @verifies retutrn correct status for language
      */
     @Test
     void getTranslationStatusForLanguage_shouldRetutrnCorrectStatusForLanguage() throws Exception {
@@ -132,7 +126,6 @@ class MessageEntryTest extends AbstractTest {
     }
 
     /**
-     * @see MessageEntry#getKey()
      * @verifies trim suffix
      */
     @Test

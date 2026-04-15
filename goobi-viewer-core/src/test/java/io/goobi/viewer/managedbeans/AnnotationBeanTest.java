@@ -68,8 +68,12 @@ class AnnotationBeanTest extends AbstractDatabaseEnabledTest {
 
     }
 
+    /**
+     * @verifies get all configured annotations
+     * @see AnnotationBean#getLazyModelAnnotations
+     */
     @Test
-    void testGetAllConfiguredAnnotations() {
+    void getLazyModelAnnotations_shouldGetAllConfiguredAnnotations() {
         List<CrowdsourcingAnnotation> firstPageAnnotations = bean.getLazyModelAnnotations().getPaginatorList();
 
 //        firstPageAnnotations.stream().map(anno -> anno.getGeneratorId()).forEach(System.out::println);
@@ -78,15 +82,23 @@ class AnnotationBeanTest extends AbstractDatabaseEnabledTest {
         Assertions.assertEquals(5, firstPageAnnotations.size());
     }
 
+    /**
+     * @verifies get all annotations of campaign
+     * @see AnnotationBean#getLazyModelAnnotations
+     */
     @Test
-    void testGetAllAnnotationsOfCampaign() {
+    void getLazyModelAnnotations_shouldGetAllAnnotationsOfCampaign() {
         bean.setOwnerCampaignId("1");
         List<CrowdsourcingAnnotation> firstPageAnnotations = bean.getLazyModelAnnotations().getPaginatorList();
         Assertions.assertEquals(3, firstPageAnnotations.size());
     }
 
+    /**
+     * @verifies get all annotations of record
+     * @see AnnotationBean#getLazyModelAnnotations
+     */
     @Test
-    void testGetAllAnnotationsOfRecord() {
+    void getLazyModelAnnotations_shouldGetAllAnnotationsOfRecord() {
         bean.setTargetRecordPI("PI_2");
         List<CrowdsourcingAnnotation> firstPageAnnotations = bean.getLazyModelAnnotations().getPaginatorList();
         Assertions.assertEquals(2, firstPageAnnotations.size());

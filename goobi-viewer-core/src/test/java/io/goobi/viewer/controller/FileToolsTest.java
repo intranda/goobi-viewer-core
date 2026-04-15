@@ -41,11 +41,10 @@ import io.goobi.viewer.AbstractTest;
 class FileToolsTest extends AbstractTest {
 
     /**
-     * @see FileTools#getStringFromFile(File,String)
-     * @verifies read text file correctly
+     * @verifies return non blank string when reading existing text file
      */
     @Test
-    void getStringFromFile_shouldReadTextFileCorrectly() throws Exception {
+    void getStringFromFile_shouldReturnNonBlankStringWhenReadingExistingTextFile() throws Exception {
         File file = new File("src/test/resources/stopwords.txt");
         Assertions.assertTrue(file.isFile());
         String contents = FileTools.getStringFromFile(file, null);
@@ -53,7 +52,6 @@ class FileToolsTest extends AbstractTest {
     }
 
     /**
-     * @see FileTools#getStringFromFile(File,String)
      * @verifies throw FileNotFoundException if file not found
      */
     @Test
@@ -64,17 +62,15 @@ class FileToolsTest extends AbstractTest {
     }
 
     /**
-     * @see FileTools#getStringFromFilePath(String)
-     * @verifies read text file correctly
+     * @verifies return non blank string when given a valid file path
      */
     @Test
-    void getStringFromFilePath_shouldReadTextFileCorrectly() throws Exception {
+    void getStringFromFilePath_shouldReturnNonBlankStringWhenGivenAValidFilePath() throws Exception {
         String contents = FileTools.getStringFromFilePath("src/test/resources/stopwords.txt");
         Assertions.assertTrue(StringUtils.isNotBlank(contents));
     }
 
     /**
-     * @see FileTools#getStringFromFilePath(String)
      * @verifies throw FileNotFoundException if file not found
      */
     @Test
@@ -85,7 +81,6 @@ class FileToolsTest extends AbstractTest {
     }
 
     /**
-     * @see FileTools#compressGzipFile(File,File)
      * @verifies throw FileNotFoundException if file not found
      */
     @Test
@@ -96,7 +91,6 @@ class FileToolsTest extends AbstractTest {
     }
 
     /**
-     * @see FileTools#decompressGzipFile(File,File)
      * @verifies throw FileNotFoundException if file not found
      */
     @Test
@@ -107,11 +101,10 @@ class FileToolsTest extends AbstractTest {
     }
 
     /**
-     * @see FileTools#getFileFromString(String,File,String,boolean)
-     * @verifies write file correctly
+     * @verifies create file on disk from string content
      */
     @Test
-    void getFileFromString_shouldWriteFileCorrectly(@TempDir File tempDir) throws Exception {
+    void getFileFromString_shouldCreateFileOnDiskFromStringContent(@TempDir File tempDir) throws Exception {
         File file = new File(tempDir, "temp.txt");
         String text = "Lorem ipsum dolor sit amet";
         FileTools.getFileFromString(text, file.getAbsolutePath(), null, false);
@@ -119,11 +112,10 @@ class FileToolsTest extends AbstractTest {
     }
 
     /**
-     * @see FileTools#getFileFromString(String,File,String,boolean)
-     * @verifies append to file correctly
+     * @verifies append string to existing file content when append flag is true
      */
     @Test
-    void getFileFromString_shouldAppendToFileCorrectly(@TempDir File tempDir) throws Exception {
+    void getFileFromString_shouldAppendStringToExistingFileContentWhenAppendFlagIsTrue(@TempDir File tempDir) throws Exception {
         File file = new File(tempDir, "temp.txt");
         String text = "XY";
         String text2 = "Z";
@@ -134,11 +126,10 @@ class FileToolsTest extends AbstractTest {
     }
 
     /**
-     * @see FileTools#getCharset(InputStream)
-     * @verifies detect charset correctly
+     * @verifies return UTF-8 for a UTF-8 encoded file input stream
      */
     @Test
-    void getCharset_shouldDetectCharsetCorrectly() throws Exception {
+    void getCharset_shouldReturnUTF8ForAUTF8EncodedFileInputStream() throws Exception {
         File file = new File("src/test/resources/stopwords.txt");
         try (FileInputStream fis = new FileInputStream(file)) {
             Assertions.assertEquals("UTF-8", FileTools.getCharset(fis));
@@ -147,10 +138,10 @@ class FileToolsTest extends AbstractTest {
 
     /**
      * @see FileTools#getBottomFolderFromPathString(String)
-     * @verifies return folder name correctly
+     * @verifies return the parent folder name from a file path string
      */
     @Test
-    void getBottomFolderFromPathString_shouldReturnFolderNameCorrectly() {
+    void getBottomFolderFromPathString_shouldReturnTheParentFolderNameFromAFilePathString() {
         Assertions.assertEquals("PPN123", FileTools.getBottomFolderFromPathString("data/1/alto/PPN123/00000001.xml"));
     }
 
@@ -165,15 +156,18 @@ class FileToolsTest extends AbstractTest {
 
     /**
      * @see FileTools#getFilenameFromPathString(String)
-     * @verifies return file name correctly
+     * @verifies extract filename from a full path string
      */
     @Test
-    void getFilenameFromPathString_shouldReturnFileNameCorrectly() throws Exception {
+    void getFilenameFromPathString_shouldExtractFilenameFromAFullPathString() throws Exception {
         Assertions.assertEquals("00000001.xml", FileTools.getFilenameFromPathString("data/1/alto/PPN123/00000001.xml"));
     }
 
+    /**
+     * @verifies is younger
+     */
     @Test
-    void testIsYounger(@TempDir Path tempDir) throws IOException, InterruptedException {
+    void isYoungerThan_shouldIsYounger(@TempDir Path tempDir) throws IOException, InterruptedException {
         Path file1 = tempDir.resolve("file1.txt");
         Path file2 = tempDir.resolve("file2.txt");
 

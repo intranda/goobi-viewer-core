@@ -81,8 +81,11 @@ class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         this.user = dao.getUser(1l);
     }
 
+    /**
+     * @verifies create
+     */
     @Test
-    void testCreate() throws DAOException {
+    void createComment_shouldCreate() throws DAOException {
         Comment comment = dao.getCommentsForPage(PI, page).stream().findFirst().orElse(null);
         assertNull(comment);
 
@@ -99,8 +102,11 @@ class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         Mockito.verify(notificator, Mockito.times(1)).notifyCreation(Mockito.any(), Mockito.any(), Mockito.any());
     }
 
+    /**
+     * @verifies modify
+     */
     @Test
-    void testModify() throws DAOException {
+    void createComment_shouldModify() throws DAOException {
         Comment comment = dao.getCommentsForPage(PI, page).stream().findFirst().orElse(null);
         assertNull(comment);
 
@@ -127,8 +133,12 @@ class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         Mockito.verify(notificator, Mockito.times(1)).notifyEdit(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
     }
 
+    /**
+     * @verifies delete
+     * @see CommentManager#createComment
+     */
     @Test
-    void testDelete() throws DAOException {
+    void createComment_shouldDelete() throws DAOException {
         Comment comment = dao.getCommentsForPage(PI, page).stream().findFirst().orElse(null);
         assertNull(comment);
 
@@ -165,7 +175,6 @@ class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see CommentManager#isUserHasAccessToCommentGroups(User)
      * @verifies return true if user admin
      */
     @Test
@@ -176,7 +185,6 @@ class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see CommentManager#isUserHasAccessToCommentGroups(User)
      * @verifies return true if user owner of user group linked to comment group
      */
     @Test
@@ -187,7 +195,6 @@ class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see CommentManager#isUserHasAccessToCommentGroups(User)
      * @verifies return true if user member of user group linked to comment group
      */
     @Test
@@ -198,6 +205,7 @@ class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @verifies complete without exception
      * @see CommentManager#shutdown()
      */
     @Test

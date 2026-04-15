@@ -38,7 +38,6 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 class IpRangeTest extends AbstractDatabaseEnabledTest {
 
     /**
-     * @see IpRange#canSatisfyAllAccessConditions(Set,String,String)
      * @verifies return true if ip range has license
      */
     @Test
@@ -50,7 +49,6 @@ class IpRangeTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see IpRange#canSatisfyAllAccessConditions(Set,String,String)
      * @verifies return false if ip range has no license
      */
     @Test
@@ -94,6 +92,10 @@ class IpRangeTest extends AbstractDatabaseEnabledTest {
         Assertions.assertTrue(ipRange.matchIp("192.168.1.11"));
     }
 
+    /**
+     * @see IpRange#matchIp(String)
+     * @verifies not match addresses
+     */
     @Test
     void matchIp_shouldNotMatchAddresses() throws Exception {
         IpRange ipRange = new IpRange();

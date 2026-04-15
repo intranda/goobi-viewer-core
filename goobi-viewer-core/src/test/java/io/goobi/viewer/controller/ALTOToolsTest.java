@@ -66,8 +66,11 @@ class ALTOToolsTest extends AbstractTest {
         super.setUp();
     }
 
+    /**
+     * @verifies return expected value for given input
+     */
     @Test
-    void testRotate() {
+    void rotate_shouldReturnExpectedValueForGivenInput() {
         Rectangle rect = new Rectangle(589, 502, 948 - 589, 654 - 502);
         Dimension canvasSize = new Dimension(1792, 2747);
         Rectangle expectedRotatedRect_270 = new Rectangle(502, 844, 654 - 502, 1203 - 844);
@@ -76,8 +79,11 @@ class ALTOToolsTest extends AbstractTest {
 
     }
 
+    /**
+     * @verifies return non empty collection for given input
+     */
     @Test
-    void testGetWordCoords() throws IOException {
+    void getWordCoords_shouldReturnNonEmptyCollectionForGivenInput() throws IOException {
         File testFile = new File("src/test/resources/data/sample_alto.xml");
         int rotation = 0;
 
@@ -107,7 +113,6 @@ class ALTOToolsTest extends AbstractTest {
     }
 
     /**
-     * @see ALTOTools#getWordCoords(String,Set,int,int)
      * @verifies match hyphenated words
      */
     @Test
@@ -120,7 +125,6 @@ class ALTOToolsTest extends AbstractTest {
     }
 
     /**
-     * @see ALTOTools#getWordCoords(String,Set,int)
      * @verifies match phrases
      */
     @Test
@@ -145,7 +149,6 @@ class ALTOToolsTest extends AbstractTest {
     }
 
     /**
-     * @see ALTOTools#getWordCoords(String,Set,int)
      * @verifies match diacritics via base letter
      */
     @Test
@@ -160,11 +163,10 @@ class ALTOToolsTest extends AbstractTest {
     }
 
     /**
-     * @see ALTOTools#createNERTag(Tag)
      * @verifies add identifier to TagCount
      */
     @Test
-    void createNERTag_shouldAddIdentifierToTagCount() throws Exception {
+    void getNERTags_shouldAddIdentifierToTagCount() throws Exception {
         File file = new File("src/test/resources/data/viewer/data/1/alto/PPN648829383/00000014.xml");
         Assertions.assertTrue(file.isFile());
         String text = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
@@ -181,11 +183,10 @@ class ALTOToolsTest extends AbstractTest {
     }
 
     /**
-     * @see ALTOTools#alto2Txt(String)
-     * @verifies use extract fulltext correctly
+     * @verifies return non-empty text from valid ALTO file
      */
     @Test
-    void alto2Txt_shouldUseExtractFulltextCorrectly() throws Exception {
+    void alto2Txt_shouldReturnNonEmptyTextFromValidAltoFile() throws Exception {
         File file = new File("src/test/resources/data/viewer/alto/LIWZ_1877_01_05_001.xml");
         Assertions.assertTrue(file.isFile());
         String alto = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
@@ -196,11 +197,10 @@ class ALTOToolsTest extends AbstractTest {
     }
 
     /**
-     * @see ALTOTools#alto2Txt(String,boolean,HttpServletRequest)
-     * @verifies concatenate word at line break correctly
+     * @verifies join hyphenated words split across line breaks into complete words
      */
     @Test
-    void alto2Txt_shouldConcatenateWordAtLineBreakCorrectly() throws Exception {
+    void alto2Txt_shouldJoinHyphenatedWordsSplitAcrossLineBreaksIntoCompleteWords() throws Exception {
         File file = new File("src/test/resources/data/viewer/alto/0230L.xml");
         Assertions.assertTrue(file.isFile());
         String alto = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
@@ -211,11 +211,10 @@ class ALTOToolsTest extends AbstractTest {
     }
 
     /**
-     * @see ALTOTools#getFullText(String,HttpServletRequest)
      * @verifies extract fulltext correctly
      */
     @Test
-    void getFullText_shouldExtractFulltextCorrectly() throws Exception {
+    void getFulltext_shouldExtractFulltextCorrectly() throws Exception {
         File file = new File("src/test/resources/data/viewer/data/1/alto/00000010.xml");
         Assertions.assertTrue(file.isFile());
         String text = ALTOTools.getFulltext(file.toPath(), StringTools.DEFAULT_ENCODING);
@@ -224,11 +223,10 @@ class ALTOToolsTest extends AbstractTest {
     }
 
     /**
-     * @see ALTOTools#getFullText(String,HttpServletRequest)
      * @verifies add uris correctly
      */
     @Test
-    void getFullText_shouldAddUrisCorrectly() throws Exception {
+    void getFulltext_shouldAddUrisCorrectly() throws Exception {
         File file = new File("src/test/resources/data/viewer/data/1/alto/PPN648829383/00000014.xml");
         Assertions.assertTrue(file.isFile());
         String text = ALTOTools.getFulltext(file.toPath(), StringTools.DEFAULT_ENCODING);
@@ -236,8 +234,11 @@ class ALTOToolsTest extends AbstractTest {
         Assertions.assertTrue(text.contains("data-entity-authority-data-uri="));
     }
 
+    /**
+     * @verifies find fuzzy terms
+     */
     @Test
-    void getMatchALTOWord_findFuzzyTerms() {
+    void getMatchALTOWord_shouldFindFuzzyTerms() {
         String[] searchTerms = new String[] { "Steigbügel~1", "Halter~1" };
         {
             Word word = new Word("Steigbugle", new AltoCoords(10, 10, 12, 12));
@@ -249,8 +250,11 @@ class ALTOToolsTest extends AbstractTest {
         }
     }
 
+    /**
+     * @verifies return collection with 3 elements
+     */
     @Test
-    void test_getWordCoordsWithWordProximity() throws ViewerConfigurationException, IOException {
+    void getWordCoords_shouldReturnCollectionWith3Elements() throws ViewerConfigurationException, IOException {
 
         File testFile = new File("src/test/resources/data/sample_alto.xml");
         String altoString = FileUtils.readFileToString(testFile, StringTools.DEFAULT_ENCODING);

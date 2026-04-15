@@ -116,10 +116,10 @@ public final class DateTools {
      * Converts the given string to a list of Date objects created from the contents of this string (years or whole dates).
      *
      * @param dateString raw date string to parse, may contain multiple dates separated by "/"
-     * @should parse single date correctly
-     * @should parse multiple dates correctly
-     * @should parse dates in parentheses correctly
      * @return a list of LocalDateTime objects parsed from the given date string
+     * @should return single-element list when input contains one date
+     * @should split slash-separated date string into individual parsed dates
+     * @should strip parentheses from dates before parsing slash-separated input
      */
     public static List<LocalDateTime> parseMultipleDatesFromString(String dateString) {
         // logger.debug("Parsing date string : {}", dateString);
@@ -174,7 +174,7 @@ public final class DateTools {
      * @param millis Epoch milliseconds to convert
      * @param utc If true, interprets the value as UTC; otherwise uses the system default timezone
      * @return {@link LocalDateTime} built from millis
-     * @should create LocalDateTime correctly
+     * @should convert epoch millis to LocalDateTime with matching year, month, day, hour, and minute
      */
     public static LocalDateTime getLocalDateTimeFromMillis(long millis, boolean utc) {
         return Instant.ofEpochMilli(millis).atZone(utc ? ZoneOffset.UTC : ZoneId.systemDefault()).toLocalDateTime();
@@ -200,13 +200,13 @@ public final class DateTools {
      * @param dateString Date/time string to parse
      * @param fromUTC If true, interprets the parsed date as UTC and converts to the system timezone
      * @return {@link LocalDateTime} parsed from dateString
-     * @should parse iso date formats correctly
-     * @should parse german date formats correctly
-     * @should parse english date formats correctly
-     * @should parse chinese date formats correctly
-     * @should parse japanese date formats correctly
      * @should return null if unsupported format
      * @should throw IllegalArgumentException if dateString is null
+     * @should parse ISO date variants including with millis t separator z suffix and year month only
+     * @should parse german dd m myyyy format with and without time component
+     * @should parse english m mddyyyy format with and without AM/PM time
+     * @should parse dot separated yyyy m mdd date format
+     * @should parse slash separated yyyy m mdd date format
      */
     public static LocalDateTime parseDateTimeFromString(String dateString, boolean fromUTC) {
         return parseDateTimeFromString(dateString, fromUTC, null);
@@ -386,9 +386,9 @@ public final class DateTools {
      *
      * @param date LocalDateTime to format.
      * @param language ISO 639-1 (two-character) language code.
-     * @should format date correctly for the given language
      * @should use English format for unknown languages
      * @return the date/time formatted as a locale-specific string based on the given language code
+     * @should format date using locale specific pattern for german and english
      */
     public static String getLocalDate(LocalDateTime date, String language) {
         if (language == null) {

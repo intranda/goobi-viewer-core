@@ -37,7 +37,6 @@ import io.goobi.viewer.solr.SolrConstants;
 class CitationToolsTest extends AbstractSolrEnabledTest {
 
     /**
-     * @see CitationLink#getValue(ViewManager)
      * @verifies throw IllegalArgumentException if allLinks null
      */
     @Test
@@ -51,7 +50,6 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see CitationLink#getValue(ViewManager)
      * @verifies throw IllegalArgumentException if level null
      */
     @Test
@@ -66,7 +64,6 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see CitationLink#getValue(ViewManager)
      * @verifies throw IllegalArgumentException if viewManager null
      */
     @Test
@@ -81,7 +78,6 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see CitationLink#getValue(ViewManager)
      * @verifies preserve internal links
      */
     @Test
@@ -95,7 +91,6 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see CitationLink#getValue(ViewManager)
      * @verifies set correct value for record type
      */
     @Test
@@ -109,7 +104,6 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see CitationLink#getValue(ViewManager)
      * @verifies set correct value for docstruct type
      */
     @Test
@@ -123,7 +117,6 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see CitationLink#getValue(ViewManager)
      * @verifies set correct value for image type
      */
     @Test
@@ -138,7 +131,6 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see CitationLink#getValue(ViewManager)
      * @verifies fall back to topstruct value correctly
      */
     @Test
@@ -153,7 +145,6 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see CitationLink#getUrl(ViewManager)
      * @verifies apply pattern correctly
      */
     @Test

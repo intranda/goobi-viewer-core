@@ -64,15 +64,23 @@ class ContentBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     //Needs annotations in test system
+    /**
+     * @verifies load a ll annotations
+     * @see ContentBean#getUserGeneratedContentsForDisplay
+     */
     @Test
-    void testLoadALlAnnotations() throws PresentationException, IndexUnreachableException, DAOException {
+    void getUserGeneratedContentsForDisplay_shouldLoadALlAnnotations() throws PresentationException, IndexUnreachableException, DAOException {
         ContentBean bean = new ContentBean();
         List<DisplayUserGeneratedContent> ugcList = bean.getUserGeneratedContentsForDisplay(PI);
         assertEquals(2, ugcList.size());
     }
 
+    /**
+     * @verifies return unmodifiable list
+     * @see ContentBean#getUserGeneratedContentsForDisplay
+     */
     @Test
-    void getUserGeneratedContentsForDisplay_returnsUnmodifiableList() throws PresentationException, IndexUnreachableException, DAOException {
+    void getUserGeneratedContentsForDisplay_shouldReturnUnmodifiableList() throws PresentationException, IndexUnreachableException, DAOException {
         ContentBean bean = new ContentBean();
         List<DisplayUserGeneratedContent> ugcList = bean.getUserGeneratedContentsForDisplay(PI);
         assertThrows(UnsupportedOperationException.class, () -> ugcList.add(null));

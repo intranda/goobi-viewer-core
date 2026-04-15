@@ -150,6 +150,8 @@ public class MetadataContainer {
      * 
      * @param key the field name for which to get the metadata value
      * @return List<String>
+     * @should translated fields from single document
+     * @should translated fields from multiple documents
      */
     public List<String> getValues(String key) {
         return this.get(key).stream().map(value -> value.getValueOrFallback(null)).filter(StringUtils::isNotEmpty).collect(Collectors.toList());
@@ -160,6 +162,7 @@ public class MetadataContainer {
      * 
      * @param key the field name for which to get the metadata value
      * @return First value for the given key; empty string if not found
+     * @should get partially translated values
      */
     public String getFirstValue(String key) {
         return this.get(key).stream().findFirst().flatMap(IMetadataValue::getValue).orElse("");

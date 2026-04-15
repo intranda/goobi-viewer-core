@@ -29,22 +29,20 @@ import org.junit.jupiter.api.Test;
 class ViewerPathTest {
 
     /**
-     * @see ViewerPath#getCombinedPrettyfiedUrl(boolean)
-     * @verifies return url with get params correctly
+     * @verifies append query string to combined URL when includeParams is true
      */
     @Test
-    void getCombinedPrettyfiedUrl_shouldReturnUrlWithGetParamsCorrectly() {
+    void getCombinedPrettyfiedUrl_shouldAppendQueryStringToCombinedURLWhenIncludeParamsIsTrue() {
         ViewerPath path = new ViewerPath("http://localhost:8080", "viewer", URI.create("search"), URI.create("PI:*/1/-/-/"));
         path.setQueryString("filterQuery=FOO:bar");
         Assertions.assertEquals("/search/PI:*/1/-/-/?filterQuery=FOO:bar", path.getCombinedPrettyfiedUrl(true));
     }
 
     /**
-     * @see ViewerPath#getCombinedPrettyfiedUrl(boolean)
-     * @verifies return url without get params correctly
+     * @verifies omit query string from combined URL when includeParams is false
      */
     @Test
-    void getCombinedPrettyfiedUrl_shouldReturnUrlWithoutGetParamsCorrectly() {
+    void getCombinedPrettyfiedUrl_shouldOmitQueryStringFromCombinedURLWhenIncludeParamsIsFalse() {
         ViewerPath path = new ViewerPath("http://localhost:8080", "viewer", URI.create("search"), URI.create("PI:*/1/-/-/"));
         path.setQueryString("filterQuery=FOO:bar");
         Assertions.assertEquals("/search/PI:*/1/-/-/", path.getCombinedPrettyfiedUrl(false));

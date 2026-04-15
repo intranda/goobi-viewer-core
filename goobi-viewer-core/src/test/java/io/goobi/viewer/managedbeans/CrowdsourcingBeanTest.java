@@ -73,23 +73,35 @@ class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         super.tearDown();
     }
 
+    /**
+     * @verifies return 2 for given input
+     * @see CrowdsourcingBean#getCampaignCount(CampaignVisibility)
+     */
     @Test
-    void testGetCampaignCount() throws DAOException {
+    void getCampaignCount_shouldReturn2ForGivenInput() throws DAOException {
         long numPublic = bean.getCampaignCount(CampaignVisibility.PUBLIC);
         long numPrivate = bean.getCampaignCount(CampaignVisibility.PRIVATE);
         Assertions.assertEquals(2, numPublic);
         Assertions.assertEquals(1, numPrivate);
     }
 
+    /**
+     * @verifies return collection with 3 elements
+     * @see CrowdsourcingBean#getAllCampaigns()
+     */
     @Test
-    void testGetAllCampaigns() throws DAOException {
+    void getAllCampaigns_shouldReturnCollectionWith3Elements() throws DAOException {
         List<Campaign> campaigns = bean.getAllCampaigns();
         Assertions.assertEquals(3, campaigns.size());
 
     }
 
+    /**
+     * @verifies save selected campaign
+     * @see CrowdsourcingBean#getSelectedCampaign
+     */
     @Test
-    void testSaveSelectedCampaign() throws DAOException, PresentationException, IndexUnreachableException {
+    void getSelectedCampaign_shouldSaveSelectedCampaign() throws DAOException, PresentationException, IndexUnreachableException {
         bean.setSelectedCampaignId("1");
         Assertions.assertNotNull(bean.getSelectedCampaign());
 
@@ -103,7 +115,6 @@ class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see CrowdsourcingBean#getAllowedCampaigns(User,List)
      * @verifies return all public campaigns if user not logged in
      */
     @Test
@@ -135,7 +146,6 @@ class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see CrowdsourcingBean#getAllowedCampaigns(User,List)
      * @verifies return private campaigns within time period if user not logged in
      */
     @Test
@@ -183,7 +193,6 @@ class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see CrowdsourcingBean#getAllowedCampaigns(User,List)
      * @verifies return private campaigns within time period if user logged in
      */
     @Test
@@ -270,7 +279,6 @@ class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see CrowdsourcingBean#isAllowed(User,Campaign)
      * @verifies return true for public campaigns
      */
     @Test
@@ -283,7 +291,6 @@ class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see CrowdsourcingBean#isAllowed(User,Campaign)
      * @verifies return false if private campaign within time period but boolean false
      */
     @Test
@@ -298,7 +305,6 @@ class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see CrowdsourcingBean#isAllowed(User,Campaign)
      * @verifies return true if private campaign within time period and user null
      */
     @Test
@@ -313,7 +319,6 @@ class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see CrowdsourcingBean#isAllowed(User,Campaign)
      * @verifies return true if private campaign within time period and user not null
      */
     @Test
@@ -328,7 +333,6 @@ class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see CrowdsourcingBean#isAllowed(User,Campaign)
      * @verifies return false if private campaign outside time period
      */
     @Test
@@ -344,7 +348,6 @@ class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see CrowdsourcingBean#isAllowed(User,Campaign)
      * @verifies return false if user group set and user null
      */
     @Test
@@ -358,7 +361,6 @@ class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see CrowdsourcingBean#isAllowed(User,Campaign)
      * @verifies return false if user group set and user not member
      */
     @Test
@@ -372,7 +374,6 @@ class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see CrowdsourcingBean#isAllowed(User,Campaign)
      * @verifies return true if user group set and user owner
      */
     @Test
@@ -388,7 +389,6 @@ class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see CrowdsourcingBean#isAllowed(User,Campaign)
      * @verifies return false if user group set but boolean false
      */
     @Test
@@ -402,8 +402,11 @@ class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertFalse(CrowdsourcingBean.isAllowed(user, campaign));
     }
 
+    /**
+     * @verifies item order configuration
+     */
     @Test
-    void test_ItemOrderConfiguration() throws PresentationException, IndexUnreachableException, DAOException {
+    void setNextIdentifierForAnnotation_shouldItemOrderConfiguration() throws PresentationException, IndexUnreachableException, DAOException {
         IDAO dao = Mockito.mock(IDAO.class);
         Configuration config = Mockito.mock(Configuration.class);
         Campaign campaign = Mockito.spy(Campaign.class);

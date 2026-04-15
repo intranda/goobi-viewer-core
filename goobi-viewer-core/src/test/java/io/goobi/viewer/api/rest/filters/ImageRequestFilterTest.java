@@ -24,8 +24,11 @@ class ImageRequestFilterTest {
     private final static String REQUEST_URL = "/api/v1/records/" + PI + "/files/images/" + FILENAME + "/full/max/0/default.jpg";
     private final static String FORWARD_URL = "/api/v1/records/" + PI + "/files/images/" + FILENAME + ".tif/full/max/0/default.jpg";
 
+    /**
+     * @verifies forward to canonical url
+     */
     @Test
-    void test_shouldForwardToCanonicalUrl() throws IOException, PresentationException, IndexUnreachableException {
+    void filter_shouldForwardToCanonicalUrl() throws IOException, PresentationException, IndexUnreachableException {
 
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         SolrSearchIndex searchIndex = Mockito.mock(SolrSearchIndex.class);

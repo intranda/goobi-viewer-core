@@ -49,8 +49,12 @@ class AbstractBuilderTest extends AbstractTest {
         };
     }
 
+    /**
+     * @verifies return non null result
+     * @see for#getEventFields()
+     */
     @Test
-    void testGetEventFields() {
+    void getEventFields_shouldReturnNonNullResult() {
         Map<String, List<String>> events = builder.getEventFields();
         Assertions.assertNotNull(events);
         Assertions.assertEquals(3, events.size());
@@ -80,16 +84,22 @@ class AbstractBuilderTest extends AbstractTest {
 
     /**
      * A valid PI must produce a URI that does not contain the literal placeholder {pi}.
+     * @verifies not contain placeholder when valid pi
+     * @see for#getManifestURI
      */
     @Test
-    void getManifestURI_validPi_doesNotContainPlaceholder() {
+    void getManifestURI_shouldNotContainPlaceholderWhenValidPi() {
         java.net.URI uri = builder.getManifestURI("PPN123456789");
         Assertions.assertFalse(uri.toString().contains("{pi}"),
                 "Manifest URI must not contain unsubstituted {pi} placeholder: " + uri);
     }
 
+    /**
+     * @verifies return true for given input
+     * @see for#contained(String, List<String>)
+     */
     @Test
-    void testMetadataContained() {
+    void contained_shouldReturnTrueForGivenInput() {
         List<String> fieldNames = List.of("MD_TEST", "MD_BLA*");
         
         Assertions.assertTrue(builder.contained("MD_TEST", fieldNames));

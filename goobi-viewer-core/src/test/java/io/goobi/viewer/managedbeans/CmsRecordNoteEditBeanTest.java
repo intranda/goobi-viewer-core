@@ -80,8 +80,12 @@ class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
         super.tearDown();
     }
 
+    /**
+     * @verifies change language
+     * @see CmsRecordNoteEditBean#getNote
+     */
     @Test
-    void testChangeLanguage() {
+    void getNote_shouldChangeLanguage() {
         bean.setNote(new CMSSingleRecordNote("PI1"));
 
         bean.setSelectedLocale(Locale.ENGLISH);
@@ -101,8 +105,12 @@ class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
         assertEquals(englishText, bean.getNote().getNoteText().getText(Locale.ENGLISH));
     }
 
+    /**
+     * @verifies must fill default language first
+     * @see CmsRecordNoteEditBean#setNote
+     */
     @Test
-    void testMustFillDefaultLanguageFirst() {
+    void setNote_shouldMustFillDefaultLanguageFirst() {
 
         //default language is en
         assertEquals(Locale.ENGLISH, BeanUtils.getDefaultLocale());
@@ -135,8 +143,12 @@ class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
 
     }
 
+    /**
+     * @verifies create title label multi language
+     * @see CmsRecordNoteEditBean#createRecordTitle
+     */
     @Test
-    void testCreateTitleLabelMultiLanguage() {
+    void createRecordTitle_shouldCreateTitleLabelMultiLanguage() {
         IMetadataValue md = new MultiLanguageMetadataValue();
         md.setValue("deutsch", "de");
         md.setValue("english", "en");
@@ -152,8 +164,12 @@ class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
         assertTrue(data.contains(expected[2]), "data String is " + data);
     }
 
+    /**
+     * @verifies create title label single value
+     * @see CmsRecordNoteEditBean#createRecordTitle
+     */
     @Test
-    void testCreateTitleLabelSingleValue() {
+    void createRecordTitle_shouldCreateTitleLabelSingleValue() {
         IMetadataValue md = new SimpleMetadataValue("default");
 
         TranslatedText text = bean.createRecordTitle(md);
@@ -162,8 +178,12 @@ class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
         assertEquals("default", data);
     }
 
+    /**
+     * @verifies filled texts are complete
+     * @see CmsRecordNoteEditBean#getNote
+     */
     @Test
-    void test_filledTextsAreComplete() {
+    void getNote_shouldFilledTextsAreComplete() {
         CMSSingleRecordNote note = new CMSSingleRecordNote("PI1");
         bean.setNote(note);
 
@@ -178,8 +198,12 @@ class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
         assertFalse(bean.getNote().getNoteText().isComplete(Locale.GERMAN));
     }
 
+    /**
+     * @verifies translation empy if no fields filled
+     * @see CmsRecordNoteEditBean#getNote
+     */
     @Test
-    void testTranslationEmpyIfNoFieldsFilled() {
+    void getNote_shouldTranslationEmpyIfNoFieldsFilled() {
         CMSSingleRecordNote note = new CMSSingleRecordNote("PI1");
         bean.setNote(note);
 
@@ -193,8 +217,12 @@ class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
         assertTrue(bean.isEmpty(Locale.GERMAN));
     }
 
+    /**
+     * @verifies translation not complete if not all fields filled
+     * @see CmsRecordNoteEditBean#getNote
+     */
     @Test
-    void testTranslationNotCompleteIfNotAllFieldsFilled() {
+    void getNote_shouldTranslationNotCompleteIfNotAllFieldsFilled() {
         CMSRecordNote note = new CMSSingleRecordNote("PI1");
         bean.setNote(note);
 
@@ -209,8 +237,12 @@ class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
         assertFalse(bean.isEmpty(Locale.GERMAN));
     }
 
+    /**
+     * @verifies translation complete if same fields filles as in default language
+     * @see CmsRecordNoteEditBean#getNote
+     */
     @Test
-    void testTranslationCompleteIfSameFieldsFillesAsInDefaultLanguage() {
+    void getNote_shouldTranslationCompleteIfSameFieldsFillesAsInDefaultLanguage() {
         CMSSingleRecordNote note = new CMSSingleRecordNote("PI1");
         bean.setNote(note);
 
@@ -224,8 +256,12 @@ class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
         assertFalse(bean.isEmpty(Locale.GERMAN));
     }
 
+    /**
+     * @verifies translation complete if all fields filled
+     * @see CmsRecordNoteEditBean#getNote
+     */
     @Test
-    void testTranslationCompleteIfAllFieldsFilled() {
+    void getNote_shouldTranslationCompleteIfAllFieldsFilled() {
         CMSSingleRecordNote note = new CMSSingleRecordNote("PI1");
         bean.setNote(note);
 
@@ -247,7 +283,7 @@ class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
      * @verifies do nothing if node null
      */
     @Test
-    void resetSimpleSearchParameters_shouldDoNothingIfNodeNull() {
+    void save_shouldDoNothingIfNodeNull() {
         assertNull(bean.getNote());
         bean.save();
         assertNull(bean.getNote());
@@ -256,10 +292,10 @@ class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
     /**
      * @throws DAOException
      * @see CmsRecordNoteEditBean#save()
-     * @verifies save new note correctly
+     * @verifies persist a new note to the database and make it retrievable by PI
      */
     @Test
-    void resetSimpleSearchParameters_shouldSaveNewNoteCorrectly() throws DAOException {
+    void save_shouldPersistANewNoteToTheDatabaseAndMakeItRetrievableByPI() throws DAOException {
         bean.setTestMode(true);
         
         CMSSingleRecordNote note = new CMSSingleRecordNote("PI3");
@@ -278,10 +314,10 @@ class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
     /**
      * @throws DAOException
      * @see CmsRecordNoteEditBean#save()
-     * @verifies update note correctly
+     * @verifies persist changed PI on an existing note when saving
      */
     @Test
-    void resetSimpleSearchParameters_shouldUpdateNoteCorrectly() throws DAOException {
+    void save_shouldPersistChangedPIOnAnExistingNoteWhenSaving() throws DAOException {
         bean.setTestMode(true);
         
         CMSSingleRecordNote note = (CMSSingleRecordNote) DataManager.getInstance().getDao().getRecordNote(1L);

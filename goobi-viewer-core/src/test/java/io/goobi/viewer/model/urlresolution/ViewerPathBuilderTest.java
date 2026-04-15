@@ -53,8 +53,11 @@ class ViewerPathBuilderTest extends AbstractTest {
         super.setUp();
     }
 
+    /**
+     * @verifies return true for given input
+     */
     @Test
-    void testStartsWith() {
+    void startsWith_shouldReturnTrueForGivenInput() {
         String url1 = "a";
         String url2 = "a/b";
         String url3 = "a/b/c";
@@ -73,8 +76,12 @@ class ViewerPathBuilderTest extends AbstractTest {
 
     }
 
+    /**
+     * @verifies create correct path w ith leading excamation mark
+     * @see ViewerPathBuilder#createPath
+     */
     @Test
-    void testCreateCorrectPathWIthLeadingExcamationMark() throws DAOException {
+    void createPath_shouldCreateCorrectPathWIthLeadingExcamationMark() throws DAOException {
         String url = "http://localhost:8082/viewer/!fulltext/AC03343066/13/";
         String serverUrl = "http://localhost:8082/viewer";
         String applicationName = "/viewer";
@@ -84,11 +91,11 @@ class ViewerPathBuilderTest extends AbstractTest {
     }
 
     /**
-     * @see ViewerPathBuilder#createPath(HttpServletRequest,String)
-     * @verifies remove server url and name correctly
+     * @verifies strip scheme, host, port and context path from URL and return remaining path
+     * @see ViewerPathBuilder#createPath(HttpServletRequest)
      */
     @Test
-    void createPath_shouldRemoveServerUrlAndNameCorrectly() throws Exception {
+    void createPath_shouldStripSchemeHostPortAndContextPathFromURLAndReturnRemainingPath() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setScheme("http");
         request.setServerName("localhost");
@@ -101,8 +108,8 @@ class ViewerPathBuilderTest extends AbstractTest {
     }
 
     /**
-     * @see ViewerPathBuilder#getPageType(URI)
      * @verifies return correct type for configured name
+     * @see ViewerPathBuilder#getPageType(final URI)
      */
     @Test
     void getPageType_shouldReturnCorrectTypeForConfiguredName() {
@@ -114,8 +121,8 @@ class ViewerPathBuilderTest extends AbstractTest {
     }
 
     /**
-     * @see ViewerPathBuilder#getPageType(URI)
      * @verifies return correct type for raw name
+     * @see ViewerPathBuilder#getPageType(final URI)
      */
     @Test
     void getPageType_shouldReturnCorrectTypeForRawName() {
@@ -126,8 +133,8 @@ class ViewerPathBuilderTest extends AbstractTest {
     }
 
     /**
-     * @see ViewerPathBuilder#getPageType(URI)
      * @verifies return empty for unknown path
+     * @see ViewerPathBuilder#getPageType(final URI)
      */
     @Test
     void getPageType_shouldReturnEmptyForUnknownPath() {
@@ -140,8 +147,7 @@ class ViewerPathBuilderTest extends AbstractTest {
      * When both viewImage and viewObject are configured to "object", a URL starting with "object/" should resolve to viewObject (whose raw name
      * matches), not viewImage.
      *
-     * @see ViewerPathBuilder#getPageType(URI)
-     * @verifies prefer raw name match as tiebreaker when both types have same configured name
+     * @verifies prefer raw name match when both types have same configured name
      */
     @Test
     void getPageType_shouldPreferRawNameMatchWhenBothTypesHaveSameConfiguredName() {
@@ -161,8 +167,7 @@ class ViewerPathBuilderTest extends AbstractTest {
      * When both viewImage and viewObject are configured to "object", createPath should use the configured name "object" (not the raw name "image") as
      * the page path.
      *
-     * @see ViewerPathBuilder#createPath(String, String, String, String)
-     * @verifies use configured name as page path when it matches the URL
+     * @verifies use configured name as page path
      */
     @Test
     void createPath_shouldUseConfiguredNameAsPagePath() throws Exception {

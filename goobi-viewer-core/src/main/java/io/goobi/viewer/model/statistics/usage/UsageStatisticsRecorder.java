@@ -90,6 +90,7 @@ public class UsageStatisticsRecorder {
      * @param type the {@link RequestType} for which to count the request
      * @param recordIdentifier the record identifier requested by the request
      * @param request a {@link HttpServletRequest}
+     * @should return 55 for given input
      */
     public void recordRequest(RequestType type, String recordIdentifier, HttpServletRequest request) {
         if (isActive() && !NetTools.isCrawlerBotRequest(request)) {

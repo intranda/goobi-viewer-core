@@ -46,7 +46,7 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see Metadata#filterMetadata(List,Locale)
-     * @verifies return language-specific version of a field
+     * @verifies return languagespecific version of a field
      */
     @Test
     void filterMetadata_shouldReturnLanguagespecificVersionOfAField() {
@@ -93,10 +93,10 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see Metadata#filterMetadata(List,String,String)
-     * @verifies filter by desired field name correctly
+     * @verifies return only metadata entries matching the given field name and language
      */
     @Test
-    void filterMetadata_shouldFilterByDesiredFieldNameCorrectly() {
+    void filterMetadata_shouldReturnOnlyMetadataEntriesMatchingTheGivenFieldNameAndLanguage() {
         List<Metadata> metadataList = new ArrayList<>();
         metadataList.add(new Metadata("", "MD_TITLE_LANG_EN", "", "foo"));
         metadataList.add(new Metadata("", "MD_TITLE_LANG_DE", "", "foo"));
@@ -141,8 +141,8 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see Metadata#isBlank(String)
      * @verifies return true if all paramValues are empty
+     * @see Metadata#isBlank()
      */
     @Test
     void isBlank_shouldReturnTrueIfAllParamValuesAreEmpty() {
@@ -152,8 +152,8 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see Metadata#isBlank(String)
      * @verifies return false if at least one paramValue is not empty
+     * @see Metadata#isBlank()
      */
     @Test
     void isBlank_shouldReturnFalseIfAtLeastOneParamValueIsNotEmpty() {
@@ -163,7 +163,6 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see Metadata#isBlank(String)
      * @verifies return true if all values have different ownerIddoc
      */
     @Test
@@ -181,11 +180,10 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see Metadata#isBlank(String)
-     * @verifies return true if at least one value has same ownerIddoc
+     * @verifies return false if at least one value has same ownerIddoc
      */
     @Test
-    void isBlank_shouldReturnTrueIfAtLeastOneValueHasSameOwnerIddoc() {
+    void isBlank_shouldReturnFalseIfAtLeastOneValueHasSameOwnerIddoc() {
         Metadata metadata = new Metadata("", "MD_FIELD", "", "");
         metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD));
         String[] values = new String[] { "val1", "val2" };
@@ -200,7 +198,6 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @throws IndexUnreachableException
-     * @see Metadata#populateGroup(StructElement,String,List<StringPair>,Locale)
      * @verifies populate group correctly
      */
     @Test
@@ -220,7 +217,6 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @throws IndexUnreachableException
-     * @see Metadata#populateGroup(StructElement,String,List<StringPair>,Locale)
      * @verifies apply default value if none found
      */
     @Test
@@ -244,11 +240,10 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see Metadata#setParamValue(int,int,List,String,String,Map,Locale)
-     * @verifies add multivalued param values correctly
+     * @verifies store multiple values for a single param index preserving order
      */
     @Test
-    void setParamValue_shouldAddMultivaluedParamValuesCorrectly() {
+    void setParamValue_shouldStoreMultipleValuesForASingleParamIndexPreservingOrder() {
         Metadata metadata = new Metadata("", "MD_FIELD", "", "");
         String[] values = new String[] { "val1", "val2" };
         metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setPrefix("pre_").setSuffix("_suf"));
@@ -261,11 +256,10 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see Metadata#setParamValue(int,int,List,String,String,Map,String,Locale)
-     * @verifies set group type correctly
+     * @verifies set groupTypeForUrl on the metadata value when group type is provided
      */
     @Test
-    void setParamValue_shouldSetGroupTypeCorrectly() {
+    void setParamValue_shouldSetGroupTypeForUrlOnTheMetadataValueWhenGroupTypeIsProvided() {
         Metadata metadata = new Metadata("", "MD_FIELD", "", "");
         String[] values = new String[] { "val1", "val2" };
         metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setPrefix("pre_").setSuffix("_suf"));
@@ -275,7 +269,6 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see Metadata#getValuesForOwner(String)
      * @verifies return all values if ownerIddoc null
      */
     @Test
@@ -293,7 +286,6 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see Metadata#getValuesForOwner(String)
      * @verifies return only values for the given ownerIddoc
      */
     @Test
@@ -338,8 +330,7 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see Metadata#setParamValue(int,int,List,String,String,Map,String,Locale)
-     * @verifies format full ISO date with output pattern
+     * @verifies format full ISO date
      */
     @Test
     void setParamValue_dateField_shouldFormatFullIsoDate() {
@@ -352,8 +343,7 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see Metadata#setParamValue(int,int,List,String,String,Map,String,Locale)
-     * @verifies format ISO datetime with output pattern
+     * @verifies format ISO date time
      */
     @Test
     void setParamValue_dateField_shouldFormatIsoDateTime() {
@@ -366,8 +356,7 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see Metadata#setParamValue(int,int,List,String,String,Map,String,Locale)
-     * @verifies format ISO year-month using month-year fallback pattern
+     * @verifies format ISO year month
      */
     @Test
     void setParamValue_dateField_shouldFormatIsoYearMonth() {
@@ -380,8 +369,7 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see Metadata#setParamValue(int,int,List,String,String,Map,String,Locale)
-     * @verifies format year-only value using year fallback pattern
+     * @verifies format year only
      */
     @Test
     void setParamValue_dateField_shouldFormatYearOnly() {
@@ -394,8 +382,7 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see Metadata#setParamValue(int,int,List,String,String,Map,String,Locale)
-     * @verifies keep raw value if unparseable as any date format
+     * @verifies keep raw value if unparseable
      */
     @Test
     void setParamValue_dateField_shouldKeepRawValueIfUnparseable() {
@@ -408,8 +395,7 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see Metadata#setParamValue(int,int,List,String,String,Map,String,Locale)
-     * @verifies parse non-ISO full date using inputPattern
+     * @verifies parse non ISO full date with input pattern
      */
     @Test
     void setParamValue_dateField_shouldParseNonIsoFullDateWithInputPattern() {
@@ -423,8 +409,7 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see Metadata#setParamValue(int,int,List,String,String,Map,String,Locale)
-     * @verifies parse US-format full date using inputPattern
+     * @verifies parse us format full date with input pattern
      */
     @Test
     void setParamValue_dateField_shouldParseUsFormatFullDateWithInputPattern() {
@@ -438,8 +423,7 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see Metadata#setParamValue(int,int,List,String,String,Map,String,Locale)
-     * @verifies parse non-ISO year-month using inputPattern
+     * @verifies parse non ISO year month with input pattern
      */
     @Test
     void setParamValue_dateField_shouldParseNonIsoYearMonthWithInputPattern() {
@@ -453,8 +437,7 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see Metadata#setParamValue(int,int,List,String,String,Map,String,Locale)
-     * @verifies parse year-only value using inputPattern
+     * @verifies parse year only with input pattern
      */
     @Test
     void setParamValue_dateField_shouldParseYearOnlyWithInputPattern() {
@@ -468,7 +451,6 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see Metadata#populate(StructElement,StructElement,String,List,Map,int,Locale)
      * @verifies store pi and logid from struct element
      */
     @Test

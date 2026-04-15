@@ -62,11 +62,10 @@ class StructElementTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see StructElement#createStub()
-     * @verifies create stub correctly
+     * @verifies copy all fields including PI, logid, doctype, label, and metadata to stub
      */
     @Test
-    void createStub_shouldCreateStubCorrectly() throws Exception {
+    void createStub_shouldCopyAllFieldsIncludingPILogidDoctypeLabelAndMetadataToStub() throws Exception {
         String iddoc = DataManager.getInstance().getSearchIndex().getIddocByLogid(PI_KLEIUNIV, "LOG_0002");
         Assertions.assertNotNull(iddoc);
 
@@ -87,11 +86,10 @@ class StructElementTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see StructElement#getParent()
-     * @verifies return parent correctly
+     * @verifies return parent StructElement with matching Lucene ID for child element
      */
     @Test
-    void getParent_shouldReturnParentCorrectly() throws Exception {
+    void getParent_shouldReturnParentStructElementWithMatchingLuceneIDForChildElement() throws Exception {
         String iddoc = DataManager.getInstance().getSearchIndex().getIddocByLogid(PI_KLEIUNIV, "LOG_0002");
         Assertions.assertNotNull(iddoc);
 
@@ -102,7 +100,6 @@ class StructElementTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see StructElement#isAnchorChild()
      * @verifies return true if current record is volume
      */
     @Test
@@ -126,10 +123,10 @@ class StructElementTest extends AbstractSolrEnabledTest {
 
     /**
      * @see StructElement#getImageUrl(int,int,int,boolean,boolean)
-     * @verifies construct url correctly
+     * @verifies return IIIF image URL with given width and height constraints
      */
     @Test
-    void getImageUrl_shouldConstructUrlCorrectly() throws Exception {
+    void getImageUrl_shouldReturnIIIFImageURLWithGivenWidthAndHeightConstraints() throws Exception {
         StructElement element = new StructElement(iddocKleiuniv);
         Assertions.assertEquals(
                 TestUtils.APPLICATION_ROOT_URL + "api/v1/records/" + PI_KLEIUNIV + "/files/images/00000001.tif/full/!600,800/0/default.jpg",
@@ -137,11 +134,10 @@ class StructElementTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see StructElement#getTopStruct()
-     * @verifies retrieve top struct correctly
+     * @verifies return top level struct element different from child element with expected lucene i d
      */
     @Test
-    void getTopStruct_shouldRetrieveTopStructCorrectly() throws Exception {
+    void getTopStruct_shouldReturnTopLevelStructElementDifferentFromChildElementWithExpectedLuceneID() throws Exception {
         String iddoc = DataManager.getInstance().getSearchIndex().getIddocByLogid(PI_KLEIUNIV, "LOG_0002");
         Assertions.assertNotNull(iddoc);
 
@@ -166,7 +162,6 @@ class StructElementTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see StructElement#getTopStruct()
      * @verifies return self if anchor
      */
     @Test
@@ -181,7 +176,6 @@ class StructElementTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see StructElement#getTopStruct()
      * @verifies return self if group
      */
     @Test
@@ -196,7 +190,6 @@ class StructElementTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see StructElement#getFirstVolumeFieldValue(String)
      * @verifies return correct value
      */
     @Test
@@ -228,8 +221,8 @@ class StructElementTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see StructElement#isHasChildren()
      * @verifies return true if element has children
+     * @see represents#isHasChildren()
      */
     @Test
     void isHasChildren_shouldReturnTrueIfElementHasChildren() throws Exception {
@@ -258,7 +251,6 @@ class StructElementTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see StructElement#getPi()
      * @verifies retriveve pi from topstruct if not topstruct
      */
     @Test
@@ -271,7 +263,6 @@ class StructElementTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see StructElement#init(SolrDocument)
      * @verifies populate groupMemberships even if field is also in ancestorIdentifierFields
      */
     @Test

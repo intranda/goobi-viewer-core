@@ -49,11 +49,10 @@ class SearchResultResourceTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see SearchResultResource#getSearchHitChildren(List,String,int,Locale)
-     * @verifies return null if searchHits null
+     * @verifies return HTTP 200 for RIS file export
      */
     @Test
-    void getSearchHitChildren_shouldReturnNullIfSearchHitsNull() throws Exception {
+    void getRISAsFile_shouldReturnHttp200ForRisFileExport() throws Exception {
         TestUtils.mockFacesContext();
         
         SearchResultResource resource = new SearchResultResource(this.servletRequest, this.servletResponse);

@@ -241,8 +241,8 @@ public class ViewerPath implements Serializable {
      *
      * @param addQueryString If true, the GET query parameter part will be added
      * @return the entire {@link #getPrettifiedPagePath() prettified} url as a path <b>except</b> the application url
-     * @should return url with get params correctly
-     * @should return url without get params correctly
+     * @should append query string to combined URL when includeParams is true
+     * @should omit query string from combined URL when includeParams is false
      */
     public String getCombinedPrettyfiedUrl(boolean addQueryString) {
         return ("/" + getCombinedPrettyfiedPath(addQueryString).toString()).replaceAll("\\/+", "/").replaceAll("\\\\+", "/");

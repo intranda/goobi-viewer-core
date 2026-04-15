@@ -30,8 +30,12 @@ import org.junit.jupiter.api.Test;
 
 class UsageStatisticsResourceTest {
 
+    /**
+     * @verifies parse date
+     * @see UsageStatisticsResource#getLocalDate
+     */
     @Test
-    void testParseDate() {
+    void getLocalDate_shouldParseDate() {
         String input = "2022-07-13";
         LocalDate date = new UsageStatisticsResource().getLocalDate(input);
         assertEquals(2022, date.getYear());

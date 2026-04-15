@@ -32,38 +32,38 @@ class NetToolsTest extends AbstractTest {
 
     /**
      * @see NetTools#parseMultipleIpAddresses(String)
-     * @verifies filter multiple addresses correctly
+     * @verifies return only the first IP address from a comma-separated list
      */
     @Test
-    void parseMultipleIpAddresses_shouldFilterMultipleAddressesCorrectly() throws Exception {
+    void parseMultipleIpAddresses_shouldReturnOnlyTheFirstIPAddressFromACommaSeparatedList() throws Exception {
         Assertions.assertEquals("1.1.1.1", NetTools.parseMultipleIpAddresses("1.1.1.1, 2.2.2.2, 3.3.3.3"));
     }
 
     /**
      * @see NetTools#scrambleEmailAddress(String)
-     * @verifies modify string correctly
+     * @verifies replace domain middle part with asterisks keeping first three and last three characters
      */
     @Test
-    void scrambleEmailAddress_shouldModifyStringCorrectly() throws Exception {
+    void scrambleEmailAddress_shouldReplaceDomainMiddlePartWithAsterisksKeepingFirstThreeAndLastThreeCharacters() throws Exception {
         Assertions.assertEquals("foo***com", NetTools.scrambleEmailAddress("foo@bar.com"));
         Assertions.assertEquals("foo***com", NetTools.scrambleEmailAddress("foofoofoo@barbarbar.com"));
     }
 
     /**
      * @see NetTools#scrambleIpAddress(String)
-     * @verifies modify string correctly
+     * @verifies replace last two octets of IP address with X
      */
     @Test
-    void scrambleIpAddress_shouldModifyStringCorrectly() throws Exception {
+    void scrambleIpAddress_shouldReplaceLastTwoOctetsOfIPAddressWithX() throws Exception {
         Assertions.assertEquals("192.168.X.X", NetTools.scrambleIpAddress("192.168.0.1"));
     }
 
     /**
      * @see NetTools#buildClearCacheUrl(String,String,String)
-     * @verifies build url correctly
+     * @verifies compose cache API URL with correct query params for each cache type
      */
     @Test
-    void buildClearCacheUrl_shouldBuildUrlCorrectly() throws Exception {
+    void buildClearCacheUrl_shouldComposeCacheAPIURLWithCorrectQueryParamsForEachCacheType() throws Exception {
         Assertions.assertEquals("https://example.com/api/v1/cache/PPN123/?token=test&content=true&thumbs=true&pdf=true",
                 NetTools.buildClearCacheUrl(NetTools.PARAM_CLEAR_CACHE_ALL, "PPN123", "https://example.com/", "test"));
         Assertions.assertEquals("https://example.com/api/v1/cache/PPN123/?token=test&content=true",
@@ -122,8 +122,11 @@ class NetToolsTest extends AbstractTest {
         Assertions.assertFalse(NetTools.isRedirectUrlAllowed(null, "https://viewer.example.org/"));
     }
 
+    /**
+     * @verifies parse ip address
+     */
     @Test
-    void test_parseIpAddress() {
+    void getIpAddress_shouldParseIpAddress() {
         {
             HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
             Mockito.when(request.getHeader("X-Forwarded-For")).thenReturn("143.34.255.931, 127.0.0.1");

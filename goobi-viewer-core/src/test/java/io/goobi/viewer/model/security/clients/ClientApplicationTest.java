@@ -42,8 +42,12 @@ class ClientApplicationTest extends AbstractDatabaseEnabledTest {
         dao = DataManager.getInstance().getDao();
     }
 
+    /**
+     * @verifies save load and update client application via DAO
+     * @see IDAO#saveClientApplication
+     */
     @Test
-    void testSave() throws DAOException {
+    void saveClientApplication_shouldSaveLoadAndUpdateClientApplicationViaDao() throws DAOException {
         ClientApplication client = new ClientApplication();
         client.setClientIdentifier("abcd");
         dao.saveClientApplication(client);

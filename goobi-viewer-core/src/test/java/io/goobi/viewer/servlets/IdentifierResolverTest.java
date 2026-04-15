@@ -49,7 +49,6 @@ class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see IdentifierResolver#doGet(HttpServletRequest,HttpServletResponse)
      * @verifies return 400 if record identifier missing
      */
     @Test
@@ -63,7 +62,6 @@ class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see IdentifierResolver#doGet(HttpServletRequest,HttpServletResponse)
      * @verifies return 404 if record not found
      */
     @Test
@@ -78,7 +76,6 @@ class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see IdentifierResolver#doGet(HttpServletRequest,HttpServletResponse)
      * @verifies return 400 if record field name bad
      */
     @Test
@@ -95,7 +92,6 @@ class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see IdentifierResolver#doGet(HttpServletRequest,HttpServletResponse)
      * @verifies return 400 if record field value bad
      */
     @Test
@@ -112,11 +108,10 @@ class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see IdentifierResolver#constructUrl(String,SolrDocument,String)
-     * @verifies construct url correctly
+     * @verifies return object page URL with PI for a regular work document
      */
     @Test
-    void constructUrl_shouldConstructUrlCorrectly() throws Exception {
+    void constructUrl_shouldReturnObjectPageURLWithPIForARegularWorkDocument() throws Exception {
         String pi = PI_KLEIUNIV;
         QueryResponse qr = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":" + pi, 0, 1, null, null, null);
         Assertions.assertEquals(1, qr.getResults().size());
@@ -124,11 +119,10 @@ class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see IdentifierResolver#constructUrl(String,SolrDocument,String)
-     * @verifies construct anchor url correctly
+     * @verifies return toc page URL for an anchor document
      */
     @Test
-    void constructUrl_shouldConstructAnchorUrlCorrectly() throws Exception {
+    void constructUrl_shouldReturnTocPageURLForAnAnchorDocument() throws Exception {
         String pi = "306653648";
         QueryResponse qr = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":" + pi, 0, 1, null, null, null);
         Assertions.assertEquals(1, qr.getResults().size());
@@ -136,11 +130,10 @@ class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see IdentifierResolver#constructUrl(SolrDocument,boolean,boolean)
-     * @verifies construct group url correctly
+     * @verifies return toc page URL for a GROUP doctype document
      */
     @Test
-    void constructUrl_shouldConstructGroupUrlCorrectly() throws Exception {
+    void constructUrl_shouldReturnTocPageURLForAGROUPDoctypeDocument() throws Exception {
         String pi = "PPN_GROUP";
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.DOCTYPE, DocType.GROUP.toString());
@@ -149,11 +142,10 @@ class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see IdentifierResolver#constructUrl(String,SolrDocument)
-     * @verifies construct page url correctly
+     * @verifies return object URL with page number and logId when resolving a page document by URN
      */
     @Test
-    void constructUrl_shouldConstructPageUrlCorrectly() throws Exception {
+    void constructUrl_shouldReturnObjectURLWithPageNumberAndLogIdWhenResolvingAPageDocumentByURN() throws Exception {
         String urn = "urn\\:nbn\\:at\\:at-akw\\:g-86493";
         String pi = "AC11442160";
         QueryResponse qr = DataManager.getInstance().getSearchIndex().search(SolrConstants.IMAGEURN + ":" + urn, 0, 1, null, null, null);
@@ -162,11 +154,10 @@ class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see IdentifierResolver#constructUrl(String,SolrDocument,boolean,boolean)
-     * @verifies construct preferred view url correctly
+     * @verifies return toc page URL when docstruct type has a preferred view configured
      */
     @Test
-    void constructUrl_shouldConstructPreferredViewUrlCorrectly() throws Exception {
+    void constructUrl_shouldReturnTocPageURLWhenDocstructTypeHasAPreferredViewConfigured() throws Exception {
         String pi = "123";
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.DOCSTRCT, "Catalogue");
@@ -176,11 +167,10 @@ class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see IdentifierResolver#constructUrl(String,SolrDocument,boolean,boolean)
-     * @verifies construct application mime type url correctly
+     * @verifies return metadata page URL when document has application mime type
      */
     @Test
-    void constructUrl_shouldConstructApplicationMimeTypeUrlCorrectly() throws Exception {
+    void constructUrl_shouldReturnMetadataPageURLWhenDocumentHasApplicationMimeType() throws Exception {
         String pi = "123";
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.DOCSTRCT, "Monograph");

@@ -38,7 +38,7 @@ class EventElementTest extends AbstractTest {
 
     /**
      * @see EventElement#EventElement(SolrDocument,Locale)
-     * @verifies fill in missing dateStart from displayDate
+     * @verifies fill in missing date start from display date
      */
     @Test
     void EventElement_shouldFillInMissingDateStartFromDisplayDate() throws Exception {
@@ -51,7 +51,7 @@ class EventElementTest extends AbstractTest {
 
     /**
      * @see EventElement#EventElement(SolrDocument,Locale)
-     * @verifies fill in missing dateEnd from dateStart
+     * @verifies fill in missing date end from date start
      */
     @Test
     void EventElement_shouldFillInMissingDateEndFromDateStart() throws Exception {
@@ -63,7 +63,6 @@ class EventElementTest extends AbstractTest {
     }
 
     /**
-     * @see EventElement#getLabel()
      * @verifies include type
      */
     @Test
@@ -75,7 +74,6 @@ class EventElementTest extends AbstractTest {
     }
 
     /**
-     * @see EventElement#getLabel()
      * @verifies not include date
      */
     @Test

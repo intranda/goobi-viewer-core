@@ -50,7 +50,7 @@ class URISyntaxValidatorTest {
 
     /**
      * @see URISyntaxValidator#validate(jakarta.faces.context.FacesContext, UIComponent, String)
-     * @verifies skip validation if validator_active is false
+     * @verifies skip validation if not active
      */
     @Test
     void validate_shouldSkipValidationIfNotActive() {
@@ -61,7 +61,7 @@ class URISyntaxValidatorTest {
 
     /**
      * @see URISyntaxValidator#validate(jakarta.faces.context.FacesContext, UIComponent, String)
-     * @verifies accept valid absolute URI when active
+     * @verifies accept absolute URI when active
      */
     @Test
     void validate_shouldAcceptAbsoluteURIWhenActive() {
@@ -72,7 +72,7 @@ class URISyntaxValidatorTest {
 
     /**
      * @see URISyntaxValidator#validate(jakarta.faces.context.FacesContext, UIComponent, String)
-     * @verifies accept valid relative URI when active and absolute not required
+     * @verifies accept relative URI when active and absolute not required
      */
     @Test
     void validate_shouldAcceptRelativeURIWhenActiveAndAbsoluteNotRequired() {

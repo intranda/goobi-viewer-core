@@ -289,6 +289,7 @@ public class CmsPageEditBean implements Serializable {
      * @param page Page to delete
      * @return true if deletion was successful; false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should delete page for given input
      */
     public boolean deletePage(CMSPage page) throws DAOException {
         if (this.dao == null || page == null || page.getId() == null) {
@@ -418,6 +419,11 @@ public class CmsPageEditBean implements Serializable {
      * Getter for the field <code>selectedPage</code>.
      *
      * @return the CMS page currently selected for editing
+     * @should new page
+     * @should new page from template
+     * @should new page from template with title and pi
+     * @should edit page
+     * @should save page
      */
     public CMSPage getSelectedPage() {
         return selectedPage;
@@ -645,6 +651,7 @@ public class CmsPageEditBean implements Serializable {
      *
      * @param component CMS component to remove from the selected page
      * @return true if the component was successfully removed from the page, false otherwise
+     * @should return true for given input
      */
     public boolean deleteComponent(CMSComponent component) {
         return this.selectedPage.removeComponent(component);
@@ -652,6 +659,7 @@ public class CmsPageEditBean implements Serializable {
 
     /**
      * addComponent.
+     * @should return true for given input
      */
     public void addComponent() {
         if (addComponent(getSelectedPage(), getSelectedComponent())) {

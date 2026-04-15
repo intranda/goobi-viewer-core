@@ -29,9 +29,11 @@ class MessageQueueManagerTest {
 
     /**
      * A normal ActiveMQ message ID must be embedded unchanged.
+     * @verifies normal id no escaping
+     * @see MessageQueueManager#buildMessageIdSelector
      */
     @Test
-    void buildMessageIdSelector_normalId_noEscaping() {
+    void buildMessageIdSelector_shouldNormalIdNoEscaping() {
         String id = "ID:hostname-12345-1711670000000-1:1:1:1:1";
         assertEquals("JMSMessageID='ID:hostname-12345-1711670000000-1:1:1:1:1'",
                 MessageQueueManager.buildMessageIdSelector(id));
@@ -41,43 +43,53 @@ class MessageQueueManagerTest {
      * A single quote in the message ID must be doubled to produce valid JMS selector syntax.
      * Without escaping, JMSMessageID=''' is a syntax error; after escaping it becomes
      * JMSMessageID='''' which is a valid (non-matching) selector.
+     * @verifies single quote is escaped
+     * @see MessageQueueManager#buildMessageIdSelector
      */
     @Test
-    void buildMessageIdSelector_singleQuote_isEscaped() {
+    void buildMessageIdSelector_shouldSingleQuoteIsEscaped() {
         assertEquals("JMSMessageID=''''", MessageQueueManager.buildMessageIdSelector("'"));
     }
 
     /**
      * Multiple quotes are all doubled.
+     * @verifies multiple quotes all escaped
+     * @see MessageQueueManager#buildMessageIdSelector
      */
     @Test
-    void buildMessageIdSelector_multipleQuotes_allEscaped() {
+    void buildMessageIdSelector_shouldMultipleQuotesAllEscaped() {
         assertEquals("JMSMessageID='''it''s'''",
                 MessageQueueManager.buildMessageIdSelector("'it's'"));
     }
 
     /**
      * Empty string is safe: produces an empty-string selector.
+     * @verifies empty string produces empty selector
+     * @see MessageQueueManager#buildMessageIdSelector
      */
     @Test
-    void buildMessageIdSelector_emptyString_producesEmptySelector() {
+    void buildMessageIdSelector_shouldEmptyStringProducesEmptySelector() {
         assertEquals("JMSMessageID=''", MessageQueueManager.buildMessageIdSelector(""));
     }
 
     /**
      * A normal message type is embedded unchanged.
+     * @verifies normal type no escaping
+     * @see MessageQueueManager#buildJmsTypeSelector
      */
     @Test
-    void buildJmsTypeSelector_normalType_noEscaping() {
+    void buildJmsTypeSelector_shouldNormalTypeNoEscaping() {
         assertEquals("JMSType='PRERENDER_PDF'",
                 MessageQueueManager.buildJmsTypeSelector("PRERENDER_PDF"));
     }
 
     /**
      * A single quote in the type must be doubled to produce valid JMS selector syntax.
+     * @verifies single quote is escaped
+     * @see MessageQueueManager#buildJmsTypeSelector
      */
     @Test
-    void buildJmsTypeSelector_singleQuote_isEscaped() {
+    void buildJmsTypeSelector_shouldSingleQuoteIsEscaped() {
         assertEquals("JMSType=''''", MessageQueueManager.buildJmsTypeSelector("'"));
     }
 }

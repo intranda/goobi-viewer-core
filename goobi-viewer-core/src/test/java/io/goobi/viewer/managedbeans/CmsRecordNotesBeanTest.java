@@ -67,8 +67,12 @@ class CmsRecordNotesBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         super.tearDown();
     }
 
+    /**
+     * @verifies get all paginated data
+     * @see CmsRecordNotesBean#getDataProvider
+     */
     @Test
-    void testGetAllPaginatedData() {
+    void getDataProvider_shouldGetAllPaginatedData() {
         bean.getDataProvider().setEntriesPerPage(2);
         assertEquals(5, bean.getDataProvider().getSizeOfDataList());
         assertEquals(2, bean.getDataProvider().getPaginatorList().size());
@@ -78,23 +82,35 @@ class CmsRecordNotesBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals(1, bean.getDataProvider().getPaginatorList().size());
     }
 
+    /**
+     * @verifies filtered paginated data
+     * @see CmsRecordNotesBean#getDataProvider
+     */
     @Test
-    void testFilteredPaginatedData() {
+    void getDataProvider_shouldFilteredPaginatedData() {
         bean.getDataProvider().getFilter(CmsRecordNotesBean.PI_TITLE_FILTER).setValue("PI1");
         bean.getDataProvider().setEntriesPerPage(2);
         assertEquals(2, bean.getDataProvider().getSizeOfDataList());
         assertEquals(2, bean.getDataProvider().getPaginatorList().size());
     }
 
+    /**
+     * @verifies filtered by title paginated data
+     * @see CmsRecordNotesBean#getDataProvider
+     */
     @Test
-    void testFilteredByTitlePaginatedData() {
+    void getDataProvider_shouldFilteredByTitlePaginatedData() {
         bean.getDataProvider().getFilter(CmsRecordNotesBean.PI_TITLE_FILTER).setValue("Bemerkungen 1");
         assertEquals(1, bean.getDataProvider().getSizeOfDataList());
         assertEquals(1, bean.getDataProvider().getPaginatorList().size());
     }
 
+    /**
+     * @verifies return expected value for given input
+     * @see CmsRecordNotesBean#getThumbnailUrl(CMSSingleRecordNote)
+     */
     @Test
-    void testGetThumbnailUrl() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
+    void getThumbnailUrl_shouldReturnExpectedValueForGivenInput() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         CMSSingleRecordNote note = new CMSSingleRecordNote(AbstractSolrEnabledTest.PI_KLEIUNIV);
         String url = bean.getThumbnailUrl(note, 333, 444);
         String reference =

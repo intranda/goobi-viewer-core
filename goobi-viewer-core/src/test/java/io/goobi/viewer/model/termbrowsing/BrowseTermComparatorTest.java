@@ -34,11 +34,10 @@ import io.goobi.viewer.AbstractTest;
 class BrowseTermComparatorTest extends AbstractTest {
 
     /**
-     * @see BrowseTermComparator#compare(BrowseTerm,BrowseTerm)
-     * @verifies compare correctly
+     * @verifies sort browse terms alphabetically with accent normalization and consistent numeric ordering
      */
     @Test
-    void compare_shouldCompareCorrectly() throws Exception {
+    void compare_shouldSortBrowseTermsAlphabeticallyWithAccentNormalizationAndConsistentNumericOrdering() throws Exception {
         BrowseTermComparator comparator = new BrowseTermComparator(null);
         Assertions.assertEquals(1, comparator.compare(new BrowseTerm("foo", null, null), new BrowseTerm("bar", null, null)));
         Assertions.assertEquals(-1, comparator.compare(new BrowseTerm("A", null, null), new BrowseTerm("Á", null, null)));
@@ -49,7 +48,6 @@ class BrowseTermComparatorTest extends AbstractTest {
     }
 
     /**
-     * @see BrowseTermComparator#compare(BrowseTerm,BrowseTerm)
      * @verifies use sort term if provided
      */
     @Test
@@ -58,7 +56,6 @@ class BrowseTermComparatorTest extends AbstractTest {
     }
 
     /**
-     * @see BrowseTermComparator#compare(BrowseTerm,BrowseTerm)
      * @verifies use translated term if provided
      */
     @Test
@@ -81,7 +78,6 @@ class BrowseTermComparatorTest extends AbstractTest {
 
 
     /**
-     * @see BrowseTermComparator#compare(BrowseTerm,BrowseTerm)
      * @verifies sort accented vowels after plain vowels
      */
     @Test

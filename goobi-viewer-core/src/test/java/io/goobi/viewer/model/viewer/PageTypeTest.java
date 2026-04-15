@@ -39,10 +39,10 @@ class PageTypeTest extends AbstractTest {
 
     /**
      * @see PageType#determinePageType(String,String,String,boolean,boolean,boolean,boolean)
-     * @verifies return configured page type correctly
+     * @verifies return viewToc for docstruct type Catalogue with TOC enabled
      */
     @Test
-    void determinePageType_shouldReturnConfiguredPageTypeCorrectly() throws Exception {
+    void determinePageType_shouldReturnViewTocForDocstructTypeCatalogueWithTOCEnabled() throws Exception {
         Assertions.assertEquals(PageType.viewToc, PageType.determinePageType("Catalogue", null, false, true, false));
     }
 
@@ -66,10 +66,10 @@ class PageTypeTest extends AbstractTest {
 
     /**
      * @see PageType#determinePageType(String,String,String,boolean,boolean,boolean,boolean)
-     * @verifies return image page type correctly
+     * @verifies return viewObject for docstruct type Monograph with images
      */
     @Test
-    void determinePageType_shouldReturnImagePageTypeCorrectly() throws Exception {
+    void determinePageType_shouldReturnViewObjectForDocstructTypeMonographWithImages() throws Exception {
         Assertions.assertEquals(PageType.viewObject, PageType.determinePageType("Monograph", null, false, true, false));
     }
 

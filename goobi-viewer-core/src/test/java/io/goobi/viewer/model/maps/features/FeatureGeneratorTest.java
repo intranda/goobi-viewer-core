@@ -19,8 +19,11 @@ class FeatureGeneratorTest {
 
     private final String COORDINATE_FIELD = "MD_COORDINATES";
 
+    /**
+     * @verifies find feature in document
+     */
     @Test
-    void test_findFeatureInDocument() {
+    void getFeatures_shouldFindFeatureInDocument() {
         Metadata metadataConfig =
                 new Metadata("Label", "{MD_TITLE} in {MD_LOCATION}", List.of(
                         new MetadataParameter(MetadataParameterType.FIELD, "MD_TITLE"),
@@ -42,8 +45,11 @@ class FeatureGeneratorTest {
                 features.get(0).getItems().stream().findFirst().orElse(null).getLabel().getValue().orElse(""));
     }
 
+    /**
+     * @verifies find features in metadata docs
+     */
     @Test
-    void test_findFeaturesInMetadataDocs() {
+    void getFeatures_shouldFindFeaturesInMetadataDocs() {
         SolrDocument mainDoc = new SolrDocument(
                 Map.of("PI", "1234", "MD_TITLE", "Document title"));
 

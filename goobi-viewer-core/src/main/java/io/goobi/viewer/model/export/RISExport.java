@@ -88,7 +88,7 @@ public class RISExport {
      * @throws PresentationException
      * @throws ViewerConfigurationException
      * @throws ContentLibException
-     * @should execute search correctly
+     * @should return search hits matching the given PI query
      */
     public void executeSearch(String finalQuery, List<StringPair> sortFields, List<String> filterQueries, Map<String, String> params,
             Map<String, Set<String>> searchTerms, Locale locale, int proximitySearchDistance)

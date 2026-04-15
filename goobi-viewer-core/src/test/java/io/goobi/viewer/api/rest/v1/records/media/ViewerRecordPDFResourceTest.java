@@ -87,8 +87,12 @@ class ViewerRecordPDFResourceTest extends AbstractRestApiTest {
         super.tearDown();
     }
 
+    /**
+     * @verifies rejects illegal chars
+     * @see ViewerRecordPDFResource#requireValidPi
+     */
     @Test
-    void testRequireValidPi_rejectsIllegalChars() {
+    void requireValidPi_shouldRejectsIllegalChars() {
         // Illegal chars used in fuzz tests that caused MetsPdfResource to throw HTTP 500
         assertThrows(BadRequestException.class, () -> ViewerRecordPDFResource.requireValidPi(" "));
         assertThrows(BadRequestException.class, () -> ViewerRecordPDFResource.requireValidPi("|"));
@@ -96,8 +100,11 @@ class ViewerRecordPDFResourceTest extends AbstractRestApiTest {
         assertThrows(BadRequestException.class, () -> ViewerRecordPDFResource.requireValidPi("%00"));
     }
 
+    /**
+     * @verifies return non empty PDF stream with correct content disposition header
+     */
     @Test
-    void testGetPdf() throws PresentationException, IndexUnreachableException, ContentLibException, IOException {
+    void getPdf_shouldReturnNonEmptyPdfStreamWithCorrectContentDispositionHeader() throws PresentationException, IndexUnreachableException, ContentLibException, IOException {
         String url = urls.path(RECORDS_RECORD, RECORDS_PDF).params(PI).build();
         Path repository = Path.of(DataFileTools.getDataRepositoryPathForRecord(PI));
         Map<String, String[]> requestParams = new HashMap<>();

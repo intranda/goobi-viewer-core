@@ -86,8 +86,11 @@ class MessageQueueBeanTest extends AbstractDatabaseEnabledTest {
         }
     }
 
+    /**
+     * @verifies search finished tasks
+     */
     @Test
-    void testSearchFinishedTasks() throws DAOException {
+    void init_shouldSearchFinishedTasks() throws DAOException {
         ViewerMessage task1 = new ViewerMessage(TaskType.DOWNLOAD_PDF.name());
         task1.setMessageId("ID:florian-test:1.0.0");
         task1.setMessageStatus(MessageStatus.FINISH);

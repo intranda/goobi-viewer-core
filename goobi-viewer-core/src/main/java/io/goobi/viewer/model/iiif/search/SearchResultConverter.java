@@ -173,6 +173,7 @@ public class SearchResultConverter {
      * @param queryRegex The regex matching the search terms
      * @param comment The comment containing the search terms
      * @return a {@link de.intranda.api.iiif.search.SearchHit}
+     * @should return non null result
      */
     public SearchHit convertCommentToHit(String queryRegex, String pi, Comment comment) {
         SearchHit hit = new SearchHit();
@@ -211,6 +212,7 @@ public class SearchResultConverter {
      * @param queryRegex regex pattern matching the search terms
      * @param ugc Solr document of type UGC to search within
      * @return A search hit matching the queryRegex within the given UGC SolrDocument
+     * @should return non null result
      */
     public SearchHit convertUGCToHit(String queryRegex, SolrDocument ugc) {
         if (ugc == null) {
@@ -256,6 +258,7 @@ public class SearchResultConverter {
      * @param fieldName Solr field name to read metadata value from
      * @param doc Solr document containing the field to search
      * @return A search hit for a Solr field search
+     * @should return non null result
      */
     public SearchHit convertMetadataToHit(String queryRegex, String fieldName, SolrDocument doc) {
         SearchHit hit = new SearchHit();
@@ -295,6 +298,7 @@ public class SearchResultConverter {
      * @return A result list containing hits for each mach of the query and annotations containing the hits
      * @throws JDOMException
      * @throws IOException
+     * @should return non null result
      */
     public AnnotationResultList getAnnotationsFromAlto(Path path, String query) throws IOException, JDOMException {
         AnnotationResultList results = new AnnotationResultList();
@@ -335,6 +339,7 @@ public class SearchResultConverter {
      * @param numHits The maximal number of hits to be returned in the result itself. This is the maximal size of the hit list within a single result
      *            page of a paged annotation collection
      * @return A result list containing all matching hits within the range set by previousHitCount, firstIndex and numHits
+     * @should return 1 for given input
      */
     public AnnotationResultList getAnnotationsFromFulltext(String text, String pi, Integer pageNo, String query, long previousHitCount,
             int firstIndex, int numHits) {

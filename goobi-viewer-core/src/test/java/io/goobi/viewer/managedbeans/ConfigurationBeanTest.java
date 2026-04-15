@@ -51,8 +51,12 @@ class ConfigurationBeanTest extends AbstractTest {
         Assertions.assertFalse(bean.isDisplaySearchRssLinks());
     }
 
+    /**
+     * @verifies page browse configuration
+     * @see for#isPageBrowseStep2Visible
+     */
     @Test
-    void testPageBrowseConfiguration() {
+    void isPageBrowseStep2Visible_shouldPageBrowseConfiguration() {
         Assertions.assertTrue(bean.isPagePdfEnabled());
         Assertions.assertFalse(bean.isPageBrowseStep1Visible());
         Assertions.assertTrue(bean.isPageBrowseStep2Visible());
@@ -108,8 +112,8 @@ class ConfigurationBeanTest extends AbstractTest {
     }
 
     /**
-     * @see ConfigurationBean#isSidebarFulltextLinkVisible()
      * @verifies return correct value
+     * @see for#isFacetFieldTypeBoolean(String)
      */
     @Test
     void isFacetFieldTypeBoolean_shouldReturnCorrectValue() {

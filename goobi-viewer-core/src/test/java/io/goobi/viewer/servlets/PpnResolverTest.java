@@ -34,7 +34,6 @@ import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 class PpnResolverTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
-     * @see PpnResolver#doGet(HttpServletRequest,HttpServletResponse)
      * @verifies return 400 if record identifier missing
      */
     @Test
@@ -50,7 +49,6 @@ class PpnResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see PpnResolver#doGet(HttpServletRequest,HttpServletResponse)
      * @verifies return 404 if record not found
      */
     @Test
@@ -66,7 +64,6 @@ class PpnResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see PpnResolver#doGet(HttpServletRequest,HttpServletResponse)
      * @verifies return 400 if record identifier bad
      */
     @Test

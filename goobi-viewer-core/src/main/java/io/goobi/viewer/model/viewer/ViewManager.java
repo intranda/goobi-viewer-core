@@ -640,6 +640,7 @@ public class ViewManager implements Serializable {
      * @return the URL to the master image of the given page, optionally appending watermark parameters
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should url-encode watermarkId containing special characters
      */
     public String getMasterImageUrl(Scale scale, PhysicalElement page) throws IndexUnreachableException, DAOException {
 
@@ -779,6 +780,8 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws ViewerConfigurationException
+     * @should return empty string if page is null
+     * @should return expected value for given input
      */
     public String getPageDownloadUrl(final DownloadOption option, PhysicalElement page)
             throws IndexUnreachableException, DAOException, ViewerConfigurationException {
@@ -820,6 +823,7 @@ public class ViewManager implements Serializable {
      * @param configuredMaxSize maximum allowed image dimensions from configuration
      * @param imageFilename file name used to determine the actual image format
      * @return List<DownloadOption>
+     * @should return non null result
      */
     public static List<DownloadOption> getDownloadOptionsForImage(
             List<DownloadOption> configuredOptions,
@@ -1098,7 +1102,7 @@ public class ViewManager implements Serializable {
     /**
      * rotateLeft.
      *
-     * @should rotate correctly
+     * @should decrement rotation by 90 degrees and wrap from 0 to 270
      * @return null (JSF navigation outcome; rotation is applied as a side effect)
      */
     public String rotateLeft() {
@@ -1117,7 +1121,7 @@ public class ViewManager implements Serializable {
     /**
      * rotateRight.
      *
-     * @should rotate correctly
+     * @should increment rotation by 90 degrees and wrap from 270 to 0
      * @return null (JSF navigation outcome; rotation is applied as a side effect)
      */
     public String rotateRight() {
@@ -1422,6 +1426,7 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws IDDOCNotFoundException
+     * @should return non null result
      */
     public void setCurrentImageOrderString(String currentImageOrderString)
             throws IndexUnreachableException, PresentationException, IDDOCNotFoundException {
@@ -1621,6 +1626,8 @@ public class ViewManager implements Serializable {
      * @return a list of physical pages for the current thumbnail page
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return correct PhysicalElements for a thumbnail page
+     * @should return correct physical elements for a thumbnail page with start page two
      */
     public List<PhysicalElement> getImagesSection() throws IndexUnreachableException, DAOException {
         return getImagesSection(DataManager.getInstance().getConfiguration().getViewerThumbnailsPerPage());
@@ -1794,8 +1801,8 @@ public class ViewManager implements Serializable {
      *
      * @return DFG Viewer link
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @should construct default url correctly
-     * @should construct url from custom field correctly
+     * @should return DFG viewer link using default source file URL when no custom field set
+     * @should return d f g viewer link using URL encoded m d 2 d f g v i e w e r URL field value
      */
     public String getLinkForDFGViewer() throws IndexUnreachableException {
         if (topStructElement != null && SolrConstants.SOURCEDOCFORMAT_METS.equals(topStructElement.getSourceDocFormat()) && isHasPages()) {
@@ -1993,6 +2000,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return empty string if current page is null
      */
     public String getTeiUrl() throws ViewerConfigurationException, IndexUnreachableException, DAOException {
         // Guard against null current page (e.g. when no page is selected yet)
@@ -2064,6 +2072,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return empty string if current page is null
      */
     public String getFulltextUrl() throws ViewerConfigurationException, PresentationException, IndexUnreachableException, DAOException {
         // Guard against null current page (e.g. when the record has no pages yet)
@@ -2115,6 +2124,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws URISyntaxException
+     * @should return non null result
      */
     public String getPdfDownloadLink() throws IndexUnreachableException, PresentationException, ViewerConfigurationException, URISyntaxException {
         return getPdfDownloadLink(null);
@@ -2189,11 +2199,11 @@ public class ViewManager implements Serializable {
     /**
      * Returns the pdf download link for a pdf of all pages from this.firstPdfPage to this.lastPdfPage (inclusively).
      *
-     * @should construct url correctly
      * @return the PDF download URL for the selected page range
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should include dollar-separated filenames for selected page range in PDF URL
      */
     public String getPdfPartDownloadLink() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("getPdfPartDownloadLink: {}-{}", firstPdfPage, lastPdfPage);
@@ -2584,6 +2594,7 @@ public class ViewManager implements Serializable {
      * @return true if the percentage of pages with full-text content is below the configured warning threshold, false otherwise
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should return true if there are no pages
      */
     public boolean isBelowFulltextThreshold() throws PresentationException, IndexUnreachableException {
         int threshold = DataManager.getInstance().getConfiguration().getFulltextPercentageWarningThreshold();
@@ -2971,6 +2982,7 @@ public class ViewManager implements Serializable {
      * record.
      *
      * @return true if there is at least one downloadable original content file available for this record, false otherwise
+     * @should display download widget
      */
     public boolean isDisplayContentDownloadMenu() {
         try {
@@ -2990,6 +3002,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws IOException
+     * @should list download links for work
      */
     public List<LabeledLink> getContentDownloadLinksForWork() throws IOException, PresentationException, IndexUnreachableException, DAOException {
         AlphanumCollatorComparator comparator = new AlphanumCollatorComparator(null);
@@ -3481,6 +3494,10 @@ public class ViewManager implements Serializable {
      * Returns true if this record contains only downloadable files (mime type "application") and no displayable image pages.
      *
      * @return true if the record's primary MIME type is "application", false otherwise
+     * @should return true if mimeType is application
+     * @should return false if mimeType is not application
+     * @should return true for application mime type
+     * @should return false for image mime type
      */
     public boolean isFilesOnly() {
         if (filesOnly == null) {
@@ -3941,6 +3958,7 @@ public class ViewManager implements Serializable {
      * @return List of configured citation links for the given levelName, populated with values
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @should update cite links on page change
      */
     public List<CitationLink> getSidebarWidgetUsageCitationLinksForLevel(String levelName) throws PresentationException, IndexUnreachableException {
         // logger.trace("getSidebarWidgetUsageCitationLinksForLevel: {}", levelName); //NOSONAR Debug
@@ -4047,6 +4065,7 @@ public class ViewManager implements Serializable {
      * @return an integer list
      * @throws IndexUnreachableException If the page numbers could not be read from SOLR
      * @throws IllegalArgumentException If the pageOrder is not within the range of page numbers of the current record or if range is less than zero
+     * @should get elements around page
      */
     public List<Integer> getPageRangeAroundPage(int pageOrder, int range, boolean fillToSize) throws IndexUnreachableException {
 

@@ -101,6 +101,8 @@ public class DailySessionUsageStatistics {
      *
      * @param sessionId the HTTP session ID to look up
      * @return {@link SessionUsageStatistics}
+     * @should persistence with entries
+     * @should persistence delete
      */
     public SessionUsageStatistics getSession(String sessionId) {
         if (StringUtils.isNotBlank(sessionId)) {
@@ -112,6 +114,7 @@ public class DailySessionUsageStatistics {
     /**
      *
      * @param session the session statistics to add
+     * @should get date range
      */
     public void addSession(SessionUsageStatistics session) {
         this.sessions.add(session);
@@ -136,6 +139,7 @@ public class DailySessionUsageStatistics {
      * @param type request type to count
      * @param pi persistent identifier of the record to filter by
      * @return the total number of requests of the given type for the given record PI across all sessions on this day
+     * @should test counting
      */
     public long getTotalRequestCount(RequestType type, String pi) {
         return this.sessions.stream().mapToLong(s -> s.getRecordRequestCount(type, pi)).sum();

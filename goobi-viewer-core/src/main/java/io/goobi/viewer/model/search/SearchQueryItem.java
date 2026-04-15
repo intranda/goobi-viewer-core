@@ -567,13 +567,13 @@ public class SearchQueryItem implements Serializable {
      * @param aggregateHits if true, SUPER fields are included for aggregated hit results.
      * @param allowFuzzySearch If true, search terms will be augmented by fuzzy search tokens
      * @return the Solr query string generated from this advanced search query item
-     * @should generate query correctly
      * @should escape reserved characters
      * @should always use OR operator if searching in all fields
      * @should preserve truncation
-     * @should generate range query correctly
-     * @should add proximity search token correctly
-     * @should group multiple lines correctly
+     * @should build range query with trimmed boundary values including negative numbers
+     * @should append proximity search distance to FULLTEXT phrase query
+     * @should build solr queries for o r a n d phrase search multi value and multi line item configurations
+     * @should add fuzzy search operator with hyphen
      */
     public String generateQuery(Set<String> searchTerms, boolean aggregateHits, boolean allowFuzzySearch) {
         StringBuilder sbItem = new StringBuilder();

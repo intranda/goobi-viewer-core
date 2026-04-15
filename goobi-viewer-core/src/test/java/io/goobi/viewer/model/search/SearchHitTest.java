@@ -55,8 +55,8 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
     
     /**
-     * @see SearchHit#SearchHit(HitType,BrowseElement,SolrDocument,Map,Locale,SearchHitFactory)
-     * @verifies set authorityDataIdentifier correctly
+     * @verifies set authority data identifier correctly
+     * @see for#SearchHit
      */
     @Test
     void SearchHit_shouldSetAuthorityDataIdentifierCorrectly() throws Exception {
@@ -70,7 +70,6 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHit#populateFoundMetadata(SolrDocument)
      * @verifies add field values pairs that match search terms
      */
     @Test
@@ -108,7 +107,6 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHit#populateFoundMetadata(SolrDocument)
      * @verifies add MD fields that contain terms from DEFAULT
      */
     @Test
@@ -141,7 +139,6 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHit#populateFoundMetadata(SolrDocument)
      * @verifies not add duplicate values
      */
     @Test
@@ -169,7 +166,6 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHit#populateFoundMetadata(SolrDocument,Set)
      * @verifies not add ignored fields
      */
     @Test
@@ -201,7 +197,6 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHit#populateFoundMetadata(SolrDocument,Set,Set)
      * @verifies not add field values that equal the label
      */
     @Test
@@ -229,7 +224,6 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHit#populateFoundMetadata(SolrDocument,Set,Set)
      * @verifies translate configured field values correctly
      */
     @Test
@@ -267,7 +261,6 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHit#populateFoundMetadata(SolrDocument,Set,Set,Set,Set)
      * @verifies write one line fields into a single string
      */
     @Test
@@ -306,7 +299,6 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHit#populateFoundMetadata(SolrDocument,Set,Set,Set,Set)
      * @verifies truncate snippet fields correctly
      */
     @Test
@@ -347,7 +339,6 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHit#addLabelHighlighting()
      * @verifies modify label correctly from default
      */
     @Test
@@ -377,7 +368,6 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHit#addLabelHighlighting()
      * @verifies modify label correctly from title
      */
     @Test
@@ -407,7 +397,6 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHit#addLabelHighlighting()
      * @verifies do nothing if searchTerms null
      */
     @Test
@@ -438,7 +427,6 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHit#addCMSPageChildren()
      * @verifies do nothing if no cms pages for record found
      */
     @Test
@@ -457,7 +445,6 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHit#addFulltextChild(SolrDocument,String)
      * @verifies throw IllegalArgumentException if doc null
      */
     @Test
@@ -474,7 +461,6 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHit#addFulltextChild(SolrDocument,String)
      * @verifies do nothing if searchTerms does not contain fulltext
      */
     @Test
@@ -508,7 +494,6 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHit#addFulltextChild(SolrDocument,String)
      * @verifies do nothing if tei file name not found
      */
     @Test
@@ -540,11 +525,10 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHit#generateNotificationFragment(int)
-     * @verifies generate fragment correctly
+     * @verifies generate HTML table row fragment with count, thumbnail image, and title
      */
     @Test
-    void generateNotificationFragment_shouldGenerateFragmentCorrectly() throws Exception {
+    void generateNotificationFragment_shouldGenerateHTMLTableRowFragmentWithCountThumbnailImageAndTitle() throws Exception {
         TestUtils.mockFacesContext();
         
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + AbstractSolrEnabledTest.PI_KLEIUNIV, null);

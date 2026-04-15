@@ -62,6 +62,7 @@ public final class PagePermissions {
     /**
      * @return {@code true} if this instance carries no pre-fetched data;
      *         callers must fall back to per-page {@link io.goobi.viewer.model.viewer.PhysicalElement} checks
+     * @should sentinel is empty
      */
     public boolean isEmpty() {
         return imagePermissions.isEmpty() && fulltextPermissions.isEmpty() && pdfPermissions.isEmpty();
@@ -71,6 +72,9 @@ public final class PagePermissions {
      * @param order physical page order number (Solr ORDER field)
      * @return {@code true} if image access is granted for the given order;
      *         {@code false} for unknown orders (fail-safe default)
+     * @should return true for granted order
+     * @should return false for denied order
+     * @should return false for unknown order
      */
     public boolean isImageGranted(int order) {
         return imagePermissions.getOrDefault(order, AccessPermission.denied()).isGranted();
@@ -80,6 +84,7 @@ public final class PagePermissions {
      * @param order physical page order number (Solr ORDER field)
      * @return {@code true} if fulltext access is granted for the given order;
      *         {@code false} for unknown orders (fail-safe default)
+     * @should return true for granted order
      */
     public boolean isFulltextGranted(int order) {
         return fulltextPermissions.getOrDefault(order, AccessPermission.denied()).isGranted();
@@ -89,6 +94,8 @@ public final class PagePermissions {
      * @param order physical page order number (Solr ORDER field)
      * @return {@code true} if page-PDF download is granted for the given order;
      *         {@code false} for unknown orders (fail-safe default)
+     * @should return false for denied order
+     * @should return false for unknown order
      */
     public boolean isPdfGranted(int order) {
         return pdfPermissions.getOrDefault(order, AccessPermission.denied()).isGranted();

@@ -41,10 +41,10 @@ class RecordLockManagerTest extends AbstractTest {
 
     /**
      * @see RecordLockManager#lockRecord(String,String,Integer)
-     * @verifies add record lock to map correctly
+     * @verifies return RECORD_LOCKED and store a lock entry with the given PI and session ID
      */
     @Test
-    void lockRecord_shouldAddRecordLockToMapCorrectly() throws Exception {
+    void lockRecord_shouldReturnRECORD_LOCKEDAndStoreALockEntryWithTheGivenPIAndSessionID() throws Exception {
         Assertions.assertEquals(LockRecordResult.RECORD_LOCKED, DataManager.getInstance().getRecordLockManager().lockRecord("PPN123", "SID123", 1));
         Set<RecordLock> locks = DataManager.getInstance().getRecordLockManager().getLoadedRecordMap().get("PPN123");
         Assertions.assertNotNull(locks);
@@ -87,10 +87,10 @@ class RecordLockManagerTest extends AbstractTest {
 
     /**
      * @see RecordLockManager#lockRecord(String,String,Integer)
-     * @verifies throw RecordLimitExceededException if limit exceeded
+     * @verifies return LIMIT_EXCEEDED if limit exceeded
      */
     @Test
-    void lockRecord_shouldThrowRecordLimitExceededExceptionIfLimitExceeded() throws Exception {
+    void lockRecord_shouldReturnLimitExceededIfLimitExceeded() throws Exception {
         DataManager.getInstance().getRecordLockManager().lockRecord("PPN123", "SID123", 1);
         Assertions.assertEquals(LockRecordResult.LIMIT_EXCEEDED, DataManager.getInstance().getRecordLockManager().lockRecord("PPN123", "SID789", 1));
     }
@@ -106,7 +106,6 @@ class RecordLockManagerTest extends AbstractTest {
     }
 
     /**
-     * @see RecordLockManager#removeLocksForSessionId(String,List)
      * @verifies skip pi in list
      */
     @Test
@@ -117,7 +116,6 @@ class RecordLockManagerTest extends AbstractTest {
     }
 
     /**
-     * @see RecordLockManager#removeOldLocks(long)
      * @verifies remove locks older than maxAge
      */
     @Test

@@ -99,8 +99,12 @@ class TableDataProviderTest {
         //
     }
 
+    /**
+     * @verifies get first page
+     * @see TableDataProvider#getPaginatorList
+     */
     @Test
-    void testGetFirstPage() {
+    void getPaginatorList_shouldGetFirstPage() {
         provider.resetAll();
         List<Integer> list = provider.getPaginatorList();
         Assertions.assertEquals(10, list.size());
@@ -108,14 +112,22 @@ class TableDataProviderTest {
         Assertions.assertEquals(10, list.get(9), 0);
     }
 
+    /**
+     * @verifies get total size
+     * @see TableDataProvider#getSizeOfDataList
+     */
     @Test
-    void testGetTotalSize() {
+    void getSizeOfDataList_shouldGetTotalSize() {
         provider.resetAll();
         Assertions.assertEquals(2005, provider.getSizeOfDataList());
     }
 
+    /**
+     * @verifies change page size
+     * @see TableDataProvider#getPaginatorList
+     */
     @Test
-    void testChangePageSize() {
+    void getPaginatorList_shouldChangePageSize() {
         provider.resetAll();
         List<Integer> list = provider.getPaginatorList();
         Assertions.assertEquals(10, list.size());
@@ -127,8 +139,12 @@ class TableDataProviderTest {
         Assertions.assertEquals(20, list.size());
     }
 
+    /**
+     * @verifies goto last page
+     * @see TableDataProvider#getPaginatorList
+     */
     @Test
-    void testGotoLastPage() {
+    void getPaginatorList_shouldGotoLastPage() {
         provider.resetAll();
         provider.cmdMoveLast();
         List<Integer> list = provider.getPaginatorList();
@@ -136,8 +152,12 @@ class TableDataProviderTest {
         Assertions.assertEquals(2005, list.get(4), 0);
     }
 
+    /**
+     * @verifies goto first page
+     * @see TableDataProvider#getPaginatorList
+     */
     @Test
-    void testGotoFirstPage() {
+    void getPaginatorList_shouldGotoFirstPage() {
         provider.resetAll();
         provider.cmdMoveLast();
         provider.cmdMoveFirst();
@@ -146,8 +166,12 @@ class TableDataProviderTest {
         Assertions.assertEquals(10, list.get(9), 0);
     }
 
+    /**
+     * @verifies goto next page
+     * @see TableDataProvider#getPaginatorList
+     */
     @Test
-    void testGotoNextPage() {
+    void getPaginatorList_shouldGotoNextPage() {
         provider.resetAll();
         provider.cmdMoveNext();
         List<Integer> list = provider.getPaginatorList();
@@ -155,8 +179,12 @@ class TableDataProviderTest {
         Assertions.assertEquals(11, list.get(0), 0);
     }
 
+    /**
+     * @verifies goto previous page
+     * @see TableDataProvider#getPaginatorList
+     */
     @Test
-    void testGotoPreviousPage() {
+    void getPaginatorList_shouldGotoPreviousPage() {
         provider.resetAll();
         provider.cmdMoveLast();
         provider.cmdMovePrevious();
@@ -165,8 +193,12 @@ class TableDataProviderTest {
         Assertions.assertEquals(2000, list.get(9), 0);
     }
 
+    /**
+     * @verifies goto page
+     * @see TableDataProvider#getPaginatorList
+     */
     @Test
-    void testGotoPage() {
+    void getPaginatorList_shouldGotoPage() {
         provider.resetAll();
         provider.setTxtMoveTo(100);
         List<Integer> list = provider.getPaginatorList();
@@ -174,8 +206,12 @@ class TableDataProviderTest {
         Assertions.assertEquals(1000, list.get(9), 0);
     }
 
+    /**
+     * @verifies filter
+     * @see TableDataProvider#getPaginatorList
+     */
     @Test
-    void testFilter() {
+    void getPaginatorList_shouldFilter() {
         provider.resetAll();
         provider.getFilterIfPresent("MIN").ifPresent(filter -> filter.setValue("100"));
         Assertions.assertEquals("100", provider.getFilterIfPresent("MIN").map(filter -> filter.getValue()).orElse("x"));
@@ -210,8 +246,12 @@ class TableDataProviderTest {
 
     }
 
+    /**
+     * @verifies sorting
+     * @see TableDataProvider#getPaginatorList
+     */
     @Test
-    void testSorting() {
+    void getPaginatorList_shouldSorting() {
         provider.resetAll();
         provider.setSortOrder(SortOrder.DESCENDING);
         Assertions.assertEquals(2005, provider.getPaginatorList().get(0), 0);

@@ -58,7 +58,6 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see BrowseElement#addSortFieldsToMetadata(StructElement,List)
      * @verifies add sort fields correctly
      */
     @Test
@@ -78,7 +77,6 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see BrowseElement#addSortFieldsToMetadata(StructElement,List,Set)
      * @verifies not add fields on ignore list
      */
     @Test
@@ -93,7 +91,6 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see BrowseElement#addSortFieldsToMetadata(StructElement,List)
      * @verifies not add fields already in the list
      */
     @Test
@@ -158,8 +155,11 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals("foo  bar", be.getFulltextForHtml());
     }
 
+    /**
+     * @verifies return Mein Titel for given input
+     */
     @Test
-    void test_createMultiLanguageLabel() throws IndexUnreachableException {
+    void createMultiLanguageLabel_shouldReturnMeinTitelForGivenInput() throws IndexUnreachableException {
         BrowseElement browseElement = new BrowseElement("PI", 0, "bla", "text", Locale.ENGLISH, "/data/1", "url");
         StructElement structElement = new StructElement(new SolrDocument(Map.of(
                 SolrConstants.IDDOC, Long.valueOf(12345),
@@ -175,8 +175,7 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     // -- Tests for initDocstructHierarchy --
 
     /**
-     * @see BrowseElement(StructElement, ...)
-     * @verifies populate struct element hierarchy for a simple work
+     * @verifies populate struct elements
      */
     @Test
     void initDocstructHierarchy_shouldPopulateStructElements() throws Exception {
@@ -194,8 +193,7 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     // -- Tests for initDocType --
 
     /**
-     * @see BrowseElement(StructElement, ...)
-     * @verifies set docType from DOCTYPE field
+     * @verifies set doc type
      */
     @Test
     void initDocType_shouldSetDocType() throws Exception {
@@ -208,7 +206,6 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see BrowseElement(StructElement, ...)
      * @verifies set metadataGroupType for METADATA doctype
      */
     @Test
@@ -228,8 +225,7 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     // -- Tests for initCoreFields --
 
     /**
-     * @see BrowseElement(StructElement, ...)
-     * @verifies copy core fields from struct element
+     * @verifies copy core fields
      */
     @Test
     void initCoreFields_shouldCopyCoreFields() throws Exception {
@@ -250,8 +246,7 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see BrowseElement(StructElement, ...)
-     * @verifies not generate url if pi is null
+     * @verifies return early if pi null
      */
     @Test
     void initCoreFields_shouldReturnEarlyIfPiNull() throws Exception {
@@ -266,8 +261,7 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     // -- Tests for resolveMimeType --
 
     /**
-     * @see BrowseElement(StructElement, ...)
-     * @verifies resolve mime type from struct element
+     * @verifies set mime type
      */
     @Test
     void resolveMimeType_shouldSetMimeType() throws Exception {
@@ -285,8 +279,7 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     // -- Tests for resolveImageNo --
 
     /**
-     * @see BrowseElement(StructElement, ...)
-     * @verifies resolve image number from ORDER field
+     * @verifies use order field
      */
     @Test
     void resolveImageNo_shouldUseOrderField() throws Exception {
@@ -302,8 +295,7 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see BrowseElement(StructElement, ...)
-     * @verifies resolve image number from THUMBPAGENO field
+     * @verifies use thumb page no
      */
     @Test
     void resolveImageNo_shouldUseThumbPageNo() throws Exception {
@@ -319,8 +311,7 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see BrowseElement(StructElement, ...)
-     * @verifies default image number to 1
+     * @verifies default to one
      */
     @Test
     void resolveImageNo_shouldDefaultToOne() throws Exception {
@@ -337,8 +328,7 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     // -- Tests for initThumbnail --
 
     /**
-     * @see BrowseElement(StructElement, ...)
-     * @verifies not fail if thumbnail handler is null
+     * @verifies not fail if thumbs null
      */
     @Test
     void initThumbnail_shouldNotFailIfThumbsNull() throws Exception {
@@ -355,7 +345,6 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     // -- Tests for initMediaFlags --
 
     /**
-     * @see BrowseElement(StructElement, ...)
      * @verifies set hasImages for image mime type
      */
     @Test
@@ -373,8 +362,7 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see BrowseElement(StructElement, ...)
-     * @verifies set hasMedia for sandboxed html mime type
+     * @verifies set has media for sandboxed html
      */
     @Test
     void initMediaFlags_shouldSetHasMediaForSandboxedHtml() throws Exception {
@@ -389,7 +377,6 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see BrowseElement(StructElement, ...)
      * @verifies detect TEI files
      */
     @Test
@@ -403,7 +390,6 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see BrowseElement(StructElement, ...)
      * @verifies set record languages
      */
     @Test
@@ -420,8 +406,7 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see BrowseElement(StructElement, ...)
-     * @verifies not set hasImages or hasMedia for unknown mime type
+     * @verifies not set flags for unknown mime type
      */
     @Test
     void initMediaFlags_shouldNotSetFlagsForUnknownMimeType() throws Exception {
@@ -438,8 +423,7 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     /**
      * PDF record without image derivatives should resolve to metadata view.
      *
-     * @see BrowseElement#determinePageType()
-     * @verifies return metadata page type for pdf mime type without images
+     * @verifies return metadata for pdf without images
      */
     @Test
     void determinePageType_shouldReturnMetadataForPdfWithoutImages() throws Exception {
@@ -458,8 +442,7 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     /**
      * PDF record with image derivatives (BOOL_IMAGEAVAILABLE=true) should resolve to object view.
      *
-     * @see BrowseElement#determinePageType()
-     * @verifies return object page type for pdf mime type with images
+     * @verifies return object for pdf with images
      */
     @Test
     void determinePageType_shouldReturnObjectForPdfWithImages() throws Exception {
@@ -480,8 +463,7 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     /**
      * Audio record should still resolve to object view via hasMedia.
      *
-     * @see BrowseElement#determinePageType()
-     * @verifies return object page type for audio mime type
+     * @verifies return object for audio
      */
     @Test
     void determinePageType_shouldReturnObjectForAudio() throws Exception {
@@ -499,8 +481,7 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     /**
      * Video record should still resolve to object view via hasMedia.
      *
-     * @see BrowseElement#determinePageType()
-     * @verifies return object page type for video mime type
+     * @verifies return object for video
      */
     @Test
     void determinePageType_shouldReturnObjectForVideo() throws Exception {

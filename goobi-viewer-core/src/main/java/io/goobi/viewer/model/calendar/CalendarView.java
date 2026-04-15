@@ -80,6 +80,7 @@ public class CalendarView implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @should return true if number of items sufficient
+     * @should return true if numer of items suffient
      */
     public boolean isDisplay() throws PresentationException, IndexUnreachableException {
         int hits = 0;

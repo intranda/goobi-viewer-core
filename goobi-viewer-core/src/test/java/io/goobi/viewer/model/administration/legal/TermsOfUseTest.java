@@ -32,7 +32,7 @@ class TermsOfUseTest extends AbstractTest {
 
     /**
      * @see TermsOfUse#TermsOfUse(TermsOfUse)
-     * @verifies clone original correctly
+     * @verifies produce feed correctly
      */
     @Test
     void TermsOfUse_shouldProduceFeedCorrectly() {
@@ -61,8 +61,8 @@ class TermsOfUseTest extends AbstractTest {
     }
 
     /**
-     * @see TermsOfUse#TermsOfUse(TermsOfUse)
      * @verifies clear the list
+     * @see TermsOfUse#cleanTranslations()
      */
     @Test
     void cleanTranslations_shouldClearTheList() {

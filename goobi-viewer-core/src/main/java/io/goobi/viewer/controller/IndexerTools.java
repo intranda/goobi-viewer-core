@@ -83,6 +83,7 @@ public final class IndexerTools {
     /**
      * Shuts down the background re-indexing executor. Called by {@link io.goobi.viewer.ContextListener}
      * during application shutdown. Waits up to 5 seconds for running tasks to finish.
+     * @should complete without exception
      */
     public static void shutdown() {
         EXECUTOR.shutdownNow();
@@ -360,11 +361,11 @@ public final class IndexerTools {
      *
      * @param pi record identifier to delete
      * @param createTraceDocument true to create a .delete trace document, false to purge completely
-     * @should create delete file correctly
-     * @should create purge file correctly
      * @param hotfolderPath path to the indexer hotfolder
      * @return true if the deletion trigger file was successfully created in the hotfolder, false otherwise
      * @throws java.io.IOException if any.
+     * @should create .delete file in hotfolder when trace flag is true
+     * @should create .purge file in hotfolder when trace flag is false
      */
     public static synchronized boolean deleteRecord(String pi, boolean createTraceDocument, Path hotfolderPath) throws IOException {
         if (pi == null) {

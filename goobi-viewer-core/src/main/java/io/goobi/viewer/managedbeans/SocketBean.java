@@ -86,6 +86,7 @@ public class SocketBean {
      * Sends an "update" message to the socket channel.
      * 
      * @param message message text to send (currently unused; triggers an "update" push)
+     * @should forward update message via push context
      */
     public void send(String message) {
         shouldSend.set(true);

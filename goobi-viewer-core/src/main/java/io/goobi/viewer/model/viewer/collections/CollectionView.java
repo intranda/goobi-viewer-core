@@ -110,6 +110,8 @@ public class CollectionView implements Serializable {
      *
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws IllegalRequestException
+     * @should return top elements sorted by size
+     * @should sort subcollections ascending and descending
      */
     public void populateCollectionList() throws IndexUnreachableException, IllegalRequestException {
         synchronized (this) {
@@ -306,6 +308,8 @@ public class CollectionView implements Serializable {
      * @param cmsCollections list of CMS collection configurations to associate
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @should return 1 for given input
+     * @should return true for given input
      */
     public static void associateWithCMSCollections(List<HierarchicalBrowseDcElement> collections, List<CMSCollection> cmsCollections) {
         if (cmsCollections == null || cmsCollections.isEmpty()) {
@@ -773,6 +777,8 @@ public class CollectionView implements Serializable {
      *
      * @param collection collection name to look up in the complete list
      * @return the viewer URL for the given collection name, or an empty string if not found
+     * @should return identifier resolver url if single record and pi known
+     * @should escape critical url chars in collection name
      */
     public String getCollectionUrl(String collection) {
         return getCompleteList().stream()

@@ -98,8 +98,12 @@ class CMSPageTemplateEditBeanTest {
         return templateManager;
     }
 
+    /**
+     * @verifies edit template
+     * @see CMSPageTemplateEditBean#setTemplateManager
+     */
     @Test
-    void testEditTemplate() {
+    void setTemplateManager_shouldEditTemplate() {
         bean.setFacesContext(mockFacesContext(Map.of("templateId", PAGE_TEMPLATE_ID.toString())));
         bean.setTemplateManager(createTemplateManager());
 
@@ -108,8 +112,12 @@ class CMSPageTemplateEditBeanTest {
         assertTrue(bean.isEditMode());
     }
 
+    /**
+     * @verifies create template
+     * @see CMSPageTemplateEditBean#setTemplateManager
+     */
     @Test
-    void testCreateTemplate() {
+    void setTemplateManager_shouldCreateTemplate() {
         bean.setFacesContext(mockFacesContext(Map.of()));
         bean.setTemplateManager(createTemplateManager());
 
@@ -118,8 +126,12 @@ class CMSPageTemplateEditBeanTest {
         assertFalse(bean.isEditMode());
     }
 
+    /**
+     * @verifies save template
+     * @see CMSPageTemplateEditBean#saveSelectedTemplate
+     */
     @Test
-    void testSaveTemplate() throws DAOException {
+    void saveSelectedTemplate_shouldSaveTemplate() throws DAOException {
         FacesContext facesContext = mockFacesContext(Map.of("templateId", PAGE_TEMPLATE_ID.toString()));
         bean.setFacesContext(facesContext);
         bean.setup();
@@ -127,8 +139,12 @@ class CMSPageTemplateEditBeanTest {
         Mockito.verify(bean.getDao(), Mockito.times(1)).updateCMSPageTemplate(bean.getSelectedTemplate());
     }
 
+    /**
+     * @verifies delete template and clear selection
+     * @see CMSPageTemplateEditBean#deleteSelectedTemplate()
+     */
     @Test
-    void testDeleteTemplate() throws DAOException {
+    void deleteSelectedTemplate_shouldDeleteTemplateAndClearSelection() throws DAOException {
         FacesContext facesContext = mockFacesContext(Map.of("templateId", PAGE_TEMPLATE_ID.toString()));
         bean.setFacesContext(facesContext);
         bean.setup();
@@ -138,8 +154,12 @@ class CMSPageTemplateEditBeanTest {
         assertNull(bean.getSelectedTemplate());
     }
 
+    /**
+     * @verifies return true for given input
+     * @see CMSPageTemplateEditBean#addComponent
+     */
     @Test
-    void testAddComponent() {
+    void addComponent_shouldReturnTrueForGivenInput() {
         FacesContext facesContext = mockFacesContext(Map.of("templateId", PAGE_TEMPLATE_ID.toString()));
         bean.setFacesContext(facesContext);
         bean.setTemplateManager(createTemplateManager());

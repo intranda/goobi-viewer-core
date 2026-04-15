@@ -84,39 +84,57 @@ class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         super.tearDown();
     }
 
+    /**
+     * @verifies page
+     */
     @Test
-    void testPage() {
+    void getCurrentPage_shouldPage() {
         CMSPage page = new CMSPage();
         CmsBean bean = new CmsBean(templateManager, navigationHelper);
         bean.setCurrentPage(page);
         Assertions.assertEquals(page, bean.getCurrentPage());
     }
 
+    /**
+     * @verifies return true for given input
+     * @see CmsBean#getLuceneFields()
+     */
     @Test
-    void testGetLuceneFields() {
+    void getLuceneFields_shouldReturnTrueForGivenInput() {
         List<String> fields = new CmsBean().getLuceneFields();
         Assertions.assertTrue(fields.contains("DC"), "Lucene field 'DC' is missing");
         Assertions.assertTrue(fields.contains("LABEL"), "Lucene field 'LABEL' is missing");
         Assertions.assertTrue(fields.contains("FILENAME"), "Lucene field 'FILENAME' is missing");
     }
 
+    /**
+     * @verifies return non empty collection for given input
+     * @see CmsBean#getStaticPages()
+     */
     @Test
-    void testGetStaticPages() throws DAOException {
+    void getStaticPages_shouldReturnNonEmptyCollectionForGivenInput() throws DAOException {
         CmsBean bean = new CmsBean();
         List<CMSStaticPage> staticPages = bean.getStaticPages();
         Assertions.assertFalse(staticPages.isEmpty());
     }
 
+    /**
+     * @verifies return 2 for given input
+     */
     @Test
-    void testGetAvailableCmsPages() throws DAOException {
+    void getAvailableCmsPages_shouldReturn2ForGivenInput() throws DAOException {
         CmsBean bean = new CmsBean();
         List<CMSPage> allPages = DataManager.getInstance().getDao().getAllCMSPages();
         List<CMSPage> availablePages = bean.getAvailableCmsPages(null);
         Assertions.assertEquals(2, allPages.size() - availablePages.size());
     }
 
+    /**
+     * @verifies save cms pages
+     * @see CmsBean#CMSPage
+     */
     @Test
-    void testSaveCMSPages() throws DAOException {
+    void CMSPage_shouldSaveCmsPages() throws DAOException {
         CmsBean bean = new CmsBean();
 
         CMSPage page = new CMSPage();
@@ -140,8 +158,12 @@ class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertNull(staticPage.getCmsPageOptional().orElse(null));
     }
 
+    /**
+     * @verifies return collection with 3 elements
+     * @see CmsBean#getGroupedQueryResults(List<SearchHit>, String)
+     */
     @Test
-    void testGetGroupedQueryResults() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+    void getGroupedQueryResults_shouldReturnCollectionWith3Elements() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         CmsBean bean = new CmsBean();
 
         String groupField = "GROUPING";
@@ -193,7 +215,6 @@ class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see CmsBean#createStaticPageList()
      * @verifies return pages in specified order
      */
     @Test
@@ -250,8 +271,7 @@ class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see CmsBean#getRelatedWorkDefaultView()
-     * @verifies return current navigation view when no related work is loaded
+     * @verifies return current navigation view when no related work loaded
      */
     @Test
     void getRelatedWorkDefaultView_shouldReturnCurrentNavigationViewWhenNoRelatedWorkLoaded() throws Exception {
@@ -274,7 +294,6 @@ class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see CmsBean#getEffectiveSidebarView()
      * @verifies return null when page has no related work
      */
     @Test
@@ -286,7 +305,6 @@ class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see CmsBean#isCmsWorkPageContext()
      * @verifies return false when current work pi is blank
      */
     @Test
@@ -299,7 +317,6 @@ class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see CmsBean#isCmsWorkPageContext()
      * @verifies return true when current work pi matches related PI
      */
     @Test
@@ -313,7 +330,6 @@ class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see CmsBean#isCmsWorkPageContext()
      * @verifies return false when current work pi does not match related PI
      */
     @Test

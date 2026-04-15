@@ -42,7 +42,7 @@ public class BearerTokenManager {
      * 
      * @param token the bearer access token to register
      * @param session the HTTP session associated with the token
-     * @should add token correctly
+     * @should store token in token map and associate it with the HTTP session
      */
     public void addToken(AuthAccessToken2 token, HttpSession session) {
         tokenMap.put(token.getAccessToken(), token);

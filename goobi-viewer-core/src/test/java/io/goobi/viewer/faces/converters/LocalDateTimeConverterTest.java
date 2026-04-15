@@ -45,8 +45,12 @@ class LocalDateTimeConverterTest {
     private static final String PATTERN_ENGLISH = "MM/dd/yyyy h:mm a";
     private static final String PATTERN_GENERIC = "yyyy-MM-dd'T'HH:mm:ss";
 
+    /**
+     * @see LocalDateTimeConverter#getAsObject(FacesContext, UIComponent, String)
+     * @verifies parse German-formatted date string into LocalDateTime using German locale and pattern
+     */
     @Test
-    void getAsObject_shouldConvertGermanDateTimeCorrectly() {
+    void getAsObject_shouldParseGermanFormattedDateStringIntoLocalDateTimeUsingGermanLocaleAndPattern() {
         Map<String, Object> attributes = new HashMap<>(2);
         attributes.put("pattern", PATTERN_GERMAN);
         attributes.put("timeZone", "UTC");
@@ -56,8 +60,12 @@ class LocalDateTimeConverterTest {
         assertEquals(DATETIME, new LocalDateTimeConverter().setLocale(Locale.GERMAN).getAsObject(null, component, DATETIME_GERMAN));
     }
     
+    /**
+     * @see LocalDateTimeConverter#getAsString(FacesContext, UIComponent, LocalDateTime)
+     * @verifies format LocalDateTime into German-formatted date string using German locale and pattern
+     */
     @Test
-    void getAsString_shouldConvertGermanDateTimeCorrectly() {
+    void getAsString_shouldFormatLocalDateTimeIntoGermanFormattedDateStringUsingGermanLocaleAndPattern() {
         Map<String, Object> attributes = new HashMap<>(2);
         attributes.put("pattern", PATTERN_GERMAN);
         attributes.put("timeZone", "UTC");
@@ -67,8 +75,12 @@ class LocalDateTimeConverterTest {
         assertEquals(DATETIME_GERMAN, new LocalDateTimeConverter().setLocale(Locale.GERMAN).getAsString(null, component, DATETIME));
     }
 
+    /**
+     * @see LocalDateTimeConverter#getAsObject(FacesContext, UIComponent, String)
+     * @verifies parse English-formatted date string into LocalDateTime using English locale and pattern
+     */
     @Test
-    void getAsObject_shouldConvertEnglishDateTimeCorrectly() {
+    void getAsObject_shouldParseEnglishFormattedDateStringIntoLocalDateTimeUsingEnglishLocaleAndPattern() {
         Map<String, Object> attributes = new HashMap<>(2);
         attributes.put("pattern", PATTERN_ENGLISH);
         attributes.put("timeZone", "UTC");
@@ -79,8 +91,12 @@ class LocalDateTimeConverterTest {
     }
     
     
+    /**
+     * @see LocalDateTimeConverter#getAsString(FacesContext, UIComponent, LocalDateTime)
+     * @verifies format LocalDateTime into English-formatted date string using English locale and pattern
+     */
     @Test
-    void getAsString_shouldConvertEnglishDateTimeCorrectly() {
+    void getAsString_shouldFormatLocalDateTimeIntoEnglishFormattedDateStringUsingEnglishLocaleAndPattern() {
         Map<String, Object> attributes = new HashMap<>(2);
         attributes.put("pattern", PATTERN_ENGLISH);
         attributes.put("timeZone", "UTC");
@@ -90,6 +106,10 @@ class LocalDateTimeConverterTest {
         assertEquals(DATETIME_ENGLISH, new LocalDateTimeConverter().setLocale(Locale.ENGLISH).getAsString(null, component, DATETIME));
     }
 
+    /**
+     * @see LocalDateTimeConverter#getAsObject(FacesContext, UIComponent, String)
+     * @verifies convert generic date time correctly
+     */
     @Test
     void getAsObject_shouldConvertGenericDateTimeCorrectly() {
         Map<String, Object> attributes = new HashMap<>(2);
@@ -100,6 +120,10 @@ class LocalDateTimeConverterTest {
         assertEquals(DATETIME, new LocalDateTimeConverter().setLocale(Locale.ENGLISH).getAsObject(null, component, DATETIME_GENERIC));
     }
     
+    /**
+     * @see LocalDateTimeConverter#getAsString(FacesContext, UIComponent, LocalDateTime)
+     * @verifies convert generic date time correctly
+     */
     @Test
     void getAsString_shouldConvertGenericDateTimeCorrectly() {
         Map<String, Object> attributes = new HashMap<>(2);

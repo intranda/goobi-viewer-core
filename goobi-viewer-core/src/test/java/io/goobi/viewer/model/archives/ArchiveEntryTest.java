@@ -84,10 +84,10 @@ class ArchiveEntryTest extends AbstractSolrEnabledTest {
 
     /**
      * @see SolrEADParser(ArchiveEntry)
-     * @verifies check access correctly
+     * @verifies return false when entry has a restricted access condition
      */
     @Test
-    void isAccessAllowed_shouldCheckAccessCorrectly() {
+    void isAccessAllowed_shouldReturnFalseWhenEntryHasARestrictedAccessCondition() {
         ArchiveEntry entry = new ArchiveEntry(1, 1, null);
         entry.setTopstructPi("PPN123");
         entry.getAccessConditions().add("restricted");

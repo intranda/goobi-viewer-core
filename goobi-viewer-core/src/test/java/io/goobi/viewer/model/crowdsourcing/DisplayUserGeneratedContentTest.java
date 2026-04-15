@@ -38,11 +38,10 @@ class DisplayUserGeneratedContentTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see DisplayUserGeneratedContent#buildFromSolrDoc(SolrDocument)
-     * @verifies construct content correctly
+     * @verifies populate type, coordinates, label, and access condition from SolrDocument fields
      */
     @Test
-    void buildFromSolrDoc_shouldConstructContentCorrectly() throws Exception {
+    void buildFromSolrDoc_shouldPopulateTypeCoordinatesLabelAndAccessConditionFromSolrDocumentFields() throws Exception {
         String coords = "1468.0, 2459.0, 1938.0, 2569.0";
 
         SolrDocument doc = new SolrDocument();

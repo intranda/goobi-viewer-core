@@ -53,8 +53,11 @@ class LocaleComparatorTest {
     public void tearDown() throws Exception {
     }
 
+    /**
+     * @verifies sort preferred locale first then english
+     */
     @Test
-    void test() {
+    void compare_shouldSortPreferredLocaleFirstThenEnglish() {
         List<Locale> locales = new ArrayList<>();
         locales.add(Locale.FRANCE);
         locales.add(Locale.ENGLISH);

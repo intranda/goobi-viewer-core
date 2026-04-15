@@ -49,7 +49,7 @@ class BrowseBeanTest extends AbstractTest {
 
     /**
      * @see BrowseBean#getBrowsingMenuItems(String)
-     * @verifies skip items for language-specific fields if no language was given
+     * @verifies skip items for languagespecific fields if no language was given
      */
     @Test
     void getBrowsingMenuItems_shouldSkipItemsForLanguagespecificFieldsIfNoLanguageWasGiven() {
@@ -62,7 +62,7 @@ class BrowseBeanTest extends AbstractTest {
 
     /**
      * @see BrowseBean#getBrowsingMenuItems(String)
-     * @verifies skip items for language-specific fields if they don't match given language
+     * @verifies skip items for languagespecific fields if they dont match given language
      */
     @Test
     void getBrowsingMenuItems_shouldSkipItemsForLanguagespecificFieldsIfTheyDontMatchGivenLanguage() {
@@ -76,7 +76,7 @@ class BrowseBeanTest extends AbstractTest {
 
     /**
      * @see BrowseBean#getBrowsingMenuItems(String)
-     * @verifies return language-specific fields with placeholder
+     * @verifies return languagespecific fields with placeholder
      */
     @Test
     void getBrowsingMenuItems_shouldReturnLanguagespecificFieldsWithPlaceholder() {
@@ -91,10 +91,10 @@ class BrowseBeanTest extends AbstractTest {
 
     /**
      * @see BrowseBean#getCollectionHierarchy(String,String)
-     * @verifies return hierarchy correctly
+     * @verifies return slash-separated ancestor chain for dot-delimited collection name
      */
     @Test
-    void getCollectionHierarchy_shouldReturnHierarchyCorrectly() {
+    void getCollectionHierarchy_shouldReturnSlashSeparatedAncestorChainForDotDelimitedCollectionName() {
         BrowseBean bb = new BrowseBean();
         assertEquals("foo", bb.getCollectionHierarchy("x", "foo"));
         assertEquals("foo / foo.bar", bb.getCollectionHierarchy("x", "foo.bar"));
@@ -177,7 +177,6 @@ class BrowseBeanTest extends AbstractTest {
     }
 
     /**
-     * @see BrowseBean#generateFilterQuery()
      * @verifies generate filter query correctly
      */
     @Test

@@ -85,8 +85,11 @@ class FeedbackBeanTest {
 
     }
 
+    /**
+     * @verifies no user
+     */
     @Test
-    void testNoUser() throws UnsupportedEncodingException, MessagingException {
+    void getFeedback_shouldNoUser() throws UnsupportedEncodingException, MessagingException {
         bean.init();
         bean.getFeedback().setMessage(FEEDBACK_MESSAGE);
         bean.getFeedback().setName(USER_NAME);
@@ -118,8 +121,11 @@ class FeedbackBeanTest {
         assertEquals(indexMailSender, indexSubjectSender);
     }
 
+    /**
+     * @verifies user
+     */
     @Test
-    void testUser() throws UnsupportedEncodingException, MessagingException {
+    void getFeedback_shouldUser() throws UnsupportedEncodingException, MessagingException {
         bean.setUserBean(mockUserBean(USER_NAME, SENDER_ADDRESS));
         bean.init();
         bean.getFeedback().setMessage(FEEDBACK_MESSAGE);
@@ -150,8 +156,12 @@ class FeedbackBeanTest {
         assertEquals(indexMailSender, indexSubjectSender);
     }
 
+    /**
+     * @verifies wrong captcha
+     * @see FeedbackBean#getFeedback
+     */
     @Test
-    void testWrongCaptcha() throws UnsupportedEncodingException, MessagingException {
+    void getFeedback_shouldWrongCaptcha() throws UnsupportedEncodingException, MessagingException {
         bean.setUserBean(mockUserBean(USER_NAME, SENDER_ADDRESS));
         bean.init();
         bean.getFeedback().setMessage(FEEDBACK_MESSAGE);
@@ -164,8 +174,12 @@ class FeedbackBeanTest {
 
     }
 
+    /**
+     * @verifies filled honeypot
+     * @see FeedbackBean#getFeedback
+     */
     @Test
-    void testFilledHoneypot() throws UnsupportedEncodingException, MessagingException {
+    void getFeedback_shouldFilledHoneypot() throws UnsupportedEncodingException, MessagingException {
         bean.setUserBean(mockUserBean(USER_NAME, SENDER_ADDRESS));
         bean.init();
         bean.getFeedback().setMessage(FEEDBACK_MESSAGE);

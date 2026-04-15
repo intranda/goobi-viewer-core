@@ -368,6 +368,8 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
      * getUrl.
      *
      * @return the URL for this TOC element
+     * @should return URL containing page type, PI, page number and logId for fullscreen view
+     * @should return URL containing page type, PI, page number and logId for reading mode view
      */
     public String getUrl() {
         return urlPrefix + urlSuffix;

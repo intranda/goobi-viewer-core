@@ -34,8 +34,11 @@ import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 
 class MetadataBuilderTest {
 
+    /**
+     * @verifies apply prefix and suffix to metadata value
+     */
     @Test
-    void test() {
+    void build_shouldApplyPrefixAndSuffixToMetadataValue() {
         MultiLanguageMetadataValue value = new MultiLanguageMetadataValue(Map.of("en", "Gallery", "de", "Gallerie"));
         Map<String, List<IMetadataValue>> metadata = Map.of(
                 "MD_ROLE", List.of(value));

@@ -220,7 +220,7 @@ public final class StringTools {
      *
      * @param str input string to escape
      * @return the input string with HTML special characters replaced by their entity equivalents
-     * @should escape all characters correctly
+     * @should replace angle brackets, quotes, and ampersands with HTML entities
      */
     public static String escapeHtmlChars(String str) {
         return replaceCharacters(str, new String[] { "&", "\"", "<", ">" }, new String[] { "&amp;", "&quot;", "&lt;", "&gt;" });
@@ -264,7 +264,7 @@ public final class StringTools {
      *
      * @param s input string to normalize
      * @return String without diacritical marks
-     * @should remove diacritical marks correctly
+     * @should strip accents from umlauts and accented characters while preserving eszett and base letters
      */
     public static String removeDiacriticalMarks(String s) {
         if (s == null) {
@@ -293,8 +293,8 @@ public final class StringTools {
      * @param s input string to strip of line breaks
      * @param replaceWith replacement string for each line break found
      * @return String without line breaks
-     * @should remove line breaks correctly
-     * @should remove html line breaks correctly
+     * @should strip CRLF sequences and join text with given replacement
+     * @should replace all HTML br tag variants with the given replacement string
      */
     public static String removeLineBreaks(String s, final String replaceWith) {
         if (s == null) {
@@ -318,7 +318,7 @@ public final class StringTools {
      *
      * @param s String to strip of JavaScript blocks
      * @return String sans any script-tag blocks
-     * @should remove JS blocks correctly
+     * @should remove script tags, self-closing scripts, and SVG event handler elements regardless of case
      */
     public static String stripJS(String s) {
         if (StringUtils.isBlank(s)) {
@@ -336,7 +336,7 @@ public final class StringTools {
      *
      * @param s String to clean
      * @return String sans any logger pattern-breaking characters
-     * @should remove chars correctly
+     * @should replace tabs and line break characters with underscores
      */
     public static String stripPatternBreakingChars(String s) {
         if (StringUtils.isBlank(s)) {
@@ -382,6 +382,7 @@ public final class StringTools {
      *
      * @param s string whose single and double quotes should be escaped
      * @return the input string with single and double quotes preceded by a backslash
+     * @should return expected value for given input
      */
     public static String escapeQuotes(final String s) {
         String ret = s;
@@ -466,7 +467,8 @@ public final class StringTools {
      * @param value URL string to escape
      * @param escapePercentCharacters true to also replace percent characters
      * @return the input string with critical URL characters replaced by their encoded placeholder equivalents
-     * @should replace characters correctly
+     * @should replace +, /, backslash, pipe, and ? with Unicode escape sequences and decode percent-encoding when flagged
+     * @should replace plus slash backslash pipe and question mark with unicode escape sequences and decode percent encoding when flagged
      */
     public static String escapeCriticalUrlChracters(final String value, boolean escapePercentCharacters) {
         if (value == null) {
@@ -489,7 +491,7 @@ public final class StringTools {
      * unescapeCriticalUrlChracters.
      *
      * @param value escaped URL string to unescape
-     * @should replace characters correctly
+     * @should restore original characters from Unicode escape sequences
      * @return the input string with encoded placeholder sequences restored to their original URL characters
      */
     public static String unescapeCriticalUrlChracters(String value) {
@@ -541,7 +543,7 @@ public final class StringTools {
      *
      * @param html The HTML to fix
      * @return Same HTML document but with Chrome-compatible CSS class names
-     * @should rename classes correctly
+     * @should move leading digits in CSS class names to the end in both selectors and class attributes
      */
     public static String renameIncompatibleCSSClasses(final String html) {
         if (html == null) {
@@ -584,8 +586,8 @@ public final class StringTools {
      * @param collection hierarchical collection name string
      * @param split delimiter character used to separate hierarchy levels
      * @return List of string containing every (sub-)collection name
-     * @should create list correctly
-     * @should return single value correctly
+     * @should build cumulative hierarchy list from separator-delimited collection string
+     * @should return single-element list when collection string has no separator
      */
     public static List<String> getHierarchyForCollection(String collection, String split) {
         if (StringUtils.isEmpty(collection) || StringUtils.isEmpty(split)) {
@@ -612,8 +614,8 @@ public final class StringTools {
      *
      * @param coords WebAnnotation coordinate string, e.g. "xywh=x,y,w,h"
      * @return Legacy format coordinates
-     * @should normalize coordinates correctly
      * @should preserve legacy coordinates
+     * @should convert xywh fragment to absolute x 1 y 1 x 2 y 2 coordinate format
      */
     public static String normalizeWebAnnotationCoordinates(String coords) {
         if (coords == null) {
@@ -671,7 +673,7 @@ public final class StringTools {
      *
      * @param myString input string to hash
      * @return generated hash
-     * @should hash string correctly
+     * @should return SHA-256 hex digest for given input string
      */
     public static String generateHash(String myString) {
         String answer = "";
@@ -741,8 +743,8 @@ public final class StringTools {
      * @return true if value null, empty or starts with 0x1; false otherwise
      * @should return true if value null or empty
      * @should return true if value starts with 0x1
-     * @should return true if value starts with #1;
      * @should return false otherwise
+     * @should return true if value starts with 1
      */
     public static boolean checkValueEmptyOrInverted(String value) {
         if (StringUtils.isEmpty(value)) {
@@ -757,7 +759,7 @@ public final class StringTools {
      * @param values All values to check
      * @param regex Regular expression pattern to filter by
      * @return List of values that match <code>regex</code>
-     * @should return all matching values
+     * @should return all matching keys
      */
     public static List<String> filterStringsViaRegex(List<String> values, String regex) {
         if (values == null || values.isEmpty() || StringUtils.isEmpty(regex)) {
@@ -925,7 +927,7 @@ public final class StringTools {
      * @param replacement String to substitute for the last occurrence of target
      * @return ALtered text
      * @should return original text if target not found
-     * @should replace target with replacement correctly
+     * @should replace the last occurrence of target substring with replacement
      */
     public static String replaceLast(String text, String target, String replacement) {
         int index = text.lastIndexOf(target);
@@ -946,6 +948,7 @@ public final class StringTools {
      * @param text the text to truncate
      * @param maxLength maximal length of the returned text
      * @return the truncated text or null if the input was null
+     * @should return abcde for given input
      */
     public static String truncateText(String text, int maxLength) {
         if (text == null || text.length() <= maxLength) {

@@ -559,8 +559,8 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
      * Returns the number of whole days between today and the starting date for this campaign.
      *
      * @return whole days left between today and dateStart; -1 if no dateStart
-     * @should return -1 if no dateStart
-     * @should calculate days correctly
+     * @should return days until start date or zero when start date is in the past
+     * @should return 1 if no date start
      */
     public long getDaysBeforeStart() {
         if (dateStart == null) {
@@ -576,8 +576,8 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
      * left, its main purpose is for displaying the number of days to the user, and it shouldn't be used for access control.
      *
      * @return whole days left between today and dateEnd; -1 if no dateEnd
-     * @should return -1 if no dateEnd
-     * @should calculate days correctly
+     * @should return days until end date or zero when end date is in the past
+     * @should return 1 if no date end
      */
     public long getDaysLeft() {
         if (dateEnd == null) {

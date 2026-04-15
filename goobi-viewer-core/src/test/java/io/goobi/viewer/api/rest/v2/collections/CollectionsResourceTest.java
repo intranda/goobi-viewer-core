@@ -71,9 +71,11 @@ class CollectionsResourceTest extends AbstractRestApiTest {
      * 
      * @throws JsonProcessingException
      * @throws JsonMappingException
+     * @verifies return non null result
+     * @see CollectionsResource#getAllCollections
      */
     @Test
-    void testGetAllCollections() throws JsonMappingException, JsonProcessingException {
+    void getAllCollections_shouldReturnNonNullResult() throws JsonMappingException, JsonProcessingException {
         String url = urls.path(COLLECTIONS).params(SOLR_FIELD).build();
         try (Response response = target(url)
                 .request()
@@ -92,9 +94,11 @@ class CollectionsResourceTest extends AbstractRestApiTest {
      * Test that a field name starting with a digit is rejected with 400 Bad Request.
      * The constructor validates the field against [A-Za-z_][A-Za-z0-9_]* to prevent
      * invalid Solr field names from reaching the index.
+     * @verifies return 400 when invalid field
+     * @see CollectionsResource#getAllCollections
      */
     @Test
-    void testGetAllCollections_invalidField_returns400() {
+    void getAllCollections_shouldReturn400WhenInvalidField() {
         String url = urls.path(COLLECTIONS).params("0invalid").build();
         try (Response response = target(url)
                 .request()
@@ -106,9 +110,11 @@ class CollectionsResourceTest extends AbstractRestApiTest {
 
     /**
      * Test method for {@link io.goobi.viewer.api.rest.v1.collections.CollectionsResource#getCollection(java.lang.String, java.lang.String)}.
+     * @verifies return non null result
+     * @see CollectionsResource#getCollection
      */
     @Test
-    void testGetCollection() {
+    void getCollection_shouldReturnNonNullResult() {
         String url = urls.path(COLLECTIONS, COLLECTIONS_COLLECTION).params(SOLR_FIELD, COLLECTION).build();
         try (Response response = target(url)
                 .request()

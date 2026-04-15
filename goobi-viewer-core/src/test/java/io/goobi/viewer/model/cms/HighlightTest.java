@@ -55,8 +55,11 @@ class HighlightTest extends AbstractSolrEnabledTest {
 
     Configuration config = DataManager.getInstance().getConfiguration();
 
+    /**
+     * @verifies get correct image uri uploaded image
+     */
     @Test
-    void test_getCorrectImageURI_uploadedImage() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
+    void getData_shouldGetCorrectImageUriUploadedImage() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         ThumbnailHandler thumbs = new ThumbnailHandler(URI.create("https:/viewer.goobi.io/api/v2/"), "/viewer/static/");
 
         Highlight object = new Highlight(new HighlightData(), thumbs, config);
@@ -71,8 +74,11 @@ class HighlightTest extends AbstractSolrEnabledTest {
         assertTrue(uriPath.endsWith("api/v1/cms/media/files/image.png/full/!1200,1400/0/default.png"));
     }
 
+    /**
+     * @verifies get correct image uri record representative
+     */
     @Test
-    void test_getCorrectImageURI_recordRepresentative() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
+    void getData_shouldGetCorrectImageUriRecordRepresentative() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         ThumbnailHandler thumbs = new ThumbnailHandler(URI.create("https:/viewer.goobi.io/api/v2/"), "/viewer/static/");
 
         Highlight object = new Highlight(new HighlightData(), thumbs, config);
@@ -88,9 +94,10 @@ class HighlightTest extends AbstractSolrEnabledTest {
      * When Solr is unreachable, getMetadataList() must return an empty list instead of
      * propagating IndexUnreachableException through JSF EL — which would corrupt
      * Mojarra's CompositeComponentStackManager and cause a StackOverflowError.
+     * @verifies return empty list when solr unreachable
      */
     @Test
-    void getMetadataList_solrUnreachable_returnsEmptyList() throws Exception {
+    void getMetadataList_shouldReturnEmptyListWhenSolrUnreachable() throws Exception {
         ThumbnailHandler thumbs = new ThumbnailHandler(URI.create("https://viewer.goobi.io/api/v2/"), "/viewer/static/");
         Configuration mockConfig = mock(Configuration.class);
 
@@ -115,8 +122,12 @@ class HighlightTest extends AbstractSolrEnabledTest {
         }
     }
 
+    /**
+     * @verifies alway active
+     * @see Highlight#getData
+     */
     @Test
-    void test_alwayActive() {
+    void getData_shouldAlwayActive() {
         Highlight object = new Highlight(new HighlightData());
         object.getData().setDateStart(null);
         object.getData().setDateEnd(null);
@@ -125,8 +136,11 @@ class HighlightTest extends AbstractSolrEnabledTest {
         assertFalse(object.isFuture());
     }
 
+    /**
+     * @verifies return true for given input
+     */
     @Test
-    void test_isPresent() {
+    void isPresent_shouldReturnTrueForGivenInput() {
         LocalDateTime now = LocalDate.of(2023, 4, 15).atStartOfDay();
         Highlight object = new Highlight(new HighlightData());
 
@@ -150,8 +164,11 @@ class HighlightTest extends AbstractSolrEnabledTest {
         assertFalse(object.isFuture(now));
     }
 
+    /**
+     * @verifies return true for given input
+     */
     @Test
-    void test_isFuture() {
+    void isFuture_shouldReturnTrueForGivenInput() {
         LocalDateTime now = LocalDate.of(2023, 3, 15).atStartOfDay();
         Highlight object = new Highlight(new HighlightData());
 
@@ -169,8 +186,11 @@ class HighlightTest extends AbstractSolrEnabledTest {
 
     }
 
+    /**
+     * @verifies return true for given input
+     */
     @Test
-    void test_isPast() {
+    void isPast_shouldReturnTrueForGivenInput() {
         LocalDateTime now = LocalDate.of(2023, 5, 15).atStartOfDay();
         Highlight object = new Highlight(new HighlightData());
 

@@ -182,7 +182,7 @@ public class SearchQueryGroup implements Serializable {
      * @param field Index field for the new item
      * @param afterIndex Item index after which to place new new item
      * @return true if operation successful; false otherwise
-     * @should add item correctly
+     * @should append a new query item and increase the item list size by one
      */
     public boolean addNewQueryItem(String field, int afterIndex) {
         logger.trace("addNewQueryItem: {}", afterIndex);
@@ -200,7 +200,7 @@ public class SearchQueryGroup implements Serializable {
      * removeQueryItem.
      *
      * @param item a {@link io.goobi.viewer.model.search.SearchQueryItem} object.
-     * @should remove item correctly
+     * @should remove the specified query item and decrease the item list size by one
      * @should not remove last remaining item
      * @return true if the item was removed successfully, false if it could not be removed (e.g. it is the last remaining item)
      */

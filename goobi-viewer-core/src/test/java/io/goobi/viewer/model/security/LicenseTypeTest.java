@@ -40,7 +40,7 @@ class LicenseTypeTest extends AbstractTest {
     
     /**
      * @see LicenseType#setAccessTicketRequired(boolean)
-     * @verifies add or remove list privilege
+     * @verifies add or remove list priviege
      */
     @Test
     void setAccessTicketRequired_shouldAddOrRemoveListPriviege() {
@@ -53,7 +53,6 @@ class LicenseTypeTest extends AbstractTest {
     }
 
     /**
-     * @see LicenseType#getAvailablePrivileges(Set)
      * @verifies only return priv view ugc if ugc type
      */
     @Test
@@ -65,8 +64,11 @@ class LicenseTypeTest extends AbstractTest {
         Assertions.assertEquals(IPrivilegeHolder.PRIV_VIEW_UGC, result.get(0));
     }
 
+    /**
+     * @verifies exclude already granted privileges
+     */
     @Test
-    void getAvailablePrivilegesHandleNonEmptyArgument() {
+    void getAvailablePrivileges_shouldExcludeAlreadyGrantedPrivileges() {
         LicenseType type = new LicenseType();
         type.setUgcType(true);
         Set<String> privileges = new HashSet<>(Arrays.asList(IPrivilegeHolder.PRIV_VIEW_UGC));

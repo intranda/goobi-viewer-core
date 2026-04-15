@@ -79,10 +79,10 @@ public class MetsResolver extends HttpServlet {
     /**
      * {@inheritDoc}
      * 
-     * @should return METS file correctly via pi
-     * @should return METS file correctly via urn
-     * @should return LIDO file correctly
-     * @should return EAD file correctly
+     * @should return HTTP 200 with valid METS XML when requested by PI
+     * @should return HTTP 200 with valid METS XML when requested by URN
+     * @should return HTTP 200 with valid LIDO XML when requested by PI
+     * @should return HTTP 200 with valid EAD XML when requested by PI
      * @should return 404 if record not in index
      * @should return 404 if file not found
      * @should return 409 if more than one record matched

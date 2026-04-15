@@ -41,24 +41,35 @@ class PullThemeHandlerTest {
             + "  <message>pom.xml: enforce newer maven version</message>\n"
             + "</themepull>";
 
+    /**
+     * @verifies parse branch revision and message
+     */
     @Test
-    void testReadXml() throws JDOMException, IOException {
+    void getDocumentFromString_shouldParseBranchRevisionAndMessage() throws JDOMException, IOException {
         Document doc = XmlTools.getDocumentFromString(resultString, "utf-8");
         assertEquals("develop", doc.getRootElement().getChildText("branch"));
         assertEquals("0f34462", doc.getRootElement().getChildText("revision"));
         assertEquals("pom.xml: enforce newer maven version", doc.getRootElement().getChildText("message"));
     }
 
+    /**
+     * @verifies read info
+     * @see PullThemeHandler#getVersionInfo
+     */
     @Test
-    void testReadInfo() throws JDOMException, IOException {
+    void getVersionInfo_shouldReadInfo() throws JDOMException, IOException {
         VersionInfo info = PullThemeHandler.getVersionInfo(resultString, "2025-01-01");
         assertEquals("develop", info.getReleaseVersion());
         assertEquals("0f34462", info.getGitRevision());
         assertEquals("2025-01-01", info.getBuildDate());
     }
 
+    /**
+     * @verifies read message
+     * @see PullThemeHandler#getMessage
+     */
     @Test
-    void testReadMessage() throws JDOMException, IOException {
+    void getMessage_shouldReadMessage() throws JDOMException, IOException {
         String message = PullThemeHandler.getMessage(resultString);
         assertEquals("pom.xml: enforce newer maven version", message);
     }

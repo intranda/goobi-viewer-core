@@ -430,8 +430,8 @@ public class Metadata implements MetadataListElement, Serializable {
      * @param options additional key/value options (e.g. NORM_TYPE)
      * @param groupType value of METADATATYPE, if available
      * @param locale locale for value translation and formatting
-     * @should add multivalued param values correctly
-     * @should set group type correctly
+     * @should store multiple values for a single param index preserving order
+     * @should set groupTypeForUrl on the metadata value when group type is provided
      */
     public void setParamValue(int valueIndex, int paramIndex, List<String> inValues, String paramLabel, String url,
             Map<String, String> options, String groupType, Locale locale) {
@@ -808,6 +808,10 @@ public class Metadata implements MetadataListElement, Serializable {
      * Checks whether any parameter values are set. 'empty' seems to be a reserved word in JSF, so use 'blank'.
      *
      * @return true if all paramValues are empty or blank; false otherwise.
+     * @should return true if all paramValues are empty
+     * @should return false if at least one paramValue is not empty
+     * @should return true if all values have different ownerIddoc
+     * @should return true if at least one value has same ownerIddoc
      */
     public boolean isBlank() {
         return isBlank(null);
@@ -852,6 +856,7 @@ public class Metadata implements MetadataListElement, Serializable {
      * @return true if at least one value was populated successfully, false otherwise
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @should store pi and logid from struct element
      */
     public boolean populate(StructElement se, String ownerIddoc, List<StringPair> sortFields, Locale locale)
             throws IndexUnreachableException, PresentationException {
@@ -1510,10 +1515,10 @@ public class Metadata implements MetadataListElement, Serializable {
      * @param language two-letter language code to match field variants against
      * @param field metadata field name to filter by; null to include all fields
      * @return Metadata list without any fields with non-matching language; original list if no language is given
-     * @should return language-specific version of a field
      * @should return generic version if no language specific version is found
      * @should preserve metadata field order
-     * @should filter by desired field name correctly
+     * @should return only metadata entries matching the given field name and language
+     * @should return languagespecific version of a field
      */
     public static List<Metadata> filterMetadata(List<Metadata> metadataList, String language, String field) {
         // logger.trace("filterMetadataByLanguage: {}", recordLanguage); //NOSONAR Debug

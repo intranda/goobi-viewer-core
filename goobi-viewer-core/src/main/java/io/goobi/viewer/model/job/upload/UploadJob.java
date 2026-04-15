@@ -285,6 +285,10 @@ public class UploadJob implements Serializable {
      * @return true if status changed; false otherwise
      * @throws PresentationException
      * @throws IndexUnreachableException
+     * @should do nothing if response null
+     * @should set status to error if process nonexistent
+     * @should set status to error of process rejected
+     * @should set status to ready if record in index
      */
     public boolean updateStatus() throws IndexUnreachableException, PresentationException {
         boolean ret = updateStatus(getJobStatus(processId));

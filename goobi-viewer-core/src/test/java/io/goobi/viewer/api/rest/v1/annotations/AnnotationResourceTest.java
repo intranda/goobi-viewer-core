@@ -50,8 +50,12 @@ class AnnotationResourceTest extends AbstractRestApiTest {
     private static final String ALTO_ELEMENT_ID = "TextLine_214";
     private static final int ALTO_PAGE_NO = 1;
 
+    /**
+     * @verifies return non null result
+     * @see AnnotationResource#getAnnotation(@Parameter(description = "Identifier of the, schema = @Schema(minimum =, maximum = "9223372036854775807")) @PathParam("id") Long)
+     */
     @Test
-    void testGetAnnotation() throws JsonMappingException, JsonProcessingException {
+    void getAnnotation_shouldReturnNonNullResult() throws JsonMappingException, JsonProcessingException {
         try (Response response = target(urls.path(ANNOTATIONS, ANNOTATIONS_ANNOTATION).params(1).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
@@ -64,8 +68,12 @@ class AnnotationResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return non null result
+     * @see AnnotationResource#getComment(@Parameter(description = "Identifier of the, schema = @Schema(minimum =, maximum = "9223372036854775807")) @PathParam("id") Long)
+     */
     @Test
-    void testGetComment() throws JsonMappingException, JsonProcessingException {
+    void getComment_shouldReturnNonNullResult() throws JsonMappingException, JsonProcessingException {
         try (Response response = target(urls.path(ANNOTATIONS, ANNOTATIONS_COMMENT).params(1).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
@@ -81,9 +89,11 @@ class AnnotationResourceTest extends AbstractRestApiTest {
     /**
      * Verifies that an ALTO annotation URL with a non-existent PI returns 404 and does not throw
      * a NumberFormatException (which would have caused a 500 before this fix).
+     * @verifies handle not found case
+     * @see AnnotationResource#getAltoAnnotation
      */
     @Test
-    void testGetAltoAnnotation_notFound() {
+    void getAltoAnnotation_shouldHandleNotFoundCase() {
         String url = urls.path(ANNOTATIONS, ANNOTATIONS_ALTO).params("NONEXISTENT_PI", 1, "SomeElement").build();
         try (Response response = target(url)
                 .request()
@@ -96,9 +106,11 @@ class AnnotationResourceTest extends AbstractRestApiTest {
     /**
      * Verifies that an existing ALTO element can be resolved as a Web Annotation.
      * Uses PPN648829383 which has ALTO data in the testing Solr and test resources.
+     * @verifies return result when found
+     * @see AnnotationResource#getAltoAnnotation
      */
     @Test
-    void testGetAltoAnnotation_found() {
+    void getAltoAnnotation_shouldReturnResultWhenFound() {
         String url = urls.path(ANNOTATIONS, ANNOTATIONS_ALTO).params(PI_WITH_ALTO, ALTO_PAGE_NO, ALTO_ELEMENT_ID).build();
         try (Response response = target(url)
                 .request()
@@ -115,9 +127,11 @@ class AnnotationResourceTest extends AbstractRestApiTest {
     /**
      * Verifies that a valid PI/page with a non-existent element ID returns 404.
      * Uses PPN648829383 page 1 which has a real ALTO file.
+     * @verifies handle not found when element
+     * @see AnnotationResource#getAltoAnnotation
      */
     @Test
-    void testGetAltoAnnotation_elementNotFound() {
+    void getAltoAnnotation_shouldHandleNotFoundWhenElement() {
         String url = urls.path(ANNOTATIONS, ANNOTATIONS_ALTO).params(PI_WITH_ALTO, ALTO_PAGE_NO, "NONEXISTENT_ELEMENT").build();
         try (Response response = target(url)
                 .request()

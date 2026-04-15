@@ -65,8 +65,12 @@ class ViewerSectionPDFResourceTest extends AbstractRestApiTest {
         super.tearDown();
     }
 
+    /**
+     * @verifies rejects illegal chars
+     * @see ViewerSectionPDFResource#requireValidPi
+     */
     @Test
-    void testRequireValidPi_rejectsIllegalChars() {
+    void requireValidPi_shouldRejectsIllegalChars() {
         // Illegal chars used in fuzz tests that caused MetsPdfResource to throw HTTP 500
         assertThrows(BadRequestException.class, () -> ViewerSectionPDFResource.requireValidPi(" "));
         assertThrows(BadRequestException.class, () -> ViewerSectionPDFResource.requireValidPi("|"));
@@ -74,8 +78,12 @@ class ViewerSectionPDFResourceTest extends AbstractRestApiTest {
         assertThrows(BadRequestException.class, () -> ViewerSectionPDFResource.requireValidPi("%00"));
     }
 
+    /**
+     * @verifies return non null result
+     * @see ViewerSectionPDFResource#getPdf
+     */
     @Test
-    void testGetPdf() {
+    void getPdf_shouldReturnNonNullResult() {
         String url = urls.path(RECORDS_SECTIONS, RECORDS_SECTIONS_PDF).params(PI, LOGID).build();
         try (Response response = target(url)
                 .request()
@@ -91,8 +99,12 @@ class ViewerSectionPDFResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies refuse access
+     * @see ViewerSectionPDFResource#getPdf
+     */
     @Test
-    void testGetPdf_refuseAccess() {
+    void getPdf_shouldRefuseAccess() {
         String url = urls.path(RECORDS_SECTIONS, RECORDS_SECTIONS_PDF).params(PI_ACCESS_RESTRICTED, LOGID).build();
         try (Response response = target(url)
                 .request()

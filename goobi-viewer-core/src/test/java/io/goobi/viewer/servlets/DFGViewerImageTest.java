@@ -49,8 +49,12 @@ class DFGViewerImageTest extends AbstractTest {
         servlet = new DFGViewerImage();
     }
 
+    /**
+     * @verifies forward to image api url
+     * @see DFGViewerImage#doGet
+     */
     @Test
-    void testForwardToImageApiUrl() throws ServletException, IOException {
+    void doGet_shouldForwardToImageApiUrl() throws ServletException, IOException {
 
         String requestUrl = "/1574750503285_37/800/0/1575272395963.jpg";
         String expectedForwardUrl = DataManager.getInstance().getConfiguration().getIIIFApiUrl()
@@ -66,8 +70,11 @@ class DFGViewerImageTest extends AbstractTest {
         Mockito.verify(response).sendRedirect(expectedForwardUrl);
     }
 
+    /**
+     * @verifies forward to image api url non ascii characters
+     */
     @Test
-    public void testForwardToImageApiUrl_nonAsciiCharacters() throws ServletException, IOException {
+    public void doGet_shouldForwardToImageApiUrlNonAsciiCharacters() throws ServletException, IOException {
 
         String filename = "Bilder für eine Ausstellung";
         String filenameEscaped = URLEncoder.encode(filename, "utf-8");
@@ -86,8 +93,12 @@ class DFGViewerImageTest extends AbstractTest {
         Mockito.verify(response).sendRedirect(expectedForwardUrl);
     }
 
+    /**
+     * @verifies forward to image api url max with
+     * @see DFGViewerImage#doGet
+     */
     @Test
-    public void testForwardToImageApiUrl_maxWith() throws ServletException, IOException {
+    public void doGet_shouldForwardToImageApiUrlMaxWith() throws ServletException, IOException {
 
         String requestUrl = "/1574750503285_37/max/0/1575272395963.jpg";
         String expectedForwardUrl = DataManager.getInstance().getConfiguration().getIIIFApiUrl()

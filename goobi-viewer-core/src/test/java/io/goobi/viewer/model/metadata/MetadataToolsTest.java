@@ -37,11 +37,10 @@ import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
 class MetadataToolsTest extends AbstractSolrEnabledTest {
 
     /**
-     * @see MetadataTools#applyReplaceRules(String,Map)
-     * @verifies apply rules correctly
+     * @verifies apply char string and regex replace rules to transform the input value
      */
     @Test
-    void applyReplaceRules_shouldApplyRulesCorrectly() throws Exception {
+    void applyReplaceRules_shouldApplyCharStringAndRegexReplaceRulesToTransformTheInputValue() throws Exception {
         List<MetadataReplaceRule> replaceRules = new ArrayList<>(3);
         replaceRules.add(new MetadataReplaceRule('<', "", MetadataReplaceRuleType.CHAR));
         replaceRules.add(new MetadataReplaceRule(">", "s", MetadataReplaceRuleType.STRING));
@@ -50,11 +49,10 @@ class MetadataToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see MetadataTools#applyReplaceRules(String,List,String)
-     * @verifies apply conditional rules correctly
+     * @verifies apply conditional replace rule only when PI matches the condition
      */
     @Test
-    void applyReplaceRules_shouldApplyConditionalRulesCorrectly() throws Exception {
+    void applyReplaceRules_shouldApplyConditionalReplaceRuleOnlyWhenPIMatchesTheCondition() throws Exception {
         List<MetadataReplaceRule> replaceRules = Collections.singletonList(
                 new MetadataReplaceRule("remove me", "", SolrConstants.PI_TOPSTRUCT + ":PPN517154005", MetadataReplaceRuleType.STRING));
         Assertions.assertEquals(SolrConstants.PI_TOPSTRUCT + ":PPN517154005", replaceRules.get(0).getConditions());
@@ -67,11 +65,10 @@ class MetadataToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see MetadataTools#findMetadataGroupType(String)
-     * @verifies map values correctly
+     * @verifies map GND type codes and named types to the corresponding MetadataGroupType
      */
     @Test
-    void findMetadataGroupType_shouldMapValuesCorrectly() throws Exception {
+    void findMetadataGroupType_shouldMapGNDTypeCodesAndNamedTypesToTheCorrespondingMetadataGroupType() throws Exception {
         Assertions.assertEquals(MetadataGroupType.CORPORATION.name(), MetadataTools.findMetadataGroupType("kiz"));
         Assertions.assertEquals(MetadataGroupType.PERSON.name(), MetadataTools.findMetadataGroupType("piz"));
         Assertions.assertEquals(MetadataGroupType.SUBJECT.name(), MetadataTools.findMetadataGroupType("saa"));

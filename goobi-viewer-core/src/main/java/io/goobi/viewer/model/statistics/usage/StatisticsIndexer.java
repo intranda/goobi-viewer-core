@@ -76,6 +76,7 @@ public class StatisticsIndexer {
      * @return The filepath to the index files
      * @throws DAOException
      * @throws IOException
+     * @should write correct json to hotfolder
      */
     public Path indexStatistics(DailySessionUsageStatistics stats) throws IOException {
         String json = createStatisticsJsonString(stats);

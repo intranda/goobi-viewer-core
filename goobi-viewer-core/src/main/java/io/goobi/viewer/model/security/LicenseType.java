@@ -441,6 +441,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     /**
      * @param accessTicketRequired true if an access ticket is required; also adds/removes the LIST privilege accordingly
      * @should add or remove list privilege
+     * @should add or remove list priviege
      */
     public void setAccessTicketRequired(boolean accessTicketRequired) {
         logger.trace("setAccessTicketRequired: {}", accessTicketRequired);
@@ -472,6 +473,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
      * Returns the list of available privileges for adding to this license (using the working copy while editing).
      *
      * @return Values in IPrivilegeHolder.PRIVS_RECORD minus the privileges already added
+     * @should only return priv view ugc if ugc type
      */
     public List<String> getAvailablePrivileges() {
         return getAvailablePrivileges(privilegesCopy);

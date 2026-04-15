@@ -30,8 +30,12 @@ import org.junit.jupiter.api.Test;
  */
 class HtmlScriptValidatorTest {
 
+    /**
+     * @verifies accept html without script tags and reject script tags
+     * @see HtmlScriptValidator#validate(FacesContext, UIComponent, String)
+     */
     @Test
-    void test() {
+    void validate_shouldAcceptHtmlWithoutScriptTagsAndRejectScriptTags() {
         Assertions.assertTrue(new HtmlScriptValidator().validate("abc\njkl  h <p>asdasd</p> ashdoha<br/> asdas"), "Does not accept <p> tag");
         Assertions.assertTrue(new HtmlScriptValidator().validate("abc\njkl  h <div test=\"asd\">asdasd</div> ashdoha<br/> asdas"),
                 "Does not accept <div> tag with attribute");

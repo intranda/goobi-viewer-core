@@ -285,6 +285,7 @@ public class UserDataBean implements Serializable {
      *
      * @return the total number of annotations created by the currently logged-in user, or 0 if no user is logged in
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return correct value
      */
     public long getAnnotationCount() throws DAOException {
         if (userBean == null || userBean.getUser() == null) {

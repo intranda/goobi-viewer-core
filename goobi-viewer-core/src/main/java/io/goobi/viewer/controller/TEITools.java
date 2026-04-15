@@ -50,7 +50,7 @@ public final class TEITools {
      * @return TEI full-text element
      * @throws org.jdom2.JDOMException if any.
      * @throws java.io.IOException if any.
-     * @should extract fulltext correctly
+     * @should return plain text without XML tags like note elements from TEI input
      */
     public static String getTeiFulltext(String tei) throws JDOMException, IOException {
         if (tei == null) {

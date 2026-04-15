@@ -15,8 +15,11 @@ class JsonStringConverterTest {
             + "docType:[!,group, anchor],\n"
             + "numPages:2}";
 
+    /**
+     * @verifies deserialize json string to visibility condition info
+     */
     @Test
-    void test() throws IOException {
+    void convert_shouldDeserializeJsonStringToVisibilityConditionInfo() throws IOException {
         VisibilityConditionInfo info = JsonStringConverter.of(VisibilityConditionInfo.class).convert(json);
         Assertions.assertEquals(1, info.getContentType().size());
         Assertions.assertEquals("IMAGE", info.getContentType().get(0));

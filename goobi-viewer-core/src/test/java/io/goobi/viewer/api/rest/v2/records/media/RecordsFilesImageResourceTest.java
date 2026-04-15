@@ -29,8 +29,12 @@ import org.junit.jupiter.api.Test;
 
 class RecordsFilesImageResourceTest {
 
+    /**
+     * @verifies rejects illegal chars
+     * @see RecordsFilesImageResource#requireValidPi
+     */
     @Test
-    void testRequireValidPi_rejectsIllegalChars() {
+    void requireValidPi_shouldRejectsIllegalChars() {
         // Characters that cause ImageResource to throw ContentLibException (HTTP 500)
         // when building file:// URIs from the PI as folder name
         assertThrows(BadRequestException.class, () -> RecordsFilesImageResource.requireValidPi(" "));

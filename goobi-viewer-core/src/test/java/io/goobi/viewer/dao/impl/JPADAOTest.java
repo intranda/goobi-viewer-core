@@ -130,40 +130,59 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     // Users
 
+    /**
+     * @verifies return all stored users
+     */
     @Test
-    void getAllUsersTest() throws DAOException {
+    void getAllUsers_shouldReturnAllStoredUsers() throws DAOException {
         List<User> users = DataManager.getInstance().getDao().getAllUsers(false);
         assertEquals(3, users.size());
     }
 
+    /**
+     * @verifies return user with open id accounts and last login
+     */
     @Test
-    void getUserByIdTest() throws DAOException {
+    void getUser_shouldReturnUserWithOpenIdAccountsAndLastLogin() throws DAOException {
         User user = DataManager.getInstance().getDao().getUser(1);
         assertNotNull(user);
         assertEquals(2, user.getOpenIdAccounts().size());
         assertEquals(LocalDateTime.of(2012, 3, 3, 11, 22, 33), user.getLastLogin());
     }
 
+    /**
+     * @verifies return user for case insensitive email
+     */
     @Test
-    void getUserByEmailTest() throws DAOException {
+    void getUserByEmail_shouldReturnUserForCaseInsensitiveEmail() throws DAOException {
         User user = DataManager.getInstance().getDao().getUserByEmail("1@UsErS.oRg");
         assertNotNull(user);
     }
 
+    /**
+     * @verifies return user for given claimed identifier
+     */
     @Test
-    void getUserByOpenIdTest() throws DAOException {
+    void getUserByOpenId_shouldReturnUserForGivenClaimedIdentifier() throws DAOException {
         User user = DataManager.getInstance().getDao().getUserByOpenId("user_1_claimed_identifier_2");
         assertNotNull(user);
     }
 
+    /**
+     * @verifies return user for given nickname
+     * @see JPADAO#getUserByNickname(String)
+     */
     @Test
-    void getUserByNicknameTest() throws DAOException {
+    void getUserByNickname_shouldReturnUserForGivenNickname() throws DAOException {
         User user = DataManager.getInstance().getDao().getUserByNickname("admin");
         assertNotNull(user);
     }
 
+    /**
+     * @verifies persist all user fields and make user retrievable
+     */
     @Test
-    void addUserTest() throws DAOException {
+    void addUser_shouldPersistAllUserFieldsAndMakeUserRetrievable() throws DAOException {
         User user = new User();
         user.setEmail("a@b.com");
         user.setPasswordHash("EEEEEE");
@@ -195,8 +214,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(user.isSuperuser(), user2.isSuperuser());
     }
 
+    /**
+     * @verifies persist changed fields without altering total count
+     */
     @Test
-    void updateUserTest() throws DAOException {
+    void updateUser_shouldPersistChangedFieldsWithoutAlteringTotalCount() throws DAOException {
         assertEquals(3, DataManager.getInstance().getDao().getAllUsers(false).size());
         User user = DataManager.getInstance().getDao().getUser(1);
         assertNotNull(user);
@@ -234,8 +256,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(user.isAgreedToTermsOfUse(), user2.isAgreedToTermsOfUse());
     }
 
+    /**
+     * @verifies remove user from database
+     */
     @Test
-    void deleteUserTest() throws DAOException {
+    void deleteUser_shouldRemoveUserFromDatabase() throws DAOException {
         User user = new User();
         user.setEmail("deleteme@b.com");
         user.setPasswordHash("DDDDDD");
@@ -253,8 +278,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertNull(DataManager.getInstance().getDao().getUserByEmail("deleteme@b.com"));
     }
 
+    /**
+     * @verifies not duplicate licenses and deleting license should not delete user
+     */
     @Test
-    void userLicenseTest() throws DAOException {
+    void updateUser_shouldNotDuplicateLicensesAndDeletingLicenseShouldNotDeleteUser() throws DAOException {
         User user = DataManager.getInstance().getDao().getUser(2);
         assertNotNull(user);
         assertEquals(1, user.getLicenses().size());
@@ -284,21 +312,30 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     // User groups
 
+    /**
+     * @verifies return all stored user groups
+     */
     @Test
-    void getAllUserGroupsTest() throws DAOException {
+    void getAllUserGroups_shouldReturnAllStoredUserGroups() throws DAOException {
         List<UserGroup> userGroups = DataManager.getInstance().getDao().getAllUserGroups();
         assertEquals(3, userGroups.size());
     }
 
+    /**
+     * @verifies return all groups for given owner
+     */
     @Test
-    void getAllUserGroupsForOwnerTest() throws DAOException {
+    void getUserGroups_shouldReturnAllGroupsForGivenOwner() throws DAOException {
         User user = DataManager.getInstance().getDao().getUser(1);
         assertNotNull(user);
         assertEquals(3, DataManager.getInstance().getDao().getUserGroups(user).size());
     }
 
+    /**
+     * @verifies return group with owner and all fields
+     */
     @Test
-    void getUserGroupByIdTest() throws DAOException {
+    void getUserGroup_shouldReturnGroupWithOwnerAndAllFields() throws DAOException {
         UserGroup ug = DataManager.getInstance().getDao().getUserGroup(1);
         assertNotNull(ug);
         assertNotNull(ug.getOwner());
@@ -308,8 +345,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertTrue(ug.isActive());
     }
 
+    /**
+     * @verifies return group by name
+     */
     @Test
-    void getUserGroupByNameTest() throws DAOException {
+    void getUserGroup_shouldReturnGroupByName() throws DAOException {
         UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup("user group 1 name");
         assertNotNull(userGroup);
         assertNotNull(userGroup.getOwner());
@@ -319,8 +359,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertTrue(userGroup.isActive());
     }
 
+    /**
+     * @verifies persist all fields and make group retrievable
+     */
     @Test
-    void addUserGroupTest() throws DAOException {
+    void addUserGroup_shouldPersistAllFieldsAndMakeGroupRetrievable() throws DAOException {
         User owner = DataManager.getInstance().getDao().getUser(1);
         assertNotNull(owner);
 
@@ -342,8 +385,12 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(userGroup.isActive(), userGroup2.isActive());
     }
 
+    /**
+     * @verifies persist changed name without altering total count
+     * @see JPADAO#updateUserGroup(UserGroup)
+     */
     @Test
-    void updateUserGroupTest() throws DAOException {
+    void updateUserGroup_shouldPersistChangedNameWithoutAlteringTotalCount() throws DAOException {
         assertEquals(3, DataManager.getInstance().getDao().getAllUserGroups().size());
         UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
         assertNotNull(userGroup);
@@ -360,8 +407,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     }
 
+    /**
+     * @verifies not delete group that has members
+     */
     @Test
-    void deleteUserGroupWithMembersTest() throws DAOException {
+    void deleteUserGroup_shouldNotDeleteGroupThatHasMembers() throws DAOException {
         assertEquals(3, DataManager.getInstance().getDao().getAllUserGroups().size());
         UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
         assertNotNull(userGroup);
@@ -370,8 +420,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(3, DataManager.getInstance().getDao().getAllUserGroups().size());
     }
 
+    /**
+     * @verifies delete group that has no members
+     */
     @Test
-    void deleteUserGroupWithoutMembersTest() throws DAOException {
+    void deleteUserGroup_shouldDeleteGroupThatHasNoMembers() throws DAOException {
         assertEquals(3, DataManager.getInstance().getDao().getAllUserGroups().size());
         UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(2);
         assertNotNull(userGroup);
@@ -382,8 +435,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     // UserRoles (group memberships)
 
+    /**
+     * @verifies return all stored user roles
+     */
     @Test
-    void getAllUserRolesTest() throws DAOException {
+    void getAllUserRoles_shouldReturnAllStoredUserRoles() throws DAOException {
         List<UserRole> userRoles = DataManager.getInstance().getDao().getAllUserRoles();
         assertEquals(3, userRoles.size());
     }
@@ -407,8 +463,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(1, DataManager.getInstance().getDao().getUserRoleCount(userGroup, user, role));
     }
 
+    /**
+     * @verifies return memberships filtered by user group
+     */
     @Test
-    void getUserGroupMembershipsByUserGroupTest() throws DAOException {
+    void getUserRoles_shouldReturnMembershipsFilteredByUserGroup() throws DAOException {
         UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
         assertNotNull(userGroup);
         List<UserRole> memberships = DataManager.getInstance().getDao().getUserRoles(userGroup, null, null);
@@ -416,8 +475,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(1, memberships.size());
     }
 
+    /**
+     * @verifies return memberships filtered by user
+     */
     @Test
-    void getUserGroupMembershipsByUserTest() throws DAOException {
+    void getUserRoles_shouldReturnMembershipsFilteredByUser() throws DAOException {
         User user = DataManager.getInstance().getDao().getUser(2);
         assertNotNull(user);
         List<UserRole> memberships = DataManager.getInstance().getDao().getUserRoles(null, user, null);
@@ -425,8 +487,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(1, memberships.size());
     }
 
+    /**
+     * @verifies return memberships filtered by role
+     */
     @Test
-    void getUserGroupMembershipsByRoleTest() throws DAOException {
+    void getUserRoles_shouldReturnMembershipsFilteredByRole() throws DAOException {
         Role role = DataManager.getInstance().getDao().getRole(1);
         assertNotNull(role);
         List<UserRole> memberships = DataManager.getInstance().getDao().getUserRoles(null, null, role);
@@ -434,8 +499,12 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(3, memberships.size());
     }
 
+    /**
+     * @verifies not duplicate licenses and deleting license should not delete group
+     * @see JPADAO#updateUserGroup(UserGroup)
+     */
     @Test
-    void userGroupLicenseTest() throws DAOException {
+    void updateUserGroup_shouldNotDuplicateLicensesAndDeletingLicenseShouldNotDeleteGroup() throws DAOException {
         UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
         assertNotNull(userGroup);
         assertEquals(2, userGroup.getLicenses().size());
@@ -462,8 +531,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertNotNull(DataManager.getInstance().getDao().getUserGroup(1L));
     }
 
+    /**
+     * @verifies persist new membership and make it retrievable
+     */
     @Test
-    void addUserRoleTest() throws DAOException {
+    void addUserRole_shouldPersistNewMembershipAndMakeItRetrievable() throws DAOException {
         User user = DataManager.getInstance().getDao().getUser(2);
         assertNotNull(user);
         UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(2);
@@ -492,8 +564,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(userRole.getRole(), userRole2.getRole());
     }
 
+    /**
+     * @verifies persist changed role without altering total count
+     */
     @Test
-    void updateUserRoleTest() throws DAOException {
+    void updateUserRole_shouldPersistChangedRoleWithoutAlteringTotalCount() throws DAOException {
         assertEquals(3, DataManager.getInstance().getDao().getAllUserRoles().size());
         UserRole userRole = DataManager.getInstance().getDao().getAllUserRoles().get(0);
         assertNotNull(userRole);
@@ -512,8 +587,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(userRole.getRole(), userRole2.getRole());
     }
 
+    /**
+     * @verifies remove user role and decrease total count
+     */
     @Test
-    void deleteUserRoleTest() throws DAOException {
+    void deleteUserRole_shouldRemoveUserRoleAndDecreaseTotalCount() throws DAOException {
         assertEquals(3, DataManager.getInstance().getDao().getAllUserRoles().size());
         UserRole userRole = DataManager.getInstance().getDao().getAllUserRoles().get(0);
         assertTrue(DataManager.getInstance().getDao().deleteUserRole(userRole));
@@ -522,14 +600,20 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     // IP ranges
 
+    /**
+     * @verifies return all stored ip ranges
+     */
     @Test
-    void getAllIpRangesTest() throws DAOException {
+    void getAllIpRanges_shouldReturnAllStoredIpRanges() throws DAOException {
         List<IpRange> ipRanges = DataManager.getInstance().getDao().getAllIpRanges();
         assertEquals(2, ipRanges.size());
     }
 
+    /**
+     * @verifies return ip range with all fields by id
+     */
     @Test
-    void getIpRangeByIdTest() throws DAOException {
+    void getIpRange_shouldReturnIpRangeWithAllFieldsById() throws DAOException {
         IpRange ipRange = DataManager.getInstance().getDao().getIpRange(1);
         assertNotNull(ipRange);
         assertEquals(Long.valueOf(1), ipRange.getId());
@@ -538,8 +622,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals("ip range 1 desc", ipRange.getDescription());
     }
 
+    /**
+     * @verifies return ip range with all fields by name
+     */
     @Test
-    void getIpRangeByNameTest() throws DAOException {
+    void getIpRange_shouldReturnIpRangeWithAllFieldsByName() throws DAOException {
         IpRange ipRange = DataManager.getInstance().getDao().getIpRange("localhost");
         assertNotNull(ipRange);
         assertEquals(Long.valueOf(1), ipRange.getId());
@@ -548,8 +635,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals("ip range 1 desc", ipRange.getDescription());
     }
 
+    /**
+     * @verifies persist all fields and increase total count
+     */
     @Test
-    void addIpRangeTest() throws DAOException {
+    void addIpRange_shouldPersistAllFieldsAndIncreaseTotalCount() throws DAOException {
         assertEquals(2, DataManager.getInstance().getDao().getAllIpRanges().size());
         IpRange ipRange = new IpRange();
         ipRange.setName("ip range to add name");
@@ -566,8 +656,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(ipRange.getSubnetMask(), ipRange2.getSubnetMask());
     }
 
+    /**
+     * @verifies persist changed fields without altering total count
+     */
     @Test
-    void updateIpRangeTest() throws DAOException {
+    void updateIpRange_shouldPersistChangedFieldsWithoutAlteringTotalCount() throws DAOException {
         assertEquals(2, DataManager.getInstance().getDao().getAllIpRanges().size());
         IpRange ipRange = DataManager.getInstance().getDao().getIpRange(1);
         assertNotNull(ipRange);
@@ -587,8 +680,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(ipRange.getSubnetMask(), ipRange2.getSubnetMask());
     }
 
+    /**
+     * @verifies remove ip range and decrease total count
+     */
     @Test
-    void deleteIpRangeTest() throws DAOException {
+    void deleteIpRange_shouldRemoveIpRangeAndDecreaseTotalCount() throws DAOException {
         assertEquals(2, DataManager.getInstance().getDao().getAllIpRanges().size());
         IpRange ipRange = DataManager.getInstance().getDao().getIpRange(2);
         assertNotNull(ipRange);
@@ -597,8 +693,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(1, DataManager.getInstance().getDao().getAllIpRanges().size());
     }
 
+    /**
+     * @verifies not duplicate licenses and deleting license should not delete ip range
+     */
     @Test
-    void ipRangeLicenseTest() throws DAOException {
+    void updateIpRange_shouldNotDuplicateLicensesAndDeletingLicenseShouldNotDeleteIpRange() throws DAOException {
         IpRange ipRange = DataManager.getInstance().getDao().getIpRange(1);
         assertNotNull(ipRange);
         assertEquals(1, ipRange.getLicenses().size());
@@ -647,8 +746,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     // Comments
 
+    /**
+     * @verifies return all stored comments
+     */
     @Test
-    void getAllCommentsTest() throws DAOException {
+    void getAllComments_shouldReturnAllStoredComments() throws DAOException {
         List<Comment> comments = DataManager.getInstance().getDao().getAllComments();
         assertEquals(4, comments.size());
     }
@@ -664,10 +766,10 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see JPADAO#getCommentCount(Map,User,Set)
-     * @verifies filter correctly
+     * @verifies return count matching filter when filtering by targetPageOrder
      */
     @Test
-    void getCommentCount_shouldFilterCorrectly() throws Exception {
+    void getCommentCount_shouldReturnCountMatchingFilterWhenFilteringByTargetPageOrder() throws Exception {
         Map<String, String> filters = new HashMap<>();
         filters.put("targetPageOrder", "1");
         assertEquals(3L, DataManager.getInstance().getDao().getCommentCount(filters, null, null));
@@ -675,10 +777,10 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see JPADAO#getCommentCount(Map,User,Set)
-     * @verifies filter for users correctly
+     * @verifies return different counts when filtering by different owner users
      */
     @Test
-    void getCommentCount_shouldFilterForUsersCorrectly() throws Exception {
+    void getCommentCount_shouldReturnDifferentCountsWhenFilteringByDifferentOwnerUsers() throws Exception {
         {
             User owner = DataManager.getInstance().getDao().getUser(1l);
             assertEquals(3L, DataManager.getInstance().getDao().getCommentCount(null, owner, null));
@@ -691,16 +793,19 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see JPADAO#getCommentCount(Map,User,Set)
-     * @verifies apply target pi filter correctly
+     * @verifies return count restricted to given target PI set
      */
     @Test
-    void getCommentCount_shouldApplyTargetPiFilterCorrectly() throws Exception {
+    void getCommentCount_shouldReturnCountRestrictedToGivenTargetPISet() throws Exception {
         // TODO update test dataset to include comments with different target_pi
         assertEquals(4L, DataManager.getInstance().getDao().getCommentCount(null, null, Collections.singleton("PI_1")));
     }
 
+    /**
+     * @verifies return comment with all fields by id
+     */
     @Test
-    void getCommentByIdTest() throws DAOException {
+    void getComment_shouldReturnCommentWithAllFieldsById() throws DAOException {
         Comment comment = DataManager.getInstance().getDao().getComment(1);
         assertNotNull(comment);
         assertEquals(Long.valueOf(1), comment.getId());
@@ -719,14 +824,20 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         //        assertEquals(1, comment2.getChildren().size());
     }
 
+    /**
+     * @verifies return comments for given pi and page
+     */
     @Test
-    void getCommentsForPageTest() throws DAOException {
+    void getCommentsForPage_shouldReturnCommentsForGivenPiAndPage() throws DAOException {
         List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage("PI_1", 1);
         assertEquals(3, comments.size());
     }
 
+    /**
+     * @verifies persist all fields and increase total count
+     */
     @Test
-    void addCommentTest() throws DAOException {
+    void addComment_shouldPersistAllFieldsAndIncreaseTotalCount() throws DAOException {
         assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
         Comment comment = new Comment();
         comment.setTargetPI("PI_2");
@@ -747,8 +858,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertNull(comment2.getDateModified());
     }
 
+    /**
+     * @verifies persist changed text and modified date without altering total count
+     */
     @Test
-    void updateCommentTest() throws DAOException {
+    void updateComment_shouldPersistChangedTextAndModifiedDateWithoutAlteringTotalCount() throws DAOException {
         assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
         Comment comment = DataManager.getInstance().getDao().getComment(1);
         assertNotNull(comment);
@@ -771,8 +885,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(comment.getCreator(), comment2.getCreator());
     }
 
+    /**
+     * @verifies remove comment and decrease total count
+     */
     @Test
-    void deleteCommentTest() throws DAOException {
+    void deleteComment_shouldRemoveCommentAndDecreaseTotalCount() throws DAOException {
         assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
         Comment comment = DataManager.getInstance().getDao().getComment(1);
         assertNotNull(comment);
@@ -783,10 +900,10 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see JPADAO#deleteComments(String,User)
-     * @verifies delete comments for pi correctly
+     * @verifies remove all comments matching given PI and return deleted count
      */
     @Test
-    void deleteComments_shouldDeleteCommentsForPiCorrectly() throws Exception {
+    void deleteComments_shouldRemoveAllCommentsMatchingGivenPIAndReturnDeletedCount() throws Exception {
         assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
         User user = DataManager.getInstance().getDao().getUser(1);
         assertNotNull(user);
@@ -796,10 +913,10 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see JPADAO#deleteComments(String,User)
-     * @verifies delete comments for user correctly
+     * @verifies remove only comments owned by given user and leave others intact
      */
     @Test
-    void deleteComments_shouldDeleteCommentsForUserCorrectly() throws Exception {
+    void deleteComments_shouldRemoveOnlyCommentsOwnedByGivenUserAndLeaveOthersIntact() throws Exception {
         assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
         User user = DataManager.getInstance().getDao().getUser(1);
         assertNotNull(user);
@@ -809,10 +926,10 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see JPADAO#deleteComments(String,User)
-     * @verifies delete comments for pi and user correctly
+     * @verifies remove only comments matching both PI and user when both are given
      */
     @Test
-    void deleteComments_shouldDeleteCommentsForPiAndUserCorrectly() throws Exception {
+    void deleteComments_shouldRemoveOnlyCommentsMatchingBothPIAndUserWhenBothAreGiven() throws Exception {
         assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
         User user = DataManager.getInstance().getDao().getUser(1);
         assertNotNull(user);
@@ -833,10 +950,10 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see JPADAO#changeCommentsOwner(User,User)
-     * @verifies update rows correctly
+     * @verifies reassign all comments from old owner to new owner and return updated row count
      */
     @Test
-    void changeCommentsOwner_shouldUpdateRowsCorrectly() throws Exception {
+    void changeCommentsOwner_shouldReassignAllCommentsFromOldOwnerToNewOwnerAndReturnUpdatedRowCount() throws Exception {
         User oldOwner = DataManager.getInstance().getDao().getUser(1);
         assertNotNull(oldOwner);
         User newOwner = DataManager.getInstance().getDao().getUser(3);
@@ -854,14 +971,20 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     // Search
 
+    /**
+     * @verifies return all stored searches
+     */
     @Test
-    void getAllSearchesTest() throws DAOException {
+    void getAllSearches_shouldReturnAllStoredSearches() throws DAOException {
         List<Search> list = DataManager.getInstance().getDao().getAllSearches();
         assertEquals(3, list.size());
     }
 
+    /**
+     * @verifies return search with all fields by id
+     */
     @Test
-    void getSearchByIdTest() throws DAOException {
+    void getSearch_shouldReturnSearchWithAllFieldsById() throws DAOException {
         Search o = DataManager.getInstance().getDao().getSearch(1);
         assertNotNull(o);
         assertEquals(Long.valueOf(1), o.getId());
@@ -875,16 +998,22 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertNotNull(o.getDateUpdated());
     }
 
+    /**
+     * @verifies return searches for given user
+     */
     @Test
-    void getSearchesForUserTest() throws DAOException {
+    void getSearches_shouldReturnSearchesForGivenUser() throws DAOException {
         User user = DataManager.getInstance().getDao().getUser(1);
         assertNotNull(user);
         List<Search> list = DataManager.getInstance().getDao().getSearches(user);
         assertEquals(2, list.size());
     }
 
+    /**
+     * @verifies persist all fields and increase total count
+     */
     @Test
-    void addSearchTest() throws DAOException {
+    void addSearch_shouldPersistAllFieldsAndIncreaseTotalCount() throws DAOException {
         assertEquals(3, DataManager.getInstance().getDao().getAllSearches().size());
         Search o = new Search(SearchHelper.SEARCH_TYPE_REGULAR, SearchHelper.SEARCH_FILTER_ALL,
                 Collections.singletonList(SearchResultGroup.createDefaultGroup()));
@@ -914,8 +1043,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(DateTools.FORMATTERISO8601DATETIME.format(now), DateTools.FORMATTERISO8601DATETIME.format(o2.getDateUpdated()));
     }
 
+    /**
+     * @verifies persist changed name and date without altering total count
+     */
     @Test
-    void updateSearchTest() throws DAOException {
+    void updateSearch_shouldPersistChangedNameAndDateWithoutAlteringTotalCount() throws DAOException {
         assertEquals(3, DataManager.getInstance().getDao().getAllSearches().size());
         Search o = DataManager.getInstance().getDao().getSearch(1);
         assertNotNull(o);
@@ -935,8 +1067,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(DateTools.FORMATTERISO8601DATETIME.format(now), DateTools.FORMATTERISO8601DATETIME.format(o2.getDateUpdated()));
     }
 
+    /**
+     * @verifies remove search and decrease total count
+     */
     @Test
-    void deleteSearchTest() throws DAOException {
+    void deleteSearch_shouldRemoveSearchAndDecreaseTotalCount() throws DAOException {
         assertEquals(3, DataManager.getInstance().getDao().getAllSearches().size());
         Search o = DataManager.getInstance().getDao().getSearch(1);
         assertNotNull(o);
@@ -947,8 +1082,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     // License types
 
+    /**
+     * @verifies return all stored license types
+     */
     @Test
-    void getAllLicenseTypesTest() throws DAOException {
+    void getAllLicenseTypes_shouldReturnAllStoredLicenseTypes() throws DAOException {
         assertEquals(NUM_LICENSE_TYPES, DataManager.getInstance().getDao().getAllLicenseTypes().size());
     }
 
@@ -957,15 +1095,18 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      * @verifies only return non open access license types
      */
     @Test
-    void getRecordTypes_shouldOnlyReturnNonOpenAccessLicenseTypes() throws Exception {
+    void getRecordLicenseTypes_shouldOnlyReturnNonOpenAccessLicenseTypes() throws Exception {
         List<LicenseType> licenseTypes = DataManager.getInstance().getDao().getRecordLicenseTypes();
         assertEquals(5, licenseTypes.size());
         assertEquals(Long.valueOf(1), licenseTypes.get(0).getId());
         assertEquals(Long.valueOf(6), licenseTypes.get(4).getId());
     }
 
+    /**
+     * @verifies return license type with privileges and overrides by id
+     */
     @Test
-    void getLicenseTypeByIdTest() throws DAOException {
+    void getLicenseType_shouldReturnLicenseTypeWithPrivilegesAndOverridesById() throws DAOException {
         {
             LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(1);
             assertNotNull(licenseType);
@@ -984,8 +1125,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         }
     }
 
+    /**
+     * @verifies return license type with all fields by name
+     */
     @Test
-    void getLicenseTypeByNameTest() throws DAOException {
+    void getLicenseType_shouldReturnLicenseTypeWithAllFieldsByName() throws DAOException {
         LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType("license type 2 name");
         assertNotNull(licenseType);
         assertEquals(Long.valueOf(2), licenseType.getId());
@@ -1022,8 +1166,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(Long.valueOf(4), overriding.get(0).getId());
     }
 
+    /**
+     * @verifies persist all fields including privileges
+     */
     @Test
-    void addLicenseTypeTest() throws DAOException {
+    void addLicenseType_shouldPersistAllFieldsIncludingPrivileges() throws DAOException {
         assertEquals(NUM_LICENSE_TYPES, DataManager.getInstance().getDao().getAllLicenseTypes().size());
         LicenseType licenseType = new LicenseType();
         licenseType.setName("license type to add name");
@@ -1041,8 +1188,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertTrue(licenseType2.getPrivileges().contains("license type to add priv 1"));
     }
 
+    /**
+     * @verifies persist changed fields and new privileges
+     */
     @Test
-    void updateLicenseTypeTest() throws DAOException {
+    void updateLicenseType_shouldPersistChangedFieldsAndNewPrivileges() throws DAOException {
         assertEquals(NUM_LICENSE_TYPES, DataManager.getInstance().getDao().getAllLicenseTypes().size());
         LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(1);
         assertNotNull(licenseType);
@@ -1062,8 +1212,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(2, licenseType.getPrivileges().size());
     }
 
+    /**
+     * @verifies not delete license type that is in use
+     */
     @Test
-    void deleteUsedLicenseTypeTest() throws DAOException {
+    void deleteLicenseType_shouldNotDeleteLicenseTypeThatIsInUse() throws DAOException {
         // Deleting license types in use should fail
         assertEquals(NUM_LICENSE_TYPES, DataManager.getInstance().getDao().getAllLicenseTypes().size());
         LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(1);
@@ -1073,8 +1226,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(NUM_LICENSE_TYPES, DataManager.getInstance().getDao().getAllLicenseTypes().size());
     }
 
+    /**
+     * @verifies delete unused license type and decrease total count
+     */
     @Test
-    void deleteUnusedLicenseTypeTest() throws DAOException {
+    void deleteLicenseType_shouldDeleteUnusedLicenseTypeAndDecreaseTotalCount() throws DAOException {
         assertEquals(NUM_LICENSE_TYPES, DataManager.getInstance().getDao().getAllLicenseTypes().size());
         LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(2);
         assertNotNull(licenseType);
@@ -1085,14 +1241,20 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     // Roles
 
+    /**
+     * @verifies return all stored roles
+     */
     @Test
-    void getAllRolesTest() throws DAOException {
+    void getAllRoles_shouldReturnAllStoredRoles() throws DAOException {
         List<Role> roles = DataManager.getInstance().getDao().getAllRoles();
         assertEquals(2, roles.size());
     }
 
+    /**
+     * @verifies return role with all fields by id
+     */
     @Test
-    void getRoleByIdTest() throws DAOException {
+    void getRole_shouldReturnRoleWithAllFieldsById() throws DAOException {
         Role role = DataManager.getInstance().getDao().getRole(1);
         assertNotNull(role);
         assertEquals(Long.valueOf(1), role.getId());
@@ -1101,8 +1263,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(1, role.getPrivileges().size());
     }
 
+    /**
+     * @verifies return role with all fields by name
+     */
     @Test
-    void getRoleByNameTest() throws DAOException {
+    void getRole_shouldReturnRoleWithAllFieldsByName() throws DAOException {
         Role role = DataManager.getInstance().getDao().getRole("role 1 name");
         assertNotNull(role);
         assertEquals(Long.valueOf(1), role.getId());
@@ -1111,8 +1276,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(1, role.getPrivileges().size());
     }
 
+    /**
+     * @verifies persist all fields including privileges
+     */
     @Test
-    void addRoleTest() throws DAOException {
+    void addRole_shouldPersistAllFieldsIncludingPrivileges() throws DAOException {
         Role role = new Role();
         role.setName("role to add name");
         role.setDescription("role to add desc");
@@ -1128,8 +1296,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertTrue(role2.getPrivileges().contains("role to add priv 1"));
     }
 
+    /**
+     * @verifies persist changed fields and new privileges
+     */
     @Test
-    void updateRoleTest() throws DAOException {
+    void updateRole_shouldPersistChangedFieldsAndNewPrivileges() throws DAOException {
         assertEquals(2, DataManager.getInstance().getDao().getAllRoles().size());
         Role role = DataManager.getInstance().getDao().getRole(1);
         assertNotNull(role);
@@ -1151,8 +1322,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(2, role.getPrivileges().size());
     }
 
+    /**
+     * @verifies not persist duplicate privileges
+     */
     @Test
-    void duplicateRolePrivilegeTest() throws DAOException {
+    void updateRole_shouldNotPersistDuplicatePrivileges() throws DAOException {
         Role role = DataManager.getInstance().getDao().getRole(1);
         assertNotNull(role);
         assertEquals(1, role.getPrivileges().size());
@@ -1165,8 +1339,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(1, role2.getPrivileges().size());
     }
 
+    /**
+     * @verifies remove role and decrease total count
+     */
     @Test
-    void deleteRoleTest() throws DAOException {
+    void deleteRole_shouldRemoveRoleAndDecreaseTotalCount() throws DAOException {
         assertEquals(2, DataManager.getInstance().getDao().getAllRoles().size());
         Role role = DataManager.getInstance().getDao().getRole(2);
         assertNotNull(role);
@@ -1177,21 +1354,30 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     // Bookmarks
 
+    /**
+     * @verifies return all stored bookmark lists
+     */
     @Test
-    void getAllBookmarkListsTest() throws DAOException {
+    void getAllBookmarkLists_shouldReturnAllStoredBookmarkLists() throws DAOException {
         List<BookmarkList> result = DataManager.getInstance().getDao().getAllBookmarkLists();
         assertEquals(3, result.size());
     }
 
+    /**
+     * @verifies return only public bookmark lists
+     */
     @Test
-    void getPublicBookmarkListsTest() throws DAOException {
+    void getPublicBookmarkLists_shouldReturnOnlyPublicBookmarkLists() throws DAOException {
         List<BookmarkList> result = DataManager.getInstance().getDao().getPublicBookmarkLists();
         assertEquals(1, result.size());
         assertEquals(Long.valueOf(2), result.get(0).getId());
     }
 
+    /**
+     * @verifies return bookmark lists for given user
+     */
     @Test
-    void getAllBookmarkListsForUserTest() throws DAOException {
+    void getBookmarkLists_shouldReturnBookmarkListsForGivenUser() throws DAOException {
         User user = DataManager.getInstance().getDao().getUser(1);
         assertNotNull(user);
         List<BookmarkList> boomarkLists = DataManager.getInstance().getDao().getBookmarkLists(user);
@@ -1200,8 +1386,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(user, boomarkLists.get(0).getOwner());
     }
 
+    /**
+     * @verifies return count matching list size for user
+     */
     @Test
-    void countAllBookmarkListsForUserTest() throws DAOException {
+    void getBookmarkListCount_shouldReturnCountMatchingListSizeForUser() throws DAOException {
         User user = DataManager.getInstance().getDao().getUser(1);
         assertNotNull(user);
         List<BookmarkList> boomarkLists = DataManager.getInstance().getDao().getBookmarkLists(user);
@@ -1209,8 +1398,12 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(boomarkLists.size(), count);
     }
 
+    /**
+     * @verifies return bookmark list with items by id
+     * @see JPADAO#getBookmarkList(String, User)
+     */
     @Test
-    void getBookmarkListByIdTest() throws DAOException {
+    void getBookmarkList_shouldReturnBookmarkListWithItemsById() throws DAOException {
         BookmarkList bl = DataManager.getInstance().getDao().getBookmarkList(1);
         assertNotNull(bl);
         assertEquals(Long.valueOf(1), bl.getId());
@@ -1297,8 +1490,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assertions.assertThrows(IllegalArgumentException.class, () -> dao.getBookmarkListByShareKey(""));
     }
 
+    /**
+     * @verifies persist list with items and make it retrievable
+     */
     @Test
-    void addBookmarkListTest() throws DAOException {
+    void addBookmarkList_shouldPersistListWithItemsAndMakeItRetrievable() throws DAOException {
         User user = DataManager.getInstance().getDao().getUser(1);
         assertNotNull(user);
 
@@ -1326,8 +1522,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals("add bookmark 1 desc", item2.getDescription());
     }
 
+    /**
+     * @verifies persist added item and changed fields without altering total count
+     */
     @Test
-    void updateBookmarkListTest() throws DAOException {
+    void updateBookmarkList_shouldPersistAddedItemAndChangedFieldsWithoutAlteringTotalCount() throws DAOException {
         BookmarkList bl = DataManager.getInstance().getDao().getBookmarkList(1);
         assertNotNull(bl);
         assertEquals(2, bl.getItems().size());
@@ -1353,8 +1552,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(3, bl2.getItems().size());
     }
 
+    /**
+     * @verifies remove bookmark list and decrease total count
+     */
     @Test
-    void deleteBookmarkListTest() throws DAOException {
+    void deleteBookmarkList_shouldRemoveBookmarkListAndDecreaseTotalCount() throws DAOException {
         assertEquals(3, DataManager.getInstance().getDao().getAllBookmarkLists().size());
         BookmarkList bl = DataManager.getInstance().getDao().getBookmarkList(1);
         assertNotNull(bl);
@@ -1363,8 +1565,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(2, DataManager.getInstance().getDao().getAllBookmarkLists().size());
     }
 
+    /**
+     * @verifies persist removed bookmark item
+     */
     @Test
-    void removeBookMarkTest() throws DAOException {
+    void updateBookmarkList_shouldPersistRemovedBookmarkItem() throws DAOException {
         BookmarkList bl = DataManager.getInstance().getDao().getBookmarkList(1);
         assertNotNull(bl);
         assertEquals(2, bl.getItems().size());
@@ -1378,10 +1583,10 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see JPADAO#getComments(int,int,String,boolean,Map)
-     * @verifies sort results correctly
+     * @verifies return comments ordered by body field in descending order
      */
     @Test
-    void getComments_shouldSortResultsCorrectly() throws Exception {
+    void getComments_shouldReturnCommentsOrderedByBodyFieldInDescendingOrder() throws Exception {
         List<Comment> ret = DataManager.getInstance().getDao().getComments(0, 2, "body", true, null, null);
         assertEquals(2, ret.size());
         assertEquals(Long.valueOf(4), ret.get(0).getId());
@@ -1390,10 +1595,10 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see JPADAO#getComments(int,int,String,boolean,Map)
-     * @verifies filter results correctly
+     * @verifies return only comments matching combined targetPI and body filter
      */
     @Test
-    void getComments_shouldFilterResultsCorrectly() throws Exception {
+    void getComments_shouldReturnOnlyCommentsMatchingCombinedTargetPIAndBodyFilter() throws Exception {
         Map<String, String> filterMap = new HashMap<>();
         filterMap.put("targetPI", "pi_1");
         filterMap.put("body", "ment 2");
@@ -1404,10 +1609,10 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see JPADAO#getComments(int,int,String,boolean,Map,Set)
-     * @verifies apply target pi filter correctly
+     * @verifies return only comments belonging to given target PI set
      */
     @Test
-    void getComments_shouldApplyTargetPiFilterCorrectly() throws Exception {
+    void getComments_shouldReturnOnlyCommentsBelongingToGivenTargetPISet() throws Exception {
         Map<String, String> filterMap = new HashMap<>();
         // TODO update test dataset to include comments with different target_pi
         List<Comment> ret = DataManager.getInstance().getDao().getComments(0, 10, null, true, filterMap, Collections.singleton("PI_1"));
@@ -1554,10 +1759,10 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see JPADAO#getLicenseTypes(int,int,String,boolean,Map)
-     * @verifies sort results correctly
+     * @verifies return license types sorted by name in both ascending and descending order
      */
     @Test
-    void getLicenseTypes_shouldSortResultsCorrectly() throws Exception {
+    void getLicenseTypes_shouldReturnLicenseTypesSortedByNameInBothAscendingAndDescendingOrder() throws Exception {
         // asc
         List<LicenseType> ret = DataManager.getInstance().getDao().getLicenseTypes(0, 2, "name", true, null);
         assertEquals(2, ret.size());
@@ -1572,10 +1777,10 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see JPADAO#getLicenseTypes(int,int,String,boolean,Map)
-     * @verifies filter results correctly
+     * @verifies return only license types matching name and description filter
      */
     @Test
-    void getLicenseTypes_shouldFilterResultsCorrectly() throws Exception {
+    void getLicenseTypes_shouldReturnOnlyLicenseTypesMatchingNameAndDescriptionFilter() throws Exception {
         Map<String, String> filterMap = new HashMap<>();
         filterMap.put("name", "license type 2 name");
         filterMap.put("description", "unused");
@@ -1586,10 +1791,10 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see JPADAO#getCoreLicenseTypes(int,int,String,boolean,Map)
-     * @verifies sort results correctly
+     * @verifies return core license types sorted by name for both sort directions
      */
     @Test
-    void getCoreLicenseTypes_shouldSortResultsCorrectly() throws Exception {
+    void getCoreLicenseTypes_shouldReturnCoreLicenseTypesSortedByNameForBothSortDirections() throws Exception {
         // TODO add more core types to test DB
 
         // asc
@@ -1604,10 +1809,10 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see JPADAO#getCoreLicenseTypes(int,int,String,boolean,Map)
-     * @verifies filter results correctly
+     * @verifies return matching core license types when filter matches and empty list when filter has no match
      */
     @Test
-    void getCoreLicenseTypes_shouldFilterResultsCorrectly() throws Exception {
+    void getCoreLicenseTypes_shouldReturnMatchingCoreLicenseTypesWhenFilterMatchesAndEmptyListWhenFilterHasNoMatch() throws Exception {
         Map<String, String> filterMap = new HashMap<>();
         filterMap.put("name", "cms");
         filterMap.put("description", "cms");
@@ -1699,7 +1904,6 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see JPADAO#addCMSMediaItem(CMSMediaItem)
      * @verifies add item correctly
      */
     @Test
@@ -1885,7 +2089,6 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see JPADAO#getAllTopCMSNavigationItems()
      * @verifies return all top items
      */
     @Test
@@ -1898,7 +2101,6 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see JPADAO#getCMSNavigationItem(long)
      * @verifies return correct item and child items
      */
     @Test
@@ -2106,12 +2308,18 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertTrue(result.isEmpty());
     }
 
+    /**
+     * @verifies return correct count
+     */
     @Test
     void getCMSPagesCount_shouldReturnCorrectCount() throws Exception {
         long numPages = DataManager.getInstance().getDao().getCMSPageCount(Collections.emptyMap(), null, null, null);
         assertEquals(3, numPages);
     }
 
+    /**
+     * @verifies return correct result
+     */
     @Test
     void getStaticPageForCMSPage_shouldReturnCorrectResult() throws Exception {
         List<CMSPage> cmsPages = DataManager.getInstance().getDao().getAllCMSPages();
@@ -2127,8 +2335,12 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         }
     }
 
+    /**
+     * @verifies return expected value for given input
+     * @see JPADAO#createCMSPageFilter
+     */
     @Test
-    void testCreateCMSPageFilter_createValidQueryWithAllParams() throws AccessDeniedException {
+    void createCMSPageFilter_shouldReturnExpectedValueForGivenInput() throws AccessDeniedException {
 
         List<String> categories = Arrays.asList(new String[] { "c1", "c2", "c3" });
         List<String> subThemes = Arrays.asList(new String[] { "s1" });
@@ -2151,8 +2363,12 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     }
 
+    /**
+     * @verifies build query with subtheme and categories
+     * @see JPADAO#createCMSPageFilter(Map<String, Object>, String, List<Long>, List<String>, List<String>)
+     */
     @Test
-    void testCreateCMSPageFilter_createValidQueryWithTwoParams() throws AccessDeniedException {
+    void createCMSPageFilter_shouldBuildQueryWithSubthemeAndCategories() throws AccessDeniedException {
 
         List<String> categories = Arrays.asList(new String[] { "c1", "c2", "c3" });
         List<String> subThemes = Arrays.asList(new String[] { "s1" });
@@ -2171,8 +2387,12 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals("s1", params.get("thm1"));
     }
 
+    /**
+     * @verifies build query with templates only
+     * @see JPADAO#createCMSPageFilter(Map<String, Object>, String, List<Long>, List<String>, List<String>)
+     */
     @Test
-    void testCreateCMSPageFilter_createValidQueryWithOneParam() throws AccessDeniedException {
+    void createCMSPageFilter_shouldBuildQueryWithTemplatesOnly() throws AccessDeniedException {
 
         List<Long> templates = Arrays.asList(new Long[] { 1l, 2l });
 
@@ -2218,7 +2438,6 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see JPADAO#getCampaign(Long)
      * @verifies return correct campaign
      */
     @Test
@@ -2260,8 +2479,12 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         }
     }
 
+    /**
+     * @verifies load campaign with log message
+     * @see JPADAO#getCampaign
+     */
     @Test
-    void testLoadCampaignWithLogMessage() throws Exception {
+    void getCampaign_shouldLoadCampaignWithLogMessage() throws Exception {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
         assertNotNull(campaign);
         assertEquals(1, campaign.getLogMessages().size());
@@ -2273,8 +2496,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(campaign, message.getCampaign());
     }
 
+    /**
+     * @verifies persist changed title
+     */
     @Test
-    void testCampaignUpdate() throws DAOException {
+    void updateCampaign_shouldPersistChangedTitle() throws DAOException {
         Campaign campaign = new Campaign();
         campaign.setTitle("Test titel");
         campaign.setId(2L);
@@ -2286,8 +2512,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals("Test titel", campaign.getTitle());
     }
 
+    /**
+     * @verifies persist log message after update
+     */
     @Test
-    void testUpdateCampaignWithLogMessage() throws Exception {
+    void updateCampaign_shouldPersistLogMessageAfterUpdate() throws Exception {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(2L);
         assertNotNull(campaign);
 
@@ -2328,10 +2557,10 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see JPADAO#getAllAnnotations(String,boolean)
-     * @verifies sort correctly
+     * @verifies return annotations in ascending and descending id order based on sort flag
      */
     @Test
-    void getAllAnnotations_shouldSortCorrectly() throws Exception {
+    void getAllAnnotations_shouldReturnAnnotationsInAscendingAndDescendingIdOrderBasedOnSortFlag() throws Exception {
         {
             List<CrowdsourcingAnnotation> result = DataManager.getInstance().getDao().getAllAnnotations("id", false);
             assertEquals(5, result.size());
@@ -2523,23 +2752,31 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see JPADAO#getAnnotations(int,int,String,boolean,Map)
-     * @verifies filter by campaign name correctly
+     * @verifies return only annotations whose campaign name matches the filter value
      */
     @Test
-    void getAnnotations_shouldFilterByCampaignNameCorrectly() throws Exception {
+    void getAnnotations_shouldReturnOnlyAnnotationsWhoseCampaignNameMatchesTheFilterValue() throws Exception {
         List<CrowdsourcingAnnotation> result =
                 DataManager.getInstance().getDao().getAnnotations(0, 10, null, false, Collections.singletonMap("campaign", "english"));
         assertEquals(3, result.size());
     }
 
+    /**
+     * @verifies return collection with 2 elements
+     * @see JPADAO#getAllGeoMaps
+     */
     @Test
-    void testGetAllGeoMaps() throws DAOException {
+    void getAllGeoMaps_shouldReturnCollectionWith2Elements() throws DAOException {
         List<GeoMap> maps = DataManager.getInstance().getDao().getAllGeoMaps();
         assertEquals(2, maps.size());
     }
 
+    /**
+     * @verifies return collection with 2 elements
+     * @see JPADAO#getPagesUsingMap
+     */
     @Test
-    void testGetPagesUsingMap() throws DAOException {
+    void getPagesUsingMap_shouldReturnCollectionWith2Elements() throws DAOException {
 
         GeoMap map1 = DataManager.getInstance().getDao().getGeoMap(1l);
         GeoMap map2 = DataManager.getInstance().getDao().getGeoMap(2l);
@@ -2552,8 +2789,12 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     }
 
+    /**
+     * @verifies update translations
+     * @see JPADAO#getGeoMap
+     */
     @Test
-    void testUpdateTranslations() throws Exception {
+    void getGeoMap_shouldUpdateTranslations() throws Exception {
         String newVal = "Kartenbeschreibung 2";
         GeoMap map1 = DataManager.getInstance().getDao().getGeoMap(1l);
         assertEquals("Kartenbeschreibung 1", map1.getDescription("de").getTranslationValue());
@@ -2567,10 +2808,10 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see JPADAO#deleteCampaignStatisticsForUser(User)
-     * @verifies remove user from creators and reviewers lists correctly
+     * @verifies remove user from all annotator and reviewer lists across campaign statistics
      */
     @Test
-    void deleteCampaignStatisticsForUser_shouldRemoveUserFromCreatorsAndReviewersListsCorrectly() throws Exception {
+    void deleteCampaignStatisticsForUser_shouldRemoveUserFromAllAnnotatorAndReviewerListsAcrossCampaignStatistics() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(1);
         assertNotNull(user);
         {
@@ -2605,10 +2846,10 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see JPADAO#changeCampaignStatisticContributors(User,User)
-     * @verifies replace user in creators and reviewers lists correctly
+     * @verifies replace source user with target user in all annotator and reviewer lists
      */
     @Test
-    void changeCampaignStatisticContributors_shouldReplaceUserInCreatorsAndReviewersListsCorrectly() throws Exception {
+    void changeCampaignStatisticContributors_shouldReplaceSourceUserWithTargetUserInAllAnnotatorAndReviewerLists() throws Exception {
         User fromUser = DataManager.getInstance().getDao().getUser(1);
         assertNotNull(fromUser);
         User toUser = DataManager.getInstance().getDao().getUser(3);
@@ -2696,8 +2937,12 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
                 JPADAO.createFilterQuery("STATIC:query", filters, params));
     }
 
+    /**
+     * @verifies generate correct joins for two joined tables
+     * @see JPADAO#createFilterQuery2
+     */
     @Test
-    void createFilterQuery_twoJoinedTables() {
+    void createFilterQuery2_shouldGenerateCorrectJoinsForTwoJoinedTables() {
         Map<String, String> filters = Collections.singletonMap("b-B_c-C", "bar");
         Map<String, Object> params = new HashMap<>();
 
@@ -2708,8 +2953,12 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals("%BAR%", params.get("bBcC"));
     }
 
+    /**
+     * @verifies generate correct join for one joined table and one direct field
+     * @see JPADAO#createFilterQuery2
+     */
     @Test
-    void createFilterQuery_joinedTableAndField() {
+    void createFilterQuery2_shouldGenerateCorrectJoinForOneJoinedTableAndOneDirectField() {
         Map<String, String> filters = Collections.singletonMap("B_c-C", "bar");
         Map<String, Object> params = new HashMap<>();
 
@@ -2720,14 +2969,22 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals("%BAR%", params.get("BcC"));
     }
 
+    /**
+     * @verifies return non null result
+     * @see JPADAO#getTermsOfUse
+     */
     @Test
-    void testGetTermsOfUse() throws DAOException {
+    void getTermsOfUse_shouldReturnNonNullResult() throws DAOException {
         TermsOfUse tou = DataManager.getInstance().getDao().getTermsOfUse();
         assertNotNull(tou);
     }
 
+    /**
+     * @verifies return true for given input
+     * @see JPADAO#saveTermsOfUse
+     */
     @Test
-    void testSaveTermsOfUse() throws DAOException {
+    void saveTermsOfUse_shouldReturnTrueForGivenInput() throws DAOException {
         TermsOfUse tou = new TermsOfUse();
         tou.setActive(true);
         DataManager.getInstance().getDao().saveTermsOfUse(tou);
@@ -2748,8 +3005,12 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     }
 
+    /**
+     * @verifies return true for given input
+     * @see JPADAO#resetUserAgreementsToTermsOfUse
+     */
     @Test
-    void testResetUserAgreementsToTermsOfUse() throws DAOException {
+    void resetUserAgreementsToTermsOfUse_shouldReturnTrueForGivenInput() throws DAOException {
 
         //initially noone has agreed
         List<User> users = DataManager.getInstance().getDao().getAllUsers(true);
@@ -2854,8 +3115,12 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     }
 
+    /**
+     * @verifies generate null motivation filter query
+     * @see JPADAO#createAnnotationsFilterQuery
+     */
     @Test
-    void testGenerateNullMotivationFilterQuery() {
+    void createAnnotationsFilterQuery_shouldGenerateNullMotivationFilterQuery() {
         {
             // campaign ID and record identifier
             Map<String, String> filters = new HashMap<>(2);
@@ -2868,23 +3133,35 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         }
     }
 
+    /**
+     * @verifies return collection with 5 elements
+     * @see JPADAO#getAllRecordNotes
+     */
     @Test
-    void testGetAllRecordNotes() throws DAOException {
+    void getAllRecordNotes_shouldReturnCollectionWith5Elements() throws DAOException {
         List<CMSRecordNote> notes = DataManager.getInstance().getDao().getAllRecordNotes();
         assertEquals(5, notes.size());
 
     }
 
+    /**
+     * @verifies get cms record notes paginated
+     * @see JPADAO#getRecordNotes
+     */
     @Test
-    void testGetCMSRecordNotesPaginated() throws DAOException {
+    void getRecordNotes_shouldGetCmsRecordNotesPaginated() throws DAOException {
         List<CMSRecordNote> notesP1 = DataManager.getInstance().getDao().getRecordNotes(0, 2, null, false, null);
         assertEquals(2, notesP1.size());
         List<CMSRecordNote> notesP2 = DataManager.getInstance().getDao().getRecordNotes(4, 2, null, false, null);
         assertEquals(1, notesP2.size());
     }
 
+    /**
+     * @verifies get cms record note
+     * @see JPADAO#getRecordNote
+     */
     @Test
-    void testGetCMSRecordNote() throws DAOException {
+    void getRecordNote_shouldGetCmsRecordNote() throws DAOException {
         CMSSingleRecordNote note = (CMSSingleRecordNote) DataManager.getInstance().getDao().getRecordNote(1l);
         assertNotNull(note);
         assertEquals("PI1", note.getRecordPi());
@@ -2895,8 +3172,12 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals("<p>Erster Paragraph</p>", note.getNoteText().getText(Locale.GERMAN));
     }
 
+    /**
+     * @verifies add cms record note
+     * @see JPADAO#addRecordNote
+     */
     @Test
-    void testAddCMSRecordNote() throws DAOException {
+    void addRecordNote_shouldAddCmsRecordNote() throws DAOException {
 
         CMSSingleRecordNote note = new CMSSingleRecordNote();
         note.getRecordTitle().setSelectedLocale(Locale.GERMAN);
@@ -2912,8 +3193,12 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(title, pNote.getRecordTitle().getText(Locale.GERMAN));
     }
 
+    /**
+     * @verifies add cms multi record note
+     * @see JPADAO#addRecordNote(CMSRecordNote)
+     */
     @Test
-    void testAddCMSMultiRecordNote() throws DAOException {
+    void addRecordNote_shouldAddCmsMultiRecordNote() throws DAOException {
 
         CMSMultiRecordNote note = new CMSMultiRecordNote();
         note.setQuery("DC:dc3d");
@@ -2925,8 +3210,12 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals("DC:dc3d", pNote.getQuery());
     }
 
+    /**
+     * @verifies persist updated text values correctly
+     * @see JPADAO#updateRecordNote
+     */
     @Test
-    void testUpdateRecordNote() throws DAOException {
+    void updateRecordNote_shouldPersistUpdatedTextValuesCorrectly() throws DAOException {
 
         CMSRecordNote note = DataManager.getInstance().getDao().getRecordNote(2l);
         note.getNoteTitle().setText(changed, Locale.GERMAN);
@@ -2940,8 +3229,12 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertFalse(note.getNoteText().getValue(Locale.ENGLISH).isPresent());
     }
 
+    /**
+     * @verifies remove record note and reduce count
+     * @see JPADAO#deleteRecordNote
+     */
     @Test
-    void testDeleteRecordNote() throws DAOException {
+    void deleteRecordNote_shouldRemoveRecordNoteAndReduceCount() throws DAOException {
         assertEquals(5, DataManager.getInstance().getDao().getAllRecordNotes().size());
         CMSRecordNote note = DataManager.getInstance().getDao().getRecordNote(2l);
         DataManager.getInstance().getDao().deleteRecordNote(note);
@@ -2950,35 +3243,55 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     }
 
+    /**
+     * @verifies return expected value
+     * @see JPADAO#getRecordNotesForPi
+     */
     @Test
-    void testGetRecordNotesForPi() throws DAOException {
+    void getRecordNotesForPi_shouldReturnExpectedValue() throws DAOException {
         assertEquals(2, DataManager.getInstance().getDao().getRecordNotesForPi("PI1", false).size());
         assertEquals(1, DataManager.getInstance().getDao().getRecordNotesForPi("PI1", true).size());
         assertEquals(0, DataManager.getInstance().getDao().getRecordNotesForPi("PI5", false).size());
     }
 
+    /**
+     * @verifies return expected value
+     * @see JPADAO#getAllMultiRecordNotes
+     */
     @Test
-    void testGetAllMultiRecordNotes() throws DAOException {
+    void getAllMultiRecordNotes_shouldReturnExpectedValue() throws DAOException {
         assertEquals(1, DataManager.getInstance().getDao().getAllMultiRecordNotes(true).size());
         assertEquals(2, DataManager.getInstance().getDao().getAllMultiRecordNotes(false).size());
     }
 
+    /**
+     * @verifies return collection with 3 elements
+     * @see JPADAO#getAllSliders
+     */
     @Test
-    void testGetAllSliders() throws DAOException {
+    void getAllSliders_shouldReturnCollectionWith3Elements() throws DAOException {
         List<CMSSlider> sliders = DataManager.getInstance().getDao().getAllSliders();
         assertEquals(3, sliders.size());
         assertTrue(sliders.stream().anyMatch(sl -> sl.getName().equals("Query Slider")));
         assertTrue(sliders.stream().anyMatch(sl -> sl.getDescription().equals("Slider from collections")));
     }
 
+    /**
+     * @verifies return non null result
+     * @see JPADAO#getSlider
+     */
     @Test
-    void testGetSlider() throws DAOException {
+    void getSlider_shouldReturnNonNullResult() throws DAOException {
         CMSSlider slider = DataManager.getInstance().getDao().getSlider(1l);
         assertNotNull(slider);
     }
 
+    /**
+     * @verifies return non null result
+     * @see JPADAO#addSlider
+     */
     @Test
-    void testAddSlider() throws DAOException {
+    void addSlider_shouldReturnNonNullResult() throws DAOException {
         String name = "Test Slider";
         CMSSlider slider = new CMSSlider(SourceType.COLLECTIONS);
         slider.setName(name);
@@ -2992,8 +3305,12 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(name, loadedSlider.getName());
     }
 
+    /**
+     * @verifies return expected value
+     * @see JPADAO#updateSlider
+     */
     @Test
-    void testUpdateSlider() throws DAOException {
+    void updateSlider_shouldReturnExpectedValue() throws DAOException {
         String name = "Test Slider";
         CMSSlider slider = DataManager.getInstance().getDao().getSlider(1l);
         assertNotEquals(name, slider.getName());
@@ -3005,8 +3322,12 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(name, DataManager.getInstance().getDao().getSlider(1l).getName());
     }
 
+    /**
+     * @verifies remove slider after successful deletion
+     * @see JPADAO#deleteSlider
+     */
     @Test
-    void testDeleteSlider() throws DAOException {
+    void deleteSlider_shouldRemoveSliderAfterSuccessfulDeletion() throws DAOException {
         String name = "Test Slider";
         CMSSlider slider = new CMSSlider(SourceType.COLLECTIONS);
         slider.setName(name);
@@ -3018,8 +3339,12 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     }
 
+    /**
+     * @verifies get embedding cms page
+     * @see JPADAO#getSlider
+     */
     @Test
-    void testGetEmbeddingCmsPage() throws DAOException {
+    void getSlider_shouldGetEmbeddingCmsPage() throws DAOException {
         CMSSlider slider = DataManager.getInstance().getDao().getSlider(1l);
         List<CMSPage> pages = DataManager.getInstance().getDao().getPagesUsingSlider(slider);
         assertEquals(1, pages.size());
@@ -3028,10 +3353,10 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see JPADAO#getCommentsOfUser(User,int,String,boolean)
-     * @verifies sort correctly
+     * @verifies return user comments sorted by dateCreated or dateModified with given limit
      */
     @Test
-    void getCommentsOfUser_shouldSortCorrectly() throws Exception {
+    void getCommentsOfUser_shouldReturnUserCommentsSortedByDateCreatedOrDateModifiedWithGivenLimit() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(1);
         assertNotNull(user);
         {
@@ -3047,8 +3372,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         }
     }
 
+    /**
+     * @verifies serialize concurrent comment updates
+     */
     @Test
-    void testSynchronization() throws DAOException {
+    void getComment_shouldSerializeConcurrentUpdates() throws DAOException {
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
         IDAO dao = DataManager.getInstance().getDao();
@@ -3108,7 +3436,6 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see JPADAO#getActiveTickets(int,int,String,boolean,Map)
      * @verifies filter rows correctly
      */
     @Test
@@ -3130,8 +3457,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
                         .size());
     }
 
+    /**
+     * @verifies delete viewer messages before date
+     */
     @Test
-    void test_deleteViewerMessagesBeforeDate() throws DAOException {
+    void deleteViewerMessagesBefore_shouldDeleteViewerMessagesBeforeDate() throws DAOException {
         IDAO dao = DataManager.getInstance().getDao();
 
         ViewerMessage task1 = new ViewerMessage(TaskType.DOWNLOAD_PDF.name());
@@ -3183,8 +3513,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(Long.valueOf(3), result.get(0).getId());
     }
 
+    /**
+     * @verifies persist recurring task trigger
+     */
     @Test
-    void test_persistRecurringTaskTrigger() throws Exception {
+    void getRecurringTaskTriggers_shouldPersistRecurringTaskTrigger() throws Exception {
         IDAO dao = DataManager.getInstance().getDao();
 
         RecurringTaskTrigger trigger = new RecurringTaskTrigger(TaskType.DOWNLOAD_PDF, "0 0 0 * * ?");

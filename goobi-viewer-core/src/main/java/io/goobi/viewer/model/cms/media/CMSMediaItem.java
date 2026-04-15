@@ -429,6 +429,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
      * setImportant.
      *
      * @param important true sets priority to IMPORTANT, false to DEFAULT
+     * @should toggle priority between default and important
      */
     public void setImportant(boolean important) {
         this.priority = important ? Priority.IMPORTANT : Priority.DEFAULT;

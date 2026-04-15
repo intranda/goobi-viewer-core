@@ -34,11 +34,10 @@ import io.goobi.viewer.AbstractTest;
 class TEIToolsTest extends AbstractTest {
 
     /**
-     * @see TEITools#getTeiFulltext(String)
-     * @verifies extract fulltext correctly
+     * @verifies return plain text without XML tags like note elements from TEI input
      */
     @Test
-    void getTeiFulltext_shouldExtractFulltextCorrectly() throws Exception {
+    void getTeiFulltext_shouldReturnPlainTextWithoutXMLTagsLikeNoteElementsFromTEIInput() throws Exception {
         Path path = Paths.get("src/test/resources/data/viewer/tei/DE_2013_Riedel_PolitikUndCo_241__248/DE_2013_Riedel_PolitikUndCo_241__248_eng.xml");
         Assertions.assertTrue(Files.isRegularFile(path));
         String tei = FileTools.getStringFromFile(path.toFile(), StringTools.DEFAULT_ENCODING);

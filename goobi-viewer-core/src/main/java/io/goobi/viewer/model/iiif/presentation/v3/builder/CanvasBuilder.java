@@ -185,6 +185,9 @@ public class CanvasBuilder extends AbstractBuilder {
      * @throws ContentLibException
      * @throws URISyntaxException
      * @throws DAOException
+     * @should return 1200 for given input
+     * @should include image
+     * @should build for given input
      */
     public Canvas3 build(String pi, int order)
             throws PresentationException, IndexUnreachableException, ContentLibException, URISyntaxException, DAOException {

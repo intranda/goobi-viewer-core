@@ -56,45 +56,67 @@ class IIIFUrlHandlerTest extends AbstractTest {
     /**
      * Test method for
      * {@link io.goobi.viewer.controller.imaging.IIIFUrlHandler#getIIIFImageUrl(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, int)}.
+     * @verifies url from file
+     * @see for#getIIIFImageUrl
      */
     @Test
-    void testUrlFromFile() {
+    void getIIIFImageUrl_shouldUrlFromFile() {
         String url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
         Assertions.assertEquals("/api/v1/records/1234/files/images/filename.tif/full/max/0/default.jpg", url);
     }
 
+    /**
+     * @verifies url from local url
+     * @see for#getIIIFImageUrl
+     */
     @Test
-    void testUrlFromLocalUrl() {
+    void getIIIFImageUrl_shouldUrlFromLocalUrl() {
         fileUrl = "http://localhost/image/filename.tif";
         String url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
         Assertions.assertEquals("/api/v1/images/external/http:U002FU002FlocalhostU002FimageU002Ffilename.tif/full/max/0/default.jpg",
                 url);
     }
 
+    /**
+     * @verifies url from external image url
+     * @see for#getIIIFImageUrl
+     */
     @Test
-    void testUrlFromExternalImageUrl() {
+    void getIIIFImageUrl_shouldUrlFromExternalImageUrl() {
         fileUrl = "http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/full/full/0/native.jpg";
         String url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
         Assertions.assertEquals("http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/full/max/0/default.jpg", url);
     }
 
+    /**
+     * @verifies url from local file url
+     * @see for#getIIIFImageUrl
+     */
     @Test
-    void testUrlFromLocalFileUrl() {
+    void getIIIFImageUrl_shouldUrlFromLocalFileUrl() {
         fileUrl = "file:///image/filename.tif";
         String url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
         Assertions.assertEquals("/api/v1/images/external/file:U002FU002FU002FimageU002Ffilename.tif/full/max/0/default.jpg",
                 url);
     }
 
+    /**
+     * @verifies url from local file url with space
+     * @see for#getIIIFImageUrl
+     */
     @Test
-    void testUrlFromLocalFileUrlWithSpace() {
+    void getIIIFImageUrl_shouldUrlFromLocalFileUrlWithSpace() {
         fileUrl = "file:///image/filename 01.tif";
         String url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
         Assertions.assertEquals("/api/v1/images/external/file:U002FU002FU002FimageU002Ffilename%2001.tif/full/max/0/default.jpg", url);
     }
 
+    /**
+     * @verifies url from windows file url
+     * @see for#getIIIFImageUrl
+     */
     @Test
-    void testUrlFromWindowsFileUrl() {
+    void getIIIFImageUrl_shouldUrlFromWindowsFileUrl() {
         fileUrl = "file:///C:/opt/digiverso/viewer/cms_media/filename.tif";
         String url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
         Assertions.assertEquals(
@@ -103,8 +125,12 @@ class IIIFUrlHandlerTest extends AbstractTest {
 
     }
 
+    /**
+     * @verifies return false for given input
+     * @see for#isIIIFUrl
+     */
     @Test
-    void testIsIIIFUrl() {
+    void isIIIFUrl_shouldReturnFalseForGivenInput() {
         fileUrl = "Eine Abrechnung mit den Rechtssozialisten_0018.tif";
         Assertions.assertFalse(handler.isIIIFUrl(fileUrl));
     }

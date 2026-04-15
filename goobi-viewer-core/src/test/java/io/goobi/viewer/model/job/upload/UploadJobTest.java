@@ -60,8 +60,8 @@ class UploadJobTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see UploadJob#updateStatus(ProcessStatusResponse)
      * @verifies do nothing if response null
+     * @see UploadJob#updateStatus()
      */
     @Test
     void updateStatus_shouldDoNothingIfResponseNull() throws Exception {
@@ -72,7 +72,6 @@ class UploadJobTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see UploadJob#updateStatus(ProcessStatusResponse)
      * @verifies set status to error if process nonexistent
      */
     @Test
@@ -87,7 +86,6 @@ class UploadJobTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see UploadJob#updateStatus(ProcessStatusResponse)
      * @verifies set status to error of process rejected
      */
     @Test
@@ -108,7 +106,6 @@ class UploadJobTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see UploadJob#updateStatus(ProcessStatusResponse)
      * @verifies set status to ready if record in index
      */
     @Test

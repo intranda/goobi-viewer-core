@@ -49,8 +49,12 @@ import io.goobi.viewer.solr.SolrSearchIndex;
 
 class StatisticsSummaryBuilderTest extends AbstractSolrEnabledTest {
 
+    /**
+     * @verifies filter results
+     * @see StatisticsSummaryBuilder#loadSummary
+     */
     @Test
-    void test_filterResults() throws IndexUnreachableException, PresentationException {
+    void loadSummary_shouldFilterResults() throws IndexUnreachableException, PresentationException {
 
         SolrSearchIndex searchIndex = createSolrRecords();
         createSolrStatistics(searchIndex);
@@ -128,7 +132,6 @@ class StatisticsSummaryBuilderTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see StatisticsSummaryBuilder#getFilteredIdentifierList(StatisticsSummaryFilter)
      * @verifies extract pi from filter correctly
      */
     @Test

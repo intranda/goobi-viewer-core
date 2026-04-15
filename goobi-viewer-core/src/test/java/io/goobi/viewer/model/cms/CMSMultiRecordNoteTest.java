@@ -43,15 +43,23 @@ import io.goobi.viewer.solr.SolrConstants;
  */
 class CMSMultiRecordNoteTest extends AbstractDatabaseAndSolrEnabledTest {
 
+    /**
+     * @verifies return non null result
+     * @see CMSMultiRecordNote#getRecords()
+     */
     @Test
-    void testGetRecords() throws DAOException {
+    void getRecords_shouldReturnNonNullResult() throws DAOException {
         CMSMultiRecordNote note = (CMSMultiRecordNote) DataManager.getInstance().getDao().getRecordNote(5l);
         assertNotNull(note);
         assertTrue(note.getRecords().size() > 0);
     }
 
+    /**
+     * @verifies return non null result
+     * @see CMSMultiRecordNote#matchesRecord(String)
+     */
     @Test
-    void testMatchesRecord() throws DAOException, PresentationException, IndexUnreachableException {
+    void matchesRecord_shouldReturnNonNullResult() throws DAOException, PresentationException, IndexUnreachableException {
         CMSMultiRecordNote note = (CMSMultiRecordNote) DataManager.getInstance().getDao().getRecordNote(5l);
         assertNotNull(note);
         String containedPI = note.getRecords().get(0);

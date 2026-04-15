@@ -118,9 +118,11 @@ class CmsPageEditBeanTest {
      * When calling bean without context-parameters, create an empty new page
      * 
      * @throws DAOException
+     * @verifies new page
+     * @see CmsPageEditBean#getSelectedPage
      */
     @Test
-    void testNewPage() {
+    void getSelectedPage_shouldNewPage() {
         FacesContext facesContext = mockFacesContext(Map.of());
         bean.setFacesContext(facesContext);
         bean.setup();
@@ -134,9 +136,11 @@ class CmsPageEditBeanTest {
      * When bean is called with context-parameter 'templateId', a new page based on the correspending template should be loaded
      * 
      * @throws DAOException
+     * @verifies new page from template
+     * @see CmsPageEditBean#getSelectedPage
      */
     @Test
-    void testNewPageFromTemplate() {
+    void getSelectedPage_shouldNewPageFromTemplate() {
         FacesContext facesContext = mockFacesContext(Map.of("templateId", PAGE_TEMPLATE_ID.toString()));
         bean.setFacesContext(facesContext);
         bean.setup();
@@ -150,9 +154,11 @@ class CmsPageEditBeanTest {
      * When bean is called with context-parameter 'templateId', a new page based on the correspending template should be loaded
      * 
      * @throws DAOException
+     * @verifies new page from template with title and pi
+     * @see CmsPageEditBean#getSelectedPage
      */
     @Test
-    void testNewPageFromTemplateWithTitleAndPi() {
+    void getSelectedPage_shouldNewPageFromTemplateWithTitleAndPi() {
         FacesContext facesContext = mockFacesContext(Map.of("templateId", PAGE_TEMPLATE_ID.toString(), "title", PAGE_NAME, "relatedPi", RELATED_PI));
         bean.setFacesContext(facesContext);
         bean.setup();
@@ -168,9 +174,11 @@ class CmsPageEditBeanTest {
      * When Bean is called with context-parameter 'selectedPageId', load the corresponding page
      * 
      * @throws DAOException
+     * @verifies edit page
+     * @see CmsPageEditBean#getSelectedPage
      */
     @Test
-    void testEditPage() {
+    void getSelectedPage_shouldEditPage() {
         FacesContext facesContext = mockFacesContext(Map.of("selectedPageId", SELECTED_PAGE_ID.toString()));
         bean.setFacesContext(facesContext);
         bean.setup();
@@ -184,9 +192,11 @@ class CmsPageEditBeanTest {
      * {@link CollectionViewBean#removeCollectionsForPage(CMSPage)} should be called to reset collections loaded by this page
      * 
      * @throws DAOException
+     * @verifies save page
+     * @see CmsPageEditBean#getSelectedPage
      */
     @Test
-    void testSavePage() throws DAOException {
+    void getSelectedPage_shouldSavePage() throws DAOException {
         FacesContext facesContext = mockFacesContext(Map.of("selectedPageId", SELECTED_PAGE_ID.toString()));
         bean.setFacesContext(facesContext);
         bean.setup();
@@ -199,9 +209,11 @@ class CmsPageEditBeanTest {
      * When saving page with setSaveAsTemplate == true, make sure a template with the set name ans lockComponents property is created
      * 
      * @throws DAOException
+     * @verifies save as template
+     * @see CmsPageEditBean#getDao
      */
     @Test
-    void testSaveAsTemplate() throws DAOException {
+    void getDao_shouldSaveAsTemplate() throws DAOException {
         FacesContext facesContext = mockFacesContext(Map.of("selectedPageId", SELECTED_PAGE_ID.toString()));
         bean.setFacesContext(facesContext);
         bean.setup();
@@ -218,9 +230,11 @@ class CmsPageEditBeanTest {
      * If the user is no cmsAdmin, calling save should not update page
      * 
      * @throws DAOException
+     * @verifies save page no admin
+     * @see CmsPageEditBean#setFacesContext
      */
     @Test
-    void testSavePageNoAdmin() throws DAOException {
+    void setFacesContext_shouldSavePageNoAdmin() throws DAOException {
         FacesContext facesContext = mockFacesContext(Map.of("selectedPageId", SELECTED_PAGE_ID.toString()));
         bean.setUserBean(mockUserBean(false));
         bean.setFacesContext(facesContext);
@@ -233,9 +247,11 @@ class CmsPageEditBeanTest {
      * When calling delete in bean, call {@link IDAO#deleteCMSPage(CMSPage)}
      * 
      * @throws DAOException
+     * @verifies delete page for given input
+     * @see CmsPageEditBean#deletePage
      */
     @Test
-    void testDeletePage() throws DAOException {
+    void deletePage_shouldDeletePageForGivenInput() throws DAOException {
         FacesContext facesContext = mockFacesContext(Map.of("selectedPageId", SELECTED_PAGE_ID.toString()));
         bean.setFacesContext(facesContext);
         bean.setup();
@@ -244,8 +260,12 @@ class CmsPageEditBeanTest {
         Mockito.verify(bean.getDao(), Mockito.times(1)).deleteCMSPage(page);
     }
 
+    /**
+     * @verifies return true for given input
+     * @see CmsPageEditBean#addComponent()
+     */
     @Test
-    void testAddComponent() {
+    void addComponent_shouldReturnTrueForGivenInput() {
         FacesContext facesContext = mockFacesContext(Map.of("selectedPageId", SELECTED_PAGE_ID.toString()));
         bean.setFacesContext(facesContext);
         bean.setTemplateManager(createTemplateManager());
@@ -257,8 +277,12 @@ class CmsPageEditBeanTest {
         assertEquals(NAME_COMPONENT, bean.getSelectedPage().getComponents().get(0).getLabel());
     }
 
+    /**
+     * @verifies return true for given input
+     * @see CmsPageEditBean#deleteComponent(CMSComponent)
+     */
     @Test
-    void testDeleteComponent() {
+    void deleteComponent_shouldReturnTrueForGivenInput() {
         FacesContext facesContext = mockFacesContext(Map.of("selectedPageId", SELECTED_PAGE_ID.toString()));
         bean.setFacesContext(facesContext);
         bean.setTemplateManager(createTemplateManager());
@@ -275,9 +299,10 @@ class CmsPageEditBeanTest {
      * Verifies that setUserRestrictedValues() stores an independent copy of the allowed categories
      * rather than a raw subList view. If a raw subList were stored, modifying the backing list
      * afterwards would cause ConcurrentModificationException in JSF's ListDataModel during rendering.
+     * @verifies categories is defensive copy
      */
     @Test
-    void testSetUserRestrictedValues_categoriesIsDefensiveCopy() throws DAOException {
+    void setUserRestrictedValues_shouldCategoriesIsDefensiveCopy() throws DAOException {
         List<CMSCategory> backingCategories = new ArrayList<>(List.of(new CMSCategory("cat1"), new CMSCategory("cat2")));
 
         User restrictedUser = Mockito.mock(User.class);

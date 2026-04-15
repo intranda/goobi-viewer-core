@@ -34,7 +34,6 @@ import io.goobi.viewer.model.viewer.StructElement;
 class AbstractPageLoaderTest extends AbstractTest {
 
     /**
-     * @see AbstractPageLoader#buildPageLabelTemplate(String, Locale)
      * @verifies replace numpages currectly
      */
     @Test
@@ -45,11 +44,10 @@ class AbstractPageLoaderTest extends AbstractTest {
     }
 
     /**
-     * @see AbstractPageLoader#buildPageLabelTemplate(String, Locale)
-     * @verifies replace message keys correctly
+     * @verifies replace {msg.key} placeholders with translated message values in template
      */
     @Test
-    void buildPageLabelTemplate_shouldReplaceMessageKeysCorrectly() throws Exception {
+    void buildPageLabelTemplate_shouldReplaceMsgKeyPlaceholdersWithTranslatedMessageValuesInTemplate() throws Exception {
         StructElement se = new StructElement();
         EagerPageLoader loader = new EagerPageLoader(se);
         Assertions.assertEquals("1 of 10", loader.buildPageLabelTemplate("1 {msg.of} 10", null));
@@ -57,10 +55,10 @@ class AbstractPageLoaderTest extends AbstractTest {
 
     /**
      * @see AbstractPageLoader#buildPageSelectItem(String,int,String,Integer,String)
-     * @verifies construct single page item correctly
+     * @verifies set label from order and orderlabel template and value from order for single page
      */
     @Test
-    void buildPageSelectItem_shouldConstructSinglePageItemCorrectly() throws Exception {
+    void buildPageSelectItem_shouldSetLabelFromOrderAndOrderlabelTemplateAndValueFromOrderForSinglePage() throws Exception {
         SelectItem si = AbstractPageLoader.buildPageSelectItem("{order}: {orderlabel}", 1, "one", null, null);
         Assertions.assertNotNull(si);
         Assertions.assertEquals("1: one", si.getLabel());
@@ -69,10 +67,10 @@ class AbstractPageLoaderTest extends AbstractTest {
 
     /**
      * @see AbstractPageLoader#buildPageSelectItem(String,int,String,Integer,String)
-     * @verifies construct double page item correctly
+     * @verifies combine both page orders and labels with dash separator for double page item
      */
     @Test
-    void buildPageSelectItem_shouldConstructDoublePageItemCorrectly() throws Exception {
+    void buildPageSelectItem_shouldCombineBothPageOrdersAndLabelsWithDashSeparatorForDoublePageItem() throws Exception {
         SelectItem si = AbstractPageLoader.buildPageSelectItem("{order}: {orderlabel}", 1, "one", 2, "two");
         Assertions.assertNotNull(si);
         Assertions.assertEquals("1-2: one - two", si.getLabel());

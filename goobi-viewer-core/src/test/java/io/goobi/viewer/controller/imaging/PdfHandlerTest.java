@@ -54,8 +54,12 @@ class PdfHandlerTest extends AbstractTest{
     }
 
 
+    /**
+     * @verifies return url with pi and div id
+     * @see PdfHandler#getPdfUrl(StructElement, PhysicalElement)
+     */
     @Test
-    void test() {
+    void getPdfUrl_shouldReturnUrlWithPiAndDivId() {
         String pi = "1234";
         Optional<String> divId = Optional.ofNullable("LOG_0003");
         Optional<String> label = Optional.ofNullable("output-filename.pdf");

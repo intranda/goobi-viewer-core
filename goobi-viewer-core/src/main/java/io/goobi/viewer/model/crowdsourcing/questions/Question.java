@@ -360,7 +360,7 @@ public class Question implements Serializable {
      *
      * @param idAsURI URI identifier containing the question ID
      * @return the numeric question ID extracted from the URI, or null if not found
-     * @should extract id correctly
+     * @should extract question ID from crowdsourcing question URI path
      */
     public static Long getQuestionId(URI idAsURI) {
         Matcher matcher = Pattern.compile(URI_ID_REGEX).matcher(idAsURI.toString());
@@ -377,7 +377,7 @@ public class Question implements Serializable {
      *
      * @param idAsURI URI identifier containing the campaign ID segment
      * @return the numeric campaign ID extracted from the URI, or null if not found
-     * @should extract id correctly
+     * @should extract campaign ID from crowdsourcing campaign URI path
      */
     public static Long getCampaignId(URI idAsURI) {
         Matcher matcher = Pattern.compile(URI_ID_REGEX).matcher(idAsURI.toString());

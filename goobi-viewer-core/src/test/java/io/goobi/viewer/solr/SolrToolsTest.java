@@ -43,7 +43,6 @@ import io.goobi.viewer.model.viewer.StringPair;
 class SolrToolsTest extends AbstractSolrEnabledTest {
 
     /**
-     * @see SolrTools#getFieldValueMap(SolrDocument)
      * @verifies return all fields in the given doc except page urns
      */
     @Test
@@ -58,7 +57,6 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrTools#getMetadataValues(SolrDocument,String)
      * @verifies return all values for the given field
      */
     @Test
@@ -70,11 +68,10 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrTools#getMetadataValues(SolrDocument,String)
-     * @verifies parse dates correctly
+     * @verifies return date field values as ISO 8601 formatted strings
      */
     @Test
-    void getMetadataValues_shouldParseDatesCorrectly() {
+    void getMetadataValues_shouldReturnDateFieldValuesAsISO8601FormattedStrings() {
         SolrDocument doc = new SolrDocument();
         LocalDateTime ldt = LocalDateTime.of(2025, 03, 06, 17, 20, 30);
         doc.addField(SolrConstants.DATE_PUBLICRELEASEDATE, DateTools.convertLocalDateTimeToDateViaInstant(ldt, false));
@@ -84,7 +81,6 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrTools#getSingleFieldStringValue(SolrDocument,String)
      * @verifies not return null as string if value is null
      */
     @Test
@@ -95,10 +91,10 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
 
     /**
      * @see SolrTools#getSingleFieldStringValue(SolrDocument,String)
-     * @verifies return value as string correctly
+     * @verifies convert numeric field value to its string representation
      */
     @Test
-    void getSingleFieldStringValue_shouldReturnValueAsStringCorrectly() {
+    void getSingleFieldStringValue_shouldConvertNumericFieldValueToItsStringRepresentation() {
         SolrDocument doc = new SolrDocument();
         doc.addField("NUM", 1337);
         assertEquals("1337", SolrTools.getSingleFieldStringValue(doc, "NUM"));
@@ -106,10 +102,10 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
 
     /**
      * @see SolrTools#getSolrSortFieldsAsList(String,String,String)
-     * @verifies split fields correctly
+     * @verifies split multiple sort fields with directions and default to asc when direction omitted
      */
     @Test
-    void getSolrSortFieldsAsList_shouldSplitFieldsCorrectly() {
+    void getSolrSortFieldsAsList_shouldSplitMultipleSortFieldsWithDirectionsAndDefaultToAscWhenDirectionOmitted() {
         List<StringPair> result = SolrTools.getSolrSortFieldsAsList("SORT_A; SORT_B, desc;SORT_C,asc", ";", ",");
         Assertions.assertNotNull(result);
         assertEquals(3, result.size());
@@ -123,10 +119,10 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
 
     /**
      * @see SolrTools#getSolrSortFieldsAsList(String,String,String)
-     * @verifies split single field correctly
+     * @verifies parse single sort field with direction and trim surrounding whitespace
      */
     @Test
-    void getSolrSortFieldsAsList_shouldSplitSingleFieldCorrectly() {
+    void getSolrSortFieldsAsList_shouldParseSingleSortFieldWithDirectionAndTrimSurroundingWhitespace() {
         List<StringPair> result = SolrTools.getSolrSortFieldsAsList("SORT_A , desc ", ";", ",");
         Assertions.assertNotNull(result);
         assertEquals(1, result.size());
@@ -162,7 +158,6 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrTools#isHasImages(SolrDocument)
      * @verifies return correct value for docsctrct docs
      */
     @Test
@@ -173,7 +168,6 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrTools#isHasImages(SolrDocument)
      * @verifies return correct value for page docs
      */
     @Test
@@ -186,7 +180,6 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrTools#isHasImages(SolrDocument)
      * @verifies return correct value for iiif manifests in file name
      */
     @Test
@@ -196,8 +189,12 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
         Assertions.assertTrue(SolrTools.isHasImages(doc));
     }
 
+    /**
+     * @verifies return collection with 1 element
+     * @see providing#getMetadataValuesForLanguage(SolrDocument, String)
+     */
     @Test
-    void testGetMetadataValuesForLanguage() {
+    void getMetadataValuesForLanguage_shouldReturnCollectionWith1Element() {
         SolrDocument doc = new SolrDocument();
         doc.addField("field_A", "value_A");
         doc.addField("field_B_LANG_EN", "field_B_en");
@@ -218,8 +215,12 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
         assertEquals("field_B_en_2", mapB.get("en").get(1));
     }
 
+    /**
+     * @verifies return 2 for given input
+     * @see providing#getMultiLanguageFieldValueMap(SolrDocument)
+     */
     @Test
-    void testGetMultiLanguageFieldValueMap() {
+    void getMultiLanguageFieldValueMap_shouldReturn2ForGivenInput() {
         SolrDocument doc = new SolrDocument();
         doc.addField("field_A", "value_A");
         doc.addField("field_B", "value_B");
@@ -248,6 +249,10 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
         Assertions.assertFalse(values.isEmpty());
     }
 
+    /**
+     * @see providing#getAvailableValuesForField(final String, final String)
+     * @verifies return all entire values
+     */
     @Test
     void getAvailableValuesForField_shouldReturnAllEntireValues() throws Exception {
         List<String> values = SolrTools.getAvailableValuesForField("MD_PLACEPUBLISH", SolrConstants.ISWORK + ":true");
@@ -288,16 +293,20 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
 
     /**
      * @see SolrTools#extractExceptionMessageHtmlTitle(String)
-     * @verifies return title content correctly
+     * @verifies extract text between title tags from HTML string
      */
     @Test
-    void extractExceptionMessageHtmlTitle_shouldReturnTitleContentCorrectly() {
+    void extractExceptionMessageHtmlTitle_shouldExtractTextBetweenTitleTagsFromHTMLString() {
         String html = "<html><head><title>foo bar</title></head><body><h1>foo</h1></body</html>";
         assertEquals("foo bar", SolrTools.extractExceptionMessageHtmlTitle(html));
     }
 
+    /**
+     * @verifies return expected value for given input
+     * @see providing#escapeSpecialCharacters(String)
+     */
     @Test
-    void test_escapeSpecialCharacters() {
+    void escapeSpecialCharacters_shouldReturnExpectedValueForGivenInput() {
         assertEquals("x\\\"\\>\\<svG onLoad=alert\\(\\\"Hello_XSS_World\\\"\\)\\>",
                 SolrTools.escapeSpecialCharacters("x\"><svG onLoad=alert(\"Hello_XSS_World\")>"));
         assertEquals("x\\\"\\>\\<svG onLoad=alert\\(\\\"Hello_XSS_World\\\"\\)\\>",
@@ -306,8 +315,12 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
         assertEquals("LOG_0004", SolrTools.escapeSpecialCharacters("LOG_0004"));
     }
 
+    /**
+     * @verifies return expected value for given input
+     * @see providing#unescapeSpecialCharacters(String)
+     */
     @Test
-    void test_unescapeSpecialCharacters() {
+    void unescapeSpecialCharacters_shouldReturnExpectedValueForGivenInput() {
         assertEquals("x\"><svG onLoad=alert(\"Hello_XSS_World\")>",
                 SolrTools.unescapeSpecialCharacters("x\\\"\\>\\<svG onLoad=alert\\(\\\"Hello_XSS_World\\\"\\)\\>"));
         assertEquals("x\"><svG onLoad=alert(\"Hello_XSS_World\")>",
@@ -326,8 +339,8 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrTools#isQuerySyntaxError(Exception)
      * @verifies return true for known syntax error messages
+     * @see providing#isQuerySyntaxError(Exception)
      */
     @Test
     void isQuerySyntaxError_shouldReturnTrueForKnownSyntaxErrorMessages() {
@@ -343,8 +356,8 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrTools#isQuerySyntaxError(Exception)
-     * @verifies return false for non-syntax errors
+     * @verifies return false for non syntax errors
+     * @see providing#isQuerySyntaxError(Exception)
      */
     @Test
     void isQuerySyntaxError_shouldReturnFalseForNonSyntaxErrors() {
@@ -373,8 +386,8 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrTools#isLanguageCodedField(String)
      * @verifies return true for language-coded field names
+     * @see providing#isLanguageCodedField(String)
      */
     @Test
     void isLanguageCodedField_shouldReturnTrueForLanguageCodedFieldNames() {
@@ -384,8 +397,8 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrTools#isLanguageCodedField(String)
      * @verifies return false for non-language-coded field names
+     * @see providing#isLanguageCodedField(String)
      */
     @Test
     void isLanguageCodedField_shouldReturnFalseForNonLanguageCodedFieldNames() {
@@ -396,8 +409,8 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrTools#getBaseFieldName(String)
      * @verifies strip language suffix
+     * @see providing#getBaseFieldName(String)
      */
     @Test
     void getBaseFieldName_shouldStripLanguageSuffix() {
@@ -406,8 +419,8 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrTools#getBaseFieldName(String)
      * @verifies return field name unchanged if no language suffix present
+     * @see providing#getBaseFieldName(String)
      */
     @Test
     void getBaseFieldName_shouldReturnFieldNameUnchangedIfNoLanguageSuffixPresent() {
@@ -415,8 +428,8 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrTools#getLanguage(String)
      * @verifies return language code from field name
+     * @see providing#getLanguage(String)
      */
     @Test
     void getLanguage_shouldReturnLanguageCodeFromFieldName() {
@@ -425,8 +438,8 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrTools#getLanguage(String)
      * @verifies return null if no language suffix present
+     * @see providing#getLanguage(String)
      */
     @Test
     void getLanguage_shouldReturnNullIfNoLanguageSuffixPresent() {

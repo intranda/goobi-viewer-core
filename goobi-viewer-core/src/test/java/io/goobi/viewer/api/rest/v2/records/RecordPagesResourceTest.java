@@ -82,9 +82,11 @@ class RecordPagesResourceTest extends AbstractRestApiTest {
     /**
      * Jersey returns 400 Bad Request when it cannot convert a path parameter to the
      * declared type (Integer). Verifies the documented @ApiResponse(400) is reachable.
+     * @verifies return 400 when invalid page no
+     * @see RecordPagesResource#getCanvas
      */
     @Test
-    void testGetCanvas_invalidPageNo_returns400() {
+    void getCanvas_shouldReturn400WhenInvalidPageNo() {
         String url = urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).params(PI, "not-a-number").build();
         try (Response response = target(url)
                 .request()
@@ -94,8 +96,12 @@ class RecordPagesResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return non null result
+     * @see RecordPagesResource#getCanvas
+     */
     @Test
-    void testGetCanvas() {
+    void getCanvas_shouldReturnNonNullResult() {
         String url = urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).params(PI, PAGENO).build();
         try (Response response = target(url)
                 .request()
@@ -117,9 +123,10 @@ class RecordPagesResourceTest extends AbstractRestApiTest {
      * @throws JsonProcessingException
      * @throws DAOException
      * @throws NumberFormatException
+     * @verifies return annotation page with correct count
      */
     @Test
-    void testGetAnnotationsForPage() throws JsonProcessingException, NumberFormatException, DAOException {
+    void getAnnotationsForPage_shouldReturnAnnotationPageWithCorrectCount() throws JsonProcessingException, NumberFormatException, DAOException {
         long annoCount = DataManager.getInstance().getDao().getAnnotationCountForTarget(PI_ANNOTATIONS, Integer.parseInt(PAGENO_ANNOTATIONS));
         try (Response response = target(urls.path(RECORDS_PAGES, RECORDS_PAGES_ANNOTATIONS).params(PI_ANNOTATIONS, PAGENO_ANNOTATIONS).build())
                 .request()
@@ -139,9 +146,11 @@ class RecordPagesResourceTest extends AbstractRestApiTest {
      * Test method for {@link io.goobi.viewer.api.rest.v2.records.RecordResource#getCommentsForRecord(java.lang.String)}.
      * 
      * @throws JsonProcessingException
+     * @verifies return non null result
+     * @see RecordPagesResource#getCommentsForPage
      */
     @Test
-    void testGetCommentsForPage() throws JsonProcessingException {
+    void getCommentsForPage_shouldReturnNonNullResult() throws JsonProcessingException {
         try (Response response = target(urls.path(RECORDS_PAGES, RECORDS_PAGES_COMMENTS).params(PI_ANNOTATIONS, PAGENO_ANNOTATIONS).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
@@ -155,8 +164,11 @@ class RecordPagesResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies escape spaces in filenames in rendering urls
+     */
     @Test
-    void testEscapeFilenamesInUrls() {
+    void getCanvas_shouldEscapeSpacesInFilenamesInRenderingUrls() {
         DataManager.getInstance().getConfiguration().overrideValue("webapi.iiif.rendering.viewer[@enabled]", true);
         Assertions.assertTrue(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingViewer());
         DataManager.getInstance().getConfiguration().overrideValue("webapi.iiif.rendering.pdf[@enabled]", true);

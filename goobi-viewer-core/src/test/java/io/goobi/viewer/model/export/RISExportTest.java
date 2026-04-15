@@ -40,7 +40,7 @@ class RISExportTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see RISExport#RISExport()
-     * @verifies set fileName correctly
+     * @verifies set file name correctly
      */
     @Test
     void RISExport_shouldSetFileNameCorrectly() throws Exception {
@@ -49,11 +49,10 @@ class RISExportTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see RISExport#executeSearch(String,String,List,List,Map,Map,Locale,int,HttpServletRequest,HttpServletResponse)
-     * @verifies execute search correctly
+     * @verifies return search hits matching the given PI query
      */
     @Test
-    void executeSearch_shouldExecuteSearchCorrectly() throws Exception {
+    void executeSearch_shouldReturnSearchHitsMatchingTheGivenPIQuery() throws Exception {
         TestUtils.mockFacesContext();
         RISExport export = new RISExport();
         export.executeSearch(SolrConstants.PI + ":" + PI_KLEIUNIV, null, null, null, null, Locale.ENGLISH, 0);
@@ -61,7 +60,6 @@ class RISExportTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see RISExport#isHasResults()
      * @verifies return correct value
      */
     @Test

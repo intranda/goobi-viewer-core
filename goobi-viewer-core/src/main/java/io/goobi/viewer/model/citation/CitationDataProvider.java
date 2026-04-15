@@ -75,8 +75,8 @@ public class CitationDataProvider implements ItemDataProvider {
      * @param fields map of metadata field names to their values
      * @param type CSL document type for this citation
      * @return Created CSLItemData
-     * @should add item data correctly
-     * @should parse years correctly
+     * @should store author name parts, issued date, URL, and ISBN in CSLItemData
+     * @should parse year-only issued date into dateParts instead of raw string
      */
     public CSLItemData addItemData(String id, Map<String, List<String>> fields, CSLType type) {
         CSLItemDataBuilder builder = new CSLItemDataBuilder().type(type).id(id);

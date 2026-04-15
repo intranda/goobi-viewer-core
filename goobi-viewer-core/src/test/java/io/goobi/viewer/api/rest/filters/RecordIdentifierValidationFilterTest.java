@@ -42,7 +42,7 @@ class RecordIdentifierValidationFilterTest {
 
     /**
      * @see RecordIdentifierValidationFilter#filter(ContainerRequestContext)
-     * @verifies pass through valid PI without aborting
+     * @verifies pass through valid pi
      */
     @Test
     void filter_shouldPassThroughValidPi() throws IOException {
@@ -65,7 +65,7 @@ class RecordIdentifierValidationFilterTest {
 
     /**
      * @see RecordIdentifierValidationFilter#filter(ContainerRequestContext)
-     * @verifies pass through when path has no records segment
+     * @verifies pass through when no records segment
      */
     @Test
     void filter_shouldPassThroughWhenNoRecordsSegment() throws IOException {

@@ -33,6 +33,7 @@ class ExternalImageResourceTest {
     /**
      * validateImageUrl() must reject non-ASCII characters because they cause URI.create() to
      * throw IllegalArgumentException (→ HTTP 500) inside the ImageResource constructor.
+     * @verifies reject non ascii characters
      */
     @Test
     void validateImageUrl_shouldRejectNonAsciiCharacters() {
@@ -47,6 +48,7 @@ class ExternalImageResourceTest {
      * validateImageUrl() must reject bare '%' characters that result from double-encoding
      * (e.g. %2B%254 → +%4). A literal '%' in the decoded filename causes URI.create() to
      * throw IllegalArgumentException inside the ImageResource constructor.
+     * @verifies reject bare percent sign
      */
     @Test
     void validateImageUrl_shouldRejectBarePercentSign() {
@@ -59,6 +61,7 @@ class ExternalImageResourceTest {
     /**
      * validateImageUrl() must accept normal printable ASCII filenames including common
      * image filename characters.
+     * @verifies accept valid ascii filenames
      */
     @Test
     void validateImageUrl_shouldAcceptValidAsciiFilenames() {

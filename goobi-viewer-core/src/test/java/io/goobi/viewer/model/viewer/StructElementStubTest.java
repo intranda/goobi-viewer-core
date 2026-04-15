@@ -60,10 +60,10 @@ class StructElementStubTest extends AbstractSolrEnabledTest {
 
     /**
      * @see StructElementStub#generateContextObject(String,StructElementStub)
-     * @verifies generate string element correctly
+     * @verifies return open URL context object with URL encoded title author and page count
      */
     @Test
-    void generateContextObject_shouldGenerateStringElementCorrectly() throws Exception {
+    void generateContextObject_shouldReturnOpenURLContextObjectWithURLEncodedTitleAuthorAndPageCount() throws Exception {
         StructElement element = new StructElement(iddocKleiuniv);
         StructElementStub stub = element.createStub();
         Assertions.assertEquals(element.getDocStructType(), stub.getDocStructType());
@@ -87,7 +87,6 @@ class StructElementStubTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see StructElementStub#getLabel(Locale)
      * @verifies return locale specific title if so requested
      */
     @Test
@@ -100,7 +99,6 @@ class StructElementStubTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see StructElementStub#getLabel(Locale)
      * @verifies return label if no locale specific title found
      */
     @Test
@@ -113,7 +111,6 @@ class StructElementStubTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see StructElementStub#getLabel(Locale)
      * @verifies return label if locale is null
      */
     @Test

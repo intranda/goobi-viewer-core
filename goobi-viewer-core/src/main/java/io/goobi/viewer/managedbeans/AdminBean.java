@@ -340,8 +340,8 @@ public class AdminBean implements Serializable {
      * @param deleteContributions If true, all content created by this user will also be deleted
      * @return Navigation outcome
      * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @should delete all user public content correctly
-     * @should anonymize all user public content correctly
+     * @should remove user comments and campaign statistic entries when deleteContent flag is true
+     * @should reassign comments and statistics to different user when deleteContent flag is false
      */
     public String deleteUserAction(User user, boolean deleteContributions) throws DAOException {
         if (user == null) {
@@ -585,7 +585,8 @@ public class AdminBean implements Serializable {
      * saveUserRoleAction.
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @should persist UserRole correctly
+     * @should save dirty user roles to database so they become retrievable via DAO
+     * @should multiple roles added on new group
      */
     public void updateUserRoles() throws DAOException {
         logger.trace("updateUserRoles: {}", dirtyUserRoles.size());

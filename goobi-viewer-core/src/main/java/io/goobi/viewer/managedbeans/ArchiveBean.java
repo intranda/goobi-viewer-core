@@ -90,7 +90,7 @@ public class ArchiveBean implements Serializable {
     }
 
     /**
-     * @should reset properties correctly
+     * @should clear currentResource, searchString, archiveTree, and databaseLoaded to defaults
      */
     public void reset() {
         this.currentResource = "";

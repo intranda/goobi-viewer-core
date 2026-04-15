@@ -36,7 +36,6 @@ import io.goobi.viewer.model.security.user.UserGroup;
 class LicenseRightsHolderTest {
 
     /**
-     * @see License#setIpRange(IpRange)
      * @verifies set user and userGroup to null if ipRange not null
      */
     @Test
@@ -58,7 +57,6 @@ class LicenseRightsHolderTest {
     }
 
     /**
-     * @see License#setIpRange(IpRange)
      * @verifies not set user and userGroup to null if ipRange null
      */
     @Test
@@ -80,7 +78,6 @@ class LicenseRightsHolderTest {
     }
 
     /**
-     * @see License#setUser(User)
      * @verifies set userGroup and ipRange to null if user not null
      */
     @Test
@@ -102,7 +99,6 @@ class LicenseRightsHolderTest {
     }
 
     /**
-     * @see License#setUser(User)
      * @verifies not set userGroup and ipRange to null if user null
      */
     @Test
@@ -124,7 +120,6 @@ class LicenseRightsHolderTest {
     }
 
     /**
-     * @see License#setUserGroup(UserGroup)
      * @verifies set user and ipRange to null if userGroup not null
      */
     @Test
@@ -146,7 +141,6 @@ class LicenseRightsHolderTest {
     }
 
     /**
-     * @see License#setUserGroup(UserGroup)
      * @verifies not set user and ipRange to null if userGroup null
      */
     @Test
@@ -168,7 +162,6 @@ class LicenseRightsHolderTest {
     }
 
     /**
-     * @see License#getAvailablePrivileges(Set)
      * @verifies only return priv view ugc if licenseType ugc type
      */
     @Test

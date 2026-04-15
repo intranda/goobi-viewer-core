@@ -37,8 +37,12 @@ import io.goobi.viewer.AbstractTest;
  */
 class GeoCoordinateFeatureTest extends AbstractTest {
 
+    /**
+     * @verifies parse search string
+     * @see GeoCoordinateFeature#getSearchString
+     */
     @Test
-    void testParseSearchString() {
+    void getSearchString_shouldParseSearchString() {
         double[][] points = new double[][] { { 1.1, 1.2 }, { 2.1, 2.2 }, { 3.1, 3.2 }, { 4.1, 4.2 }, { 1.1, 1.2 } };
         String referencePointsString = "1.1 1.2, 2.1 2.2, 3.1 3.2, 4.1 4.2, 1.1 1.2";
         String referenceQuery = "IsWithin(POLYGON((" + referencePointsString + ")))";
@@ -48,8 +52,12 @@ class GeoCoordinateFeatureTest extends AbstractTest {
         assertEquals(referenceQuery, query);
     }
 
+    /**
+     * @verifies parse points
+     * @see GeoCoordinateFeature#getGeoSearchPoints
+     */
     @Test
-    void testParsePoints() {
+    void getGeoSearchPoints_shouldParsePoints() {
         double[][] referencePoints = new double[][] { { 1.1, 1.2 }, { 2.1, -2.2 }, { 3.1, 3.2 }, { -4.1, 4.2 }, { 1.1, 1.2 } };
         String pointsString = "1.1 1.2, 2.1 -2.2, 3.1 3.2, -4.1 4.2, 1.1 1.2";
         String query = "WKT_COORDS:\"Intersects(POLYGON((" + pointsString + ")))";
@@ -58,8 +66,12 @@ class GeoCoordinateFeatureTest extends AbstractTest {
         assertArrayEquals(referencePoints, points);
     }
 
+    /**
+     * @verifies parse point
+     * @see GeoCoordinateFeature#getGeoSearchPoints
+     */
     @Test
-    void test_parsePoint() {
+    void getGeoSearchPoints_shouldParsePoint() {
         double[][] referencePoints = new double[][] { { 1.1, 1.2 } };
         String pointsString = "1.1 1.2";
         String query = "WKT_COORDS:\"Intersects(POINT(" + pointsString + ")) distErrorPct=0.3";
@@ -68,8 +80,12 @@ class GeoCoordinateFeatureTest extends AbstractTest {
         assertArrayEquals(referencePoints, points);
     }
 
+    /**
+     * @verifies parse illegal points
+     * @see GeoCoordinateFeature#getGeoSearchPoints
+     */
     @Test
-    void testParseIllegalPoints() {
+    void getGeoSearchPoints_shouldParseIllegalPoints() {
         {
             double[][] referencePoints = new double[][] { { 1.1, 1.2 }, { 0, 0 }, { 3.1, 3.2 }, { 4.1, 4.2 }, { 1.1, 1.2 } };
             String pointsString = "1.1 1.2, 2.1 , 3.1 3.2, 4.1 4.2, 1.1 1.2";
@@ -99,8 +115,11 @@ class GeoCoordinateFeatureTest extends AbstractTest {
         }
     }
 
+    /**
+     * @verifies escape geo facet string for solr query
+     */
     @Test
-    void testFacetEscaping() throws UnsupportedEncodingException {
+    void generateFacetFilterQueries_shouldEscapeGeoFacetStringForSolrQuery() throws UnsupportedEncodingException {
         String origFacetString =
                 "WKT_COORDS:\"IsWithin(POLYGON((11.83273903383027 51.94656677497078,11.83273903383027 53.48917317885388,13.855459790711027 53.48917317885388,13.855459790711027 51.94656677497078,11.83273903383027 51.94656677497078)))\"";
         String geoJson =

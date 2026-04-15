@@ -348,6 +348,10 @@ public final class AccessConditionUtils {
      * 
      * @param session The session in which the user data is stored
      * @return The user logged into the given session. May be null if no user is logged in
+     * @should return null for null session
+     * @should return user from direct session attribute
+     * @should return null without session scan when cdi returns null user
+     * @should return user via session scan when stored under non standard key
      */
     public static User retrieveUserFromContext(HttpSession session) {
         try {
@@ -383,6 +387,9 @@ public final class AccessConditionUtils {
      * @return populated {@link PagePermissions};
      *         {@link PagePermissions#EMPTY} when pi is blank, when no pages are found,
      *         or when a Solr/DAO error occurs (logged at WARN)
+     * @should return granted permissions for open access record
+     * @should return empty for blank pi
+     * @should return empty for null pi
      */
     public static PagePermissions fetchPagePermissions(String pi, HttpServletRequest request) {
         if (StringUtils.isBlank(pi)) {
@@ -465,9 +472,9 @@ public final class AccessConditionUtils {
      * @should return empty list for null pi
      * @should return filenames for open access record
      * @should return empty list for record with no files indexed
-     * @should return empty list for restricted record when anonymous
      * @should return bare filenames not full paths
      * @should work for fulltext field
+     * @should return empty list for restricted record anonymous
      */
     public static List<String> fetchAccessibleFileNames(String pi, String filenameField,
             String privilegeType, HttpServletRequest request) {
@@ -918,6 +925,13 @@ public final class AccessConditionUtils {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return true if required access conditions empty
+     * @should return true if ip range allows access
+     * @should return true if required access conditions contain only open access
+     * @should return true if all license types allow privilege by default
+     * @should return false if not all license types allow privilege by default
+     * @should return true if ip range allows access to all conditions
+     * @should not return true if no ip range matches
      */
     public static AccessPermission checkAccessPermission(Set<String> requiredAccessConditions, String privilegeName, String query,
             HttpServletRequest request) throws IndexUnreachableException, PresentationException, DAOException {
@@ -1430,8 +1444,6 @@ public final class AccessConditionUtils {
      * @should throw RecordNotFoundException if record not found
      * @should return 100 if record has no quota value
      * @should return 100 if record open access
-     * @should return 0 if no license configured
-     * @should return actual quota value if found
      */
     public static int getPdfDownloadQuotaForRecord(String pi)
             throws PresentationException, IndexUnreachableException, DAOException, RecordNotFoundException {
@@ -1541,6 +1553,7 @@ public final class AccessConditionUtils {
      * @param dao DAO instance used to retrieve licenses and IP ranges
      * @return List<License>
      * @throws DAOException
+     * @should return empty collection for given input
      */
     public static List<License> getApplyingLicenses(Optional<User> user, String ipAddress, LicenseType type, IDAO dao) throws DAOException {
         List<License> licenses = dao.getLicenses(type);
@@ -1612,6 +1625,7 @@ public final class AccessConditionUtils {
      * @param attributeValue permission value to store in the session
      * @param session HTTP session to store the attribute in
      * @return true if successful; false otherwise
+     * @should return false for given input
      */
     public static boolean addSessionPermission(String attributeName, Object attributeValue, HttpSession session) {
         // logger.trace("addSessionPermission: {}", attributeName); //NOSONAR Debug

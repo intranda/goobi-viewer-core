@@ -137,8 +137,12 @@ class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
         super.tearDown();
     }
 
+    /**
+     * @verifies serialize
+     * @see PersistentAnnotation#getBody
+     */
     @Test
-    void testSerialize() throws JsonParseException, JsonMappingException, IOException {
+    void getBody_shouldSerialize() throws JsonParseException, JsonMappingException, IOException {
 
         String bodyString = daoAnno.getBody();
         Assertions.assertEquals("{\"type\":\"TextualBody\",\"format\":\"text/plain\",\"value\":\"annotation text\"}", bodyString);
@@ -157,8 +161,11 @@ class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
 
     }
 
+    /**
+     * @verifies persist annotation and preserve body and target
+     */
     @Test
-    void testSave() throws DAOException, JsonParseException, JsonMappingException, IOException {
+    void addAnnotation_shouldPersistAnnotationAndPreserveBodyAndTarget() throws DAOException, JsonParseException, JsonMappingException, IOException {
 
         JPADAO dao = (JPADAO) DataManager.getInstance().getDao();
 
@@ -184,8 +191,11 @@ class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
         return dao.getAllAnnotations(null, false);
     }
 
+    /**
+     * @verifies persist annotation
+     */
     @Test
-    void testPersistAnnotation() throws DAOException {
+    void getId_shouldPersistAnnotation() throws DAOException {
         boolean added = DataManager.getInstance().getDao().addAnnotation(daoAnno);
         Assertions.assertTrue(added);
         //        URI uri = URI.create(Long.toString(daoAnno.getId()));
@@ -206,8 +216,12 @@ class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
                 DateTools.FORMATTERISO8601DATETIMEMS.format(fromDAO2.getDateModified()));
     }
 
+    /**
+     * @verifies get content from oa
+     * @see PersistentAnnotation#getContentString
+     */
     @Test
-    void testGetContent_fromOA() {
+    void getContentString_shouldGetContentFromOa() {
         String content = "{\n" +
                 "        \"@type\": \"cnt:ContentAsText\",\n" +
                 "        \"format\": \"text/plain\",\n" +
@@ -218,8 +232,12 @@ class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
         assertEquals("GROSHERZOGLICH", pAnno.getContentString());
     }
 
+    /**
+     * @verifies get content from wa
+     * @see PersistentAnnotation#getContentString
+     */
     @Test
-    void testGetContent_fromWA() {
+    void getContentString_shouldGetContentFromWa() {
         String content = "{\n" +
                 "        \"type\": \"TextualBody\",\n" +
                 "        \"format\": \"text/plain\",\n" +

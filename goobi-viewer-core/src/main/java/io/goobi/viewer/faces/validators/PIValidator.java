@@ -67,11 +67,12 @@ public class PIValidator implements Validator<String> {
      *
      * @param pi persistent identifier string to validate for syntax
      * @should return true if pi good
-     * @should return false if pi empty, blank or null
      * @should return false if pi contains illegal characters
      * @should return false if pi starts with non alphanumeric character
      * @should return false if pi contains plus sign
      * @return true if the given persistent identifier is non-blank and contains only valid characters, false otherwise
+     * @should return false if pi empty blank or null
+     * @should return false if pi contains non ascii characters
      */
     public static boolean validatePi(String pi) {
         if (StringUtils.isBlank(pi)) {

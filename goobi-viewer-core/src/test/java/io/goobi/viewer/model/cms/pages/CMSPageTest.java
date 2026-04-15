@@ -61,8 +61,12 @@ class CMSPageTest extends AbstractDatabaseEnabledTest {
         contentManager = templateManager.getContentManager();// new CMSPageContentManager(componentTemplatesPath);
     }
 
+    /**
+     * @verifies persist page
+     * @see CMSPage#getTitle
+     */
     @Test
-    void testPersistPage() throws DAOException {
+    void getTitle_shouldPersistPage() throws DAOException {
 
         CMSPage page = new CMSPage();
         page.getTitleTranslations().setValue("Titel", Locale.ENGLISH);
@@ -79,8 +83,12 @@ class CMSPageTest extends AbstractDatabaseEnabledTest {
         assertEquals("Titel", cloned.getTitle(Locale.ENGLISH));
     }
 
+    /**
+     * @verifies persist page with content
+     * @see CMSPage#removeComponent
+     */
     @Test
-    void testPersistPageWithContent() throws DAOException {
+    void removeComponent_shouldPersistPageWithContent() throws DAOException {
 
         CMSPage page = new CMSPage();
         page.getTitleTranslations().setValue("Titel", Locale.ENGLISH);
@@ -101,8 +109,12 @@ class CMSPageTest extends AbstractDatabaseEnabledTest {
         assertEquals("Entered Text", clonedTextContent.getText().getText(Locale.ENGLISH));
     }
 
+    /**
+     * @verifies return false before initialisation
+     * @see CMSPage#isComponentsLoaded
+     */
     @Test
-    void isComponentsLoaded_returnsFalseBeforeInitialisation() {
+    void isComponentsLoaded_shouldReturnFalseBeforeInitialisation() {
         CMSPage page = new CMSPage();
         page.addComponent(contentManager.getComponent("text").orElseThrow());
         // Copy constructor creates page with persistentComponents but without cmsComponents
@@ -110,8 +122,12 @@ class CMSPageTest extends AbstractDatabaseEnabledTest {
         assertFalse(copy.isComponentsLoaded());
     }
 
+    /**
+     * @verifies return true after initialisation
+     * @see CMSPage#isComponentsLoaded
+     */
     @Test
-    void isComponentsLoaded_returnsTrueAfterInitialisation() {
+    void isComponentsLoaded_shouldReturnTrueAfterInitialisation() {
         CMSPage page = new CMSPage();
         page.addComponent(contentManager.getComponent("text").orElseThrow());
         CMSPage copy = new CMSPage(page);
@@ -119,8 +135,12 @@ class CMSPageTest extends AbstractDatabaseEnabledTest {
         assertTrue(copy.isComponentsLoaded());
     }
 
+    /**
+     * @verifies return true even when template not found
+     * @see CMSPage#isComponentsLoaded
+     */
     @Test
-    void isComponentsLoaded_returnsTrueEvenWhenTemplateNotFound() {
+    void isComponentsLoaded_shouldReturnTrueEvenWhenTemplateNotFound() {
         CMSPage page = new CMSPage();
         // Add a component with an unknown template filename
         PersistentCMSComponent unknown = new PersistentCMSComponent();
@@ -136,10 +156,10 @@ class CMSPageTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see CMSPage#exportAsXml()
-     * @verifies create doc correctly
+     * @verifies create XML document with localized titles, categories, and text components
      */
     @Test
-    void exportAsXml_shouldCreateDocCorrectly() {
+    void exportAsXml_shouldCreateXMLDocumentWithLocalizedTitlesCategoriesAndTextComponents() {
         CMSPage page = new CMSPage();
         page.getTitleTranslations().setValue("Title", Locale.ENGLISH);
         page.getTitleTranslations().setValue("Titel", Locale.GERMAN);

@@ -43,7 +43,6 @@ class ArchiveEntryMetadataListTest extends AbstractDatabaseAndSolrEnabledTest {
     /**
      * @throws IndexUnreachableException
      * @throws PresentationException
-     * @see populateMetadata(SolrDocument,List)
      * @verifies populate metadata correctly
      */
     @Test

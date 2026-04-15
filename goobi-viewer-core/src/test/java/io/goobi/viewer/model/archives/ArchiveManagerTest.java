@@ -84,14 +84,22 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
         }
     }
 
+    /**
+     * @verifies return 2 for given input
+     * @see should#getDatabases()
+     */
     @Test
-    void testGetDatabases() {
+    void getDatabases_shouldReturn2ForGivenInput() {
         ArchiveManager archiveManager = new ArchiveManager(eadParser);
         assertEquals(2, archiveManager.getDatabases().size());
     }
 
+    /**
+     * @verifies return collection for given input
+     * @see should#getNodeType(String)
+     */
     @Test
-    void testGetNodeTypes() {
+    void getNodeType_shouldReturnCollectionForGivenInput() {
         ArchiveManager archiveManager = new ArchiveManager(eadParser);
         assertEquals("collection", archiveManager.getNodeType("collection").getName());
         assertEquals("folder", archiveManager.getNodeType("folder").getName());
@@ -103,8 +111,12 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
         assertEquals("video", archiveManager.getNodeType("video").getName());
     }
 
+    /**
+     * @verifies get database
+     * @see should#ArchiveManager
+     */
     @Test
-    void testGetDatabase() throws Exception {
+    void ArchiveManager_shouldGetDatabase() throws Exception {
         {
             ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser));
             ArchiveTree tree = archiveManager.getArchiveTree("r1");
@@ -122,16 +134,23 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
         }
     }
 
+    /**
+     * @verifies update database
+     * @see should#getArchiveTree
+     */
     @Test
-    void testUpdateDatabase() throws Exception {
+    void getArchiveTree_shouldUpdateDatabase() throws Exception {
         ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser));
         archiveManager.getArchiveTree("r1");
         archiveManager.getArchiveTree("r1");
         Mockito.verify(archiveManager, Mockito.times(1)).loadDatabase(Mockito.any(), Mockito.any());
     }
 
+    /**
+     * @verifies add new archive
+     */
     @Test
-    void testAddNewArchive() {
+    void getArchive_shouldAddNewArchive() {
         assertNotNull(possibleDatabases);
         ArchiveManager archiveManager = new ArchiveManager(eadParser);
 
@@ -143,8 +162,12 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
         assertNotNull(archiveManager.getArchive("r3"));
     }
 
+    /**
+     * @verifies remove archive
+     * @see should#getArchive
+     */
     @Test
-    void testRemoveArchive() {
+    void getArchive_shouldRemoveArchive() {
         assertNotNull(possibleDatabases);
         ArchiveManager archiveManager = new ArchiveManager(eadParser);
         possibleDatabases.remove(1);
@@ -167,18 +190,22 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
         assertNotNull(tree);
     }
 
+    /**
+     * @verifies legacy icon mapping
+     * @see should#NodeType
+     */
     @Test
-    void testLegacyIconMapping() {
+    void NodeType_shouldLegacyIconMapping() {
         NodeType nodeType = new NodeType("legacy", "fa fa-file-video-o");
         assertEquals("video", nodeType.getIcon());
     }
 
     /**
      * @see ArchiveManager#findIndexedNeighbours(String)
-     * @verifies return neighbors correctly
+     * @verifies return pair of optional neighbor IDs with empty optional when no neighbor exists
      */
     @Test
-    void findIndexedNeighbours_shouldRecturnNeighborsCorrectly() throws Exception {
+    void findIndexedNeighbours_shouldReturnPairOfOptionalNeighborIDsWithEmptyOptionalWhenNoNeighborExists() throws Exception {
         Pair<Optional<String>, Optional<String>> result = ArchiveManager.findIndexedNeighbours("A91x36057394742965620181205135958381");
         assertNotNull(result);
         assertEquals("A91x28075361251831020181205135958451", result.getLeft().get());

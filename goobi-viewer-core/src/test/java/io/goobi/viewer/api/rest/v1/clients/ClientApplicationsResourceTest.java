@@ -43,8 +43,12 @@ import io.goobi.viewer.model.security.clients.ClientApplication.AccessStatus;
  */
 class ClientApplicationsResourceTest extends AbstractRestApiTest {
 
+    /**
+     * @verifies no access
+     * @see ClientApplicationsResource#request
+     */
     @Test
-    void test_noAccess() {
+    void request_shouldNoAccess() {
         try (Response response = target()
                 .path(CLIENTS)
                 .request()
@@ -74,8 +78,12 @@ class ClientApplicationsResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies list clients
+     * @see ClientApplicationsResource#request
+     */
     @Test
-    void test_listClients() {
+    void request_shouldListClients() {
         try (Response response = target(CLIENTS)
                 .request()
                 .header("token", "test")
@@ -90,8 +98,12 @@ class ClientApplicationsResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return expected value
+     * @see ClientApplicationsResource#getClient
+     */
     @Test
-    void test_getClient() {
+    void getClient_shouldReturnExpectedValue() {
         try (Response response = target()
                 .path(CLIENTS + CLIENTS_CLIENT.replace("{id}", "1234-abcd-4321"))
                 .request()
@@ -106,8 +118,11 @@ class ClientApplicationsResourceTest extends AbstractRestApiTest {
 
     }
 
+    /**
+     * @verifies put client
+     */
     @Test
-    void test_putClient() throws DAOException {
+    void request_shouldPutClient() throws DAOException {
 
         ClientApplication databaseClient = DataManager.getInstance().getDao().getClientApplicationByClientId("1234-abcd-4321");
         assertEquals(AccessStatus.REQUESTED, databaseClient.getAccessStatus());

@@ -47,7 +47,7 @@ class TOCElementTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see TOCElement#TOCElement(String,String,String,String,String,int,String,String,boolean,boolean,String,String)
-     * @verifies add logId to url
+     * @verifies add log id to url
      */
     @Test
     void TOCElement_shouldAddLogIdToUrl() throws Exception {
@@ -60,7 +60,7 @@ class TOCElementTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see TOCElement#TOCElement(String,String,String,String,String,int,String,String,boolean,boolean,String,String)
-     * @verifies set correct view url for given docStructType
+     * @verifies set correct view url for given doc struct type
      */
     @Test
     void TOCElement_shouldSetCorrectViewUrlForGivenDocStructType() throws Exception {
@@ -72,22 +72,20 @@ class TOCElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see TOCElement#getUrl(String)
-     * @verifies construct full screen url correctly
+     * @verifies return URL containing page type, PI, page number and logId for fullscreen view
      */
     @Test
-    void getUrl_shouldConstructFullScreenUrlCorrectly() throws Exception {
+    void getUrl_shouldReturnURLContainingPageTypePIPageNumberAndLogIdForFullscreenView() throws Exception {
         TOCElement tef = new TOCElement(new SimpleMetadataValue("Label"), "1", "first", "123", "LOG_0001", 0, "PPN123", null, false, false, true,
                 "image", null, null);
         Assertions.assertEquals('/' + PageType.viewFullscreen.getName() + "/PPN123/1/LOG_0001/", tef.getUrl(PageType.viewFullscreen.getName()));
     }
 
     /**
-     * @see TOCElement#getUrl(String)
-     * @verifies construct reading mode url correctly
+     * @verifies return URL containing page type, PI, page number and logId for reading mode view
      */
     @Test
-    void getUrl_shouldConstructReadingModeUrlCorrectly() throws Exception {
+    void getUrl_shouldReturnURLContainingPageTypePIPageNumberAndLogIdForReadingModeView() throws Exception {
         TOCElement tef = new TOCElement(new SimpleMetadataValue("Label"), "1", "first", "123", "LOG_0001", 0, "PPN123", null, false, false, true,
                 "image", null, null);
         Assertions.assertEquals('/' + PageType.viewFullscreen.getName() + "/PPN123/1/LOG_0001/", tef.getUrl(PageType.viewFullscreen.getName()));

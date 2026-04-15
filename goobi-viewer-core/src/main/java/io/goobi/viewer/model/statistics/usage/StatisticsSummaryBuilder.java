@@ -81,6 +81,7 @@ public class StatisticsSummaryBuilder {
      * @return a {@link StatisticsSummary}
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @should filter results
      */
     public StatisticsSummary loadSummary(StatisticsSummaryFilter filter) throws IndexUnreachableException, PresentationException {
         return loadFromSolr(filter);

@@ -102,12 +102,18 @@ class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest {
         super.tearDown();
     }
 
+    /**
+     * @verifies return false if client not contains license
+     */
     @Test
     void checkAccessPermission_shouldReturnFalseIfClientNotContainsLicense() throws Exception {
         Assertions.assertFalse(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
                 "11.22.33.44", Optional.of(client), null).isGranted());
     }
 
+    /**
+     * @verifies return true if client contains license
+     */
     @Test
     void checkAccessPermission_shouldReturnTrueIfClientContainsLicense() throws Exception {
         license.getLicensees().get(0).setClient(client);
@@ -116,6 +122,9 @@ class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest {
                 "11.22.33.44", Optional.of(client), null).isGranted());
     }
 
+    /**
+     * @verifies return true if all clients contains license
+     */
     @Test
     void checkAccessPermission_shouldReturnTrueIfAllClientsContainsLicense() throws Exception {
         license.getLicensees().get(0).setClient(client);
@@ -127,6 +136,9 @@ class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest {
                 "11.22.33.44", Optional.of(client), null).isGranted());
     }
 
+    /**
+     * @verifies return false if client is outside ip range
+     */
     @Test
     void checkAccessPermission_shouldReturnFalseIfClientIsOutsideIpRange() throws Exception {
         license.getLicensees().get(0).setClient(client);
@@ -144,6 +156,9 @@ class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest {
                 "11.22.33.44", Optional.of(client), null).isGranted());
     }
 
+    /**
+     * @verifies return true if client is inside ip range
+     */
     @Test
     void checkAccessPermission_shouldReturnTrueIfClientIsInsideIpRange() throws Exception {
         license.getLicensees().get(0).setClient(client);

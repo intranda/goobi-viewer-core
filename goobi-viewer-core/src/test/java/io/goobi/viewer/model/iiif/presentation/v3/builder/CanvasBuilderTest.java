@@ -47,8 +47,12 @@ class CanvasBuilderTest extends AbstractSolrEnabledTest {
     ApiUrls urls = new ApiUrls("http://localhost:8080/viewer/api/v2");
     CanvasBuilder builder = new CanvasBuilder(urls, null);
 
+    /**
+     * @verifies include image
+     * @see CanvasBuilder#build
+     */
     @Test
-    void test_build_shouldIncludeImage()
+    void build_shouldIncludeImage()
             throws ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException, DAOException {
 
         PhysicalElement element = Mockito.mock(PhysicalElement.class);
@@ -86,9 +90,10 @@ class CanvasBuilderTest extends AbstractSolrEnabledTest {
      * When a non-empty PagePermissions is pre-loaded onto the builder, build(page) must NOT call
      * page.isAccessPermissionImage() or page.isAccessPermissionFulltext() — the pre-fetched map
      * is used instead, eliminating per-page Solr queries in the manifest loop.
+     * @verifies build for given input
      */
     @Test
-    void test_build_usesPrefetchedPermissionsWithoutCallingPageMethods()
+    void build_shouldBuildForGivenInput()
             throws ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException, DAOException {
 
         PhysicalElement element = Mockito.mock(PhysicalElement.class);
@@ -119,11 +124,10 @@ class CanvasBuilderTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see CanvasBuilder#addImageResource(Canvas3, PhysicalElement)
-     * @verifies use prefetched dimension cache without calling ImageHandler when dimensions cached
+     * @verifies return 1200 for given input
      */
     @Test
-    void test_build_usesDimensionCacheWithoutCallingImageHandler()
+    void build_shouldReturn1200ForGivenInput()
             throws ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException, DAOException {
 
         PhysicalElement element = Mockito.mock(PhysicalElement.class);

@@ -35,11 +35,10 @@ import io.goobi.viewer.AbstractTest;
 class IndexerToolsTest extends AbstractTest {
 
     /**
-     * @see IndexerTools#deleteRecord(String,boolean,Path)
-     * @verifies create delete file correctly
+     * @verifies create .delete file in hotfolder when trace flag is true
      */
     @Test
-    void deleteRecord_shouldCreateDeleteFileCorrectly() throws Exception {
+    void deleteRecord_shouldCreateDeleteFileInHotfolderWhenTraceFlagIsTrue() throws Exception {
         Path hotfolder = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder());
         if (!Files.isDirectory(hotfolder)) {
             Files.createDirectory(hotfolder);
@@ -59,11 +58,10 @@ class IndexerToolsTest extends AbstractTest {
     }
 
     /**
-     * @see IndexerTools#deleteRecord(String,boolean,Path)
-     * @verifies create purge file correctly
+     * @verifies create .purge file in hotfolder when trace flag is false
      */
     @Test
-    void deleteRecord_shouldCreatePurgeFileCorrectly() throws Exception {
+    void deleteRecord_shouldCreatePurgeFileInHotfolderWhenTraceFlagIsFalse() throws Exception {
         Path hotfolder = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder());
         if (!Files.isDirectory(hotfolder)) {
             Files.createDirectory(hotfolder);
@@ -83,7 +81,6 @@ class IndexerToolsTest extends AbstractTest {
     }
 
     /**
-     * @see IndexerTools#findNamingScheme(String,String,File[])
      * @verifies return original baseName if no files exist
      */
     @Test
@@ -102,7 +99,6 @@ class IndexerToolsTest extends AbstractTest {
     }
 
     /**
-     * @see IndexerTools#findNamingScheme(String,String,File[])
      * @verifies return alternative naming scheme if initial name already exists
      */
     @Test
@@ -125,7 +121,8 @@ class IndexerToolsTest extends AbstractTest {
     }
 
     /**
-     * @see IndexerTools#shutdown()
+     * @verifies complete without exception
+     * @see for#shutdown()
      */
     @Test
     void shutdown_shouldCompleteWithoutException() {

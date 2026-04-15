@@ -116,6 +116,7 @@ public class DisclaimerBean implements Serializable {
      * The configuration object for the disclaimer to be used by the viewerJS.disclaimerModal module.
      * 
      * @return a json object
+     * @should write json
      */
     public String getDisclaimerConfig() {
         if (dao != null) {

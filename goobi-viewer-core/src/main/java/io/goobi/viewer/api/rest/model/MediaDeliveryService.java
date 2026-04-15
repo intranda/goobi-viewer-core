@@ -293,6 +293,7 @@ public class MediaDeliveryService {
      *
      * @param range raw value of the HTTP Range header to validate
      * @return true if range matches pattern; false otherwise
+     * @should match range header
      */
     protected static boolean matchesRangeHeaderPattern(String range) {
         if (range.matches("bytes=.+")) {

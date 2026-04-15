@@ -38,10 +38,10 @@ class XmlToolsTest {
 
     /**
      * @see XmlTools#getDocumentFromString(String,String)
-     * @verifies build document correctly
+     * @verifies parse XML string into Document with root element and child elements preserved
      */
     @Test
-    void getDocumentFromString_shouldBuildDocumentCorrectly() throws Exception {
+    void getDocumentFromString_shouldParseXMLStringIntoDocumentWithRootElementAndChildElementsPreserved() throws Exception {
         String xml = "<root><child>child1</child><child>child2</child></root>";
         Document doc = XmlTools.getDocumentFromString(xml, null);
         Assertions.assertNotNull(doc);
@@ -52,11 +52,10 @@ class XmlToolsTest {
     }
 
     /**
-     * @see XmlTools#getStringFromElement(Object,String)
-     * @verifies return XML string correctly for documents
+     * @verifies serialize Document object to XML string containing root element tags
      */
     @Test
-    void getStringFromElement_shouldReturnXMLStringCorrectlyForDocuments() throws Exception {
+    void getStringFromElement_shouldSerializeDocumentObjectToXMLStringContainingRootElementTags() throws Exception {
         Document doc = new Document();
         doc.setRootElement(new Element("root"));
         String xml = XmlTools.getStringFromElement(doc, null);
@@ -65,11 +64,10 @@ class XmlToolsTest {
     }
 
     /**
-     * @see XmlTools#getStringFromElement(Object,String)
-     * @verifies return XML string correctly for elements
+     * @verifies serialize standalone Element to XML string containing element tags
      */
     @Test
-    void getStringFromElement_shouldReturnXMLStringCorrectlyForElements() throws Exception {
+    void getStringFromElement_shouldSerializeStandaloneElementToXMLStringContainingElementTags() throws Exception {
         String xml = XmlTools.getStringFromElement(new Element("root"), null);
         Assertions.assertNotNull(xml);
         Assertions.assertTrue(xml.contains("<root></root>"));
@@ -88,7 +86,6 @@ class XmlToolsTest {
     }
 
     /**
-     * @see XmlTools#writeXmlFile(Document,String)
      * @verifies throw FileSystemException if file is directory
      */
     @Test
@@ -101,7 +98,6 @@ class XmlToolsTest {
     /**
      * t
      *
-     * @see XmlTools#readXmlFile(Path)
      * @verifies build document from path correctly
      */
     @Test
@@ -113,17 +109,16 @@ class XmlToolsTest {
 
     /**
      * @see XmlTools#readXmlFile(String)
-     * @verifies build document from string correctly
+     * @verifies return document with root element when given valid xml file path
      */
     @Test
-    void readXmlFile_shouldBuildDocumentFromStringCorrectly() throws Exception {
+    void readXmlFile_shouldReturnDocumentWithRootElementWhenGivenValidXmlFilePath() throws Exception {
         Document doc = XmlTools.readXmlFile("src/test/resources/config_viewer.test.xml");
         Assertions.assertNotNull(doc);
         Assertions.assertNotNull(doc.getRootElement());
     }
 
     /**
-     * @see XmlTools#readXmlFile(URL)
      * @verifies build document from url correctly
      */
     @Test

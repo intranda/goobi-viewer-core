@@ -62,10 +62,10 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchFacets#resetActiveFacets()
-     * @verifies reset facets correctly
+     * @verifies reset active facet string to default dash value
      */
     @Test
-    void resetActiveFacets_shouldResetFacetsCorrectly() {
+    void resetActiveFacets_shouldResetActiveFacetStringToDefaultDashValue() {
         SearchFacets facets = new SearchFacets();
         facets.setActiveFacetString("foo:bar;;");
         Assertions.assertEquals("foo%3Abar%3B%3B", facets.getActiveFacetString());
@@ -74,7 +74,6 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#generateFacetPrefix(List,boolean)
      * @verifies encode slashed and backslashes
      */
     @Test
@@ -144,7 +143,6 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#parseFacetString(String,List,Map)
      * @verifies use label from labelMap if available
      */
     @Test
@@ -215,7 +213,6 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#getActiveFacetString()
      * @verifies contain queries from all FacetItems
      */
     @Test
@@ -239,7 +236,7 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchFacets#getActiveFacetString()
-     * @verifies return hyphen if currentFacets empty
+     * @verifies return hyphen if active facets empty
      */
     @Test
     void getActiveFacetString_shouldReturnHyphenIfActiveFacetsEmpty() {
@@ -250,10 +247,10 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchFacets#removeFacetAction(String,String)
-     * @verifies remove facet correctly
+     * @verifies remove only the exact matching facet without affecting similarly prefixed entries
      */
     @Test
-    void removeFacetAction_shouldRemoveFacetCorrectly() {
+    void removeFacetAction_shouldRemoveOnlyTheExactMatchingFacetWithoutAffectingSimilarlyPrefixedEntries() {
         SearchFacets facets = new SearchFacets();
         facets.setActiveFacetString("DOCSTRCT:a;;MD_TITLE:bob;;MD_TITLE:b;;");
         Assertions.assertEquals(3, facets.getActiveFacets().size());
@@ -278,7 +275,6 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#removeFacetAction(String,String)
      * @verifies sanitize triple semicolons to double after removal
      */
     @Test
@@ -324,7 +320,7 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchFacets#generateSimpleFacetFilterQueries(boolean)
-     * @verifies generate query correctly
+     * @verifies generate queries correctly
      */
     @Test
     void generateSimpleFacetFilterQueries_shouldGenerateQueriesCorrectly() {
@@ -390,7 +386,6 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#generateSimpleFacetFilterQueries(boolean)
      * @verifies combine facet queries if field name same
      */
     @Test
@@ -452,7 +447,6 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#isFacetCurrentlyUsed(IFacetItem)
      * @verifies return correct value
      */
     @Test
@@ -478,7 +472,7 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchFacets#isHasRangeFacets()
-     * @verifies not throw NPE when map value is null due to concurrent clear
+     * @verifies not throw NPE when map value is null
      */
     @Test
     void isHasRangeFacets_shouldNotThrowNPEWhenMapValueIsNull() throws Exception {
@@ -557,11 +551,10 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#updateFacetItem(String,String,List,boolean)
-     * @verifies update facet item correctly
+     * @verifies replace existing facet item value with parsed range values when field matches
      */
     @Test
-    void updateFacetItem_shouldUpdateFacetItemCorrectly() {
+    void updateFacetItem_shouldReplaceExistingFacetItemValueWithParsedRangeValuesWhenFieldMatches() {
         List<IFacetItem> items = new ArrayList<>(2);
         items.add(new FacetItem("FIELD1:foo", false));
         items.add(new FacetItem("FIELD2:bar", false));
@@ -573,11 +566,10 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#updateFacetItem(String,String,List,boolean)
-     * @verifies add new item correctly
+     * @verifies append new facet item to list when no item with matching field exists
      */
     @Test
-    void updateFacetItem_shouldAddNewItemCorrectly() {
+    void updateFacetItem_shouldAppendNewFacetItemToListWhenNoItemWithMatchingFieldExists() {
         List<IFacetItem> items = new ArrayList<>(2);
         items.add(new FacetItem("FIELD1:foo", false));
         SearchFacets.updateFacetItem("FIELD2", "bar", items, false);
@@ -587,7 +579,6 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#populateAbsoluteMinMaxValuesForField(String)
      * @verifies populate values correctly
      */
     @Test
@@ -600,7 +591,6 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#populateAbsoluteMinMaxValuesForField(String)
      * @verifies add all values to list
      */
     @Test
@@ -615,7 +605,6 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#populateAbsoluteMinMaxValuesForField(String)
      * @verifies use configured min max values correctly
      */
     @Test
@@ -627,8 +616,11 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals("2024", facets.getAbsoluteMaxRangeValue(SolrConstants.CALENDAR_YEAR));
     }
 
+    /**
+     * @verifies facet escaping
+     */
     @Test
-    void testFacetEscaping()
+    void getActiveFacetString_shouldFacetEscaping()
             throws UnsupportedEncodingException, PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         TestUtils.mockFacesContext();
         
@@ -654,8 +646,8 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#isUnselectedValuesAvailable()
      * @verifies return null if field or value null
+     * @see SearchFacets#getFacet(String, String)
      */
     @Test
     void getFacet_shouldReturnNullIfFieldOrValueNull() {
@@ -665,7 +657,6 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#isUnselectedValuesAvailable()
      * @verifies return correct facet item
      */
     @Test
@@ -676,7 +667,6 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#isUnselectedValuesAvailable()
      * @verifies return true if a facet field has selectable values
      */
     @Test
@@ -694,7 +684,6 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#isUnselectedValuesAvailable()
      * @verifies return false of no selectable values found
      */
     @Test
@@ -711,8 +700,8 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#getAvailableFacetsListSizeForField(String)
      * @verifies return zero for unknown field
+     * @see SearchFacets#getAvailableFacetsListSizeForField(String)
      */
     @Test
     void getAvailableFacetsListSizeForField_shouldReturnZeroForUnknownField() {
@@ -721,7 +710,6 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#getAvailableFacetsListSizeForField(String)
      * @verifies return correct size
      */
     @Test
@@ -732,8 +720,8 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#isFacetListSizeSufficient(String)
      * @verifies return false for unknown field
+     * @see SearchFacets#isFacetListSizeSufficient(String)
      */
     @Test
     void isFacetListSizeSufficient_shouldReturnFalseForUnknownField() {
@@ -742,7 +730,6 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#isFacetListSizeSufficient(String)
      * @verifies return false for single item field
      */
     @Test
@@ -753,7 +740,6 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#isFacetListSizeSufficient(String)
      * @verifies return true for field with two or more items
      */
     @Test
@@ -764,7 +750,6 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#isUnselectedValuesAvailable()
      * @verifies return false if only range facets available
      */
     @Test
@@ -783,10 +768,10 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
      * ConcurrentModificationException or any other concurrency error.
      *
      * @see SearchFacets#getAvailableFacets()
-     * @verifies not throw under concurrent reads and writes
+     * @verifies not throw under concurrent access
      */
     @Test
-    void availableFacets_shouldNotThrowUnderConcurrentAccess() throws Exception {
+    void getAvailableFacets_shouldNotThrowUnderConcurrentAccess() throws Exception {
         SearchFacets facets = new SearchFacets();
         int threads = 20;
         ExecutorService executor = Executors.newFixedThreadPool(threads);

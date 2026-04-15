@@ -62,8 +62,11 @@ public class IIIFPresentationResourceBuilderTest extends AbstractDatabaseAndSolr
         super.tearDown();
     }
 
+    /**
+     * @verifies return requested number of results
+     */
     @Test
-    void successfullyQueryManifests()
+    void getManifestsForQuery_shouldReturnRequestedNumberOfResults()
             throws DAOException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException {
         List<IPresentationModelElement> collection = testee.getManifestsForQuery("ISWORK:*", "", 0, 2);
         Assertions.assertEquals(2, collection.size());

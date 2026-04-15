@@ -487,6 +487,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
      * Returns the list of available record privileges for adding to this license (using the working copy while editing).
      *
      * @return Values in IPrivilegeHolder.PRIVS_RECORD minus the privileges already added
+     * @should only return priv view ugc if licenseType ugc type
      */
     public List<String> getAvailablePrivileges() {
         return getAvailablePrivileges(privilegesCopy);
@@ -988,6 +989,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
      * 
      * @return "disabled" if any required values are missing; null otherwise
      * @should return null if all relevant fields filled
+     * @should only return null if all relevant fields filled
      */
     public String getDisabledStatus() {
         if (getLicenseType() == null) {

@@ -155,6 +155,8 @@ public class DownloadBean implements Serializable {
      *
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.DownloadException if any.
+     * @should throw download exception when unknown task type
+     * @should throw download exception when file not found
      */
     public void downloadFileAction() throws IOException, DownloadException {
         DownloadJob job;

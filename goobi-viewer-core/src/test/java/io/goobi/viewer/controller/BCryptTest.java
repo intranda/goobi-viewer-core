@@ -32,11 +32,10 @@ import io.goobi.viewer.AbstractTest;
 class BCryptTest extends AbstractTest {
 
     /**
-     * @see BCrypt#hashpw(String,String)
-     * @verifies hash password correctly
+     * @verifies produce unique hashes for distinct passwords including ASCII, umlauts, and symbols up to truncation limit
      */
     @Test
-    void hashpw_shouldHashPasswordCorrectly() throws Exception {
+    void hashpw_shouldProduceUniqueHashesForDistinctPasswordsIncludingASCIIUmlautsAndSymbolsUpToTruncationLimit() throws Exception {
         String salt = BCrypt.gensalt();
         Set<String> used = new HashSet<>();
 

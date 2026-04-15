@@ -175,7 +175,7 @@ public final class UserTools {
      *
      * @param user the user whose public contributions should be deleted
      * @throws DAOException
-     * @should delete all user public content correctly
+     * @should delete user comments and remove user from campaign record statistics
      */
     public static void deleteUserPublicContributions(User user) throws DAOException {
         if (user == null) {
@@ -205,7 +205,7 @@ public final class UserTools {
      * @param user the user whose public contributions should be anonymized
      * @return true if successful; false otherwise
      * @throws DAOException
-     * @should anonymize all user public content correctly
+     * @should replace user as comment creator and campaign reviewer with anonymous identity
      */
     public static boolean anonymizeUserPublicContributions(User user) throws DAOException {
         User anon = UserTools.checkAndCreateAnonymousUser();

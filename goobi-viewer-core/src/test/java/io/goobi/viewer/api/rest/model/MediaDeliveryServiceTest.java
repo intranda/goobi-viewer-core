@@ -27,8 +27,12 @@ import org.junit.jupiter.api.Test;
 
 class MediaDeliveryServiceTest {
 
+    /**
+     * @verifies match range header
+     * @see that#matchesRangeHeaderPattern
+     */
     @Test
-    void test_matchRangeHeader() {
+    void matchesRangeHeaderPattern_shouldMatchRangeHeader() {
         {
             String range = "n-n";
             assertFalse(MediaDeliveryService.matchesRangeHeaderPattern(range));

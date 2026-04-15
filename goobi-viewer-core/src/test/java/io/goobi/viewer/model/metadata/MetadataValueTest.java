@@ -37,10 +37,10 @@ class MetadataValueTest {
 
     /**
      * @see MetadataValue#getComboValueShort(int)
-     * @verifies construct param correctly
+     * @verifies return prefix value and suffix concatenated for the given param index
      */
     @Test
-    void getComboValueShort_shouldConstructParamCorrectly() {
+    void getComboValueShort_shouldReturnPrefixValueAndSuffixConcatenatedForTheGivenParamIndex() {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamPrefixes().add("pre_");
         value.getParamValues().add(new ArrayList<>());
@@ -55,10 +55,10 @@ class MetadataValueTest {
 
     /**
      * @see MetadataValue#getComboValueShort(int)
-     * @verifies construct multivalued param correctly
+     * @verifies concatenate prefix value and suffix for each entry in a multivalued param
      */
     @Test
-    void getComboValueShort_shouldConstructMultivaluedParamCorrectly() {
+    void getComboValueShort_shouldConcatenatePrefixValueAndSuffixForEachEntryInAMultivaluedParam() {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamPrefixes().add("pre_");
         value.getParamValues().add(new ArrayList<>());
@@ -178,10 +178,10 @@ class MetadataValueTest {
 
     /**
      * @see MetadataValue#getComboValueShort(int)
-     * @verifies use master value fragment correctly
+     * @verifies substitute param value into the master value fragment placeholder
      */
     @Test
-    void getComboValueShort_shouldUseMasterValueFragmentCorrectly() {
+    void getComboValueShort_shouldSubstituteParamValueIntoTheMasterValueFragmentPlaceholder() {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamMasterValueFragments().add("foo {0} bar");
         value.getParamSuffixes().add("pre_");
@@ -199,11 +199,10 @@ class MetadataValueTest {
     }
 
     /**
-     * @see MetadataValue#applyHighlightingToParamValue(int,Set)
-     * @verifies apply highlighting correctly
+     * @verifies wrap matching search term in highlight mark tag within param value
      */
     @Test
-    void applyHighlightingToParamValue_shouldApplyHighlightingCorrectly() {
+    void applyHighlightingToParamValue_shouldWrapMatchingSearchTermInHighlightMarkTagWithinParamValue() {
         MetadataValue mdValue = new MetadataValue("", "", "");
         List<String> values = Arrays.asList("foobar", "something");
         mdValue.getParamValues().add(values);
@@ -212,7 +211,6 @@ class MetadataValueTest {
     }
 
     /**
-     * @see MetadataValue#isAllParamValuesBlank()
      * @verifies return true if all param values blank
      */
     @Test
@@ -226,7 +224,6 @@ class MetadataValueTest {
     }
 
     /**
-     * @see MetadataValue#isAllParamValuesBlank()
      * @verifies return false if any param value not blank
      */
     @Test

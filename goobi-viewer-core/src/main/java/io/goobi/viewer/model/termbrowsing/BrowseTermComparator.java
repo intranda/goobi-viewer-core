@@ -67,7 +67,7 @@ public class BrowseTermComparator implements Comparator<BrowseTerm>, Serializabl
      * @param o1 first browse term to compare
      * @param o2 second browse term to compare
      * @return a negative integer, zero, or a positive integer as the first argument is less than, equal to, or greater than the second
-     * @should compare correctly
+     * @should sort browse terms alphabetically with accent normalization and consistent numeric ordering
      * @should use sort term if provided
      * @should use translated term if provided
      * @should sort accented vowels after plain vowels

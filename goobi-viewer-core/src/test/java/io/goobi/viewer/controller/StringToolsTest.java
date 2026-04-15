@@ -44,10 +44,10 @@ class StringToolsTest {
 
     /**
      * @see StringTools#escapeHtmlChars(String)
-     * @verifies escape all characters correctly
+     * @verifies replace angle brackets, quotes, and ampersands with HTML entities
      */
     @Test
-    void escapeHtmlChars_shouldEscapeAllCharactersCorrectly() throws Exception {
+    void escapeHtmlChars_shouldReplaceAngleBracketsQuotesAndAmpersandsWithHTMLEntities() throws Exception {
         assertEquals("&lt;i&gt;&quot;A&amp;B&quot;&lt;/i&gt;", StringTools.escapeHtmlChars("<i>\"A&B\"</i>"));
     }
 
@@ -63,28 +63,28 @@ class StringToolsTest {
 
     /**
      * @see StringTools#removeDiacriticalMarks(String)
-     * @verifies remove diacritical marks correctly
+     * @verifies strip accents from umlauts and accented characters while preserving eszett and base letters
      */
     @Test
-    void removeDiacriticalMarks_shouldRemoveDiacriticalMarksCorrectly() throws Exception {
+    void removeDiacriticalMarks_shouldStripAccentsFromUmlautsAndAccentedCharactersWhilePreservingEszettAndBaseLetters() throws Exception {
         assertEquals("aaaaoooouuuueeeeßn", StringTools.removeDiacriticalMarks("äáàâöóòôüúùûëéèêßñ"));
     }
 
     /**
      * @see StringTools#removeLineBreaks(String,String)
-     * @verifies remove line breaks correctly
+     * @verifies strip CRLF sequences and join text with given replacement
      */
     @Test
-    void removeLineBreaks_shouldRemoveLineBreaksCorrectly() throws Exception {
+    void removeLineBreaks_shouldStripCRLFSequencesAndJoinTextWithGivenReplacement() throws Exception {
         assertEquals("foobar", StringTools.removeLineBreaks("foo\r\nbar", ""));
     }
 
     /**
      * @see StringTools#removeLineBreaks(String,String)
-     * @verifies remove html line breaks correctly
+     * @verifies replace all HTML br tag variants with the given replacement string
      */
     @Test
-    void removeLineBreaks_shouldRemoveHtmlLineBreaksCorrectly() throws Exception {
+    void removeLineBreaks_shouldReplaceAllHTMLBrTagVariantsWithTheGivenReplacementString() throws Exception {
         assertEquals("foo bar", StringTools.removeLineBreaks("foo<br>bar", " "));
         assertEquals("foo bar", StringTools.removeLineBreaks("foo<br/>bar", " "));
         assertEquals("foo bar", StringTools.removeLineBreaks("foo<br />bar", " "));
@@ -92,10 +92,10 @@ class StringToolsTest {
 
     /**
      * @see StringTools#stripJS(String)
-     * @verifies remove JS blocks correctly
+     * @verifies remove script tags, self-closing scripts, and SVG event handler elements regardless of case
      */
     @Test
-    void stripJS_shouldRemoveJSBlocksCorrectly() throws Exception {
+    void stripJS_shouldRemoveScriptTagsSelfClosingScriptsAndSVGEventHandlerElementsRegardlessOfCase() throws Exception {
         assertEquals("foo  bar", StringTools.stripJS("foo <script type=\"javascript\">\nfunction f {\n alert();\n}\n</script> bar"));
         assertEquals("foo  bar", StringTools.stripJS("foo <SCRIPT>\nfunction f {\n alert();\n}\n</ScRiPt> bar"));
         assertEquals("foo  bar", StringTools.stripJS("foo <SCRIPT src=\"http://dangerousscript.js\"/> bar"));
@@ -105,15 +105,19 @@ class StringToolsTest {
 
     /**
      * @see StringTools#stripPatternBreakingChars(String)
-     * @verifies remove chars correctly
+     * @verifies replace tabs and line break characters with underscores
      */
     @Test
-    void stripPatternBreakingChars_shouldRemoveCharsCorrectly() throws Exception {
+    void stripPatternBreakingChars_shouldReplaceTabsAndLineBreakCharactersWithUnderscores() throws Exception {
         assertEquals("foo_bar__", StringTools.stripPatternBreakingChars("foo\tbar\r\n"));
     }
 
+    /**
+     * @verifies return expected value for given input
+     * @see providing#escapeQuotes(final String)
+     */
     @Test
-    void testEscapeQuotes() {
+    void escapeQuotes_shouldReturnExpectedValueForGivenInput() {
         String original = "Das ist ein 'String' mit \"Quotes\".";
         String reference = "Das ist ein \\'String\\' mit \\\"Quotes\\\".";
 
@@ -135,11 +139,10 @@ class StringToolsTest {
     }
 
     /**
-     * @see StringTools#renameIncompatibleCSSClasses(String)
-     * @verifies rename classes correctly
+     * @verifies move leading digits in CSS class names to the end in both selectors and class attributes
      */
     @Test
-    void renameIncompatibleCSSClasses_shouldRenameClassesCorrectly() throws Exception {
+    void renameIncompatibleCSSClasses_shouldMoveLeadingDigitsInCSSClassNamesToTheEndInBothSelectorsAndClassAttributes() throws Exception {
         Path file = Paths.get("src/test/resources/data/text_example_bad_classes.htm");
         assertTrue(Files.isRegularFile(file));
 
@@ -157,10 +160,10 @@ class StringToolsTest {
 
     /**
      * @see StringTools#getHierarchyForCollection(String,String)
-     * @verifies create list correctly
+     * @verifies build cumulative hierarchy list from separator-delimited collection string
      */
     @Test
-    void getHierarchyForCollection_shouldCreateListCorrectly() throws Exception {
+    void getHierarchyForCollection_shouldBuildCumulativeHierarchyListFromSeparatorDelimitedCollectionString() throws Exception {
         List<String> result = StringTools.getHierarchyForCollection("a.b.c.d", ".");
         assertEquals(4, result.size());
         assertEquals("a", result.get(0));
@@ -171,10 +174,10 @@ class StringToolsTest {
 
     /**
      * @see StringTools#getHierarchyForCollection(String,String)
-     * @verifies return single value correctly
+     * @verifies return single-element list when collection string has no separator
      */
     @Test
-    void getHierarchyForCollection_shouldReturnSingleValueCorrectly() throws Exception {
+    void getHierarchyForCollection_shouldReturnSingleElementListWhenCollectionStringHasNoSeparator() throws Exception {
         List<String> result = StringTools.getHierarchyForCollection("a", ".");
         assertEquals(1, result.size());
         assertEquals("a", result.get(0));
@@ -182,10 +185,10 @@ class StringToolsTest {
 
     /**
      * @see StringTools#normalizeWebAnnotationCoordinates(String)
-     * @verifies normalize coordinates correctly
+     * @verifies convert xywh fragment to absolute x 1 y 1 x 2 y 2 coordinate format
      */
     @Test
-    void normalizeWebAnnotationCoordinates_shouldNormalizeCoordinatesCorrectly() throws Exception {
+    void normalizeWebAnnotationCoordinates_shouldConvertXywhFragmentToAbsoluteX1Y1X2Y2CoordinateFormat() throws Exception {
         assertEquals("1, 2, 4, 6", StringTools.normalizeWebAnnotationCoordinates("xywh=1, 2, 3, 4"));
     }
 
@@ -200,10 +203,10 @@ class StringToolsTest {
 
     /**
      * @see StringTools#generateHash(String)
-     * @verifies hash string correctly
+     * @verifies return SHA-256 hex digest for given input string
      */
     @Test
-    void generateHash_shouldHashStringCorrectly() throws Exception {
+    void generateHash_shouldReturnSHA256HexDigestForGivenInputString() throws Exception {
         assertEquals("9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08", StringTools.generateHash("test"));
     }
 
@@ -228,7 +231,7 @@ class StringToolsTest {
 
     /**
      * @see StringTools#checkValueEmptyOrInverted(String)
-     * @verifies return true if value starts with #1;
+     * @verifies return true if value starts with 1
      */
     @Test
     void checkValueEmptyOrInverted_shouldReturnTrueIfValueStartsWith1() throws Exception {
@@ -287,25 +290,29 @@ class StringToolsTest {
 
     /**
      * @see StringTools#escapeCriticalUrlChracters(String,boolean)
-     * @verifies replace characters correctly
+     * @verifies replace plus slash backslash pipe and question mark with unicode escape sequences and decode percent encoding when flagged
      */
     @Test
-    void escapeCriticalUrlChracters_shouldReplaceCharactersCorrectly() throws Exception {
+    void escapeCriticalUrlChracters_shouldReplacePlusSlashBackslashPipeAndQuestionMarkWithUnicodeEscapeSequencesAndDecodePercentEncodingWhenFlagged() throws Exception {
         assertEquals("U002BAU002FU005CU007CU003FZ", StringTools.escapeCriticalUrlChracters("+A/\\|?Z", false));
         assertEquals("U007C", StringTools.escapeCriticalUrlChracters("%7C", true));
     }
 
     /**
      * @see StringTools#unescapeCriticalUrlChracters(String)
-     * @verifies replace characters correctly
+     * @verifies restore original characters from Unicode escape sequences
      */
     @Test
-    void unescapeCriticalUrlChracters_shouldReplaceCharactersCorrectly() throws Exception {
+    void unescapeCriticalUrlChracters_shouldRestoreOriginalCharactersFromUnicodeEscapeSequences() throws Exception {
         assertEquals("+A/\\|?Z", StringTools.unescapeCriticalUrlChracters("U002BAU002FU005CU007CU003FZ"));
     }
 
+    /**
+     * @verifies return expected value
+     * @see providing#sortByList
+     */
     @Test
-    void testSortByList() {
+    void sortByList_shouldReturnExpectedValue() {
         List<String> sorting = List.of("c", "d", "e", "f", "g", "a", "h");
 
         List<String> s1 = List.of("a", "b", "c", "d");
@@ -317,8 +324,11 @@ class StringToolsTest {
         assertEquals("b", s1Sorted.get(3));
     }
 
+    /**
+     * @verifies remove script tags and data attributes from html
+     */
     @Test
-    void testCleanHtml() {
+    void cleanHtml_shouldRemoveScriptTagsAndDataAttributesFromHtml() {
 
         String html =
                 "<p><script>alert('SPAM')</script><span data-sheets-value=\"{\"1\":2,\"2\":\"Kremer, Boris, and Alex Reding. My home is my castle : exposition d’art contemporain, du 1er juin au 27 octobre 2006, Galerie l’Indépendance - Parc Heintz] = from 1 June to 27 October 2006. Luxembourg: Dexia-BIL, 2006. Print.\"}\" data-sheets-userformat=\"{\"2\":15107,\"3\":{\"1\":0},\"4\":{\"1\":2,\"2\":16777215},\"11\":4,\"12\":0,\"14\":{\"1\":2,\"2\":3815994},\"15\":\"\\\"Source Sans Pro\\\", \\\"Helvetica Neue\\\", Helvetica, Arial, sans-serif\",\"16\":11}\">Kremer, Boris, and Alex Reding. <em>My home is my castle : exposition d’art contemporain, du 1er juin au 27 octobre 2006, Galerie l’Indépendance - Parc Heintz</em>. Luxembourg: Dexia-BIL, 2006. Print.</span></p>";
@@ -332,7 +342,6 @@ class StringToolsTest {
     }
 
     /**
-     * @see StringTools#findBestMatch(String,List<String>,Locale)
      * @verifies throw IllegalArgumentException if s is null
      */
     @Test
@@ -362,7 +371,6 @@ class StringToolsTest {
     }
 
     /**
-     * @see StringTools#findBestMatch(String,List<String>,Locale)
      * @verifies return null if no matches found
      */
     @Test
@@ -370,8 +378,12 @@ class StringToolsTest {
         Assertions.assertNull(StringTools.findBestMatch("Lorem ipsum dolor sit amet", Arrays.asList(";)", "", "zyx"), "en"));
     }
 
+    /**
+     * @verifies return abcde for given input
+     * @see providing#truncateText(String, int)
+     */
     @Test
-    void test_truncateText() {
+    void truncateText_shouldReturnAbcdeForGivenInput() {
         Assertions.assertEquals("abcde", StringTools.truncateText("abcde", 5));
         Assertions.assertEquals("a...", StringTools.truncateText("abcde", 4));
         Assertions.assertEquals("abc...", StringTools.truncateText("abc def gh", 6));
@@ -389,10 +401,10 @@ class StringToolsTest {
     
     /**
      * @see SolrTools#replaceLast(String,String,String)
-     * @verifies replace target with replacement correctly
+     * @verifies replace the last occurrence of target substring with replacement
      */
     @Test
-    void replaceLast_shouldReplaceTargetWithReplacementCorrectly() {
+    void replaceLast_shouldReplaceTheLastOccurrenceOfTargetSubstringWithReplacement() {
         assertEquals("lorem ipsum dolor stand amet", StringTools.replaceLast("lorem ipsum dolor sit amet", "sit", "stand"));
     }
 

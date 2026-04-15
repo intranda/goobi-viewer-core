@@ -50,8 +50,11 @@ class UsageStatisticsRecorderTest extends AbstractDatabaseEnabledTest {
     }
 
 
+    /**
+     * @verifies aggregate concurrent request counts correctly
+     */
     @Test
-    void test_recordRequests() throws DAOException, InterruptedException {
+    void recordRequest_shouldAggregateConcurrentRequestCountsCorrectly() throws DAOException, InterruptedException {
 
 
         String pi1 = "PI_1";

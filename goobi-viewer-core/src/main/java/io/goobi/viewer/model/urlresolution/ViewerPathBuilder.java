@@ -69,6 +69,9 @@ public final class ViewerPathBuilder {
      * @param httpRequest The request from which the path is generated
      * @return an Optional containing the ViewerPath for the request URL, or empty if not resolvable
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should strip scheme, host, port and context path from URL and return remaining path
+     * @should create correct path w ith leading excamation mark
+     * @should use configured name as page path
      */
     public static Optional<ViewerPath> createPath(HttpServletRequest httpRequest) throws DAOException {
         String serverUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest); // http://localhost:8080/viewer
@@ -243,6 +246,10 @@ public final class ViewerPathBuilder {
      *
      * @param servicePath requested service path to match against known page types
      * @return an Optional containing the best-matching PageType, or empty if the path matches no known page type
+     * @should return correct type for configured name
+     * @should return correct type for raw name
+     * @should return empty for unknown path
+     * @should prefer raw name match when both types have same configured name
      */
     public static Optional<PageType> getPageType(final URI servicePath) {
         // logger.trace("getPageType: {}", servicePath); //NOSONAR Debug
@@ -276,6 +283,7 @@ public final class ViewerPathBuilder {
      * @param uri URI whose leading path segments are compared
      * @param string path string to match against the URI prefix
      * @return true if the leading path segments of the URI match all segments of the given string, false otherwise
+     * @should return true for given input
      */
     public static boolean startsWith(URI uri, final String string) {
         if (uri != null && string != null) {

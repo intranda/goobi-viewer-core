@@ -122,6 +122,7 @@ public class MessageQueueBean implements Serializable {
 
     /**
      * init.
+     * @should search finished tasks
      */
     @PostConstruct
     public void init() {

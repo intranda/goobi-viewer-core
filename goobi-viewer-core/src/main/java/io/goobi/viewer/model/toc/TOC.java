@@ -126,8 +126,8 @@ public class TOC implements Serializable {
      * getTreeViewForGroup.
      *
      * @param group TOC group name to build the tree for
-     * @should call buildTree and set maxTocDepth correctly
      * @return a list of TOC elements for the given group with tree nesting applied
+     * @should not throw NPE when ViewManager is null
      */
     public List<TOCElement> getTreeViewForGroup(String group) {
         if (!treeBuilt) {
@@ -170,6 +170,9 @@ public class TOC implements Serializable {
      * @param collapseThreshold sibling count above which a level is auto-collapsed
      * @param lowestLevelToCollapse minimum hierarchy level eligible for length-based collapse
      * @param currentElementIdDoc IDDOC of the currently displayed struct element
+     * @should expand ancestors of target element
+     * @should not throw NPE when group not in tocElementMap
+     * @should not throw NPE when group not in map
      */
     protected void buildTree(String group, int visibleLevel, int collapseThreshold, int lowestLevelToCollapse, String currentElementIdDoc) {
         logger.trace("buildTree");
@@ -619,7 +622,7 @@ public class TOC implements Serializable {
     /**
      * Returns the number of paginator pages for the given TOC size and elements per page.
      *
-     * @should calculate number correctly
+     * @should return ceiling division of total TOC size by page size
      * @return a int.
      */
     public int getNumPages() {

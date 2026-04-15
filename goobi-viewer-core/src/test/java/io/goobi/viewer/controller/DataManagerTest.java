@@ -50,7 +50,6 @@ class DataManagerTest {
     }
 
     /**
-     * @see DataManager#registerModule(IModule)
      * @verifies not add module if it's already registered
      */
     @Test
@@ -207,8 +206,8 @@ class DataManagerTest {
     }
 
     /**
+     * @verifies close client without check reload needed
      * @see DataManager#closeSearchIndex()
-     * @verifies close searchIndex without calling checkReloadNeeded
      */
     @Test
     void closeSearchIndex_shouldCloseClientWithoutCheckReloadNeeded() throws Exception {

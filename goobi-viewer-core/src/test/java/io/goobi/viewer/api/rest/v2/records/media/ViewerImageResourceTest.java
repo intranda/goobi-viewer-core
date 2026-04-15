@@ -73,8 +73,11 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
         super.tearDown();
     }
 
+    /**
+     * @verifies return info json with id ending in image base url
+     */
     @Test
-    void testGetImageInformation() {
+    void getImageInformation_shouldReturnInfoJsonWithCorrectId() {
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_INFO).params(PI, FILENAME + ".tif").build();
         String id = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME + ".tif").build();
         try (Response response = target(url)
@@ -89,8 +92,11 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies redirect from base url to info json
+     */
     @Test
-    void testGetImageInformationFromBaseUrl() {
+    void getImageInformation_shouldRedirectFromBaseUrlToInfoJson() {
         String url = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME).build();
         String id = urls.path(RECORDS_FILES_IMAGE_INFO).params(PI, FILENAME + ".tif").build();
         try (Response response = target(url)
@@ -103,8 +109,11 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies handle special characters in filename
+     */
     @Test
-    void testGetImageInformationSpecialCharacters() {
+    void getImageInformation_shouldHandleSpecialCharactersInFilename() {
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_INFO).params(PI_SPECIAL_CHARACTERS, FILENAME_SPECIAL_CHARACTERS).build();
         String id = urls.path(RECORDS_FILES_IMAGE).params(PI_SPECIAL_CHARACTERS, FILENAME_SPECIAL_CHARACTERS).build();
         try (Response response = target(url)
@@ -119,8 +128,11 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return image data for filename with special characters
+     */
     @Test
-    void testGetImageSpecialCharacters() {
+    void getImage_shouldReturnImageDataForFilenameWithSpecialCharacters() {
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF)
                 .params(PI_SPECIAL_CHARACTERS, FILENAME_SPECIAL_CHARACTERS, REGION, SIZE, ROTATION, QUALITY, FORMAT)
                 .build();
@@ -138,8 +150,11 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return image data with content location header
+     */
     @Test
-    void testGetImage() {
+    void getImage_shouldReturnImageDataWithContentLocation() {
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF)
                 .params(PI, FILENAME + ".tif", REGION, SIZE, ROTATION, QUALITY, FORMAT)
                 .build();
@@ -156,8 +171,11 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return pdf with content disposition header
+     */
     @Test
-    void testGetPdf() {
+    void getPdf_shouldReturnPdfWithContentDispositionHeader() {
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_PDF).params(PI, FILENAME).build();
         try (Response response = target(url)
                 .request()

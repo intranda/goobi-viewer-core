@@ -32,7 +32,7 @@ class CalendarViewTest extends AbstractSolrEnabledTest {
     
     /**
      * @see CalendarView#isDisplay()
-     * @verifies return true if number of items sufficient
+     * @verifies return true if numer of items suffient
      */
     @Test
     void isDisplay_shouldReturnTrueIfNumerOfItemsSuffient() throws Exception {

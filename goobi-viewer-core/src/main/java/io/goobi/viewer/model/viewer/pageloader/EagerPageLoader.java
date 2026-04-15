@@ -149,8 +149,8 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
     /**
      * setFirstAndLastPageOrder.
      *
-     * @should set first page order correctly
-     * @should set last page order correctly
+     * @should set first page order to 1 for loaded struct element
+     * @should set last page order to total number of pages for loaded struct element
      */
     protected final void setFirstAndLastPageOrder() {
         if (pages != null && !pages.isEmpty()) {

@@ -66,21 +66,33 @@ class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
         super.tearDown();
     }
 
+    /**
+     * @verifies selected tag
+     * @see CmsMediaBean#getSelectedTag
+     */
     @Test
-    void testSelectedTag() {
+    void getSelectedTag_shouldSelectedTag() {
         String tag = "sampleTag";
         bean.setSelectedTag(tag);
         Assertions.assertEquals(tag, bean.getSelectedTag());
     }
 
+    /**
+     * @verifies return collection with 7 elements
+     * @see CmsMediaBean#getAllMediaCategories()
+     */
     @Test
-    void testGetAllMediaCategories() throws DAOException {
+    void getAllMediaCategories_shouldReturnCollectionWith7Elements() throws DAOException {
         List<CMSCategory> tags = bean.getAllMediaCategories();
         Assertions.assertEquals(7, tags.size());
     }
 
+    /**
+     * @verifies return 4 for given input
+     * @see CmsMediaBean#getMediaItems()
+     */
     @Test
-    void testGetMediaItems() throws DAOException {
+    void getMediaItems_shouldReturn4ForGivenInput() throws DAOException {
 
         bean.setFilter("");
         Assertions.assertEquals(4, bean.getMediaItems().size());
@@ -93,8 +105,12 @@ class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
         Assertions.assertEquals(0, bean.getMediaItems().size());
     }
 
+    /**
+     * @verifies return true for given input
+     * @see CmsMediaBean#getImageFilter()
+     */
     @Test
-    void testGetImageFilter() {
+    void getImageFilter_shouldReturnTrueForGivenInput() {
         String file1 = "image.jpg";
         String file2 = "image.JPEG";
         String file3 = "image.xml";
@@ -103,8 +119,12 @@ class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
         Assertions.assertFalse(file3.matches(CmsMediaBean.getImageFilter()));
     }
 
+    /**
+     * @verifies return URL ending with expected path
+     * @see CmsMediaBean#getMediaUrl(CMSMediaItem)
+     */
     @Test
-    void testGetMediaUrlForGif() throws NumberFormatException {
+    void getMediaUrl_shouldReturnUrlEndingWithExpectedPath() throws NumberFormatException {
         CMSMediaItem item = new CMSMediaItem();
         item.setFileName("lorelai.gif");
         String url = CmsMediaBean.getMediaUrl(item);

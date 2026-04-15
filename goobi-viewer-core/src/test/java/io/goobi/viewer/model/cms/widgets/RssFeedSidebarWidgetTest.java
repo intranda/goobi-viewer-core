@@ -36,8 +36,12 @@ import io.goobi.viewer.solr.SolrConstants;
 
 class RssFeedSidebarWidgetTest extends AbstractDatabaseEnabledTest {
 
+    /**
+     * @verifies persist
+     * @see RssFeedSidebarWidget#getSortField
+     */
     @Test
-    void testPersist() throws DAOException {
+    void getSortField_shouldPersist() throws DAOException {
         RssFeedSidebarWidget widget = new RssFeedSidebarWidget();
         widget.getDescription().setValue("Beschreibung", Locale.GERMAN);
         widget.getDescription().setValue("Description", Locale.ENGLISH);
@@ -61,8 +65,12 @@ class RssFeedSidebarWidgetTest extends AbstractDatabaseEnabledTest {
 
     }
 
+    /**
+     * @verifies clone
+     * @see RssFeedSidebarWidget#getSortField
+     */
     @Test
-    void testClone() {
+    void getSortField_shouldClone() {
         RssFeedSidebarWidget widget = new RssFeedSidebarWidget();
         widget.getDescription().setValue("Beschreibung", Locale.GERMAN);
         widget.getDescription().setValue("Description", Locale.ENGLISH);
@@ -84,8 +92,12 @@ class RssFeedSidebarWidgetTest extends AbstractDatabaseEnabledTest {
         assertEquals(widget.getStyleClass(), clone.getStyleClass());
     }
 
+    /**
+     * @verifies type
+     * @see RssFeedSidebarWidget#getType
+     */
     @Test
-    void testType() {
+    void getType_shouldType() {
         assertEquals(CustomWidgetType.WIDGET_RSSFEED, new RssFeedSidebarWidget().getType());
     }
 

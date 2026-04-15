@@ -26,13 +26,15 @@ import org.junit.jupiter.api.Test;
 
 class ReflectionTest {
 
+    /**
+     * @verifies return value from existing method
+     */
     @Test
-    void test() {
+    void getMethodReturnValue_shouldReturnValueFromExistingMethod() {
         Assertions.assertEquals("graograman", Reflection.getMethodReturnValue(new Foo(), "bar").orElse(null));
     }
 
     /**
-     * @see Reflection#getMethodReturnValue(Object, String)
      * @verifies return empty optional if method not found
      */
     @Test

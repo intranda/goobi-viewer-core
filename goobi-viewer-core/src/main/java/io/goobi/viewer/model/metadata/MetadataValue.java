@@ -136,16 +136,16 @@ public class MetadataValue implements Serializable {
      * getComboValueShort.
      *
      * @param index zero-based parameter index to retrieve
-     * @should construct param correctly
-     * @should construct multivalued param correctly
      * @should not add prefix if first param
      * @should return empty string if value index larger than number of values
      * @should return empty string if value is empty
      * @should not add empty prefix
      * @should not add empty suffix
      * @should add separator between values if no prefix used
-     * @should use master value fragment correctly
+     * @should substitute param value into the master value fragment placeholder
      * @return the formatted combined metadata value for the given parameter index
+     * @should return prefix value and suffix concatenated for the given param index
+     * @should concatenate prefix value and suffix for each entry in a multivalued param
      */
     public String getComboValueShort(int index) {
         if (paramValues.size() <= index || paramValues.get(index) == null || paramValues.get(index).isEmpty()) {
@@ -399,7 +399,7 @@ public class MetadataValue implements Serializable {
      *
      * @param paramIndex Metadata parameter index
      * @param searchTerms Set of search terms
-     * @should apply highlighting correctly
+     * @should wrap matching search term in highlight mark tag within param value
      */
     public void applyHighlightingToParamValue(int paramIndex, Set<String> searchTerms) {
         if (paramValues.size() <= paramIndex || paramValues.get(paramIndex) == null) {

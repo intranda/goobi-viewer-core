@@ -85,8 +85,11 @@ class RecordPageResourceTest extends AbstractRestApiTest {
         super.tearDown();
     }
 
+    /**
+     * @verifies return one pages entry with three tags
+     */
     @Test
-    void testGetNER() {
+    void getNERTags_shouldReturnOnePagesEntryWithThreeTags() {
         String url = urls.path(RECORDS_PAGES, RECORDS_PAGES_NER_TAGS).params(PI, PAGENO).build();
         try (Response response = target(url)
                 .request()
@@ -103,8 +106,12 @@ class RecordPageResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return non null result
+     * @see RecordPageResource#getSequence
+     */
     @Test
-    void testGetSequence() throws JsonMappingException, JsonProcessingException {
+    void getSequence_shouldReturnNonNullResult() throws JsonMappingException, JsonProcessingException {
         String url = urls.path(RECORDS_PAGES, RECORDS_PAGES_SEQUENCE).params(PI).build();
         try (Response response = target(url)
                 .request()
@@ -120,8 +127,12 @@ class RecordPageResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return non null result
+     * @see RecordPageResource#getCanvas
+     */
     @Test
-    void testGetCanvas() throws JsonMappingException, JsonProcessingException {
+    void getCanvas_shouldReturnNonNullResult() throws JsonMappingException, JsonProcessingException {
         String url = urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).params(PI, PAGENO).build();
         try (Response response = target(url)
                 .request()
@@ -141,9 +152,10 @@ class RecordPageResourceTest extends AbstractRestApiTest {
      * 
      * @throws JsonProcessingException
      * @throws JsonMappingException
+     * @verifies return empty annotation collection when none indexed
      */
     @Test
-    void testGetAnnotationsForPage() throws JsonMappingException, JsonProcessingException {
+    void getAnnotationsForRecord_shouldReturnEmptyAnnotationCollectionWhenNoneIndexed() throws JsonMappingException, JsonProcessingException {
         try (Response response = target(urls.path(RECORDS_PAGES, RECORDS_PAGES_ANNOTATIONS).params(PI_ANNOTATIONS, PAGENO_ANNOTATIONS).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
@@ -162,9 +174,11 @@ class RecordPageResourceTest extends AbstractRestApiTest {
      * 
      * @throws JsonProcessingException
      * @throws JsonMappingException
+     * @verifies return non null result
+     * @see RecordPageResource#getCommentsForPage
      */
     @Test
-    void testGetCommentsForPage() throws JsonMappingException, JsonProcessingException {
+    void getCommentsForPage_shouldReturnNonNullResult() throws JsonMappingException, JsonProcessingException {
         try (Response response = target(urls.path(RECORDS_PAGES, RECORDS_PAGES_COMMENTS).params(PI_ANNOTATIONS, PAGENO_ANNOTATIONS).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
@@ -179,8 +193,11 @@ class RecordPageResourceTest extends AbstractRestApiTest {
     }
     
 
+    /**
+     * @verifies escape spaces in filenames within rendering links
+     */
     @Test
-    void testEscapeFilenamesInUrls() {
+    void getCanvas_shouldEscapeSpacesInFilenamesWithinRenderingLinks() {
         DataManager.getInstance().getConfiguration().overrideValue("webapi.iiif.rendering.viewer[@enabled]", true);
         Assertions.assertTrue(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingViewer());
         DataManager.getInstance().getConfiguration().overrideValue("webapi.iiif.rendering.pdf[@enabled]", true);
@@ -223,9 +240,10 @@ class RecordPageResourceTest extends AbstractRestApiTest {
      * A PI containing illegal characters (e.g. carriage return %0D, unicode garbage) must return
      * HTTP 400, not 500. Before the fix, RecordPageResource did not validate the PI in its
      * constructor, so invalid PIs could reach Solr and cause NPEs or unexpected exceptions.
+     * @verifies return http 400 when pi contains illegal characters
      */
     @Test
-    void testInvalidPi_returnsHttp400() {
+    void getAnnotationsForRecord_shouldReturnHttp400WhenPiContainsIllegalCharacters() {
         // Use a PI that contains a colon, which is blocked by PIValidator
         String url = urls.path(RECORDS_PAGES, RECORDS_PAGES_ANNOTATIONS).params("invalid:pi", 1).build();
         try (Response response = target(url)

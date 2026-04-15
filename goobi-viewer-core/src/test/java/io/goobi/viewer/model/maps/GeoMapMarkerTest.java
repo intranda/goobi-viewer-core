@@ -53,14 +53,22 @@ class GeoMapMarkerTest {
     public void tearDown() throws Exception {
     }
 
+    /**
+     * @verifies return expected value
+     * @see GeoMapMarker#toJSONString
+     */
     @Test
-    void testToJSONString() throws JsonProcessingException {
+    void toJSONString_shouldReturnExpectedValue() throws JsonProcessingException {
         String s = testObject.toJSONString();
         Assertions.assertEquals(testString, s);
     }
 
+    /**
+     * @verifies deserialize all fields from JSON
+     * @see GeoMapMarker#fromJSONString(String)
+     */
     @Test
-    void testDeserialize() throws JsonMappingException, JsonProcessingException {
+    void fromJSONString_shouldDeserializeAllFieldsFromJson() throws JsonMappingException, JsonProcessingException {
         GeoMapMarker m = GeoMapMarker.fromJSONString(testString);
         Assertions.assertEquals(testObject.getName(), m.getName());
         Assertions.assertEquals(testObject.getIconRotate(), m.getIconRotate());

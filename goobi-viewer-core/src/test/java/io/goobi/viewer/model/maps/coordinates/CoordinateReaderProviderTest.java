@@ -16,30 +16,50 @@ class CoordinateReaderProviderTest {
 
     private final CoordinateReaderProvider coordinateReaderProvider = new CoordinateReaderProvider();
 
+    /**
+     * @verifies throw exception if no reader found
+     * @see CoordinateReaderProvider#getReader
+     */
     @Test
-    void testThrowExceptionIfNoReaderFound() {
+    void getReader_shouldThrowExceptionIfNoReaderFound() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> coordinateReaderProvider.getReader("bla"));
     }
 
+    /**
+     * @verifies read json point
+     * @see CoordinateReaderProvider#getReader
+     */
     @Test
-    void testReadJsonPoint() {
+    void getReader_shouldReadJsonPoint() {
         Assertions.assertEquals(GeoJsonReader.class, coordinateReaderProvider.getReader(JSON_POINT).getClass());
     }
 
+    /**
+     * @verifies read json polygon
+     * @see CoordinateReaderProvider#getReader
+     */
     @Test
-    void testReadJsonPolygon() {
+    void getReader_shouldReadJsonPolygon() {
         Assertions.assertEquals(GeoJsonReader.class, coordinateReaderProvider.getReader(JSON_POLYGON).getClass());
     }
 
+    /**
+     * @verifies read points
+     * @see CoordinateReaderProvider#getReader
+     */
     @Test
-    void testReadPoints() {
+    void getReader_shouldReadPoints() {
         Assertions.assertEquals(WKTPointReader.class, coordinateReaderProvider.getReader(POINT_2D).getClass());
         Assertions.assertEquals(WKTPointReader.class, coordinateReaderProvider.getReader(POINT_3D).getClass());
         Assertions.assertEquals(WKTPointReader.class, coordinateReaderProvider.getReader(POINT_5D).getClass());
     }
 
+    /**
+     * @verifies read polygon
+     * @see CoordinateReaderProvider#getReader
+     */
     @Test
-    void testReadPolygon() {
+    void getReader_shouldReadPolygon() {
         Assertions.assertEquals(WKTPolygonReader.class, coordinateReaderProvider.getReader(POLYGON).getClass());
     }
 

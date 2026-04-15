@@ -56,8 +56,11 @@ class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
         contentManager = templateManager.getContentManager();
     }
     
+    /**
+     * @verifies persist added components and remove deleted components after save and reload
+     */
     @Test
-    void test() throws DAOException {
+    void saveCMSPage_shouldPersistAddedComponentsAndRemoveDeletedComponentsAfterSaveAndReload() throws DAOException {
         CMSPage page = new CMSPage();
         
         page.initialiseCMSComponents(templateManager);
@@ -98,8 +101,11 @@ class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
         
     }
     
+    /**
+     * @verifies persist and delete components without content
+     */
     @Test
-    void testNoContent() throws DAOException {
+    void saveCMSPage_shouldPersistAndDeleteComponentsWithoutContent() throws DAOException {
         CMSPage page = new CMSPage();
         
         page.initialiseCMSComponents(templateManager);
@@ -132,8 +138,11 @@ class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
         
     }
     
+    /**
+     * @verifies remove component and content from database
+     */
     @Test
-    void testComponent() throws DAOException {
+    void deleteCMSComponent_shouldRemoveComponentAndContentFromDatabase() throws DAOException {
         
         CMSShortTextContent text = new CMSShortTextContent();
         text.getText().setText("text");

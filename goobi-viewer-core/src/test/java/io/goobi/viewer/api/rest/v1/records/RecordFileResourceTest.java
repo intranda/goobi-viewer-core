@@ -68,9 +68,11 @@ class RecordFileResourceTest extends AbstractRestApiTest {
 
     /**
      * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordFileResource#getAlto(java.lang.String)}.
+     * @verifies return HTTP 200 with non blank content
+     * @see RecordFileResource#getAlto
      */
     @Test
-    void testGetAlto() {
+    void getAlto_shouldReturnHttp200WithNonBlankContent() {
         String url = urls.path(RECORDS_FILES, RECORDS_FILES_ALTO).params(PI, FILENAME + ".xml").build();
         try (Response response = target(url)
                 .request()
@@ -84,9 +86,11 @@ class RecordFileResourceTest extends AbstractRestApiTest {
 
     /**
      * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordFileResource#getPlaintext(java.lang.String)}.
+     * @verifies return HTTP 200 with non blank content
+     * @see RecordFileResource#getPlaintext
      */
     @Test
-    void testGetPlaintext() {
+    void getPlaintext_shouldReturnHttp200WithNonBlankContent() {
         String url = urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT).params(PI, FILENAME + ".xml").build();
         try (Response response = target(url)
                 .request()
@@ -100,9 +104,11 @@ class RecordFileResourceTest extends AbstractRestApiTest {
 
     /**
      * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordFileResource#getTEI(java.lang.String)}.
+     * @verifies return HTTP 200 with non blank content
+     * @see RecordFileResource#getTEI
      */
     @Test
-    void testGetTEI() {
+    void getTEI_shouldReturnHttp200WithNonBlankContent() {
         String url = urls.path(RECORDS_FILES, RECORDS_FILES_TEI).params(PI, FILENAME + ".xml").build();
         try (Response response = target(url)
                 .request()
@@ -114,8 +120,12 @@ class RecordFileResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return expected value
+     * @see RecordFileResource#getSourceFile
+     */
     @Test
-    void testGetSourceFile() {
+    void getSourceFile_shouldReturnExpectedValue() {
         DataManager.getInstance().getConfiguration().overrideValue("viewerHome", "/opt/digiverso/viewer/");
         
         String url = urls.path(RECORDS_FILES, RECORDS_FILES_SOURCE).params(PI, "text.txt").build();
@@ -130,8 +140,12 @@ class RecordFileResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies get missing source file
+     * @see RecordFileResource#try
+     */
     @Test
-    void testGetMissingSourceFile() {
+    void try_shouldGetMissingSourceFile() {
         String url = urls.path(RECORDS_FILES, RECORDS_FILES_SOURCE).params(PI, "bla.txt").build();
         try (Response response = target(url)
                 .request()
@@ -140,8 +154,12 @@ class RecordFileResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return 404 for path traversal attempt
+     * @see RecordFileResource#getSourceFile
+     */
     @Test
-    void testGetSourceFilePathTraversalAttack() {
+    void getSourceFile_shouldReturn404ForPathTraversalAttempt() {
         String url = urls.path(RECORDS_FILES, RECORDS_FILES_SOURCE).params(PI, "/../../../../..//etc/passwd").build();
         try (Response response = target(url)
                 .request()

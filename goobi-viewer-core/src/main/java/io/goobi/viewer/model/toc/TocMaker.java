@@ -141,16 +141,16 @@ public final class TocMaker {
      * @param mimeType Mime type determines the target URL of the TOC element.
      * @param tocCurrentPage Current page of a paginated TOC.
      * @param hitsPerPage Hits per page of a paginated TOC.
-     * @should generate volume TOC with siblings correctly
-     * @should generate volume TOC without siblings correctly
-     * @should generate anchor TOC correctly
-     * @should paginate anchor TOC correctly
+     * @should return anchor element followed by all volume elements when siblings excluded
+     * @should return anchor plus all child volumes when generating anchor TOC
+     * @should return different volume subsets per page when anchor TOC is paginated
      * @should throw IllegalArgumentException if structElement is null
      * @should throw IllegalArgumentException if toc is null
      * @return a linked map of view names to their TOC element lists, preserving insertion order
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should include anchor element full volume tree and sibling volume top elements in t o c
      */
     public static Map<String, List<TOCElement>> generateToc(TOC toc, StructElement structElement, boolean addAllSiblings, String mimeType,
             int tocCurrentPage, int hitsPerPage) throws PresentationException, IndexUnreachableException, DAOException {

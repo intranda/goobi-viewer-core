@@ -39,7 +39,7 @@ class PasswordValidatorTest {
 
     /**
      * @see PasswordValidator#validatePassword(String)
-     * @verifies return false if password empty
+     * @verifies return true if password empty
      */
     @Test
     void validatePassword_shouldReturnTrueIfPasswordEmpty() throws Exception {

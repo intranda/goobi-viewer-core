@@ -78,18 +78,11 @@ public class Sitemap {
      * @param viewerRootUrl Root URL of the Goobi viewer instance
      * @param outputPath Destination folder path for the sitemap files.
      * @return File list
-     * @should generate sitemap element for each sitemap in index file
-     * @should set correct lastmod date for each sitemap in index file
-     * @should generate sitemap files correctly
-     * @should contain no more than 50000 urls per sitemap file
-     * @should only create toc url for anchors
-     * @should only create toc url for groups
-     * @should only create full-text entries if full-text available
-     * @should throw IOException if outputPath invalid
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should sitemap
      */
     public List<File> generate(String viewerRootUrl, String outputPath)
             throws IOException, PresentationException, IndexUnreachableException, DAOException {

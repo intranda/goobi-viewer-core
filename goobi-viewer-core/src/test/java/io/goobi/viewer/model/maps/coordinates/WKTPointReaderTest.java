@@ -13,24 +13,34 @@ class WKTPointReaderTest {
     private static final String POINT_3D = "15.423 51.235 -7.24365";
     private static final String POINT_5D = "15.423 51.235 -7.24365 45.52 -23.3";
 
+    /**
+     * @verifies return correct result for valid and incomplete points
+     * @see WKTPointReader#canRead(String)
+     */
     @Test
-    void testCanReadPoint() {
+    void canRead_shouldReturnCorrectResultForValidAndIncompletePoints() {
         Assertions.assertFalse(new WKTPointReader().canRead(INCOMPLETE_POINT));
         Assertions.assertTrue(new WKTPointReader().canRead(POINT_2D));
         Assertions.assertTrue(new WKTPointReader().canRead(POINT_3D));
         Assertions.assertTrue(new WKTPointReader().canRead(POINT_5D));
     }
 
+    /**
+     * @verifies parse x and y coordinates from 2d point
+     */
     @Test
-    void restRead2D() {
+    void read_shouldParseXAndYCoordinatesFrom2dPoint() {
         Geometry point = new WKTPointReader().read(POINT_2D);
         Assertions.assertEquals(Point.class, point.getClass());
         Assertions.assertEquals(15.423, ((Point) point).getPosition().getX());
         Assertions.assertEquals(51.235, ((Point) point).getPosition().getY());
     }
 
+    /**
+     * @verifies parse x y z coordinates from 3d point
+     */
     @Test
-    void restRead3D() {
+    void read_shouldParseXYZCoordinatesFrom3dPoint() {
         Geometry point = new WKTPointReader().read(POINT_3D);
         Assertions.assertEquals(Point.class, point.getClass());
         Assertions.assertEquals(15.423, ((Point) point).getPosition().getX());
@@ -38,8 +48,11 @@ class WKTPointReaderTest {
         Assertions.assertEquals(-7.24365, ((Point) point).getPosition().getZ());
     }
 
+    /**
+     * @verifies parse x y z m coordinates from 5d point
+     */
     @Test
-    void restRead5D() {
+    void read_shouldParseXYZMCoordinatesFrom5dPoint() {
         Geometry point = new WKTPointReader().read(POINT_5D);
         Assertions.assertEquals(Point.class, point.getClass());
         Assertions.assertEquals(15.423, ((Point) point).getPosition().getX());

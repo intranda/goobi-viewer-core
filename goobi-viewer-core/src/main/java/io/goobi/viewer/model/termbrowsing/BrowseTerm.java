@@ -122,7 +122,7 @@ public class BrowseTerm implements Serializable {
      * addToHitCount.
      *
      * @param num a int.
-     * @should add to hit count correctly
+     * @should accumulate successive additions into the total hit count
      */
     public synchronized void addToHitCount(int num) {
         hitCount += num;

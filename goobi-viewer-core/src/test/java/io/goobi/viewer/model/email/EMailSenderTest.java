@@ -34,7 +34,6 @@ import jakarta.mail.Message;
 class EMailSenderTest extends AbstractTest {
 
     /**
-     * @see RISExport#RISExport()
      * @verifies create message correctly
      */
     @Test

@@ -29,8 +29,12 @@ import io.goobi.viewer.model.cms.media.CMSMediaItem.Priority;
 
 class CMSMediaItemTest {
 
+    /**
+     * @see CMSMediaItem#setImportant(boolean)
+     * @verifies toggle priority between default and important
+     */
     @Test
-    void testStImportant() {
+    void setImportant_shouldTogglePriorityBetweenDefaultAndImportant() {
         CMSMediaItem media = new CMSMediaItem();
         Assertions.assertFalse(media.isImportant());
         Assertions.assertEquals(Priority.DEFAULT, media.getPriority());

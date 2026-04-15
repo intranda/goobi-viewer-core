@@ -86,8 +86,12 @@ class DisclaimerBeanTest extends AbstractTest {
         bean.setUserBean(userBean);
     }
 
+    /**
+     * @verifies write json
+     * @see DisclaimerBean#getDisclaimerConfig
+     */
     @Test
-    void testWriteJson() {
+    void getDisclaimerConfig_shouldWriteJson() {
 
         String string = bean.getDisclaimerConfig();
         assertTrue(StringUtils.isNotBlank(string));

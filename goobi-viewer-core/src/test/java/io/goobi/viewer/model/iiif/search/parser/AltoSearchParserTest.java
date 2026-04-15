@@ -65,8 +65,11 @@ class AltoSearchParserTest {
     public void tearDown() throws Exception {
     }
 
+    /**
+     * @verifies return dem Herrn for given input
+     */
     @Test
-    void test_getTextBefore_noSpaces() {
+    void getPrecedingText_shouldReturnDemHerrnForGivenInput() {
         Line line = new Line(new AltoCoords(0, 0, 1000, 20));
         String text = "Da es dem Herrn Verleger darauf ankommt, ein geschichtliches";
         int x = 10;
@@ -80,8 +83,11 @@ class AltoSearchParserTest {
         Assertions.assertEquals("dem Herrn", preceeding);
     }
 
+    /**
+     * @verifies return preceding words with space elements
+     */
     @Test
-    void test_getTextBefore() {
+    void getPrecedingText_shouldReturnPrecedingWordsWithSpaceElements() {
         Line line = new Line(new AltoCoords(0, 0, 1000, 20));
         String text = "Da es dem Herrn Verleger darauf ankommt, ein geschichtliches";
         int x = 10;
@@ -97,8 +103,11 @@ class AltoSearchParserTest {
         Assertions.assertEquals("dem Herrn", preceeding);
     }
 
+    /**
+     * @verifies return expected value for given input
+     */
     @Test
-    void test_getTextAfter_noSpaces() {
+    void getSucceedingText_shouldReturnExpectedValueForGivenInput() {
         Line line = new Line(new AltoCoords(0, 0, 1000, 20));
         String text = "Da es dem Herrn Verleger darauf ankommt, ein geschichtliches";
         int x = 10;
@@ -112,8 +121,11 @@ class AltoSearchParserTest {
         Assertions.assertEquals("darauf ankommt,", preceeding);
     }
 
+    /**
+     * @verifies return succeeding words with space elements
+     */
     @Test
-    void test_getTextAfter() {
+    void getSucceedingText_shouldReturnSucceedingWordsWithSpaceElements() {
         Line line = new Line(new AltoCoords(0, 0, 1000, 20));
         String text = "Da es dem Herrn Verleger darauf ankommt, ein geschichtliches";
         int x = 10;
@@ -129,8 +141,11 @@ class AltoSearchParserTest {
         Assertions.assertEquals("darauf ankommt,", preceeding);
     }
 
+    /**
+     * @verifies return non null result
+     */
     @Test
-    void testFindWordMatches() {
+    void findWordMatches_shouldReturnNonNullResult() {
         String query = "diese* schönste*";
         String regex = AltoSearchParser.getQueryRegex(query);
         List<Word> words =
@@ -152,8 +167,11 @@ class AltoSearchParserTest {
         Assertions.assertEquals(2, hits.get(1).size());
     }
 
+    /**
+     * @verifies return collection with 6 elements
+     */
     @Test
-    void testFindLineMatches() {
+    void findLineMatches_shouldReturnCollectionWith6Elements() {
         String query = "diese* schönste*";
         String regex = AltoSearchParser.getQueryRegex(query);
         List<Line> lines =

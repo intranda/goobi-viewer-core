@@ -63,7 +63,6 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#checkAccessPermission(List,Set,String,User,String,String)
      * @verifies return true if required access conditions empty
      */
     @Test
@@ -73,7 +72,6 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#checkAccessPermission(List,Set,String,User,String,String)
      * @verifies return true if ip range allows access
      */
     @Test
@@ -84,7 +82,6 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#checkAccessPermission(List,Set,String,User,String,String)
      * @verifies return true if required access conditions contain only open access
      */
     @Test
@@ -111,7 +108,6 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#checkAccessPermission(List,Set,String,User,String,String)
      * @verifies return true if all license types allow privilege by default
      */
     @Test
@@ -136,7 +132,6 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#checkAccessPermission(List,Set,String,User,String,String)
      * @verifies return false if not all license types allow privilege by default
      */
     @Test
@@ -160,7 +155,6 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#checkAccessPermission(List,Set,String,User,String,String)
      * @verifies return true if ip range allows access to all conditions
      */
     @Test
@@ -191,7 +185,6 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#checkAccessPermission(List,Set,String,User,String,String)
      * @verifies not return true if no ip range matches
      */
     @Test
@@ -211,7 +204,6 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#getRelevantLicenseTypesOnly(List,Set,String)
      * @verifies remove license types whose names do not match access conditions
      */
     @Test
@@ -237,7 +229,6 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see AccessConditionUtils#getRelevantLicenseTypesOnly(List,Set,String,Map)
      * @verifies not remove moving wall license types to open access if condition query excludes given pi
      */
     @Test
@@ -339,6 +330,9 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":00000001\\ \\(1\\).*", result);
     }
 
+    /**
+     * @verifies use full name for image formats
+     */
     @Test
     void generateAccessCheckQuery_shouldUseFullNameForImageFormats() throws Exception {
         {
@@ -368,6 +362,9 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
         }
     }
 
+    /**
+     * @verifies use full name for 3D object formats
+     */
     @Test
     void generateAccessCheckQuery_shouldUseFullNameFor3dObjectFormats() throws Exception {
         {
@@ -384,6 +381,9 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
         }
     }
 
+    /**
+     * @verifies use base name for formatless files
+     */
     @Test
     void generateAccessCheckQuery_shouldUseBaseNameForFormatlessFiles() throws Exception {
         {
@@ -434,7 +434,6 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see AccessConditionUtils#isConcurrentViewsLimitEnabledForAnyAccessCondition(List)
      * @verifies return false if access conditions null or empty
      */
     @Test
@@ -444,7 +443,6 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see AccessConditionUtils#isConcurrentViewsLimitEnabledForAnyAccessCondition(List)
      * @verifies return true if any license type has limit enabled
      */
     @Test
@@ -453,8 +451,11 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertTrue(AccessConditionUtils.isConcurrentViewsLimitEnabledForAnyAccessCondition(Arrays.asList(licenseTypes)));
     }
 
+    /**
+     * @verifies return empty collection for given input
+     */
     @Test
-    void test_getApplyingLicenses_byIp() throws DAOException {
+    void getApplyingLicenses_shouldReturnEmptyCollectionForGivenInput() throws DAOException {
 
         LicenseType licenseType = new LicenseType();
 
@@ -482,10 +483,10 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see AccessConditionUtils#addSessionPermission(String, Object, HttpSession)
+     * @verifies return false for given input
      */
     @Test
-    void testAddSessionPermission_invalidatedSession() {
+    void addSessionPermission_shouldReturnFalseForGivenInput() {
         jakarta.servlet.http.HttpSession session = Mockito.mock(jakarta.servlet.http.HttpSession.class);
         // Simulate a session that has already been invalidated
         Mockito.doThrow(new IllegalStateException("setAttribute: Session [null] has already been invalidated"))
@@ -497,15 +498,16 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see AccessConditionUtils#addSessionPermission(String, Object, HttpSession)
+     * @verifies return false when session is null
      */
     @Test
-    void testAddSessionPermission_nullSession() {
+    void addSessionPermission_shouldReturnFalseWhenSessionIsNull() {
         assertFalse(AccessConditionUtils.addSessionPermission("PRIV_TEST", "value", null));
     }
 
     /**
-     * @see AccessConditionUtils#retrieveUserFromContext(HttpSession)
      * @verifies return null for null session
+     * @see providing#retrieveUserFromContext(HttpSession)
      */
     @Test
     void retrieveUserFromContext_shouldReturnNullForNullSession() {
@@ -513,8 +515,7 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see AccessConditionUtils#retrieveUserFromContext(HttpSession)
-     * @verifies return user from standard userBean session attribute
+     * @verifies return user from direct session attribute
      */
     @Test
     void retrieveUserFromContext_shouldReturnUserFromDirectSessionAttribute() {
@@ -529,8 +530,7 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see AccessConditionUtils#retrieveUserFromContext(HttpSession)
-     * @verifies return null without session scan when CDI returns userBean with null user
+     * @verifies return null without session scan when cdi returns null user
      *
      * When CDI is active and returns a UserBean with null user (anonymous visitor), the method must
      * return null directly without falling through to the expensive O(N) session scan.
@@ -553,8 +553,7 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see AccessConditionUtils#retrieveUserFromContext(HttpSession)
-     * @verifies find user via session attribute scan when stored under non-standard key
+     * @verifies return user via session scan when stored under non standard key
      *
      * In CDI/Weld environments, session-scoped beans may be stored under a generated key rather than
      * the EL name "userBean". This test verifies that the fallback scan (findInstanceInSessionAttributes)
@@ -628,8 +627,7 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see AccessConditionUtils#fetchAccessibleFileNames(String,String,String,HttpServletRequest)
-     * @verifies return empty list for restricted record when anonymous
+     * @verifies return empty list for restricted record anonymous
      */
     @Test
     void fetchAccessibleFileNames_shouldReturnEmptyListForRestrictedRecordAnonymous() throws Exception {
@@ -683,8 +681,8 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     // --- fetchPagePermissions ---
 
     /**
-     * @see AccessConditionUtils#fetchPagePermissions(String, jakarta.servlet.http.HttpServletRequest)
-     * @verifies return EMPTY for blank pi
+     * @verifies return empty for blank pi
+     * @see providing#fetchPagePermissions(String, HttpServletRequest)
      */
     @Test
     void fetchPagePermissions_shouldReturnEmptyForBlankPi() {
@@ -693,8 +691,8 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see AccessConditionUtils#fetchPagePermissions(String, jakarta.servlet.http.HttpServletRequest)
-     * @verifies return EMPTY for null pi
+     * @verifies return empty for null pi
+     * @see providing#fetchPagePermissions(String, HttpServletRequest)
      */
     @Test
     void fetchPagePermissions_shouldReturnEmptyForNullPi() {
@@ -703,8 +701,8 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see AccessConditionUtils#fetchPagePermissions(String, jakarta.servlet.http.HttpServletRequest)
      * @verifies return granted permissions for open access record
+     * @see providing#fetchPagePermissions(String, HttpServletRequest)
      */
     @Test
     void fetchPagePermissions_shouldReturnGrantedPermissionsForOpenAccessRecord() {

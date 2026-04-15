@@ -215,6 +215,7 @@ public abstract class PersistentAnnotation {
      * Getter for the field <code>id</code>.
      *
      * @return the database primary key of this annotation
+     * @should persist annotation
      */
     public Long getId() {
         return id;
@@ -402,6 +403,7 @@ public abstract class PersistentAnnotation {
      * Getter for the field <code>body</code>.
      *
      * @return the annotation body content (typically a JSON-LD or plain-text value)
+     * @should serialize
      */
     public String getBody() {
         return body;
@@ -550,6 +552,8 @@ public abstract class PersistentAnnotation {
      * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should get content from oa
+     * @should get content from wa
      */
     public String getContentString() {
 

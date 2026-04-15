@@ -161,6 +161,7 @@ public class ChangeDiscoveryResource {
      * @return An {@link de.intranda.api.iiif.discovery.OrderedCollectionPage} of {@link Activity Activities}
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should return ordered collection page with next and partOf links
      */
     @Hidden
     @GET

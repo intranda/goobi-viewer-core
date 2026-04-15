@@ -44,6 +44,7 @@ class SessionCounterFilterTest extends AbstractTest {
     /**
      * Reproduces the ConcurrentModificationException that occurs when JSF modifies the
      * LogicalViewMap while SessionCounterFilter iterates over its values.
+     * @verifies not throw when logical view map throws concurrent modification exception
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test

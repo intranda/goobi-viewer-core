@@ -42,8 +42,12 @@ class HtmlSidebarWidgetTest extends AbstractDatabaseEnabledTest {
             "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";
     private static final String LOREM_IPSUM_SHORT = "Lorem ipsum dolor sit amet,";
 
+    /**
+     * @verifies persist
+     * @see HtmlSidebarWidget#getHtmlText
+     */
     @Test
-    void testPersist() throws DAOException {
+    void getHtmlText_shouldPersist() throws DAOException {
         HtmlSidebarWidget widget = new HtmlSidebarWidget();
         widget.getDescription().setValue("Beschreibung", Locale.GERMAN);
         widget.getDescription().setValue("Description", Locale.ENGLISH);
@@ -62,8 +66,12 @@ class HtmlSidebarWidgetTest extends AbstractDatabaseEnabledTest {
 
     }
 
+    /**
+     * @verifies clone
+     * @see HtmlSidebarWidget#getDescription
+     */
     @Test
-    void testClone() {
+    void getDescription_shouldClone() {
         HtmlSidebarWidget widget = new HtmlSidebarWidget();
         widget.getDescription().setValue("Beschreibung", Locale.GERMAN);
         widget.getDescription().setValue("Description", Locale.ENGLISH);
@@ -87,13 +95,21 @@ class HtmlSidebarWidgetTest extends AbstractDatabaseEnabledTest {
         assertEquals(widget.getStyleClass(), copy.getStyleClass());
     }
 
+    /**
+     * @verifies type
+     * @see HtmlSidebarWidget#getType
+     */
     @Test
-    void testType() {
+    void getType_shouldType() {
         assertEquals(CustomWidgetType.WIDGET_HTML, new HtmlSidebarWidget().getType());
     }
 
+    /**
+     * @verifies short description from description
+     * @see HtmlSidebarWidget#isHasShortDescription
+     */
     @Test
-    void test_shortDescriptionFromDescription() {
+    void isHasShortDescription_shouldShortDescriptionFromDescription() {
         HtmlSidebarWidget widget = new HtmlSidebarWidget();
         Assertions.assertFalse(widget.isHasShortDescription());
         widget.getDescription().setText(LOREM_IPSUM, Locale.GERMAN);
@@ -106,8 +122,12 @@ class HtmlSidebarWidgetTest extends AbstractDatabaseEnabledTest {
         Assertions.assertEquals(LOREM_IPSUM_SHORT + "...", widget.getShortDescription(35).getValueOrFallback(Locale.GERMAN));
     }
 
+    /**
+     * @verifies short description from text
+     * @see HtmlSidebarWidget#isHasShortDescription
+     */
     @Test
-    void test_shortDescriptionFromText() {
+    void isHasShortDescription_shouldShortDescriptionFromText() {
         HtmlSidebarWidget widget = new HtmlSidebarWidget();
         Assertions.assertFalse(widget.isHasShortDescription());
         widget.getHtmlText().setText(LOREM_IPSUM, Locale.GERMAN);

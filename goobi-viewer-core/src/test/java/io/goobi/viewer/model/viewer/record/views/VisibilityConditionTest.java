@@ -26,16 +26,22 @@ import jakarta.servlet.http.HttpServletRequest;
 
 class VisibilityConditionTest {
 
+    /**
+     * @verifies read condition
+     */
     @Test
-    void testReadCondition() {
+    void getMimeType_shouldReadCondition() {
         VisibilityConditionInfo info = new VisibilityConditionInfo();
         info.setMimeType(List.of("image"));
         VisibilityCondition cond = new VisibilityCondition(info);
         Assertions.assertTrue(cond.getMimeType().matches(List.of("image")));
     }
 
+    /**
+     * @verifies file type condition
+     */
     @Test
-    void testFileTypeCondition() {
+    void getFileTypes_shouldFileTypeCondition() {
         VisibilityConditionInfo info = new VisibilityConditionInfo();
         info.setContentType(List.of("IMAGE"));
         VisibilityCondition cond = new VisibilityCondition(info);
@@ -43,16 +49,22 @@ class VisibilityConditionTest {
         Assertions.assertFalse(cond.getFileTypes().matches(List.of(FileType.EPUB)));
     }
 
+    /**
+     * @verifies read unknown condition
+     */
     @Test
-    void testReadUnknownCondition() {
+    void getMimeType_shouldReadUnknownCondition() {
         VisibilityConditionInfo info = new VisibilityConditionInfo();
         info.setMimeType(List.of("images"));
         VisibilityCondition cond = new VisibilityCondition(info);
         Assertions.assertFalse(cond.getMimeType().matches(List.of("image")));
     }
 
+    /**
+     * @verifies match any mime type when only numPages is set
+     */
     @Test
-    void testOtherCondition() {
+    void getMimeType_shouldMatchAnyMimeTypeWhenOnlyNumPagesIsSet() {
         VisibilityConditionInfo info = new VisibilityConditionInfo();
         info.setNumPages("2");
         VisibilityCondition cond = new VisibilityCondition(info);
@@ -61,8 +73,11 @@ class VisibilityConditionTest {
         Assertions.assertTrue(cond.getNumPages().matches(312));
     }
 
+    /**
+     * @verifies mime type
+     */
     @Test
-    void test_matchesRecord_mimeType()
+    void matchesRecord_shouldMimeType()
             throws IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException, ViewerConfigurationException {
 
         RecordPropertyCache cache = new RecordPropertyCache();
@@ -75,8 +90,11 @@ class VisibilityConditionTest {
         Assertions.assertTrue(condMimeType.matchesRecord(PageType.viewImage, viewManager, request, cache));
     }
 
+    /**
+     * @verifies doc type
+     */
     @Test
-    void test_matchesRecord_docType()
+    void matchesRecord_shouldDocType()
             throws IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException, ViewerConfigurationException {
 
         RecordPropertyCache cache = new RecordPropertyCache();
@@ -93,9 +111,10 @@ class VisibilityConditionTest {
      * When the pageType condition does not match the current view, no access-condition check should
      * be performed. Previously, checkAccess() ran before views.matches(), so a Solr query was
      * issued even when the pageType alone would have disqualified the condition.
+     * @verifies no access check when page type fails
      */
     @Test
-    void test_matchesRecord_noAccessCheckWhenPageTypeFails()
+    void matchesRecord_shouldNoAccessCheckWhenPageTypeFails()
             throws IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException, ViewerConfigurationException {
 
         RecordPropertyCache cache = Mockito.spy(new RecordPropertyCache());
@@ -118,9 +137,10 @@ class VisibilityConditionTest {
     /**
      * When no contentType condition is specified, getFileTypesForRecord() must not be called,
      * avoiding an unnecessary Solr query for all page filenames.
+     * @verifies no file type query when condition absent
      */
     @Test
-    void test_matchesRecord_noFileTypeQueryWhenConditionAbsent()
+    void matchesRecord_shouldNoFileTypeQueryWhenConditionAbsent()
             throws IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException, ViewerConfigurationException {
 
         RecordPropertyCache cache = Mockito.spy(new RecordPropertyCache());

@@ -28,8 +28,11 @@ import org.junit.jupiter.api.Test;
 
 class DownloadOptionTest {
 
+    /**
+     * @verifies return format extension or master file extension
+     */
     @Test
-    void test() {
+    void getExtension_shouldReturnFormatExtensionOrMasterFileExtension() {
         Assertions.assertEquals("jpg", new DownloadOption("small", "jpg", new Dimension(15, 15)).getExtension("00000001.tif"));
         Assertions.assertEquals("tif", new DownloadOption("small", "master", new Dimension(15, 15)).getExtension("00000001.tif"));
         Assertions.assertEquals("png", new DownloadOption("small", "master", new Dimension(15, 15)).getExtension("00000001.png"));

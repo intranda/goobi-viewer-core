@@ -88,9 +88,10 @@ class SearchResultConverterTest extends AbstractSolrEnabledTest {
     /**
      * Test method for
      * {@link io.goobi.viewer.model.iiif.search.SearchResultConverter#convertCommentToHit(java.lang.String, java.lang.String, io.goobi.viewer.model.annotation.comments.Comment)}.
+     * @verifies return non null result
      */
     @Test
-    void testConvertCommentToHit() {
+    void convertCommentToHit_shouldReturnNonNullResult() {
         Comment comment = new Comment(pi, pageNo, null, text, null, null);
         comment.setId(1l);
 
@@ -115,9 +116,10 @@ class SearchResultConverterTest extends AbstractSolrEnabledTest {
     /**
      * Test method for
      * {@link io.goobi.viewer.model.iiif.search.SearchResultConverter#convertUGCToHit(java.lang.String, org.apache.solr.common.SolrDocument)}.
+     * @verifies return non null result
      */
     @Test
-    void testConvertUGCToHit() {
+    void convertUGCToHit_shouldReturnNonNullResult() {
         SolrDocument ugc = new SolrDocument();
         ugc.setField(SolrConstants.UGCTERMS, text);
         ugc.setField(SolrConstants.UGCTYPE, "ADDRESS");
@@ -142,9 +144,10 @@ class SearchResultConverterTest extends AbstractSolrEnabledTest {
     /**
      * Test method for
      * {@link io.goobi.viewer.model.iiif.search.SearchResultConverter#convertMetadataToHit(java.lang.String, java.lang.String, org.apache.solr.common.SolrDocument)}.
+     * @verifies return non null result
      */
     @Test
-    void testConvertMetadataToHit() {
+    void convertMetadataToHit_shouldReturnNonNullResult() {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.TITLE, text);
         doc.setField(SolrConstants.PI_TOPSTRUCT, pi);
@@ -176,9 +179,10 @@ class SearchResultConverterTest extends AbstractSolrEnabledTest {
      * 
      * @throws JDOMException
      * @throws IOException
+     * @verifies return non null result
      */
     @Test
-    void testGetAnnotationsFromAlto() throws IOException, JDOMException {
+    void getAnnotationsFromAlto_shouldReturnNonNullResult() throws IOException, JDOMException {
         String query = "Hollywood";
         String queryRegex = AbstractSearchParser.getQueryRegex(query);
 
@@ -199,9 +203,11 @@ class SearchResultConverterTest extends AbstractSolrEnabledTest {
     /**
      * Test method for
      * {@link io.goobi.viewer.model.iiif.search.SearchResultConverter#getAnnotationsFromFulltext(java.lang.String, java.lang.String, java.lang.Integer, java.lang.String, long, int, int)}.
+     * @verifies return 1 for given input
+     * @see SearchResultConverter#getAnnotationsFromFulltext(String, String, Integer, String, long, int, int)
      */
     @Test
-    void testGetAnnotationsFromFulltext() {
+    void getAnnotationsFromFulltext_shouldReturn1ForGivenInput() {
         String query = "in";
         String queryRegex = AbstractSearchParser.getQueryRegex(query);
 

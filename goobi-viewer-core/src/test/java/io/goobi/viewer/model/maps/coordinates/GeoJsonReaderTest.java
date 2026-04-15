@@ -14,8 +14,12 @@ class GeoJsonReaderTest {
     private static final String POINT =
             "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[26.72509,58.38062]},\"properties\":{}}]}";
 
+    /**
+     * @verifies parse GeoJSON point with correct coordinates
+     * @see GeoJsonReader#read(String)
+     */
     @Test
-    void testReadPoint() {
+    void read_shouldParseGeoJsonPointWithCorrectCoordinates() {
         ICoordinateReader reader = new GeoJsonReader();
         Assertions.assertTrue(reader.canRead(POINT));
         Geometry geometry = reader.read(POINT);
@@ -24,8 +28,12 @@ class GeoJsonReaderTest {
         Assertions.assertEquals(26.72509, ((Point) geometry).getCoordinates().getX());
     }
 
+    /**
+     * @verifies parse GeoJSON polygon with correct structure
+     * @see GeoJsonReader#read(String)
+     */
     @Test
-    void testReadPolygon() {
+    void read_shouldParseGeoJsonPolygonWithCorrectStructure() {
         ICoordinateReader reader = new GeoJsonReader();
         Assertions.assertTrue(reader.canRead(POLYGON));
         Geometry geometry = reader.read(POLYGON);

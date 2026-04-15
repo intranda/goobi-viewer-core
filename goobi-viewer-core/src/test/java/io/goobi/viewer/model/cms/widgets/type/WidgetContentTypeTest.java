@@ -27,15 +27,23 @@ import org.junit.jupiter.api.Test;
 
 class WidgetContentTypeTest {
 
+    /**
+     * @verifies get by name
+     * @see for#valueOf
+     */
     @Test
-    void testGetByName() {
+    void valueOf_shouldGetByName() {
         assertEquals(DefaultWidgetType.WIDGET_BROWSING, WidgetContentType.valueOf("WIDGET_BROWSING"));
         assertEquals(AutomaticWidgetType.WIDGET_CMSGEOMAP, WidgetContentType.valueOf("WIDGET_CMSGEOMAP"));
         assertEquals(CustomWidgetType.WIDGET_FIELDFACETS, WidgetContentType.valueOf("WIDGET_FIELDFACETS"));
     }
 
+    /**
+     * @verifies return expected value for given input
+     * @see #getGenerationType(WidgetContentType)
+     */
     @Test
-    void testGetGenerationType() {
+    void getGenerationType_shouldReturnExpectedValueForGivenInput() {
         assertEquals(WidgetGenerationType.DEFAULT, WidgetContentType.getGenerationType(DefaultWidgetType.WIDGET_BROWSING));
         assertEquals(WidgetGenerationType.AUTOMATIC, WidgetContentType.getGenerationType(AutomaticWidgetType.WIDGET_CMSGEOMAP));
         assertEquals(WidgetGenerationType.CUSTOM, WidgetContentType.getGenerationType(CustomWidgetType.WIDGET_FIELDFACETS));

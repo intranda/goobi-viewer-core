@@ -51,7 +51,7 @@ class AuthenticationEndpointTest extends AbstractRestApiTest {
 
     /**
      * @see AuthenticationEndpoint#headerParameterLogin(String)
-     * @verifies not return status 403 if redirectUrl host is whitelisted
+     * @verifies not return status 403 if redirect url host whitelisted
      */
     @Test
     void headerParameterLogin_shouldNotReturnStatus403IfRedirectUrlHostWhitelisted() throws Exception {

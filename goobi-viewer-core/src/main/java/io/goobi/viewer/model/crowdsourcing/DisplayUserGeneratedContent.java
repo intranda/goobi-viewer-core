@@ -531,8 +531,8 @@ public class DisplayUserGeneratedContent {
      *
      * @param doc Solr document containing UGC field values
      * @return UserGeneratedContent generated from the given Solr document
-     * @should construct content correctly
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should populate type, coordinates, label, and access condition from SolrDocument fields
      */
     public static DisplayUserGeneratedContent buildFromSolrDoc(SolrDocument doc) throws IndexUnreachableException {
         if (doc == null) {

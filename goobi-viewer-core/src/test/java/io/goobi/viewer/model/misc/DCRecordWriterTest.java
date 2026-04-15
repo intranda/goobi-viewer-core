@@ -54,8 +54,12 @@ class DCRecordWriterTest {
     public void tearDown() throws Exception {
     }
 
+    /**
+     * @verifies return expected XML output
+     * @see DCRecordWriter#getAsString()
+     */
     @Test
-    void testWrite() {
+    void getAsString_shouldReturnExpectedXmlOutput() {
         DCRecordWriter writer = new DCRecordWriter();
         writer.addDCMetadata("title", "Titel");
         writer.addDCMetadata("identifier", "ID");

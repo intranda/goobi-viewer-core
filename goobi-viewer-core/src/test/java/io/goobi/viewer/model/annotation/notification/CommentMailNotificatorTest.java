@@ -31,7 +31,6 @@ import io.goobi.viewer.model.annotation.comments.Comment;
 class CommentMailNotificatorTest extends AbstractTest {
 
     /**
-     * @see CommentMailNotificator#buildRecordUrlElement(String,PersistentAnnotation)
      * @verifies build element correctly
      */
     @Test

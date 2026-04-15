@@ -45,8 +45,11 @@ class ComplexMetadataTest {
     private static final String IDDOC = "456";
     private static final String IDDOC_OWNER = "123";
 
+    /**
+     * @verifies return correct field values from single document
+     */
     @Test
-    void testSingleDoc() {
+    void getFirstValue_shouldReturnCorrectFieldValuesFromSingleDocument() {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.PI_TOPSTRUCT, PI);
         doc.setField(SolrConstants.IDDOC, IDDOC.toString());
@@ -69,8 +72,11 @@ class ComplexMetadataTest {
         assertEquals(TITLE_EN, md.getFirstValue(SolrConstants.TITLE, Locale.ENGLISH));
     }
 
+    /**
+     * @verifies return correct field values from multilanguage docs
+     */
     @Test
-    void testMultiDoc() {
+    void getFromMultilanganguageDocs_shouldReturnCorrectFieldValuesFromMultilanguageDocs() {
         List<SolrDocument> docs = new ArrayList<>();
         {
             SolrDocument doc = new SolrDocument();
@@ -110,9 +116,10 @@ class ComplexMetadataTest {
      * Verify that multiple Solr documents sharing the same MD_REFID are grouped into a single
      * translated ComplexMetadata entry, even when the number of duplicates is large.
      * This guards against O(n²) list-copy behaviour in the grouping implementation.
+     * @verifies merges documents with same ref id
      */
     @Test
-    void testGetMetadataFromDocumentsMergesDocumentsWithSameRefId() {
+    void getMetadataFromDocuments_shouldMergesDocumentsWithSameRefId() {
         // 100 language-variant docs all belonging to the same logical metadata value (REFID="1")
         List<SolrDocument> docs = IntStream.range(0, 100).mapToObj(i -> {
             SolrDocument doc = new SolrDocument();
@@ -135,9 +142,10 @@ class ComplexMetadataTest {
     /**
      * Verify that documents without MD_REFID (null key) are each treated as an independent
      * untranslated ComplexMetadata entry rather than being merged into a single group.
+     * @verifies keeps null ref id documents as separate entries
      */
     @Test
-    void testGetMetadataFromDocumentsKeepsNullRefIdDocumentsAsSeparateEntries() {
+    void getMetadataFromDocuments_shouldKeepsNullRefIdDocumentsAsSeparateEntries() {
         List<SolrDocument> docs = new ArrayList<>();
         for (String value : List.of("Alpha", "Beta", "Gamma")) {
             SolrDocument doc = new SolrDocument();
@@ -157,8 +165,11 @@ class ComplexMetadataTest {
         assertEquals(3, result.size(), "Each document without MD_REFID must produce a separate ComplexMetadata entry");
     }
 
+    /**
+     * @verifies return correct values from multiple metadata documents
+     */
     @Test
-    void testMultiMetadata() {
+    void getMetadataFromDocuments_shouldReturnCorrectValuesFromMultipleMetadataDocuments() {
         List<SolrDocument> docs = new ArrayList<>();
 
         {

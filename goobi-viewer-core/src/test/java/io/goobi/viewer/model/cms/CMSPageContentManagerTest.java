@@ -37,8 +37,11 @@ import io.goobi.viewer.model.cms.pages.content.CMSPageContentManager;
 
 class CMSPageContentManagerTest {
 
+    /**
+     * @verifies load component templates from directory
+     */
     @Test
-    void testReadFromTemplateFiles() throws IOException {
+    void getComponents_shouldLoadComponentTemplatesFromDirectory() throws IOException {
         Path path = Paths.get("src/test/resources/data/viewer/cms/component_templates");
 
         CMSPageContentManager manager = new CMSPageContentManager(path);

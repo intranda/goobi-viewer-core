@@ -34,15 +34,21 @@ class WidgetDisplayElementTest {
             "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";
     private static final String LOREM_IPSUM_SHORT = "Lorem ipsum dolor sit amet,";
 
+    /**
+     * @verifies description from type
+     */
     @Test
-    void test_descriptionFromType() {
+    void getDescription_shouldDescriptionFromType() {
         CustomSidebarWidget widget = new HtmlSidebarWidget();
         WidgetDisplayElement element = new WidgetDisplayElement(widget);
         Assertions.assertEquals(CustomWidgetType.WIDGET_HTML.getDescription(), element.getDescriptionOrTypeDescription().getText(Locale.GERMAN));
     }
 
+    /**
+     * @verifies description from html text
+     */
     @Test
-    void test_descriptionFromHtmlText() {
+    void getDescriptionOrTypeDescription_shouldDescriptionFromHtmlText() {
         HtmlSidebarWidget widget = new HtmlSidebarWidget();
         widget.getHtmlText().setText(LOREM_IPSUM, Locale.GERMAN);
         WidgetDisplayElement element = new WidgetDisplayElement(widget);
@@ -50,8 +56,11 @@ class WidgetDisplayElementTest {
         Assertions.assertEquals(LOREM_IPSUM, element.getDescriptionOrTypeDescription().getText(Locale.GERMAN));
     }
 
+    /**
+     * @verifies description from description text
+     */
     @Test
-    void test_descriptionFromDescriptionText() {
+    void getDescriptionOrTypeDescription_shouldDescriptionFromDescriptionText() {
         CustomSidebarWidget widget = new HtmlSidebarWidget();
         widget.getDescription().setText(LOREM_IPSUM, Locale.GERMAN);
         WidgetDisplayElement element = new WidgetDisplayElement(widget);

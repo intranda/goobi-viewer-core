@@ -98,7 +98,6 @@ class UserTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see User#canSatisfyAllAccessConditions(Set,String,String)
      * @verifies return true if condition is open access
      */
     @Test
@@ -110,7 +109,6 @@ class UserTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see User#canSatisfyAllAccessConditions(Set,String,String)
      * @verifies return true if user is superuser
      */
     @Test
@@ -123,7 +121,6 @@ class UserTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see User#canSatisfyAllAccessConditions(Set,String,String)
      * @verifies return true if user has license
      */
     @Test
@@ -135,7 +132,6 @@ class UserTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see User#canSatisfyAllAccessConditions(Set,String,String)
      * @verifies return false if user has no license
      */
     @Test
@@ -158,11 +154,10 @@ class UserTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see User#getId(URI)
-     * @verifies extract id correctly
+     * @verifies parse numeric user ID from URI path segment
      */
     @Test
-    void getId_shouldExtractIdCorrectly() throws Exception {
+    void getId_shouldParseNumericUserIDFromURIPathSegment() throws Exception {
         Assertions.assertEquals(Long.valueOf(1234567890L), User.getId(new URI("https://example.com/viewer/users/1234567890/")));
     }
 }

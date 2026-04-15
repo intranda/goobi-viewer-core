@@ -306,6 +306,7 @@ public class UserBean implements Serializable {
      * @throws java.lang.IllegalStateException if any.
      * @throws java.lang.InterruptedException if any.
      * @throws java.util.concurrent.ExecutionException if any.
+     * @should return null for invalid input
      */
     public String login() throws AuthenticationProviderException, IllegalStateException, InterruptedException, ExecutionException {
         return login(getAuthenticationProvider());

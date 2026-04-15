@@ -86,9 +86,9 @@ public class MessageValue {
     /**
      *
      * @return Translation status of this value
-     * @should return none status correctly
-     * @should return partial status correctly
-     * @should return full status correctly
+     * @should return NONE when current value is empty
+     * @should return PARTIAL when current value differs from default value
+     * @should return FULL when current value matches default value
      */
     public TranslationStatus getTranslationStatus() {
         if (StringUtils.isBlank(value)) {

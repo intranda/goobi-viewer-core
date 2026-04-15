@@ -40,9 +40,10 @@ class DefaultQueueListenerShutdownTest {
      * Verifies that startListener exits the message loop when isTransportFailed() returns true.
      * Before the fix, the while loop only checked shouldStop, so a broker-side disconnect would
      * cause the listener to spin indefinitely rather than exit cleanly.
+     * @verifies exit message loop when transport fails
      */
     @Test
-    void testStartListener_exitsWhenTransportFails() throws JMSException {
+    void startListener_shouldExitMessageLoopWhenTransportFails() throws JMSException {
         MessageQueueManager broker = Mockito.mock(MessageQueueManager.class);
         DefaultQueueListener listener = new DefaultQueueListener(broker, "testQueue");
 
@@ -69,9 +70,10 @@ class DefaultQueueListenerShutdownTest {
      * Verifies that waitForMessage does not sleep for 3 seconds when shouldStop is true.
      * The JMSException catch block must skip both the sleep and the error log when the
      * listener is shutting down, so Tomcat does not have to wait.
+     * @verifies not sleep when shutting down
      */
     @Test
-    void testWaitForMessage_doesNotSleepWhenShuttingDown() throws JMSException {
+    void waitForMessage_shouldNotSleepWhenShuttingDown() throws JMSException {
         MessageQueueManager broker = Mockito.mock(MessageQueueManager.class);
         DefaultQueueListener listener = new DefaultQueueListener(broker, "testQueue");
         listener.close(); // sets shouldStop = true; thread is null so join is skipped

@@ -117,7 +117,8 @@ public class SearchHitFactory {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws DAOException
-     * @should add export fields correctly
+     * @should find with umlaut
+     * @should find umlaute
      */
     public SearchHit createSearchHit(SolrDocument doc, SolrDocument ownerDoc, String fulltext, HitType overrideType)
             throws PresentationException, IndexUnreachableException, DAOException {

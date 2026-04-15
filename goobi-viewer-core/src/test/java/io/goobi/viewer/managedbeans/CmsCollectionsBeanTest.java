@@ -34,11 +34,10 @@ import io.goobi.viewer.solr.SolrConstants;
 class CmsCollectionsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
-     * @see CmsCollectionsBean#initImageMode()
-     * @verifies set imageMode correctly
+     * @verifies set image mode to PI when representative work exists, NONE when absent, and IMAGE when media item is set
      */
     @Test
-    void initImageMode_shouldSetImageModeCorrectly() throws Exception {
+    void initImageMode_shouldSetImageModeToPIWhenRepresentativeWorkExistsNONEWhenAbsentAndIMAGEWhenMediaItemIsSet() throws Exception {
         CmsCollectionsBean bean = new CmsCollectionsBean();
         bean.setCurrentCollection(new CMSCollection(SolrConstants.DC, "varia"));
 
@@ -79,10 +78,10 @@ class CmsCollectionsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see CmsCollectionsBean#isDisplaySolrFieldSelectionWidget()
-     * @verifies return false if only one collection field is configured
+     * @verifies return true if multiple collection fields are configured
      */
     @Test
-    void isDisplaySolrFieldSelectionWidget_shouldReturnFalseIfOnlyOneCollectionFieldIsConfigured() throws Exception {
+    void isDisplaySolrFieldSelectionWidget_shouldReturnTrueIfMultipleCollectionFieldsAreConfigured() throws Exception {
         CmsCollectionsBean bean = new CmsCollectionsBean();
         Assertions.assertEquals(3, bean.getAllCollectionFields().size());
 

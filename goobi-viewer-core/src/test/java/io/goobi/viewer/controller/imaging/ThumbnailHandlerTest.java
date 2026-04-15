@@ -74,8 +74,12 @@ class ThumbnailHandlerTest extends AbstractTest {
         handler = new ThumbnailHandler(iiifHandler, STATIC_IMAGES_PATH);
     }
 
+    /**
+     * @verifies page
+     * @see ThumbnailHandler#getThumbnailUrl
+     */
     @Test
-    void testPage() {
+    void getThumbnailUrl_shouldPage() {
         PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
                 .setPhysId("PHYS_0001")
                 .setFilePath("00000001.tif")
@@ -91,14 +95,22 @@ class ThumbnailHandlerTest extends AbstractTest {
         Assertions.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/!200,300/0/default.jpg", url);
     }
 
+    /**
+     * @verifies return empty string
+     * @see ThumbnailHandler#getThumbnailUrl
+     */
     @Test
-    void testNullPage_shouldReturnEmptyString() {
+    void getThumbnailUrl_shouldReturnEmptyString() {
         String url = handler.getThumbnailUrl((PhysicalElement) null, 200, 300);
         Assertions.assertEquals("", url);
     }
 
+    /**
+     * @verifies external iiif image url
+     * @see ThumbnailHandler#getThumbnailUrl
+     */
     @Test
-    void testExternalIIIFImageUrl() {
+    void getThumbnailUrl_shouldExternalIiifImageUrl() {
         String fileUrl = "http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/full/full/0/native.jpg";
         PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
                 .setPhysId("PHYS_0001")
@@ -116,8 +128,12 @@ class ThumbnailHandlerTest extends AbstractTest {
         Assertions.assertEquals(refrenceUrl, url);
     }
 
+    /**
+     * @verifies external iiif image info url
+     * @see ThumbnailHandler#getThumbnailUrl
+     */
     @Test
-    void testExternalIIIFImageInfoUrl() {
+    void getThumbnailUrl_shouldExternalIiifImageInfoUrl() {
         String fileUrl = "http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/info.json";
         PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
                 .setPhysId("PHYS_0001")
@@ -135,8 +151,11 @@ class ThumbnailHandlerTest extends AbstractTest {
         Assertions.assertEquals(refrenceUrl, url);
     }
 
+    /**
+     * @verifies return expected value for given input
+     */
     @Test
-    void testGetFullImageUrl() {
+    void getFullImageUrl_shouldReturnExpectedValueForGivenInput() {
         String fileUrl = "00000001.tif";
         PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
                 .setPhysId("PHYS_0001")
@@ -165,9 +184,11 @@ class ThumbnailHandlerTest extends AbstractTest {
     /**
      * Non-standard mime type "image/tif" (single f) must fall back to file extension lookup
      * so that getFullImageUrl does not return an empty string for such pages.
+     * @verifies fall back to file extension
+     * @see ThumbnailHandler#getFullImageUrl
      */
     @Test
-    void testGetFullImageUrl_nonStandardTifMimeType_shouldFallBackToFileExtension() {
+    void getFullImageUrl_shouldFallBackToFileExtension() {
         PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
                 .setPhysId("PHYS_0001")
                 .setFilePath("00000001.tif")
@@ -184,8 +205,12 @@ class ThumbnailHandlerTest extends AbstractTest {
         Assertions.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/max/0/default.tif", url);
     }
 
+    /**
+     * @verifies thumbnail url
+     * @see ThumbnailHandler#getThumbnailUrl
+     */
     @Test
-    void testThumbnailUrl() {
+    void getThumbnailUrl_shouldThumbnailUrl() {
         String fileUrl = "00000001.tif";
         PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
                 .setPhysId("PHYS_0001")
@@ -208,8 +233,12 @@ class ThumbnailHandlerTest extends AbstractTest {
 
     }
 
+    /**
+     * @verifies return correct URL for local document
+     * @see ThumbnailHandler#getThumbnailUrl(StructElement, int, int)
+     */
     @Test
-    void testDocLocal() throws IndexUnreachableException {
+    void getThumbnailUrl_shouldReturnCorrectUrlForLocalDocument() throws IndexUnreachableException {
 
         SolrDocument solrDoc = new SolrDocument();
         solrDoc.setField(SolrConstants.MIMETYPE, "image/tiff");
@@ -225,8 +254,12 @@ class ThumbnailHandlerTest extends AbstractTest {
         Assertions.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/!200,300/0/default.jpg", url);
     }
 
+    /**
+     * @verifies return correct URL for local anchor
+     * @see ThumbnailHandler#getThumbnailUrl(StructElement, int, int)
+     */
     @Test
-    void testAnchorLocal() throws IndexUnreachableException, PresentationException {
+    void getThumbnailUrl_shouldReturnCorrectUrlForLocalAnchor() throws IndexUnreachableException, PresentationException {
 
         SolrDocument solrDoc = new SolrDocument();
         solrDoc.setField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
@@ -254,8 +287,12 @@ class ThumbnailHandlerTest extends AbstractTest {
         Assertions.assertEquals("/api/v1/records/1234_1/files/images/00000001.tif/full/!200,300/0/default.jpg", url);
     }
 
+    /**
+     * @verifies encode whitespace in URL for local anchor
+     * @see ThumbnailHandler#getThumbnailUrl(StructElement, int, int)
+     */
     @Test
-    void testAnchorLocal_whitespace() throws IndexUnreachableException, PresentationException {
+    void getThumbnailUrl_shouldEncodeWhitespaceInUrlForLocalAnchor() throws IndexUnreachableException, PresentationException {
 
         SolrDocument solrDoc = new SolrDocument();
         solrDoc.setField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
@@ -283,8 +320,12 @@ class ThumbnailHandlerTest extends AbstractTest {
         Assertions.assertEquals("/api/v1/records/1234_1/files/images/a+b+c.tif/full/!200,300/0/default.jpg", url);
     }
 
+    /**
+     * @verifies return correct URL for external document
+     * @see ThumbnailHandler#getThumbnailUrl(StructElement, int, int)
+     */
     @Test
-    void testDocExternal() throws IndexUnreachableException {
+    void getThumbnailUrl_shouldReturnCorrectUrlForExternalDocument() throws IndexUnreachableException {
 
         SolrDocument solrDoc = new SolrDocument();
         solrDoc.setField(SolrConstants.MIMETYPE, "image/tiff");
@@ -301,8 +342,12 @@ class ThumbnailHandlerTest extends AbstractTest {
                 url);
     }
 
+    /**
+     * @verifies return correct URL for external IIIF document
+     * @see ThumbnailHandler#getThumbnailUrl(StructElement, int, int)
+     */
     @Test
-    void testDocExternalIIIF() throws IndexUnreachableException {
+    void getThumbnailUrl_shouldReturnCorrectUrlForExternalIiifDocument() throws IndexUnreachableException {
 
         SolrDocument solrDoc = new SolrDocument();
         solrDoc.setField(SolrConstants.MIMETYPE, "image/tiff");
@@ -318,8 +363,11 @@ class ThumbnailHandlerTest extends AbstractTest {
         Assertions.assertEquals("http://external/iiif/image/00000001.tif/full/!200,300/0/default.jpg", url);
     }
 
+    /**
+     * @verifies return expected value for given input
+     */
     @Test
-    void testGetCMSMediaImageApiUrl_legacy() throws UnsupportedEncodingException {
+    void getCMSMediaImageApiUrl_shouldReturnExpectedValueForGivenInput() throws UnsupportedEncodingException {
 
         String legacyApiUrl = "https://viewer.goobi.io/rest/";
 
@@ -337,8 +385,12 @@ class ThumbnailHandlerTest extends AbstractTest {
         assertEquals(legacyApiUrl + "image/-/" + encFilepath, thumbUrlLegacy);
     }
 
+    /**
+     * @verifies build url from filename and current api url
+     * @see ThumbnailHandler#getCMSMediaImageApiUrl(String)
+     */
     @Test
-    void testGetCMSMediaImageApiUrl() {
+    void getCMSMediaImageApiUrl_shouldBuildUrlFromFilenameAndCurrentApiUrl() {
 
         String currentApiUrl = "https://viewer.goobi.io/api/v1";
 
@@ -348,8 +400,11 @@ class ThumbnailHandlerTest extends AbstractTest {
         assertEquals(currentApiUrl + ApiUrls.CMS_MEDIA + ApiUrls.CMS_MEDIA_FILES_FILE.replace("{filename}", filename), thumbUrlV1);
     }
 
+    /**
+     * @verifies return non null result
+     */
     @Test
-    void testGetCMSMediaImageApiUrl_withSpaces() {
+    void getCMSMediaImageApiUrl_shouldReturnNonNullResult() {
 
         String currentApiUrl = "https://viewer.goobi.io/api/v1";
 
@@ -361,8 +416,12 @@ class ThumbnailHandlerTest extends AbstractTest {
         assertNotNull(URI.create(thumbUrlV1));
     }
 
+    /**
+     * @verifies c ms media thumbnail url
+     * @see ThumbnailHandler#getThumbnailUrl
+     */
     @Test
-    void testCMSMediaThumbnailUrl() {
+    void getThumbnailUrl_shouldCMsMediaThumbnailUrl() {
 
         String currentApiUrl = "https://viewer.goobi.io/api/v1";
 
@@ -422,13 +481,15 @@ class ThumbnailHandlerTest extends AbstractTest {
         Assertions.assertEquals("max", ThumbnailHandler.getSize(0, 0));
     }
 
+    /**
+     * @verifies return max if both null
+     */
     @Test
     void getSize_shouldReturnMaxIfBothNull() {
         Assertions.assertEquals("max", ThumbnailHandler.getSize(null, null));
     }
 
     /**
-     * @see ThumbnailHandler#getImagePath(PhysicalElement)
      * @verifies return image thumbnail path correctly
      */
     @Test
@@ -439,7 +500,6 @@ class ThumbnailHandlerTest extends AbstractTest {
     }
 
     /**
-     * @see ThumbnailHandler#getImagePath(PhysicalElement)
      * @verifies return audio thumbnail path correctly
      */
     @Test
@@ -455,7 +515,6 @@ class ThumbnailHandlerTest extends AbstractTest {
     }
 
     /**
-     * @see ThumbnailHandler#getImagePath(PhysicalElement)
      * @verifies return video thumbnail path correctly
      */
     @Test
@@ -471,7 +530,6 @@ class ThumbnailHandlerTest extends AbstractTest {
     }
 
     /**
-     * @see ThumbnailHandler#getImagePath(PhysicalElement)
      * @verifies return pdf thumbnail path correctly
      */
     @Test
@@ -483,8 +541,7 @@ class ThumbnailHandlerTest extends AbstractTest {
 
     /**
      * @throws IndexUnreachableException
-     * @see ThumbnailHandler#getImagePath(PhysicalElement)
-     * @verifies return pdf thumbnail path correctly
+     * @verifies return born digital thumbnail path correctly
      */
     @Test
     void getImagePath_shouldReturnBornDigitalThumbnailPathCorrectly() throws IndexUnreachableException {
@@ -499,7 +556,6 @@ class ThumbnailHandlerTest extends AbstractTest {
     }
 
     /**
-     * @see ThumbnailHandler#getImagePath(PhysicalElement)
      * @verifies return 3d object thumbnail path correctly
      */
     @Test
@@ -513,7 +569,6 @@ class ThumbnailHandlerTest extends AbstractTest {
     }
 
     /**
-     * @see ThumbnailHandler#getImagePath(PhysicalElement)
      * @verifies return mime type correctly
      */
     @Test

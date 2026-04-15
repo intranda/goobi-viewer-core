@@ -276,7 +276,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * clearSearchItemLists.
      *
-     * @should clear map correctly
+     * @should empty the advanced search select items map
      */
     public void clearSearchItemLists() {
         advancedSearchSelectItems.clear();
@@ -416,7 +416,7 @@ public class SearchBean implements SearchInterface, Serializable {
      *
      * @param resetParameters true to reset sort, filter and page before searching
      * @return Navigation outcome
-     * @should generate search string correctly
+     * @should generate internal search string from advanced search query items
      * @should reset search parameters
      */
     public String searchAdvanced(boolean resetParameters) {
@@ -448,7 +448,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * Executes a search for any content tagged with today's month and day.
      *
      * @return Navigation outcome
-     * @should set search string correctly
+     * @should set search string starting with MONTHDAY field
      */
     public String searchToday() {
         logger.trace("searchToday");
@@ -511,6 +511,8 @@ public class SearchBean implements SearchInterface, Serializable {
 
     /**
      * Resets variables that hold search result data. Does not reset search parameter variables such as type, filter or collection.
+     * @should not throw NullPointerException under concurrent access
+     * @should not throw NPE when called concurrently
      */
     public void resetSearchResults() {
         logger.trace("resetSearchResults");
@@ -600,7 +602,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Resets search options for the simple search.
      *
-     * @should reset variables correctly
+     * @should clear searchString to empty and searchStringForUrl to dash
      */
     protected void resetSimpleSearchParameters() {
         logger.trace("resetSimpleSearchParameters");
@@ -613,8 +615,8 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Resets search options for the advanced search.
      *
-     * @should reset variables correctly
-     * @should re-select collection correctly
+     * @should reinitialize advanced search query group with three default query items
+     * @should preserve active DC facet value in the DC query item after reset
      */
     protected void resetAdvancedSearchParameters() {
         logger.trace("resetAdvancedSearchParameters");
@@ -1496,7 +1498,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * Sets activeResultGroup via the given name.
      *
      * @param activeResultGroupName Name of the active context
-     * @should select result group correctly
+     * @should store and return the given result group name
      * @should reset result group if new name not configured
      * @should reset result group if empty name given
      */
@@ -1554,13 +1556,13 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Matches the selected collection item in the advanced search to the current value of <code>currentCollection</code>.
      *
-     * @should mirror facet items to search query items correctly
-     * @should remove facet items from search query items correctly
+     * @should copy active hierarchical facet values into corresponding advanced search query items
      * @should add extra search query item if all items full
      * @should not replace query items already in use
      * @should not add identical hierarchical query items
      * @should change nothing if facet already exists in query items
      * @should not throw NPE when queryItems contains null elements
+     * @should not throw CME when called concurrently
      */
     public void mirrorAdvancedSearchCurrentHierarchicalFacets() {
         logger.trace("mirrorAdvancedSearchCurrentHierarchicalFacets");
@@ -1787,8 +1789,8 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * increaseCurrentHitIndex.
      *
-     * @should increase index correctly
-     * @should decrease index correctly
+     * @should increase hit index by operand value within bounds
+     * @should decrease hit index by negative operand value within bounds
      * @should reset operand afterwards
      * @should do nothing if hit index at the last hit
      * @should do nothing if hit index at 0
@@ -1841,7 +1843,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @param page Page number of he loaded record.
      * @param aggregateHits If true, only the identifier has to match, page number is ignored.
      * @should set currentHitIndex to minus one if no search hits
-     * @should set currentHitIndex correctly
+     * @should set currentHitIndex to the position of the given PI in the search result list
      */
     public void findCurrentHitIndex(String pi, int page, boolean aggregateHits) {
         logger.trace("findCurrentHitIndex: {}/{}", pi, page);
@@ -1874,6 +1876,8 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should return null if currentHitIndex is negative
+     * @should return null if currentSearch is null
      */
     public BrowseElement getNextElement() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         // Capture currentHitIndex in a local variable to prevent a TOCTOU race condition:
@@ -1912,6 +1916,8 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should return null if currentHitIndex is negative
+     * @should return null if currentSearch is null
      */
     public BrowseElement getPreviousElement() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         // Capture currentHitIndex in a local variable to prevent a TOCTOU race condition:
@@ -2177,6 +2183,8 @@ public class SearchBean implements SearchInterface, Serializable {
      * getAdvancedSearchAllowedFields.
      *
      * @return List of allowed advanced search fields
+     * @should omit languaged fields for other languages
+     * @should addSearchFilters
      */
     public List<AdvancedSearchFieldConfiguration> getAdvancedSearchAllowedFields() {
         return getAdvancedSearchAllowedFields(navigationHelper.getLocaleString(), advancedSearchFieldTemplate, false);
@@ -3171,8 +3179,8 @@ public class SearchBean implements SearchInterface, Serializable {
      *
      * @param language BCP 47 language tag for translating sort option labels
      * @return List of sorting options for the given language
-     * @should return options correctly
      * @should use current random seed option instead of default
+     * @should return sorting options with language specific default field first
      */
     public Collection<SearchSortingOption> getSearchSortingOptions(String language) {
         Collection<SearchSortingOption> options = DataManager.getInstance().getConfiguration().getSearchSortingOptions(language);

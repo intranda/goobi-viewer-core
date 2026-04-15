@@ -49,8 +49,11 @@ import io.goobi.viewer.solr.SolrConstants;
 
 class SearchHitFactoryTest extends AbstractSolrEnabledTest {
 
+    /**
+     * @verifies find with umlaut
+     */
     @Test
-    void createSearchHit_findWithUmlaut() throws PresentationException, IndexUnreachableException, DAOException {
+    void createSearchHit_shouldFindWithUmlaut() throws PresentationException, IndexUnreachableException, DAOException {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.IDDOC, Long.toString(1l));
         doc.setField("MD_FOO", "Norden");
@@ -60,8 +63,11 @@ class SearchHitFactoryTest extends AbstractSolrEnabledTest {
         assertEquals(1, hit.getFoundMetadata().size());
     }
 
+    /**
+     * @verifies find umlaute
+     */
     @Test
-    void createSearchHit_findUmlaute() throws PresentationException, IndexUnreachableException, DAOException {
+    void createSearchHit_shouldFindUmlaute() throws PresentationException, IndexUnreachableException, DAOException {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.IDDOC, Long.toString(1l));
         doc.setField("MD_FOO", "Nörden");
@@ -72,7 +78,6 @@ class SearchHitFactoryTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SearchHitFactory#findAdditionalMetadataFieldsContainingSearchTerms(List,Map,String,String,Map)
      * @verifies add metadata fields that match search terms
      */
     @Test
@@ -113,7 +118,6 @@ class SearchHitFactoryTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SearchHitFactory#findAdditionalMetadataFieldsContainingSearchTerms(List,Map,String,String,Map)
      * @verifies not add duplicates from default terms
      */
     @Test
@@ -137,7 +141,6 @@ class SearchHitFactoryTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SearchHitFactory#findAdditionalMetadataFieldsContainingSearchTerms(List,Map,String,String,Map)
      * @verifies not add duplicates from explicit terms
      */
     @Test
@@ -166,7 +169,6 @@ class SearchHitFactoryTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SearchHitFactory#findAdditionalMetadataFieldsContainingSearchTerms(List,Map,String,String,Map)
      * @verifies not add ignored fields
      */
     @Test
@@ -196,7 +198,6 @@ class SearchHitFactoryTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SearchHitFactory#findAdditionalMetadataFieldsContainingSearchTerms(List,Map,String,String,Map)
      * @verifies translate configured field values correctly
      */
     @Test
@@ -227,7 +228,6 @@ class SearchHitFactoryTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SearchHitFactory#findAdditionalMetadataFieldsContainingSearchTerms(List,Map,String,String,Map)
      * @verifies write one line fields into a single string
      */
     @Test
@@ -268,7 +268,6 @@ class SearchHitFactoryTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SearchHitFactory#findAdditionalMetadataFieldsContainingSearchTerms(List,Map,String,String,Map)
      * @verifies truncate snippet fields correctly
      */
     @Test
@@ -323,7 +322,6 @@ class SearchHitFactoryTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SearchHitFactory#findAdditionalMetadataFieldsContainingSearchTerms(Map,Map,Set,String,String)
      * @verifies not add highlighting to nohighlight fields
      */
     @Test

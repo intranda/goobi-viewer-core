@@ -397,11 +397,12 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IDDOCNotFoundException
      * @throws io.goobi.viewer.exceptions.RecordLimitExceededException
      * @throws java.lang.NumberFormatException
-     * @should create ViewManager correctly
-     * @should update ViewManager correctly if LOGID has changed
+     * @should initialize ViewManager with matching PI and struct elements after update
+     * @should create new ViewManager instance when LOGID changes between updates
      * @should not override topDocumentIddoc if LOGID has changed
      * @should throw RecordNotFoundException if listing not allowed by default
      * @should load records that have been released via moving wall
+     * @should set toc on view manager after update
      */
     public void update() throws PresentationException, IndexUnreachableException, RecordNotFoundException, RecordDeletedException, DAOException,
             ViewerConfigurationException, IDDOCNotFoundException, NumberFormatException, RecordLimitExceededException {
@@ -903,6 +904,10 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @throws ViewerConfigurationException
      * @throws IllegalUrlParameterException
+     * @should use default image "1" when no identifier is set
+     * @should use default image "1" when identifier is the dash sentinel
+     * @should use default image when no identifier set
+     * @should use default image when identifier is dash sentinel
      */
     public void setRepresentativeImage()
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IllegalUrlParameterException {
@@ -1079,10 +1084,11 @@ public class ActiveDocumentBean implements Serializable {
      * setPersistentIdentifier.
      *
      * @param persistentIdentifier persistent identifier of the record to load
-     * @should determine currentElementIddoc correctly
+     * @should resolve topDocumentIddoc from Solr when PI is set
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.RecordNotFoundException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should preserve last received identifier when not found
      */
     public void setPersistentIdentifier(String persistentIdentifier)
             throws PresentationException, RecordNotFoundException, IndexUnreachableException {
@@ -1131,6 +1137,7 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @return the persistent identifier of the currently loaded record, or "-" if no record is loaded
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should be thread safe after record load
      */
     public String getPersistentIdentifier() throws IndexUnreachableException {
         // Capture volatile reference once; ViewManager.getPi() is immutable after construction
@@ -1150,7 +1157,10 @@ public class ActiveDocumentBean implements Serializable {
      * @param pageOrderRange Single page number or range
      * @return the absolute URL to the specified page type and order for the current record
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @should construct url correctly
+     * @should return correct page in single page mode
+     * @should return correct range in double page mode if currently showing one page
+     * @should return correct range in double page mode if currently showing two pages
+     * @should return correct range in double page mode if current page double image
      */
     public String getPageUrl(final String pageType, String pageOrderRange) throws IndexUnreachableException {
         StringBuilder sbUrl = new StringBuilder();
@@ -1288,11 +1298,8 @@ public class ActiveDocumentBean implements Serializable {
      * @param step number of pages to advance (positive or negative)
      * @return the absolute URL to the page that is the given number of steps from the current page
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @should return correct page in single page mode
-     * @should return correct range in double page mode if current page double image
-     * @should return correct range in double page mode if currently showing two pages
-     * @should return correct range in double page mode if currently showing one page
      * @should not throw NPE when viewManager is null
+     * @should not throw NPE when current page is null
      */
     public String getPageUrlRelativeToCurrentPage(int step) throws IndexUnreachableException {
         // logger.trace("getPageUrl: {}", step); //NOSONAR Debug
@@ -1540,6 +1547,8 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @return the absolute URL to the fullscreen image view for the current page
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should not throw NPE when getCurrentPage returns null in double page mode
+     * @should not throw NPE when current page is null
      */
     public String getFullscreenImageUrl() throws IndexUnreachableException {
         // Capture vm once so that a concurrent reset() cannot null the volatile field mid-method.
@@ -1662,6 +1671,8 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should return null when viewManager is null
+     * @should rebuild and cache toc when view manager toc is null
      */
     public TOC getToc() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         ViewManager vm = viewManager;
@@ -1702,13 +1713,12 @@ public class ActiveDocumentBean implements Serializable {
      * Setter for the field <code>tocCurrentPage</code>.
      *
      * @param tocCurrentPage desired TOC pagination page number
-     * @should set toc page to last page if value too high
-     * @should throw IllegalUrlParameterException for non-numeric value
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws io.goobi.viewer.exceptions.IllegalUrlParameterException if tocCurrentPage is not a valid integer or range
+     * @should throw IllegalUrlParameterException for non-numeric value
      */
     public void setTocCurrentPage(String tocCurrentPage)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException, IllegalUrlParameterException {
@@ -2370,7 +2380,9 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @should return empty string if no record loaded
      * @should return empty string if navigationHelper null
-     * @should generate tags correctly
+     * @should return non blank link tags when record is loaded
+     * @should generate canonical without page number for first page
+     * @should generate canonical with page number for non first page
      */
     public String getRelativeUrlTags() throws IndexUnreachableException, DAOException, PresentationException {
         // Single volatile read to avoid TOCTOU race with reset()/update() on concurrent threads.
@@ -2560,6 +2572,8 @@ public class ActiveDocumentBean implements Serializable {
      * @return {@link io.goobi.viewer.model.maps.GeoMap}
      * @throws io.goobi.viewer.exceptions.DAOException
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @should return GeoMap for loaded record
+     * @should return non null geo map when no record loaded
      */
     public GeoMap getGeoMap() throws DAOException, IndexUnreachableException {
         // No synchronization needed: getRecordGeoMap() reads/writes the volatile geoMaps
@@ -2573,6 +2587,7 @@ public class ActiveDocumentBean implements Serializable {
      * @return {@link io.goobi.viewer.model.maps.RecordGeoMap}
      * @throws io.goobi.viewer.exceptions.DAOException
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @should cache result for same PI
      */
     public RecordGeoMap getRecordGeoMap() throws DAOException, IndexUnreachableException {
         // getPersistentIdentifier() and getTopDocument() each capture viewManager independently.
@@ -2804,6 +2819,12 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @return true if user comments are allowed for the current record, false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException
+     * @should return false when no record is loaded
+     * @should return false when comments are disabled globally
+     * @should not throw NPE if allowUserComments is reset concurrently
+     * @should return false when no record loaded
+     * @should return false when comments disabled globally
+     * @should not throw NPE if allow user comments reset concurrently
      */
     public boolean isAllowUserComments() throws DAOException {
         // Single volatile read to avoid TOCTOU race with reset()/update() on concurrent threads.

@@ -34,7 +34,6 @@ import io.goobi.viewer.model.security.AccessPermission;
 class AbstractLicenseeTest {
 
     /**
-     * @see AbstractLicensee#getAccessPermissionFromMap(Map)
      * @verifies return denied if permissionMap empty
      */
     @Test
@@ -43,7 +42,6 @@ class AbstractLicenseeTest {
     }
 
     /**
-     * @see AbstractLicensee#getAccessPermissionFromMap(Map)
      * @verifies return denied if all permissions in map denied
      */
     @Test
@@ -52,7 +50,6 @@ class AbstractLicenseeTest {
     }
 
     /**
-     * @see AbstractLicensee#getAccessPermissionFromMap(Map)
      * @verifies preserve accessTicketRequired
      */
     @Test
@@ -63,7 +60,6 @@ class AbstractLicenseeTest {
     }
 
     /**
-     * @see AbstractLicensee#getAccessPermissionFromMap(Map)
      * @verifies preserve downloadTicketRequired
      */
     @Test
@@ -74,7 +70,6 @@ class AbstractLicenseeTest {
     }
 
     /**
-     * @see AbstractLicensee#getAccessPermissionFromMap(Map)
      * @verifies preserve redirect metadata
      */
     @Test
@@ -88,7 +83,6 @@ class AbstractLicenseeTest {
     }
     
     /**
-     * @see AbstractLicensee#getAccessPermissionFromMap(Map)
      * @verifies preserve access denied placeholder info
      */
     @Test
@@ -103,7 +97,6 @@ class AbstractLicenseeTest {
     }
 
     /**
-     * @see AbstractLicensee#getAccessPermissionFromMap(Map)
      * @verifies preserve additional licensee
      */
     @Test

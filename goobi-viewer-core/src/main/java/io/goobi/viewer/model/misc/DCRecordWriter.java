@@ -106,6 +106,7 @@ public class DCRecordWriter {
      *
      * @param path The path to the file (created if it doesn't exist, overwritten if it does) or the directory which should contain the file
      * @throws IOException if the parent directory of the given path doesn't exist, or writing the file fails for some other reason
+     * @should return expected value for given input
      */
     public void write(Path path) throws IOException {
         Path filePath = path;

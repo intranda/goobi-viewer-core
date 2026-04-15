@@ -35,7 +35,6 @@ import io.goobi.viewer.model.security.user.User;
 class AdminCommentBeanTest extends AbstractDatabaseEnabledTest {
 
     /**
-     * @see AdminCommentBean#init()
      * @verifies sort lazyModelComments by dateCreated desc by default
      */
     @Test

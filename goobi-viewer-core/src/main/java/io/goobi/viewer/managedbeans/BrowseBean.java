@@ -804,9 +804,9 @@ public class BrowseBean implements Serializable {
      * @param language BCP-47 language code to filter language-specific fields
      * @return List of browsing menu items
      * @should skip items that have skipInWidget true
-     * @should skip items for language-specific fields if no language was given
-     * @should skip items for language-specific fields if they don't match given language
-     * @should return language-specific fields with placeholder
+     * @should skip items for languagespecific fields if no language was given
+     * @should skip items for languagespecific fields if they dont match given language
+     * @should return languagespecific fields with placeholder
      */
     public List<String> getBrowsingMenuItems(final String language) {
         String useLanguage = language;
@@ -996,7 +996,7 @@ public class BrowseBean implements Serializable {
      * @param collectionField Solr field name of the collection
      * @param collectionValue Raw collection value (may be hierarchical)
      * @return {@link String}
-     * @should return hierarchy correctly
+     * @should return slash-separated ancestor chain for dot-delimited collection name
      */
     public String getCollectionHierarchy(String collectionField, String collectionValue) {
         logger.trace("getCollectionHierarchy: {}:{}", collectionField, collectionValue);

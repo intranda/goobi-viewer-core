@@ -191,6 +191,10 @@ public class FeedbackBean implements Serializable {
      * Getter for the field <code>feedback</code>.
      *
      * @return the Feedback object containing the user's feedback data
+     * @should no user
+     * @should user
+     * @should wrong captcha
+     * @should filled honeypot
      */
     public Feedback getFeedback() {
         return feedback;

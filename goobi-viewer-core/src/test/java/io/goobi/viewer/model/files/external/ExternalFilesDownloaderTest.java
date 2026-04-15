@@ -46,8 +46,11 @@ class ExternalFilesDownloaderTest {
     private final Path testZipFile = Path.of("src/test/resources/data/viewer/external-files/1287088031.zip");
     private final TestServlet server = new TestServlet("127.0.0.1", 9191);
 
+    /**
+     * @verifies download and extract zip file
+     */
     @Test
-    void test(@TempDir Path downloadFolder) throws IOException, InterruptedException, ExecutionException, TimeoutException {
+    void downloadExternalFiles_shouldDownloadAndExtractZipFile(@TempDir Path downloadFolder) throws IOException, InterruptedException, ExecutionException, TimeoutException {
 
         byte[] body = Files.readAllBytes(testZipFile);
         server.getServerClient()

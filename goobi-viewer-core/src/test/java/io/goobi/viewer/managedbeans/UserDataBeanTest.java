@@ -35,7 +35,6 @@ import io.goobi.viewer.model.security.user.User;
 class UserDataBeanTest extends AbstractDatabaseEnabledTest {
 
     /**
-     * @see UserDataBean#getAnnotationCount()
      * @verifies return correct value
      */
     @Test
@@ -51,7 +50,6 @@ class UserDataBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see UserDataBean#getLatestComments(User,int)
      * @verifies return the latest comments
      */
     @Test

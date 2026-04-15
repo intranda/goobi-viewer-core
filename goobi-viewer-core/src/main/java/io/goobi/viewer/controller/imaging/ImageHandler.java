@@ -93,6 +93,10 @@ public class ImageHandler {
      * @param page physical page providing the image filename and PI
      * @param pageType viewer page type used to select the appropriate URL pattern
      * @return the IIIF image info URL for the given page and page type
+     * @should return expected value for given input
+     * @should encode special characters in pi and filename
+     * @should return external url unmodified when filepath is absolute url with info json
+     * @should proxy external url through internal api when filepath lacks info json
      */
     public String getImageUrl(PhysicalElement page, PageType pageType) {
         if (page == null) {
@@ -175,6 +179,7 @@ public class ImageHandler {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws ViewerConfigurationException
      * @throws DAOException
+     * @should return expected value for given input
      */
     public ImageInformation getImageInformation(PhysicalElement page, PageType pageType)
             throws ContentLibException, ViewerConfigurationException, URISyntaxException, IndexUnreachableException, DAOException {

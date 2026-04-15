@@ -34,11 +34,10 @@ import io.goobi.viewer.solr.SolrConstants;
 class SearchQueryItemTest extends AbstractSolrEnabledTest {
 
     /**
-     * @see SearchQueryItem#generateQuery(Set)
-     * @verifies generate query correctly
+     * @verifies build solr queries for o r a n d phrase search multi value and multi line item configurations
      */
     @Test
-    void generateQuery_shouldGenerateQueryCorrectly() {
+    void generateQuery_shouldBuildSolrQueriesForORANDPhraseSearchMultiValueAndMultiLineItemConfigurations() {
         {
             SearchQueryItem item = new SearchQueryItem();
             item.setOperator(SearchItemOperator.OR);
@@ -166,6 +165,10 @@ class SearchQueryItemTest extends AbstractSolrEnabledTest {
                 item.generateQuery(searchTerms, true, false));
     }
 
+    /**
+     * @see SearchQueryItem#generateQuery(Set<String>, boolean, boolean)
+     * @verifies add fuzzy search operator
+     */
     @Test
     void generateQuery_shouldAddFuzzySearchOperator() {
         SearchQueryItem item = new SearchQueryItem();
@@ -176,6 +179,10 @@ class SearchQueryItemTest extends AbstractSolrEnabledTest {
         Assertions.assertEquals("+(MD_TITLE:((fooo fooo~1) AND (bar)))", item.generateQuery(searchTerms, true, true));
     }
 
+    /**
+     * @see SearchQueryItem#generateQuery(Set<String>, boolean, boolean)
+     * @verifies add fuzzy search operator with wildcards
+     */
     @Test
     void generateQuery_shouldAddFuzzySearchOperatorWithWildcards() {
         SearchQueryItem item = new SearchQueryItem();
@@ -188,7 +195,7 @@ class SearchQueryItemTest extends AbstractSolrEnabledTest {
 
     /**
      * @see SearchQueryItem#generateQuery(Set,boolean)
-     * @verifies preserve truncation
+     * @verifies add fuzzy search operator with hyphen
      */
     @Test
     void generateQuery_shouldAddFuzzySearchOperatorWithHyphen() {
@@ -202,10 +209,10 @@ class SearchQueryItemTest extends AbstractSolrEnabledTest {
 
     /**
      * @see SearchQueryItem#generateQuery(Set,boolean)
-     * @verifies generate range query correctly
+     * @verifies build range query with trimmed boundary values including negative numbers
      */
     @Test
-    void generateQuery_shouldGenerateRangeQueryCorrectly() {
+    void generateQuery_shouldBuildRangeQueryWithTrimmedBoundaryValuesIncludingNegativeNumbers() {
         SearchQueryItem item = new SearchQueryItem();
         item.setField("MD_YEARPUBLISH");
         item.setValue(" 1900 ");
@@ -221,10 +228,10 @@ class SearchQueryItemTest extends AbstractSolrEnabledTest {
 
     /**
      * @see SearchQueryItem#generateQuery(Set,boolean,boolean,int)
-     * @verifies add proximity search token correctly
+     * @verifies append proximity search distance to FULLTEXT phrase query
      */
     @Test
-    void generateQuery_shouldAddProximitySearchTokenCorrectly() {
+    void generateQuery_shouldAppendProximitySearchDistanceToFULLTEXTPhraseQuery() {
         SearchQueryItem item = new SearchQueryItem();
         item.setField(SolrConstants.FULLTEXT);
         item.setValue("\"foo bar\"~10");

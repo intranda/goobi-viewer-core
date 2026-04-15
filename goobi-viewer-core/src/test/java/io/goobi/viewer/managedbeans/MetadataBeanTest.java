@@ -35,8 +35,8 @@ import io.goobi.viewer.model.metadata.MetadataElement;
 class MetadataBeanTest extends AbstractTest {
 
     /**
-     * @see MetadataBean#etMetadataElementsAsList(MetadataElement...)
      * @verifies return empty list given null
+     * @see MetadataBean#getMetadataElementsAsList(MetadataElement...)
      */
     @Test
     void getMetadataElementsAsList_shouldReturnEmptyListGivenNull() {
@@ -47,7 +47,6 @@ class MetadataBeanTest extends AbstractTest {
     }
 
     /**
-     * @see MetadataBean#etMetadataElementsAsList(MetadataElement...)
      * @verifies return given elements as list
      */
     @Test
@@ -71,7 +70,6 @@ class MetadataBeanTest extends AbstractTest {
     }
 
     /**
-     * @see MetadataBean#getBottomMetadataElementAsList(int)
      * @verifies return empty list if bottom element contains no sidebar metadata
      */
     @Test
@@ -88,8 +86,7 @@ class MetadataBeanTest extends AbstractTest {
     }
 
     /**
-     * @see MetadataBean#getBottomMetadataElementAsList(int)
-     * @verifies return bottom if it contains sidebar metadata
+     * @verifies return bottom element if it contains sidebar metadata
      */
     @Test
     void getBottomMetadataElementAsList_shouldReturnBottomElementIfItContainsSidebarMetadata() {
@@ -119,8 +116,8 @@ class MetadataBeanTest extends AbstractTest {
     }
 
     /**
-     * @see MetadataBean#getMetadataElementList(int, boolean)
      * @verifies return empty list when no document loaded
+     * @see MetadataBean#getMetadataElementList()
      */
     @Test
     void getMetadataElementList_shouldReturnEmptyListWhenNoDocumentLoaded() {

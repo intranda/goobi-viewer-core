@@ -31,11 +31,10 @@ import io.goobi.viewer.solr.SolrConstants;
 class CitationLinkTest extends AbstractSolrEnabledTest {
 
     /**
-     * @see CitationLink#getUrl(ViewManager)
-     * @verifies construct internal record url correctly
+     * @verifies return record page URL with PI and page 1 for internal record type
      */
     @Test
-    void getUrl_shouldConstructInternalRecordUrlCorrectly() throws Exception {
+    void getUrl_shouldReturnRecordPageURLWithPIAndPage1ForInternalRecordType() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV, true);
         Assertions.assertNotNull(viewManager);
         Assertions.assertEquals(viewManager.getTopStructElementIddoc(), viewManager.getCurrentStructElementIddoc());
@@ -45,11 +44,10 @@ class CitationLinkTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see CitationLink#getUrl(ViewManager)
-     * @verifies construct internal docstruct url correctly
+     * @verifies return docstruct URL with PI page and log id for internal docstruct type
      */
     @Test
-    void getUrl_shouldConstructInternalDocstructUrlCorrectly() throws Exception {
+    void getUrl_shouldReturnDocstructURLWithPIPageAndLogIdForInternalDocstructType() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV, true);
         Assertions.assertNotNull(viewManager);
         viewManager.setCurrentImageOrder(10);
@@ -60,11 +58,10 @@ class CitationLinkTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see CitationLink#getUrl(ViewManager)
-     * @verifies construct internal image url correctly
+     * @verifies return image URL with PI and current page number for internal image type
      */
     @Test
-    void getUrl_shouldConstructInternalImageUrlCorrectly() throws Exception {
+    void getUrl_shouldReturnImageURLWithPIAndCurrentPageNumberForInternalImageType() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV, true);
         Assertions.assertNotNull(viewManager);
         viewManager.setCurrentImageOrder(2);

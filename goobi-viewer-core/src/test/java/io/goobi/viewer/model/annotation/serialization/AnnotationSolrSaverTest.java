@@ -42,8 +42,11 @@ import io.goobi.viewer.model.annotation.serialization.SolrAnnotationSaver.Target
 class AnnotationSolrSaverTest extends AbstractDatabaseAndSolrEnabledTest {
 
 
+    /**
+     * @verifies call reindex target with correct pi and page
+     */
     @Test
-    void callRedindexTargetWithCorrectArguments() throws IOException {
+    void save_shouldCallReindexTargetWithCorrectPiAndPage() throws IOException {
         String pi1 = "PI1";
         Integer page1 = 5;
 
@@ -57,8 +60,11 @@ class AnnotationSolrSaverTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals(new Target(pi1, page1), targetArgument.getValue());
     }
 
+    /**
+     * @verifies call reindex target once per distinct target
+     */
     @Test
-    void callReindexTargetCorrectNumberOfTimes() throws IOException {
+    void save_shouldCallReindexTargetOncePerDistinctTarget() throws IOException {
         String pi1 = "PI1";
         String pi2 = "PI2";
         Integer noPage = null;

@@ -136,8 +136,12 @@ class ComplexMetadataContainerTest extends AbstractTest {
 
     }
 
+    /**
+     * @verifies create metadata container
+     * @see ComplexMetadataContainer#getMetadata
+     */
     @Test
-    void testCreateMetadataContainer() {
+    void getMetadata_shouldCreateMetadataContainer() {
         ComplexMetadataContainer container = new ComplexMetadataContainer(metadataDocs);
 
         assertEquals(2, container.getMetadata("MD_BIOGRAPHY_EDUCATION").size());

@@ -69,10 +69,10 @@ class FacetItemTest extends AbstractTest {
 
     /**
      * @see FacetItem#getQueryEscapedLink()
-     * @verifies construct link correctly
+     * @verifies return unchanged f i e l d value link for a non hierarchical facet item
      */
     @Test
-    void getQueryEscapedLink_shouldConstructLinkCorrectly() {
+    void getQueryEscapedLink_shouldReturnUnchangedFIELDValueLinkForANonHierarchicalFacetItem() {
         IFacetItem item = new FacetItem("FIELD:value", false);
         Assertions.assertEquals("FIELD:value", item.getQueryEscapedLink());
     }
@@ -89,20 +89,20 @@ class FacetItemTest extends AbstractTest {
 
     /**
      * @see FacetItem#getQueryEscapedLink()
-     * @verifies construct hierarchical link correctly
+     * @verifies return OR query with wildcard suffix for a hierarchical facet item
      */
     @Test
-    void getQueryEscapedLink_shouldConstructHierarchicalLinkCorrectly() {
+    void getQueryEscapedLink_shouldReturnORQueryWithWildcardSuffixForAHierarchicalFacetItem() {
         IFacetItem item = new FacetItem("FIELD:value", true);
         Assertions.assertEquals("(FIELD:value OR FIELD:value.*)", item.getQueryEscapedLink());
     }
 
     /**
      * @see FacetItem#getQueryEscapedLink()
-     * @verifies construct range link correctly
+     * @verifies return unchanged range query link for a range facet item
      */
     @Test
-    void getQueryEscapedLink_shouldConstructRangeLinkCorrectly() {
+    void getQueryEscapedLink_shouldReturnUnchangedRangeQueryLinkForARangeFacetItem() {
         IFacetItem item = new FacetItem("FIELD:[foo TO bar]", false);
         Assertions.assertEquals("FIELD:[foo TO bar]", item.getQueryEscapedLink());
     }
@@ -119,10 +119,10 @@ class FacetItemTest extends AbstractTest {
 
     /**
      * @see FacetItem#generateFacetItems(String,Map,boolean,boolean,boolean)
-     * @verifies sort items correctly
+     * @verifies sort generated facet items alphabetically in ascending and descending order
      */
     @Test
-    void generateFacetItems_shouldSortItemsCorrectly() {
+    void generateFacetItems_shouldSortGeneratedFacetItemsAlphabeticallyInAscendingAndDescendingOrder() {
         Map<String, Long> values = new TreeMap<>();
         values.put("Monograph", 1L);
         values.put("Article", 5L);
@@ -147,10 +147,10 @@ class FacetItemTest extends AbstractTest {
 
     /**
      * @see FacetItem#getFullValue()
-     * @verifies build full value correctly
+     * @verifies combine value and value2 with dash separator for a range facet
      */
     @Test
-    void getFullValue_shouldBuildFullValueCorrectly() {
+    void getFullValue_shouldCombineValueAndValue2WithDashSeparatorForARangeFacet() {
         IFacetItem item = new FacetItem("FIELD:[foo TO bar]", false);
         Assertions.assertEquals("foo", item.getValue());
         Assertions.assertEquals("bar", item.getValue2());
@@ -195,7 +195,7 @@ class FacetItemTest extends AbstractTest {
 
     /**
      * @see FacetItem#getEscapedValue(String)
-     * @verifies not throw StringIndexOutOfBoundsException for wildcard only value
+     * @verifies not throw for wildcard only value
      */
     @Test
     void getEscapedValue_shouldNotThrowForWildcardOnlyValue() {
@@ -204,7 +204,6 @@ class FacetItemTest extends AbstractTest {
     }
 
     /**
-     * @see FacetItem#generateFilterLinkList(String,Map,boolean,Locale,Map)
      * @verifies set label from separate field if configured and found
      */
     @Test
@@ -218,7 +217,6 @@ class FacetItemTest extends AbstractTest {
     }
 
     /**
-     * @see FacetItem#generateFilterLinkList(List,String,Map,boolean,int,Locale,Map)
      * @verifies prefer existing items
      */
     @Test
@@ -243,11 +241,10 @@ class FacetItemTest extends AbstractTest {
     }
 
     /**
-     * @see FacetItem#generateFilterLinkList(String,Map,boolean,boolean,Locale,Map)
-     * @verifies group values by starting character correctly
+     * @verifies group facet values by starting character and sum their counts
      */
     @Test
-    void generateFilterLinkList_shouldGroupValuesByStartingCharacterCorrectly() {
+    void generateFilterLinkList_shouldGroupFacetValuesByStartingCharacterAndSumTheirCounts() {
         Map<String, String> labelMap = new HashMap<>(1);
         FacetSorting.SortingMap<String, Long> valueMap = FacetSorting.getSortingMap("MD_PERSON", "alphabetical", Locale.GERMAN);
         valueMap.put("Cooper, Alice", 1L);
@@ -288,11 +285,10 @@ class FacetItemTest extends AbstractTest {
     }
 
     /**
-     * @see FacetItem#generateFilterLinkList(String,Map,boolean,boolean,Locale,Map)
-     * @verifies group values by starting character correctly, even with existing items
+     * @verifies group facet values by first character and sum counts including existing items
      */
     @Test
-    void generateFilterLinkList_shouldGroupValuesByStartingCharacterCorrectlyWithExistingItems() {
+    void generateFilterLinkList_shouldGroupFacetValuesByFirstCharacterAndSumCountsIncludingExistingItems() {
         List<IFacetItem> existingItems = new ArrayList<>(2);
         existingItems.add(new FacetItem("MD_CREATOR:Groos, Karl", false).setCount(1));
         existingItems.add(new FacetItem("MD_CREATOR:Cooper, Alice", false).setCount(1));
@@ -313,11 +309,10 @@ class FacetItemTest extends AbstractTest {
     }
 
     /**
-     * @see FacetItem#FacetItem(String,String,boolean)
-     * @verifies set label to value if no label value given
+     * @verifies merge existing and new items into filter link list
      */
     @Test
-    void FacetItem_shouldSetLabelToValueIfNoLabelValueGiven() {
+    void generateFilterLinkList_shouldMergeExistingAndNewItemsIntoFilterLinkList() {
         List<IFacetItem> existingItems = new ArrayList<>(2);
         existingItems.add(new FacetItem("MD_CREATOR:Groos, Karl", false).setCount(1));
         existingItems.add(new FacetItem("MD_CREATOR:Doe, John", false).setCount(1));

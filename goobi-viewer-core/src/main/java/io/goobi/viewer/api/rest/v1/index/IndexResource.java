@@ -350,6 +350,7 @@ public class IndexResource {
      * @return Heatmap as {@link String}
      * @throws IOException
      * @throws IndexUnreachableException
+     * @should return 400 when invalid solr field
      */
     @GET
     @Path(INDEX_SPATIAL_HEATMAP)

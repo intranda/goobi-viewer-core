@@ -206,6 +206,7 @@ public class CrowdsourcingBean implements Serializable {
      * @param visibility visibility level to filter by, or null for all campaigns
      * @return The total number of campaigns of a certain {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility}
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return 2 for given input
      */
     public long getCampaignCount(CampaignVisibility visibility) throws DAOException {
         Map<String, String> filters = new HashMap<>();
@@ -328,6 +329,7 @@ public class CrowdsourcingBean implements Serializable {
      *
      * @return All campaigns from the database
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return collection with 3 elements
      */
     public List<Campaign> getAllCampaigns() throws DAOException {
         return dao.getAllCampaigns();
@@ -355,6 +357,9 @@ public class CrowdsourcingBean implements Serializable {
      * @param user user to check campaign visibility for, or null for anonymous access
      * @return List of campaigns allowed to the given user
      * @throws io.goobi.viewer.exceptions.DAOException
+     * @should return all public campaigns if user not logged in
+     * @should return private campaigns within time period if user not logged in
+     * @should return private campaigns within time period if user logged in
      */
     public List<Campaign> getAllowedCampaigns(User user) throws DAOException {
         return getAllowedCampaigns(user, getAllCampaigns());
@@ -532,6 +537,7 @@ public class CrowdsourcingBean implements Serializable {
      * Getter for the field <code>selectedCampaign</code>.
      *
      * @return the currently selected crowdsourcing campaign, or null if none is selected
+     * @should save selected campaign
      */
     public Campaign getSelectedCampaign() {
         return selectedCampaign;
@@ -638,6 +644,7 @@ public class CrowdsourcingBean implements Serializable {
      *
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should item order configuration
      */
     public void setNextIdentifierForAnnotation() throws PresentationException, IndexUnreachableException {
         if (getTargetCampaign() != null) {

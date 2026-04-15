@@ -81,10 +81,10 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see ActiveDocumentBean#update()
-     * @verifies create ViewManager correctly
+     * @verifies initialize ViewManager with matching PI and struct elements after update
      */
     @Test
-    void update_shouldCreateViewManagerCorrectly() throws Exception {
+    void update_shouldInitializeViewManagerWithMatchingPIAndStructElementsAfterUpdate() throws Exception {
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("1");
         adb.update();
@@ -103,7 +103,7 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see ActiveDocumentBean#update()
-     * @verifies set TOC on ViewManager after update
+     * @verifies set toc on view manager after update
      */
     @Test
     void update_shouldSetTocOnViewManagerAfterUpdate() throws Exception {
@@ -118,8 +118,8 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @verifies rebuild and cache toc when view manager toc is null
      * @see ActiveDocumentBean#getToc()
-     * @verifies rebuild TOC via slow path when ViewManager TOC is null and cache result
      */
     @Test
     void getToc_shouldRebuildAndCacheTocWhenViewManagerTocIsNull() throws Exception {
@@ -142,10 +142,10 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see ActiveDocumentBean#update()
-     * @verifies update ViewManager correctly if LOGID has changed
+     * @verifies create new ViewManager instance when LOGID changes between updates
      */
     @Test
-    void update_shouldUpdateViewManagerCorrectlyIfLOGIDHasChanged() throws Exception {
+    void update_shouldCreateNewViewManagerInstanceWhenLOGIDChangesBetweenUpdates() throws Exception {
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("1");
         adb.update();
@@ -182,17 +182,17 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see ActiveDocumentBean#setPersistentIdentifier(String)
-     * @verifies determine currentElementIddoc correctly
+     * @verifies resolve topDocumentIddoc from Solr when PI is set
      */
     @Test
-    void setPersistentIdentifier_shouldDetermineCurrentElementIddocCorrectly() throws Exception {
+    void setPersistentIdentifier_shouldResolveTopDocumentIddocFromSolrWhenPIIsSet() throws Exception {
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         assertEquals(iddocKleiuniv, adb.topDocumentIddoc);
     }
 
     /**
      * @see ActiveDocumentBean#setPersistentIdentifier(String)
-     * @verifies preserve lastReceivedIdentifier after reset when identifier not found
+     * @verifies preserve last received identifier when not found
      */
     @Test
     void setPersistentIdentifier_shouldPreserveLastReceivedIdentifierWhenNotFound() throws Exception {
@@ -268,7 +268,7 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies construct url correctly
      */
     @Test
-    void getUrl_shouldConstructUrlCorrectly() throws Exception {
+    void getPageUrl_shouldConstructUrlCorrectly() throws Exception {
         adb.setNavigationHelper(navigationHelper);
         navigationHelper.setLocaleString("en");
         adb.setPersistentIdentifier(PI_KLEIUNIV);
@@ -315,8 +315,8 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ActiveDocumentBean#getPageUrlRelativeToCurrentPage(int)
      * @verifies return correct page in single page mode
+     * @see ActiveDocumentBean#getPageUrl(final String, String)
      */
     @Test
     void getPageUrl_shouldReturnCorrectPageInSinglePageMode() throws Exception {
@@ -334,8 +334,8 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ActiveDocumentBean#getPageUrlRelativeToCurrentPage(int)
      * @verifies return correct range in double page mode if currently showing one page
+     * @see ActiveDocumentBean#getPageUrl(final String, String)
      */
     @Test
     void getPageUrl_shouldReturnCorrectRangeInDoublePageModeIfCurrentlyShowingOnePage() throws Exception {
@@ -375,8 +375,8 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ActiveDocumentBean#getPageUrlRelativeToCurrentPage(int)
      * @verifies return correct range in double page mode if currently showing two pages
+     * @see ActiveDocumentBean#getPageUrl(final String, String)
      */
     @Test
     void getPageUrl_shouldReturnCorrectRangeInDoublePageModeIfCurrentlyShowingTwoPages() throws Exception {
@@ -396,8 +396,8 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ActiveDocumentBean#getPageUrlRelativeToCurrentPage(int)
      * @verifies return correct range in double page mode if current page double image
+     * @see ActiveDocumentBean#getPageUrl(final String, String)
      */
     @Test
     void getPageUrl_shouldReturnCorrectRangeInDoublePageModeIfCurrentPageDoubleImage() throws Exception {
@@ -454,10 +454,10 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see ActiveDocumentBean#getRelativeUrlTags()
-     * @verifies generate tags correctly
+     * @verifies return non blank link tags when record is loaded
      */
     @Test
-    void getRelativeUrlTags_shouldGenerateTagsCorrectly() throws Exception {
+    void getRelativeUrlTags_shouldReturnNonBlankLinkTagsWhenRecordIsLoaded() throws Exception {
         adb.setPersistentIdentifier(AbstractSolrEnabledTest.PI_KLEIUNIV);
         adb.setImageToShow("3");
         adb.update();
@@ -473,8 +473,8 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ActiveDocumentBean#getToc()
      * @verifies return null when viewManager is null
+     * @see ActiveDocumentBean#getToc()
      */
     @Test
     void getToc_shouldReturnNullWhenViewManagerIsNull() throws Exception {
@@ -484,7 +484,7 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see ActiveDocumentBean#createTOC()
-     * @verifies return empty TOC without NPE when viewManager is null
+     * @verifies return empty toc when view manager is null
      */
     @Test
     void createTOC_shouldReturnEmptyTocWhenViewManagerIsNull() throws Exception {
@@ -517,8 +517,8 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @verifies not throw NPE when current page is null
      * @see ActiveDocumentBean#getFullscreenImageUrl()
-     * @verifies not throw NPE when getCurrentPage returns null in double page mode
      */
     @Test
     void getFullscreenImageUrl_shouldNotThrowNPEWhenCurrentPageIsNull() throws Exception {
@@ -539,8 +539,7 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ActiveDocumentBean#getPageUrlRelativeToCurrentPage(int)
-     * @verifies not throw NPE when getCurrentPage returns null in double page mode
+     * @verifies not throw NPE when current page is null
      */
     @Test
     void getPageUrlRelativeToCurrentPage_shouldNotThrowNPEWhenCurrentPageIsNull() throws Exception {
@@ -591,9 +590,10 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @see ActiveDocumentBean#getLogid()
      * @see ActiveDocumentBean#getAction()
      * @see ActiveDocumentBean#getCurrentThumbnailPage()
+     * @verifies be thread safe after record load
      */
     @Test
-    void getters_shouldBeThreadSafeAfterRecordLoad() throws Exception {
+    void getPersistentIdentifier_shouldBeThreadSafeAfterRecordLoad() throws Exception {
         adb.setNavigationHelper(navigationHelper);
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("1");
@@ -628,8 +628,8 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @verifies return non null geo map when no record loaded
      * @see ActiveDocumentBean#getGeoMap()
-     * @verifies return non-null GeoMap when no record is loaded
      */
     @Test
     void getGeoMap_shouldReturnNonNullGeoMapWhenNoRecordLoaded() throws Exception {
@@ -640,8 +640,8 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ActiveDocumentBean#getGeoMap()
      * @verifies return GeoMap for loaded record
+     * @see ActiveDocumentBean#getGeoMap()
      */
     @Test
     void getGeoMap_shouldReturnGeoMapForLoadedRecord() throws Exception {
@@ -653,8 +653,8 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ActiveDocumentBean#getRecordGeoMap()
      * @verifies cache result for same PI
+     * @see ActiveDocumentBean#getRecordGeoMap()
      */
     @Test
     void getRecordGeoMap_shouldCacheResultForSamePI() throws Exception {
@@ -668,8 +668,8 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @verifies return false when no record loaded
      * @see ActiveDocumentBean#isAllowUserComments()
-     * @verifies return false when no record is loaded
      */
     @Test
     void isAllowUserComments_shouldReturnFalseWhenNoRecordLoaded() throws Exception {
@@ -678,8 +678,8 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @verifies return false when comments disabled globally
      * @see ActiveDocumentBean#isAllowUserComments()
-     * @verifies return false when comments are disabled globally
      */
     @Test
     void isAllowUserComments_shouldReturnFalseWhenCommentsDisabledGlobally() throws Exception {
@@ -691,8 +691,8 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @verifies not throw NPE if allow user comments reset concurrently
      * @see ActiveDocumentBean#isAllowUserComments()
-     * @verifies not throw NPE if allowUserComments is reset concurrently
      */
     @Test
     void isAllowUserComments_shouldNotThrowNPEIfAllowUserCommentsResetConcurrently() throws Exception {
@@ -709,8 +709,8 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @verifies use default image when no identifier set
      * @see ActiveDocumentBean#setRepresentativeImage()
-     * @verifies use default image "1" when no identifier is set
      */
     @Test
     void setRepresentativeImage_shouldUseDefaultImageWhenNoIdentifierSet() throws Exception {
@@ -722,8 +722,8 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @verifies use default image when identifier is dash sentinel
      * @see ActiveDocumentBean#setRepresentativeImage()
-     * @verifies use default image "1" when identifier is the dash sentinel
      */
     @Test
     void setRepresentativeImage_shouldUseDefaultImageWhenIdentifierIsDashSentinel() throws Exception {
@@ -737,7 +737,7 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see ActiveDocumentBean#getRelativeUrlTags()
-     * @verifies generate canonical URL without page number for first page
+     * @verifies generate canonical without page number for first page
      */
     @Test
     void getRelativeUrlTags_shouldGenerateCanonicalWithoutPageNumberForFirstPage() throws Exception {
@@ -767,7 +767,7 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see ActiveDocumentBean#getRelativeUrlTags()
-     * @verifies generate canonical URL with page number for non-first page
+     * @verifies generate canonical with page number for non first page
      */
     @Test
     void getRelativeUrlTags_shouldGenerateCanonicalWithPageNumberForNonFirstPage() throws Exception {

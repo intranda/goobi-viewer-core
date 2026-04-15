@@ -77,8 +77,11 @@ class PdfRequestFilterTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals(0, PdfRequestFilter.getNumAllowedPages(9, 10));
     }
 
+    /**
+     * @verifies grant access
+     */
     @Test
-    void test_shouldGrantAccess() throws IOException, PresentationException, IndexUnreachableException {
+    void filter_shouldGrantAccess() throws IOException, PresentationException, IndexUnreachableException {
         String pi = "15929110";
 
         HttpSession session = Mockito.mock(HttpSession.class);
@@ -95,8 +98,11 @@ class PdfRequestFilterTest extends AbstractDatabaseAndSolrEnabledTest {
         Mockito.verify(context, Mockito.never()).abortWith(Mockito.any());
     }
 
+    /**
+     * @verifies refuse access
+     */
     @Test
-    void test_shouldRefuseAccess() throws IOException, PresentationException, IndexUnreachableException {
+    void filter_shouldRefuseAccess() throws IOException, PresentationException, IndexUnreachableException {
         String pi = "PPNsas1_2_194";
 
         HttpSession session = Mockito.mock(HttpSession.class);

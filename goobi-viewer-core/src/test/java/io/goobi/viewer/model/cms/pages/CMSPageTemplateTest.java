@@ -37,8 +37,11 @@ class CMSPageTemplateTest {
     Path themeComponentFile = Paths.get("src/test/resources/data/viewer/cms/theme_templates/custom_template_01_home.xml");
 
     
+    /**
+     * @verifies parse theme template with library and filename
+     */
     @Test
-    void testLoadLegacyThemeTemplate() {
+    void loadFromXML_shouldParseThemeTemplateWithLibraryAndFilename() {
       CMSPageTemplate template = CMSPageTemplate.loadFromXML(themeComponentFile);
       CMSComponent component = template.createCMSComponent();
       JsfComponent jsf = component.getJsfComponent();

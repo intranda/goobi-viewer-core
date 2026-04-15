@@ -45,9 +45,11 @@ class NotAllowedExceptionMapperTest {
     /**
      * RFC 9110 §15.5.6 requires a 405 response to include an Allow header listing the
      * supported methods. Verify that the mapper sets the correct status code.
+     * @verifies return 405
+     * @see NotAllowedExceptionMapper#toResponse
      */
     @Test
-    void toResponse_returns405() {
+    void toResponse_shouldReturn405() {
         NotAllowedException ex = buildException("GET", "HEAD");
         Response response = mapper.toResponse(ex);
         assertEquals(405, response.getStatus());
@@ -56,9 +58,11 @@ class NotAllowedExceptionMapperTest {
     /**
      * RFC 9110 §15.5.6: the Allow header must be present and must list the methods that
      * the JAX-RS runtime reported as allowed for the requested path.
+     * @verifies allow header contains allowed methods
+     * @see NotAllowedExceptionMapper#toResponse
      */
     @Test
-    void toResponse_allowHeaderContainsAllowedMethods() {
+    void toResponse_shouldAllowHeaderContainsAllowedMethods() {
         NotAllowedException ex = buildException("GET", "HEAD", "OPTIONS");
         Response response = mapper.toResponse(ex);
 
@@ -72,9 +76,11 @@ class NotAllowedExceptionMapperTest {
     /**
      * The response body must be JSON and include the status code so clients can parse it
      * consistently with other error responses from this API.
+     * @verifies body is json
+     * @see NotAllowedExceptionMapper#toResponse
      */
     @Test
-    void toResponse_bodyIsJson() {
+    void toResponse_shouldBodyIsJson() {
         NotAllowedException ex = buildException("GET");
         Response response = mapper.toResponse(ex);
 

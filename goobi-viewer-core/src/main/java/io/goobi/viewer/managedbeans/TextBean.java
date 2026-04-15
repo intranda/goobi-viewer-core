@@ -95,6 +95,10 @@ public class TextBean implements Serializable {
      * @param topDocument top-level Solr document of the record
      * @param language ISO 639-1 language code
      * @return ProfileDescAbstractLong
+     * @should return non-empty HTML string starting with html tag for a TEI file with abstract
+     * @should throw IllegalArgumentException if language null
+     * @should return null if topDocument null
+     * @should return null if topDocument has no tei for language
      */
     public String getAbstract(StructElement topDocument, String language) {
         return getAbstract(topDocument, "ProfileDescAbstractLong", language);
@@ -182,7 +186,6 @@ public class TextBean implements Serializable {
      * @throws RecordNotFoundException
      * @throws IOException
      * @throws FileNotFoundException
-     * @should return text correctly
      * @should return null if topDocument null
      */
     public String getTeiText(StructElement topDocument, String language)
@@ -256,8 +259,8 @@ public class TextBean implements Serializable {
      * 
      * @param filePath path to the TEI file to load
      * @return TEI from the given filePath as HTML text
-     * @should load text correctly
      * @should return null if file not found
+     * @should return non empty string when given a valid TEI file path
      */
     public static String loadTeiFulltext(String filePath) {
         try {

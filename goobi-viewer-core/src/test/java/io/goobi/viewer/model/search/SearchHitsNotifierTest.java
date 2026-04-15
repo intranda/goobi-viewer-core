@@ -69,9 +69,10 @@ class SearchHitsNotifierTest extends AbstractDatabaseAndSolrEnabledTest {
      * @throws DAOException
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @verifies return new hits when count exceeds last hits count
      */
     @Test
-    void testcheckSearchUpdate() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+    void getNewHits_shouldReturnNewHitsWhenCountExceedsLastHitsCount() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         TestUtils.mockFacesContext();
 
         DataManager.getInstance().getConfiguration().overrideValue("search.resultGroups[@enabled]", false);

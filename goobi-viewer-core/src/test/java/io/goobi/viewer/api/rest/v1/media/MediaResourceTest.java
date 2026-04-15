@@ -41,8 +41,11 @@ class MediaResourceTest extends AbstractRestApiTest {
     private static final String FILENAME = "00000032";
     private static final Object MIMETYPE = "mpeg3";
 
+    /**
+     * @verifies return status 200 for existing audio file
+     */
     @Test
-    void testLoadAudio() {
+    void serveAudioContent_shouldReturnStatus200ForExistingAudioFile() {
         String url = urls.path(RECORDS_FILES, RECORDS_FILES_AUDIO).params(PI, MIMETYPE, FILENAME + ".mp3").build();
         try (Response response = target(url)
                 .request()
@@ -52,8 +55,11 @@ class MediaResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return status 404 for missing audio file
+     */
     @Test
-    void testLoadMissingAudio() {
+    void serveAudioContent_shouldReturnStatus404ForMissingAudioFile() {
         String url = urls.path(RECORDS_FILES, RECORDS_FILES_AUDIO).params(PI, MIMETYPE, FILENAME + ".mp4").build();
         try (Response response = target(url)
                 .request()
@@ -63,8 +69,11 @@ class MediaResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return status 206 for single byte range request
+     */
     @Test
-    void testLoadAudioRange() {
+    void serveAudioContent_shouldReturnStatus206ForSingleByteRangeRequest() {
         String url = urls.path(RECORDS_FILES, RECORDS_FILES_AUDIO).params(PI, MIMETYPE, FILENAME + ".mp3").build();
         try (Response response = target(url)
                 .request()
@@ -75,8 +84,11 @@ class MediaResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return status 206 for multi byte range request
+     */
     @Test
-    void testLoadAudioMultiRange() {
+    void serveAudioContent_shouldReturnStatus206ForMultiByteRangeRequest() {
         String url = urls.path(RECORDS_FILES, RECORDS_FILES_AUDIO).params(PI, MIMETYPE, FILENAME + ".mp3").build();
         try (Response response = target(url)
                 .request()
@@ -87,8 +99,11 @@ class MediaResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return status 416 for malformed range header
+     */
     @Test
-    void testLoadAudioIllegalRange() {
+    void serveAudioContent_shouldReturnStatus416ForMalformedRangeHeader() {
         String url = urls.path(RECORDS_FILES, RECORDS_FILES_AUDIO).params(PI, MIMETYPE, FILENAME + ".mp3").build();
         try (Response response = target(url)
                 .request()

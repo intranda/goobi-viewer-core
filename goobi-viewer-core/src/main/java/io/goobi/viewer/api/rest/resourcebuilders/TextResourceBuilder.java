@@ -121,6 +121,7 @@ public class TextResourceBuilder {
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws ContentLibException
+     * @should throw ContentNotFoundException if no fulltext files found
      */
     public StreamingOutput getFulltextAsZip(String pi, HttpServletRequest request)
             throws IOException, PresentationException, IndexUnreachableException, ContentLibException {

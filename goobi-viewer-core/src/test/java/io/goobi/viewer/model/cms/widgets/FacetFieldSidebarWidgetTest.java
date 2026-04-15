@@ -36,8 +36,12 @@ import io.goobi.viewer.solr.SolrConstants;
 
 class FacetFieldSidebarWidgetTest extends AbstractDatabaseEnabledTest {
 
+    /**
+     * @verifies persist
+     * @see FacetFieldSidebarWidget#getFacetField
+     */
     @Test
-    void testPersist() throws DAOException {
+    void getFacetField_shouldPersist() throws DAOException {
         FacetFieldSidebarWidget widget = new FacetFieldSidebarWidget();
         widget.getDescription().setValue("Beschreibung", Locale.GERMAN);
         widget.getDescription().setValue("Description", Locale.ENGLISH);
@@ -54,8 +58,12 @@ class FacetFieldSidebarWidgetTest extends AbstractDatabaseEnabledTest {
 
     }
 
+    /**
+     * @verifies clone
+     * @see FacetFieldSidebarWidget#getNumEntries
+     */
     @Test
-    void testClone() {
+    void getNumEntries_shouldClone() {
         FacetFieldSidebarWidget widget = new FacetFieldSidebarWidget();
         widget.getDescription().setValue("Beschreibung", Locale.GERMAN);
         widget.getDescription().setValue("Description", Locale.ENGLISH);
@@ -75,8 +83,12 @@ class FacetFieldSidebarWidgetTest extends AbstractDatabaseEnabledTest {
         assertEquals(widget.getStyleClass(), clone.getStyleClass());
     }
 
+    /**
+     * @verifies type
+     * @see FacetFieldSidebarWidget#getType
+     */
     @Test
-    void testType() {
+    void getType_shouldType() {
         assertEquals(CustomWidgetType.WIDGET_FIELDFACETS, new FacetFieldSidebarWidget().getType());
     }
 }

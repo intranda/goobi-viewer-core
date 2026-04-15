@@ -50,53 +50,85 @@ class IIIFPresentationAPIHandlerTest extends AbstractTest {
         handler = new IIIFPresentationAPIHandler(urls, DataManager.getInstance().getConfiguration());
     }
 
+    /**
+     * @verifies return expected value for given input
+     * @see IIIFPresentationAPIHandler#getManifestUrl(String)
+     */
     @Test
-    void testGetManifestUrl() throws URISyntaxException {
+    void getManifestUrl_shouldReturnExpectedValueForGivenInput() throws URISyntaxException {
         Assertions.assertEquals(REST_API_URL + "/records/PI-SAMPLE/manifest/", handler.getManifestUrl("PI-SAMPLE"));
     }
 
+    /**
+     * @verifies return expected value for given input
+     * @see IIIFPresentationAPIHandler#getCollectionUrl
+     */
     @Test
-    void testGetCollectionUrl() throws URISyntaxException {
+    void getCollectionUrl_shouldReturnExpectedValueForGivenInput() throws URISyntaxException {
         Assertions.assertEquals(REST_API_URL + "/collections/DC/", handler.getCollectionUrl());
 
     }
 
+    /**
+     * @verifies return correct url for single field param
+     * @see IIIFPresentationAPIHandler#getCollectionUrl()
+     */
     @Test
-    void testGetCollectionUrlString() throws URISyntaxException {
+    void getCollectionUrl_shouldReturnCorrectUrlForSingleFieldParam() throws URISyntaxException {
         Assertions.assertEquals(REST_API_URL + "/collections/DC/", handler.getCollectionUrl("DC"));
 
     }
 
+    /**
+     * @verifies return correct url for field and collection params
+     * @see IIIFPresentationAPIHandler#getCollectionUrl()
+     */
     @Test
-    void testGetCollectionUrlStringString() throws URISyntaxException {
+    void getCollectionUrl_shouldReturnCorrectUrlForFieldAndCollectionParams() throws URISyntaxException {
         Assertions.assertEquals(REST_API_URL + "/collections/DC/sonstige.ocr",
                 handler.getCollectionUrl("DC", "sonstige.ocr"));
 
     }
 
+    /**
+     * @verifies return expected value for given input
+     * @see IIIFPresentationAPIHandler#getLayerUrl(String, String)
+     */
     @Test
-    void testGetLayerUrl() throws URISyntaxException {
+    void getLayerUrl_shouldReturnExpectedValueForGivenInput() throws URISyntaxException {
         Assertions.assertEquals(REST_API_URL + "/records/PI-SAMPLE/layers/FULLTEXT/",
                 handler.getLayerUrl("PI-SAMPLE", "fulltext"));
 
     }
 
+    /**
+     * @verifies return expected value for given input
+     * @see IIIFPresentationAPIHandler#getAnnotationsUrl(String, int, String)
+     */
     @Test
-    void testGetAnnotationsUrl() throws URISyntaxException {
+    void getAnnotationsUrl_shouldReturnExpectedValueForGivenInput() throws URISyntaxException {
         Assertions.assertEquals(REST_API_URL + "/records/PI-SAMPLE/pages/12/annotations/",
                 handler.getAnnotationsUrl("PI-SAMPLE", 12, "crowdsourcing"));
 
     }
 
+    /**
+     * @verifies return expected value for given input
+     * @see IIIFPresentationAPIHandler#getCanvasUrl(String, int)
+     */
     @Test
-    void testGetCanvasUrl() throws URISyntaxException {
+    void getCanvasUrl_shouldReturnExpectedValueForGivenInput() throws URISyntaxException {
         Assertions.assertEquals(REST_API_URL + "/records/PI-SAMPLE/pages/12/canvas/",
                 handler.getCanvasUrl("PI-SAMPLE", 12));
 
     }
 
+    /**
+     * @verifies return expected value for given input
+     * @see IIIFPresentationAPIHandler#getRangeUrl(String, String)
+     */
     @Test
-    void testGetRangeUrl() throws URISyntaxException {
+    void getRangeUrl_shouldReturnExpectedValueForGivenInput() throws URISyntaxException {
         Assertions.assertEquals(REST_API_URL + "/records/PI-SAMPLE/sections/LOG_0007/range/",
                 handler.getRangeUrl("PI-SAMPLE", "LOG_0007"));
 

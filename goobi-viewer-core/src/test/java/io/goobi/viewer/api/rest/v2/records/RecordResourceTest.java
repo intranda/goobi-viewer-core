@@ -81,9 +81,10 @@ class RecordResourceTest extends AbstractRestApiTest {
      * Characters like space (%20), pipe (%7C), or null byte (%2500) are blocked
      * at the HTTP routing layer before reaching the constructor, so we test with
      * valid URL-path characters that are in the PI blocklist (ILLEGAL_CHARS).
+     * @verifies return 400 for illegal characters in pi
      */
     @Test
-    void testInvalidPiReturns400() {
+    void validatePi_shouldReturn400ForIllegalCharactersInPi() {
         // exclamation mark — valid URL path char, in PI blocklist
         // Use /manifest since v2 RecordResource does not expose a /ris endpoint
         try (Response response = target("/records/!/manifest")
@@ -102,24 +103,32 @@ class RecordResourceTest extends AbstractRestApiTest {
     /**
      * Null PI must be rejected with BadRequestException, not silently accepted.
      * This guards the fix that changed the condition from (pi != null && ...) to (pi == null || ...).
+     * @verifies null pi throws bad request
+     * @see RecordResource#validatePi
      */
     @Test
-    void testNullPiThrowsBadRequest() {
+    void validatePi_shouldNullPiThrowsBadRequest() {
         assertThrows(jakarta.ws.rs.BadRequestException.class, () -> RecordResource.validatePi(null),
                 "null PI should throw BadRequestException");
     }
 
     /**
      * Valid PIs must pass validatePi without throwing.
+     * @verifies valid pi accepted
+     * @see RecordResource#validatePi
      */
     @Test
-    void testValidPiAccepted() {
+    void validatePi_shouldValidPiAccepted() {
         assertDoesNotThrow(() -> RecordResource.validatePi("PPN615391702"));
         assertDoesNotThrow(() -> RecordResource.validatePi("valid_pi-1.0"));
     }
 
+    /**
+     * @verifies return non null result
+     * @see RecordResource#getManifest
+     */
     @Test
-    void testGetManifest() {
+    void getManifest_shouldReturnNonNullResult() {
         String url = urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(PI).build();
         try (Response response = target(url)
                 .request()

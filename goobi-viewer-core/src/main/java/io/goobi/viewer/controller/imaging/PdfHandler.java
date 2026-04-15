@@ -80,6 +80,7 @@ public class PdfHandler {
      * @param doc struct element providing the logical section identifier
      * @param page physical page whose image file is included in the PDF
      * @return the PDF download URL for the given struct element and single page
+     * @should return url with pi and div id
      */
     public String getPdfUrl(StructElement doc, PhysicalElement page) {
         return getPdfUrl(doc, new PhysicalElement[] { page });

@@ -59,6 +59,7 @@ public interface WidgetContentType {
      * 
      * @param name the name to look up
      * @return null if no matching type exists
+     * @should get by name
      */
     public static WidgetContentType valueOf(String name) {
         try {
@@ -84,6 +85,7 @@ public interface WidgetContentType {
      * 
      * @param type the widget content type to resolve
      * @return {@link WidgetGenerationType}
+     * @should return expected value for given input
      */
     public static WidgetGenerationType getGenerationType(WidgetContentType type) {
         switch (type.getClass().getSimpleName()) {

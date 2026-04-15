@@ -31,10 +31,10 @@ class MaintenanceModeTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see MaintenanceMode#getTextOrDefault(String)
-     * @verifies return translation correctly
+     * @verifies return set translation for matching locale and fall back to it for other locales
      */
     @Test
-    void getTextOrDefault_shouldReturnTranslationCorrectly() throws Exception {
+    void getTextOrDefault_shouldReturnSetTranslationForMatchingLocaleAndFallBackToItForOtherLocales() throws Exception {
         MaintenanceMode mm = new MaintenanceMode();
         mm.setText("foo", "en");
         assertEquals("foo", mm.getTextOrDefault("en"));

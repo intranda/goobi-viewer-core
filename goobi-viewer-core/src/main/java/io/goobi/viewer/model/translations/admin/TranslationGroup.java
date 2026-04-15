@@ -345,8 +345,8 @@ public final class TranslationGroup {
     /**
      *
      * @return List<MessageEntry>
-     * @should filter by key correctly
-     * @should filter by value correctly
+     * @should return only entries whose translation value contains the filter string
+     * @should return only entries whose key contains the filter string case insensitively
      */
     public List<MessageEntry> getFilteredEntries() {
         if (StringUtils.isBlank(filterString)) {

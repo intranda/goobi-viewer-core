@@ -92,8 +92,12 @@ class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
         super.tearDown();
     }
 
+    /**
+     * @see CollectionView#populateCollectionList()
+     * @verifies return top elements sorted by size
+     */
     @Test
-    void test() throws IndexUnreachableException, IllegalRequestException {
+    void populateCollectionList_shouldReturnTopElementsSortedBySize() throws IndexUnreachableException, IllegalRequestException {
         CollectionView collection = new CollectionView(SolrConstants.DC, getTestProvider());
         collection.populateCollectionList();
         List<HierarchicalBrowseDcElement> topElements = new ArrayList<>(collection.getVisibleDcElements());
@@ -114,8 +118,12 @@ class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals("c.d.a", allElements.get(12).getName());
     }
 
+    /**
+     * @see CollectionView#populateCollectionList()
+     * @verifies sort subcollections ascending and descending
+     */
     @Test
-    void test_sortSubcollections() throws IllegalRequestException, IndexUnreachableException {
+    void populateCollectionList_shouldSortSubcollectionsAscendingAndDescending() throws IllegalRequestException, IndexUnreachableException {
 
         CollectionView collection =
                 new CollectionView(SolrConstants.DC, () -> Map.of("monographien", new CollectionResult("monographien", 1l),
@@ -168,7 +176,6 @@ class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see CollectionView#getCollectionUrl(HierarchicalBrowseDcElement,String,String)
      * @verifies return identifier resolver url if single record and pi known
      */
     @Test
@@ -184,7 +191,6 @@ class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see CollectionView#getCollectionUrl(HierarchicalBrowseDcElement,String,String)
      * @verifies escape critical url chars in collection name
      */
     @Test
@@ -195,8 +201,11 @@ class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals("/search/-/-/1/-/foo%3AfooU002Fbar/", col.getCollectionUrl(element));
     }
 
+    /**
+     * @verifies associate cms collection info with element
+     */
     @Test
-    void loadCMSCollection_addCMSCollectionInfo() throws PresentationException, IndexUnreachableException, IllegalRequestException, DAOException {
+    void getCollection_shouldAssociateCmsCollectionInfoWithElement() throws PresentationException, IndexUnreachableException, IllegalRequestException, DAOException {
         CMSPage page = new CMSPage();
         page.setId(1l);
         PersistentCMSComponent component = new PersistentCMSComponent();
@@ -218,7 +227,6 @@ class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see Configuration#getCollectionDefaultSortField(String)
      * @verifies give priority to exact matches
      */
     @Test
@@ -228,7 +236,6 @@ class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see Configuration#getCollectionDefaultSortField(String)
      * @verifies return correct field for collection
      */
     @Test
@@ -238,7 +245,6 @@ class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see Configuration#getCollectionDefaultSortField(String)
      * @verifies return hyphen if collection not found
      */
     @Test
@@ -247,8 +253,11 @@ class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals("-", CollectionView.getCollectionDefaultSortField("nonexistingcollection", sortFields));
     }
 
+    /**
+     * @verifies return 1 for given input
+     */
     @Test
-    void test_associateWithCMSCollections() throws IllegalRequestException, IndexUnreachableException {
+    void associateWithCMSCollections_shouldReturn1ForGivenInput() throws IllegalRequestException, IndexUnreachableException {
 
         CollectionView view = new CollectionView("DC", () -> {
             return Map.of("a", new CollectionResult("a", 5));
@@ -267,8 +276,11 @@ class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals("AAA", view.getVisibleDcElements().get(0).getDescription("de"));
     }
 
+    /**
+     * @verifies return true for given input
+     */
     @Test
-    void test_associateWithCMSCollections_noConcurrentModification()
+    void associateWithCMSCollections_shouldReturnTrueForGivenInput()
             throws IllegalRequestException, IndexUnreachableException, InterruptedException, ExecutionException {
 
         RandomStringUtils random = RandomStringUtils.insecure();
@@ -329,11 +341,10 @@ class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @throws PresentationException 
-     * @see Configuration#getFirstRecordUrl(HierarchicalBrowseDcElement,String)
-     * @verifies escape url encode collection name
+     * @verifies return browse URL for collection with special characters
      */
     @Test
-    void getFirstRecordUrl_shouldReturnHyphenIfCollectionNotFound() throws PresentationException {
+    void getFirstRecordUrl_shouldReturnBrowseUrlForCollectionWithSpecialCharacters() throws PresentationException {
         HierarchicalBrowseDcElement collection = new HierarchicalBrowseDcElement("Foo (2025-2026)", 1, "MD_FOO", null, ".", 0);
         String url = CollectionView.getFirstRecordUrl(collection, "MD_FOO");
         Assertions.assertEquals("/browse/MD_FOO/Foo+%282025-2026%29/record/", url);

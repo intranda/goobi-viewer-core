@@ -31,10 +31,10 @@ import io.goobi.viewer.model.security.user.User;
 class CommentTest {
     /**
      * @see Comment#Comment(String,int,User,String,Comment)
-     * @verifies construct object correctly
+     * @verifies set pi owner and text from constructor arguments
      */
     @Test
-    void Comment_shouldConstructObjectCorrectly() throws Exception {
+    void Comment_shouldSetPiOwnerAndTextFromConstructorArguments() throws Exception {
         User owner = new User();
         Comment comment = new Comment("PPN123", 1, owner, "comment text", null, null);
         Assertions.assertEquals("PPN123", comment.getTargetPI());
@@ -44,7 +44,6 @@ class CommentTest {
     }
 
     /**
-     * @see Comment#mayEdit(User)
      * @verifies return true if use id equals owner id
      */
     @Test
@@ -56,7 +55,6 @@ class CommentTest {
     }
 
     /**
-     * @see Comment#mayEdit(User)
      * @verifies return false if owner id is null
      */
     @Test
@@ -68,7 +66,6 @@ class CommentTest {
     }
 
     /**
-     * @see Comment#mayEdit(User)
      * @verifies return false if user is null
      */
     @Test
@@ -79,7 +76,6 @@ class CommentTest {
     }
 
     /**
-     * @see Comment#checkAndCleanScripts()
      * @verifies remove scripts correctly
      */
     @Test

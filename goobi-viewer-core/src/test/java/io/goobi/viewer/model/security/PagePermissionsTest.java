@@ -33,31 +33,47 @@ class PagePermissionsTest {
 
     // --- EMPTY sentinel ---
 
+    /**
+     * @verifies return true for EMPTY sentinel
+     * @see PagePermissions#isEmpty
+     */
     @Test
-    void empty_sentinel_isEmpty() {
+    void isEmpty_shouldReturnTrueForEmptySentinel() {
         assertTrue(PagePermissions.EMPTY.isEmpty());
     }
 
+    /**
+     * @verifies deny image for any order
+     */
     @Test
-    void empty_deniesImageForAnyOrder() {
+    void isImageGranted_shouldDenyImageForAnyOrderWhenEmpty() {
         assertFalse(PagePermissions.EMPTY.isImageGranted(1));
         assertFalse(PagePermissions.EMPTY.isImageGranted(9999));
     }
 
+    /**
+     * @verifies deny fulltext for any order
+     */
     @Test
-    void empty_deniesFulltextForAnyOrder() {
+    void isFulltextGranted_shouldDenyFulltextForAnyOrderWhenEmpty() {
         assertFalse(PagePermissions.EMPTY.isFulltextGranted(1));
     }
 
+    /**
+     * @verifies deny pdf for any order
+     */
     @Test
-    void empty_deniesPdfForAnyOrder() {
+    void isPdfGranted_shouldDenyPdfForAnyOrderWhenEmpty() {
         assertFalse(PagePermissions.EMPTY.isPdfGranted(1));
     }
 
     // --- non-empty instance ---
 
+    /**
+     * @verifies return false when permissions are present
+     */
     @Test
-    void nonEmpty_isNotEmpty() {
+    void isEmpty_shouldReturnFalseWhenPermissionsArePresent() {
         PagePermissions pp = new PagePermissions(
                 Map.of(1, AccessPermission.granted()),
                 Map.of(1, AccessPermission.granted()),
@@ -65,8 +81,11 @@ class PagePermissionsTest {
         assertFalse(pp.isEmpty());
     }
 
+    /**
+     * @verifies return true for granted order
+     */
     @Test
-    void isImageGranted_returnsTrueForGrantedOrder() {
+    void isImageGranted_shouldReturnTrueForGrantedOrder() {
         PagePermissions pp = new PagePermissions(
                 Map.of(5, AccessPermission.granted()),
                 Collections.emptyMap(),
@@ -74,8 +93,11 @@ class PagePermissionsTest {
         assertTrue(pp.isImageGranted(5));
     }
 
+    /**
+     * @verifies return false for denied order
+     */
     @Test
-    void isImageGranted_returnsFalseForDeniedOrder() {
+    void isImageGranted_shouldReturnFalseForDeniedOrder() {
         PagePermissions pp = new PagePermissions(
                 Map.of(5, AccessPermission.denied()),
                 Collections.emptyMap(),
@@ -83,8 +105,11 @@ class PagePermissionsTest {
         assertFalse(pp.isImageGranted(5));
     }
 
+    /**
+     * @verifies return false for unknown order
+     */
     @Test
-    void isImageGranted_returnsFalseForUnknownOrder() {
+    void isImageGranted_shouldReturnFalseForUnknownOrder() {
         // Unknown orders must default to denied (fail-safe)
         PagePermissions pp = new PagePermissions(
                 Map.of(5, AccessPermission.granted()),
@@ -93,8 +118,11 @@ class PagePermissionsTest {
         assertFalse(pp.isImageGranted(99));
     }
 
+    /**
+     * @verifies return true for granted order
+     */
     @Test
-    void isFulltextGranted_returnsTrueForGrantedOrder() {
+    void isFulltextGranted_shouldReturnTrueForGrantedOrder() {
         PagePermissions pp = new PagePermissions(
                 Collections.emptyMap(),
                 Map.of(3, AccessPermission.granted()),
@@ -102,8 +130,11 @@ class PagePermissionsTest {
         assertTrue(pp.isFulltextGranted(3));
     }
 
+    /**
+     * @verifies return false for denied order
+     */
     @Test
-    void isPdfGranted_returnsFalseForDeniedOrder() {
+    void isPdfGranted_shouldReturnFalseForDeniedOrder() {
         PagePermissions pp = new PagePermissions(
                 Collections.emptyMap(),
                 Collections.emptyMap(),
@@ -111,8 +142,11 @@ class PagePermissionsTest {
         assertFalse(pp.isPdfGranted(7));
     }
 
+    /**
+     * @verifies return false for unknown order
+     */
     @Test
-    void isPdfGranted_returnsFalseForUnknownOrder() {
+    void isPdfGranted_shouldReturnFalseForUnknownOrder() {
         PagePermissions pp = new PagePermissions(
                 Collections.emptyMap(),
                 Collections.emptyMap(),

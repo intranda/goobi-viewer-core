@@ -42,8 +42,11 @@ import io.goobi.viewer.solr.SolrConstants;
 
 class StatisticsIndexerTest {
 
+    /**
+     * @verifies write correct json to hotfolder
+     */
     @Test
-    void test() throws DAOException, IOException {
+    void indexStatistics_shouldWriteCorrectJsonToHotfolder() throws DAOException, IOException {
         Path hotfolder = Paths.get("src/test/resources/hotfolder");
         Path hotfolderFile = hotfolder.resolve("statistics-usage-2022-07-04.json");
         if(Files.exists(hotfolderFile)) {
@@ -89,8 +92,11 @@ class StatisticsIndexerTest {
         
     }
     
+    /**
+     * @verifies format usage statistics query with date range and record identifier
+     */
     @Test
-    void testBuildQuery() {
+    void buildQuery_shouldFormatUsageStatisticsQueryWithDateRangeAndRecordIdentifier() {
         LocalDate date = LocalDate.of(2022, 8, 30);
         String query1 = String.format("+%s:%s +%s:\"%s\"", 
                 SolrConstants.DOCTYPE, 

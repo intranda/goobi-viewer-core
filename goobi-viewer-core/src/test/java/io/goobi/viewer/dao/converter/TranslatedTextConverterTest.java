@@ -60,8 +60,12 @@ class TranslatedTextConverterTest {
     public void tearDown() throws Exception {
     }
 
+    /**
+     * @verifies correctly convert to string
+     * @see TranslatedTextConverter#convertToDatabaseColumn
+     */
     @Test
-    void testCorrectlyConvertToString() {
+    void convertToDatabaseColumn_shouldCorrectlyConvertToString() {
         TranslatedText value = new TranslatedText(locales, Locale.GERMAN);
         value.setText(GERMANVALUE, Locale.GERMAN);
         value.setText(ENGLISHVALUE, Locale.ENGLISH);
@@ -71,8 +75,12 @@ class TranslatedTextConverterTest {
 
     }
 
+    /**
+     * @verifies correctl convert from string
+     * @see TranslatedTextConverter#convertToEntityAttribute
+     */
     @Test
-    void testCorrectlConvertFromString() {
+    void convertToEntityAttribute_shouldCorrectlConvertFromString() {
 
         TranslatedText value = converter.convertToEntityAttribute(JSON);
 
@@ -84,8 +92,12 @@ class TranslatedTextConverterTest {
 
     }
 
+    /**
+     * @verifies convert single value currectly
+     * @see TranslatedTextConverter#convertToEntityAttribute
+     */
     @Test
-    void testConvertSingleValueCurrectly() {
+    void convertToEntityAttribute_shouldConvertSingleValueCurrectly() {
         TranslatedText value = new TranslatedText(locales, Locale.GERMAN);
         value.setText(GERMANVALUE, Locale.GERMAN);
 

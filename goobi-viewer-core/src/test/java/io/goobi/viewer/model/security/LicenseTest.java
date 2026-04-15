@@ -34,7 +34,6 @@ import io.goobi.viewer.model.security.user.User;
 class LicenseTest {
 
     /**
-     * @see License#getAvailablePrivileges(Set)
      * @verifies only return priv view ugc if licenseType ugc type
      */
     @Test
@@ -48,8 +47,7 @@ class LicenseTest {
     }
     
     /**
-     * @see License#getDisabledStatus()
-     * @verifies return null if all relevant fields filled
+     * @verifies only return null if all relevant fields filled
      */
     @Test
     void getDisabledStatus_shouldOnlyReturnNullIfAllRelevantFieldsFilled() {

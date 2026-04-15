@@ -171,6 +171,10 @@ class ConfigurationTest extends AbstractTest {
         assertEquals(2, ret.size());
     }
 
+    /**
+     * @see Configuration#getCollectionDefaultSortFields(String)
+     * @verifies return all fields
+     */
     @Test
     void getCollectionDefaultSortFields_shouldReturnAllFields() {
         Map<String, String> sortFields = DataManager.getInstance().getConfiguration().getCollectionDefaultSortFields(SolrConstants.DC);
@@ -421,8 +425,8 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getArchiveMetadataForTemplate(String)
-     * @verifies return default template configuration if template not found
+     * @verifies return default template configuration
+     * @see Configuration#getArchiveMetadata()
      */
     @Test
     void getArchiveMetadata_shouldReturnDefaultTemplateConfiguration() {
@@ -496,6 +500,10 @@ class ConfigurationTest extends AbstractTest {
         assertEquals("PDF", DataManager.getInstance().getConfiguration().getPdfFolder());
     }
 
+    /**
+     * @verifies return correct value
+     * @see Configuration#getVocabulariesFolder()
+     */
     @Test
     void getVocabulariesFolder_shouldReturnCorrectValue() {
         assertEquals("vocabularies", DataManager.getInstance().getConfiguration().getVocabulariesFolder());
@@ -549,10 +557,10 @@ class ConfigurationTest extends AbstractTest {
 
     /**
      * @see Configuration#getAuthenticationProviders()
-     * @verifies return all properly configured elements
+     * @verifies return all six configured providers with their type specific attributes populated
      */
     @Test
-    void getAuthenticationProviders_shouldReturnAllProperlyConfiguredElements() {
+    void getAuthenticationProviders_shouldReturnAllSixConfiguredProvidersWithTheirTypeSpecificAttributesPopulated() {
         List<IAuthenticationProvider> providers = DataManager.getInstance().getConfiguration().getAuthenticationProviders();
         assertEquals(6, providers.size());
 
@@ -590,10 +598,10 @@ class ConfigurationTest extends AbstractTest {
 
     /**
      * @see Configuration#getAuthenticationProviders()
-     * @verifies load user group names correctly
+     * @verifies populate addUserToGroups list from provider configuration
      */
     @Test
-    void getAuthenticationProviders_shouldLoadUserGroupNamesCorrectly() {
+    void getAuthenticationProviders_shouldPopulateAddUserToGroupsListFromProviderConfiguration() {
         List<IAuthenticationProvider> providers = DataManager.getInstance().getConfiguration().getAuthenticationProviders();
         assertEquals(6, providers.size());
         List<String> groups = providers.get(3).getAddUserToGroups();
@@ -619,8 +627,8 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getDataRepositoryCacheTTL()
      * @verifies return correct value
+     * @see Configuration#getDataRepositoryCacheTTL()
      */
     @Test
     void getDataRepositoryCacheTTL_shouldReturnCorrectValue() {
@@ -693,10 +701,10 @@ class ConfigurationTest extends AbstractTest {
 
     /**
      * @see Configuration#getMetadataListTypes(String)
-     * @verifies filter by prefix correctly
+     * @verifies return only types matching the given prefix
      */
     @Test
-    void getMetadataListTypes_shouldFilterByPrefixCorrectly() {
+    void getMetadataListTypes_shouldReturnOnlyTypesMatchingTheGivenPrefix() {
         List<String> result = DataManager.getInstance().getConfiguration().getMetadataListTypes("cms_");
         assertEquals(1, result.size());
         assertEquals("cms_fooBar", result.get(0));
@@ -729,7 +737,7 @@ class ConfigurationTest extends AbstractTest {
 
     /**
      * @see Configuration#getMetadataTemplates(String)
-     * @verifies return empty map if type null
+     * @verifies return empty list if list type not found
      */
     @Test
     void getMetadataTemplates_shouldReturnEmptyListIfListTypeNotFound() {
@@ -742,7 +750,7 @@ class ConfigurationTest extends AbstractTest {
 
     /**
      * @see Configuration#getMetadataTemplates(String)
-     * @verifies return empty map if type null
+     * @verifies return correct config
      */
     @Test
     void getMetadataTemplates_shouldReturnCorrectConfig() {
@@ -1146,14 +1154,18 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getUnconditionalImageAccessMaxWidth()
      * @verifies return correct value
+     * @see Configuration#getThumbnailImageAccessMaxWidth()
      */
     @Test
     void getThumbnailImageAccessMaxWidth_shouldReturnCorrectValue() {
         assertEquals(1, DataManager.getInstance().getConfiguration().getThumbnailImageAccessMaxWidth());
     }
 
+    /**
+     * @see Configuration#getUnzoomedImageAccessMaxWidth()
+     * @verifies return correct value
+     */
     @Test
     void getUnzoomedImageAccessMaxWidth_shouldReturnCorrectValue() {
         assertEquals(2, DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth());
@@ -1209,7 +1221,7 @@ class ConfigurationTest extends AbstractTest {
      * @verifies return correct value
      */
     @Test
-    void isBookshelvesEnabled_shouldReturnCorrectValue() {
+    void isBookmarksEnabled_shouldReturnCorrectValue() {
         assertEquals(false, DataManager.getInstance().getConfiguration().isBookmarksEnabled());
     }
 
@@ -1276,8 +1288,11 @@ class ConfigurationTest extends AbstractTest {
         assertEquals(false, DataManager.getInstance().getConfiguration().isMetadataPdfEnabled());
     }
 
+    /**
+     * @verifies return configured value
+     */
     @Test
-    void getHideDownloadFileRegex_returnConfiguredValue() {
+    void getAdditionalFilesDisplayFilters_shouldReturnConfiguredValue() {
         List<IFilterConfiguration> filters = DataManager.getInstance().getConfiguration().getAdditionalFilesDisplayFilters();
         assertEquals(2, filters.size());
         assertEquals("(wug_.*|AK_.*)", filters.get(0).getMatchRegex());
@@ -1289,7 +1304,7 @@ class ConfigurationTest extends AbstractTest {
      * @verifies return correct value
      */
     @Test
-    void isGeneratePdfInTaskManager_shouldReturnCorrectValue() {
+    void isGeneratePdfInMessageQueue_shouldReturnCorrectValue() {
         assertTrue(DataManager.getInstance().getConfiguration().isGeneratePdfInMessageQueue());
     }
 
@@ -1415,7 +1430,7 @@ class ConfigurationTest extends AbstractTest {
      * @verifies return correct value
      */
     @Test
-    void isSidebarViewsWidgetMetadataLinkVisible_shouldReturnCorrectValue() {
+    void isSidebarViewsWidgetMetadataViewLinkVisible_shouldReturnCorrectValue() {
         assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarViewsWidgetMetadataViewLinkVisible());
     }
 
@@ -1424,7 +1439,7 @@ class ConfigurationTest extends AbstractTest {
      * @verifies return correct value
      */
     @Test
-    void isSidebarViewsWidgetObjectLinkVisible_shouldReturnCorrectValue() {
+    void isSidebarViewsWidgetObjectViewLinkVisible_shouldReturnCorrectValue() {
         assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarViewsWidgetObjectViewLinkVisible());
     }
 
@@ -1433,7 +1448,7 @@ class ConfigurationTest extends AbstractTest {
      * @verifies return correct value
      */
     @Test
-    void isSidebarViewsWidgetThumbsLinkVisible_shouldReturnCorrectValue() {
+    void isSidebarViewsWidgetThumbsViewLinkVisible_shouldReturnCorrectValue() {
         assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarViewsWidgetThumbsViewLinkVisible());
     }
 
@@ -1447,11 +1462,11 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isSidebarTocViewLinkVisible()
+     * @see Configuration#isSidebarViewsWidgetTocViewLinkVisible()
      * @verifies return correct value
      */
     @Test
-    void isSidebarViewsWidgetTocLinkVisible_shouldReturnCorrectValue() {
+    void isSidebarViewsWidgetTocViewLinkVisible_shouldReturnCorrectValue() {
         assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarViewsWidgetTocViewLinkVisible());
     }
 
@@ -1460,7 +1475,7 @@ class ConfigurationTest extends AbstractTest {
      * @verifies return correct value
      */
     @Test
-    void isSidebarTocVisibleInFullscreen_shouldReturnCorrectValue() {
+    void isSidebarTocWidgetVisibleInFullscreen_shouldReturnCorrectValue() {
         assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarTocWidgetVisibleInFullscreen());
     }
 
@@ -1504,10 +1519,10 @@ class ConfigurationTest extends AbstractTest {
 
     /**
      * @see Configuration#getSearchSortingOptions()
-     * @verifies handle descending configurations correctly
+     * @verifies include ascending and descending entries for the same field
      */
     @Test
-    void getSearchSortingOptions_shouldHandleDescendingConfigurationsCorrectly() {
+    void getSearchSortingOptions_shouldIncludeAscendingAndDescendingEntriesForTheSameField() {
         List<SearchSortingOption> result = DataManager.getInstance().getConfiguration().getSearchSortingOptions(null);
         assertEquals(TestUtils.NUM_ALL_SEARCH_SORTING_OPTIONS, result.size());
         assertEquals(SolrConstants.DATECREATED, result.get(8).getField());
@@ -1690,7 +1705,7 @@ class ConfigurationTest extends AbstractTest {
 
     /**
      * @see Configuration#getAdvancedSearchFields(String,boolean,String)
-     * @verifies return skip fields that don't match given language
+     * @verifies return skip fields that dont match given language
      */
     @Test
     void getAdvancedSearchFields_shouldReturnSkipFieldsThatDontMatchGivenLanguage() {
@@ -2150,8 +2165,12 @@ class ConfigurationTest extends AbstractTest {
         assertFalse(DataManager.getInstance().getConfiguration().isShowSearchHitsInGeoFacetMap("WKT_COORDS"));
     }
 
+    /**
+     * @verifies return configured sort order for field
+     * @see Configuration#getSortOrder(String)
+     */
     @Test
-    void getSortOrderTest() {
+    void getSortOrder_shouldReturnConfiguredSortOrderForField() {
         assertEquals("numerical", DataManager.getInstance().getConfiguration().getSortOrder("YEAR"));
         assertEquals("default", DataManager.getInstance().getConfiguration().getSortOrder("MD_PLACEPUBLISH"));
         assertEquals("alphabetical", DataManager.getInstance().getConfiguration().getSortOrder("MD_CREATOR"));
@@ -2168,7 +2187,7 @@ class ConfigurationTest extends AbstractTest {
 
     /**
      * @see Configuration#getAdvancedSearchTemplateNames()
-     * @verifies return all configured values
+     * @verifies return correct value
      */
     @Test
     void getAdvancedSearchTemplateNames_shouldReturnCorrectValue() {
@@ -2214,20 +2233,20 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getNextVersionIdentifierField()
-     * @verifies return correct value
-     */
-    @Test
-    void getNextVersionIdentifierField_shouldReturnCorrectValue() {
-        assertEquals("MD_PREVIOUS_VERSION", DataManager.getInstance().getConfiguration().getPreviousVersionIdentifierField());
-    }
-
-    /**
      * @see Configuration#getPreviousVersionIdentifierField()
      * @verifies return correct value
      */
     @Test
     void getPreviousVersionIdentifierField_shouldReturnCorrectValue() {
+        assertEquals("MD_PREVIOUS_VERSION", DataManager.getInstance().getConfiguration().getPreviousVersionIdentifierField());
+    }
+
+    /**
+     * @see Configuration#getNextVersionIdentifierField()
+     * @verifies return correct value
+     */
+    @Test
+    void getNextVersionIdentifierField_shouldReturnCorrectValue() {
         assertEquals("MD_NEXT_VERSION", DataManager.getInstance().getConfiguration().getNextVersionIdentifierField());
     }
 
@@ -2416,11 +2435,11 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getDisplayTitlePURL()
-     * @verifies return correct value
+     * @see Configuration#isDisplayTitlePURL()
+     * @verifies return false by default
      */
     @Test
-    void getDisplayTitlePURL_shouldReturnCorrectValue() {
+    void isDisplayTitlePURL_shouldReturnFalseByDefault() {
         assertEquals(false, DataManager.getInstance().getConfiguration().isDisplayTitlePURL());
     }
 
@@ -2461,13 +2480,21 @@ class ConfigurationTest extends AbstractTest {
         assertEquals("cmsMediaFolder_value", DataManager.getInstance().getConfiguration().getCmsMediaFolder());
     }
 
+    /**
+     * @verifies return configured value
+     * @see Configuration#getCmsMediaDisplayWidth()
+     */
     @Test
-    void getCmsMediaDisplayWidthTest() {
+    void getCmsMediaDisplayWidth_shouldReturnConfiguredValue() {
         assertEquals(600, DataManager.getInstance().getConfiguration().getCmsMediaDisplayWidth());
     }
 
+    /**
+     * @verifies return configured value
+     * @see Configuration#getCmsMediaDisplayHeight()
+     */
     @Test
-    void getCmsMediaDisplaHeightTest() {
+    void getCmsMediaDisplayHeight_shouldReturnConfiguredValue() {
         assertEquals(800, DataManager.getInstance().getConfiguration().getCmsMediaDisplayHeight());
     }
 
@@ -2480,8 +2507,12 @@ class ConfigurationTest extends AbstractTest {
         assertFalse(DataManager.getInstance().getConfiguration().isSearchSavingEnabled());
     }
 
+    /**
+     * @verifies return configured scale values
+     * @see Configuration#getImageViewZoomScales()
+     */
     @Test
-    void getImageViewZoomScalesTest() throws ViewerConfigurationException {
+    void getImageViewZoomScales_shouldReturnConfiguredScaleValues() throws ViewerConfigurationException {
         List<String> scales = DataManager.getInstance().getConfiguration().getImageViewZoomScales();
         assertEquals("600", scales.get(0));
         assertEquals("1000", scales.get(1));
@@ -2489,16 +2520,24 @@ class ConfigurationTest extends AbstractTest {
         assertEquals("3000", scales.get(3));
     }
 
+    /**
+     * @verifies return fullscreen scales for fullscreen page type
+     * @see Configuration#getImageViewZoomScales()
+     */
     @Test
-    void getFullscreenViewZoomScalesTest() throws ViewerConfigurationException {
+    void getImageViewZoomScales_shouldReturnFullscreenScalesForFullscreenPageType() throws ViewerConfigurationException {
         List<String> scales = DataManager.getInstance().getConfiguration().getImageViewZoomScales(new ViewAttributes(PageType.viewFullscreen));
         assertEquals("1000", scales.get(0));
         assertEquals("2000", scales.get(1));
         assertEquals("3000", scales.get(2));
     }
 
+    /**
+     * @verifies return configured tile sizes and scale factors
+     * @see Configuration#getTileSizes()
+     */
     @Test
-    void getImageViewTileSizesTest() throws ViewerConfigurationException {
+    void getTileSizes_shouldReturnConfiguredTileSizesAndScaleFactors() throws ViewerConfigurationException {
         Map<Integer, List<Integer>> tiles = DataManager.getInstance().getConfiguration().getTileSizes();
         assertEquals(512, tiles.keySet().iterator().next(), 0);
         assertEquals(3, tiles.get(512).size());
@@ -2507,8 +2546,12 @@ class ConfigurationTest extends AbstractTest {
         assertEquals(3, tiles.get(512).get(2), 0);
     }
 
+    /**
+     * @verifies return fullscreen tile sizes for fullscreen page type
+     * @see Configuration#getTileSizes()
+     */
     @Test
-    void getFullscreenTileSizesTest() throws ViewerConfigurationException {
+    void getTileSizes_shouldReturnFullscreenTileSizesForFullscreenPageType() throws ViewerConfigurationException {
         Map<Integer, List<Integer>> tiles =
                 DataManager.getInstance().getConfiguration().getTileSizes(new ViewAttributes(PageType.viewFullscreen));
         assertEquals(1024, tiles.keySet().iterator().next(), 0);
@@ -2518,13 +2561,21 @@ class ConfigurationTest extends AbstractTest {
         assertEquals(8, tiles.get(1024).get(2), 0);
     }
 
+    /**
+     * @verifies return configured value
+     * @see Configuration#getFooterHeight()
+     */
     @Test
-    void getFooterHeightTest() throws ViewerConfigurationException {
+    void getFooterHeight_shouldReturnConfiguredValue() throws ViewerConfigurationException {
         assertEquals(50, DataManager.getInstance().getConfiguration().getFooterHeight());
     }
 
+    /**
+     * @verifies return zero for edit content page type
+     * @see Configuration#getFooterHeight()
+     */
     @Test
-    void getCrowdsourcingFooterHeightTest() throws ViewerConfigurationException {
+    void getFooterHeight_shouldReturnZeroForEditContentPageType() throws ViewerConfigurationException {
         assertEquals(0, DataManager.getInstance().getConfiguration().getFooterHeight(new ViewAttributes(PageType.editContent)));
     }
 
@@ -2616,8 +2667,8 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isTocListSiblingRecords()
      * @verifies return empty string if field config not found
+     * @see Configuration#getAncestorIdentifierFieldFilterQuery(String)
      */
     @Test
     void getAncestorIdentifierFieldFilterQuery_shouldReturnEmptyStringIfFieldConfigNotFound() {
@@ -2626,8 +2677,8 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isTocListSiblingRecords()
      * @verifies return correctValue
+     * @see Configuration#getAncestorIdentifierFieldFilterQuery(String)
      */
     @Test
     void getAncestorIdentifierFieldFilterQuery_shouldReturnCorrectValue() {
@@ -2654,10 +2705,10 @@ class ConfigurationTest extends AbstractTest {
 
     /**
      * @see Configuration#getCollectionDisplayDepthForSearch(String)
-     * @verifies return -1 if no collection config was found
+     * @verifies return minus 1 if no collection config was found
      */
     @Test
-    void getCollectionDisplayDepthForSearch_shouldReturn1IfNoCollectionConfigWasFound() {
+    void getCollectionDisplayDepthForSearch_shouldReturnMinus1IfNoCollectionConfigWasFound() {
         assertEquals(-1, DataManager.getInstance().getConfiguration().getCollectionDisplayDepthForSearch("MD_NOSUCHFIELD"));
     }
 
@@ -2689,8 +2740,11 @@ class ConfigurationTest extends AbstractTest {
         assertFalse(DataManager.getInstance().getConfiguration().isAddCollectionHierarchyToBreadcrumbs("MD_NOSUCHFIELD"));
     }
 
+    /**
+     * @verifies broken config
+     */
     @Test
-    void testBrokenConfig() {
+    void getConfigLocalPath_shouldBrokenConfig() {
         DataManager.getInstance()
                 .injectConfiguration(new Configuration(new File("src/test/resources/localConfig/config_viewer_broken.test.xml").getAbsolutePath()));
         assertEquals("src/test/resources/localConfig/", DataManager.getInstance().getConfiguration().getConfigLocalPath());
@@ -2866,11 +2920,19 @@ class ConfigurationTest extends AbstractTest {
         assertEquals("MD_REFID", results.get(0));
     }
 
+    /**
+     * @see Configuration#isDoublePageNavigationEnabled(ViewAttributes)
+     * @verifies return correct value
+     */
     @Test
     void isDoublePageNavigationEnabled_shouldReturnCorrectValue() throws ViewerConfigurationException {
         assertTrue(DataManager.getInstance().getConfiguration().isDoublePageNavigationEnabled(new ViewAttributes(null)));
     }
 
+    /**
+     * @see Configuration#isSequencePageNavigationEnabled(ViewAttributes)
+     * @verifies return correct value
+     */
     @Test
     void isSequencePageNavigationEnabled_shouldReturnCorrectValue() throws ViewerConfigurationException {
         assertFalse(DataManager.getInstance().getConfiguration().isSequencePageNavigationEnabled(new ViewAttributes(null)));
@@ -2903,8 +2965,12 @@ class ConfigurationTest extends AbstractTest {
         assertEquals(SolrConstants.CALENDAR_YEAR, DataManager.getInstance().getConfiguration().getSitelinksField());
     }
 
+    /**
+     * @verifies return all configured collection fields
+     * @see Configuration#getConfiguredCollections()
+     */
     @Test
-    void getGetConfiguredCollections() {
+    void getConfiguredCollections_shouldReturnAllConfiguredCollectionFields() {
         List<String> fields = DataManager.getInstance().getConfiguration().getConfiguredCollections();
         assertEquals(3, fields.size());
         assertTrue(fields.contains("DC"));
@@ -2995,8 +3061,8 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getThemeRootPath()
      * @verifies return correct value
+     * @see Configuration#getThemeRootPath()
      */
     @Test
     void getThemeRootPath_shouldReturnCorrectValue() {
@@ -3131,38 +3197,50 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getLimitImageHeightUpperRatioThreshold()
-     * @verifies return correct value
-     */
-    @Test
-    void getLimitImageHeightUpperRatioThreshold_shouldReturnCorrectValue() {
-        assertEquals(0.2f, DataManager.getInstance().getConfiguration().getLimitImageHeightLowerRatioThreshold());
-    }
-
-    /**
      * @see Configuration#getLimitImageHeightLowerRatioThreshold()
      * @verifies return correct value
      */
     @Test
     void getLimitImageHeightLowerRatioThreshold_shouldReturnCorrectValue() {
+        assertEquals(0.2f, DataManager.getInstance().getConfiguration().getLimitImageHeightLowerRatioThreshold());
+    }
+
+    /**
+     * @see Configuration#getLimitImageHeightUpperRatioThreshold()
+     * @verifies return correct value
+     */
+    @Test
+    void getLimitImageHeightUpperRatioThreshold_shouldReturnCorrectValue() {
         assertEquals(2.0f, DataManager.getInstance().getConfiguration().getLimitImageHeightUpperRatioThreshold());
     }
 
+    /**
+     * @verifies read map box token
+     * @see Configuration#getMapBoxToken
+     */
     @Test
-    void testReadMapBoxToken() {
+    void getMapBoxToken_shouldReadMapBoxToken() {
         assertEquals("some.token", DataManager.getInstance().getConfiguration().getMapBoxToken());
     }
 
+    /**
+     * @verifies return collection with 2 elements
+     * @see Configuration#getLicenseDescriptions()
+     */
     @Test
-    void testGetLicenseDescriptions() {
+    void getLicenseDescriptions_shouldReturnCollectionWith2Elements() {
         List<LicenseDescription> licenses = DataManager.getInstance().getConfiguration().getLicenseDescriptions();
         assertEquals(2, licenses.size());
         assertEquals("CC0 1.0", licenses.get(0).getLabel());
         assertEquals("http://rightsstatements.org/vocab/InC/1.0/", licenses.get(1).getUrl());
     }
 
+    /**
+     * @verifies return collection with 4 elements
+     * @see Configuration#getGeoMapMarkerFields()
+     */
     @Test
-    void testGetGeoMapMarkerFields() {
+    void getGeoMapMarkerFields_shouldReturnCollectionWith4Elements() {
         List<String> fields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
         assertEquals(4, fields.size());
         assertTrue(fields.contains("MD_GEOJSON_POINT"));
@@ -3171,8 +3249,12 @@ class ConfigurationTest extends AbstractTest {
         assertTrue(fields.contains("MD_GPS_POLYGON"));
     }
 
+    /**
+     * @verifies return collection with 5 elements
+     * @see Configuration#getGeoMapMarker(String)
+     */
     @Test
-    void testGetGeoMapMarkers() {
+    void getGeoMapMarker_shouldReturnCollectionWith5Elements() {
         List<GeoMapMarker> markers = DataManager.getInstance().getConfiguration().getGeoMapMarkers();
         assertEquals(5, markers.size());
         assertEquals("maps__marker_1", markers.get(0).getName());
@@ -3180,8 +3262,12 @@ class ConfigurationTest extends AbstractTest {
         assertEquals("fa-search", markers.get(1).getIcon());
     }
 
+    /**
+     * @verifies return non null result
+     * @see Configuration#getGeoMapMarker(String)
+     */
     @Test
-    void testGetGeoMapMarker() {
+    void getGeoMapMarker_shouldReturnNonNullResult() {
         GeoMapMarker marker = DataManager.getInstance().getConfiguration().getGeoMapMarker("maps__marker_2");
         assertNotNull(marker);
         assertEquals("maps__marker_2", marker.getName());
@@ -3234,8 +3320,8 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getSidebarWidgetCitationCitationStyles()
      * @verifies return all configured values
+     * @see Configuration#getSidebarWidgetCitationCitationRecommendationStyles()
      */
     @Test
     void getSidebarWidgetCitationCitationRecommendationStyles_shouldReturnAllConfiguredValues() {
@@ -3244,8 +3330,8 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getSidebarWidgetCitationCitationStyles()
      * @verifies return correct configuration
+     * @see Configuration#getSidebarWidgetCitationCitationRecommendationSource()
      */
     @Test
     void getSidebarWidgetCitationCitationRecommendationSource_shouldReturnCorrectConfiguration() {
@@ -3317,8 +3403,12 @@ class ConfigurationTest extends AbstractTest {
         assertEquals(1, DataManager.getInstance().getConfiguration().getPageSelectDropdownDisplayMinPages());
     }
 
+    /**
+     * @verifies return collection with 3 elements
+     * @see Configuration#getConfiguredCollectionFields()
+     */
     @Test
-    void testGetConfiguredCollectionFields() {
+    void getConfiguredCollectionFields_shouldReturnCollectionWith3Elements() {
         List<String> fields = DataManager.getInstance().getConfiguration().getConfiguredCollectionFields();
         assertEquals(3, fields.size());
         assertTrue(fields.contains("DC"));
@@ -3357,10 +3447,10 @@ class ConfigurationTest extends AbstractTest {
 
     /**
      * @see Configuration#getTranslationGroups()
-     * @verifies read config items correctly
+     * @verifies return translation groups with type, name, description, items, and regex flags from config
      */
     @Test
-    void getTranslationGroups_shouldReadConfigItemsCorrectly() {
+    void getTranslationGroups_shouldReturnTranslationGroupsWithTypeNameDescriptionItemsAndRegexFlagsFromConfig() {
         List<TranslationGroup> result = DataManager.getInstance().getConfiguration().getTranslationGroups();
         assertNotNull(result);
         assertEquals(3, result.size());
@@ -3718,8 +3808,8 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getHttpHeaderLoginRedirectWhitelist()
      * @verifies return configured values
+     * @see Configuration#getHttpHeaderLoginRedirectWhitelist()
      */
     @Test
     void getHttpHeaderLoginRedirectWhitelist_shouldReturnConfiguredValues() {
@@ -3729,8 +3819,12 @@ class ConfigurationTest extends AbstractTest {
         assertTrue(whitelist.contains("sso.example.com"));
     }
 
+    /**
+     * @verifies return collection with 3 elements
+     * @see Configuration#getGeomapFeatureTitleOptions()
+     */
     @Test
-    void test_getGeomapFeatureTitleOptions() {
+    void getGeomapFeatureTitleOptions_shouldReturnCollectionWith3Elements() {
         List<SelectItem> items = DataManager.getInstance().getConfiguration().getGeomapFeatureTitleOptions();
         assertEquals(3, items.size());
 
@@ -3745,8 +3839,12 @@ class ConfigurationTest extends AbstractTest {
 
     }
 
+    /**
+     * @verifies return collection with 5 elements
+     * @see Configuration#getGeomapFilters
+     */
     @Test
-    void test_getGeomapFilters() {
+    void getGeomapFilters_shouldReturnCollectionWith5Elements() {
         List<GeomapItemFilter> filters = DataManager.getInstance().getConfiguration().getGeomapFilters();
         assertEquals(5, filters.size());
         assertEquals("Filter_D", filters.get(0).getLabel());
@@ -3759,8 +3857,12 @@ class ConfigurationTest extends AbstractTest {
 
     }
 
+    /**
+     * @verifies get date format
+     * @see Configuration#getStringFormat
+     */
     @Test
-    void testGetDateFormat() {
+    void getStringFormat_shouldGetDateFormat() {
         assertEquals("dd/MM/yyyy", DataManager.getInstance().getConfiguration().getStringFormat("date", Locale.ENGLISH).orElse("Not configured"));
     }
 
@@ -3773,8 +3875,12 @@ class ConfigurationTest extends AbstractTest {
         assertEquals(100, DataManager.getInstance().getConfiguration().getArchivesLazyLoadingThreshold());
     }
 
+    /**
+     * @verifies return collection with 3 elements
+     * @see Configuration#getCollectionSortOrders(String)
+     */
     @Test
-    void testGetCollectionSortOrders() {
+    void getCollectionSortOrders_shouldReturnCollectionWith3Elements() {
         Map<String, String> sortOrders = DataManager.getInstance().getConfiguration().getCollectionSortOrders("DC");
         assertEquals(3, sortOrders.size());
         assertEquals("alphanumerical_desc",
@@ -3788,16 +3894,24 @@ class ConfigurationTest extends AbstractTest {
 
     }
 
+    /**
+     * @verifies return collection with 2 elements
+     * @see Configuration#getExternalResourceUrlTemplates
+     */
     @Test
-    void test_getExternalResourceUrlTemplates() {
+    void getExternalResourceUrlTemplates_shouldReturnCollectionWith2Elements() {
         List<String> templates = DataManager.getInstance().getConfiguration().getExternalResourceUrlTemplates();
         assertEquals(2, templates.size());
         assertEquals("https://devel.dnb.de/npregional-bereitstellung/objekte?iln=63&idn={MD_FILEURL}", templates.get(1));
         assertEquals("http://d-nb.info/{MD_DOWNLOAD_IDENTIFIER}/34", templates.get(0));
     }
 
+    /**
+     * @verifies get external resource url header
+     * @see Configuration#getDownloadHeader
+     */
     @Test
-    void test_getExternalResourceUrlHeader() {
+    void getDownloadHeader_shouldGetExternalResourceUrlHeader() {
         Map<String, String> url1Header = DataManager.getInstance()
                 .getConfiguration()
                 .getDownloadHeader("https://devel.dnb.de/npregional-bereitstellung/objekte?iln=63&idn={MD_FILEURL}");
@@ -3812,8 +3926,12 @@ class ConfigurationTest extends AbstractTest {
         assertEquals("Bearer $SYS(DNB_DOWNLOAD_KEY)", url0Header.get("Authorization"));
     }
 
+    /**
+     * @verifies return non null result
+     * @see Configuration#getMainMetadataListItemsForTemplate(int, String)
+     */
     @Test
-    void test_getMainMetadataListItemsForTemplate() {
+    void getMainMetadataListItemsForTemplate_shouldReturnNonNullResult() {
         List<MetadataListElement> items = DataManager.getInstance().getConfiguration().getMainMetadataListItemsForTemplate(0, "_DEFAULT");
         List<Metadata> metadata = DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(0, "_DEFAULT");
 

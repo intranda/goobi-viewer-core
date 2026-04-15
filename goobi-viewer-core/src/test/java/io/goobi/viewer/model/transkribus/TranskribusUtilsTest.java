@@ -28,8 +28,11 @@ import io.goobi.viewer.AbstractDatabaseEnabledTest;
 
 class TranskribusUtilsTest extends AbstractDatabaseEnabledTest {
 
+    /**
+     * @verifies pass trivial assertion
+     */
     @Test
-    void dummy() throws Exception {
+    void placeholder_shouldPassTrivialAssertion() throws Exception {
         Assertions.assertTrue(true);
     }
 

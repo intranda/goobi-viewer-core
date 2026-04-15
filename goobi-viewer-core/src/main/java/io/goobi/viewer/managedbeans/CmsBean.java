@@ -575,6 +575,7 @@ public class CmsBean implements Serializable {
      *         or the current navigation view as fallback
      * @throws IndexUnreachableException if the Solr index is unreachable when checking if the related work is loaded
      * @should return current navigation view when no related work is loaded
+     * @should return current navigation view when no related work loaded
      */
     public String getRelatedWorkDefaultView() throws IndexUnreachableException {
         if (!isRelatedWorkLoaded()) {
@@ -704,6 +705,7 @@ public class CmsBean implements Serializable {
      * Getter for the field <code>currentPage</code>.
      *
      * @return the currently active CMS page, or an empty CMSPage if none is set
+     * @should page
      */
     public CMSPage getCurrentPage() {
         if (currentPage == null) {
@@ -942,6 +944,7 @@ public class CmsBean implements Serializable {
      * @param hits List of search hits to group
      * @param groupingField Solr field name to group hits by
      * @return List&lt;Entry&lt;String, List&lt;SearchHit&gt;&gt;&gt;
+     * @should return collection with 3 elements
      */
     public List<Entry<String, List<SearchHit>>> getGroupedQueryResults(List<SearchHit> hits, String groupingField) {
 
@@ -1026,6 +1029,7 @@ public class CmsBean implements Serializable {
      * getLuceneFields.
      *
      * @return a list of all Solr field names excluding internal, facet, and norm fields
+     * @should return true for given input
      */
     public List<String> getLuceneFields() {
         return getLuceneFields(false, false);
@@ -1078,6 +1082,7 @@ public class CmsBean implements Serializable {
      *
      * @return a list of all CMS static pages mapping viewer page types to CMS pages
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return non empty collection for given input
      */
     public List<CMSStaticPage> getStaticPages() throws DAOException {
         if (this.staticPages == null) {
@@ -1167,6 +1172,7 @@ public class CmsBean implements Serializable {
      * @param page static page whose existing mapping is excluded from filtering
      * @return A list of all cmsPages not yet registered to a static page
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return 2 for given input
      */
     public List<CMSPage> getAvailableCmsPages(CMSStaticPage page) throws DAOException {
         List<CMSPage> allPages = getAllCMSPages().stream()

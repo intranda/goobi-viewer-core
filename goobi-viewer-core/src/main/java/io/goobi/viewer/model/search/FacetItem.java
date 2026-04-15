@@ -209,11 +209,10 @@ public class FacetItem implements Serializable, IFacetItem {
      * @param groupToLength If value is greater than 0, facet values will be grouped together by if they contain equal characters at {0-groupByLength}
      * @param labelMap Optional map for storing alternate labels for later use by the client
      * @return {@link java.util.ArrayList} of {@link io.goobi.viewer.model.search.FacetItem}
-     * @should add priority values first
      * @should set label from separate field if configured and found
-     * @should group values by starting character correctly
-     * @should augment existing items with new values
+     * @should group facet values by starting character and sum their counts
      * @should prefer existing items
+     * @should group facet values by first character and sum counts including existing items
      */
     public static List<IFacetItem> generateFilterLinkList(List<IFacetItem> existingFacetsItems, String field, SortingMap<String, Long> values,
             boolean hierarchical, int groupToLength, Map<String, String> labelMap) {
@@ -319,7 +318,7 @@ public class FacetItem implements Serializable, IFacetItem {
      * @param reverseOrder if true, reverse the sort order
      * @param hierarchical true if facet field is hierarchical
      * @return a list of facet items generated from the given values map, optionally sorted
-     * @should sort items correctly
+     * @should sort generated facet items alphabetically in ascending and descending order
      */
     public static List<IFacetItem> generateFacetItems(String field, Map<String, Long> values, boolean sort, boolean reverseOrder,
             boolean hierarchical) {
@@ -380,12 +379,11 @@ public class FacetItem implements Serializable, IFacetItem {
     /**
      * Returns field:value (with the value escaped for the Solr query).
      *
-     * @should construct link correctly
      * @should escape values containing whitespaces
-     * @should construct hierarchical link correctly
-     * @should construct range link correctly
-     * @should construct polygon link correctly
+     * @should return OR query with wildcard suffix for a hierarchical facet item
+     * @should return unchanged range query link for a range facet item
      * @return the Solr filter query string for this facet item, with field and value properly escaped
+     * @should return unchanged f i e l d value link for a non hierarchical facet item
      */
     @Override
     public String getQueryEscapedLink() {
@@ -522,7 +520,7 @@ public class FacetItem implements Serializable, IFacetItem {
      * getFullValue.
      *
      * @return Range of value - value2; just value if value2 empty
-     * @should build full value correctly
+     * @should combine value and value2 with dash separator for a range facet
      */
     public String getFullValue() {
         StringBuilder sb = new StringBuilder(value);

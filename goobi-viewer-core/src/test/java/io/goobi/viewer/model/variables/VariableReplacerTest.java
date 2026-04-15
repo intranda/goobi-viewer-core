@@ -47,8 +47,12 @@ class VariableReplacerTest {
     private static final String PULL_THEME = "{config-folder-path}/script_theme-pull.sh {theme-path}";
     private static final String CREATE_DEVELOPER_PACKAGE = "{config-folder-path}/script_create_package.sh viewer {base-path} /var/www {solr-url}";
 
+    /**
+     * @verifies return expected value for given input
+     * @see VariableReplacer#replace(String)
+     */
     @Test
-    void test_replaceConfig() {
+    void replace_shouldReturnExpectedValueForGivenInput() {
         Configuration config = new Configuration("config_viewer_developer.xml");
         VariableReplacer vr = new VariableReplacer(config);
 
@@ -65,8 +69,12 @@ class VariableReplacerTest {
 
     }
 
+    /**
+     * @verifies substitute multiple variables across metadata rows
+     * @see VariableReplacer#replace(String)
+     */
     @Test
-    void test() {
+    void replace_shouldSubstituteMultipleVariablesAcrossMetadataRows() {
         StructElement struct = Mockito.mock(StructElement.class);
         Mockito.when(struct.getMetadataFields()).thenAnswer(arg -> {
             return METADATA_MAP;
@@ -79,8 +87,12 @@ class VariableReplacerTest {
         assertTrue(phrases.contains("It's a  disappointment to meet them!"));
     }
 
+    /**
+     * @verifies no variables
+     * @see VariableReplacer#getMetadataValues
+     */
     @Test
-    void test_noVariables() {
+    void getMetadataValues_shouldNoVariables() {
         String phraseTemplate = "It's a bloody pleasure to meet him!";
         StructElement struct = Mockito.mock(StructElement.class);
         Mockito.when(struct.getMetadataValues(Mockito.anyString())).thenAnswer(arg -> {
@@ -94,8 +106,12 @@ class VariableReplacerTest {
         assertTrue(phrases.contains(phraseTemplate));
     }
 
+    /**
+     * @verifies return expected value
+     * @see VariableReplacer#SimpleMetadataValue
+     */
     @Test
-    void test_simpleMetadataValue() {
+    void SimpleMetadataValue_shouldReturnExpectedValue() {
         VariableReplacer replacer = new VariableReplacer(Map.of("test", Map.of("value", List.of("replaced value"))));
         Metadata md = new Metadata("label", "{value}");
         Metadata replaced = replacer.replace(md);
@@ -103,8 +119,12 @@ class VariableReplacerTest {
         Assertions.assertEquals("replaced value", replaced.getValue().getValue().orElse(""));
     }
 
+    /**
+     * @verifies multi lang metadata value
+     * @see VariableReplacer#Metadata
+     */
     @Test
-    void test_multiLangMetadataValue() {
+    void Metadata_shouldMultiLangMetadataValue() {
         VariableReplacer replacer = new VariableReplacer(Map.of("test", Map.of("value", List.of("replaced value"))));
         MultiLanguageMetadataValue value = new MultiLanguageMetadataValue(Map.of("de", "Der Wert ist {value}", "en", "The value is {value}"));
         Metadata md = new Metadata("label", value);

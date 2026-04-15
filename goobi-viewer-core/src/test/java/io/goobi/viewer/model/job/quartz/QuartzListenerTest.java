@@ -90,8 +90,12 @@ class QuartzListenerTest extends AbstractDatabaseEnabledTest{
         }
     }
     
+    /**
+     * @verifies start jobs
+     * @see QuartzListener#contextInitialized
+     */
     @Test
-    void testStartJobs() throws SchedulerException {
+    void contextInitialized_shouldStartJobs() throws SchedulerException {
         ServletContext context = Mockito.mock(ServletContext.class);
         ServletContextEvent contextEvt = Mockito.mock(ServletContextEvent.class);
         Mockito.when(contextEvt.getServletContext()).thenReturn(context);

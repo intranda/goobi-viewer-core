@@ -76,8 +76,12 @@ class LocalAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
     public void tearDown() throws Exception {
     }
 
+    /**
+     * @verifies valid
+     * @see LocalAuthenticationProvider#login
+     */
     @Test
-    void testLogin_valid() throws AuthenticationProviderException, InterruptedException, ExecutionException {
+    void login_shouldValid() throws AuthenticationProviderException, InterruptedException, ExecutionException {
         DataManager.getInstance().getSecurityManager().reset();
         CompletableFuture<LoginResult> future = provider.login(userActive_email, userActive_pwHash);
         Assertions.assertTrue(future.get().getUser().isPresent());
@@ -85,23 +89,35 @@ class LocalAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
         Assertions.assertFalse(future.get().getUser().get().isSuspended());
     }
 
+    /**
+     * @verifies invalid
+     * @see LocalAuthenticationProvider#login
+     */
     @Test
-    void testLogin_invalid() throws AuthenticationProviderException, InterruptedException, ExecutionException {
+    void login_shouldInvalid() throws AuthenticationProviderException, InterruptedException, ExecutionException {
         DataManager.getInstance().getSecurityManager().reset();
         CompletableFuture<LoginResult> future = provider.login(userActive_email, userSuspended_pwHash);
         Assertions.assertTrue(future.get().getUser().isPresent());
         Assertions.assertTrue(future.get().isRefused());
     }
 
+    /**
+     * @verifies unknown
+     * @see LocalAuthenticationProvider#login
+     */
     @Test
-    void testLogin_unknown() throws AuthenticationProviderException, InterruptedException, ExecutionException {
+    void login_shouldUnknown() throws AuthenticationProviderException, InterruptedException, ExecutionException {
         DataManager.getInstance().getSecurityManager().reset();
         CompletableFuture<LoginResult> future = provider.login(userActive_email + "test", userActive_pwHash);
         Assertions.assertFalse(future.get().getUser().isPresent());
     }
 
+    /**
+     * @verifies suspended
+     * @see LocalAuthenticationProvider#login
+     */
     @Test
-    void testLogin_suspended() throws AuthenticationProviderException, InterruptedException, ExecutionException {
+    void login_shouldSuspended() throws AuthenticationProviderException, InterruptedException, ExecutionException {
         DataManager.getInstance().getSecurityManager().reset();
         CompletableFuture<LoginResult> future = provider.login(userSuspended_email, userSuspended_pwHash);
         Assertions.assertTrue(future.get().getUser().isPresent());

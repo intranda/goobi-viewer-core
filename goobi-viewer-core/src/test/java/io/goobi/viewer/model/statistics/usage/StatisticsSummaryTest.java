@@ -9,8 +9,11 @@ import org.mockito.Mockito;
 
 class StatisticsSummaryTest {
 
+    /**
+     * @verifies return true for given input
+     */
     @Test
-    void test_isOlderThan() {
+    void isOlderThan_shouldReturnTrueForGivenInput() {
         LocalDateTime creationTime = LocalDateTime.of(2020, 1, 1, 12, 0, 0);
         LocalDateTime now = LocalDateTime.of(2020, 1, 1, 12, 1, 0); //one minute later
 

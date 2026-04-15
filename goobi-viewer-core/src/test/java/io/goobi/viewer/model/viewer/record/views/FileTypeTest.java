@@ -15,8 +15,11 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 
 class FileTypeTest {
 
+    /**
+     * @verifies return true for given input
+     */
     @Test
-    void test_containedFileTypes() throws IndexUnreachableException, DAOException, RecordNotFoundException {
+    void containedFiletypes_shouldReturnTrueForGivenInput() throws IndexUnreachableException, DAOException, RecordNotFoundException {
         PhysicalElement page = Mockito.mock(PhysicalElement.class);
         Map<String, String> filenameMap = Map.of(
                 "image", "01.tif",
@@ -34,8 +37,12 @@ class FileTypeTest {
         Assertions.assertFalse(types.contains(FileType.PDF));
     }
 
+    /**
+     * @verifies return expected value for given input
+     * @see #getContentTypeFor(String)
+     */
     @Test
-    void test_getContentTypeFor() throws ContentTypeException {
+    void getContentTypeFor_shouldReturnExpectedValueForGivenInput() throws ContentTypeException {
         Assertions.assertEquals("image/tiff", FileType.getContentTypeFor("file.tif"));
         Assertions.assertEquals("image/jpeg", FileType.getContentTypeFor("file.JPG"));
         Assertions.assertEquals("image/png", FileType.getContentTypeFor("file.png"));

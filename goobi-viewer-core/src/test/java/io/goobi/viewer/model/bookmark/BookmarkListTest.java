@@ -55,7 +55,6 @@ class BookmarkListTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see BookmarkList#generateSolrQueryForItems()
      * @verifies return correct query
      */
     @Test
@@ -82,11 +81,10 @@ class BookmarkListTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see BookmarkList#getMiradorJsonObject()
-     * @verifies generate JSON object correctly
+     * @verifies generate Mirador JSON with data and windowObjects arrays matching bookmark count
      */
     @Test
-    void getMiradorJsonObject_shouldGenerateJSONObjectCorrectly() throws Exception {
+    void getMiradorJsonObject_shouldGenerateMiradorJSONWithDataAndWindowObjectsArraysMatchingBookmarkCount() throws Exception {
         BookmarkList bookmarkList = new BookmarkList();
         for (int i = 1; i <= 16; ++i) {
             Bookmark item = new Bookmark();
@@ -116,7 +114,6 @@ class BookmarkListTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see BookmarkList#getFilterQuery()
      * @verifies construct query correctly
      */
     @Test
@@ -132,11 +129,10 @@ class BookmarkListTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see BookmarkList#sortBookmarkLists(List)
-     * @verifies sort lists correctly
+     * @verifies sort bookmark lists by most recent update date descending with unmodified lists last
      */
     @Test
-    void sortBookmarkLists_shouldSortListCorrectly() throws Exception {
+    void sortBookmarkLists_shouldSortBookmarkListsByMostRecentUpdateDateDescendingWithUnmodifiedListsLast() throws Exception {
         List<BookmarkList> lists = new ArrayList<>();
         {
             BookmarkList list = new BookmarkList();

@@ -45,8 +45,11 @@ import io.goobi.viewer.api.rest.v1.bookmarks.BookmarkResource;
  */
 class BookmarkResourceTest extends AbstractRestApiTest {
 
+    /**
+     * @verifies parse name and pi from json
+     */
     @Test
-    void testDeserializeBookmark() throws JsonMappingException, JsonProcessingException {
+    void deserializeBookmark_shouldParseNameAndPiFromJson() throws JsonMappingException, JsonProcessingException {
         String jsonString = "{\"name\": \"Test Bookmark\", \"description\": \"some testing...\", \"pi\": \"PPN743674162\"}";
         ObjectMapper mapper = new ObjectMapper();
         Bookmark bookmark = mapper.readValue(jsonString, Bookmark.class);
@@ -63,9 +66,11 @@ class BookmarkResourceTest extends AbstractRestApiTest {
     /**
      * Verify that POST /bookmarks returns 409 when called without a logged-in user.
      * Session users already have exactly one temporary bookmark list and may not add more.
+     * @verifies return 409 when not logged in
+     * @see BookmarkResource#addBookmarkList
      */
     @Test
-    void testAddBookmarkList_returns409WhenNotLoggedIn() {
+    void addBookmarkList_shouldReturn409WhenNotLoggedIn() {
         BookmarkList list = new BookmarkList();
         list.setName("Test List");
         try (Response response = target(USERS_BOOKMARKS)
@@ -84,9 +89,11 @@ class BookmarkResourceTest extends AbstractRestApiTest {
     /**
      * requireValidListId() is private but enforced in all list-specific endpoints.
      * A listId of 0 must be rejected with HTTP 400 before any business logic runs.
+     * @verifies return 400 when zero list id
+     * @see BookmarkResource#getBookmarkList
      */
     @Test
-    void getBookmarkList_zeroListId_returns400() {
+    void getBookmarkList_shouldReturn400WhenZeroListId() {
         try (Response response = target(USERS_BOOKMARKS + "/0")
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
@@ -97,9 +104,11 @@ class BookmarkResourceTest extends AbstractRestApiTest {
 
     /**
      * Negative listIds must also be rejected with HTTP 400.
+     * @verifies return 400 when negative list id
+     * @see BookmarkResource#getBookmarkList
      */
     @Test
-    void getBookmarkList_negativeListId_returns400() {
+    void getBookmarkList_shouldReturn400WhenNegativeListId() {
         try (Response response = target(USERS_BOOKMARKS + "/-1")
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
@@ -108,8 +117,12 @@ class BookmarkResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return null for invalid input and parsed integer for valid input
+     * @see BookmarkResource#parseMaxHits
+     */
     @Test
-    void testParseMaxHits() {
+    void parseMaxHits_shouldReturnNullForInvalidInputAndParsedIntegerForValidInput() {
         // null input → null output
         assertNull(BookmarkResource.parseMaxHits(null), "null string should parse to null");
         // literal "null" (sent by some clients) → null output

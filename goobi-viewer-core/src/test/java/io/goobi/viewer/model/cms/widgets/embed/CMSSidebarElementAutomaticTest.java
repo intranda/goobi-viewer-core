@@ -36,8 +36,11 @@ import io.goobi.viewer.model.maps.GeoMap;
 
 class CMSSidebarElementAutomaticTest extends AbstractDatabaseEnabledTest {
 
+    /**
+     * @verifies set owner map generation type and content type
+     */
     @Test
-    void test() throws DAOException {
+    void CMSSidebarElementAutomatic_shouldSetOwnerMapGenerationTypeAndContentType() throws DAOException {
         GeoMap map = DataManager.getInstance().getDao().getGeoMap(1l);
         Assertions.assertNotNull(map);
         CMSPage owner = DataManager.getInstance().getDao().getCMSPage(1l);

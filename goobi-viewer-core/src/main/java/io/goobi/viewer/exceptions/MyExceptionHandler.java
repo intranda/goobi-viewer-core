@@ -286,6 +286,8 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
     /**
      * @param requestMap current JSF request attribute map
      * @param session current HTTP session for storing navigation state
+     * @should not throw if NavigationHelper proxy throws IllegalStateException due to invalidated session
+     * @should not throw if session invalidated during nav helper access
      */
     public void putNavigationState(Map<String, Object> requestMap, HttpSession session) {
         NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();

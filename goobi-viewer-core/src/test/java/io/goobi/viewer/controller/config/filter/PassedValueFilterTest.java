@@ -17,32 +17,52 @@ class PassedValueFilterTest {
             "record", Map.of("DC", List.of("abra.ka.dabra.simsala.bim", "hex, hex")),
             "page", Map.of(ReplacerVariables.MIME_TYPE, List.of("application/epub-zip"))));
 
+    /**
+     * @verifies pass show filter
+     * @see PassedValueFilter#passes
+     */
     @Test
-    void test_passShowFilter() {
+    void passes_shouldPassShowFilter() {
         PassedValueFilter filter = PassedValueFilter.getShowFilter("abra\\.ka\\.dabra.*");
         assertTrue(filter.passes("{record.DC}", vr));
     }
 
+    /**
+     * @verifies block show filter
+     * @see PassedValueFilter#passes
+     */
     @Test
-    void test_blockShowFilter() {
+    void passes_shouldBlockShowFilter() {
         PassedValueFilter filter = PassedValueFilter.getShowFilter("visibili.vanitar");
         assertFalse(filter.passes("{record.DC}", vr));
     }
 
+    /**
+     * @verifies block hide filter
+     * @see PassedValueFilter#getHideFilter
+     */
     @Test
-    void test_blockHideFilter() {
+    void getHideFilter_shouldBlockHideFilter() {
         PassedValueFilter filter = PassedValueFilter.getHideFilter("abra\\.ka\\.dabra.*");
         assertFalse(filter.passes("{record.DC}", vr));
     }
 
+    /**
+     * @verifies pass hide filter
+     * @see PassedValueFilter#getHideFilter
+     */
     @Test
-    void test_passHideFilter() {
+    void getHideFilter_shouldPassHideFilter() {
         PassedValueFilter filter = PassedValueFilter.getHideFilter("visibili.vanitar");
         assertTrue(filter.passes("{record.DC}", vr));
     }
 
+    /**
+     * @verifies block conditions apply
+     * @see PassedValueFilter#passes
+     */
     @Test
-    void test_block_conditionsApply() {
+    void passes_shouldBlockConditionsApply() {
         PassedValueFilter filter = PassedValueFilter.getHideFilter("abra\\.ka\\.dabra.*");
         ConfiguredValueFilter condition = ConfiguredValueFilter.getShowFilter("{page.mimeType}", "image/tiff");
         assertFalse(filter.passes("{record.DC}", vr));

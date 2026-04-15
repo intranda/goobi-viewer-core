@@ -13,8 +13,11 @@ class SocketBeanTest {
     private static final String UPDATE = "update";
     private static final String TEST_MESSAGE = "Test Message";
 
+    /**
+     * @verifies forward update message via push context
+     */
     @Test
-    void test() throws InterruptedException {
+    void send_shouldForwardUpdateMessageViaPushContext() throws InterruptedException {
         PushContext push = Mockito.spy(PushContext.class);
         SocketBean bean = new SocketBean(0, push);
         bean.send(TEST_MESSAGE);
@@ -27,9 +30,10 @@ class SocketBeanTest {
      * Verifies that close() terminates the executor promptly even when a long idle period is configured.
      * With shutdownNow() the sleeping scheduled thread is interrupted immediately. With the old
      * service.close() / shutdown() approach the call would block until the next scheduled run.
+     * @verifies terminates executor promptly
      */
     @Test
-    void testClose_terminatesExecutorPromptly() {
+    void close_shouldTerminatesExecutorPromptly() {
         PushContext push = Mockito.spy(PushContext.class);
         SocketBean bean = new SocketBean(30, push); // 30-second schedule
 

@@ -56,8 +56,12 @@ class EmailValidatorTest {
         Assertions.assertFalse(EmailValidator.validateEmailAddress("blup", false));
     }
 
+    /**
+     * @verifies validate empty string
+     * @see EmailValidator#validateEmailAddress
+     */
     @Test
-    void validateEmailAddress_validateEmptyString() throws Exception {
+    void validateEmailAddress_shouldValidateEmptyString() throws Exception {
         Assertions.assertFalse(EmailValidator.validateEmailAddress("", false));
         Assertions.assertTrue(EmailValidator.validateEmailAddress("", true));
     }

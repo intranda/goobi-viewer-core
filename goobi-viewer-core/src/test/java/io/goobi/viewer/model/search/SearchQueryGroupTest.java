@@ -35,7 +35,6 @@ import io.goobi.viewer.solr.SolrConstants;
 class SearchQueryGroupTest extends AbstractSolrEnabledTest {
 
     /**
-     * @see SearchQueryGroup#init(List)
      * @verifies create and preselect visible fields
      */
     @Test
@@ -59,7 +58,6 @@ class SearchQueryGroupTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SearchQueryGroup#injectItems(List)
      * @verifies replace existing items with given
      */
     @Test
@@ -75,7 +73,6 @@ class SearchQueryGroupTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SearchQueryGroup#isBlank()
      * @verifies return true if all items without value
      */
     @Test
@@ -85,7 +82,6 @@ class SearchQueryGroupTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SearchQueryGroup#isBlank()
      * @verifies return false if at least one item has value
      */
     @Test
@@ -97,7 +93,6 @@ class SearchQueryGroupTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SearchQueryGroup#getAvailableOperators()
      * @verifies return all enum values
      */
     @Test
@@ -110,10 +105,10 @@ class SearchQueryGroupTest extends AbstractSolrEnabledTest {
 
     /**
      * @see SearchQueryGroup#addNewQueryItem()
-     * @verifies add item correctly
+     * @verifies append a new query item and increase the item list size by one
      */
     @Test
-    void addNewQueryItem_shouldAddItemCorrectly() {
+    void addNewQueryItem_shouldAppendANewQueryItemAndIncreaseTheItemListSizeByOne() {
         SearchQueryGroup group = new SearchQueryGroup(null, null);
         Assertions.assertEquals(1, group.getQueryItems().size());
         Assertions.assertTrue(group.addNewQueryItem("MD_FOO", -1));
@@ -121,11 +116,10 @@ class SearchQueryGroupTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SearchQueryGroup#removeQueryItem(SearchQueryItem)
-     * @verifies remove item correctly
+     * @verifies remove the specified query item and decrease the item list size by one
      */
     @Test
-    void removeQueryItem_shouldRemoveItemCorrectly() {
+    void removeQueryItem_shouldRemoveTheSpecifiedQueryItemAndDecreaseTheItemListSizeByOne() {
         SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true, "en"), null);
         Assertions.assertEquals(3, group.getQueryItems().size());
         Assertions.assertTrue(group.removeQueryItem(group.getQueryItems().get(0)));

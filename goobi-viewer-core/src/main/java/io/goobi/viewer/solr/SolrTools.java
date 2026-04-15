@@ -108,8 +108,8 @@ public final class SolrTools {
      * @param solrSortFields comma-separated Solr sort field string to parse
      * @param splitFieldsBy String by which the individual field configurations are split
      * @param splitNameOrderBy String by which the field name and sorting order are split
-     * @should split fields correctly
-     * @should split single field correctly
+     * @should split multiple sort fields with directions and default to asc when direction omitted
+     * @should parse single sort field with direction and trim surrounding whitespace
      * @should throw IllegalArgumentException if solrSortFields is null
      * @should throw IllegalArgumentException if splitFieldsBy is null
      * @should throw IllegalArgumentException if splitNameOrderBy is null
@@ -274,7 +274,7 @@ public final class SolrTools {
      *
      * @param doc Solr document to read from
      * @param field Solr field name to retrieve
-     * @should return value as string correctly
+     * @should convert numeric field value to its string representation
      * @should not return null as string if value is null
      * @return the string value of the given Solr field, or null if the field is absent or its value is null
      */
@@ -334,7 +334,7 @@ public final class SolrTools {
      * @param fieldName Solr field name to retrieve values for
      * @return a list of all string values for the given field in the given Solr document
      * @should return all values for the given field
-     * @should parse dates correctly
+     * @should return date field values as ISO 8601 formatted strings
      */
     public static List<String> getMetadataValues(SolrDocument doc, String fieldName) {
         if (doc == null) {
@@ -391,7 +391,7 @@ public final class SolrTools {
      *
      * @param doc Solr document to convert to a multi-language value map
      * @return a map of field names to their multi-language metadata values, excluding IMAGEURN_OAI and PAGEURNS
-     * @should return all fields in the given doc except page urns
+     * @should return 2 for given input
      */
     public static Map<String, List<IMetadataValue>> getMultiLanguageFieldValueMap(SolrDocument doc) {
         Map<String, List<IMetadataValue>> ret = new HashMap<>();
@@ -443,6 +443,7 @@ public final class SolrTools {
      * @param key the metadata key without the '_LANG_...' suffix
      * @return A map with keys for each language and lists of all found metadata values for this language. Metadata that match the given key but have
      *         no language information are listed as language {@code _DEFAULT}
+     * @should return collection with 1 element
      */
     public static Map<String, List<String>> getMetadataValuesForLanguage(SolrDocument doc, String key) {
         if (doc == null) {
@@ -592,6 +593,8 @@ public final class SolrTools {
     /**
      * @param fieldName Solr field name to check for language encoding
      * @return true if fieldName contains _LANG_; false otherwise
+     * @should return true for language-coded field names
+     * @should return false for non-language-coded field names
      */
     public static boolean isLanguageCodedField(String fieldName) {
         // Use pre-compiled pattern instead of String.matches() to avoid per-call Pattern.compile()
@@ -623,6 +626,8 @@ public final class SolrTools {
      *
      * @param e exception thrown by Solr to inspect
      * @return true if the exception indicates a Solr query syntax or validation error (HTTP 400), false otherwise
+     * @should return true for known syntax error messages
+     * @should return false for non syntax errors
      */
     public static boolean isQuerySyntaxError(Exception e) {
         // Check for known Solr query/parameter validation error messages.
@@ -644,7 +649,7 @@ public final class SolrTools {
      * @return Extracted message
      * @should return empty string if exceptionMessage empty
      * @should return exceptionMessage if no pattern match found
-     * @should return title content correctly
+     * @should extract text between title tags from HTML string
      */
     public static String extractExceptionMessageHtmlTitle(String exceptionMessage) {
         if (StringUtils.isEmpty(exceptionMessage)) {
@@ -789,6 +794,7 @@ public final class SolrTools {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @should return all existing values for the given field
+     * @should return all entire values
      */
     public static List<String> getAvailableValuesForField(final String field, final String filterQuery)
             throws PresentationException, IndexUnreachableException {
@@ -937,6 +943,7 @@ public final class SolrTools {
      *
      * @param string the string to escape
      * @return the escaped string. if the original string is null, null is also returned
+     * @should return expected value for given input
      */
     public static String escapeSpecialCharacters(String string) {
         if (StringUtils.isNotBlank(string)) {
@@ -950,6 +957,7 @@ public final class SolrTools {
      *
      * @param string the string to unescape
      * @return the unescaped string
+     * @should return expected value for given input
      */
     public static String unescapeSpecialCharacters(String string) {
         if (StringUtils.isNotBlank(string)) {
@@ -978,6 +986,8 @@ public final class SolrTools {
      *
      * @param fieldName Solr field name possibly containing a language suffix
      * @return fieldName without language suffix
+     * @should strip language suffix
+     * @should return field name unchanged if no language suffix present
      */
     public static String getBaseFieldName(String fieldName) {
         if (StringUtils.isNotBlank(fieldName)) {
@@ -991,6 +1001,8 @@ public final class SolrTools {
      *
      * @param fieldName Solr field name from which to extract the language code
      * @return language part of fieldName
+     * @should return language code from field name
+     * @should return null if no language suffix present
      */
     public static String getLanguage(String fieldName) {
         if (StringUtils.isNotBlank(fieldName)) {

@@ -34,8 +34,12 @@ import io.goobi.viewer.AbstractTest;
  */
 class LanguageHelperTest extends AbstractTest {
 
+    /**
+     * @verifies resolve both ISO 639 1 and ISO 639 2 codes
+     * @see LanguageHelper#getLanguage(final String)
+     */
     @Test
-    void test() {
+    void getLanguage_shouldResolveBothIso639_1AndIso639_2Codes() {
         LanguageHelper helper = new LanguageHelper("src/test/resources/languages.xml");
         try {
             Assertions.assertNotNull(helper.getLanguage("fra"));
@@ -46,8 +50,11 @@ class LanguageHelperTest extends AbstractTest {
         }
     }
 
+    /**
+     * @verifies stops reloading thread
+     */
     @Test
-    void testShutdownStopsReloadingThread() throws InterruptedException {
+    void shutdown_shouldStopsReloadingThread() throws InterruptedException {
         Set<Thread> threadsBefore = Thread.getAllStackTraces().keySet();
         LanguageHelper helper = new LanguageHelper("src/test/resources/languages.xml");
 

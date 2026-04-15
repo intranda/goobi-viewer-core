@@ -67,8 +67,11 @@ class SequenceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
     public static final String PI = PI_KLEIUNIV;
     public static final int ORDER = 1;
 
+    /**
+     * @verifies produce non-blank annotation list JSON
+     */
     @Test
-    void testAddOtherContent() throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
+    void addOtherContent_shouldProduceNonBlankAnnotationListJson() throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
             DAOException, ContentNotFoundException, IOException {
 
         ManifestBuilder manifestBuilder = new ManifestBuilder(new ApiUrls("https://viewer.goobi.io/rest/"));
@@ -99,9 +102,10 @@ class SequenceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
     /**
      * When a non-empty PagePermissions is stored on the builder before generateCanvas is called,
      * page.isAccessPermissionImage() must NOT be invoked — the pre-fetched map is used instead.
+     * @verifies generate canvas for given input
      */
     @Test
-    void testGenerateCanvas_usesPrefetchedPermissionsWithoutCallingPageMethod()
+    void generateCanvas_shouldGenerateCanvasForGivenInput()
             throws URISyntaxException, ViewerConfigurationException, IndexUnreachableException,
             PresentationException, DAOException {
 
@@ -135,11 +139,10 @@ class SequenceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SequenceBuilder#getSize(PhysicalElement)
-     * @verifies use prefetched dimension cache without calling ImageHandler when dimensions cached
+     * @verifies return 1200 for given input
      */
     @Test
-    void testGenerateCanvas_usesDimensionCacheWithoutCallingImageHandler()
+    void generateCanvas_shouldReturn1200ForGivenInput()
             throws URISyntaxException, ViewerConfigurationException, IndexUnreachableException,
             PresentationException, DAOException {
 

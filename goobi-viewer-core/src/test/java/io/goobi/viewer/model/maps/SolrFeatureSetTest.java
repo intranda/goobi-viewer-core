@@ -11,8 +11,12 @@ import io.goobi.viewer.exceptions.PresentationException;
 
 class SolrFeatureSetTest extends AbstractDatabaseAndSolrEnabledTest {
 
+    /**
+     * @verifies get features
+     * @see SolrFeatureSet#setSolrQuery
+     */
     @Test
-    void testGetFeatures() throws PresentationException, IndexUnreachableException {
+    void setSolrQuery_shouldGetFeatures() throws PresentationException, IndexUnreachableException {
         SolrFeatureSet featureSet = new SolrFeatureSet();
         featureSet.setSearchScope(SolrSearchScope.RECORDS);
         featureSet.setSolrQuery("PI_TOPSTRUCT:AC03111335");

@@ -106,6 +106,7 @@ public class CMSMultiRecordNote extends CMSRecordNote {
 
     /**
      * @return a list of PIs of all records matching the query
+     * @should return non null result
      */
     public List<String> getRecords() {
         if (this.records == null) {
@@ -171,6 +172,7 @@ public class CMSMultiRecordNote extends CMSRecordNote {
      *
      * @param pi persistent identifier of the record to check
      * @return true if pi matches query; false otherwise
+     * @should return non null result
      */
     public boolean matchesRecord(String pi) {
 

@@ -17,8 +17,12 @@ import io.goobi.viewer.model.calendar.CalendarItemWeek;
 
 class CalendarBeanTest extends AbstractSolrEnabledTest {
 
+    /**
+     * @verifies century from year
+     * @see CalendarBean#getCentury
+     */
     @Test
-    void test_centuryFromYear() {
+    void getCentury_shouldCenturyFromYear() {
 
         CalendarBean bean = new CalendarBean();
 
@@ -31,15 +35,22 @@ class CalendarBeanTest extends AbstractSolrEnabledTest {
 
     }
 
+    /**
+     * @verifies get all centuries
+     * @see CalendarBean#getAllActiveCenturies
+     */
     @Test
-    void test_getAllCenturies() throws PresentationException, IndexUnreachableException {
+    void getAllActiveCenturies_shouldGetAllCenturies() throws PresentationException, IndexUnreachableException {
         CalendarBean bean = new CalendarBean();
         List<CalendarItemCentury> centuries = bean.getAllActiveCenturies();
         Assertions.assertTrue(centuries.size() > 0);
     }
 
+    /**
+     * @verifies add days before monday
+     */
     @Test
-    void test_addDaysBeforeMonday() {
+    void addEmptyDays_shouldAddDaysBeforeMonday() {
         {
             LocalDate date = LocalDate.of(1569, 6, 1);
             assertEquals(DayOfWeek.SUNDAY, date.getDayOfWeek());
