@@ -440,6 +440,18 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchFacets#isFacetStringCurrentlyUsed(String)
+     * @verifies return false for blank link
+     */
+    @Test
+    void isFacetStringCurrentlyUsed_shouldReturnFalseForBlankLink() {
+        SearchFacets facets = new SearchFacets();
+        Assertions.assertFalse(facets.isFacetStringCurrentlyUsed(null));
+        Assertions.assertFalse(facets.isFacetStringCurrentlyUsed(""));
+        Assertions.assertFalse(facets.isFacetStringCurrentlyUsed("  "));
+    }
+
+    /**
      * @see SearchFacets#isFacetCurrentlyUsed(IFacetItem)
      * @verifies return correct value
      */

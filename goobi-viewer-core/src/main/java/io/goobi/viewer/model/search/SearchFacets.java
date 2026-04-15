@@ -266,8 +266,13 @@ public class SearchFacets implements Serializable {
      *
      * @param link facet query link string to look up in the active facets
      * @return true if given link is part of the active facet string; false otherwise
+     * @should return false for blank link
      */
     public boolean isFacetStringCurrentlyUsed(String link) {
+        // Blank links are never valid facet strings (e.g. caused by JSF EL null coercion).
+        if (StringUtils.isBlank(link)) {
+            return false;
+        }
         try {
             return isFacetCurrentlyUsed(new FacetItem(link, false));
         } catch (IllegalArgumentException e) {
@@ -1108,6 +1113,11 @@ public class SearchFacets implements Serializable {
         synchronized (lock) {
             //add current facets which have no hits. This may happen due to geomap faceting
             for (IFacetItem currentItem : getActiveFacetsCopy()) {
+                // Skip items with null field to prevent null keys in the returned map,
+                // which can cause JSF EL null-coercion issues in the template.
+                if (currentItem.getField() == null) {
+                    continue;
+                }
                 String fieldType = DataManager.getInstance().getConfiguration().getFacetFieldType(currentItem.getField());
                 //don't include geo and range facets in list, since they have their own widgets
                 //Is this code still relevant then? Aren't all other facets included in allFacetFields and availableFacets?
