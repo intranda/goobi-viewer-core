@@ -579,7 +579,11 @@ public class SearchFacets implements Serializable {
             // causes an "undefined field ;MD_GENRE_LANG_EN" error.
             if ("".equals(facetLink) || "undefined".equals(facetLink) || facetLink.startsWith(":") || facetLink.startsWith(";")
                     || facetLink.endsWith(":")) {
-                logger.warn("Invalid facet, skipping: {}", facetLink);
+                // Log facet value in quotes so empty strings are visible, and include the request URL for context
+                HttpServletRequest req = BeanUtils.getRequest();
+                String requestUrl = req != null ? (req.getRequestURL().toString()
+                        + (req.getQueryString() != null ? "?" + req.getQueryString() : "")) : "unknown";
+                logger.warn("Invalid facet, skipping: '{}'; requestUrl='{}'", facetLink, requestUrl);
                 continue;
             }
 
