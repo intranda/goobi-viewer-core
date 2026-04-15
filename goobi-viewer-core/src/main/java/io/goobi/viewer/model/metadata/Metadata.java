@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Year;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -511,25 +513,38 @@ public class Metadata implements MetadataListElement, Serializable {
                 case DATEFIELD:
                     String outputPattern = StringUtils.isNotBlank(param.getOutputPattern()) ? param.getOutputPattern()
                             : BeanUtils.getNavigationHelper().getDatePattern();
-                    String altOutputPattern = outputPattern.replace("dd/", "");
                     try {
+                        // Step 1: Full date (ISO yyyy-MM-dd, or custom inputPattern)
                         LocalDate date = StringUtils.isNotEmpty(param.getInputPattern())
                                 ? LocalDate.parse(value, DateTimeFormatter.ofPattern(param.getInputPattern()))
                                 : LocalDate.parse(value);
                         value = date.format(DateTimeFormatter.ofPattern(outputPattern));
                     } catch (DateTimeParseException e) {
-                        // No-day format hack
+                        // Step 2: Year-month (ISO yyyy-MM, or custom inputPattern) – strip day-related characters
+                        // from output pattern. Replace uppercase Y (week-based year) with y to avoid
+                        // UnsupportedTemporalTypeException.
                         try {
-                            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(altOutputPattern);
-                            LocalDate date = LocalDate.parse(value + "-01");
-                            value = date.format(dateTimeFormatter);
+                            YearMonth yearMonth = StringUtils.isNotEmpty(param.getInputPattern())
+                                    ? YearMonth.parse(value, DateTimeFormatter.ofPattern(param.getInputPattern()))
+                                    : YearMonth.parse(value);
+                            String monthYearPattern = outputPattern.replaceAll("d+[^A-Za-z]?|[^A-Za-z]?d+", "")
+                                    .replace("Y", "y").trim();
+                            value = yearMonth.format(DateTimeFormatter.ofPattern(monthYearPattern));
                         } catch (DateTimeParseException e1) {
-                            // LocalDateTime
+                            // Step 3: Full datetime (ISO yyyy-MM-dd'T'HH:mm:ss)
                             try {
-                                LocalDateTime date = LocalDateTime.parse(value);
-                                value = date.format(DateTimeFormatter.ofPattern(outputPattern));
+                                LocalDateTime dateTime = LocalDateTime.parse(value);
+                                value = dateTime.format(DateTimeFormatter.ofPattern(outputPattern));
                             } catch (DateTimeParseException e2) {
-                                logger.warn("Error parsing '{}' as date or datetime", value);
+                                // Step 4: Year only (ISO yyyy, or custom inputPattern) – output the numeric year directly
+                                try {
+                                    Year year = StringUtils.isNotEmpty(param.getInputPattern())
+                                            ? Year.parse(value, DateTimeFormatter.ofPattern(param.getInputPattern()))
+                                            : Year.parse(value);
+                                    value = String.valueOf(year.getValue());
+                                } catch (DateTimeParseException e3) {
+                                    logger.warn("Error parsing '{}' as date or datetime", value);
+                                }
                             }
                         }
                     }

@@ -336,4 +336,134 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals("{0}", new Metadata().getMasterValue());
 
     }
+
+    /**
+     * @see Metadata#setParamValue(int,int,List,String,String,Map,String,Locale)
+     * @verifies format full ISO date with output pattern
+     */
+    @Test
+    void setParamValue_dateField_shouldFormatFullIsoDate() {
+        Metadata metadata = new Metadata("", "MD_DATE", "", "");
+        metadata.getParams().add(new MetadataParameter()
+                .setType(MetadataParameterType.DATEFIELD)
+                .setOutputPattern("dd.MM.yyyy"));
+        metadata.setParamValue(0, 0, Collections.singletonList("2024-04-15"), "", null, null, null, null);
+        assertEquals("15.04.2024", metadata.getValues().get(0).getParamValues().get(0).get(0));
+    }
+
+    /**
+     * @see Metadata#setParamValue(int,int,List,String,String,Map,String,Locale)
+     * @verifies format ISO datetime with output pattern
+     */
+    @Test
+    void setParamValue_dateField_shouldFormatIsoDateTime() {
+        Metadata metadata = new Metadata("", "MD_DATE", "", "");
+        metadata.getParams().add(new MetadataParameter()
+                .setType(MetadataParameterType.DATEFIELD)
+                .setOutputPattern("dd.MM.yyyy"));
+        metadata.setParamValue(0, 0, Collections.singletonList("2024-04-15T10:30:00"), "", null, null, null, null);
+        assertEquals("15.04.2024", metadata.getValues().get(0).getParamValues().get(0).get(0));
+    }
+
+    /**
+     * @see Metadata#setParamValue(int,int,List,String,String,Map,String,Locale)
+     * @verifies format ISO year-month using month-year fallback pattern
+     */
+    @Test
+    void setParamValue_dateField_shouldFormatIsoYearMonth() {
+        Metadata metadata = new Metadata("", "MD_DATE", "", "");
+        metadata.getParams().add(new MetadataParameter()
+                .setType(MetadataParameterType.DATEFIELD)
+                .setOutputPattern("dd.MM.yyyy"));
+        metadata.setParamValue(0, 0, Collections.singletonList("1876-04"), "", null, null, null, null);
+        assertEquals("04.1876", metadata.getValues().get(0).getParamValues().get(0).get(0));
+    }
+
+    /**
+     * @see Metadata#setParamValue(int,int,List,String,String,Map,String,Locale)
+     * @verifies format year-only value using year fallback pattern
+     */
+    @Test
+    void setParamValue_dateField_shouldFormatYearOnly() {
+        Metadata metadata = new Metadata("", "MD_DATE", "", "");
+        metadata.getParams().add(new MetadataParameter()
+                .setType(MetadataParameterType.DATEFIELD)
+                .setOutputPattern("dd.MM.yyyy"));
+        metadata.setParamValue(0, 0, Collections.singletonList("1876"), "", null, null, null, null);
+        assertEquals("1876", metadata.getValues().get(0).getParamValues().get(0).get(0));
+    }
+
+    /**
+     * @see Metadata#setParamValue(int,int,List,String,String,Map,String,Locale)
+     * @verifies keep raw value if unparseable as any date format
+     */
+    @Test
+    void setParamValue_dateField_shouldKeepRawValueIfUnparseable() {
+        Metadata metadata = new Metadata("", "MD_DATE", "", "");
+        metadata.getParams().add(new MetadataParameter()
+                .setType(MetadataParameterType.DATEFIELD)
+                .setOutputPattern("dd.MM.yyyy"));
+        metadata.setParamValue(0, 0, Collections.singletonList("foobar"), "", null, null, null, null);
+        assertEquals("foobar", metadata.getValues().get(0).getParamValues().get(0).get(0));
+    }
+
+    /**
+     * @see Metadata#setParamValue(int,int,List,String,String,Map,String,Locale)
+     * @verifies parse non-ISO full date using inputPattern
+     */
+    @Test
+    void setParamValue_dateField_shouldParseNonIsoFullDateWithInputPattern() {
+        Metadata metadata = new Metadata("", "MD_DATE", "", "");
+        metadata.getParams().add(new MetadataParameter()
+                .setType(MetadataParameterType.DATEFIELD)
+                .setInputPattern("dd-MM-yyyy")
+                .setOutputPattern("dd.MM.yyyy"));
+        metadata.setParamValue(0, 0, Collections.singletonList("15-04-1876"), "", null, null, null, null);
+        assertEquals("15.04.1876", metadata.getValues().get(0).getParamValues().get(0).get(0));
+    }
+
+    /**
+     * @see Metadata#setParamValue(int,int,List,String,String,Map,String,Locale)
+     * @verifies parse US-format full date using inputPattern
+     */
+    @Test
+    void setParamValue_dateField_shouldParseUsFormatFullDateWithInputPattern() {
+        Metadata metadata = new Metadata("", "MD_DATE", "", "");
+        metadata.getParams().add(new MetadataParameter()
+                .setType(MetadataParameterType.DATEFIELD)
+                .setInputPattern("MM/dd/yyyy")
+                .setOutputPattern("dd.MM.yyyy"));
+        metadata.setParamValue(0, 0, Collections.singletonList("04/15/1876"), "", null, null, null, null);
+        assertEquals("15.04.1876", metadata.getValues().get(0).getParamValues().get(0).get(0));
+    }
+
+    /**
+     * @see Metadata#setParamValue(int,int,List,String,String,Map,String,Locale)
+     * @verifies parse non-ISO year-month using inputPattern
+     */
+    @Test
+    void setParamValue_dateField_shouldParseNonIsoYearMonthWithInputPattern() {
+        Metadata metadata = new Metadata("", "MD_DATE", "", "");
+        metadata.getParams().add(new MetadataParameter()
+                .setType(MetadataParameterType.DATEFIELD)
+                .setInputPattern("MM-yyyy")
+                .setOutputPattern("dd.MM.yyyy"));
+        metadata.setParamValue(0, 0, Collections.singletonList("04-1876"), "", null, null, null, null);
+        assertEquals("04.1876", metadata.getValues().get(0).getParamValues().get(0).get(0));
+    }
+
+    /**
+     * @see Metadata#setParamValue(int,int,List,String,String,Map,String,Locale)
+     * @verifies parse year-only value using inputPattern
+     */
+    @Test
+    void setParamValue_dateField_shouldParseYearOnlyWithInputPattern() {
+        Metadata metadata = new Metadata("", "MD_DATE", "", "");
+        metadata.getParams().add(new MetadataParameter()
+                .setType(MetadataParameterType.DATEFIELD)
+                .setInputPattern("yyyy")
+                .setOutputPattern("dd.MM.yyyy"));
+        metadata.setParamValue(0, 0, Collections.singletonList("1876"), "", null, null, null, null);
+        assertEquals("1876", metadata.getValues().get(0).getParamValues().get(0).get(0));
+    }
 }
