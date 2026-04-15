@@ -851,7 +851,7 @@ public class ThumbnailHandler {
         } else if (mediaType.isMEI() || StringUtils.isNotBlank(doc.getMetadataValue(SolrConstants.FILENAME_MEI))) {
             ret = getThumbnailPath(MEI_THUMB).toString();
         } else if (logger.isWarnEnabled()) {
-            logger.warn("Mime type of '{}' not supported: {}", doc.getLuceneId(), mimeType);
+            logger.warn("Mime type of '{}' (file: {}) not supported: {}", doc.getPi(), getFilename(doc).orElse("unknown"), mimeType);
         }
 
         return ret;
