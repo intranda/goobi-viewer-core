@@ -305,9 +305,10 @@ public class ManifestBuilder extends AbstractBuilder {
             ContentLibException, URISyntaxException, DAOException {
 
         IPageLoader pageLoader = AbstractPageLoader.create(ele);
-        // Pre-fetch all page permissions in one batch before the loop to avoid O(n) Solr queries.
-        // Falls back to per-page checks automatically when pagePermissions.isEmpty().
+        // Pre-fetch all page permissions and dimensions in one batch each before the loop,
+        // avoiding O(n) Solr queries and O(n) disk reads during canvas construction.
         canvasBuilder.preparePagePermissions(ele.getPi());
+        canvasBuilder.preparePageDimensions(ele.getPi());
         for (int order = pageLoader.getFirstPageOrder(); order <= pageLoader.getLastPageOrder(); order++) {
             PhysicalElement page = pageLoader.getPage(order);
             addPage(manifest, page);

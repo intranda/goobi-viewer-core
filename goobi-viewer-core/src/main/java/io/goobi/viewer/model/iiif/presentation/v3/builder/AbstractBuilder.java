@@ -285,7 +285,8 @@ public abstract class AbstractBuilder {
         displayFields.addAll(eventFields);
 
         for (String field : getMetadataFields(ele)) {
-            if (contained(field, displayFields) && !field.endsWith(SolrConstants.SUFFIX_UNTOKENIZED) && !field.matches(".*_LANG_\\w{2,3}")) {
+            // Use SolrTools.isLanguageCodedField() instead of per-call Pattern.compile() via String.matches()
+            if (contained(field, displayFields) && !field.endsWith(SolrConstants.SUFFIX_UNTOKENIZED) && !SolrTools.isLanguageCodedField(field)) {
                 String configuredLabel = this.config.getIIIFMetadataLabel(field);
                 String label = StringUtils.isNotBlank(configuredLabel) ? configuredLabel
                         : (field.contains("/") ? field.substring(field.indexOf("/") + 1) : field);

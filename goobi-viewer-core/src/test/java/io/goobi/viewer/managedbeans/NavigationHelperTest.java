@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
@@ -41,7 +40,6 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
@@ -227,13 +225,11 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
 
         ActiveDocumentBean mockAdb = Mockito.mock(ActiveDocumentBean.class);
         Mockito.when(mockAdb.getViewManager()).thenReturn(null);
+        // Use setter injection instead of MockedStatic — activeDocumentBean is now an @Inject field
+        nh.setActiveDocumentBean(mockAdb);
 
-        try (MockedStatic<BeanUtils> mockedBeanUtils = Mockito.mockStatic(BeanUtils.class)) {
-            mockedBeanUtils.when(BeanUtils::getActiveDocumentBean).thenReturn(mockAdb);
-
-            String result = nh.determineCurrentSubThemeDiscriminatorValue();
-            assertEquals("", result);
-        }
+        String result = nh.determineCurrentSubThemeDiscriminatorValue();
+        assertEquals("", result);
     }
 
     @Test

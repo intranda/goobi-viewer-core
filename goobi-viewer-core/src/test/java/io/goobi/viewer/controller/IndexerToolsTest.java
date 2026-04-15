@@ -123,4 +123,13 @@ class IndexerToolsTest extends AbstractTest {
             FileUtils.deleteDirectory(hotfolder.toFile());
         }
     }
+
+    /**
+     * @see IndexerTools#shutdown()
+     */
+    @Test
+    void shutdown_shouldCompleteWithoutException() {
+        // Verifies the executor shuts down cleanly even without any submitted tasks
+        Assertions.assertDoesNotThrow(IndexerTools::shutdown);
+    }
 }

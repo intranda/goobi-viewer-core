@@ -162,6 +162,28 @@ class ThumbnailHandlerTest extends AbstractTest {
                 urlFraction);
     }
 
+    /**
+     * Non-standard mime type "image/tif" (single f) must fall back to file extension lookup
+     * so that getFullImageUrl does not return an empty string for such pages.
+     */
+    @Test
+    void testGetFullImageUrl_nonStandardTifMimeType_shouldFallBackToFileExtension() {
+        PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
+                .setPhysId("PHYS_0001")
+                .setFilePath("00000001.tif")
+                .setOrder(1)
+                .setOrderLabel("Seite 1")
+                .setUrn("urn:234235:3423")
+                .setPurlPart("http://purl")
+                .setMimeType("image/tif")
+                .setDataRepository(null)
+                .build();
+
+        String url = handler.getFullImageUrl(page, Scale.MAX, "MASTER");
+        Assertions.assertNotEquals("", url, "getFullImageUrl must not return empty string for mime type 'image/tif'");
+        Assertions.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/max/0/default.tif", url);
+    }
+
     @Test
     void testThumbnailUrl() {
         String fileUrl = "00000001.tif";

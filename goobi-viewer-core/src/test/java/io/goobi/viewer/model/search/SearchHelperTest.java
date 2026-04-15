@@ -430,6 +430,24 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchHelper#truncateFulltext(Set,String,int,boolean,boolean,int)
+     * @verifies not throw on search term with trailing backslash
+     */
+    @Test
+    void truncateFulltext_shouldNotThrowOnSearchTermWithTrailingBackslash() {
+        String original = "Der Friseur schnitt die Haare";
+        // Search terms ending with backslash used to cause PatternSyntaxException
+        // when compiled directly as regex patterns without quoting.
+        String[] terms = { "friseur\\" };
+        Assertions.assertDoesNotThrow(
+                () -> SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 200, true, true, 0));
+
+        String[] termsNumber = { "71\\" };
+        Assertions.assertDoesNotThrow(
+                () -> SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(termsNumber)), original, 200, true, true, 0));
+    }
+
+    /**
      * @see SearchHelper#extractSearchTermsFromQuery(String)
      * @verifies extract all values from query except from NOT blocks
      */

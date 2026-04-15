@@ -96,20 +96,15 @@ public class LabeledLink implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
+        // Compare by url to match hashCode() and avoid CDI lookup via getName() on every list comparison.
+        // Previously equals() used getName() which triggered BeanUtils.getLocale() → CDI bean lookup on
+        // every call (e.g. LinkedList.indexOf() in breadcrumb construction) and also violated the
+        // hashCode/equals contract (hashCode was url-based, equals was name-based).
         LabeledLink other = (LabeledLink) obj;
-        if (getName().isEmpty()) {
-            if (!other.getName().isEmpty()) {
-                return false;
-            }
-        } else if (!getName().equals(other.getName())) {
-            return false;
+        if (url == null) {
+            return other.url == null;
         }
-        //        if (url == null) {
-        //            if (other.url != null)
-        //                return false;
-        //        } else if (!url.equals(other.url))
-        //            return false;
-        return true;
+        return url.equals(other.url);
     }
 
     /**

@@ -371,4 +371,67 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     void cleanUpQuery_shouldKeepSingleBraces() {
         assertEquals("\\{u.a.", SolrTools.cleanUpQuery("\\{u.a."));
     }
+
+    /**
+     * @see SolrTools#isLanguageCodedField(String)
+     * @verifies return true for language-coded field names
+     */
+    @Test
+    void isLanguageCodedField_shouldReturnTrueForLanguageCodedFieldNames() {
+        assertTrue(SolrTools.isLanguageCodedField("MD_TITLE_LANG_DE"));
+        assertTrue(SolrTools.isLanguageCodedField("MD_TITLE_LANG_DEU"));
+        assertTrue(SolrTools.isLanguageCodedField("FIELD_LANG_EN"));
+    }
+
+    /**
+     * @see SolrTools#isLanguageCodedField(String)
+     * @verifies return false for non-language-coded field names
+     */
+    @Test
+    void isLanguageCodedField_shouldReturnFalseForNonLanguageCodedFieldNames() {
+        assertFalse(SolrTools.isLanguageCodedField("MD_TITLE"));
+        assertFalse(SolrTools.isLanguageCodedField("MD_TITLE_LANG_"));
+        assertFalse(SolrTools.isLanguageCodedField(""));
+        assertFalse(SolrTools.isLanguageCodedField(null));
+    }
+
+    /**
+     * @see SolrTools#getBaseFieldName(String)
+     * @verifies strip language suffix
+     */
+    @Test
+    void getBaseFieldName_shouldStripLanguageSuffix() {
+        assertEquals("MD_TITLE", SolrTools.getBaseFieldName("MD_TITLE_LANG_DE"));
+        assertEquals("MD_TITLE", SolrTools.getBaseFieldName("MD_TITLE_LANG_DEU"));
+    }
+
+    /**
+     * @see SolrTools#getBaseFieldName(String)
+     * @verifies return field name unchanged if no language suffix present
+     */
+    @Test
+    void getBaseFieldName_shouldReturnFieldNameUnchangedIfNoLanguageSuffixPresent() {
+        assertEquals("MD_TITLE", SolrTools.getBaseFieldName("MD_TITLE"));
+    }
+
+    /**
+     * @see SolrTools#getLanguage(String)
+     * @verifies return language code from field name
+     */
+    @Test
+    void getLanguage_shouldReturnLanguageCodeFromFieldName() {
+        assertEquals("DE", SolrTools.getLanguage("MD_TITLE_LANG_DE"));
+        assertEquals("DEU", SolrTools.getLanguage("MD_TITLE_LANG_DEU"));
+    }
+
+    /**
+     * @see SolrTools#getLanguage(String)
+     * @verifies return null if no language suffix present
+     */
+    @Test
+    void getLanguage_shouldReturnNullIfNoLanguageSuffixPresent() {
+        Assertions.assertNull(SolrTools.getLanguage("MD_TITLE"));
+        Assertions.assertNull(SolrTools.getLanguage(""));
+        Assertions.assertNull(SolrTools.getLanguage(null));
+    }
 }

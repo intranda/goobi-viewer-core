@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
@@ -69,6 +70,9 @@ public final class ALTOTools {
             "(^[^a-zA-ZÄäÁáÀàÂâÖöÓóÒòÔôÜüÚúÙùÛûëÉéÈèÊêßñ]+)|([^a-zA-ZÄäÁáÀàÂâÖöÓóÒòÔôÜüÚúÙùÛûëÉéÈèÊêßñ]+$)";
     /** Characters that can cause an "Invalid UTF-8 middle byte" error in the parser. */
     public static final String ALTO_PROBLEMATIC_CHARS = "[ﬅﬆﬃﬄﬂﬁ�]";
+    // Pre-compiled patterns to avoid per-call Pattern.compile() in hot paths (called for every ALTO word/tag)
+    private static final Pattern TAG_LABEL_IGNORE_COMPILED = Pattern.compile(TAG_LABEL_IGNORE_REGEX);
+    private static final Pattern ALTO_PROBLEMATIC_CHARS_COMPILED = Pattern.compile(ALTO_PROBLEMATIC_CHARS);
 
     /**
      * Private constructor.
@@ -163,8 +167,9 @@ public final class ALTOTools {
     @SuppressWarnings("rawtypes")
     static List<TagCount> createNERTag(Tag tag) {
         String value = tag.getLabel();
+        // Use pre-compiled pattern to avoid per-call Pattern.compile() in this hot path (called for every ALTO NER tag)
         value =
-                value.replaceAll(TAG_LABEL_IGNORE_REGEX, ""); //NOSONAR TAG_LABEL_IGNORE_REGEX contains no lazy internal repetitions
+                TAG_LABEL_IGNORE_COMPILED.matcher(value).replaceAll(""); //NOSONAR TAG_LABEL_IGNORE_REGEX contains no lazy internal repetitions
         Type type = Type.getByLabel(tag.getType());
         if (type == null) {
             logger.trace("Unknown tag type: {}, using {}", tag.getType(), Type.MISC.name());
@@ -212,7 +217,8 @@ public final class ALTOTools {
             throw new IllegalArgumentException("alto may not be null");
         }
 
-        TextEnricher charCleanupEnricher = (string, element) -> string.replaceAll(ALTO_PROBLEMATIC_CHARS, " ");
+        // Use pre-compiled pattern to avoid per-call Pattern.compile() in this hot path (called for every ALTO word)
+        TextEnricher charCleanupEnricher = (string, element) -> ALTO_PROBLEMATIC_CHARS_COMPILED.matcher(string).replaceAll(" ");
         TextEnricher nerEnricher = new NamedEntityEnricher();
         AltoTextReader reader =
                 new AltoTextReader(alto, charset != null ? charset : StringTools.DEFAULT_ENCODING, charCleanupEnricher, nerEnricher);

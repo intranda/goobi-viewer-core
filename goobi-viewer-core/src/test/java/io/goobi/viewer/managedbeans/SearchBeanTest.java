@@ -283,6 +283,92 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchBean#mirrorAdvancedSearchCurrentHierarchicalFacets()
+     * @verifies add extra search query item if all items full
+     */
+    @Test
+    void mirrorAdvancedSearchCurrentHierarchicalFacets_shouldAddExtraSearchQueryItemIfAllItemsFull() {
+        searchBean.resetAdvancedSearchParameters();
+        List<SearchQueryItem> items = searchBean.getAdvancedSearchQueryGroup().getQueryItems();
+        int initialSize = items.size();
+
+        // Occupy all existing items so none can be re-used for a new facet
+        for (SearchQueryItem item : new java.util.ArrayList<>(items)) {
+            item.setField(SolrConstants.DC);
+            item.setValue("occupied");
+        }
+
+        // One DC facet whose value does not match any occupied item → a new item must be created
+        searchBean.getFacets().setActiveFacetString("DC:newValue");
+        searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets();
+
+        assertEquals(initialSize + 1, searchBean.getAdvancedSearchQueryGroup().getQueryItems().size());
+        SearchQueryItem newItem = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(initialSize);
+        assertEquals(SolrConstants.DC, newItem.getField());
+        assertEquals("newValue", newItem.getValue());
+    }
+
+    /**
+     * @see SearchBean#mirrorAdvancedSearchCurrentHierarchicalFacets()
+     * @verifies not throw ConcurrentModificationException under concurrent access
+     */
+    @Test
+    void mirrorAdvancedSearchCurrentHierarchicalFacets_shouldNotThrowCMEWhenCalledConcurrently() throws Exception {
+        // SearchBean is @SessionScoped: multiple request threads share the same instance.
+        // Before the fix, iterating the live queryItems list while another thread (or a prior
+        // outer-loop iteration) added a new SearchQueryItem caused a ConcurrentModificationException.
+        searchBean.resetAdvancedSearchParameters();
+
+        // Occupy all existing items to force new item creation (the add path that caused the CME)
+        for (SearchQueryItem item : new java.util.ArrayList<>(searchBean.getAdvancedSearchQueryGroup().getQueryItems())) {
+            item.setField(SolrConstants.DC);
+            item.setValue("occupied");
+        }
+        searchBean.getFacets().setActiveFacetString("DC:a;;DC:b;;DC:c;;DC:d;;DC:e");
+
+        int threadCount = 10;
+        AtomicReference<Throwable> caught = new AtomicReference<>();
+        CountDownLatch ready = new CountDownLatch(threadCount);
+        CountDownLatch start = new CountDownLatch(1);
+        ExecutorService pool = Executors.newFixedThreadPool(threadCount);
+
+        for (int i = 0; i < threadCount; i++) {
+            pool.submit(() -> {
+                ready.countDown();
+                try {
+                    start.await();
+                    searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets();
+                } catch (Throwable t) {
+                    caught.compareAndSet(null, t);
+                }
+            });
+        }
+
+        ready.await();
+        start.countDown();
+        pool.shutdown();
+        pool.awaitTermination(5, TimeUnit.SECONDS);
+
+        Assertions.assertNull(caught.get(), "mirrorAdvancedSearchCurrentHierarchicalFacets() must not throw under concurrent access");
+    }
+
+    /**
+     * @see SearchBean#mirrorAdvancedSearchCurrentHierarchicalFacets()
+     * @verifies not throw NPE when queryItems contains null elements
+     */
+    @Test
+    void mirrorAdvancedSearchCurrentHierarchicalFacets_shouldNotThrowNPEWhenQueryItemsContainsNullElements() {
+        searchBean.resetAdvancedSearchParameters();
+        // Simulate the race condition in which init()'s clear() races with the ArrayList copy
+        // constructor: clear() nulls backing-array slots before resetting size, so a concurrent
+        // new ArrayList<>(list) can capture null elements. Inject one directly to reproduce the
+        // failure path without needing actual thread-timing.
+        searchBean.getAdvancedSearchQueryGroup().getQueryItems().add(null);
+        searchBean.getFacets().setActiveFacetString("DC:a");
+        Assertions.assertDoesNotThrow(() -> searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets());
+    }
+
+    /**
      * @see SearchBean#generateSimpleSearchString(String)
      * @verifies generate phrase search query without filter correctly
      */
@@ -1088,5 +1174,47 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         pool.awaitTermination(5, TimeUnit.SECONDS);
 
         Assertions.assertNull(caught.get(), "resetSearchResults() must not throw under concurrent access");
+    }
+
+    /**
+     * @see SearchBean#getPreviousElement()
+     * @verifies return null if currentHitIndex is negative
+     */
+    @Test
+    void getPreviousElement_shouldReturnNullIfCurrentHitIndexIsNegative() throws Exception {
+        // Default state: currentHitIndex == -1 (simulates a concurrent reset)
+        Assertions.assertNull(searchBean.getPreviousElement());
+    }
+
+    /**
+     * @see SearchBean#getPreviousElement()
+     * @verifies return null if currentSearch is null
+     */
+    @Test
+    void getPreviousElement_shouldReturnNullIfCurrentSearchIsNull() throws Exception {
+        searchBean.setCurrentHitIndex(5);
+        Assertions.assertNull(searchBean.getCurrentSearch());
+        Assertions.assertNull(searchBean.getPreviousElement());
+    }
+
+    /**
+     * @see SearchBean#getNextElement()
+     * @verifies return null if currentHitIndex is negative
+     */
+    @Test
+    void getNextElement_shouldReturnNullIfCurrentHitIndexIsNegative() throws Exception {
+        // Default state: currentHitIndex == -1 (simulates a concurrent reset)
+        Assertions.assertNull(searchBean.getNextElement());
+    }
+
+    /**
+     * @see SearchBean#getNextElement()
+     * @verifies return null if currentSearch is null
+     */
+    @Test
+    void getNextElement_shouldReturnNullIfCurrentSearchIsNull() throws Exception {
+        searchBean.setCurrentHitIndex(5);
+        Assertions.assertNull(searchBean.getCurrentSearch());
+        Assertions.assertNull(searchBean.getNextElement());
     }
 }

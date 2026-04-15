@@ -156,6 +156,23 @@ class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see TOC#buildTree(String, int, int, int, String)
+     * @verifies not throw NPE when group not in tocElementMap
+     */
+    @Test
+    void buildTree_shouldNotThrowNPEWhenGroupNotInMap() {
+        TOC toc = new TOC();
+        Map<String, List<TOCElement>> map = new HashMap<>();
+        map.put(StringConstants.DEFAULT_NAME, new ArrayList<>());
+        toc.setTocElementMap(map);
+
+        // "unknownGroup" is not a key in the map — must not throw NPE
+        Assertions.assertDoesNotThrow(() -> toc.buildTree("unknownGroup", 1, 5, 0, null));
+        // Result should be null since the group doesn't exist
+        Assertions.assertNull(toc.getViewForGroup("unknownGroup"));
+    }
+
+    /**
      * @see TOC#getTreeViewForGroup(String)
      * @verifies not throw NPE when ViewManager is null
      */

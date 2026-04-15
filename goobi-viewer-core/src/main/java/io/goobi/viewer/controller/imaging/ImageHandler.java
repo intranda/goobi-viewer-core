@@ -263,6 +263,9 @@ public class ImageHandler {
                     .toString();
         }
 
+        // Warn when falling back to disk read because WIDTH/HEIGHT are missing in the Solr index
+        logger.warn("Image dimensions not found in Solr index for PI='{}', file='{}' — falling back to disk read", page.getPi(),
+                page.getFilepath());
         logger.trace(url);
         return getImageInformation(url);
     }

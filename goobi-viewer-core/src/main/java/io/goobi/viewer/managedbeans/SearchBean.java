@@ -210,12 +210,13 @@ public class SearchBean implements SearchInterface, Serializable {
     /** Origin record from which the search was triggered (for back-link to TOC view). Null if not searching within a record. */
     private AdvancedSearchOrigin advancedSearchOrigin;
     /** Group of query item clusters for the advanced search. */
-    private SearchQueryGroup advancedSearchQueryGroup =
-            new SearchQueryGroup(
-                    DataManager.getInstance()
-                            .getConfiguration()
-                            .getAdvancedSearchFields(advancedSearchFieldTemplate, true, BeanUtils.getLocale().getLanguage()),
-                    advancedSearchFieldTemplate);
+    // Initialised without a CDI call to avoid a circular dependency: NavigationHelper now injects
+    // SearchBean via @Inject, and Weld creates a SearchBean proxy during NavigationHelper construction.
+    // The proxy constructor runs field initialisers, so any CDI call here (BeanUtils.getLocale())
+    // would try to instantiate NavigationHelper which in turn requests SearchBean → infinite recursion.
+    // @PostConstruct init() calls resetAdvancedSearchParameters() which reinitialises this group with
+    // the correct locale-aware field list.
+    private SearchQueryGroup advancedSearchQueryGroup = new SearchQueryGroup(Collections.emptyList(), advancedSearchFieldTemplate);
     /** Human-readable representation of the advanced search query for displaying. */
     private String advancedSearchQueryInfo;
     /** Current search object. Contains the results and can be used to persist search parameters in the DB. */
@@ -1559,6 +1560,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @should not replace query items already in use
      * @should not add identical hierarchical query items
      * @should change nothing if facet already exists in query items
+     * @should not throw NPE when queryItems contains null elements
      */
     public void mirrorAdvancedSearchCurrentHierarchicalFacets() {
         logger.trace("mirrorAdvancedSearchCurrentHierarchicalFacets");
@@ -1566,6 +1568,10 @@ public class SearchBean implements SearchInterface, Serializable {
         if (facets.isActiveFacetsEmpty()) {
             // Reset hierarchical query items if no active facets selected
             List<SearchQueryItem> queryItems = new ArrayList<>(advancedSearchQueryGroup.getQueryItems());
+            // Defensive: a concurrent init() call can race with the ArrayList copy constructor —
+            // clear() nulls backing-array slots before resetting size, so the copy may capture
+            // null elements. Remove them before iterating to prevent NullPointerException.
+            queryItems.removeIf(item -> item == null);
             for (SearchQueryItem item : queryItems) {
                 if (item.isHierarchical()) {
                     logger.trace("resetting current field value in advanced search: {}", item.getField());
@@ -1585,8 +1591,18 @@ public class SearchBean implements SearchInterface, Serializable {
 
             SearchQueryItem match = null;
 
+            // Take a defensive snapshot of the current query items for this facet's lookup loops.
+            // SearchBean is @SessionScoped and may be accessed by multiple request threads simultaneously
+            // (e.g. two browser tabs). Iterating the live list while another thread (or a prior
+            // outer-loop iteration) adds a new item via getQueryItems().add() would trigger a
+            // ConcurrentModificationException in ArrayList's fail-fast iterator.
+            // Additionally filter out null elements: init()'s clear() nulls backing-array slots
+            // before resetting size, so a concurrent copy can capture nulls (see removeIf above).
+            List<SearchQueryItem> queryItemsSnapshot = new ArrayList<>(advancedSearchQueryGroup.getQueryItems());
+            queryItemsSnapshot.removeIf(item -> item == null);
+
             // First try to match item with exact field
-            for (SearchQueryItem queryItem : advancedSearchQueryGroup.getQueryItems()) {
+            for (SearchQueryItem queryItem : queryItemsSnapshot) {
                 if (!populatedQueryItems.contains(queryItem)
                         && (facetItem.getField().equals(queryItem.getField()) && facetItem.getValue().equals(queryItem.getValue()))) {
                     match = queryItem;
@@ -1597,7 +1613,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
             // Match same field with no value selected
             if (match == null) {
-                for (SearchQueryItem queryItem : advancedSearchQueryGroup.getQueryItems()) {
+                for (SearchQueryItem queryItem : queryItemsSnapshot) {
                     if (!populatedQueryItems.contains(queryItem)
                             && facetItem.getField().equals(queryItem.getField())
                             && StringUtils.isEmpty(queryItem.getValue())) {
@@ -1611,7 +1627,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
             // If no exact field match found, try to re-purpose an unused item
             if (match == null) {
-                for (SearchQueryItem queryItem : advancedSearchQueryGroup.getQueryItems()) {
+                for (SearchQueryItem queryItem : queryItemsSnapshot) {
                     // field:value pair already exists
                     if (!populatedQueryItems.contains(queryItem) && (queryItem.getField() == null || StringUtils.isEmpty(queryItem.getValue()))) {
                         match = queryItem;
@@ -1860,8 +1876,13 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public BrowseElement getNextElement() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        logger.trace("getNextElement: {}", currentHitIndex);
-        if (currentHitIndex <= -1 || currentSearch == null || currentSearch.getHits().isEmpty()) {
+        // Capture currentHitIndex in a local variable to prevent a TOCTOU race condition:
+        // SearchBean is @SessionScoped and concurrently accessed by multiple request threads
+        // (e.g. two browser tabs). Without the snapshot, a reset by another thread between
+        // the guard check and the Solr call could produce an out-of-bounds 'start' parameter.
+        final int hitIndex = currentHitIndex;
+        logger.trace("getNextElement: {}", hitIndex);
+        if (hitIndex <= -1 || currentSearch == null || currentSearch.getHits().isEmpty()) {
             return null;
         }
 
@@ -1875,11 +1896,11 @@ public class SearchBean implements SearchInterface, Serializable {
         if (StringUtils.isNotBlank(currentSearch.getCustomFilterQuery())) {
             filterQueries.add(currentSearch.getCustomFilterQuery());
         }
-        if (currentHitIndex < currentSearch.getHitsCount() - 1) {
-            return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex + 1, currentSearch.getAllSortFields(), filterQueries,
+        if (hitIndex < currentSearch.getHitsCount() - 1) {
+            return SearchHelper.getBrowseElement(searchStringInternal, hitIndex + 1, currentSearch.getAllSortFields(), filterQueries,
                     SearchHelper.generateQueryParams(termQuery), searchTerms, BeanUtils.getLocale(), proximitySearchDistance);
         }
-        return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex, currentSearch.getAllSortFields(), filterQueries,
+        return SearchHelper.getBrowseElement(searchStringInternal, hitIndex, currentSearch.getAllSortFields(), filterQueries,
                 SearchHelper.generateQueryParams(termQuery), searchTerms, BeanUtils.getLocale(), proximitySearchDistance);
     }
 
@@ -1893,8 +1914,14 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public BrowseElement getPreviousElement() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        logger.trace("getPreviousElement: {}", currentHitIndex);
-        if (currentHitIndex <= -1 || currentSearch == null || currentSearch.getHits().isEmpty()) {
+        // Capture currentHitIndex in a local variable to prevent a TOCTOU race condition:
+        // SearchBean is @SessionScoped and concurrently accessed by multiple request threads
+        // (e.g. two browser tabs). Without the snapshot, a reset by another thread between
+        // the guard check and the Solr call could produce a negative 'start' parameter,
+        // causing Solr to reject the query with "start parameter cannot be negative".
+        final int hitIndex = currentHitIndex;
+        logger.trace("getPreviousElement: {}", hitIndex);
+        if (hitIndex <= -1 || currentSearch == null || currentSearch.getHits().isEmpty()) {
             return null;
         }
 
@@ -1908,11 +1935,11 @@ public class SearchBean implements SearchInterface, Serializable {
         if (StringUtils.isNotBlank(currentSearch.getCustomFilterQuery())) {
             filterQueries.add(currentSearch.getCustomFilterQuery());
         }
-        if (currentHitIndex > 0) {
-            return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex - 1, currentSearch.getAllSortFields(), filterQueries,
+        if (hitIndex > 0) {
+            return SearchHelper.getBrowseElement(searchStringInternal, hitIndex - 1, currentSearch.getAllSortFields(), filterQueries,
                     SearchHelper.generateQueryParams(termQuery), searchTerms, BeanUtils.getLocale(), proximitySearchDistance);
         } else if (currentSearch.getHitsCount() > 0) {
-            return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex, currentSearch.getAllSortFields(), filterQueries,
+            return SearchHelper.getBrowseElement(searchStringInternal, hitIndex, currentSearch.getAllSortFields(), filterQueries,
                     SearchHelper.generateQueryParams(termQuery), searchTerms, BeanUtils.getLocale(), proximitySearchDistance);
         }
 

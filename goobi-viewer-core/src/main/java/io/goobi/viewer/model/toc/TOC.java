@@ -90,6 +90,8 @@ public class TOC implements Serializable {
         synchronized (this) {
             tocElementMap = TocMaker.generateToc(this, structElement, addAllSiblings, mimeType, tocCurrentPage,
                     DataManager.getInstance().getConfiguration().getTocAnchorGroupElementsPerPage());
+            // Reset the flag so buildTree runs again for the new tocElementMap data.
+            treeBuilt = false;
         }
     }
 
@@ -175,14 +177,27 @@ public class TOC implements Serializable {
             throw new IllegalArgumentException("group may not be null");
         }
 
+        // Capture the group list before entering the synchronized block so we can pass
+        // the same (non-null-checked) reference to uncollapseCurrentElementAncestors below.
+        List<TOCElement> groupElements = null;
         synchronized (this) {
             if (tocElementMap != null) {
+                groupElements = tocElementMap.get(group);
+                // Guard: if the requested group is absent from the map, skip tree building.
+                // This prevents an NPE when tocElementMap is concurrently replaced with a
+                // new instance that has different keys (e.g. after generate() is called for
+                // a different document between getGroupNames() and getTreeViewForGroup()).
+                if (groupElements == null) {
+                    logger.warn("Requested TOC group '{}' not found in tocElementMap (available: {}); skipping tree build.", group,
+                            tocElementMap.keySet());
+                    return;
+                }
                 // long start = System.nanoTime(); //NOSONAR Debug
                 int lastLevel = 0;
                 int lastParent = 0;
-                for (TOCElement tocElement : tocElementMap.get(group)) {
+                for (TOCElement tocElement : groupElements) {
                     // Current element index
-                    int index = tocElementMap.get(group).indexOf(tocElement);
+                    int index = groupElements.indexOf(tocElement);
                     tocElement.setID(index);
                     if (tocElement.getLevel() > maxTocDepth) {
                         maxTocDepth = tocElement.getLevel();
@@ -190,16 +205,16 @@ public class TOC implements Serializable {
 
                     if (lastLevel < tocElement.getLevel() && index > 0) {
                         tocElement.setParentId(lastParent);
-                        tocElementMap.get(group).get(index - 1).setHasChild(true);
+                        groupElements.get(index - 1).setHasChild(true);
                         if (tocElement.getLevel() > visibleLevel) {
-                            tocElementMap.get(group).get(index - 1).setExpanded(false);
+                            groupElements.get(index - 1).setExpanded(false);
                             tocElement.setVisible(false);
                         } else {
-                            tocElementMap.get(group).get(index - 1).setExpanded(true);
+                            groupElements.get(index - 1).setExpanded(true);
                         }
 
-                        for (int i = index + 1; i < tocElementMap.get(group).size(); i++) {
-                            TOCElement tc = tocElementMap.get(group).get(i);
+                        for (int i = index + 1; i < groupElements.size(); i++) {
+                            TOCElement tc = groupElements.get(i);
                             if (tc.getLevel() == tocElement.getLevel()) {
                                 // Elements on the same level as the current element get the same parent ID and are set visible
                                 tc.setParentId(tocElement.getParentId());
@@ -220,7 +235,7 @@ public class TOC implements Serializable {
                 treeBuilt = true;
             }
         }
-        uncollapseCurrentElementAncestors(tocElementMap.get(group), currentElementIdDoc);
+        uncollapseCurrentElementAncestors(groupElements, currentElementIdDoc);
     }
 
     /**
@@ -229,19 +244,21 @@ public class TOC implements Serializable {
      * @param currentElementIdDoc IDDOC of the currently displayed struct element
      */
     private void uncollapseCurrentElementAncestors(List<TOCElement> list, String currentElementIdDoc) {
-        if (currentElementIdDoc != null) {
-            TOCElement currentElement = getElement(list, currentElementIdDoc);
-            if (currentElement != null) {
-                currentElement.setVisible(true);
-                int parentId = currentElement.getParentId();
-                TOCElement parent = getElement(list, parentId);
-                // recursively expand all direct ancestors
-                while (parent != null) {
-                    parent.setExpanded(true);
-                    expandTree(parentId);
-                    parentId = parent.getParentId();
-                    parent = getElement(list, parentId);
-                }
+        // Guard against null list (group absent from map) or unknown current element.
+        if (list == null || currentElementIdDoc == null) {
+            return;
+        }
+        TOCElement currentElement = getElement(list, currentElementIdDoc);
+        if (currentElement != null) {
+            currentElement.setVisible(true);
+            int parentId = currentElement.getParentId();
+            TOCElement parent = getElement(list, parentId);
+            // recursively expand all direct ancestors
+            while (parent != null) {
+                parent.setExpanded(true);
+                expandTree(parentId);
+                parentId = parent.getParentId();
+                parent = getElement(list, parentId);
             }
         }
     }

@@ -37,6 +37,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import org.apache.solr.common.SolrDocumentList;
@@ -44,6 +45,7 @@ import org.apache.solr.common.SolrDocumentList;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.managedbeans.UserBean;
@@ -524,6 +526,30 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
         Mockito.when(session.getAttribute("userBean")).thenReturn(userBean);
 
         Assertions.assertEquals(user, AccessConditionUtils.retrieveUserFromContext(session));
+    }
+
+    /**
+     * @see AccessConditionUtils#retrieveUserFromContext(HttpSession)
+     * @verifies return null without session scan when CDI returns userBean with null user
+     *
+     * When CDI is active and returns a UserBean with null user (anonymous visitor), the method must
+     * return null directly without falling through to the expensive O(N) session scan.
+     */
+    @Test
+    void retrieveUserFromContext_shouldReturnNullWithoutSessionScanWhenCdiReturnsNullUser() {
+        UserBean userBean = new UserBean(); // user field is null — anonymous visitor
+
+        HttpSession session = Mockito.mock(HttpSession.class);
+
+        try (MockedStatic<BeanUtils> mockedBeanUtils = Mockito.mockStatic(BeanUtils.class)) {
+            mockedBeanUtils.when(BeanUtils::getUserBean).thenReturn(userBean);
+
+            User result = AccessConditionUtils.retrieveUserFromContext(session);
+
+            Assertions.assertNull(result);
+            // The session must not be scanned — getAttributeNames() is the entry point of the scan
+            Mockito.verify(session, Mockito.never()).getAttributeNames();
+        }
     }
 
     /**

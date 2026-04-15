@@ -45,6 +45,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
+import jakarta.servlet.http.HttpServletRequest;
+
+import com.ocpsoft.pretty.PrettyContext;
+import com.ocpsoft.pretty.faces.url.URL;
+
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -261,12 +266,31 @@ public class SearchFacets implements Serializable {
      *
      * @param link facet query link string to look up in the active facets
      * @return true if given link is part of the active facet string; false otherwise
+     * @should return false for blank link
      */
     public boolean isFacetStringCurrentlyUsed(String link) {
+        // Blank links are never valid facet strings (e.g. caused by JSF EL null coercion).
+        if (StringUtils.isBlank(link)) {
+            return false;
+        }
         try {
             return isFacetCurrentlyUsed(new FacetItem(link, false));
         } catch (IllegalArgumentException e) {
-            logger.warn(e.getMessage());
+            // Log link in quotes so empty strings are visible, and include the request URL for context.
+            // Use PrettyContext to get the original pretty URL (before internal JSF forward), falling back to the raw request URL.
+            HttpServletRequest req = BeanUtils.getRequest();
+            String requestUrl = "unknown";
+            if (req != null) {
+                PrettyContext prettyContext = PrettyContext.getCurrentInstance(req);
+                URL prettyUrl = prettyContext != null ? prettyContext.getRequestURL() : null;
+                if (prettyUrl != null) {
+                    requestUrl = prettyUrl.toURL();
+                } else {
+                    requestUrl = req.getRequestURL().toString()
+                            + (req.getQueryString() != null ? "?" + req.getQueryString() : "");
+                }
+            }
+            logger.warn("Field and value are not colon-separated: '{}'; requestUrl='{}'", link, requestUrl);
             return false;
         }
     }
@@ -573,7 +597,11 @@ public class SearchFacets implements Serializable {
             // causes an "undefined field ;MD_GENRE_LANG_EN" error.
             if ("".equals(facetLink) || "undefined".equals(facetLink) || facetLink.startsWith(":") || facetLink.startsWith(";")
                     || facetLink.endsWith(":")) {
-                logger.warn("Invalid facet, skipping: {}", facetLink);
+                // Log facet value in quotes so empty strings are visible, and include the request URL for context
+                HttpServletRequest req = BeanUtils.getRequest();
+                String requestUrl = req != null ? (req.getRequestURL().toString()
+                        + (req.getQueryString() != null ? "?" + req.getQueryString() : "")) : "unknown";
+                logger.warn("Invalid facet, skipping: '{}'; requestUrl='{}'", facetLink, requestUrl);
                 continue;
             }
 
@@ -1085,6 +1113,11 @@ public class SearchFacets implements Serializable {
         synchronized (lock) {
             //add current facets which have no hits. This may happen due to geomap faceting
             for (IFacetItem currentItem : getActiveFacetsCopy()) {
+                // Skip items with null field to prevent null keys in the returned map,
+                // which can cause JSF EL null-coercion issues in the template.
+                if (currentItem.getField() == null) {
+                    continue;
+                }
                 String fieldType = DataManager.getInstance().getConfiguration().getFacetFieldType(currentItem.getField());
                 //don't include geo and range facets in list, since they have their own widgets
                 //Is this code still relevant then? Aren't all other facets included in allFacetFields and availableFacets?

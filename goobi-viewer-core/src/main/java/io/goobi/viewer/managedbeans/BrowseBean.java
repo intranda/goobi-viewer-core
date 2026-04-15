@@ -101,10 +101,12 @@ public class BrowseBean implements Serializable {
     /** Solr field to browse. */
     private String browsingMenuField = null;
     /** Term list for the current result page (browsing menu). Used for displaying. */
-    private List<String> browseTermList;
+    // volatile: published atomically to prevent ConcurrentModificationException when JSF iterates
+    // these lists via c:forEach while another session request replaces or populates them
+    private volatile List<String> browseTermList;
     /** Escaped term list for the current result page (browsing menu). Used for URL construction. */
-    private List<String> browseTermListEscaped;
-    private List<Long> browseTermHitCountList;
+    private volatile List<String> browseTermListEscaped;
+    private volatile List<Long> browseTermHitCountList;
     private Map<String, List<String>> availableStringFilters = new HashMap<>();
     /** This is used for filtering term browsing by the starting letter. */
     private String currentStringFilter = "";
@@ -136,15 +138,12 @@ public class BrowseBean implements Serializable {
      * Resets all lists for term browsing.
      */
     public void resetTerms() {
-        if (browseTermList != null) {
-            browseTermList.clear();
-        }
-        if (browseTermListEscaped != null) {
-            browseTermListEscaped.clear();
-        }
-        if (browseTermHitCountList != null) {
-            browseTermHitCountList.clear();
-        }
+        // Assign null rather than calling clear() on the existing list instances.
+        // Calling clear() on a live reference while a JSF render thread holds an iterator
+        // to the same list causes ConcurrentModificationException.
+        browseTermList = null;
+        browseTermListEscaped = null;
+        browseTermHitCountList = null;
         if (availableStringFilters != null) {
             availableStringFilters.clear();
         }
@@ -418,9 +417,13 @@ public class BrowseBean implements Serializable {
             if (end > hitsCount) {
                 end = hitsCount;
             }
-            browseTermList = new ArrayList<>(browsingMenuHitsPerPage);
-            browseTermListEscaped = new ArrayList<>(browseTermList.size());
-            browseTermHitCountList = new ArrayList<>(browseTermList.size());
+            // Build lists as local variables; assign to fields only when complete.
+            // This prevents a concurrent render thread from observing a partially-built list
+            // via getBrowseTermList() and then hitting ConcurrentModificationException
+            // when elements are added to the same list instance inside this synchronized block.
+            List<String> newBrowseTermList = new ArrayList<>(browsingMenuHitsPerPage);
+            List<String> newBrowseTermListEscaped = new ArrayList<>(browsingMenuHitsPerPage);
+            List<Long> newBrowseTermHitCountList = new ArrayList<>(browsingMenuHitsPerPage);
 
             // Get terms for the current page
             logger.trace("Fetching terms for page {} ({} - {})", currentPage, start, end - 1);
@@ -436,11 +439,11 @@ public class BrowseBean implements Serializable {
                 Optional<String> translation = term.getTranslations() != null ? term.getTranslations().getValue(locale) : Optional.empty();
                 if (translation.isPresent()) {
                     // Use translated label, if present
-                    browseTermList.add(translation.get());
+                    newBrowseTermList.add(translation.get());
                 } else {
-                    browseTermList.add(term.getTerm());
+                    newBrowseTermList.add(term.getTerm());
                 }
-                browseTermHitCountList.add(terms.get(i).getHitCount());
+                newBrowseTermHitCountList.add(terms.get(i).getHitCount());
 
                 // Escape characters such as quotation marks
                 String escapedTerm = ClientUtils.escapeQueryChars(term.getTerm().intern());
@@ -450,8 +453,13 @@ public class BrowseBean implements Serializable {
                 } catch (UnsupportedEncodingException e) {
                     logger.error(e.getMessage());
                 }
-                browseTermListEscaped.add(escapedTerm.intern());
+                newBrowseTermListEscaped.add(escapedTerm.intern());
             }
+
+            // Atomically publish the fully-built lists so no reader ever sees a partial state
+            this.browseTermList = newBrowseTermList;
+            this.browseTermListEscaped = newBrowseTermListEscaped;
+            this.browseTermHitCountList = newBrowseTermHitCountList;
 
             return "searchTermList";
         }

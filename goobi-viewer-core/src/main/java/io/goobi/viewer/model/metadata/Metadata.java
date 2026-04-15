@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Year;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -117,6 +119,10 @@ public class Metadata implements MetadataListElement, Serializable {
      * ID of the owning StructElement. Used for constructing unique value IDs, where required.
      */
     private String ownerStructElementIddoc;
+    /** PI (persistent identifier) of the owning record; set during populate() for diagnostic logging. */
+    private String ownerPi;
+    /** Logical structure ID (logid) of the owning StructElement; set during populate() for diagnostic logging. */
+    private String ownerLogid;
     private CitationProcessorWrapper citationProcessorWrapper;
     private int indentation = 0;
     private final List<MetadataValue> values = new ArrayList<>();
@@ -143,6 +149,8 @@ public class Metadata implements MetadataListElement, Serializable {
         this.accessGranted = orig.accessGranted;
         this.ownerDocstrctType = orig.ownerDocstrctType;
         this.ownerStructElementIddoc = orig.ownerStructElementIddoc;
+        this.ownerPi = orig.ownerPi;
+        this.ownerLogid = orig.ownerLogid;
         this.citationProcessorWrapper = orig.citationProcessorWrapper;
         this.indentation = orig.indentation;
         this.values.addAll(orig.values.stream()
@@ -511,25 +519,39 @@ public class Metadata implements MetadataListElement, Serializable {
                 case DATEFIELD:
                     String outputPattern = StringUtils.isNotBlank(param.getOutputPattern()) ? param.getOutputPattern()
                             : BeanUtils.getNavigationHelper().getDatePattern();
-                    String altOutputPattern = outputPattern.replace("dd/", "");
                     try {
+                        // Step 1: Full date (ISO yyyy-MM-dd, or custom inputPattern)
                         LocalDate date = StringUtils.isNotEmpty(param.getInputPattern())
                                 ? LocalDate.parse(value, DateTimeFormatter.ofPattern(param.getInputPattern()))
                                 : LocalDate.parse(value);
                         value = date.format(DateTimeFormatter.ofPattern(outputPattern));
                     } catch (DateTimeParseException e) {
-                        // No-day format hack
+                        // Step 2: Year-month (ISO yyyy-MM, or custom inputPattern) – strip day-related characters
+                        // from output pattern. Replace uppercase Y (week-based year) with y to avoid
+                        // UnsupportedTemporalTypeException.
                         try {
-                            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(altOutputPattern);
-                            LocalDate date = LocalDate.parse(value + "-01");
-                            value = date.format(dateTimeFormatter);
+                            YearMonth yearMonth = StringUtils.isNotEmpty(param.getInputPattern())
+                                    ? YearMonth.parse(value, DateTimeFormatter.ofPattern(param.getInputPattern()))
+                                    : YearMonth.parse(value);
+                            String monthYearPattern = outputPattern.replaceAll("d+[^A-Za-z]?|[^A-Za-z]?d+", "")
+                                    .replace("Y", "y").trim();
+                            value = yearMonth.format(DateTimeFormatter.ofPattern(monthYearPattern));
                         } catch (DateTimeParseException e1) {
-                            // LocalDateTime
+                            // Step 3: Full datetime (ISO yyyy-MM-dd'T'HH:mm:ss)
                             try {
-                                LocalDateTime date = LocalDateTime.parse(value);
-                                value = date.format(DateTimeFormatter.ofPattern(outputPattern));
+                                LocalDateTime dateTime = LocalDateTime.parse(value);
+                                value = dateTime.format(DateTimeFormatter.ofPattern(outputPattern));
                             } catch (DateTimeParseException e2) {
-                                logger.warn("Error parsing '{}' as date or datetime", value);
+                                // Step 4: Year only (ISO yyyy, or custom inputPattern) – output the numeric year directly
+                                try {
+                                    Year year = StringUtils.isNotEmpty(param.getInputPattern())
+                                            ? Year.parse(value, DateTimeFormatter.ofPattern(param.getInputPattern()))
+                                            : Year.parse(value);
+                                    value = String.valueOf(year.getValue());
+                                } catch (DateTimeParseException e3) {
+                                    logger.warn("Error parsing '{}' as date or datetime for field '{}' (PI: {}, logid: {})",
+                                            value, paramLabel, ownerPi, ownerLogid);
+                                }
                             }
                         }
                     }
@@ -864,6 +886,9 @@ public class Metadata implements MetadataListElement, Serializable {
         }
 
         this.ownerStructElementIddoc = ownerIddoc;
+        // Store PI and logid so setParamValue() can include them in diagnostic log messages.
+        this.ownerPi = se.getPi();
+        this.ownerLogid = se.getLogid();
         ownerDocstrctType = se.getDocStructType();
 
         if (StringUtils.isNotEmpty(citationTemplate)) {
@@ -1375,6 +1400,26 @@ public class Metadata implements MetadataListElement, Serializable {
     public Metadata setOwnerDocstrctType(String ownerDocstrctType) {
         this.ownerDocstrctType = ownerDocstrctType;
         return this;
+    }
+
+    /**
+     * Returns the PI (persistent identifier) of the owning record, as set during {@link #populate}.
+     * May be null if this metadata was not populated from a StructElement.
+     *
+     * @return PI of the owning record, or null
+     */
+    public String getOwnerPi() {
+        return ownerPi;
+    }
+
+    /**
+     * Returns the logical structure ID (logid) of the owning StructElement, as set during {@link #populate}.
+     * May be null if this metadata was not populated from a StructElement.
+     *
+     * @return logid of the owning StructElement, or null
+     */
+    public String getOwnerLogid() {
+        return ownerLogid;
     }
 
     public Metadata setFilterQuery(String filterQuery) {

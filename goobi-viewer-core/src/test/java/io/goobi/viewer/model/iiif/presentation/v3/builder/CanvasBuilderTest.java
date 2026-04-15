@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import java.awt.Dimension;
 import java.net.URISyntaxException;
 import java.util.Map;
 
@@ -115,6 +116,36 @@ class CanvasBuilderTest extends AbstractSolrEnabledTest {
         verify(element, Mockito.times(1)).isAccessPermissionImage();
         // Fulltext is never called (fulltext not available in this test, so the block is skipped)
         verify(element, never()).isAccessPermissionFulltext();
+    }
+
+    /**
+     * @see CanvasBuilder#addImageResource(Canvas3, PhysicalElement)
+     * @verifies use prefetched dimension cache without calling ImageHandler when dimensions cached
+     */
+    @Test
+    void test_build_usesDimensionCacheWithoutCallingImageHandler()
+            throws ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException, DAOException {
+
+        PhysicalElement element = Mockito.mock(PhysicalElement.class);
+        Mockito.when(element.getPi()).thenReturn("PI_01");
+        Mockito.when(element.getOrder()).thenReturn(1);
+        Mockito.when(element.getOrderLabel()).thenReturn("1");
+        Mockito.when(element.getFileName()).thenReturn("00000001.tif");
+        Mockito.when(element.getFilepath()).thenReturn("00000001.tif");
+        Mockito.when(element.getMediaType()).thenReturn(new MimeType("image/tiff"));
+        Mockito.when(element.getMimeType()).thenReturn("image/tiff");
+        // No individual size → would normally trigger disk I/O via getImageInformation()
+        Mockito.when(element.getImageWidth()).thenReturn(0);
+        Mockito.when(element.getImageHeight()).thenReturn(0);
+
+        // Inject pre-fetched dimension cache: must be used instead of disk I/O
+        builder.setPageDimensions(Map.of(1, new Dimension(1200, 800)));
+
+        // If the cache is consulted: canvas dimensions are set correctly, no ContentLibException thrown
+        // (getImageInformation() would throw trying to read "00000001.tif" from disk in a test env)
+        Canvas3 canvas = builder.build(element);
+        assertEquals(1200, canvas.getWidth());
+        assertEquals(800, canvas.getHeight());
     }
 
 }

@@ -196,4 +196,13 @@ class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertNotNull(member);
         Assertions.assertTrue(CommentManager.isUserHasAccessToCommentGroups(member));
     }
+
+    /**
+     * @see CommentManager#shutdown()
+     */
+    @Test
+    void shutdown_shouldCompleteWithoutException() {
+        // Verifies the notification executor shuts down cleanly
+        Assertions.assertDoesNotThrow(CommentManager::shutdown);
+    }
 }

@@ -1396,7 +1396,9 @@ public final class SearchHelper {
                         }
                     }
                 } else {
-                    Matcher m = Pattern.compile(searchTerm.toLowerCase()).matcher(fulltext.toLowerCase());
+                    // Use Pattern.quote() to treat the search term as a literal string, preventing
+                    // PatternSyntaxException when user input contains regex special characters (e.g. backslash).
+                    Matcher m = Pattern.compile(Pattern.quote(searchTerm.toLowerCase())).matcher(fulltext.toLowerCase());
                     int lastIndex = -1;
                     while (m.find()) {
                         // Skip match if it follows right after the last match
