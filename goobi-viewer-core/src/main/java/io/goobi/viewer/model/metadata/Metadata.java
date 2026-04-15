@@ -119,6 +119,10 @@ public class Metadata implements MetadataListElement, Serializable {
      * ID of the owning StructElement. Used for constructing unique value IDs, where required.
      */
     private String ownerStructElementIddoc;
+    /** PI (persistent identifier) of the owning record; set during populate() for diagnostic logging. */
+    private String ownerPi;
+    /** Logical structure ID (logid) of the owning StructElement; set during populate() for diagnostic logging. */
+    private String ownerLogid;
     private CitationProcessorWrapper citationProcessorWrapper;
     private int indentation = 0;
     private final List<MetadataValue> values = new ArrayList<>();
@@ -145,6 +149,8 @@ public class Metadata implements MetadataListElement, Serializable {
         this.accessGranted = orig.accessGranted;
         this.ownerDocstrctType = orig.ownerDocstrctType;
         this.ownerStructElementIddoc = orig.ownerStructElementIddoc;
+        this.ownerPi = orig.ownerPi;
+        this.ownerLogid = orig.ownerLogid;
         this.citationProcessorWrapper = orig.citationProcessorWrapper;
         this.indentation = orig.indentation;
         this.values.addAll(orig.values.stream()
@@ -543,7 +549,8 @@ public class Metadata implements MetadataListElement, Serializable {
                                             : Year.parse(value);
                                     value = String.valueOf(year.getValue());
                                 } catch (DateTimeParseException e3) {
-                                    logger.warn("Error parsing '{}' as date or datetime", value);
+                                    logger.warn("Error parsing '{}' as date or datetime for field '{}' (PI: {}, logid: {})",
+                                            value, paramLabel, ownerPi, ownerLogid);
                                 }
                             }
                         }
@@ -879,6 +886,9 @@ public class Metadata implements MetadataListElement, Serializable {
         }
 
         this.ownerStructElementIddoc = ownerIddoc;
+        // Store PI and logid so setParamValue() can include them in diagnostic log messages.
+        this.ownerPi = se.getPi();
+        this.ownerLogid = se.getLogid();
         ownerDocstrctType = se.getDocStructType();
 
         if (StringUtils.isNotEmpty(citationTemplate)) {
@@ -1390,6 +1400,26 @@ public class Metadata implements MetadataListElement, Serializable {
     public Metadata setOwnerDocstrctType(String ownerDocstrctType) {
         this.ownerDocstrctType = ownerDocstrctType;
         return this;
+    }
+
+    /**
+     * Returns the PI (persistent identifier) of the owning record, as set during {@link #populate}.
+     * May be null if this metadata was not populated from a StructElement.
+     *
+     * @return PI of the owning record, or null
+     */
+    public String getOwnerPi() {
+        return ownerPi;
+    }
+
+    /**
+     * Returns the logical structure ID (logid) of the owning StructElement, as set during {@link #populate}.
+     * May be null if this metadata was not populated from a StructElement.
+     *
+     * @return logid of the owning StructElement, or null
+     */
+    public String getOwnerLogid() {
+        return ownerLogid;
     }
 
     public Metadata setFilterQuery(String filterQuery) {

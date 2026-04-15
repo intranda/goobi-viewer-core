@@ -466,4 +466,22 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
         metadata.setParamValue(0, 0, Collections.singletonList("1876"), "", null, null, null, null);
         assertEquals("1876", metadata.getValues().get(0).getParamValues().get(0).get(0));
     }
+
+    /**
+     * @see Metadata#populate(StructElement,StructElement,String,List,Map,int,Locale)
+     * @verifies store pi and logid from struct element
+     */
+    @Test
+    void populate_shouldStorePiAndLogidFromStructElement() throws Exception {
+        StructElement se = new StructElement();
+        se.setPi("TEST_PI_123");
+        se.setLogid("LOG_0001");
+
+        Metadata metadata = new Metadata("", "MD_TITLE", "", "");
+        metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("MD_TITLE"));
+        metadata.populate(se, null, "42", null, null, 0, null);
+
+        assertEquals("TEST_PI_123", metadata.getOwnerPi());
+        assertEquals("LOG_0001", metadata.getOwnerLogid());
+    }
 }
