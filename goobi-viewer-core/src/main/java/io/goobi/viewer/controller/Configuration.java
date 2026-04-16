@@ -1107,6 +1107,7 @@ public class Configuration extends AbstractConfiguration {
      * is returned, all downloads should remain visible
      *
      * @return a regex or an empty string if no downloads should be hidden
+      * @should return configured value
      */
     public List<IFilterConfiguration> getAdditionalFilesDisplayFilters() {
         HierarchicalConfiguration<ImmutableNode> widgetConfig = getSidebarWidgetConfiguration("additional-files");

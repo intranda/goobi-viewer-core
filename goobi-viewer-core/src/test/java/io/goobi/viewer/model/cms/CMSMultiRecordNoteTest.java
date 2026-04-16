@@ -55,7 +55,7 @@ class CMSMultiRecordNoteTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @verifies return true for contained PI and false for other
+     * @verifies return true for contained pi and false for other
      * @see CMSMultiRecordNote#matchesRecord(String)
      */
     @Test

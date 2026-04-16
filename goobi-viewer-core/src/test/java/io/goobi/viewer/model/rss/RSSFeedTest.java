@@ -39,7 +39,7 @@ class RSSFeedTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @verifies return non-null SyndFeed with requested number of entries
+     * @verifies return non null synd feed with requested number of entries
      * @see RSSFeed#createRss(String, String, int)
      */
     @Test
@@ -51,7 +51,7 @@ class RSSFeedTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @verifies return non-null Channel with requested number of items
+     * @verifies return non null channel with requested number of items
      * @see RSSFeed#createRssFeed(String, String, int)
      */
     @Test

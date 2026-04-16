@@ -1290,6 +1290,7 @@ class ConfigurationTest extends AbstractTest {
 
     /**
      * @verifies return configured value
+     * @see Configuration#getAdditionalFilesDisplayFilters()
      */
     @Test
     void getAdditionalFilesDisplayFilters_shouldReturnConfiguredValue() {
@@ -3447,7 +3448,7 @@ class ConfigurationTest extends AbstractTest {
 
     /**
      * @see Configuration#getTranslationGroups()
-     * @verifies return translation groups with type, name, description, items, and regex flags from config
+     * @verifies return translation groups with type name description items and regex flags from config
      */
     @Test
     void getTranslationGroups_shouldReturnTranslationGroupsWithTypeNameDescriptionItemsAndRegexFlagsFromConfig() {

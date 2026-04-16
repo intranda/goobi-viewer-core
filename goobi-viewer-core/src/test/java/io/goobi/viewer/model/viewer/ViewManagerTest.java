@@ -248,7 +248,7 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @verifies include dollar-separated filenames for selected page range in PDF URL
+     * @verifies include dollar separated filenames for selected page range in p d f u r l
      */
     @Test
     void getPdfPartDownloadLink_shouldIncludeDollarSeparatedFilenamesForSelectedPageRangeInPDFURL() throws Exception {
@@ -638,7 +638,7 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @verifies return DFG viewer link using URL-encoded MD2DFGVIEWERURL field value
+     * @verifies return DFG viewer link using URL encoded m d 2 DFGVIEWERURL field value
      */
     @Test
     void getLinkForDFGViewer_shouldReturnDFGViewerLinkUsingURLEncodedMD2DFGVIEWERURLFieldValue() throws Exception {
@@ -856,7 +856,7 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @verifies url-encode watermarkId containing special characters
+     * @verifies url encode watermark id containing special characters
      */
     @Test
     void getMasterImageUrl_shouldUrlEncodeWatermarkIdContainingSpecialCharacters() throws Exception {

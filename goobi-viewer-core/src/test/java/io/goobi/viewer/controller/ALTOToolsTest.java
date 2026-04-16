@@ -183,7 +183,7 @@ class ALTOToolsTest extends AbstractTest {
     }
 
     /**
-     * @verifies return non-empty text from valid ALTO file
+     * @verifies return non empty text from valid alto file
      */
     @Test
     void alto2Txt_shouldReturnNonEmptyTextFromValidAltoFile() throws Exception {
@@ -211,10 +211,10 @@ class ALTOToolsTest extends AbstractTest {
     }
 
     /**
-     * @verifies extract fulltext correctly
+     * @verifies return non-empty text from valid ALTO file
      */
     @Test
-    void getFulltext_shouldExtractFulltextCorrectly() throws Exception {
+    void getFulltext_shouldReturnNonEmptyTextFromValidALTOFile() throws Exception {
         File file = new File("src/test/resources/data/viewer/data/1/alto/00000010.xml");
         Assertions.assertTrue(file.isFile());
         String text = ALTOTools.getFulltext(file.toPath(), StringTools.DEFAULT_ENCODING);
@@ -223,10 +223,10 @@ class ALTOToolsTest extends AbstractTest {
     }
 
     /**
-     * @verifies add uris correctly
+     * @verifies include authority data URI attributes in output
      */
     @Test
-    void getFulltext_shouldAddUrisCorrectly() throws Exception {
+    void getFulltext_shouldIncludeAuthorityDataURIAttributesInOutput() throws Exception {
         File file = new File("src/test/resources/data/viewer/data/1/alto/PPN648829383/00000014.xml");
         Assertions.assertTrue(file.isFile());
         String text = ALTOTools.getFulltext(file.toPath(), StringTools.DEFAULT_ENCODING);

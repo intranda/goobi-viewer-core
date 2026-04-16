@@ -143,7 +143,7 @@ class ViewerResourceBundleTest extends AbstractTest {
     }
 
     /**
-     * @verifies create locale-specific message properties files in the config folder
+     * @verifies create locale specific message properties files in the config folder
      */
     @Test
     void createLocalMessageFiles_shouldCreateLocaleSpecificMessagePropertiesFilesInTheConfigFolder() throws Exception {

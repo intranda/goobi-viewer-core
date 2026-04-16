@@ -34,17 +34,17 @@ import io.goobi.viewer.model.viewer.StructElement;
 class AbstractPageLoaderTest extends AbstractTest {
 
     /**
-     * @verifies replace numpages correctly
+     * @verifies replace numpages placeholder with actual page count in label format
      */
     @Test
-    void buildPageLabelTemplate_shouldReplaceNumpagesCorrectly() throws Exception {
+    void buildPageLabelTemplate_shouldReplaceNumpagesPlaceholderWithActualPageCountInLabelFormat() throws Exception {
         StructElement se = new StructElement();
         EagerPageLoader loader = new EagerPageLoader(se);
         Assertions.assertEquals("foo 0 bar", loader.buildPageLabelTemplate("foo {numpages} bar", null));
     }
 
     /**
-     * @verifies replace {msg.key} placeholders with translated message values in template
+     * @verifies replace msg key placeholders with translated message values in template
      */
     @Test
     void buildPageLabelTemplate_shouldReplaceMsgKeyPlaceholdersWithTranslatedMessageValuesInTemplate() throws Exception {

@@ -117,6 +117,10 @@ public class FeedbackBean implements Serializable {
      *
      * @param setCurrentUrl if true, uses the current URL as feedback URL; otherwise uses the referrer
      * @return an empty string after attempting to submit the feedback form
+      * @should send feedback email when no user logged in
+      * @should send feedback email when user logged in
+      * @should not send email when captcha answer is wrong
+      * @should not send email when honeypot field is filled
      */
     public String submitFeedbackAction(boolean setCurrentUrl) {
         // Check whether the security question has been answered correct, if configured

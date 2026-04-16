@@ -268,6 +268,10 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
      *
      * @param locale the locale for which to check completeness
      * @return true if title and text of the note are complete; false otherwise;
+      * @should confirm filled texts are complete
+      * @should return false if not all fields filled
+      * @should return true if same fields filled as in default language
+      * @should return true if all fields filled
      */
     @Override
     public boolean isComplete(Locale locale) {

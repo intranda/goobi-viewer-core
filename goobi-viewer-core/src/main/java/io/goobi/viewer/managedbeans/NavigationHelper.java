@@ -231,6 +231,7 @@ public class NavigationHelper implements Serializable {
      * searchPage.
      *
      * @return the search page name after setting it as the current navigation page
+      * @should return expected value for given input
      */
     public String searchPage() {
         this.setCurrentPage(SEARCH_PAGE);
@@ -334,6 +335,7 @@ public class NavigationHelper implements Serializable {
      * Setter for the field <code>currentPage</code>.
      *
      * @param currentPage page name to set as current
+     * @should return expected value for given input
      */
     public void setCurrentPage(String currentPage) {
         logger.trace("setCurrentPage: {}", currentPage);

@@ -52,7 +52,7 @@ class SearchFunctionalityTest extends AbstractSolrEnabledTest {
     }
     
     /**
-     * @verifies include active context and URL-encoded query string in prefix
+     * @verifies include active context and URL encoded query string in prefix
      */
     @Test
     void getUrlPrefix_shouldIncludeActiveContextAndURLEncodedQueryStringInPrefix() {

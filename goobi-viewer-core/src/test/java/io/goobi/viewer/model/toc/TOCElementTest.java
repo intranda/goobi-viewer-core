@@ -72,7 +72,7 @@ class TOCElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @verifies return URL containing page type, PI, page number and logId for fullscreen view
+     * @verifies return URL containing page type PI page number and log id for fullscreen view
      */
     @Test
     void getUrl_shouldReturnURLContainingPageTypePIPageNumberAndLogIdForFullscreenView() throws Exception {
@@ -82,7 +82,7 @@ class TOCElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @verifies return URL containing page type, PI, page number and logId for fullscreen view with alternate setup
+     * @verifies return URL containing page type PI page number and log id for fullscreen view with alternate setup
      */
     @Test
     void getUrl_shouldReturnURLContainingPageTypePIPageNumberAndLogIdForFullscreenViewWithAlternateSetup() throws Exception {

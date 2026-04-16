@@ -34,7 +34,7 @@ class PagePermissionsTest {
     // --- EMPTY sentinel ---
 
     /**
-     * @verifies return true for EMPTY sentinel
+     * @verifies return true for empty sentinel
      * @see PagePermissions#isEmpty
      */
     @Test
@@ -43,7 +43,8 @@ class PagePermissionsTest {
     }
 
     /**
-     * @verifies deny image for any order
+     * @verifies deny image for any order when empty
+     * @see PagePermissions#isImageGranted(int)
      */
     @Test
     void isImageGranted_shouldDenyImageForAnyOrderWhenEmpty() {
@@ -52,7 +53,8 @@ class PagePermissionsTest {
     }
 
     /**
-     * @verifies deny fulltext for any order
+     * @verifies deny fulltext for any order when empty
+     * @see PagePermissions#isFulltextGranted(int)
      */
     @Test
     void isFulltextGranted_shouldDenyFulltextForAnyOrderWhenEmpty() {
@@ -60,7 +62,8 @@ class PagePermissionsTest {
     }
 
     /**
-     * @verifies deny pdf for any order
+     * @verifies deny pdf for any order when empty
+     * @see PagePermissions#isPdfGranted(int)
      */
     @Test
     void isPdfGranted_shouldDenyPdfForAnyOrderWhenEmpty() {

@@ -30,7 +30,7 @@ import io.goobi.viewer.model.archives.ArchiveTree;
 class ArchiveBeanTest extends AbstractSolrEnabledTest {
 
     /**
-     * @verifies clear currentResource, searchString, archiveTree, and databaseLoaded to defaults
+     * @verifies clear current resource search string archive tree and database loaded to defaults
      */
     @Test
     void reset_shouldClearCurrentResourceSearchStringArchiveTreeAndDatabaseLoadedToDefaults() {

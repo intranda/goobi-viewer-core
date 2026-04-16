@@ -84,7 +84,7 @@ class HighlightsBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @verifies return correct URL for record and URL highlights
+     * @verifies return correct url for highlights
      * @see HighlightsBean#getUrl(Highlight)
      */
     @Test

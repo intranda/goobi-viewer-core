@@ -177,6 +177,8 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws ViewerConfigurationException
+      * @should get correct image uri for uploaded image
+      * @should get correct image uri for record representative
      */
     public URI getImageURI(int width, int height) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         switch (this.data.getImageMode()) {

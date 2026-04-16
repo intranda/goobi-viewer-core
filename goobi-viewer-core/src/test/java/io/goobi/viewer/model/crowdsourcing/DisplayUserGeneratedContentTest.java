@@ -38,7 +38,7 @@ class DisplayUserGeneratedContentTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @verifies populate type, coordinates, label, and access condition from SolrDocument fields
+     * @verifies populate type coordinates label and access condition from solr document fields
      */
     @Test
     void buildFromSolrDoc_shouldPopulateTypeCoordinatesLabelAndAccessConditionFromSolrDocumentFields() throws Exception {

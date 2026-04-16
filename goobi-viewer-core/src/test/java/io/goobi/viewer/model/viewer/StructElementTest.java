@@ -62,7 +62,7 @@ class StructElementTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @verifies copy all fields including PI, logid, doctype, label, and metadata to stub
+     * @verifies copy all fields including PI logid doctype label and metadata to stub
      */
     @Test
     void createStub_shouldCopyAllFieldsIncludingPILogidDoctypeLabelAndMetadataToStub() throws Exception {

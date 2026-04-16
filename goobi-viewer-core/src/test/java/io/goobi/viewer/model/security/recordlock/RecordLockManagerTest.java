@@ -87,7 +87,7 @@ class RecordLockManagerTest extends AbstractTest {
 
     /**
      * @see RecordLockManager#lockRecord(String,String,Integer)
-     * @verifies return LIMIT_EXCEEDED if limit exceeded
+     * @verifies return limit exceeded if limit exceeded
      */
     @Test
     void lockRecord_shouldReturnLimitExceededIfLimitExceeded() throws Exception {

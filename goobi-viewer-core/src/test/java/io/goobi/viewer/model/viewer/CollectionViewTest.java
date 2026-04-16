@@ -341,7 +341,7 @@ class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @throws PresentationException 
-     * @verifies return browse URL for collection with special characters
+     * @verifies return browse url for collection with special characters
      */
     @Test
     void getFirstRecordUrl_shouldReturnBrowseUrlForCollectionWithSpecialCharacters() throws PresentationException {

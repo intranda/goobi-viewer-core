@@ -117,6 +117,7 @@ public class TocWriter {
      * @param output stream to write the generated PDF document to
      * @param elements TOC elements to render as PDF table rows
      * @throws io.goobi.viewer.model.toc.export.pdf.WriteTocException if any.
+      * @should create pdf document from toc element list
      */
     public void createPdfDocument(OutputStream output, List<TOCElement> elements) throws WriteTocException {
         try (Document document = new Document()) {

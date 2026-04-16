@@ -1384,6 +1384,8 @@ public class ActiveDocumentBean implements Serializable {
      * @param step number of pages to go back
      * @return the absolute URL to the page that is the given number of steps before the current page
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+      * @should decrease image number by given step
+      * @should go no lower than first page order
      */
     public String getPreviousPageUrl(int step) throws IndexUnreachableException {
         return getPageUrlRelativeToCurrentPage(step * -1);

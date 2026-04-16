@@ -503,7 +503,7 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see ActiveDocumentBean#setTocCurrentPage(String)
-     * @verifies throw IllegalUrlParameterException for non-numeric value
+     * @verifies throw illegal url parameter exception for non numeric value
      */
     @Test
     void setTocCurrentPage_shouldThrowIllegalUrlParameterExceptionForNonNumericValue() {

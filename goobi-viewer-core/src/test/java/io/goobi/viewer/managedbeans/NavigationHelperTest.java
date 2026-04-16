@@ -151,7 +151,7 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see NavigationHelper#setStatusMapValue(String,String)
-     * @verifies store given key-value pair in status map
+     * @verifies store given key value pair in status map
      */
     @Test
     void setStatusMapValue_shouldStoreGivenKeyValuePairInStatusMap() {
@@ -178,7 +178,7 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see NavigationHelper#getRecordUrl(String,String,int,boolean,boolean)
-     * @verifies return /object/{PI}/ URL for monograph record type
+     * @verifies return object PIURL for monograph record type
      */
     @Test
     void getRecordUrl_shouldReturnObjectPIURLForMonographRecordType() {

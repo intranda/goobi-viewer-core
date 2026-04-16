@@ -120,7 +120,7 @@ class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @verifies return URL ending with expected path
+     * @verifies return url ending with expected path
      * @see CmsMediaBean#getMediaUrl(CMSMediaItem)
      */
     @Test

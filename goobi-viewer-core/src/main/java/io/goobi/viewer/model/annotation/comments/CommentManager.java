@@ -159,6 +159,7 @@ public class CommentManager implements AnnotationLister<Comment> {
      * @param text new comment text provided by the editor
      * @param editor user performing the edit
      * @param publicationStatus updated publication status for the comment
+      * @should modify
      */
     public void editComment(Comment comment, String text, User editor, PublicationStatus publicationStatus) {
         String textCleaned = checkAndCleanScripts(text, editor, comment.getTargetPI(), comment.getTargetPageOrder());
@@ -232,6 +233,7 @@ public class CommentManager implements AnnotationLister<Comment> {
     /**
      *
      * @param comment the comment to delete
+      * @should delete
      */
     public void deleteComment(Comment comment) {
         try {

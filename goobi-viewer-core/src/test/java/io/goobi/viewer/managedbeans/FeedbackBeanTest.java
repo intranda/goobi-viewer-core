@@ -86,7 +86,7 @@ class FeedbackBeanTest {
     }
 
     /**
-     * @verifies send feedback email when no user is logged in
+     * @verifies send feedback email when no user logged in
      * @see FeedbackBean#submitFeedbackAction
      */
     @Test
@@ -123,7 +123,7 @@ class FeedbackBeanTest {
     }
 
     /**
-     * @verifies send feedback email when user is logged in
+     * @verifies send feedback email when user logged in
      * @see FeedbackBean#submitFeedbackAction
      */
     @Test

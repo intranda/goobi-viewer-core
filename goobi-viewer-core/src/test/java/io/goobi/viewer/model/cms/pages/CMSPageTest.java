@@ -63,7 +63,7 @@ class CMSPageTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @verifies persist page
-     * @see CMSPage#addCMSPage
+     * @see IDAO#addCMSPage(CMSPage)
      */
     @Test
     void persistPage_shouldPersistPage() throws DAOException {
@@ -85,7 +85,7 @@ class CMSPageTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @verifies persist page with content
-     * @see CMSPage#addComponent
+     * @see IDAO#addCMSPage(CMSPage)
      */
     @Test
     void persistPage_shouldPersistPageWithContent() throws DAOException {
@@ -156,7 +156,7 @@ class CMSPageTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see CMSPage#exportAsXml()
-     * @verifies create XML document with localized titles, categories, and text components
+     * @verifies create XML document with localized titles categories and text components
      */
     @Test
     void exportAsXml_shouldCreateXMLDocumentWithLocalizedTitlesCategoriesAndTextComponents() {

@@ -47,7 +47,7 @@ class LocalDateTimeConverterTest {
 
     /**
      * @see LocalDateTimeConverter#getAsObject(FacesContext, UIComponent, String)
-     * @verifies parse German-formatted date string into LocalDateTime using German locale and pattern
+     * @verifies parse german formatted date string into local date time using german locale and pattern
      */
     @Test
     void getAsObject_shouldParseGermanFormattedDateStringIntoLocalDateTimeUsingGermanLocaleAndPattern() {
@@ -62,7 +62,7 @@ class LocalDateTimeConverterTest {
     
     /**
      * @see LocalDateTimeConverter#getAsString(FacesContext, UIComponent, LocalDateTime)
-     * @verifies format LocalDateTime into German-formatted date string using German locale and pattern
+     * @verifies format local date time into german formatted date string using german locale and pattern
      */
     @Test
     void getAsString_shouldFormatLocalDateTimeIntoGermanFormattedDateStringUsingGermanLocaleAndPattern() {
@@ -77,7 +77,7 @@ class LocalDateTimeConverterTest {
 
     /**
      * @see LocalDateTimeConverter#getAsObject(FacesContext, UIComponent, String)
-     * @verifies parse English-formatted date string into LocalDateTime using English locale and pattern
+     * @verifies parse english formatted date string into local date time using english locale and pattern
      */
     @Test
     void getAsObject_shouldParseEnglishFormattedDateStringIntoLocalDateTimeUsingEnglishLocaleAndPattern() {
@@ -93,7 +93,7 @@ class LocalDateTimeConverterTest {
     
     /**
      * @see LocalDateTimeConverter#getAsString(FacesContext, UIComponent, LocalDateTime)
-     * @verifies format LocalDateTime into English-formatted date string using English locale and pattern
+     * @verifies format local date time into english formatted date string using english locale and pattern
      */
     @Test
     void getAsString_shouldFormatLocalDateTimeIntoEnglishFormattedDateStringUsingEnglishLocaleAndPattern() {

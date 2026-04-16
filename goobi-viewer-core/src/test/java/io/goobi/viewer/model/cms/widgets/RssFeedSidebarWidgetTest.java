@@ -67,7 +67,6 @@ class RssFeedSidebarWidgetTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @verifies clone all fields via copy constructor
-     * @see RssFeedSidebarWidget#RssFeedSidebarWidget(RssFeedSidebarWidget)
      */
     @Test
     void constructor_shouldCloneAllFieldsViaCopyConstructor() {

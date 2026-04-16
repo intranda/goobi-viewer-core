@@ -53,7 +53,7 @@ class TextBeanTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @verifies return non-empty HTML string starting with html tag for a TEI file with abstract
+     * @verifies return non empty HTML string starting with html tag for a TEI file with abstract
      */
     @Test
     void getAbstract_shouldReturnNonEmptyHTMLStringStartingWithHtmlTagForATEIFileWithAbstract() throws Exception {

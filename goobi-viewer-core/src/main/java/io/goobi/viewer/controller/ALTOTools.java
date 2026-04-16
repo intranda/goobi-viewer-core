@@ -88,6 +88,8 @@ public final class ALTOTools {
      * @param encoding character encoding to use when reading the file
      * @return {@link String} containing plain text from ALTO at the given path
      * @throws IOException
+     * @should return non-empty text from valid ALTO file
+     * @should include authority data URI attributes in output
      */
     public static String getFulltext(Path path, String encoding) throws IOException {
         String altoString = FileTools.getStringFromFile(path.toFile(), encoding);
@@ -101,7 +103,7 @@ public final class ALTOTools {
      * @param charset character encoding of the ALTO document
      * @param mergeLineBreakWords merge words split across line breaks into one
      * @return the plain text extracted from the ALTO XML document, or null on error
-     * @should extract fulltext correctly
+     * @should return non-empty text from valid ALTO string
      */
     public static String getFulltext(String alto, String charset, boolean mergeLineBreakWords) {
         try {
@@ -120,6 +122,7 @@ public final class ALTOTools {
      * @param inCharset character encoding of the ALTO document
      * @param type NER tag type to filter by; null returns all types
      * @return a list of NER TagCount objects extracted from the given ALTO document
+      * @should add identifier to tag count
      */
     public static List<TagCount> getNERTags(String alto, final String inCharset, NERTag.Type type) {
         String charset = inCharset;

@@ -44,7 +44,7 @@ class StringToolsTest {
 
     /**
      * @see StringTools#escapeHtmlChars(String)
-     * @verifies replace angle brackets, quotes, and ampersands with HTML entities
+     * @verifies replace angle brackets quotes and ampersands with HTML entities
      */
     @Test
     void escapeHtmlChars_shouldReplaceAngleBracketsQuotesAndAmpersandsWithHTMLEntities() throws Exception {
@@ -92,7 +92,7 @@ class StringToolsTest {
 
     /**
      * @see StringTools#stripJS(String)
-     * @verifies remove script tags, self-closing scripts, and SVG event handler elements regardless of case
+     * @verifies remove script tags self closing scripts and SVG event handler elements regardless of case
      */
     @Test
     void stripJS_shouldRemoveScriptTagsSelfClosingScriptsAndSVGEventHandlerElementsRegardlessOfCase() throws Exception {
@@ -160,7 +160,7 @@ class StringToolsTest {
 
     /**
      * @see StringTools#getHierarchyForCollection(String,String)
-     * @verifies build cumulative hierarchy list from separator-delimited collection string
+     * @verifies build cumulative hierarchy list from separator delimited collection string
      */
     @Test
     void getHierarchyForCollection_shouldBuildCumulativeHierarchyListFromSeparatorDelimitedCollectionString() throws Exception {
@@ -174,7 +174,7 @@ class StringToolsTest {
 
     /**
      * @see StringTools#getHierarchyForCollection(String,String)
-     * @verifies return single-element list when collection string has no separator
+     * @verifies return single element list when collection string has no separator
      */
     @Test
     void getHierarchyForCollection_shouldReturnSingleElementListWhenCollectionStringHasNoSeparator() throws Exception {
@@ -203,7 +203,7 @@ class StringToolsTest {
 
     /**
      * @see StringTools#generateHash(String)
-     * @verifies return SHA-256 hex digest for given input string
+     * @verifies return s h a 256 hex digest for given input string
      */
     @Test
     void generateHash_shouldReturnSHA256HexDigestForGivenInputString() throws Exception {

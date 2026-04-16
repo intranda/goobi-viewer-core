@@ -37,7 +37,7 @@ import io.goobi.viewer.AbstractTest;
 class CitationDataProviderTest extends AbstractTest {
 
     /**
-     * @verifies store author name parts, issued date, URL, and ISBN in CSLItemData
+     * @verifies store author name parts issued date URL and ISBN in CSL item data
      */
     @Test
     void addItemData_shouldStoreAuthorNamePartsIssuedDateURLAndISBNInCSLItemData() throws Exception {
@@ -78,7 +78,7 @@ class CitationDataProviderTest extends AbstractTest {
     }
 
     /**
-     * @verifies parse year-only issued date into dateParts instead of raw string
+     * @verifies parse year only issued date into date parts instead of raw string
      */
     @Test
     void addItemData_shouldParseYearOnlyIssuedDateIntoDatePartsInsteadOfRawString() throws Exception {

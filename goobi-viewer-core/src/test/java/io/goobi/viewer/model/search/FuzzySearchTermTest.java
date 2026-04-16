@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 class FuzzySearchTermTest {
 
     /**
-     * @verifies handle long-s character substitution correctly
+     * @verifies handle long s character substitution correctly
      * @see FuzzySearchTerm#matches(String)
      */
     @Test

@@ -112,7 +112,7 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @verifies return archive tree for known resource IDs
+     * @verifies return archive tree for known resource ids
      * @see ArchiveManager#getArchiveTree(String)
      */
     @Test

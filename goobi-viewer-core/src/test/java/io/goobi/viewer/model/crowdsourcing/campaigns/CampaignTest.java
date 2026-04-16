@@ -408,7 +408,7 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @verifies do record-based count correctly
+     * @verifies do recordbased count correctly
      */
     @Test
     void getNumRecordsForStatus_shouldDoRecordbasedCountCorrectly() throws Exception {
@@ -432,7 +432,7 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @verifies do page-based count correctly
+     * @verifies do pagebased count correctly
      */
     @Test
     void getNumRecordsForStatus_shouldDoPagebasedCountCorrectly() throws Exception {

@@ -218,7 +218,7 @@ class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @verifies return not complete if not all fields filled
+     * @verifies return false if not all fields filled
      * @see CmsRecordNoteEditBean#isComplete
      */
     @Test
@@ -238,7 +238,7 @@ class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @verifies return complete if same fields filled as in default language
+     * @verifies return true if same fields filled as in default language
      * @see CmsRecordNoteEditBean#isComplete
      */
     @Test
@@ -257,7 +257,7 @@ class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @verifies return complete if all fields filled
+     * @verifies return true if all fields filled
      * @see CmsRecordNoteEditBean#isComplete
      */
     @Test

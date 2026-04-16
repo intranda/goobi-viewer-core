@@ -83,7 +83,7 @@ class SitemapTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @verifies create sitemap files in output directory
+     * @verifies create sitemap files
      * @see Sitemap#generate(String, String)
      */
     @Test

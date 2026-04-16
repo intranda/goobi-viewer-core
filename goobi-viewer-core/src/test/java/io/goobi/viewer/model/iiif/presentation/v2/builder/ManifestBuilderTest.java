@@ -70,7 +70,7 @@ class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
     public static final String PI = "74241";
 
     /**
-     * @verifies build non-blank manifest json
+     * @verifies build non blank manifest json
      */
     @Test
     void generateManifest_shouldBuildNonBlankManifestJson() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException, URISyntaxException,

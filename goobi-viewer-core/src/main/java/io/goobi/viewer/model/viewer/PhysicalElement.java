@@ -1611,6 +1611,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      * @return true if user has access permission; false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
+      * @should return true if access allowed for this page
+      * @should return false if access denied for this page
      */
     public boolean isAccessPermissionFulltext() throws IndexUnreachableException, DAOException {
         HttpServletRequest request = null;

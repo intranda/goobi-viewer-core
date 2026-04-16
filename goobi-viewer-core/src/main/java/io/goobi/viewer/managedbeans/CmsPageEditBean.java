@@ -173,6 +173,9 @@ public class CmsPageEditBean implements Serializable {
      * savePageAndForwardToEdit.
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+      * @should save page
+      * @should save as template
+      * @should save page no admin
      */
     public void savePageAndForwardToEdit() throws DAOException {
         this.saveSelectedPage();
@@ -190,6 +193,9 @@ public class CmsPageEditBean implements Serializable {
      * Adds the current page to the database, if it doesn't exist or updates it otherwise.
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should save page
+     * @should save as template
+     * @should save page no admin
      */
     public void saveSelectedPage() throws DAOException {
         logger.trace("saveSelectedPage");
@@ -274,6 +280,7 @@ public class CmsPageEditBean implements Serializable {
      *
      * @return Return view
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+      * @should delete page for given input
      */
     public String deleteSelectedPage() throws DAOException {
         if (deletePage(selectedPage)) {

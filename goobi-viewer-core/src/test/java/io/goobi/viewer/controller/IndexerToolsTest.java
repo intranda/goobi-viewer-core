@@ -35,7 +35,7 @@ import io.goobi.viewer.AbstractTest;
 class IndexerToolsTest extends AbstractTest {
 
     /**
-     * @verifies create .delete file in hotfolder when trace flag is true
+     * @verifies create delete file in hotfolder when trace flag is true
      */
     @Test
     void deleteRecord_shouldCreateDeleteFileInHotfolderWhenTraceFlagIsTrue() throws Exception {
@@ -58,7 +58,7 @@ class IndexerToolsTest extends AbstractTest {
     }
 
     /**
-     * @verifies create .purge file in hotfolder when trace flag is false
+     * @verifies create purge file in hotfolder when trace flag is false
      */
     @Test
     void deleteRecord_shouldCreatePurgeFileInHotfolderWhenTraceFlagIsFalse() throws Exception {

@@ -135,6 +135,7 @@ public class DataRetriever {
      * @param solrField Solr field used to store the collection hierarchy
      * @return List<CollectionResult> (immutable!)
      * @throws IndexUnreachableException
+      * @should get top collections
      */
     public List<CollectionResult> getTopLevelCollections(String solrField) throws IndexUnreachableException {
         String splittingChar = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(solrField);

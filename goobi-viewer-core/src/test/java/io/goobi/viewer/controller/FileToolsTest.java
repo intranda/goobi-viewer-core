@@ -126,7 +126,7 @@ class FileToolsTest extends AbstractTest {
     }
 
     /**
-     * @verifies return UTF-8 for a UTF-8 encoded file input stream
+     * @verifies return u t f 8 for a u t f 8 encoded file input stream
      */
     @Test
     void getCharset_shouldReturnUTF8ForAUTF8EncodedFileInputStream() throws Exception {

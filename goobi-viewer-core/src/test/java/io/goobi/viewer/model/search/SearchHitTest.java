@@ -525,7 +525,7 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @verifies generate HTML table row fragment with count, thumbnail image, and title
+     * @verifies generate HTML table row fragment with count thumbnail image and title
      */
     @Test
     void generateNotificationFragment_shouldGenerateHTMLTableRowFragmentWithCountThumbnailImageAndTitle() throws Exception {

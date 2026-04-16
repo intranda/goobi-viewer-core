@@ -44,7 +44,7 @@ class HtmlSidebarWidgetTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @verifies persist widget to database and retrieve it
-     * @see HtmlSidebarWidget#HtmlSidebarWidget()
+     * @see IDAO#addCustomWidget(CustomSidebarWidget)
      */
     @Test
     void addCustomWidget_shouldPersistWidgetToDatabase() throws DAOException {

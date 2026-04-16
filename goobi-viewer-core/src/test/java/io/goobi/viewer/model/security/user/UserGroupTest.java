@@ -33,7 +33,7 @@ class UserGroupTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see UserGroup#getMemberCount()
-     * @verifies return total of owner plus distinct members without double-counting the owner
+     * @verifies return total of owner plus distinct members without double counting the owner
      */
     @Test
     void getMemberCount_shouldReturnTotalOfOwnerPlusDistinctMembersWithoutDoubleCountingTheOwner() throws Exception {

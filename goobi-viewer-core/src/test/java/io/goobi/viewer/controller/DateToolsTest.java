@@ -140,7 +140,7 @@ class DateToolsTest extends AbstractTest {
 
     /**
      * @see DateTools#parseDateTimeFromString(String,boolean)
-     * @verifies parse english m mddyyyy format with and without AM/PM time
+     * @verifies parse english m mddyyyy format with and without AMPM time
      */
     @Test
     void parseDateTimeFromString_shouldParseEnglishMMddyyyyFormatWithAndWithoutAMPMTime() throws Exception {
@@ -224,7 +224,7 @@ class DateToolsTest extends AbstractTest {
 
     /**
      * @see DateTools#parseMultipleDatesFromString(String)
-     * @verifies return single-element list when input contains one date
+     * @verifies return single element list when input contains one date
      */
     @Test
     void parseMultipleDatesFromString_shouldReturnSingleElementListWhenInputContainsOneDate() throws Exception {
@@ -235,7 +235,7 @@ class DateToolsTest extends AbstractTest {
 
     /**
      * @see DateTools#parseMultipleDatesFromString(String)
-     * @verifies split slash-separated date string into individual parsed dates
+     * @verifies split slash separated date string into individual parsed dates
      */
     @Test
     void parseMultipleDatesFromString_shouldSplitSlashSeparatedDateStringIntoIndividualParsedDates() throws Exception {
@@ -247,7 +247,7 @@ class DateToolsTest extends AbstractTest {
 
     /**
      * @see DateTools#parseMultipleDatesFromString(String)
-     * @verifies strip parentheses from dates before parsing slash-separated input
+     * @verifies strip parentheses from dates before parsing slash separated input
      */
     @Test
     void parseMultipleDatesFromString_shouldStripParenthesesFromDatesBeforeParsingSlashSeparatedInput() throws Exception {
@@ -259,7 +259,7 @@ class DateToolsTest extends AbstractTest {
 
     /**
      * @see DateTools#getLocalDateTimeFromMillis(long,boolean)
-     * @verifies convert epoch millis to LocalDateTime with matching year, month, day, hour, and minute
+     * @verifies convert epoch millis to local date time with matching year month day hour and minute
      */
     @Test
     void getLocalDateTimeFromMillis_shouldConvertEpochMillisToLocalDateTimeWithMatchingYearMonthDayHourAndMinute() throws Exception {

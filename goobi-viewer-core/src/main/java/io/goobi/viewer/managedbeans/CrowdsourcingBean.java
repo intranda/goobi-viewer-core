@@ -472,6 +472,7 @@ public class CrowdsourcingBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+      * @should persist campaign changes after save action
      */
     public String saveSelectedCampaignAction() throws DAOException, PresentationException, IndexUnreachableException {
         logger.trace("saveSelectedCampaign");

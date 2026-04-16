@@ -34,7 +34,7 @@ import io.goobi.viewer.solr.SolrConstants;
 class CmsCollectionsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
-     * @verifies set image mode to PI when representative work exists, NONE when absent, and IMAGE when media item is set
+     * @verifies set image mode to PI when representative work exists NONE when absent and IMAGE when media item is set
      */
     @Test
     void initImageMode_shouldSetImageModeToPIWhenRepresentativeWorkExistsNONEWhenAbsentAndIMAGEWhenMediaItemIsSet() throws Exception {

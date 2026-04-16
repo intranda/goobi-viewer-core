@@ -1210,6 +1210,7 @@ public class CmsBean implements Serializable {
      * Saves static page status for all cms pages.
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+      * @should save cms pages
      */
     public void saveStaticPages() throws DAOException {
         for (CMSStaticPage page : getStaticPages()) {

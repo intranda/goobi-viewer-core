@@ -35,7 +35,7 @@ class AdminLicenseBeanTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see AdminLicenseBean#getGroupedLicenseTypeSelectItems()
-     * @verifies return two SelectItemGroups with 1 core and 5 non-core license types
+     * @verifies return two select item groups with 1 core and 5 non core license types
      */
     @Test
     void getGroupedLicenseTypeSelectItems_shouldReturnTwoSelectItemGroupsWith1CoreAnd5NonCoreLicenseTypes() throws Exception {

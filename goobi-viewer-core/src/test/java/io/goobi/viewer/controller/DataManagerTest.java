@@ -50,7 +50,7 @@ class DataManagerTest {
     }
 
     /**
-     * @verifies not add module if it's already registered
+     * @verifies not add module if its already registered
      */
     @Test
     void registerModule_shouldNotAddModuleIfItsAlreadyRegistered() {

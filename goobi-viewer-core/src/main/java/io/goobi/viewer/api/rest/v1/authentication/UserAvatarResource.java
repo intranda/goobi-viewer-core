@@ -137,6 +137,7 @@ public class UserAvatarResource extends ImageResource {
      * @param userId database ID of the user
      * @return {@link URI}
      * @throws WebApplicationException
+     * @should return 404 for missing avatar
      */
     public static URI getMediaFileUrl(Long userId) throws WebApplicationException {
         try {

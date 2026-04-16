@@ -68,7 +68,7 @@ class SequenceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
     public static final int ORDER = 1;
 
     /**
-     * @verifies produce non-blank annotation list JSON
+     * @verifies produce non blank annotation list json
      */
     @Test
     void addOtherContent_shouldProduceNonBlankAnnotationListJson() throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,

@@ -83,7 +83,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#searchAutosuggestion(String)
-     * @verifies return non-empty suggestion list for a matching search prefix
+     * @verifies return non empty suggestion list for a matching search prefix
      */
     @Test
     void searchAutosuggestion_shouldReturnNonEmptySuggestionListForAMatchingSearchPrefix() throws Exception {
@@ -92,7 +92,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @verifies return empty list when filtered by a non-matching collection facet
+     * @verifies return empty list when filtered by a non matching collection facet
      */
     @Test
     void searchAutosuggestion_shouldReturnEmptyListWhenFilteredByANonMatchingCollectionFacet() throws Exception {
@@ -102,7 +102,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @verifies return empty list when filtered by a non-matching title facet
+     * @verifies return empty list when filtered by a non matching title facet
      */
     @Test
     void searchAutosuggestion_shouldReturnEmptyListWhenFilteredByANonMatchingTitleFacet() throws Exception {
@@ -1209,7 +1209,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @verifies create workbook with query header row and PI/label columns for matching records
+     * @verifies create workbook with query header row and PI label columns for matching records
      */
     @Test
     void exportSearchAsExcel_shouldCreateWorkbookWithQueryHeaderRowAndPILabelColumnsForMatchingRecords() throws Exception {
@@ -1417,7 +1417,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#prepareQuery(String,String)
-     * @verifies wrap non-null query in parentheses
+     * @verifies wrap non null query in parentheses
      */
     @Test
     void prepareQuery_shouldWrapNonNullQueryInParentheses() {
@@ -1437,7 +1437,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#parseSortString(String,NavigationHelper)
-     * @verifies parse semicolon-separated sort string into list of sort fields
+     * @verifies parse semicolon separated sort string into list of sort fields
      */
     @Test
     void parseSortString_shouldParseSemicolonSeparatedSortStringIntoListOfSortFields() {

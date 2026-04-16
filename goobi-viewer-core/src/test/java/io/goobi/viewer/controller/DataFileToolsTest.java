@@ -53,7 +53,7 @@ class DataFileToolsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see DataFileTools#getSourceFilePath(String,String,String)
-     * @verifies return correct source file paths for METS MARC format
+     * @verifies return correct source file paths for mets marc format
      */
     @Test
     void getSourceFilePath_shouldReturnCorrectSourceFilePathsForMetsMarcFormat() {

@@ -60,7 +60,7 @@ class TocWriterTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @verifies create PDF document from TOC element list
+     * @verifies create pdf document from toc element list
      */
     @Test
     void createPdfDocument_shouldCreatePdfDocumentFromTocElementList() throws FileNotFoundException, IOException, WriteTocException {

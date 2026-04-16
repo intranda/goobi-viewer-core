@@ -60,7 +60,6 @@ class FacetFieldSidebarWidgetTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @verifies clone all fields via copy constructor
-     * @see FacetFieldSidebarWidget#FacetFieldSidebarWidget(FacetFieldSidebarWidget)
      */
     @Test
     void copyConstructor_shouldCloneAllFields() {

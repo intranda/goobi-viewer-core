@@ -131,10 +131,10 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @verifies fall back to topstruct value correctly
+     * @verifies use topstruct field value when topstruct fallback is enabled on image level link
      */
     @Test
-    void generateCitationLinksForLevel_shouldFallBackToTopstructValueCorrectly() throws Exception {
+    void generateCitationLinksForLevel_shouldUseTopstructFieldValueWhenTopstructFallbackIsEnabledOnImageLevelLink() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV, true);
         Assertions.assertNotNull(viewManager);
         viewManager.setCurrentImageOrder(10);
@@ -145,10 +145,10 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @verifies apply pattern correctly
+     * @verifies replace value and page placeholders in link pattern with resolved field and page number
      */
     @Test
-    void generateCitationLinksForLevel_shouldApplyPatternCorrectly() throws Exception {
+    void generateCitationLinksForLevel_shouldReplaceValueAndPagePlaceholdersInLinkPatternWithResolvedFieldAndPageNumber() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV, true);
         Assertions.assertNotNull(viewManager);
         viewManager.setCurrentImageOrder(2);

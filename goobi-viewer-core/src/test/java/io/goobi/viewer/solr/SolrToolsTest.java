@@ -388,7 +388,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @verifies return true for language-coded field names
+     * @verifies return true for language coded field names
      * @see SolrTools#isLanguageCodedField(String)
      */
     @Test
@@ -399,7 +399,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @verifies return false for non-language-coded field names
+     * @verifies return false for non language coded field names
      * @see SolrTools#isLanguageCodedField(String)
      */
     @Test

@@ -234,7 +234,7 @@ class ThumbnailHandlerTest extends AbstractTest {
     }
 
     /**
-     * @verifies return correct URL for local document
+     * @verifies return correct url for local document
      * @see ThumbnailHandler#getThumbnailUrl(StructElement, int, int)
      */
     @Test
@@ -255,7 +255,7 @@ class ThumbnailHandlerTest extends AbstractTest {
     }
 
     /**
-     * @verifies return correct URL for local anchor
+     * @verifies return correct url for local anchor
      * @see ThumbnailHandler#getThumbnailUrl(StructElement, int, int)
      */
     @Test
@@ -288,7 +288,7 @@ class ThumbnailHandlerTest extends AbstractTest {
     }
 
     /**
-     * @verifies encode whitespace in URL for local anchor
+     * @verifies encode whitespace in url for local anchor
      * @see ThumbnailHandler#getThumbnailUrl(StructElement, int, int)
      */
     @Test
@@ -321,7 +321,7 @@ class ThumbnailHandlerTest extends AbstractTest {
     }
 
     /**
-     * @verifies return correct URL for external document
+     * @verifies return correct url for external document
      * @see ThumbnailHandler#getThumbnailUrl(StructElement, int, int)
      */
     @Test
@@ -343,7 +343,7 @@ class ThumbnailHandlerTest extends AbstractTest {
     }
 
     /**
-     * @verifies return correct URL for external IIIF document
+     * @verifies return correct url for external iiif document
      * @see ThumbnailHandler#getThumbnailUrl(StructElement, int, int)
      */
     @Test
