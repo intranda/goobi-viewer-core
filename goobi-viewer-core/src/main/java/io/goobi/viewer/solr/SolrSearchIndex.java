@@ -573,7 +573,7 @@ public class SolrSearchIndex implements java.io.Closeable {
 
         String query = SolrTools.cleanUpQuery(new StringBuilder(fieldName).append(":*").append(querySuffix).toString());
         logger.trace("generateFilteredTagCloud query: {}", query);
-        Pattern p = Pattern.compile(StringTools.REGEX_WORDS);
+        Pattern p = StringTools.PATTERN_REGEX_WORDS;
         Set<String> stopWords = DataManager.getInstance().getConfiguration().getStopwords();
 
         List<String> termlist = new ArrayList<>();
