@@ -108,6 +108,30 @@ class ViewerPathBuilderTest extends AbstractTest {
     }
 
     /**
+     * @see ViewerPathBuilder#createPath(HttpServletRequest, String)
+     * @verifies remove server url or name correctly
+     */
+    @Test
+    void createPath_shouldRemoveServerUrlOrNameCorrectly() throws Exception {
+        // Verify that both full server URL prefix and context-path-only prefix are stripped
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setScheme("http");
+        request.setServerName("localhost");
+        request.setServerPort(8080);
+        request.setContextPath("/viewer");
+
+        // When the baseUrl starts with the full server URL, it should be stripped
+        Optional<ViewerPath> path1 = ViewerPathBuilder.createPath(request, "http://localhost:8080/viewer/image/PPN123/1/");
+        assertTrue(path1.isPresent());
+        assertEquals("image/PPN123/1/", path1.get().getCombinedPath().toString());
+
+        // When the baseUrl starts with just the context path (server name), it should also be stripped
+        Optional<ViewerPath> path2 = ViewerPathBuilder.createPath(request, "/viewer/image/PPN456/2/");
+        assertTrue(path2.isPresent());
+        assertEquals("image/PPN456/2/", path2.get().getCombinedPath().toString());
+    }
+
+    /**
      * @verifies return correct type for configured name
      * @see ViewerPathBuilder#getPageType(final URI)
      */

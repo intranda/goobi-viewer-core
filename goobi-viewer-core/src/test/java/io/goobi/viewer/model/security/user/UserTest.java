@@ -160,4 +160,19 @@ class UserTest extends AbstractDatabaseEnabledTest {
     void getId_shouldParseNumericUserIDFromURIPathSegment() throws Exception {
         Assertions.assertEquals(Long.valueOf(1234567890L), User.getId(new URI("https://example.com/viewer/users/1234567890/")));
     }
+
+    /**
+     * @see User#getId(URI)
+     * @verifies extract id correctly
+     */
+    @Test
+    void getId_shouldExtractIdCorrectly() throws Exception {
+        // Extracts user ID from various URI formats
+        Assertions.assertEquals(Long.valueOf(42L), User.getId(new URI("https://example.com/viewer/users/42/")));
+        Assertions.assertEquals(Long.valueOf(42L), User.getId(new URI("https://example.com/viewer/users/42")));
+        // Returns null for null input
+        Assertions.assertNull(User.getId(null));
+        // Returns null for URI without user ID
+        Assertions.assertNull(User.getId(new URI("https://example.com/viewer/other/path")));
+    }
 }

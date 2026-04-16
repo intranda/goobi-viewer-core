@@ -34,11 +34,12 @@ class PagePermissionsTest {
     // --- EMPTY sentinel ---
 
     /**
-     * @verifies return true for empty sentinel
-     * @see PagePermissions#isEmpty
+     * @see PagePermissions#isEmpty()
+     * @verifies sentinel is empty
      */
     @Test
-    void isEmpty_shouldReturnTrueForEmptySentinel() {
+    void isEmpty_shouldSentinelIsEmpty() {
+        // The EMPTY sentinel must report itself as empty
         assertTrue(PagePermissions.EMPTY.isEmpty());
     }
 

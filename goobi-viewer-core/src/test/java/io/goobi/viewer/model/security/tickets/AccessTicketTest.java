@@ -73,4 +73,17 @@ class AccessTicketTest extends AbstractTest {
         ticket.setExpirationDate(LocalDateTime.now().plusDays(1));
         Assertions.assertFalse(ticket.isExpired());
     }
+
+    /**
+     * @see AccessTicket#isActive()
+     * @verifies return true if ticket active
+     */
+    @Test
+    void isActive_shouldReturnTrueIfTicketActive() throws Exception {
+        // Active ticket: has a password hash (not a request) and expiration in the future (not expired)
+        AccessTicket ticket = new AccessTicket();
+        ticket.setPasswordHash("somehash");
+        ticket.setExpirationDate(LocalDateTime.now().plusDays(10));
+        Assertions.assertTrue(ticket.isActive());
+    }
 }

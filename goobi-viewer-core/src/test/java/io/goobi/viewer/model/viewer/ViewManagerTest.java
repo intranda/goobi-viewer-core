@@ -917,6 +917,32 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see ViewManager#isFilesOnly()
+     * @verifies return true if mimeType is application
+     */
+    @Test
+    void isFilesOnly_shouldReturnTrueIfMimeTypeIsApplication() throws Exception {
+        // Verify that isFilesOnly returns true when the ViewManager's mimeType is "application"
+        StructElement se = new StructElement("123");
+        IPageLoader pageLoader = Mockito.mock(EagerPageLoader.class);
+        ViewManager viewManager = new ViewManager(se, pageLoader, se.getLuceneId(), null, "application", null);
+        Assertions.assertTrue(viewManager.isFilesOnly());
+    }
+
+    /**
+     * @see ViewManager#isFilesOnly()
+     * @verifies return false if mimeType is not application
+     */
+    @Test
+    void isFilesOnly_shouldReturnFalseIfMimeTypeIsNotApplication() throws Exception {
+        // Verify that isFilesOnly returns false when the ViewManager's mimeType is not "application"
+        StructElement se = new StructElement("123");
+        IPageLoader pageLoader = Mockito.mock(EagerPageLoader.class);
+        ViewManager viewManager = new ViewManager(se, pageLoader, se.getLuceneId(), null, "image", null);
+        Assertions.assertFalse(viewManager.isFilesOnly());
+    }
+
+    /**
      * @verifies return true for application mime type
      */
     @Test
