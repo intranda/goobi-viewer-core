@@ -1600,6 +1600,18 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchHelper#getFilteredTermsFromIndex(BrowsingMenuFieldConfig,String,String,java.util.List,int,int,String)
+     * @verifies not throw exception when startsWith contains special solr characters
+     */
+    @Test
+    void getFilteredTermsFromIndex_shouldNotThrowExceptionWhenStartsWithContainsSpecialSolrCharacters() throws Exception {
+        BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("MD_CREATOR_UNTOKENIZED", null, null);
+        // Parenthesis is a special Solr character that caused SyntaxError before the fix
+        QueryResponse resp = SearchHelper.getFilteredTermsFromIndex(bmfc, "(", null, null, 0, SolrSearchIndex.MAX_HITS, null);
+        Assertions.assertNotNull(resp);
+    }
+
+    /**
      * @see SearchHelper#getQueryForAccessCondition(String,boolean)
      * @verifies build query with slash escaped access condition value when escaping is enabled
      */

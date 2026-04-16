@@ -2108,6 +2108,7 @@ public final class SearchHelper {
      * @throws IndexUnreachableException
      * @should contain facets for the main field
      * @should contain facets for the sort field
+     * @should not throw exception when startsWith contains special solr characters
      */
     static QueryResponse getFilteredTermsFromIndex(BrowsingMenuFieldConfig bmfc, String startsWith, String filterQuery, List<StringPair> sortFields,
             int start, int rows, String language) throws PresentationException, IndexUnreachableException {
@@ -2143,7 +2144,8 @@ public final class SearchHelper {
 
         // If no separate sorting field is configured, add startsWith to the filter queries
         if (StringUtils.isEmpty(bmfc.getSortField()) && StringUtils.isNotEmpty(startsWith)) {
-            filterQueries.add(mainField + ":" + startsWith + "*");
+            // Escape special Solr characters in startsWith to prevent syntax errors (e.g. parentheses)
+            filterQueries.add(mainField + ":" + ClientUtils.escapeQueryChars(startsWith) + "*");
         }
 
         // Add configured filter queries
