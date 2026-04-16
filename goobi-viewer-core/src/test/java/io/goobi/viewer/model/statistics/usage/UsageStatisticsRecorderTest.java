@@ -51,6 +51,65 @@ class UsageStatisticsRecorderTest extends AbstractDatabaseEnabledTest {
 
 
     /**
+     * @see UsageStatisticsRecorder#recordRequest(RequestType, String, jakarta.servlet.http.HttpServletRequest)
+     * @verifies return 55 for given input
+     */
+    @Test
+    void recordRequest_shouldReturn55ForGivenInput() throws DAOException, InterruptedException {
+        // Verify that 25+30=55 RECORD_VIEW requests for PI_ALPHA across two concurrent sessions sum to 55
+        // Uses unique PI identifiers to avoid collision with other tests sharing the same date
+        String pi1 = "PI_ALPHA";
+        String pi2 = "PI_BETA";
+        String pi3 = "PI_GAMMA";
+
+        String session1 = "sess_a";
+        String session2 = "sess_b";
+
+        UsageStatisticsRecorder recorder = new UsageStatisticsRecorder(dao, DataManager.getInstance().getConfiguration(), "viewer.goobi.io");
+        Random random = new Random();
+
+        Thread thread1 = new Thread(() -> {
+            try {
+                for (int i = 0; i < 25; i++) {
+                    wait(random);
+                    recorder.recordRequest(RequestType.RECORD_VIEW, pi1, session1, "", "");
+                }
+                for (int i = 0; i < 15; i++) {
+                    wait(random);
+                    recorder.recordRequest(RequestType.RECORD_VIEW, pi2, session1, "", "");
+                }
+            } catch (InterruptedException e) {
+                // ignored
+            }
+        });
+
+        Thread thread2 = new Thread(() -> {
+            try {
+                for (int i = 0; i < 10; i++) {
+                    wait(random);
+                    recorder.recordRequest(RequestType.RECORD_VIEW, pi3, session2, "", "");
+                }
+                for (int i = 0; i < 30; i++) {
+                    wait(random);
+                    recorder.recordRequest(RequestType.RECORD_VIEW, pi1, session2, "", "");
+                }
+            } catch (InterruptedException e) {
+                // ignored
+            }
+        });
+
+        LocalDate date = LocalDate.now();
+        thread1.start();
+        thread2.start();
+
+        thread1.join();
+        thread2.join();
+        DailySessionUsageStatistics stats = dao.getUsageStatistics(date);
+
+        assertEquals(55L, stats.getTotalRequestCount(RequestType.RECORD_VIEW, pi1));
+    }
+
+    /**
      * @verifies aggregate concurrent request counts correctly
      */
     @Test

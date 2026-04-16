@@ -25,6 +25,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 
@@ -133,6 +138,36 @@ class IIIFUrlHandlerTest extends AbstractTest {
     void isIIIFUrl_shouldReturnFalseForGivenInput() {
         fileUrl = "Eine Abrechnung mit den Rechtssozialisten_0018.tif";
         Assertions.assertFalse(handler.isIIIFUrl(fileUrl));
+    }
+
+    /**
+     * @see IIIFUrlHandler#getModifiedIIIFFUrl(String,RegionRequest,Scale,Rotation,Colortype,ImageFileFormat)
+     * @verifies replace dimensions correctly
+     */
+    @Test
+    void getModifiedIIIFFUrl_shouldReplaceDimensionsCorrectly() throws Exception {
+        // Valid IIIF image URL with full/max/0/default.jpg parameters
+        String iiifUrl = "https://example.com/image/full/max/0/default.jpg";
+        // Replace region to square and format to png; pass null for unchanged parameters
+        String result = handler.getModifiedIIIFFUrl(iiifUrl, RegionRequest.SQUARE, null, null, null, ImageFileFormat.PNG);
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.contains("square"), "Region should be replaced to square");
+        Assertions.assertTrue(result.contains(".png"), "Format should be replaced to png");
+        // Size, rotation, and quality remain unchanged
+        Assertions.assertTrue(result.contains("/max/"), "Size should remain unchanged");
+        Assertions.assertTrue(result.contains("/0/"), "Rotation should remain unchanged");
+    }
+
+    /**
+     * @see IIIFUrlHandler#getModifiedIIIFFUrl(String,RegionRequest,Scale,Rotation,Colortype,ImageFileFormat)
+     * @verifies do nothing if not iiif url
+     */
+    @Test
+    void getModifiedIIIFFUrl_shouldDoNothingIfNotIiifUrl() throws Exception {
+        // Non-IIIF URL should be returned unchanged
+        String nonIiifUrl = "https://example.com/images/photo.jpg";
+        String result = handler.getModifiedIIIFFUrl(nonIiifUrl, RegionRequest.FULL, Scale.MAX, Rotation.NONE, Colortype.DEFAULT, ImageFileFormat.JPG);
+        Assertions.assertEquals(nonIiifUrl, result);
     }
 
 }

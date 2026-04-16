@@ -786,6 +786,59 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchFacets#isFacetExpanded(String)
+     * @verifies return false if value null
+     */
+    @Test
+    void isFacetExpanded_shouldReturnFalseIfValueNull() {
+        // Verify that isFacetExpanded returns false when the field has never been set (map returns null)
+        SearchFacets facets = new SearchFacets();
+        Assertions.assertFalse(facets.isFacetExpanded("NONEXISTENT_FIELD"));
+    }
+
+    /**
+     * @see SearchFacets#isFacetExpanded(String)
+     * @verifies return true if value true
+     */
+    @Test
+    void isFacetExpanded_shouldReturnTrueIfValueTrue() {
+        // Verify that isFacetExpanded returns true after expandFacet has been called for the field
+        SearchFacets facets = new SearchFacets();
+        facets.expandFacet("DC");
+        Assertions.assertTrue(facets.isFacetExpanded("DC"));
+    }
+
+    /**
+     * @see SearchFacets#updateFacetItem(String, String, List, boolean)
+     * @verifies update facet item correctly
+     */
+    @Test
+    void updateFacetItem_shouldUpdateFacetItemCorrectly() {
+        // Verify that an existing facet item for the given field gets its value replaced
+        List<IFacetItem> items = new ArrayList<>(1);
+        items.add(new FacetItem("FIELD1:oldvalue", false));
+        SearchFacets.updateFacetItem("FIELD1", "newvalue", items, false);
+        Assertions.assertEquals(1, items.size());
+        Assertions.assertEquals("FIELD1", items.get(0).getField());
+        Assertions.assertEquals("newvalue", items.get(0).getValue());
+    }
+
+    /**
+     * @see SearchFacets#updateFacetItem(String, String, List, boolean)
+     * @verifies add new item correctly
+     */
+    @Test
+    void updateFacetItem_shouldAddNewItemCorrectly() {
+        // Verify that a new facet item is appended when no existing item matches the field
+        List<IFacetItem> items = new ArrayList<>(1);
+        items.add(new FacetItem("FIELD1:foo", false));
+        SearchFacets.updateFacetItem("FIELD2", "bar", items, false);
+        Assertions.assertEquals(2, items.size());
+        Assertions.assertEquals("FIELD2", items.get(1).getField());
+        Assertions.assertEquals("bar", items.get(1).getValue());
+    }
+
+    /**
      * Regression guard for the replacement of Collections.synchronizedMap with ConcurrentHashMap.
      * Verifies that concurrent reads and writes to availableFacets do not throw
      * ConcurrentModificationException or any other concurrency error.

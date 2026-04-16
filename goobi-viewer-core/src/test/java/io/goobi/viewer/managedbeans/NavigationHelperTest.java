@@ -256,8 +256,46 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @verifies map generic types to error
+     * @see NavigationHelper#setCurrentPageForError(String)
+     * @verifies map null and generic error types to error
+     */
+    @Test
+    void setCurrentPageForError_shouldMapNullAndGenericErrorTypesToError() {
+        NavigationHelper nh = new NavigationHelper();
+
+        // null should map to "error"
+        nh.setCurrentPageForError(null);
+        assertEquals("error", nh.getCurrentPage());
+
+        // "general" should map to "error"
+        nh.setCurrentPageForError("general");
+        assertEquals("error", nh.getCurrentPage());
+
+        // "general_no_url" should map to "error"
+        nh.setCurrentPageForError("general_no_url");
+        assertEquals("error", nh.getCurrentPage());
+    }
+
+    /**
+     * @see NavigationHelper#setCurrentPageForError(String)
      * @verifies pass through specific error types unchanged
+     */
+    @Test
+    void setCurrentPageForError_shouldPassThroughSpecificErrorTypesUnchanged() {
+        NavigationHelper nh = new NavigationHelper();
+
+        nh.setCurrentPageForError("recordNotFound");
+        assertEquals("recordNotFound", nh.getCurrentPage());
+
+        nh.setCurrentPageForError("download");
+        assertEquals("download", nh.getCurrentPage());
+
+        nh.setCurrentPageForError("viewExpired");
+        assertEquals("viewExpired", nh.getCurrentPage());
+    }
+
+    /**
+     * @verifies map generic types to error
      * @see NavigationHelper#setCurrentPageForError(String)
      */
     @Test

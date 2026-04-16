@@ -143,6 +143,49 @@ class ViewerResourceBundleTest extends AbstractTest {
     }
 
     /**
+     * @see ViewerResourceBundle#createLocalMessageFiles(List)
+     * @verifies create files correctly
+     */
+    @Test
+    void createLocalMessageFiles_shouldCreateFilesCorrectly() throws Exception {
+        List<Locale> locales = Arrays.asList(new Locale[] { Locale.ENGLISH, Locale.GERMAN });
+        Assertions.assertEquals(2, locales.size());
+
+        String origConfigLocalPath = DataManager.getInstance().getConfiguration().getConfigLocalPath();
+        DataManager.getInstance().getConfiguration().overrideValue("configFolder", "target/config_temp_pkg/");
+
+        // Create config folder
+        Path configFolder = Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath());
+        try {
+            if (!Files.exists(configFolder)) {
+                Files.createDirectories(configFolder);
+            }
+            Assertions.assertTrue(Files.isDirectory(configFolder));
+
+            // Verify files do not exist yet
+            for (Locale locale : locales) {
+                Path path =
+                        Paths.get(configFolder.toAbsolutePath().toString(), "messages_" + locale.getLanguage() + ".properties");
+                Assertions.assertFalse(Files.exists(path));
+            }
+
+            // Call package-private method with explicit locale list
+            ViewerResourceBundle.createLocalMessageFiles(locales);
+            // Verify files have been created
+            for (Locale locale : locales) {
+                Path path =
+                        Paths.get(configFolder.toAbsolutePath().toString(), "messages_" + locale.getLanguage() + ".properties");
+                Assertions.assertTrue(Files.isRegularFile(path));
+            }
+        } finally {
+            if (Files.exists(configFolder)) {
+                FileUtils.deleteDirectory(configFolder.toFile());
+            }
+            DataManager.getInstance().getConfiguration().overrideValue("configFolder", origConfigLocalPath);
+        }
+    }
+
+    /**
      * @see ViewerResourceBundle#createLocalMessageFiles()
      * @verifies create locale-specific message properties files in the config folder
      */

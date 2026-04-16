@@ -421,6 +421,78 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see BrowseElement#determinePageType()
+     * @verifies return metadata page type for pdf mime type without images
+     */
+    @Test
+    void determinePageType_shouldReturnMetadataPageTypeForPdfMimeTypeWithoutImages() throws Exception {
+        // PDF without images should resolve to metadata view
+        StructElement se = new StructElement();
+        se.setPi("PPN123");
+        se.setDocStructType("Monograph");
+        se.getMetadataFields().put(SolrConstants.MIMETYPE, Collections.singletonList("application/pdf"));
+        BrowseElement be = new BrowseElement(se, Collections.singletonMap(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>()),
+                Locale.ENGLISH, null, null, null);
+        assertFalse(be.isHasImages());
+        assertFalse(be.isHasMedia());
+        assertEquals(PageType.viewMetadata, be.determinePageType());
+    }
+
+    /**
+     * @see BrowseElement#determinePageType()
+     * @verifies return object page type for pdf mime type with images
+     */
+    @Test
+    void determinePageType_shouldReturnObjectPageTypeForPdfMimeTypeWithImages() throws Exception {
+        // PDF with images should resolve to object view
+        StructElement se = new StructElement(new SolrDocument(Map.of(
+                SolrConstants.IDDOC, "12345",
+                SolrConstants.ISWORK, "true",
+                SolrConstants.PI, "PPN123",
+                SolrConstants.DOCSTRCT, "Monograph",
+                SolrConstants.MIMETYPE, "application/pdf",
+                SolrConstants.BOOL_IMAGEAVAILABLE, "true")));
+        BrowseElement be = new BrowseElement(se, Collections.singletonMap(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>()),
+                Locale.ENGLISH, null, null, null);
+        assertTrue(be.isHasImages());
+        assertEquals(PageType.viewObject, be.determinePageType());
+    }
+
+    /**
+     * @see BrowseElement#determinePageType()
+     * @verifies return object page type for audio mime type
+     */
+    @Test
+    void determinePageType_shouldReturnObjectPageTypeForAudioMimeType() throws Exception {
+        // Audio should resolve to object view via hasMedia flag
+        StructElement se = new StructElement();
+        se.setPi("PPN123");
+        se.setDocStructType("Monograph");
+        se.getMetadataFields().put(SolrConstants.MIMETYPE, Collections.singletonList("audio/mpeg"));
+        BrowseElement be = new BrowseElement(se, Collections.singletonMap(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>()),
+                Locale.ENGLISH, null, null, null);
+        assertTrue(be.isHasMedia());
+        assertEquals(PageType.viewObject, be.determinePageType());
+    }
+
+    /**
+     * @see BrowseElement#determinePageType()
+     * @verifies return object page type for video mime type
+     */
+    @Test
+    void determinePageType_shouldReturnObjectPageTypeForVideoMimeType() throws Exception {
+        // Video should resolve to object view via hasMedia flag
+        StructElement se = new StructElement();
+        se.setPi("PPN123");
+        se.setDocStructType("Monograph");
+        se.getMetadataFields().put(SolrConstants.MIMETYPE, Collections.singletonList("video/mp4"));
+        BrowseElement be = new BrowseElement(se, Collections.singletonMap(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>()),
+                Locale.ENGLISH, null, null, null);
+        assertTrue(be.isHasMedia());
+        assertEquals(PageType.viewObject, be.determinePageType());
+    }
+
+    /**
      * PDF record without image derivatives should resolve to metadata view.
      *
      * @verifies return metadata for pdf without images

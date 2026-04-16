@@ -240,6 +240,27 @@ class MetadataElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * Verifies that getMetadata falls back to the non-language-specific field
+     * when the requested language variant is not present in the metadata list.
+     *
+     * @see MetadataElement#getMetadata(String, String)
+     * @verifies fall back to non language field if language field not found
+     */
+    @Test
+    void getMetadata_shouldFallBackToNonLanguageFieldIfLanguageFieldNotFound() throws Exception {
+        MetadataElement me = new MetadataElement();
+
+        // Only add a generic (non-language) metadata entry — no French variant exists
+        Metadata mdGeneric = new Metadata("", "MD_TITLE", "", "Generic Title");
+        me.getMetadataList().add(mdGeneric);
+
+        // Request French variant, which does not exist — should fall back to generic
+        Metadata result = me.getMetadata("MD_TITLE", "FR");
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals("MD_TITLE", result.getLabel());
+    }
+
+    /**
      * @verifies get fold position
      */
     @Test

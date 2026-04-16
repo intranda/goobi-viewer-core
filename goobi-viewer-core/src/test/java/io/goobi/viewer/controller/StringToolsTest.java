@@ -44,7 +44,7 @@ class StringToolsTest {
 
     /**
      * @see StringTools#escapeHtmlChars(String)
-     * @verifies replace angle brackets quotes and ampersands with HTML entities
+     * @verifies replace angle brackets, quotes, and ampersands with HTML entities
      */
     @Test
     void escapeHtmlChars_shouldReplaceAngleBracketsQuotesAndAmpersandsWithHTMLEntities() throws Exception {
@@ -92,7 +92,7 @@ class StringToolsTest {
 
     /**
      * @see StringTools#stripJS(String)
-     * @verifies remove script tags self closing scripts and SVG event handler elements regardless of case
+     * @verifies remove script tags, self-closing scripts, and SVG event handler elements regardless of case
      */
     @Test
     void stripJS_shouldRemoveScriptTagsSelfClosingScriptsAndSVGEventHandlerElementsRegardlessOfCase() throws Exception {
@@ -160,7 +160,7 @@ class StringToolsTest {
 
     /**
      * @see StringTools#getHierarchyForCollection(String,String)
-     * @verifies build cumulative hierarchy list from separator delimited collection string
+     * @verifies build cumulative hierarchy list from separator-delimited collection string
      */
     @Test
     void getHierarchyForCollection_shouldBuildCumulativeHierarchyListFromSeparatorDelimitedCollectionString() throws Exception {
@@ -290,7 +290,7 @@ class StringToolsTest {
 
     /**
      * @see StringTools#escapeCriticalUrlChracters(String,boolean)
-     * @verifies replace plus slash backslash pipe and question mark with unicode escape sequences and decode percent encoding when flagged
+     * @verifies replace +, /, backslash, pipe, and ? with Unicode escape sequences and decode percent-encoding when flagged
      */
     @Test
     void escapeCriticalUrlChracters_shouldReplacePlusSlashBackslashPipeAndQuestionMarkWithUnicodeEscapeSequencesAndDecodePercentEncodingWhenFlagged() throws Exception {

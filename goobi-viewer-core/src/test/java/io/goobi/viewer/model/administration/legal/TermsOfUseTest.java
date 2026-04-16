@@ -61,6 +61,22 @@ class TermsOfUseTest extends AbstractTest {
     }
 
     /**
+     * @see TermsOfUse#cleanTranslations()
+     * @verifies clear the list
+     */
+    @Test
+    void cleanTranslations_shouldClearTheList() {
+        // Verify that cleanTranslations removes all translations with blank values
+        TermsOfUse tou = new TermsOfUse();
+        tou.setTitle("en", " ");
+        tou.setDescription("en", "");
+        Assertions.assertEquals(2, tou.getTranslations().size());
+
+        tou.cleanTranslations();
+        Assertions.assertEquals(0, tou.getTranslations().size());
+    }
+
+    /**
      * @verifies remove blank translations from the list
      * @see TermsOfUse#cleanTranslations()
      */

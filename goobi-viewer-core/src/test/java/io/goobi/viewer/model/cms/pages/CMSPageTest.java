@@ -156,7 +156,7 @@ class CMSPageTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see CMSPage#exportAsXml()
-     * @verifies create XML document with localized titles categories and text components
+     * @verifies create XML document with localized titles, categories, and text components
      */
     @Test
     void exportAsXml_shouldCreateXMLDocumentWithLocalizedTitlesCategoriesAndTextComponents() {

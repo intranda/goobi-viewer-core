@@ -247,7 +247,7 @@ class DateToolsTest extends AbstractTest {
 
     /**
      * @see DateTools#parseMultipleDatesFromString(String)
-     * @verifies strip parentheses from dates before parsing slash separated input
+     * @verifies strip parentheses from dates before parsing slash-separated input
      */
     @Test
     void parseMultipleDatesFromString_shouldStripParenthesesFromDatesBeforeParsingSlashSeparatedInput() throws Exception {

@@ -498,6 +498,30 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * Verifies that populate uses the default value of a MetadataParameter
+     * when the StructElement has no value for the requested field.
+     *
+     * @see Metadata#populate(StructElement, StructElement, String, List, Map, int, Locale)
+     * @verifies use default value of no value found
+     */
+    @Test
+    void populate_shouldUseDefaultValueOfNoValueFound() throws Exception {
+        StructElement se = new StructElement();
+        se.setPi("PPN_TEST");
+        // StructElement has no metadata fields, so the lookup for "MD_NONEXISTENT" will return null
+
+        Metadata metadata = new Metadata("MD_NONEXISTENT", "{0}", Collections.singletonList(
+                new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("MD_NONEXISTENT").setDefaultValue("fallback_value")));
+
+        boolean result = metadata.populate(se, null, "1", null, null, 0, null);
+        // The default value path sets found=true, so populate should return true
+        Assertions.assertTrue(result);
+        // The default value should have been applied to the first MetadataValue
+        Assertions.assertFalse(metadata.getValues().isEmpty());
+        Assertions.assertEquals("fallback_value", metadata.getValues().get(0).getParamValues().get(0).get(0));
+    }
+
+    /**
      * @verifies store pi and logid from struct element
      */
     @Test

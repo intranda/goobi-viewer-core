@@ -126,6 +126,24 @@ class MessageEntryTest extends AbstractTest {
     }
 
     /**
+     * @see MessageEntry#getTranslationStatusForLanguage(String)
+     * @verifies retutrn correct status for language
+     */
+    @Test
+    void getTranslationStatusForLanguage_shouldRetutrnCorrectStatusForLanguage() throws Exception {
+        // Verify that getTranslationStatusForLanguage returns the correct status per language
+        List<MessageValue> values = new ArrayList<>(3);
+        values.add(new MessageValue("en", "value", "value"));
+        values.add(new MessageValue("de", "wert zzz", "wert"));
+        values.add(new MessageValue("fr", "", ""));
+        MessageEntry entry = new MessageEntry("key", values);
+        Assertions.assertEquals(TranslationStatus.FULL, entry.getTranslationStatusForLanguage("en"));
+        Assertions.assertEquals(TranslationStatus.PARTIAL, entry.getTranslationStatusForLanguage("de"));
+        Assertions.assertEquals(TranslationStatus.NONE, entry.getTranslationStatusForLanguage("fr"));
+        Assertions.assertEquals(TranslationStatus.NONE, entry.getTranslationStatusForLanguage(null));
+    }
+
+    /**
      * @verifies trim suffix
      */
     @Test

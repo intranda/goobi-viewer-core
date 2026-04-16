@@ -68,4 +68,18 @@ class WidgetDisplayElementTest {
         Assertions.assertEquals(LOREM_IPSUM, element.getDescriptionOrTypeDescription().getText(Locale.GERMAN));
     }
 
+    /**
+     * @see WidgetDisplayElement#getDescription()
+     * @verifies description from type
+     */
+    @Test
+    void getDescription_shouldDescriptionFromType() {
+        // Verify that getDescription returns the description set via the constructor
+        CustomSidebarWidget widget = new HtmlSidebarWidget();
+        widget.getDescription().setText("Test description", Locale.ENGLISH);
+        WidgetDisplayElement element = new WidgetDisplayElement(widget);
+        Assertions.assertNotNull(element.getDescription());
+        Assertions.assertFalse(element.getDescription().isEmpty());
+    }
+
 }

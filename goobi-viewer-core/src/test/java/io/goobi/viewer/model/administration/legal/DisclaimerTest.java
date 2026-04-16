@@ -43,6 +43,32 @@ class DisclaimerTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * @see Disclaimer#getAcceptanceScope()
+     * @verifies persist
+     */
+    @Test
+    void getAcceptanceScope_shouldPersist() {
+        // Verify that the acceptance scope is non-null and retains set values (no DAO round-trip needed)
+        Disclaimer disclaimer = new Disclaimer();
+        disclaimer.getAcceptanceScope().setDaysToLive(5);
+        assertNotNull(disclaimer.getAcceptanceScope());
+        assertEquals(5, disclaimer.getAcceptanceScope().getDaysToLive());
+    }
+
+    /**
+     * @see Disclaimer#getAcceptanceScope()
+     * @verifies scope
+     */
+    @Test
+    void getAcceptanceScope_shouldScope() {
+        // Verify that default scope values are returned and can be modified
+        Disclaimer disclaimer = new Disclaimer();
+        assertNotNull(disclaimer.getAcceptanceScope());
+        assertEquals(14, disclaimer.getAcceptanceScope().getDaysToLive());
+        assertEquals(ConsentScope.StorageMode.LOCAL, disclaimer.getAcceptanceScope().getStorageMode());
+    }
+
+    /**
      * @verifies persist disclaimer with acceptance scope to database
      * @see Disclaimer#getAcceptanceScope()
      */

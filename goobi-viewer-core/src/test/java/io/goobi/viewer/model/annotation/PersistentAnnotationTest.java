@@ -138,6 +138,21 @@ class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * @see PersistentAnnotation#getId()
+     * @verifies persist annotation
+     */
+    @Test
+    void getId_shouldPersistAnnotation() throws Exception {
+        // Verify that after persisting, getId() returns a non-null database ID
+        DataManager.getInstance().getDao().addAnnotation(daoAnno);
+        Assertions.assertNotNull(daoAnno.getId());
+
+        CrowdsourcingAnnotation loaded = DataManager.getInstance().getDao().getAnnotation(daoAnno.getId());
+        Assertions.assertNotNull(loaded);
+        Assertions.assertEquals(daoAnno.getId(), loaded.getId());
+    }
+
+    /**
      * @verifies serialize
      * @see PersistentAnnotation#getBody
      */

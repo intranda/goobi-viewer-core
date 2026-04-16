@@ -259,6 +259,19 @@ class FacetItemTest extends AbstractTest {
     }
 
     /**
+     * @see FacetItem#FacetItem(String, String, boolean)
+     * @verifies set label to value if no label value given
+     */
+    @Test
+    void FacetItem_shouldSetLabelToValueIfNoLabelValueGiven() {
+        // When label is null, the constructor should set the label to the parsed value via parseLink
+        IFacetItem item = new FacetItem("FIELD:myvalue", null, false);
+        Assertions.assertEquals("FIELD", item.getField());
+        Assertions.assertEquals("myvalue", item.getValue());
+        Assertions.assertEquals("myvalue", item.getLabel());
+    }
+
+    /**
      * @see FacetItem#parseLink()
      * @verifies set label to value if label empty
      */
@@ -273,10 +286,10 @@ class FacetItemTest extends AbstractTest {
 
     /**
      * @see FacetItem#parseLink()
-     * @verifies remove wildcard from label
+     * @verifies removed wildcard from label
      */
     @Test
-    void parseLink_shouldRemoveWildcardFromLabel() {
+    void parseLink_shouldRemovedWildcardFromLabel() {
         FacetItem item = new FacetItem(false);
         Assertions.assertNull(item.getLabel());
         item.setLink("foo:b*");

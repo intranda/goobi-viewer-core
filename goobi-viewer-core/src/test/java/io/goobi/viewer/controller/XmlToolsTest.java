@@ -137,4 +137,52 @@ class XmlToolsTest {
         Assertions.assertThrows(FileNotFoundException.class, () -> XmlTools.readXmlFile("notfound.xml"));
     }
 
+    /**
+     * @see XmlTools#determineFileFormat(Document)
+     * @verifies detect mets files correctly
+     */
+    @Test
+    void determineFileFormat_shouldDetectMetsFilesCorrectly() throws Exception {
+        // Minimal METS XML with mets namespace on root element
+        String xml = "<mets xmlns:mets=\"http://www.loc.gov/METS/\"></mets>";
+        Document doc = XmlTools.getDocumentFromString(xml, null);
+        Assertions.assertEquals("METS", XmlTools.determineFileFormat(doc));
+    }
+
+    /**
+     * @see XmlTools#determineFileFormat(Document)
+     * @verifies detect lido files correctly
+     */
+    @Test
+    void determineFileFormat_shouldDetectLidoFilesCorrectly() throws Exception {
+        // Minimal LIDO XML with lido namespace on root element
+        String xml = "<lido:lidoWrap xmlns:lido=\"http://www.lido-schema.org\"></lido:lidoWrap>";
+        Document doc = XmlTools.getDocumentFromString(xml, null);
+        Assertions.assertEquals("LIDO", XmlTools.determineFileFormat(doc));
+    }
+
+    /**
+     * @see XmlTools#determineFileFormat(Document)
+     * @verifies detect abbyy files correctly
+     */
+    @Test
+    void determineFileFormat_shouldDetectAbbyyFilesCorrectly() throws Exception {
+        // Minimal ABBYY XML with default namespace URI containing "abbyy"
+        String xml = "<document xmlns=\"http://www.abbyy.com/FineReader_xml/FineReader10-schema-v1.xml\"></document>";
+        Document doc = XmlTools.getDocumentFromString(xml, null);
+        Assertions.assertEquals("ABBYYXML", XmlTools.determineFileFormat(doc));
+    }
+
+    /**
+     * @see XmlTools#determineFileFormat(Document)
+     * @verifies detect tei files correctly
+     */
+    @Test
+    void determineFileFormat_shouldDetectTeiFilesCorrectly() throws Exception {
+        // Minimal TEI XML with root element named "TEI"
+        String xml = "<TEI xmlns=\"http://www.tei-c.org/ns/1.0\"></TEI>";
+        Document doc = XmlTools.getDocumentFromString(xml, null);
+        Assertions.assertEquals("TEI", XmlTools.determineFileFormat(doc));
+    }
+
 }

@@ -37,8 +37,8 @@ import io.goobi.viewer.solr.SolrConstants;
 class EventElementTest extends AbstractTest {
 
     /**
-     * @see EventElement#EventElement(SolrDocument,Locale)
-     * @verifies fill in missing date start from display date
+     * @see EventElement#EventElement(SolrDocument,Locale,boolean)
+     * @verifies fill in missing dateStart from displayDate
      */
     @Test
     void EventElement_shouldFillInMissingDateStartFromDisplayDate() throws Exception {
@@ -50,8 +50,8 @@ class EventElementTest extends AbstractTest {
     }
 
     /**
-     * @see EventElement#EventElement(SolrDocument,Locale)
-     * @verifies fill in missing date end from date start
+     * @see EventElement#EventElement(SolrDocument,Locale,boolean)
+     * @verifies fill in missing dateEnd from dateStart
      */
     @Test
     void EventElement_shouldFillInMissingDateEndFromDateStart() throws Exception {

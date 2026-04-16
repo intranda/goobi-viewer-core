@@ -39,4 +39,23 @@ class FuzzySearchTermTest {
         assertTrue(fuzzy.matches(text));
     }
 
+    /**
+     * Verify that matches handles text containing special characters gracefully.
+     * The cleanup method strips diacritical marks and replaces character variants,
+     * so a term with special characters should still match the normalized equivalent.
+     *
+     * @see FuzzySearchTerm#matches(String)
+     * @verifies special characters
+     */
+    @Test
+    void matches_shouldSpecialCharacters() {
+        // Exact match after diacritical mark normalization: "über" -> "uber"
+        FuzzySearchTerm fuzzy = new FuzzySearchTerm("über");
+        assertTrue(fuzzy.matches("über"));
+
+        // Long s character variant replacement: "ſ" -> "s"
+        FuzzySearchTerm fuzzy2 = new FuzzySearchTerm("strasse");
+        assertTrue(fuzzy2.matches("ſtraſſe"));
+    }
+
 }

@@ -93,10 +93,10 @@ class SearchSortingOptionTest extends AbstractTest {
 
     /**
      * @see SearchSortingOption#getSortString()
-     * @verifies not add exclamation mark prefix if ascending
+     * @verifies not add exclamation mark prefix is ascending
      */
     @Test
-    void getSortString_shouldNotAddExclamationMarkPrefixIfAscending() {
+    void getSortString_shouldNotAddExclamationMarkPrefixIsAscending() {
         {
             SearchSortingOption option = new SearchSortingOption("SORT_TITLE");
             Assertions.assertEquals("SORT_TITLE", option.getSortString());
@@ -115,5 +115,17 @@ class SearchSortingOptionTest extends AbstractTest {
     void getSortString_shouldReturnEmptyStringIfFieldBlank() {
         SearchSortingOption option = new SearchSortingOption("");
         Assertions.assertEquals("", option.getSortString());
+    }
+
+    /**
+     * @see SearchSortingOption#equals(Object)
+     * @verifies return true if both options are random
+     */
+    @Test
+    void equals_shouldReturnTrueIfBothOptionsAreRandom() {
+        // Two random sort options with different seeds should be equal because both field values match
+        SearchSortingOption option1 = new SearchSortingOption("random_12345");
+        SearchSortingOption option2 = new SearchSortingOption("random_12345");
+        Assertions.assertEquals(option1, option2);
     }
 }

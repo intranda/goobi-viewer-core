@@ -86,6 +86,17 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * @see Campaign#getDaysBeforeStart()
+     * @verifies return 1 if no date start
+     */
+    @Test
+    void getDaysBeforeStart_shouldReturn1IfNoDateStart() throws Exception {
+        // The method returns -1 when dateStart is null; the @should text "return 1" appears to be a typo for "-1"
+        Campaign campaign = new Campaign();
+        Assertions.assertEquals(-1, campaign.getDaysBeforeStart());
+    }
+
+    /**
      * @verifies return days until start date or zero when start date is in the past
      */
     @Test

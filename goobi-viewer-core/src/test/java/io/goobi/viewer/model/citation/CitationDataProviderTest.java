@@ -37,7 +37,8 @@ import io.goobi.viewer.AbstractTest;
 class CitationDataProviderTest extends AbstractTest {
 
     /**
-     * @verifies store author name parts issued date URL and ISBN in CSL item data
+     * @see CitationDataProvider#addItemData(String, java.util.Map, CSLType)
+     * @verifies store author name parts, issued date, URL, and ISBN in CSLItemData
      */
     @Test
     void addItemData_shouldStoreAuthorNamePartsIssuedDateURLAndISBNInCSLItemData() throws Exception {

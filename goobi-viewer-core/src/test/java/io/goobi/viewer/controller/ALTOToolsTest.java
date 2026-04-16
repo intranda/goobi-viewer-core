@@ -163,7 +163,8 @@ class ALTOToolsTest extends AbstractTest {
     }
 
     /**
-     * @verifies add identifier to TagCount
+     * @see ALTOTools#getNERTags(String,String,NERTag.Type)
+     * @verifies add identifier to tag count
      */
     @Test
     void getNERTags_shouldAddIdentifierToTagCount() throws Exception {

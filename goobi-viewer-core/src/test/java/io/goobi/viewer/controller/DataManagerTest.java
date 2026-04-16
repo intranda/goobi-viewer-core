@@ -219,4 +219,20 @@ class DataManagerTest {
         Mockito.verify(mockIndex, Mockito.times(1)).close();
         Mockito.verify(mockIndex, Mockito.never()).checkReloadNeeded();
     }
+
+    /**
+     * @see DataManager#closeSearchIndex()
+     * @verifies close searchIndex without calling checkReloadNeeded
+     */
+    @Test
+    void closeSearchIndex_shouldCloseSearchIndexWithoutCallingCheckReloadNeeded() throws Exception {
+        // Verify that closeSearchIndex() delegates directly to close() without triggering checkReloadNeeded()
+        SolrSearchIndex mockIndex = Mockito.mock(SolrSearchIndex.class);
+        DataManager.getInstance().injectSearchIndex(mockIndex);
+
+        DataManager.getInstance().closeSearchIndex();
+
+        Mockito.verify(mockIndex).close();
+        Mockito.verify(mockIndex, Mockito.never()).checkReloadNeeded();
+    }
 }

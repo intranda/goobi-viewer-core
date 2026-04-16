@@ -34,6 +34,63 @@ import io.goobi.viewer.solr.SolrConstants;
 class SearchQueryItemTest extends AbstractSolrEnabledTest {
 
     /**
+     * @see SearchQueryItem#removeLine(SearchQueryItemLine)
+     * @verifies remove line correctly
+     */
+    @Test
+    void removeLine_shouldRemoveLineCorrectly() {
+        // Add a second line so the item has two lines, then remove one
+        SearchQueryItem item = new SearchQueryItem();
+        item.addNewLine(0);
+        Assertions.assertEquals(2, item.getLines().size());
+        SearchQueryItemLine lineToRemove = item.getLines().get(1);
+        Assertions.assertTrue(item.removeLine(lineToRemove));
+        Assertions.assertEquals(1, item.getLines().size());
+    }
+
+    /**
+     * @see SearchQueryItem#removeLine(SearchQueryItemLine)
+     * @verifies not remove last remaining line
+     */
+    @Test
+    void removeLine_shouldNotRemoveLastRemainingLine() {
+        // With only one line in the item, removeLine should return false
+        SearchQueryItem item = new SearchQueryItem();
+        Assertions.assertEquals(1, item.getLines().size());
+        SearchQueryItemLine onlyLine = item.getLines().get(0);
+        Assertions.assertFalse(item.removeLine(onlyLine));
+        Assertions.assertEquals(1, item.getLines().size());
+    }
+
+    /**
+     * @see SearchQueryItem#toggleValue(String)
+     * @verifies set values correctly
+     */
+    @Test
+    void toggleValue_shouldSetValuesCorrectly() {
+        // Toggling a value that is not yet set should add it to the first line's values
+        SearchQueryItem item = new SearchQueryItem();
+        Assertions.assertFalse(item.isValueSet("testval"));
+        item.toggleValue("testval");
+        Assertions.assertTrue(item.isValueSet("testval"));
+    }
+
+    /**
+     * @see SearchQueryItem#toggleValue(String)
+     * @verifies unset values correctly
+     */
+    @Test
+    void toggleValue_shouldUnsetValuesCorrectly() {
+        // Toggling an already-set value should remove it from the first line's values
+        SearchQueryItem item = new SearchQueryItem();
+        item.toggleValue("testval");
+        Assertions.assertTrue(item.isValueSet("testval"));
+        item.toggleValue("testval");
+        Assertions.assertFalse(item.isValueSet("testval"));
+    }
+
+
+    /**
      * @verifies build solr queries for o r a n d phrase search multi value and multi line item configurations
      */
     @Test
