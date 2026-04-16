@@ -572,6 +572,7 @@ public class BrowseBean implements Serializable {
      * Setter for the field <code>browsingMenuField</code>.
      *
      * @param browsingMenuField Solr field name to use for term browsing, or "-" / null for none
+     * @should normalize field name to uppercase
      */
     public void setBrowsingMenuField(final String browsingMenuField) {
         synchronized (this) {
@@ -580,9 +581,10 @@ public class BrowseBean implements Serializable {
                 useBrowsingMenuField = "";
             }
             try {
-                this.browsingMenuField = URLDecoder.decode(useBrowsingMenuField, SearchBean.URL_ENCODING);
+                // Normalize to uppercase so that lowercase URLs (e.g. from bots) match the configured Solr field names
+                this.browsingMenuField = URLDecoder.decode(useBrowsingMenuField, SearchBean.URL_ENCODING).toUpperCase();
             } catch (UnsupportedEncodingException e) {
-                this.browsingMenuField = useBrowsingMenuField;
+                this.browsingMenuField = useBrowsingMenuField.toUpperCase();
             }
         }
     }
