@@ -129,6 +129,40 @@ class BookmarkListTest extends AbstractSolrEnabledTest {
     }
 
     /**
+     * @see BookmarkList#sortBookmarkLists(List)
+     * @verifies sort lists correctly
+     */
+    @Test
+    void sortBookmarkLists_shouldSortListsCorrectly() throws Exception {
+        // Verify that lists are sorted descending by dateUpdated, with
+        // dateUpdated being derived from the latest bookmark date if not set explicitly.
+        // The method only sorts when at least one list has its dateUpdated inferred from items.
+        List<BookmarkList> lists = new ArrayList<>();
+        {
+            // List without dateUpdated, but with a bookmark date -> dateUpdated will be inferred
+            BookmarkList list = new BookmarkList();
+            list.setId(1L);
+            Bookmark bookmark = new Bookmark();
+            bookmark.setDateAdded(LocalDateTime.of(2021, 1, 15, 0, 0));
+            list.getItems().add(bookmark);
+            lists.add(list);
+        }
+        {
+            // List with explicit dateUpdated
+            BookmarkList list = new BookmarkList();
+            list.setId(2L);
+            list.setDateUpdated(LocalDateTime.of(2021, 6, 1, 0, 0));
+            lists.add(list);
+        }
+
+        BookmarkList.sortBookmarkLists(lists);
+        // Descending by dateUpdated: 2 (June) before 1 (January)
+        Assertions.assertEquals(Long.valueOf(2), lists.get(0).getId());
+        Assertions.assertEquals(Long.valueOf(1), lists.get(1).getId());
+    }
+
+    /**
+     * @see BookmarkList#sortBookmarkLists(List)
      * @verifies sort bookmark lists by most recent update date descending with unmodified lists last
      */
     @Test

@@ -32,7 +32,7 @@ class NetToolsTest extends AbstractTest {
 
     /**
      * @see NetTools#parseMultipleIpAddresses(String)
-     * @verifies return only the first IP address from a comma separated list
+     * @verifies return only the first IP address from a comma-separated list
      */
     @Test
     void parseMultipleIpAddresses_shouldReturnOnlyTheFirstIPAddressFromACommaSeparatedList() throws Exception {

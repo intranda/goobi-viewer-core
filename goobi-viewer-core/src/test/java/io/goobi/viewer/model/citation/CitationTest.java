@@ -36,7 +36,8 @@ import io.goobi.viewer.AbstractTest;
 class CitationTest extends AbstractTest {
 
     /**
-     * @verifies return APA style HTML citation containing italic title and year
+     * @see Citation#getCitationString(String)
+     * @verifies return APA-style HTML citation containing italic title and year
      */
     @Test
     void getCitationString_shouldReturnAPAStyleHTMLCitationContainingItalicTitleAndYear() throws Exception {
@@ -55,7 +56,8 @@ class CitationTest extends AbstractTest {
     }
 
     /**
-     * @verifies return APA style plaintext citation with author year and title
+     * @see Citation#getCitationString(String)
+     * @verifies return APA-style plaintext citation with author, year, and title
      */
     @Test
     void getCitationString_shouldReturnAPAStylePlaintextCitationWithAuthorYearAndTitle() throws Exception {

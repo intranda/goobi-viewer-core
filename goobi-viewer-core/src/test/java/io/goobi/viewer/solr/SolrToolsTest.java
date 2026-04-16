@@ -101,6 +101,58 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
+     * @see SolrTools#getAsInt(Object)
+     * @verifies return int value correctly
+     */
+    @Test
+    void getAsInt_shouldReturnIntValueCorrectly() {
+        // Passing an Integer object should return the same value
+        assertEquals(Integer.valueOf(42), SolrTools.getAsInt(42));
+        assertEquals(Integer.valueOf(0), SolrTools.getAsInt(0));
+        assertEquals(Integer.valueOf(-7), SolrTools.getAsInt(-7));
+        Assertions.assertNull(SolrTools.getAsInt(null));
+    }
+
+    /**
+     * @see SolrTools#getAsInt(Object)
+     * @verifies parse int from string correctly
+     */
+    @Test
+    void getAsInt_shouldParseIntFromStringCorrectly() {
+        // Passing a String representation should be parsed to Integer
+        assertEquals(Integer.valueOf(123), SolrTools.getAsInt("123"));
+        assertEquals(Integer.valueOf(-99), SolrTools.getAsInt("-99"));
+        // Non-numeric string should return null
+        Assertions.assertNull(SolrTools.getAsInt("abc"));
+    }
+
+    /**
+     * @see SolrTools#getAsLong(Object)
+     * @verifies return long value correctly
+     */
+    @Test
+    void getAsLong_shouldReturnLongValueCorrectly() {
+        // Passing a Long object should return the same value
+        assertEquals(Long.valueOf(42L), SolrTools.getAsLong(42L));
+        assertEquals(Long.valueOf(0L), SolrTools.getAsLong(0L));
+        assertEquals(Long.valueOf(-7L), SolrTools.getAsLong(-7L));
+        Assertions.assertNull(SolrTools.getAsLong(null));
+    }
+
+    /**
+     * @see SolrTools#getAsLong(Object)
+     * @verifies parse long from string correctly
+     */
+    @Test
+    void getAsLong_shouldParseLongFromStringCorrectly() {
+        // Passing a String representation should be parsed to Long
+        assertEquals(Long.valueOf(123L), SolrTools.getAsLong("123"));
+        assertEquals(Long.valueOf(-99L), SolrTools.getAsLong("-99"));
+        // Non-numeric string should return null
+        Assertions.assertNull(SolrTools.getAsLong("abc"));
+    }
+
+    /**
      * @see SolrTools#getSolrSortFieldsAsList(String,String,String)
      * @verifies split multiple sort fields with directions and default to asc when direction omitted
      */
@@ -388,7 +440,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @verifies return true for language coded field names
+     * @verifies return true for language-coded field names
      * @see SolrTools#isLanguageCodedField(String)
      */
     @Test
@@ -399,7 +451,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @verifies return false for non language coded field names
+     * @verifies return false for non-language-coded field names
      * @see SolrTools#isLanguageCodedField(String)
      */
     @Test

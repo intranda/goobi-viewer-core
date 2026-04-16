@@ -29,6 +29,8 @@ import java.util.Map;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import org.apache.solr.common.SolrDocumentList;
+
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
 import io.goobi.viewer.solr.SolrConstants;
@@ -86,5 +88,21 @@ class MetadataToolsTest extends AbstractSolrEnabledTest {
     @Test
     void convertLanguageToIso2_shouldReturnOriginalValueIfLanguageNotFound() throws Exception {
         Assertions.assertEquals("###", MetadataTools.convertLanguageToIso2("###"));
+    }
+
+    /**
+     * @see MetadataTools#getGroupedMetadata(String, String, List)
+     * @verifies return grouped metadata docs correctly
+     */
+    @Test
+    void getGroupedMetadata_shouldReturnGroupedMetadataDocsCorrectly() throws Exception {
+        // Query grouped metadata docs for PI_KLEIUNIV using its IDDOC as owner
+        SolrDocumentList docs = MetadataTools.getGroupedMetadata(iddocKleiuniv, null, null);
+        Assertions.assertNotNull(docs);
+        // The query should return only docs with DOCTYPE=METADATA and IDDOC_OWNER matching the owner IDDOC
+        for (org.apache.solr.common.SolrDocument doc : docs) {
+            Assertions.assertEquals("METADATA", doc.getFieldValue(SolrConstants.DOCTYPE));
+            Assertions.assertEquals(iddocKleiuniv, String.valueOf(doc.getFieldValue(SolrConstants.IDDOC_OWNER)));
+        }
     }
 }

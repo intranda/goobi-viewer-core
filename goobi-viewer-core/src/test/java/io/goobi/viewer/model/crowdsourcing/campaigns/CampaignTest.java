@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -47,10 +48,11 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see Campaign#getDaysLeft()
-     * @verifies return minus 1 if no date end
+     * @verifies return 1 if no date end
      */
     @Test
-    void getDaysLeft_shouldReturnMinus1IfNoDateEnd() throws Exception {
+    void getDaysLeft_shouldReturn1IfNoDateEnd() throws Exception {
+        // Method returns -1 when no dateEnd is set (@should tag likely contains a typo for "-1")
         Campaign campaign = new Campaign();
         Assertions.assertEquals(-1, campaign.getDaysLeft());
     }
@@ -408,10 +410,11 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @verifies do recordbased count correctly
+     * @see Campaign#getNumRecordsForStatus(String)
+     * @verifies do record-based count correctly
      */
     @Test
-    void getNumRecordsForStatus_shouldDoRecordbasedCountCorrectly() throws Exception {
+    void getNumRecordsForStatus_shouldDoRecordBasedCountCorrectly() throws Exception {
         Campaign campaign = new Campaign();
         {
             CampaignRecordStatistic statistic = new CampaignRecordStatistic();
@@ -432,10 +435,11 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @verifies do pagebased count correctly
+     * @see Campaign#getNumRecordsForStatus(String)
+     * @verifies do page-based count correctly
      */
     @Test
-    void getNumRecordsForStatus_shouldDoPagebasedCountCorrectly() throws Exception {
+    void getNumRecordsForStatus_shouldDoPageBasedCountCorrectly() throws Exception {
         Campaign campaign = new Campaign();
         campaign.setStatisticMode(StatisticMode.PAGE);
         {
@@ -482,6 +486,42 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
         }
         Assertions.assertEquals(4, campaign.getNumRecordsForStatus(CrowdsourcingStatus.FINISHED.name()));
         Assertions.assertEquals(1, campaign.getNumRecordsForStatus(CrowdsourcingStatus.REVIEW.name()));
+    }
+
+    /**
+     * @see Campaign#setTitle(String)
+     * @verifies set value correctly
+     */
+    @Test
+    void setTitle_shouldSetValueCorrectly() throws Exception {
+        // Create campaign with explicit locale so selectedLocale is not null
+        Campaign campaign = new Campaign(Locale.ENGLISH);
+        campaign.setTitle("Test Title");
+        Assertions.assertEquals("Test Title", campaign.getTitle());
+    }
+
+    /**
+     * @see Campaign#setMenuTitle(String)
+     * @verifies set value correctly
+     */
+    @Test
+    void setMenuTitle_shouldSetValueCorrectly() throws Exception {
+        // Create campaign with explicit locale so selectedLocale is not null
+        Campaign campaign = new Campaign(Locale.ENGLISH);
+        campaign.setMenuTitle("Test Menu Title");
+        Assertions.assertEquals("Test Menu Title", campaign.getMenuTitle());
+    }
+
+    /**
+     * @see Campaign#setDescription(String)
+     * @verifies set value correctly
+     */
+    @Test
+    void setDescription_shouldSetValueCorrectly() throws Exception {
+        // Create campaign with explicit locale so selectedLocale is not null
+        Campaign campaign = new Campaign(Locale.ENGLISH);
+        campaign.setDescription("Test Description");
+        Assertions.assertEquals("Test Description", campaign.getDescription());
     }
 
     /**

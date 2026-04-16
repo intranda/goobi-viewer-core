@@ -78,7 +78,8 @@ class CitationDataProviderTest extends AbstractTest {
     }
 
     /**
-     * @verifies parse year only issued date into date parts instead of raw string
+     * @see CitationDataProvider#addItemData(String, java.util.Map, de.undercouch.citeproc.csl.CSLType)
+     * @verifies parse year-only issued date into dateParts instead of raw string
      */
     @Test
     void addItemData_shouldParseYearOnlyIssuedDateIntoDatePartsInsteadOfRawString() throws Exception {

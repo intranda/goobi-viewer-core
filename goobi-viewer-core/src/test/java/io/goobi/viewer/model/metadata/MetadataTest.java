@@ -197,6 +197,53 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * No-arg isBlank() delegates to isBlank(null), returning all values regardless of ownerIddoc.
+     * Even when at least one value has a matching ownerIddoc, the method returns true
+     * if all param values are blank.
+     *
+     * @see Metadata#isBlank()
+     * @verifies return true if at least one value has same ownerIddoc
+     */
+    @Test
+    void isBlankNoArg_shouldReturnTrueIfAtLeastOneValueHasSameOwnerIddoc() {
+        // Set up metadata with two blank-valued entries that have different ownerIddocs
+        Metadata metadata = new Metadata("", "MD_FIELD", "", "");
+        metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD));
+        String[] blankValues = new String[] { "", "" };
+        metadata.setParamValue(0, 0, Arrays.asList(blankValues), "", null, null, null, null);
+        metadata.setParamValue(1, 0, Arrays.asList(blankValues), "", null, null, null, null);
+        assertEquals(2, metadata.getValues().size());
+        metadata.getValues().get(0).setOwnerIddoc("123");
+        metadata.getValues().get(1).setOwnerIddoc("456");
+
+        // No-arg isBlank() returns all values; all param values are blank, so result is true
+        Assertions.assertTrue(metadata.isBlank());
+    }
+
+    /**
+     * When filtering by ownerIddoc, if the matching value has blank param values, isBlank returns true.
+     *
+     * @see Metadata#isBlank(String)
+     * @verifies return true if at least one value has same ownerIddoc
+     */
+    @Test
+    void isBlankWithOwnerIddoc_shouldReturnTrueIfAtLeastOneValueHasSameOwnerIddoc() {
+        // Set up metadata with one non-blank entry (ownerIddoc "123") and one blank entry (ownerIddoc "456")
+        Metadata metadata = new Metadata("", "MD_FIELD", "", "");
+        metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD));
+        String[] nonBlankValues = new String[] { "val1", "val2" };
+        String[] blankValues = new String[] { "", "" };
+        metadata.setParamValue(0, 0, Arrays.asList(nonBlankValues), "", null, null, null, null);
+        metadata.setParamValue(1, 0, Arrays.asList(blankValues), "", null, null, null, null);
+        assertEquals(2, metadata.getValues().size());
+        metadata.getValues().get(0).setOwnerIddoc("123");
+        metadata.getValues().get(1).setOwnerIddoc("456");
+
+        // Filter by ownerIddoc "456" which has blank param values, so isBlank returns true
+        Assertions.assertTrue(metadata.isBlank("456"));
+    }
+
+    /**
      * @throws IndexUnreachableException
      * @verifies populate group correctly
      */

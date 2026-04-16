@@ -3448,7 +3448,7 @@ class ConfigurationTest extends AbstractTest {
 
     /**
      * @see Configuration#getTranslationGroups()
-     * @verifies return translation groups with type name description items and regex flags from config
+     * @verifies return translation groups with type, name, description, items, and regex flags from config
      */
     @Test
     void getTranslationGroups_shouldReturnTranslationGroupsWithTypeNameDescriptionItemsAndRegexFlagsFromConfig() {
@@ -3948,5 +3948,61 @@ class ConfigurationTest extends AbstractTest {
         assertNotNull(fold);
         assertEquals(4, items.indexOf(fold));
 
+    }
+
+    /**
+     * @see Configuration#getConfigLocalPath()
+     * @verifies broken config
+     */
+    @Test
+    void getConfigLocalPath_shouldBrokenConfig() throws Exception {
+        // Verify that getConfigLocalPath handles a broken/missing config gracefully by returning a fallback path
+        DataManager.getInstance()
+                .injectConfiguration(new Configuration(new File("src/test/resources/localConfig/config_viewer_broken.test.xml").getAbsolutePath()));
+        String result = DataManager.getInstance().getConfiguration().getConfigLocalPath();
+        assertNotNull(result);
+        assertTrue(result.endsWith("/"));
+    }
+
+    /**
+     * @see Configuration#getMetadataListItemsForTemplate(String, String, boolean, boolean)
+     * @verifies return empty list if no metadata lists configured
+     */
+    @Test
+    void getMetadataListItemsForTemplate_shouldReturnEmptyListIfNoMetadataListsConfigured() throws Exception {
+        // Use a config with no metadata.metadataList elements at all
+        DataManager.getInstance()
+                .injectConfiguration(
+                        new Configuration(new File("src/test/resources/config_viewer_no_metadata_list.test.xml").getAbsolutePath()));
+        List<MetadataListElement> result =
+                DataManager.getInstance().getConfiguration().getMetadataListItemsForTemplate("searchHit", "_DEFAULT", true, false);
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    /**
+     * @see Configuration#getMetadataListItemsForTemplate(String, String, boolean, boolean)
+     * @verifies return empty list if metadataList contains no templates
+     */
+    @Test
+    void getMetadataListItemsForTemplate_shouldReturnEmptyListIfMetadataListContainsNoTemplates() throws Exception {
+        // Use a config with a metadataList element that has no template children
+        DataManager.getInstance()
+                .injectConfiguration(
+                        new Configuration(new File("src/test/resources/config_viewer_no_templates.test.xml").getAbsolutePath()));
+        List<MetadataListElement> result =
+                DataManager.getInstance().getConfiguration().getMetadataListItemsForTemplate("emptyType", "_DEFAULT", true, false);
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    /**
+     * @see Configuration#getCollectionDisplayDepthForSearch(String)
+     * @verifies return 1 if no collection config was found
+     */
+    @Test
+    void getCollectionDisplayDepthForSearch_shouldReturn1IfNoCollectionConfigWasFound() throws Exception {
+        // When no collection config exists for a field, the method returns -1 as the default
+        assertEquals(-1, DataManager.getInstance().getConfiguration().getCollectionDisplayDepthForSearch("MD_NONEXISTENTFIELD"));
     }
 }

@@ -51,4 +51,53 @@ class ArchiveTreeTest extends AbstractTest {
         tree.checkTreeFullyLoaded(nodes);
         Assertions.assertFalse(tree.isTreeFullyLoaded());
     }
+
+    /**
+     * Verifies that getTreeViewForGroup triggers buildTree (setting treeBuilt=true)
+     * and that the returned list matches the generated flat entry list for the group.
+     *
+     * @see ArchiveTree#getTreeViewForGroup(String)
+     * @verifies call buildTree and set maxTocDepth correctly
+     */
+    @Test
+    void getTreeViewForGroup_shouldCallBuildTreeAndSetMaxTocDepthCorrectly() throws Exception {
+        // Build a small archive tree: root -> child1, child2 (child2 -> grandchild)
+        ArchiveEntry root = new ArchiveEntry(0, 0, null);
+        root.setId("root");
+        root.setLabel("Root");
+
+        ArchiveEntry child1 = new ArchiveEntry(0, 1, null);
+        child1.setId("child1");
+        child1.setLabel("Child 1");
+        root.addSubEntry(child1);
+
+        ArchiveEntry child2 = new ArchiveEntry(1, 1, null);
+        child2.setId("child2");
+        child2.setLabel("Child 2");
+        root.addSubEntry(child2);
+
+        ArchiveEntry grandchild = new ArchiveEntry(0, 2, null);
+        grandchild.setId("grandchild");
+        grandchild.setLabel("Grandchild");
+        child2.addSubEntry(grandchild);
+
+        // Generate tree entries for the default group
+        ArchiveTree tree = new ArchiveTree();
+        tree.generate(root);
+
+        // Calling getTreeViewForGroup should trigger buildTree internally and return the entry list
+        List<ArchiveEntry> result = tree.getTreeViewForGroup(ArchiveTree.DEFAULT_GROUP);
+
+        Assertions.assertNotNull(result);
+        // The flat list should contain root + child1 + child2 + grandchild = 4 entries
+        Assertions.assertEquals(4, result.size());
+        Assertions.assertEquals("root", result.get(0).getId());
+        Assertions.assertEquals("child1", result.get(1).getId());
+        Assertions.assertEquals("child2", result.get(2).getId());
+        Assertions.assertEquals("grandchild", result.get(3).getId());
+
+        // Calling again should return same result (buildTree already ran, treeBuilt flag is true)
+        List<ArchiveEntry> result2 = tree.getTreeViewForGroup(ArchiveTree.DEFAULT_GROUP);
+        Assertions.assertEquals(result.size(), result2.size());
+    }
 }

@@ -229,6 +229,24 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * Test that parseVolumeLabelConfig extracts all brace-delimited field names
+     * from the label configuration string.
+     *
+     * @see TocMaker#parseVolumeLabelConfig(String)
+     * @verifies parse all field names correctly
+     */
+    @Test
+    void parseVolumeLabelConfig_shouldParseAllFieldNamesCorrectly() {
+        // Configuration string with three placeholder fields in braces
+        List<String> fields = TocMaker.parseVolumeLabelConfig("Number {CURRENTNO}: {MD_TITLE} ({YEAR})");
+        Assertions.assertNotNull(fields);
+        Assertions.assertEquals(3, fields.size());
+        Assertions.assertEquals("CURRENTNO", fields.get(0));
+        Assertions.assertEquals("MD_TITLE", fields.get(1));
+        Assertions.assertEquals("YEAR", fields.get(2));
+    }
+
+    /**
      * @verifies create correctly sorted map
      */
     @Test

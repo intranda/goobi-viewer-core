@@ -638,7 +638,8 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @verifies return DFG viewer link using URL encoded m d 2 DFGVIEWERURL field value
+     * @see ViewManager#getLinkForDFGViewer()
+     * @verifies return d f g viewer link using URL encoded m d 2 d f g v i e w e r URL field value
      */
     @Test
     void getLinkForDFGViewer_shouldReturnDFGViewerLinkUsingURLEncodedMD2DFGVIEWERURLFieldValue() throws Exception {

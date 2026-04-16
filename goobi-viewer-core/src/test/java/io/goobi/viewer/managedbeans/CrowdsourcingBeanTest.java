@@ -403,10 +403,11 @@ class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @verifies use fixed or random target based on item order configuration
+     * @see CrowdsourcingBean#setNextIdentifierForAnnotation()
+     * @verifies item order configuration
      */
     @Test
-    void setNextIdentifierForAnnotation_shouldUseFixedOrRandomTargetBasedOnItemOrderConfiguration() throws PresentationException, IndexUnreachableException, DAOException {
+    void setNextIdentifierForAnnotation_shouldItemOrderConfiguration() throws PresentationException, IndexUnreachableException, DAOException {
         IDAO dao = Mockito.mock(IDAO.class);
         Configuration config = Mockito.mock(Configuration.class);
         Campaign campaign = Mockito.spy(Campaign.class);

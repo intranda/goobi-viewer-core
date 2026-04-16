@@ -174,7 +174,7 @@ class StringToolsTest {
 
     /**
      * @see StringTools#getHierarchyForCollection(String,String)
-     * @verifies return single element list when collection string has no separator
+     * @verifies return single-element list when collection string has no separator
      */
     @Test
     void getHierarchyForCollection_shouldReturnSingleElementListWhenCollectionStringHasNoSeparator() throws Exception {
@@ -203,7 +203,7 @@ class StringToolsTest {
 
     /**
      * @see StringTools#generateHash(String)
-     * @verifies return s h a 256 hex digest for given input string
+     * @verifies return SHA-256 hex digest for given input string
      */
     @Test
     void generateHash_shouldReturnSHA256HexDigestForGivenInputString() throws Exception {

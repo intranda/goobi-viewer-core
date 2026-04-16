@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- Goobi viewer configuration file (for unit tests) -->
+<!-- Config with metadataList that has no template children -->
+
+<config>
+    <configFolder>src/test/resources/nonexistent/</configFolder>
+    <viewerHome>src/test/resources/data/viewer/</viewerHome>
+    <dataRepositoriesHome>src/test/resources/data/viewer/data/</dataRepositoriesHome>
+    <stopwordsFile>src/test/resources/stopwords.txt</stopwordsFile>
+
+    <metadata>
+        <metadataList type="emptyType">
+        </metadataList>
+    </metadata>
+</config>

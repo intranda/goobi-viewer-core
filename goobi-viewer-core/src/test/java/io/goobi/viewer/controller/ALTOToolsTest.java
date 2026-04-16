@@ -251,6 +251,22 @@ class ALTOToolsTest extends AbstractTest {
     }
 
     /**
+     * @see ALTOTools#getFulltext(String,String,boolean)
+     * @verifies return non-empty text from valid ALTO string
+     */
+    @Test
+    void getFulltext_shouldReturnNonEmptyTextFromValidALTOString() throws Exception {
+        // Read sample ALTO XML and pass it as a string to the 3-arg getFulltext method
+        File file = new File("src/test/resources/data/sample_alto.xml");
+        Assertions.assertTrue(file.isFile());
+        String alto = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
+        Assertions.assertNotNull(alto);
+        String text = ALTOTools.getFulltext(alto, StringTools.DEFAULT_ENCODING, false);
+        Assertions.assertNotNull(text);
+        Assertions.assertFalse(text.isEmpty());
+    }
+
+    /**
      * @verifies return collection with 3 elements
      */
     @Test

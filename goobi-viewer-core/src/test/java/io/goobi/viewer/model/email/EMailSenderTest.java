@@ -21,7 +21,9 @@
  */
 package io.goobi.viewer.model.email;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -30,6 +32,7 @@ import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.export.RISExport;
 import jakarta.mail.Message;
+import jakarta.mail.internet.InternetAddress;
 
 class EMailSenderTest extends AbstractTest {
 
@@ -48,5 +51,24 @@ class EMailSenderTest extends AbstractTest {
         Assertions.assertNotNull(replyTo);
         Assertions.assertEquals(1, replyTo.length);
         Assertions.assertEquals("reply-to@example.com", replyTo[0]);
+    }
+
+    /**
+     * Verifies that prepareRecipients correctly parses a list of email address strings
+     * into an array of InternetAddress objects.
+     *
+     * @see EMailSender#prepareRecipients(List)
+     * @verifies parse addresses correctly
+     */
+    @Test
+    void prepareRecipients_shouldParseAddressesCorrectly() throws Exception {
+        List<String> recipients = Arrays.asList("alice@example.com", "bob@example.com", "charlie@example.com");
+        InternetAddress[] result = EMailSender.prepareRecipients(recipients);
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(3, result.length);
+        Assertions.assertEquals("alice@example.com", result[0].getAddress());
+        Assertions.assertEquals("bob@example.com", result[1].getAddress());
+        Assertions.assertEquals("charlie@example.com", result[2].getAddress());
     }
 }

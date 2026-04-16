@@ -217,4 +217,41 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
         assertEquals("A91x36057394742965620181205135958381", result.getRight().get());
 
     }
+
+    /**
+     * Verifies that findIndexedNeighbours returns the correct left (previous) and right (next)
+     * neighbor PIs for a given EAD node ID. The test index contains two linked archive records;
+     * this test verifies both neighbors are resolved correctly when queried from either side.
+     *
+     * @see ArchiveManager#findIndexedNeighbours(String)
+     * @verifies return neighbors correctly
+     */
+    @Test
+    void findIndexedNeighbours_shouldReturnNeighborsCorrectly() throws Exception {
+        // The test index has two archive-linked records:
+        //   node A91x28075361251831020181205135958451 (sorted first) -> no left, right exists
+        //   node A91x36057394742965620181205135958381 (sorted second) -> left exists, no right
+        // Verify the neighbor relationship from the first node's perspective
+        Pair<Optional<String>, Optional<String>> result =
+                ArchiveManager.findIndexedNeighbours("A91x28075361251831020181205135958451");
+        assertNotNull(result);
+        // First node has no predecessor
+        Assertions.assertTrue(result.getLeft().isEmpty());
+        // First node has a successor
+        Assertions.assertTrue(result.getRight().isPresent());
+
+        // Verify the neighbor relationship from the second node's perspective
+        Pair<Optional<String>, Optional<String>> result2 =
+                ArchiveManager.findIndexedNeighbours("A91x36057394742965620181205135958381");
+        assertNotNull(result2);
+        // Second node has a predecessor
+        Assertions.assertTrue(result2.getLeft().isPresent());
+        // Second node has no successor
+        Assertions.assertTrue(result2.getRight().isEmpty());
+
+        // Successor of the first node points to the second node's PI
+        assertEquals("A91x36057394742965620181205135958381", result.getRight().get());
+        // Predecessor of the second node points to the first node's PI
+        assertEquals("A91x28075361251831020181205135958451", result2.getLeft().get());
+    }
 }

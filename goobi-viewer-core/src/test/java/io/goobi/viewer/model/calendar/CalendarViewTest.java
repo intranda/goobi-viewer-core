@@ -29,7 +29,18 @@ import org.junit.jupiter.api.Test;
 import io.goobi.viewer.AbstractSolrEnabledTest;
 
 class CalendarViewTest extends AbstractSolrEnabledTest {
-    
+
+    /**
+     * @see CalendarView#isDisplay()
+     * @verifies return true if number of items sufficient
+     */
+    @Test
+    void isDisplay_shouldReturnTrueIfNumberOfItemsSufficient() throws Exception {
+        // Verify that isDisplay returns true when the calendar has enough items
+        CalendarView cv = new CalendarView("168714434_1805", "168714434", null, null);
+        Assertions.assertTrue(cv.isDisplay());
+    }
+
     /**
      * @see CalendarView#isDisplay()
      * @verifies return true if numer of items suffient

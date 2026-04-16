@@ -24,7 +24,11 @@ package io.goobi.viewer.managedbeans;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
+
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.controller.Configuration;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.CmsCollectionsBean.CMSCollectionImageMode;
 import io.goobi.viewer.model.cms.collections.CMSCollection;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
@@ -86,6 +90,20 @@ class CmsCollectionsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals(3, bean.getAllCollectionFields().size());
 
         Assertions.assertTrue(bean.isDisplaySolrFieldSelectionWidget());
+    }
+
+    /**
+     * @see CmsCollectionsBean#isDisplaySolrFieldSelectionWidget()
+     * @verifies return false if only one collection field is configured
+     */
+    @Test
+    void isDisplaySolrFieldSelectionWidget_shouldReturnFalseIfOnlyOneCollectionFieldIsConfigured() throws Exception {
+        // Use a config with only one collection field so the widget should not be displayed
+        DataManager.getInstance()
+                .injectConfiguration(new Configuration(new File("src/test/resources/config_viewer_single_collection.test.xml").getAbsolutePath()));
+        CmsCollectionsBean bean = new CmsCollectionsBean();
+        Assertions.assertEquals(1, bean.getAllCollectionFields().size());
+        Assertions.assertFalse(bean.isDisplaySolrFieldSelectionWidget());
     }
 
     /**

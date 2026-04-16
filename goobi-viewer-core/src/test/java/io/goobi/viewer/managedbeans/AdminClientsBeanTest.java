@@ -36,11 +36,11 @@ import io.goobi.viewer.model.security.clients.ClientApplication.AccessStatus;
 class AdminClientsBeanTest {
 
     /**
-     * @verifies return table data provider
-     * @see AdminClientsBean#getConfiguredClientsModel
+     * @see AdminClientsBean#getConfiguredClientsModel()
+     * @verifies table data provider
      */
     @Test
-    void getConfiguredClientsModel_shouldReturnTableDataProvider() throws DAOException {
+    void getConfiguredClientsModel_shouldTableDataProvider() throws DAOException {
         
         List<ClientApplication> clients = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
