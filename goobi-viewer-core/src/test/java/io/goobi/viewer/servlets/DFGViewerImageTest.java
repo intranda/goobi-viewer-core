@@ -94,11 +94,11 @@ class DFGViewerImageTest extends AbstractTest {
     }
 
     /**
-     * @verifies forward to image api url max with
+     * @verifies forward to image api url max width
      * @see DFGViewerImage#doGet
      */
     @Test
-    public void doGet_shouldForwardToImageApiUrlMaxWith() throws ServletException, IOException {
+    public void doGet_shouldForwardToImageApiUrlMaxWidth() throws ServletException, IOException {
 
         String requestUrl = "/1574750503285_37/max/0/1575272395963.jpg";
         String expectedForwardUrl = DataManager.getInstance().getConfiguration().getIIIFApiUrl()

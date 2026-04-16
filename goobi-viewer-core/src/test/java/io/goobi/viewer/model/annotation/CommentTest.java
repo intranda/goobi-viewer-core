@@ -30,7 +30,7 @@ import io.goobi.viewer.model.security.user.User;
 
 class CommentTest {
     /**
-     * @see Comment#Comment(String,int,User,String,Comment)
+     * @see Comment#Comment(String, int, User, String, String, PublicationStatus)
      * @verifies set pi owner and text from constructor arguments
      */
     @Test

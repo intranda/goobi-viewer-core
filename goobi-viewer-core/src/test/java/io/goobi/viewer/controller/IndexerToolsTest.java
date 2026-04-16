@@ -122,7 +122,7 @@ class IndexerToolsTest extends AbstractTest {
 
     /**
      * @verifies complete without exception
-     * @see for#shutdown()
+     * @see IndexerTools#shutdown()
      */
     @Test
     void shutdown_shouldCompleteWithoutException() {

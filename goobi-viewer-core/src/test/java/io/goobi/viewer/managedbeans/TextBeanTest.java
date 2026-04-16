@@ -129,10 +129,10 @@ class TextBeanTest extends AbstractSolrEnabledTest {
 
     /**
      * @see TextBean#getRecordLanguages(StructElement)
-     * @verifies return return all tei languages
+     * @verifies return all tei languages
      */
     @Test
-    void getRecordLanguages_shouldReturnReturnAllTeiLanguages() throws Exception {
+    void getRecordLanguages_shouldReturnAllTeiLanguages() throws Exception {
         StructElement se = new StructElement();
         se.getMetadataFields().put("FILENAME_TEI_LANG_DE", Collections.emptyList());
         se.getMetadataFields().put("FILENAME_TEI_LANG_EN", Collections.emptyList());

@@ -2741,10 +2741,10 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @verifies broken config
+     * @verifies return fallback paths when config file is broken
      */
     @Test
-    void getConfigLocalPath_shouldBrokenConfig() {
+    void getConfigLocalPath_shouldReturnFallbackPathsWhenConfigFileIsBroken() {
         DataManager.getInstance()
                 .injectConfiguration(new Configuration(new File("src/test/resources/localConfig/config_viewer_broken.test.xml").getAbsolutePath()));
         assertEquals("src/test/resources/localConfig/", DataManager.getInstance().getConfiguration().getConfigLocalPath());

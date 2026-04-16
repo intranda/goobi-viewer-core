@@ -114,7 +114,7 @@ class StringToolsTest {
 
     /**
      * @verifies return expected value for given input
-     * @see providing#escapeQuotes(final String)
+     * @see StringTools#escapeQuotes(String)
      */
     @Test
     void escapeQuotes_shouldReturnExpectedValueForGivenInput() {
@@ -309,7 +309,7 @@ class StringToolsTest {
 
     /**
      * @verifies return expected value
-     * @see providing#sortByList
+     * @see StringTools#sortByList(Object, Object, List)
      */
     @Test
     void sortByList_shouldReturnExpectedValue() {
@@ -328,7 +328,7 @@ class StringToolsTest {
      * @verifies remove script tags and data attributes from html
      */
     @Test
-    void cleanHtml_shouldRemoveScriptTagsAndDataAttributesFromHtml() {
+    void scenario_shouldRemoveScriptTagsAndDataAttributesWhenCleaningHtmlWithJsoup() {
 
         String html =
                 "<p><script>alert('SPAM')</script><span data-sheets-value=\"{\"1\":2,\"2\":\"Kremer, Boris, and Alex Reding. My home is my castle : exposition d’art contemporain, du 1er juin au 27 octobre 2006, Galerie l’Indépendance - Parc Heintz] = from 1 June to 27 October 2006. Luxembourg: Dexia-BIL, 2006. Print.\"}\" data-sheets-userformat=\"{\"2\":15107,\"3\":{\"1\":0},\"4\":{\"1\":2,\"2\":16777215},\"11\":4,\"12\":0,\"14\":{\"1\":2,\"2\":3815994},\"15\":\"\\\"Source Sans Pro\\\", \\\"Helvetica Neue\\\", Helvetica, Arial, sans-serif\",\"16\":11}\">Kremer, Boris, and Alex Reding. <em>My home is my castle : exposition d’art contemporain, du 1er juin au 27 octobre 2006, Galerie l’Indépendance - Parc Heintz</em>. Luxembourg: Dexia-BIL, 2006. Print.</span></p>";
@@ -380,7 +380,7 @@ class StringToolsTest {
 
     /**
      * @verifies return abcde for given input
-     * @see providing#truncateText(String, int)
+     * @see StringTools#truncateText(String, int)
      */
     @Test
     void truncateText_shouldReturnAbcdeForGivenInput() {
@@ -391,7 +391,7 @@ class StringToolsTest {
     }
     
     /**
-     * @see SolrTools#replaceLast(String,String,String)
+     * @see StringTools#replaceLast(String, String, String)
      * @verifies return original text if target not found
      */
     @Test
@@ -400,7 +400,7 @@ class StringToolsTest {
     }
     
     /**
-     * @see SolrTools#replaceLast(String,String,String)
+     * @see StringTools#replaceLast(String, String, String)
      * @verifies replace the last occurrence of target substring with replacement
      */
     @Test

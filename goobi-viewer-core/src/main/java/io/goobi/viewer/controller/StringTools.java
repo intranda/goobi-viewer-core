@@ -445,6 +445,7 @@ public final class StringTools {
      * @throws UnsupportedEncodingException
      * @should return true if string contains url encoded characters
      * @should return false if string not encoded
+     * @should return false if string contains literal percent sign
      */
     public static boolean isStringUrlEncoded(String s, String charset) throws UnsupportedEncodingException {
         if (StringUtils.isEmpty(s)) {

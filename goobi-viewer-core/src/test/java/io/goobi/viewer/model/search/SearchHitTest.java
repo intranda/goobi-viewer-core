@@ -56,7 +56,7 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     
     /**
      * @verifies set authority data identifier correctly
-     * @see for#SearchHit
+     * @see SearchHit#SearchHit(HitType, BrowseElement, SolrDocument, Map, Locale, SearchHitFactory)
      */
     @Test
     void SearchHit_shouldSetAuthorityDataIdentifierCorrectly() throws Exception {
@@ -73,7 +73,7 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies add field values pairs that match search terms
      */
     @Test
-    void populateFoundMetadata_shouldAddFieldValuesPairsThatMatchSearchTerms() throws Exception {
+    void createSearchHit_shouldAddFieldValuesPairsThatMatchSearchTerms() throws Exception {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         {
             Set<String> terms = new HashSet<>();
@@ -110,7 +110,7 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies add MD fields that contain terms from DEFAULT
      */
     @Test
-    void populateFoundMetadata_shouldAddMDFieldsThatContainTermsFromDEFAULT() throws Exception {
+    void createSearchHit_shouldAddMDFieldsThatContainTermsFromDEFAULT() throws Exception {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         {
             Set<String> terms = new HashSet<>();
@@ -142,7 +142,7 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies not add duplicate values
      */
     @Test
-    void populateFoundMetadata_shouldNotAddDuplicateValues() throws Exception {
+    void createSearchHit_shouldNotAddDuplicateValues() throws Exception {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         {
             Set<String> terms = new HashSet<>();
@@ -169,7 +169,7 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies not add ignored fields
      */
     @Test
-    void populateFoundMetadata_shouldNotAddIgnoredFields() throws Exception {
+    void createSearchHit_shouldNotAddIgnoredFields() throws Exception {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         {
             Set<String> terms = new HashSet<>();
@@ -200,7 +200,7 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies not add field values that equal the label
      */
     @Test
-    void populateFoundMetadata_shouldNotAddFieldValuesThatEqualTheLabel() throws Exception {
+    void createSearchHit_shouldNotAddFieldValuesThatEqualTheLabel() throws Exception {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         {
             Set<String> terms = new HashSet<>();
@@ -227,7 +227,7 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies translate configured field values correctly
      */
     @Test
-    void populateFoundMetadata_shouldTranslateConfiguredFieldValuesCorrectly() throws Exception {
+    void createSearchHit_shouldTranslateConfiguredFieldValuesCorrectly() throws Exception {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         {
             Set<String> terms = new HashSet<>();
@@ -264,7 +264,7 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies write one line fields into a single string
      */
     @Test
-    void populateFoundMetadata_shouldWriteOneLineFieldsIntoASingleString() throws Exception {
+    void createSearchHit_shouldWriteOneLineFieldsIntoASingleString() throws Exception {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "bat", "hiru" })));
         searchTerms.put("MD_COUNT_SE", new HashSet<>(Arrays.asList(new String[] { "ett", "två" })));
@@ -302,7 +302,7 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies truncate snippet fields correctly
      */
     @Test
-    void populateFoundMetadata_shouldTruncateSnippetFieldsCorrectly() throws Exception {
+    void createSearchHit_shouldTruncateSnippetFieldsCorrectly() throws Exception {
         int maxLength = 50;
         DataManager.getInstance().getConfiguration().overrideValue("search.fulltextFragmentLength", maxLength);
 

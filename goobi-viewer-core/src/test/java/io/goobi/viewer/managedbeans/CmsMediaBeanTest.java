@@ -67,11 +67,11 @@ class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @verifies selected tag
+     * @verifies return previously set tag
      * @see CmsMediaBean#getSelectedTag
      */
     @Test
-    void getSelectedTag_shouldSelectedTag() {
+    void getSelectedTag_shouldReturnPreviouslySetTag() {
         String tag = "sampleTag";
         bean.setSelectedTag(tag);
         Assertions.assertEquals(tag, bean.getSelectedTag());

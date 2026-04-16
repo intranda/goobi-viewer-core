@@ -29,7 +29,7 @@ import io.goobi.viewer.AbstractSolrEnabledTest;
 class ArchiveEntryTest extends AbstractSolrEnabledTest {
 
     /**
-     * @see SolrEADParser(ArchiveEntry)
+     * @see ArchiveEntry#ArchiveEntry(ArchiveEntry, ArchiveEntry)
      * @verifies clone entry correctly
      */
     @Test
@@ -72,7 +72,7 @@ class ArchiveEntryTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrEADParser(ArchiveEntry)
+     * @see ArchiveEntry#isAccessAllowed()
      * @verifies return true if access conditions empty
      */
     @Test
@@ -83,7 +83,7 @@ class ArchiveEntryTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrEADParser(ArchiveEntry)
+     * @see ArchiveEntry#isAccessAllowed()
      * @verifies return false when entry has a restricted access condition
      */
     @Test
