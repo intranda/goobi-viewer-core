@@ -81,6 +81,8 @@ public final class StringTools {
     public static final String REGEX_BRACES = "\\{(\\w+)\\}";
     /** Constant <code>REGEX_WORDS="[a-zäáàâöóòôüúùûëéèêßñ0123456789]+"</code>. */
     public static final String REGEX_WORDS = "[\\wäáàâöóòôüúùûëéèêßñ]+";
+    /** Pre-compiled Pattern for {@link #REGEX_WORDS}. */
+    public static final Pattern PATTERN_REGEX_WORDS = Pattern.compile(REGEX_WORDS);
     /** Constant <code>DEFAULT_ENCODING="UTF-8"</code>. */
     public static final String DEFAULT_ENCODING = StandardCharsets.UTF_8.name();
     /** Constant <code>DEFAULT_CHARSET="UTF-8"</code>. */

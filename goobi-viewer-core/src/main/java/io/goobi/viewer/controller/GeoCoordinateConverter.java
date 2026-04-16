@@ -86,6 +86,9 @@ public class GeoCoordinateConverter {
     private static final Logger logger = LogManager.getLogger(GeoCoordinateConverter.class);
     protected static final String POINT_LAT_LNG_PATTERN = "([\\dE.-]+)[\\s/]*([\\dE.-]+)";
     protected static final String POLYGON_LAT_LNG_PATTERN = "POLYGON\\(\\(([\\dE.-]+[\\s/]*[\\dE.-]+[,\\s]*)+\\)\\)"; //NOSONAR
+    // Pre-compiled patterns to avoid repeated Pattern.compile() in hot paths
+    protected static final Pattern COMPILED_POINT_PATTERN = Pattern.compile(POINT_LAT_LNG_PATTERN);
+    protected static final Pattern COMPILED_POLYGON_PATTERN = Pattern.compile(POLYGON_LAT_LNG_PATTERN);
 
     //    private final Configuration config;
     private final Map<String, Metadata> featureTitleConfigs;
@@ -402,10 +405,10 @@ public class GeoCoordinateConverter {
         List<GeoMapFeature> docFeatures = new ArrayList<>();
         for (String point : points) {
             try {
-                if (point.matches(POINT_LAT_LNG_PATTERN)) { //NOSONAR  no catastrophic backtracking detected
+                if (COMPILED_POINT_PATTERN.matcher(point).matches()) { //NOSONAR  no catastrophic backtracking detected
                     GeoMapFeature feature = new GeoMapFeature();
 
-                    Matcher matcher = Pattern.compile(POINT_LAT_LNG_PATTERN).matcher(point); // NOSONAR  no catastrophic backtracking detected
+                    Matcher matcher = COMPILED_POINT_PATTERN.matcher(point); // NOSONAR  no catastrophic backtracking detected
                     matcher.find();
                     Double lat = Double.valueOf(matcher.group(1));
                     Double lng = Double.valueOf(matcher.group(2));
@@ -418,10 +421,10 @@ public class GeoCoordinateConverter {
                     json.put("geometry", geom);
                     feature.setJson(json.toString());
                     docFeatures.add(feature);
-                } else if (point.matches(POLYGON_LAT_LNG_PATTERN)) {
+                } else if (COMPILED_POLYGON_PATTERN.matcher(point).matches()) {
                     GeoMapFeature feature = new GeoMapFeature();
 
-                    Matcher matcher = Pattern.compile(POLYGON_LAT_LNG_PATTERN).matcher(point); // NOSONAR  no catastrophic backtracking detected
+                    Matcher matcher = COMPILED_POLYGON_PATTERN.matcher(point); // NOSONAR  no catastrophic backtracking detected
                     matcher.find();
                     Double lat = Double.valueOf(matcher.group(1));
                     Double lng = Double.valueOf(matcher.group(2));
@@ -511,12 +514,12 @@ public class GeoCoordinateConverter {
             }
             return locs;
         } else if (o instanceof String s) {
-            Matcher polygonMatcher = Pattern.compile(POLYGON_LAT_LNG_PATTERN).matcher(s); //NOSONAR   no catastrophic backtracking detected
+            Matcher polygonMatcher = COMPILED_POLYGON_PATTERN.matcher(s); //NOSONAR   no catastrophic backtracking detected
             while (polygonMatcher.find()) {
                 String match = polygonMatcher.group();
                 locs.add(new Polygon(getPoints(match)));
                 s = s.replace(match, "");
-                polygonMatcher = Pattern.compile(POLYGON_LAT_LNG_PATTERN).matcher(s); //NOSONAR   no catastrophic backtracking detected
+                polygonMatcher = COMPILED_POLYGON_PATTERN.matcher(s); //NOSONAR   no catastrophic backtracking detected
             }
             if (StringUtils.isNotBlank(s)) {
                 locs.addAll(Arrays.asList(getPoints(s)).stream().map(p -> new Point(p[0], p[1])).toList());
@@ -528,7 +531,7 @@ public class GeoCoordinateConverter {
 
     private static double[][] getPoints(String value) {
         List<double[]> points = new ArrayList<>();
-        Matcher matcher = Pattern.compile(POINT_LAT_LNG_PATTERN).matcher(value); //NOSONAR   no catastrophic backtracking detected
+        Matcher matcher = COMPILED_POINT_PATTERN.matcher(value); //NOSONAR   no catastrophic backtracking detected
         while (matcher.find() && matcher.groupCount() == 2) {
             points.add(parsePoint(matcher.group(1), matcher.group(2)));
         }
