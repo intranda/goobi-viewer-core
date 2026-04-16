@@ -108,7 +108,7 @@ class BrowseBeanTest extends AbstractTest {
     void selectRedirectFilter_shouldReturnFirstAvailableAlphabeticalFilterIfAvailable() {
         BrowseBean bb = new BrowseBean();
         bb.setBrowsingMenuField("foo");
-        bb.getAvailableStringFiltersMap().put("foo", new ArrayList<>(4));
+        bb.getAvailableStringFiltersMap().put("FOO", new ArrayList<>(4));
         bb.getAvailableStringFilters().add("!");
         bb.getAvailableStringFilters().add("0-9");
         bb.getAvailableStringFilters().add("A");
@@ -124,7 +124,7 @@ class BrowseBeanTest extends AbstractTest {
     void selectRedirectFilter_shouldReturnNumericalFilterIfAvailable() {
         BrowseBean bb = new BrowseBean();
         bb.setBrowsingMenuField("foo");
-        bb.getAvailableStringFiltersMap().put("foo", new ArrayList<>(2));
+        bb.getAvailableStringFiltersMap().put("FOO", new ArrayList<>(2));
         bb.getAvailableStringFilters().add("!");
         bb.getAvailableStringFilters().add("2");
         assertEquals("2", bb.selectRedirectFilter());
@@ -138,7 +138,7 @@ class BrowseBeanTest extends AbstractTest {
     void selectRedirectFilter_shouldReturnFirstFilterIfNoOtherAvailable() {
         BrowseBean bb = new BrowseBean();
         bb.setBrowsingMenuField("foo");
-        bb.getAvailableStringFiltersMap().put("foo", new ArrayList<>(2));
+        bb.getAvailableStringFiltersMap().put("FOO", new ArrayList<>(2));
         bb.getAvailableStringFilters().add("!");
         bb.getAvailableStringFilters().add("?");
         assertEquals("!", bb.selectRedirectFilter());
@@ -164,6 +164,17 @@ class BrowseBeanTest extends AbstractTest {
         BrowseBean bb = new BrowseBean();
         bb.setBrowsingMenuField("MD_FOO");
         assertEquals("MD_FOO", bb.getBrowsingMenuFieldForLanguage("en"));
+    }
+
+    /**
+     * @see BrowseBean#setBrowsingMenuField(String)
+     * @verifies normalize field name to uppercase
+     */
+    @Test
+    void setBrowsingMenuField_shouldNormalizeFieldNameToUppercase() {
+        BrowseBean bb = new BrowseBean();
+        bb.setBrowsingMenuField("md_allpersons_untokenized");
+        assertEquals("MD_ALLPERSONS_UNTOKENIZED", bb.getBrowsingMenuField());
     }
 
     /**
