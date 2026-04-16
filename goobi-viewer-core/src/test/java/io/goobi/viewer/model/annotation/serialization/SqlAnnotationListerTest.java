@@ -68,11 +68,11 @@ class SqlAnnotationListerTest {
     }
 
     /**
-     * @verifies with condition
-     * @see SqlAnnotationLister#getAnnotations
+     * @verifies filter annotations with condition
+     * @see SqlAnnotationLister#getAnnotationCount(String, List, List, List, String, Integer)
      */
     @Test
-    void getAnnotations_shouldWithCondition() {
+    void getAnnotationCount_shouldFilterWithCondition() {
         assertEquals(1, lister.getAnnotationCount("Text 1", null, null, null, null, null));
         assertEquals(7, lister.getAnnotationCount("Text", null, null, null, null, null));
         assertEquals(2, lister.getAnnotationCount(null, Arrays.asList("commenting"), null, null, null, null));
@@ -84,11 +84,11 @@ class SqlAnnotationListerTest {
     }
 
     /**
-     * @verifies page
-     * @see SqlAnnotationLister#getAnnotation
+     * @verifies paginate annotation results
+     * @see SqlAnnotationLister#getAnnotations(int, int, String, List, List, List, String, Integer, String, boolean)
      */
     @Test
-    void getAnnotation_shouldPage() {
+    void getAnnotations_shouldPaginateResults() {
         assertEquals(5, lister.getAnnotations(0, 5, null, null, null, null, null, null, "", false).size());
         assertEquals(2, lister.getAnnotations(5, 5, null, null, null, null, null, null, "", false).size());
     }

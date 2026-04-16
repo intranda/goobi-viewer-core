@@ -141,11 +141,11 @@ class RecordFileResourceTest extends AbstractRestApiTest {
     }
 
     /**
-     * @verifies get missing source file
-     * @see RecordFileResource#try
+     * @verifies return 404 for missing source file
+     * @see RecordFileResource#getSourceFile
      */
     @Test
-    void try_shouldGetMissingSourceFile() {
+    void getSourceFile_shouldReturn404ForMissingSourceFile() {
         String url = urls.path(RECORDS_FILES, RECORDS_FILES_SOURCE).params(PI, "bla.txt").build();
         try (Response response = target(url)
                 .request()

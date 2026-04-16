@@ -41,10 +41,10 @@ import io.goobi.viewer.solr.SolrConstants;
 class MetadataContainerTest extends AbstractTest {
 
     /**
-     * @verifies translated fields from single document
+     * @verifies translate fields from single document
      */
     @Test
-    void getValues_shouldTranslatedFieldsFromSingleDocument() {
+    void getValues_shouldTranslateFieldsFromSingleDocument() {
 
         SolrDocument doc = new SolrDocument(Map.of(
                 "MD_ROLE_LANG_FR", "Curateur.rice",
@@ -61,10 +61,10 @@ class MetadataContainerTest extends AbstractTest {
     }
 
     /**
-     * @verifies translated fields from multiple documents
+     * @verifies translate fields from multiple documents
      */
     @Test
-    void getValues_shouldTranslatedFieldsFromMultipleDocuments() {
+    void getValues_shouldTranslateFieldsFromMultipleDocuments() {
 
         SolrDocument main = new SolrDocument(Map.of(
                 "PI", "1234"));
@@ -105,10 +105,10 @@ class MetadataContainerTest extends AbstractTest {
      * Verify that {@code createMetadataEntity(StructElement)} strips the {@code _UNTOKENIZED}
      * suffix and merges the base field and its tokenized variant under a single map key, so that
      * the resulting container contains exactly one entry per logical field name.
-     * @verifies untokenized fields merged into base field key
+     * @verifies merge untokenized fields into base field key
      */
     @Test
-    void getMetadata_shouldUntokenizedFieldsMergedIntoBaseFieldKey() throws IndexUnreachableException {
+    void getMetadata_shouldMergeUntokenizedFieldsIntoBaseFieldKey() throws IndexUnreachableException {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.IDDOC, "1");
         doc.setField(SolrConstants.ISWORK, "true");

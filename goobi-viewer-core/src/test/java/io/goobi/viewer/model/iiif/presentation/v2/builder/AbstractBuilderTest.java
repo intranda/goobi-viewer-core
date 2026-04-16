@@ -51,7 +51,7 @@ class AbstractBuilderTest extends AbstractTest {
 
     /**
      * @verifies return non null result
-     * @see for#getEventFields()
+     * @see AbstractBuilder#getEventFields()
      */
     @Test
     void getEventFields_shouldReturnNonNullResult() {
@@ -85,7 +85,7 @@ class AbstractBuilderTest extends AbstractTest {
     /**
      * A valid PI must produce a URI that does not contain the literal placeholder {pi}.
      * @verifies not contain placeholder when valid pi
-     * @see for#getManifestURI
+     * @see AbstractBuilder#getManifestURI(String)
      */
     @Test
     void getManifestURI_shouldNotContainPlaceholderWhenValidPi() {
@@ -96,7 +96,7 @@ class AbstractBuilderTest extends AbstractTest {
 
     /**
      * @verifies return true for given input
-     * @see for#contained(String, List<String>)
+     * @see AbstractBuilder#contained(String, List)
      */
     @Test
     void contained_shouldReturnTrueForGivenInput() {

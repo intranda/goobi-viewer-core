@@ -38,10 +38,10 @@ class VisibilityConditionTest {
     }
 
     /**
-     * @verifies file type condition
+     * @verifies match configured file type condition
      */
     @Test
-    void getFileTypes_shouldFileTypeCondition() {
+    void getFileTypes_shouldMatchFileTypeCondition() {
         VisibilityConditionInfo info = new VisibilityConditionInfo();
         info.setContentType(List.of("IMAGE"));
         VisibilityCondition cond = new VisibilityCondition(info);
@@ -74,10 +74,10 @@ class VisibilityConditionTest {
     }
 
     /**
-     * @verifies mime type
+     * @verifies match when mime type condition matches record
      */
     @Test
-    void matchesRecord_shouldMimeType()
+    void matchesRecord_shouldMatchMimeType()
             throws IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException, ViewerConfigurationException {
 
         RecordPropertyCache cache = new RecordPropertyCache();
@@ -91,10 +91,10 @@ class VisibilityConditionTest {
     }
 
     /**
-     * @verifies doc type
+     * @verifies match when doc type condition matches record
      */
     @Test
-    void matchesRecord_shouldDocType()
+    void matchesRecord_shouldMatchDocType()
             throws IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException, ViewerConfigurationException {
 
         RecordPropertyCache cache = new RecordPropertyCache();
@@ -111,10 +111,10 @@ class VisibilityConditionTest {
      * When the pageType condition does not match the current view, no access-condition check should
      * be performed. Previously, checkAccess() ran before views.matches(), so a Solr query was
      * issued even when the pageType alone would have disqualified the condition.
-     * @verifies no access check when page type fails
+     * @verifies skip access check when page type does not match
      */
     @Test
-    void matchesRecord_shouldNoAccessCheckWhenPageTypeFails()
+    void matchesRecord_shouldSkipAccessCheckWhenPageTypeFails()
             throws IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException, ViewerConfigurationException {
 
         RecordPropertyCache cache = Mockito.spy(new RecordPropertyCache());
@@ -137,10 +137,10 @@ class VisibilityConditionTest {
     /**
      * When no contentType condition is specified, getFileTypesForRecord() must not be called,
      * avoiding an unnecessary Solr query for all page filenames.
-     * @verifies no file type query when condition absent
+     * @verifies skip file type query when contentType condition is absent
      */
     @Test
-    void matchesRecord_shouldNoFileTypeQueryWhenConditionAbsent()
+    void matchesRecord_shouldSkipFileTypeQueryWhenConditionAbsent()
             throws IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException, ViewerConfigurationException {
 
         RecordPropertyCache cache = Mockito.spy(new RecordPropertyCache());

@@ -66,11 +66,11 @@ class ViewerSectionPDFResourceTest extends AbstractRestApiTest {
     }
 
     /**
-     * @verifies rejects illegal chars
+     * @verifies reject illegal chars
      * @see ViewerSectionPDFResource#requireValidPi
      */
     @Test
-    void requireValidPi_shouldRejectsIllegalChars() {
+    void requireValidPi_shouldRejectIllegalChars() {
         // Illegal chars used in fuzz tests that caused MetsPdfResource to throw HTTP 500
         assertThrows(BadRequestException.class, () -> ViewerSectionPDFResource.requireValidPi(" "));
         assertThrows(BadRequestException.class, () -> ViewerSectionPDFResource.requireValidPi("|"));

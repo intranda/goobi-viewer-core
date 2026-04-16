@@ -29,7 +29,7 @@ class WidgetContentTypeTest {
 
     /**
      * @verifies get by name
-     * @see for#valueOf
+     * @see WidgetContentType#valueOf(String)
      */
     @Test
     void valueOf_shouldGetByName() {

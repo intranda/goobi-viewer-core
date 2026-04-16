@@ -222,7 +222,7 @@ class StructElementTest extends AbstractSolrEnabledTest {
 
     /**
      * @verifies return true if element has children
-     * @see represents#isHasChildren()
+     * @see StructElement#isHasChildren()
      */
     @Test
     void isHasChildren_shouldReturnTrueIfElementHasChildren() throws Exception {

@@ -51,11 +51,11 @@ class HighlightsBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @verifies list objecs
+     * @verifies list objects
      * @see HighlightsBean#getAllObjectsProvider
      */
     @Test
-    void getAllObjectsProvider_shouldListObjecs() {
+    void getAllObjectsProvider_shouldListObjects() {
 
         LocalDateTime now = LocalDate.of(2023, 3, 15).atStartOfDay();
         bean.initProviders(now);
@@ -84,10 +84,11 @@ class HighlightsBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @verifies highlight url
+     * @verifies return correct URL for record and URL highlights
+     * @see HighlightsBean#getUrl(Highlight)
      */
     @Test
-    void getUrl_shouldHighlightUrl() throws DAOException {
+    void getUrl_shouldReturnCorrectUrlForHighlights() throws DAOException {
 
         Mockito.when(navigationHelper.getImageUrl()).thenReturn("localhost:8080/viewer/image");
 

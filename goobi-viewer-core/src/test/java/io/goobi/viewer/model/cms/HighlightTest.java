@@ -56,10 +56,10 @@ class HighlightTest extends AbstractSolrEnabledTest {
     Configuration config = DataManager.getInstance().getConfiguration();
 
     /**
-     * @verifies get correct image uri uploaded image
+     * @verifies get correct image uri for uploaded image
      */
     @Test
-    void getData_shouldGetCorrectImageUriUploadedImage() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
+    void getImageURI_shouldGetCorrectImageUriForUploadedImage() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         ThumbnailHandler thumbs = new ThumbnailHandler(URI.create("https:/viewer.goobi.io/api/v2/"), "/viewer/static/");
 
         Highlight object = new Highlight(new HighlightData(), thumbs, config);
@@ -75,10 +75,10 @@ class HighlightTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @verifies get correct image uri record representative
+     * @verifies get correct image uri for record representative
      */
     @Test
-    void getData_shouldGetCorrectImageUriRecordRepresentative() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
+    void getImageURI_shouldGetCorrectImageUriForRecordRepresentative() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         ThumbnailHandler thumbs = new ThumbnailHandler(URI.create("https:/viewer.goobi.io/api/v2/"), "/viewer/static/");
 
         Highlight object = new Highlight(new HighlightData(), thumbs, config);
@@ -123,11 +123,11 @@ class HighlightTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @verifies alway active
-     * @see Highlight#getData
+     * @verifies always be active
+     * @see Highlight#isPresent
      */
     @Test
-    void getData_shouldAlwayActive() {
+    void isPresent_shouldAlwaysBeActive() {
         Highlight object = new Highlight(new HighlightData());
         object.getData().setDateStart(null);
         object.getData().setDateEnd(null);

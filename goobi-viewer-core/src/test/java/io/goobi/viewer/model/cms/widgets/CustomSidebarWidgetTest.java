@@ -12,11 +12,11 @@ class CustomSidebarWidgetTest {
     private static final String LOREM_IPSUM_SHORT = "Lorem ipsum dolor sit amet,";
 
     /**
-     * @verifies short description
-     * @see should#isHasShortDescription
+     * @verifies return true when description text is set
+     * @see CustomSidebarWidget#isHasShortDescription()
      */
     @Test
-    void isHasShortDescription_shouldShortDescription() {
+    void isHasShortDescription_shouldReturnTrueWhenDescriptionSet() {
         CustomSidebarWidget widget = new CustomSidebarWidget();
         Assertions.assertFalse(widget.isHasShortDescription());
         widget.getDescription().setText(LOREM_IPSUM, Locale.GERMAN);

@@ -56,10 +56,10 @@ class SecurityQuestionTest {
     }
 
     /**
-     * @verifies return false empty answer
+     * @verifies return false for empty answer
      */
     @Test
-    void isAnswerCorrect_shouldReturnFalseEmptyAnswer() throws Exception {
+    void isAnswerCorrect_shouldReturnFalseForEmptyAnswer() throws Exception {
         SecurityQuestion q = new SecurityQuestion("foo", Collections.singleton("answer"));
         Assertions.assertFalse(q.isAnswerCorrect(null));
         Assertions.assertFalse(q.isAnswerCorrect(""));

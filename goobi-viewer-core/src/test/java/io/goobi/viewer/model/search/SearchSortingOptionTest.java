@@ -93,10 +93,10 @@ class SearchSortingOptionTest extends AbstractTest {
 
     /**
      * @see SearchSortingOption#getSortString()
-     * @verifies not add exclamation mark prefix is ascending
+     * @verifies not add exclamation mark prefix if ascending
      */
     @Test
-    void getSortString_shouldNotAddExclamationMarkPrefixIsAscending() {
+    void getSortString_shouldNotAddExclamationMarkPrefixIfAscending() {
         {
             SearchSortingOption option = new SearchSortingOption("SORT_TITLE");
             Assertions.assertEquals("SORT_TITLE", option.getSortString());

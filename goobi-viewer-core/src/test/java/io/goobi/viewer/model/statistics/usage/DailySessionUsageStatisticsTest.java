@@ -63,7 +63,7 @@ class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest {
     
     /**
      * @verifies persist and load usage statistics correctly
-     * @see DailySessionUsageStatistics#getId()
+     * @see IDAO#addUsageStatistics(DailySessionUsageStatistics)
      */
     @Test
     void addUsageStatistics_shouldPersistAndLoadCorrectly() throws DAOException {
@@ -155,10 +155,11 @@ class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest {
     }
     
     /**
-     * @verifies test counting
+     * @verifies return correct total and unique request counts per record
+     * @see DailySessionUsageStatistics#getTotalRequestCount(RequestType, String)
      */
     @Test
-    void getTotalRequestCount_shouldTestCounting() {
+    void getTotalRequestCount_shouldReturnCorrectTotalAndUniqueRequestCountsPerRecord() {
         
         LocalDate date = LocalDate.now();
         DailySessionUsageStatistics stats = new DailySessionUsageStatistics(date, "viewer-test");

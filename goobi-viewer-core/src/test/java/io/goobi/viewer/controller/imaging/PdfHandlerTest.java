@@ -56,7 +56,7 @@ class PdfHandlerTest extends AbstractTest{
 
     /**
      * @verifies return url with pi and div id
-     * @see PdfHandler#getPdfUrl(StructElement, PhysicalElement)
+     * @see PdfHandler#getPdfUrl(String, Optional, Optional)
      */
     @Test
     void getPdfUrl_shouldReturnUrlWithPiAndDivId() {

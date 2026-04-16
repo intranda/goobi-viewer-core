@@ -59,7 +59,7 @@ class NetToolsTest extends AbstractTest {
     }
 
     /**
-     * @see NetTools#buildClearCacheUrl(String,String,String)
+     * @see NetTools#buildClearCacheUrl(String,String,String,String)
      * @verifies compose cache API URL with correct query params for each cache type
      */
     @Test

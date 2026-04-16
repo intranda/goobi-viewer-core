@@ -86,7 +86,7 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
 
     /**
      * @verifies return 2 for given input
-     * @see should#getDatabases()
+     * @see ArchiveManager#getDatabases()
      */
     @Test
     void getDatabases_shouldReturn2ForGivenInput() {
@@ -96,7 +96,7 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
 
     /**
      * @verifies return collection for given input
-     * @see should#getNodeType(String)
+     * @see ArchiveManager#getNodeType(String)
      */
     @Test
     void getNodeType_shouldReturnCollectionForGivenInput() {
@@ -112,11 +112,11 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @verifies get database
-     * @see should#ArchiveManager
+     * @verifies return archive tree for known resource IDs
+     * @see ArchiveManager#getArchiveTree(String)
      */
     @Test
-    void ArchiveManager_shouldGetDatabase() throws Exception {
+    void getArchiveTree_shouldReturnArchiveTreeForKnownResourceIds() throws Exception {
         {
             ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser));
             ArchiveTree tree = archiveManager.getArchiveTree("r1");
@@ -136,7 +136,7 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
 
     /**
      * @verifies update database
-     * @see should#getArchiveTree
+     * @see ArchiveManager#getArchiveTree(String)
      */
     @Test
     void getArchiveTree_shouldUpdateDatabase() throws Exception {
@@ -164,7 +164,7 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
 
     /**
      * @verifies remove archive
-     * @see should#getArchive
+     * @see ArchiveManager#getArchive(String)
      */
     @Test
     void getArchive_shouldRemoveArchive() {
@@ -191,11 +191,11 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @verifies legacy icon mapping
-     * @see should#NodeType
+     * @verifies map legacy icon name to current icon
+     * @see NodeType#NodeType(String, String)
      */
     @Test
-    void NodeType_shouldLegacyIconMapping() {
+    void NodeType_shouldMapLegacyIcon() {
         NodeType nodeType = new NodeType("legacy", "fa fa-file-video-o");
         assertEquals("video", nodeType.getIcon());
     }

@@ -83,11 +83,11 @@ class CmsRecordNotesBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @verifies filtered paginated data
+     * @verifies return filtered paginated data
      * @see CmsRecordNotesBean#getDataProvider
      */
     @Test
-    void getDataProvider_shouldFilteredPaginatedData() {
+    void getDataProvider_shouldReturnFilteredPaginatedData() {
         bean.getDataProvider().getFilter(CmsRecordNotesBean.PI_TITLE_FILTER).setValue("PI1");
         bean.getDataProvider().setEntriesPerPage(2);
         assertEquals(2, bean.getDataProvider().getSizeOfDataList());
@@ -95,11 +95,11 @@ class CmsRecordNotesBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @verifies filtered by title paginated data
+     * @verifies return filtered by title paginated data
      * @see CmsRecordNotesBean#getDataProvider
      */
     @Test
-    void getDataProvider_shouldFilteredByTitlePaginatedData() {
+    void getDataProvider_shouldReturnFilteredByTitlePaginatedData() {
         bean.getDataProvider().getFilter(CmsRecordNotesBean.PI_TITLE_FILTER).setValue("Bemerkungen 1");
         assertEquals(1, bean.getDataProvider().getSizeOfDataList());
         assertEquals(1, bean.getDataProvider().getPaginatorList().size());

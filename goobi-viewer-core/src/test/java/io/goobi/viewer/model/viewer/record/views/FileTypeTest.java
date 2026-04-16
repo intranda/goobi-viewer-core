@@ -39,7 +39,7 @@ class FileTypeTest {
 
     /**
      * @verifies return expected value for given input
-     * @see #getContentTypeFor(String)
+     * @see FileType#getContentTypeFor(String)
      */
     @Test
     void getContentTypeFor_shouldReturnExpectedValueForGivenInput() throws ContentTypeException {

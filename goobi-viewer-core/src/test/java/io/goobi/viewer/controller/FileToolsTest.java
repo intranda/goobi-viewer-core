@@ -164,10 +164,11 @@ class FileToolsTest extends AbstractTest {
     }
 
     /**
-     * @verifies is younger
+     * @verifies return true if file is younger than reference file
+     * @see FileTools#isYoungerThan(Path, Path)
      */
     @Test
-    void isYoungerThan_shouldIsYounger(@TempDir Path tempDir) throws IOException, InterruptedException {
+    void isYoungerThan_shouldReturnTrueIfFileIsYounger(@TempDir Path tempDir) throws IOException, InterruptedException {
         Path file1 = tempDir.resolve("file1.txt");
         Path file2 = tempDir.resolve("file2.txt");
 
@@ -181,7 +182,7 @@ class FileToolsTest extends AbstractTest {
     }
 
     /**
-     * @see DataFileTools#sanitizeFileName(String)
+     * @see FileTools#sanitizeFileName(String)
      * @verifies return unchanged string if string blank
      */
     @Test
@@ -190,7 +191,7 @@ class FileToolsTest extends AbstractTest {
     }
 
     /**
-     * @see DataFileTools#sanitizeFileName(String)
+     * @see FileTools#sanitizeFileName(String)
      * @verifies remove everything but the file name from given path
      */
     @Test
@@ -234,7 +235,7 @@ class FileToolsTest extends AbstractTest {
     }
 
     /**
-     * @see DataFileTools#sanitizeFileName(String)
+     * @see FileTools#sanitizeFileName(String)
      * @verifies throw IllegalArgumentException given invalid file name
      */
     @Test

@@ -83,10 +83,11 @@ class SitemapTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @verifies sitemap
+     * @verifies create sitemap files in output directory
+     * @see Sitemap#generate(String, String)
      */
     @Test
-    void generate_shouldSitemap() throws IOException, InterruptedException {
+    void generate_shouldCreateSitemapFiles() throws IOException, InterruptedException {
 
         int timeout = 20; //minutes
 

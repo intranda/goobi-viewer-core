@@ -75,11 +75,11 @@ class ThumbnailHandlerTest extends AbstractTest {
     }
 
     /**
-     * @verifies page
+     * @verifies return url for page
      * @see ThumbnailHandler#getThumbnailUrl
      */
     @Test
-    void getThumbnailUrl_shouldPage() {
+    void getThumbnailUrl_shouldReturnUrlForPage() {
         PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
                 .setPhysId("PHYS_0001")
                 .setFilePath("00000001.tif")
@@ -106,11 +106,11 @@ class ThumbnailHandlerTest extends AbstractTest {
     }
 
     /**
-     * @verifies external iiif image url
+     * @verifies return external iiif image url
      * @see ThumbnailHandler#getThumbnailUrl
      */
     @Test
-    void getThumbnailUrl_shouldExternalIiifImageUrl() {
+    void getThumbnailUrl_shouldReturnExternalIiifImageUrl() {
         String fileUrl = "http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/full/full/0/native.jpg";
         PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
                 .setPhysId("PHYS_0001")
@@ -129,11 +129,11 @@ class ThumbnailHandlerTest extends AbstractTest {
     }
 
     /**
-     * @verifies external iiif image info url
+     * @verifies return external iiif image info url
      * @see ThumbnailHandler#getThumbnailUrl
      */
     @Test
-    void getThumbnailUrl_shouldExternalIiifImageInfoUrl() {
+    void getThumbnailUrl_shouldReturnExternalIiifImageInfoUrl() {
         String fileUrl = "http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/info.json";
         PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
                 .setPhysId("PHYS_0001")
@@ -206,11 +206,11 @@ class ThumbnailHandlerTest extends AbstractTest {
     }
 
     /**
-     * @verifies thumbnail url
+     * @verifies return thumbnail url
      * @see ThumbnailHandler#getThumbnailUrl
      */
     @Test
-    void getThumbnailUrl_shouldThumbnailUrl() {
+    void getThumbnailUrl_shouldReturnThumbnailUrl() {
         String fileUrl = "00000001.tif";
         PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
                 .setPhysId("PHYS_0001")
@@ -417,11 +417,11 @@ class ThumbnailHandlerTest extends AbstractTest {
     }
 
     /**
-     * @verifies c ms media thumbnail url
+     * @verifies return cms media thumbnail url
      * @see ThumbnailHandler#getThumbnailUrl
      */
     @Test
-    void getThumbnailUrl_shouldCMsMediaThumbnailUrl() {
+    void getThumbnailUrl_shouldReturnCmsMediaThumbnailUrl() {
 
         String currentApiUrl = "https://viewer.goobi.io/api/v1";
 

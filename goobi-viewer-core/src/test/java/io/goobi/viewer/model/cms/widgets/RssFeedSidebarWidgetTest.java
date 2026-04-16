@@ -37,11 +37,11 @@ import io.goobi.viewer.solr.SolrConstants;
 class RssFeedSidebarWidgetTest extends AbstractDatabaseEnabledTest {
 
     /**
-     * @verifies persist
-     * @see RssFeedSidebarWidget#getSortField
+     * @verifies persist all fields via DAO
+     * @see RssFeedSidebarWidget
      */
     @Test
-    void getSortField_shouldPersist() throws DAOException {
+    void constructor_shouldPersistAllFieldsViaDao() throws DAOException {
         RssFeedSidebarWidget widget = new RssFeedSidebarWidget();
         widget.getDescription().setValue("Beschreibung", Locale.GERMAN);
         widget.getDescription().setValue("Description", Locale.ENGLISH);
@@ -66,11 +66,11 @@ class RssFeedSidebarWidgetTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @verifies clone
-     * @see RssFeedSidebarWidget#getSortField
+     * @verifies clone all fields via copy constructor
+     * @see RssFeedSidebarWidget#RssFeedSidebarWidget(RssFeedSidebarWidget)
      */
     @Test
-    void getSortField_shouldClone() {
+    void constructor_shouldCloneAllFieldsViaCopyConstructor() {
         RssFeedSidebarWidget widget = new RssFeedSidebarWidget();
         widget.getDescription().setValue("Beschreibung", Locale.GERMAN);
         widget.getDescription().setValue("Description", Locale.ENGLISH);
@@ -93,11 +93,11 @@ class RssFeedSidebarWidgetTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @verifies type
+     * @verifies return correct type
      * @see RssFeedSidebarWidget#getType
      */
     @Test
-    void getType_shouldType() {
+    void getType_shouldReturnCorrectType() {
         assertEquals(CustomWidgetType.WIDGET_RSSFEED, new RssFeedSidebarWidget().getType());
     }
 

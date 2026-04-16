@@ -126,7 +126,7 @@ class RecordPagesResourceTest extends AbstractRestApiTest {
      * @verifies return annotation page with correct count
      */
     @Test
-    void getAnnotationsForPage_shouldReturnAnnotationPageWithCorrectCount() throws JsonProcessingException, NumberFormatException, DAOException {
+    void getAnnotationsForRecord_shouldReturnAnnotationPageWithCorrectCount() throws JsonProcessingException, NumberFormatException, DAOException {
         long annoCount = DataManager.getInstance().getDao().getAnnotationCountForTarget(PI_ANNOTATIONS, Integer.parseInt(PAGENO_ANNOTATIONS));
         try (Response response = target(urls.path(RECORDS_PAGES, RECORDS_PAGES_ANNOTATIONS).params(PI_ANNOTATIONS, PAGENO_ANNOTATIONS).build())
                 .request()

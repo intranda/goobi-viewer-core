@@ -259,7 +259,7 @@ class FacetItemTest extends AbstractTest {
     }
 
     /**
-     * @see FacetItem#parseLink(String)
+     * @see FacetItem#parseLink()
      * @verifies set label to value if label empty
      */
     @Test
@@ -273,10 +273,10 @@ class FacetItemTest extends AbstractTest {
 
     /**
      * @see FacetItem#parseLink()
-     * @verifies removed wildcard from label
+     * @verifies remove wildcard from label
      */
     @Test
-    void parseLink_shouldRemovedWildcardFromLabel() {
+    void parseLink_shouldRemoveWildcardFromLabel() {
         FacetItem item = new FacetItem(false);
         Assertions.assertNull(item.getLabel());
         item.setLink("foo:b*");

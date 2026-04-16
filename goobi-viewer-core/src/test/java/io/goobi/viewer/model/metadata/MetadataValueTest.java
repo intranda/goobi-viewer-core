@@ -236,7 +236,7 @@ class MetadataValueTest {
     }
 
     /**
-     * @see Metadata#isAccessRestricted()
+     * @see MetadataValue#isAccessRestricted()
      * @verifies return false if accessConditions empty
      */
     @Test
@@ -246,7 +246,7 @@ class MetadataValueTest {
     }
 
     /**
-     * @see Metadata#isAccessRestricted()
+     * @see MetadataValue#isAccessRestricted()
      * @verifies return false if only value is open access
      */
     @Test
@@ -257,7 +257,7 @@ class MetadataValueTest {
     }
 
     /**
-     * @see Metadata#isAccessRestricted()
+     * @see MetadataValue#isAccessRestricted()
      * @verifies return false if random values contained
      */
     @Test
@@ -268,7 +268,7 @@ class MetadataValueTest {
     }
 
     /**
-     * @see Metadata#isAccessRestricted()
+     * @see MetadataValue#isAccessRestricted()
      * @verifies return true if metadata access restricted condition contained
      */
     @Test

@@ -88,11 +88,11 @@ class VariableReplacerTest {
     }
 
     /**
-     * @verifies no variables
-     * @see VariableReplacer#getMetadataValues
+     * @verifies return input unchanged when no variables present
+     * @see VariableReplacer#replace(String)
      */
     @Test
-    void getMetadataValues_shouldNoVariables() {
+    void replace_shouldReturnInputUnchangedWhenNoVariablesPresent() {
         String phraseTemplate = "It's a bloody pleasure to meet him!";
         StructElement struct = Mockito.mock(StructElement.class);
         Mockito.when(struct.getMetadataValues(Mockito.anyString())).thenAnswer(arg -> {
@@ -108,10 +108,10 @@ class VariableReplacerTest {
 
     /**
      * @verifies return expected value
-     * @see VariableReplacer#SimpleMetadataValue
+     * @see VariableReplacer#replace(Metadata)
      */
     @Test
-    void SimpleMetadataValue_shouldReturnExpectedValue() {
+    void replace_shouldReturnExpectedValue() {
         VariableReplacer replacer = new VariableReplacer(Map.of("test", Map.of("value", List.of("replaced value"))));
         Metadata md = new Metadata("label", "{value}");
         Metadata replaced = replacer.replace(md);
@@ -120,11 +120,11 @@ class VariableReplacerTest {
     }
 
     /**
-     * @verifies multi lang metadata value
-     * @see VariableReplacer#Metadata
+     * @verifies replace variables in multi lang metadata value
+     * @see VariableReplacer#replace(Metadata)
      */
     @Test
-    void Metadata_shouldMultiLangMetadataValue() {
+    void replace_shouldReplaceVariablesInMultiLangMetadataValue() {
         VariableReplacer replacer = new VariableReplacer(Map.of("test", Map.of("value", List.of("replaced value"))));
         MultiLanguageMetadataValue value = new MultiLanguageMetadataValue(Map.of("de", "Der Wert ist {value}", "en", "The value is {value}"));
         Metadata md = new Metadata("label", value);

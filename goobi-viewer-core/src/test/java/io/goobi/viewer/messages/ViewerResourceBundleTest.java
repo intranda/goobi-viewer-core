@@ -94,11 +94,11 @@ class ViewerResourceBundleTest extends AbstractTest {
     }
 
     /**
-     * @see ViewerResourceBundle#getAllLocales()
+     * @see ViewerResourceBundle#getTranslation(String, Locale)
      * @verifies return english for unknown languages
      */
     @Test
-    void getAllLocales_shouldReturnEnglishForUnknownLanguages() {
+    void getTranslation_shouldReturnEnglishForUnknownLanguages() {
 
         String germanTranslation = ViewerResourceBundle.getTranslation("MD_AUTHOR", Locale.GERMAN);
         String englishTranslation = ViewerResourceBundle.getTranslation("MD_AUTHOR", Locale.ENGLISH);

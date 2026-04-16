@@ -86,10 +86,11 @@ class AnnotationConverterTest {
     }
 
     /**
-     * @verifies deserialize web annotation json to object
+     * @verifies deserialize web annotation JSON to object
+     * @see WebAnnotation
      */
     @Test
-    void readValue_shouldDeserializeWebAnnotationJsonToObject() throws JsonMappingException, JsonProcessingException {
+    void deserializeWebAnnotation_shouldDeserializeWebAnnotationJsonToObject() throws JsonMappingException, JsonProcessingException {
         WebAnnotation webAnno = mapper.readValue(campaignAnnotation, WebAnnotation.class);
         assertEquals("https://viewer.goobi.io/api/v1/annotations/annotation_2/", webAnno.getId().toString());
     }

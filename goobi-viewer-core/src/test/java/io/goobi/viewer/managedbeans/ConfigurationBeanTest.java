@@ -53,7 +53,7 @@ class ConfigurationBeanTest extends AbstractTest {
 
     /**
      * @verifies page browse configuration
-     * @see for#isPageBrowseStep2Visible
+     * @see ConfigurationBean#isPageBrowseStep2Visible
      */
     @Test
     void isPageBrowseStep2Visible_shouldPageBrowseConfiguration() {
@@ -113,7 +113,7 @@ class ConfigurationBeanTest extends AbstractTest {
 
     /**
      * @verifies return correct value
-     * @see for#isFacetFieldTypeBoolean(String)
+     * @see ConfigurationBean#isFacetFieldTypeBoolean(String)
      */
     @Test
     void isFacetFieldTypeBoolean_shouldReturnCorrectValue() {

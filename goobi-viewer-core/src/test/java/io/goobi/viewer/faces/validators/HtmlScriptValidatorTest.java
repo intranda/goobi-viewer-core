@@ -32,7 +32,7 @@ class HtmlScriptValidatorTest {
 
     /**
      * @verifies accept html without script tags and reject script tags
-     * @see HtmlScriptValidator#validate(FacesContext, UIComponent, String)
+     * @see HtmlScriptValidator#validate(String)
      */
     @Test
     void validate_shouldAcceptHtmlWithoutScriptTagsAndRejectScriptTags() {
