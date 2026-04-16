@@ -506,7 +506,8 @@ public class TextResourceBuilder {
 
         Map<java.nio.file.Path, String> fileMapFromPlaintext = null;
         if (!fulltextFiles.isEmpty()) {
-            logger.debug("Collecting plaintext files from {}", fulltextFiles.get(0).getParent().toAbsolutePath());
+            logger.debug("{}: Collecting {} plaintext files from {}", pi, fulltextFiles.size(),
+                    fulltextFiles.get(0).getParent().toAbsolutePath());
             fileMapFromPlaintext = fulltextFiles.stream().collect(Collectors.toMap(p -> p, p -> {
                 try {
                     return FileTools.getStringFromFile(p.toFile(), StringTools.DEFAULT_ENCODING);
@@ -532,15 +533,16 @@ public class TextResourceBuilder {
                 DataManager.getInstance().getConfiguration().getAltoFolder(),
                 DataManager.getInstance().getConfiguration().getAltoFolder(), request);
         if (!altoFiles.isEmpty()) {
-            logger.debug("Converting ALTO files from {}", altoFiles.get(0).getParent().toAbsolutePath());
-            altoFiles.stream()
+            // Filter out ALTO files for which plaintext already exists before parsing
+            List<java.nio.file.Path> altoFilesToConvert = altoFiles.stream()
                     .filter(p -> {
-                        // Skip ALTO files for which plaintext already exists
                         String txtName = p.getFileName().toString().replaceAll("(?i)\\.(alto|xml)", ".txt");
                         return !fileNames.contains(txtName);
                     })
-                    .forEach(p -> {
-                        String txtName = p.getFileName().toString().replaceAll("(?i)\\.(alto|xml)", ".txt");
+                    .toList();
+            logger.debug("{}: {} ALTO files found, {} need conversion ({} skipped due to existing plaintext)",
+                    pi, altoFiles.size(), altoFilesToConvert.size(), altoFiles.size() - altoFilesToConvert.size());
+            altoFilesToConvert.forEach(p -> {
                         try {
                             String text = ALTOTools.getFulltext(p, StringTools.DEFAULT_ENCODING);
                             ret.put(Paths.get(p.toString().replaceAll("(?i)\\.(alto|xml)", ".txt")), text);
