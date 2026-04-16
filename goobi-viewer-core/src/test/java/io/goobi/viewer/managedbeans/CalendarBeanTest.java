@@ -18,11 +18,11 @@ import io.goobi.viewer.model.calendar.CalendarItemWeek;
 class CalendarBeanTest extends AbstractSolrEnabledTest {
 
     /**
-     * @verifies century from year
+     * @verifies return century from year
      * @see CalendarBean#getCentury
      */
     @Test
-    void getCentury_shouldCenturyFromYear() {
+    void getCentury_shouldReturnCenturyFromYear() {
 
         CalendarBean bean = new CalendarBean();
 

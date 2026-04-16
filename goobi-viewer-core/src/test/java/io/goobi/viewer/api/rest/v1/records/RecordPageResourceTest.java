@@ -148,8 +148,8 @@ class RecordPageResourceTest extends AbstractRestApiTest {
     }
 
     /**
-     * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordResource#getAnnotationsForRecord(java.lang.String)}.
-     * 
+     * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordPageResource#getAnnotationsForRecord(java.lang.String)}.
+     *
      * @throws JsonProcessingException
      * @throws JsonMappingException
      * @verifies return empty annotation collection when none indexed
@@ -170,8 +170,8 @@ class RecordPageResourceTest extends AbstractRestApiTest {
     }
 
     /**
-     * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordResource#getCommentsForRecord(java.lang.String)}.
-     * 
+     * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordPageResource#getCommentsForPage()}.
+     *
      * @throws JsonProcessingException
      * @throws JsonMappingException
      * @verifies return non null result

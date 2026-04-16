@@ -85,10 +85,10 @@ class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @verifies page
+     * @verifies return the current page
      */
     @Test
-    void getCurrentPage_shouldPage() {
+    void getCurrentPage_shouldReturnTheCurrentPage() {
         CMSPage page = new CMSPage();
         CmsBean bean = new CmsBean(templateManager, navigationHelper);
         bean.setCurrentPage(page);
@@ -131,10 +131,10 @@ class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @verifies save cms pages
-     * @see CmsBean#CMSPage
+     * @see CmsBean#saveStaticPages
      */
     @Test
-    void CMSPage_shouldSaveCmsPages() throws DAOException {
+    void saveStaticPages_shouldSaveCmsPages() throws DAOException {
         CmsBean bean = new CmsBean();
 
         CMSPage page = new CMSPage();

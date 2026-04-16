@@ -43,11 +43,11 @@ class HtmlSidebarWidgetTest extends AbstractDatabaseEnabledTest {
     private static final String LOREM_IPSUM_SHORT = "Lorem ipsum dolor sit amet,";
 
     /**
-     * @verifies persist
-     * @see HtmlSidebarWidget#getHtmlText
+     * @verifies persist widget to database and retrieve it
+     * @see HtmlSidebarWidget#HtmlSidebarWidget()
      */
     @Test
-    void getHtmlText_shouldPersist() throws DAOException {
+    void addCustomWidget_shouldPersistWidgetToDatabase() throws DAOException {
         HtmlSidebarWidget widget = new HtmlSidebarWidget();
         widget.getDescription().setValue("Beschreibung", Locale.GERMAN);
         widget.getDescription().setValue("Description", Locale.ENGLISH);
@@ -67,11 +67,11 @@ class HtmlSidebarWidgetTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @verifies clone
-     * @see HtmlSidebarWidget#getDescription
+     * @verifies clone all fields via copy constructor
+     * @see HtmlSidebarWidget#HtmlSidebarWidget(HtmlSidebarWidget)
      */
     @Test
-    void getDescription_shouldClone() {
+    void HtmlSidebarWidget_shouldCloneAllFields() {
         HtmlSidebarWidget widget = new HtmlSidebarWidget();
         widget.getDescription().setValue("Beschreibung", Locale.GERMAN);
         widget.getDescription().setValue("Description", Locale.ENGLISH);
@@ -96,20 +96,20 @@ class HtmlSidebarWidgetTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @verifies type
+     * @verifies return widget html type
      * @see HtmlSidebarWidget#getType
      */
     @Test
-    void getType_shouldType() {
+    void getType_shouldReturnWidgetHtmlType() {
         assertEquals(CustomWidgetType.WIDGET_HTML, new HtmlSidebarWidget().getType());
     }
 
     /**
-     * @verifies short description from description
+     * @verifies derive short description from description
      * @see HtmlSidebarWidget#isHasShortDescription
      */
     @Test
-    void isHasShortDescription_shouldShortDescriptionFromDescription() {
+    void isHasShortDescription_shouldDeriveShortDescriptionFromDescription() {
         HtmlSidebarWidget widget = new HtmlSidebarWidget();
         Assertions.assertFalse(widget.isHasShortDescription());
         widget.getDescription().setText(LOREM_IPSUM, Locale.GERMAN);
@@ -123,11 +123,11 @@ class HtmlSidebarWidgetTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @verifies short description from text
+     * @verifies derive short description from text
      * @see HtmlSidebarWidget#isHasShortDescription
      */
     @Test
-    void isHasShortDescription_shouldShortDescriptionFromText() {
+    void isHasShortDescription_shouldDeriveShortDescriptionFromText() {
         HtmlSidebarWidget widget = new HtmlSidebarWidget();
         Assertions.assertFalse(widget.isHasShortDescription());
         widget.getHtmlText().setText(LOREM_IPSUM, Locale.GERMAN);

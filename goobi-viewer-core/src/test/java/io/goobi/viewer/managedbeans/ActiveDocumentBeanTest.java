@@ -207,11 +207,11 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ActiveDocumentBean#getNextUrl(String,int)
+     * @see ActiveDocumentBean#getPageUrlRelativeToCurrentPage(int)
      * @verifies increase image number by given step
      */
     @Test
-    void getNextUrl_shouldIncreaseImageNumberByGivenStep() throws Exception {
+    void getPageUrlRelativeToCurrentPage_shouldIncreaseImageNumberByGivenStep() throws Exception {
         adb.setNavigationHelper(navigationHelper);
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("10");
@@ -220,11 +220,11 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ActiveDocumentBean#getNextUrl(String,int)
+     * @see ActiveDocumentBean#getPageUrlRelativeToCurrentPage(int)
      * @verifies go no higher than last page
      */
     @Test
-    void getNextUrl_shouldGoNoHigherThanLastPage() throws Exception {
+    void getPageUrlRelativeToCurrentPage_shouldGoNoHigherThanLastPage() throws Exception {
         adb.setNavigationHelper(navigationHelper);
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("15");
@@ -234,11 +234,11 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ActiveDocumentBean#getPrevUrl(String,int)
+     * @see ActiveDocumentBean#getPreviousPageUrl(int)
      * @verifies decrease image number by given step
      */
     @Test
-    void getPrevUrl_shouldDecreaseImageNumberByGivenStep() throws Exception {
+    void getPreviousPageUrl_shouldDecreaseImageNumberByGivenStep() throws Exception {
         adb.setNavigationHelper(navigationHelper);
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("10");
@@ -247,11 +247,11 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ActiveDocumentBean#getPrevUrl(String,int)
+     * @see ActiveDocumentBean#getPreviousPageUrl(int)
      * @verifies go no lower than first page order
      */
     @Test
-    void getPrevUrl_shouldGoNoLowerThanFirstPageOrder() throws Exception {
+    void getPreviousPageUrl_shouldGoNoLowerThanFirstPageOrder() throws Exception {
         adb.setNavigationHelper(navigationHelper);
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("2");
@@ -264,7 +264,7 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ActiveDocumentBean#getPageUrl(String,int)
+     * @see ActiveDocumentBean#getPageUrl(String)
      * @verifies construct url correctly
      */
     @Test

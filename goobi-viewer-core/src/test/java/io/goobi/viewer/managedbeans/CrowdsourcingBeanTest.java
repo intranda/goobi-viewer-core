@@ -97,11 +97,11 @@ class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @verifies save selected campaign
-     * @see CrowdsourcingBean#getSelectedCampaign
+     * @verifies persist campaign changes after save action
+     * @see CrowdsourcingBean#saveSelectedCampaignAction()
      */
     @Test
-    void getSelectedCampaign_shouldSaveSelectedCampaign() throws DAOException, PresentationException, IndexUnreachableException {
+    void saveSelectedCampaignAction_shouldPersistCampaignChangesAfterSaveAction() throws DAOException, PresentationException, IndexUnreachableException {
         bean.setSelectedCampaignId("1");
         Assertions.assertNotNull(bean.getSelectedCampaign());
 
@@ -403,10 +403,10 @@ class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @verifies item order configuration
+     * @verifies use fixed or random target based on item order configuration
      */
     @Test
-    void setNextIdentifierForAnnotation_shouldItemOrderConfiguration() throws PresentationException, IndexUnreachableException, DAOException {
+    void setNextIdentifierForAnnotation_shouldUseFixedOrRandomTargetBasedOnItemOrderConfiguration() throws PresentationException, IndexUnreachableException, DAOException {
         IDAO dao = Mockito.mock(IDAO.class);
         Configuration config = Mockito.mock(Configuration.class);
         Campaign campaign = Mockito.spy(Campaign.class);

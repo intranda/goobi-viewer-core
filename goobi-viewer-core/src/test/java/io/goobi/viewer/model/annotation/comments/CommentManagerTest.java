@@ -104,9 +104,10 @@ class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @verifies modify
+     * @see CommentManager#editComment
      */
     @Test
-    void createComment_shouldModify() throws DAOException {
+    void editComment_shouldModify() throws DAOException {
         Comment comment = dao.getCommentsForPage(PI, page).stream().findFirst().orElse(null);
         assertNull(comment);
 
@@ -135,10 +136,10 @@ class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @verifies delete
-     * @see CommentManager#createComment
+     * @see CommentManager#deleteComment
      */
     @Test
-    void createComment_shouldDelete() throws DAOException {
+    void deleteComment_shouldDelete() throws DAOException {
         Comment comment = dao.getCommentsForPage(PI, page).stream().findFirst().orElse(null);
         assertNull(comment);
 

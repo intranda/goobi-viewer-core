@@ -150,7 +150,7 @@ public final class TocMaker {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @should include anchor element full volume tree and sibling volume top elements in t o c
+     * @should include anchor element full volume tree and sibling volume top elements in TOC
      */
     public static Map<String, List<TOCElement>> generateToc(TOC toc, StructElement structElement, boolean addAllSiblings, String mimeType,
             int tocCurrentPage, int hitsPerPage) throws PresentationException, IndexUnreachableException, DAOException {

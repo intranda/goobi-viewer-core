@@ -35,20 +35,20 @@ class WidgetDisplayElementTest {
     private static final String LOREM_IPSUM_SHORT = "Lorem ipsum dolor sit amet,";
 
     /**
-     * @verifies description from type
+     * @verifies return description from type
      */
     @Test
-    void getDescription_shouldDescriptionFromType() {
+    void getDescriptionOrTypeDescription_shouldReturnDescriptionFromType() {
         CustomSidebarWidget widget = new HtmlSidebarWidget();
         WidgetDisplayElement element = new WidgetDisplayElement(widget);
         Assertions.assertEquals(CustomWidgetType.WIDGET_HTML.getDescription(), element.getDescriptionOrTypeDescription().getText(Locale.GERMAN));
     }
 
     /**
-     * @verifies description from html text
+     * @verifies return description from html text
      */
     @Test
-    void getDescriptionOrTypeDescription_shouldDescriptionFromHtmlText() {
+    void getDescriptionOrTypeDescription_shouldReturnDescriptionFromHtmlText() {
         HtmlSidebarWidget widget = new HtmlSidebarWidget();
         widget.getHtmlText().setText(LOREM_IPSUM, Locale.GERMAN);
         WidgetDisplayElement element = new WidgetDisplayElement(widget);
@@ -57,10 +57,10 @@ class WidgetDisplayElementTest {
     }
 
     /**
-     * @verifies description from description text
+     * @verifies return description from description text
      */
     @Test
-    void getDescriptionOrTypeDescription_shouldDescriptionFromDescriptionText() {
+    void getDescriptionOrTypeDescription_shouldReturnDescriptionFromDescriptionText() {
         CustomSidebarWidget widget = new HtmlSidebarWidget();
         widget.getDescription().setText(LOREM_IPSUM, Locale.GERMAN);
         WidgetDisplayElement element = new WidgetDisplayElement(widget);

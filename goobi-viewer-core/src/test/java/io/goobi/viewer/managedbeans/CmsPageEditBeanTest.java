@@ -193,10 +193,10 @@ class CmsPageEditBeanTest {
      * 
      * @throws DAOException
      * @verifies save page
-     * @see CmsPageEditBean#getSelectedPage
+     * @see CmsPageEditBean#saveSelectedPage()
      */
     @Test
-    void getSelectedPage_shouldSavePage() throws DAOException {
+    void saveSelectedPage_shouldSavePage() throws DAOException {
         FacesContext facesContext = mockFacesContext(Map.of("selectedPageId", SELECTED_PAGE_ID.toString()));
         bean.setFacesContext(facesContext);
         bean.setup();
@@ -210,10 +210,10 @@ class CmsPageEditBeanTest {
      * 
      * @throws DAOException
      * @verifies save as template
-     * @see CmsPageEditBean#getDao
+     * @see CmsPageEditBean#saveSelectedPage()
      */
     @Test
-    void getDao_shouldSaveAsTemplate() throws DAOException {
+    void saveSelectedPage_shouldSaveAsTemplate() throws DAOException {
         FacesContext facesContext = mockFacesContext(Map.of("selectedPageId", SELECTED_PAGE_ID.toString()));
         bean.setFacesContext(facesContext);
         bean.setup();
@@ -231,10 +231,10 @@ class CmsPageEditBeanTest {
      * 
      * @throws DAOException
      * @verifies save page no admin
-     * @see CmsPageEditBean#setFacesContext
+     * @see CmsPageEditBean#saveSelectedPage()
      */
     @Test
-    void setFacesContext_shouldSavePageNoAdmin() throws DAOException {
+    void saveSelectedPage_shouldSavePageNoAdmin() throws DAOException {
         FacesContext facesContext = mockFacesContext(Map.of("selectedPageId", SELECTED_PAGE_ID.toString()));
         bean.setUserBean(mockUserBean(false));
         bean.setFacesContext(facesContext);
@@ -248,10 +248,10 @@ class CmsPageEditBeanTest {
      * 
      * @throws DAOException
      * @verifies delete page for given input
-     * @see CmsPageEditBean#deletePage
+     * @see CmsPageEditBean#deleteSelectedPage()
      */
     @Test
-    void deletePage_shouldDeletePageForGivenInput() throws DAOException {
+    void deleteSelectedPage_shouldDeletePageForGivenInput() throws DAOException {
         FacesContext facesContext = mockFacesContext(Map.of("selectedPageId", SELECTED_PAGE_ID.toString()));
         bean.setFacesContext(facesContext);
         bean.setup();

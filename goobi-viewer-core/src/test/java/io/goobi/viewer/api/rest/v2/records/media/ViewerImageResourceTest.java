@@ -77,7 +77,7 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
      * @verifies return info json with id ending in image base url
      */
     @Test
-    void getImageInformation_shouldReturnInfoJsonWithCorrectId() {
+    void getInfoAsJson_shouldReturnInfoJsonWithCorrectId() {
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_INFO).params(PI, FILENAME + ".tif").build();
         String id = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME + ".tif").build();
         try (Response response = target(url)
@@ -96,7 +96,7 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
      * @verifies redirect from base url to info json
      */
     @Test
-    void getImageInformation_shouldRedirectFromBaseUrlToInfoJson() {
+    void redirectToCanonicalImageInfo_shouldRedirectFromBaseUrlToInfoJson() {
         String url = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME).build();
         String id = urls.path(RECORDS_FILES_IMAGE_INFO).params(PI, FILENAME + ".tif").build();
         try (Response response = target(url)
@@ -113,7 +113,7 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
      * @verifies handle special characters in filename
      */
     @Test
-    void getImageInformation_shouldHandleSpecialCharactersInFilename() {
+    void getInfoAsJson_shouldHandleSpecialCharactersInFilename() {
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_INFO).params(PI_SPECIAL_CHARACTERS, FILENAME_SPECIAL_CHARACTERS).build();
         String id = urls.path(RECORDS_FILES_IMAGE).params(PI_SPECIAL_CHARACTERS, FILENAME_SPECIAL_CHARACTERS).build();
         try (Response response = target(url)

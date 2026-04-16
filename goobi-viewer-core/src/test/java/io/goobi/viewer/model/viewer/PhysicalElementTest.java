@@ -70,11 +70,11 @@ class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @verifies test
+     * @verifies return correct threshold values
      * @see PhysicalElement#getImageHeightRationThresholds
      */
     @Test
-    void getImageHeightRationThresholds_shouldTest() {
+    void getImageHeightRationThresholds_shouldReturnCorrectThresholdValues() {
         PhysicalElement page =
                 new PhysicalElement("PHYS_0001", "00000001.tif", 1, "Seite 1", "urn:234235:3423", "http://purl", "1234", "image/tiff", null);
         Assertions.assertEquals(0.2f, page.getImageHeightRationThresholds().get(0));
@@ -118,11 +118,11 @@ class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see PhysicalElement#getBaseMimeType()
-     * @verifies return correct base mime type
+     * @see PhysicalElement#getMediaType()
+     * @verifies return correct media type
      */
     @Test
-    void getBaseMimeType_shouldReturnCorrectBaseMimeType() throws Exception {
+    void getMediaType_shouldReturnCorrectMediaType() throws Exception {
         Assertions.assertTrue(new PhysicalElementBuilder().setMimeType("image/tiff").build().getMediaType().isImage());
         Assertions.assertTrue(new PhysicalElementBuilder().setMimeType("audio/mpeg3").build().getMediaType().isAudio());
         Assertions.assertTrue(new PhysicalElementBuilder().setMimeType("video/webm").build().getMediaType().isVideo());

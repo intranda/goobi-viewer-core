@@ -70,7 +70,7 @@ class RecordSectionResourceTest extends AbstractRestApiTest {
     }
 
     /**
-     * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordResource#getRISAsFile()}.
+     * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordSectionResource#getRISAsFile()}.
      * @verifies return non null result
      * @see RecordSectionResource#getRISAsFile
      */
@@ -90,7 +90,7 @@ class RecordSectionResourceTest extends AbstractRestApiTest {
     }
 
     /**
-     * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordResource#getRISAsText()}.
+     * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordSectionResource#getRISAsText()}.
      * @verifies return non null result
      * @see RecordSectionResource#getRISAsText()
      */

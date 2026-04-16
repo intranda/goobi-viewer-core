@@ -117,6 +117,7 @@ class GeoCoordinateFeatureTest extends AbstractTest {
 
     /**
      * @verifies escape geo facet string for solr query
+     * @see SearchFacets#generateFacetFilterQueries(boolean)
      */
     @Test
     void generateFacetFilterQueries_shouldEscapeGeoFacetStringForSolrQuery() throws UnsupportedEncodingException {

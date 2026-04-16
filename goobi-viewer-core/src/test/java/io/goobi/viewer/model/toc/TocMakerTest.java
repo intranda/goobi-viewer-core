@@ -47,7 +47,7 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see TocMaker#getSolrFieldsToFetch()
+     * @see TocMaker#getSolrFieldsToFetch(String)
      * @verifies return both static and configured fields
      */
     @Test
@@ -59,7 +59,7 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @verifies include anchor element full volume tree and sibling volume top elements in t o c
+     * @verifies include anchor element full volume tree and sibling volume top elements in TOC
      */
     @Test
     void generateToc_shouldIncludeAnchorElementFullVolumeTreeAndSiblingVolumeTopElementsInTOC() throws Exception {

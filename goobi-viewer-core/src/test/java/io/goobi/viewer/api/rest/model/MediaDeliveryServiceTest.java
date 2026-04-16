@@ -29,7 +29,7 @@ class MediaDeliveryServiceTest {
 
     /**
      * @verifies match range header
-     * @see that#matchesRangeHeaderPattern
+     * @see MediaDeliveryService#matchesRangeHeaderPattern
      */
     @Test
     void matchesRangeHeaderPattern_shouldMatchRangeHeader() {

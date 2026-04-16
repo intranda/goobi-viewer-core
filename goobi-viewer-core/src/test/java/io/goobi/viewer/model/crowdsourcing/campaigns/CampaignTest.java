@@ -271,7 +271,7 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
      * @verifies return false if user not in group
      */
     @Test
-    void isUserAllowedAction_shouldReturnFalseIfUserNotInGroup() throws Exception {
+    void isUserMayEdit_shouldReturnFalseIfUserNotInGroup() throws Exception {
         User user = new User();
         Campaign campaign = new Campaign();
         campaign.setLimitToGroup(true);

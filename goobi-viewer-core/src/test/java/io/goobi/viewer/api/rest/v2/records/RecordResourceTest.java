@@ -103,22 +103,22 @@ class RecordResourceTest extends AbstractRestApiTest {
     /**
      * Null PI must be rejected with BadRequestException, not silently accepted.
      * This guards the fix that changed the condition from (pi != null && ...) to (pi == null || ...).
-     * @verifies null pi throws bad request
+     * @verifies throw bad request for null pi
      * @see RecordResource#validatePi
      */
     @Test
-    void validatePi_shouldNullPiThrowsBadRequest() {
+    void validatePi_shouldThrowBadRequestForNullPi() {
         assertThrows(jakarta.ws.rs.BadRequestException.class, () -> RecordResource.validatePi(null),
                 "null PI should throw BadRequestException");
     }
 
     /**
      * Valid PIs must pass validatePi without throwing.
-     * @verifies valid pi accepted
+     * @verifies accept valid pi
      * @see RecordResource#validatePi
      */
     @Test
-    void validatePi_shouldValidPiAccepted() {
+    void validatePi_shouldAcceptValidPi() {
         assertDoesNotThrow(() -> RecordResource.validatePi("PPN615391702"));
         assertDoesNotThrow(() -> RecordResource.validatePi("valid_pi-1.0"));
     }

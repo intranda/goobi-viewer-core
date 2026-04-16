@@ -116,10 +116,10 @@ class ComplexMetadataTest {
      * Verify that multiple Solr documents sharing the same MD_REFID are grouped into a single
      * translated ComplexMetadata entry, even when the number of duplicates is large.
      * This guards against O(n²) list-copy behaviour in the grouping implementation.
-     * @verifies merges documents with same ref id
+     * @verifies merge documents with same ref id
      */
     @Test
-    void getMetadataFromDocuments_shouldMergesDocumentsWithSameRefId() {
+    void getMetadataFromDocuments_shouldMergeDocumentsWithSameRefId() {
         // 100 language-variant docs all belonging to the same logical metadata value (REFID="1")
         List<SolrDocument> docs = IntStream.range(0, 100).mapToObj(i -> {
             SolrDocument doc = new SolrDocument();
@@ -142,10 +142,10 @@ class ComplexMetadataTest {
     /**
      * Verify that documents without MD_REFID (null key) are each treated as an independent
      * untranslated ComplexMetadata entry rather than being merged into a single group.
-     * @verifies keeps null ref id documents as separate entries
+     * @verifies keep null ref id documents as separate entries
      */
     @Test
-    void getMetadataFromDocuments_shouldKeepsNullRefIdDocumentsAsSeparateEntries() {
+    void getMetadataFromDocuments_shouldKeepNullRefIdDocumentsAsSeparateEntries() {
         List<SolrDocument> docs = new ArrayList<>();
         for (String value : List.of("Alpha", "Beta", "Gamma")) {
             SolrDocument doc = new SolrDocument();

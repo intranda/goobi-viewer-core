@@ -110,10 +110,10 @@ class MessageEntryTest extends AbstractTest {
     }
 
     /**
-     * @verifies retutrn correct status for language
+     * @verifies return correct status for language
      */
     @Test
-    void getTranslationStatusForLanguage_shouldRetutrnCorrectStatusForLanguage() throws Exception {
+    void getTranslationStatusForLanguage_shouldReturnCorrectStatusForLanguage() throws Exception {
         List<MessageValue> values = new ArrayList<>(2);
         values.add(new MessageValue("en", "value", "value"));
         values.add(new MessageValue("de", "wert zzz", "wert"));

@@ -44,11 +44,10 @@ import io.goobi.viewer.model.security.clients.ClientApplication.AccessStatus;
 class ClientApplicationsResourceTest extends AbstractRestApiTest {
 
     /**
-     * @verifies no access
-     * @see ClientApplicationsResource#request
+     * @verifies return 401 when no auth token provided
      */
     @Test
-    void request_shouldNoAccess() {
+    void scenario_shouldReturn401WhenNoAuthTokenProvided() {
         try (Response response = target()
                 .path(CLIENTS)
                 .request()
@@ -119,10 +118,10 @@ class ClientApplicationsResourceTest extends AbstractRestApiTest {
     }
 
     /**
-     * @verifies put client
+     * @verifies update client access status and subnet mask via PUT
      */
     @Test
-    void request_shouldPutClient() throws DAOException {
+    void setClient_shouldUpdateClientAccessStatusAndSubnetMaskViaPut() throws DAOException {
 
         ClientApplication databaseClient = DataManager.getInstance().getDao().getClientApplicationByClientId("1234-abcd-4321");
         assertEquals(AccessStatus.REQUESTED, databaseClient.getAccessStatus());

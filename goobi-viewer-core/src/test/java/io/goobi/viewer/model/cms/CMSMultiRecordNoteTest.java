@@ -55,11 +55,11 @@ class CMSMultiRecordNoteTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @verifies return non null result
+     * @verifies return true for contained PI and false for other
      * @see CMSMultiRecordNote#matchesRecord(String)
      */
     @Test
-    void matchesRecord_shouldReturnNonNullResult() throws DAOException, PresentationException, IndexUnreachableException {
+    void matchesRecord_shouldReturnTrueForContainedPiAndFalseForOther() throws DAOException, PresentationException, IndexUnreachableException {
         CMSMultiRecordNote note = (CMSMultiRecordNote) DataManager.getInstance().getDao().getRecordNote(5l);
         assertNotNull(note);
         String containedPI = note.getRecords().get(0);

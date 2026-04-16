@@ -51,10 +51,10 @@ class LanguageHelperTest extends AbstractTest {
     }
 
     /**
-     * @verifies stops reloading thread
+     * @verifies stop reloading thread
      */
     @Test
-    void shutdown_shouldStopsReloadingThread() throws InterruptedException {
+    void shutdown_shouldStopReloadingThread() throws InterruptedException {
         Set<Thread> threadsBefore = Thread.getAllStackTraces().keySet();
         LanguageHelper helper = new LanguageHelper("src/test/resources/languages.xml");
 

@@ -43,11 +43,11 @@ class DisclaimerTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @verifies persist
-     * @see should#getAcceptanceScope
+     * @verifies persist disclaimer with acceptance scope to database
+     * @see Disclaimer#getAcceptanceScope()
      */
     @Test
-    void getAcceptanceScope_shouldPersist() throws DAOException {
+    void getAcceptanceScope_shouldPersistDisclaimerWithAcceptanceScopeToDatabase() throws DAOException {
         Disclaimer disclaimer = new Disclaimer();
         disclaimer.setDisplayScope(new DisplayScope(PageScope.RECORD, "PI:X"));
         disclaimer.getAcceptanceScope().setDaysToLive(8);
@@ -60,11 +60,11 @@ class DisclaimerTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @verifies scope
-     * @see should#getAcceptanceScope
+     * @verifies return default scope values and allow modification
+     * @see Disclaimer#getAcceptanceScope()
      */
     @Test
-    void getAcceptanceScope_shouldScope() {
+    void getAcceptanceScope_shouldReturnDefaultScopeValuesAndAllowModification() {
         Disclaimer disclaimer = new Disclaimer();
         assertEquals(14, disclaimer.getAcceptanceScope().getDaysToLive());
         assertEquals(ConsentScope.StorageMode.LOCAL, disclaimer.getAcceptanceScope().getStorageMode());

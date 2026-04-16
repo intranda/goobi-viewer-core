@@ -165,7 +165,7 @@ public abstract class AbstractPageLoader implements IPageLoader {
      * @param locale locale used to resolve message key placeholders
      * @return the label format string with static placeholders resolved
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @should replace numpages currectly
+     * @should replace numpages correctly
      * @should replace {msg.key} placeholders with translated message values in template
      */
     protected String buildPageLabelTemplate(String format, Locale locale) throws IndexUnreachableException {

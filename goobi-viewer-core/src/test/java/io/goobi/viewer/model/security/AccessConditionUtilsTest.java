@@ -247,7 +247,7 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#generateAccessCheckQuery(String,String)
+     * @see AccessConditionUtils#generateAccessCheckQuery(String,String)
      * @verifies use correct field name for AV files
      */
     @Test
@@ -276,7 +276,7 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#generateAccessCheckQuery(String,String)
+     * @see AccessConditionUtils#generateAccessCheckQuery(String,String)
      * @verifies use correct file name for text files
      */
     @Test
@@ -507,7 +507,7 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @verifies return null for null session
-     * @see providing#retrieveUserFromContext(HttpSession)
+     * @see AccessConditionUtils#retrieveUserFromContext(HttpSession)
      */
     @Test
     void retrieveUserFromContext_shouldReturnNullForNullSession() {
@@ -682,7 +682,7 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @verifies return empty for blank pi
-     * @see providing#fetchPagePermissions(String, HttpServletRequest)
+     * @see AccessConditionUtils#fetchPagePermissions(String, HttpServletRequest)
      */
     @Test
     void fetchPagePermissions_shouldReturnEmptyForBlankPi() {
@@ -692,7 +692,7 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @verifies return empty for null pi
-     * @see providing#fetchPagePermissions(String, HttpServletRequest)
+     * @see AccessConditionUtils#fetchPagePermissions(String, HttpServletRequest)
      */
     @Test
     void fetchPagePermissions_shouldReturnEmptyForNullPi() {
@@ -702,7 +702,7 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @verifies return granted permissions for open access record
-     * @see providing#fetchPagePermissions(String, HttpServletRequest)
+     * @see AccessConditionUtils#fetchPagePermissions(String, HttpServletRequest)
      */
     @Test
     void fetchPagePermissions_shouldReturnGrantedPermissionsForOpenAccessRecord() {

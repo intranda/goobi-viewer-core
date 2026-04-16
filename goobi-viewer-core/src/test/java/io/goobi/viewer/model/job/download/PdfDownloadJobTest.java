@@ -43,10 +43,10 @@ class PdfDownloadJobTest extends AbstractSolrEnabledTest {
     private static final String PI = "02008031921530";
 
     /**
-     * @verifies folder contains pdf
+     * @verifies return true if folder contains pdf
      */
     @Test
-    void containsPdfs_shouldFolderContainsPdf(@TempDir Path directory) throws IOException {
+    void containsPdfs_shouldReturnTrueIfFolderContainsPdf(@TempDir Path directory) throws IOException {
 
         Files.createFile(directory.resolve("file1.pdf"));
         Files.createFile(directory.resolve("file2.pdf"));
@@ -57,10 +57,10 @@ class PdfDownloadJobTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @verifies folder contains no pdf
+     * @verifies return false if folder contains no pdf
      */
     @Test
-    void containsPdfs_shouldFolderContainsNoPdf(@TempDir Path directory) throws IOException {
+    void containsPdfs_shouldReturnFalseIfFolderContainsNoPdf(@TempDir Path directory) throws IOException {
 
         Files.createFile(directory.resolve("file1.jpg"));
         Files.createFile(directory.resolve("file2.txt"));

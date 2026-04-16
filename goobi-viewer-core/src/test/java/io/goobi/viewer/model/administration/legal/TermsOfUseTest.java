@@ -32,10 +32,10 @@ class TermsOfUseTest extends AbstractTest {
 
     /**
      * @see TermsOfUse#TermsOfUse(TermsOfUse)
-     * @verifies produce feed correctly
+     * @verifies clone original correctly
      */
     @Test
-    void TermsOfUse_shouldProduceFeedCorrectly() {
+    void TermsOfUse_shouldCloneOriginalCorrectly() {
         TermsOfUse orig = new TermsOfUse();
         orig.id = 123L;
         orig.setActive(true);
@@ -61,11 +61,11 @@ class TermsOfUseTest extends AbstractTest {
     }
 
     /**
-     * @verifies clear the list
+     * @verifies remove blank translations from the list
      * @see TermsOfUse#cleanTranslations()
      */
     @Test
-    void cleanTranslations_shouldClearTheList() {
+    void cleanTranslations_shouldRemoveBlankTranslationsFromTheList() {
         TermsOfUse orig = new TermsOfUse();
         orig.id = 123L;
         orig.setActive(true);

@@ -181,7 +181,7 @@ class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see IdentifierResolver#parseFieldValueParameters(HttpServletRequest,Map,Map)
+     * @see IdentifierResolver#parseFieldValueParameters(Map,Map,Map)
      * @verifies parse fields and values correctly
      */
     @Test

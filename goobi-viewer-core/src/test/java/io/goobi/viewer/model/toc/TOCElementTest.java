@@ -82,10 +82,10 @@ class TOCElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @verifies return URL containing page type, PI, page number and logId for reading mode view
+     * @verifies return URL containing page type, PI, page number and logId for fullscreen view with alternate setup
      */
     @Test
-    void getUrl_shouldReturnURLContainingPageTypePIPageNumberAndLogIdForReadingModeView() throws Exception {
+    void getUrl_shouldReturnURLContainingPageTypePIPageNumberAndLogIdForFullscreenViewWithAlternateSetup() throws Exception {
         TOCElement tef = new TOCElement(new SimpleMetadataValue("Label"), "1", "first", "123", "LOG_0001", 0, "PPN123", null, false, false, true,
                 "image", null, null);
         Assertions.assertEquals('/' + PageType.viewFullscreen.getName() + "/PPN123/1/LOG_0001/", tef.getUrl(PageType.viewFullscreen.getName()));

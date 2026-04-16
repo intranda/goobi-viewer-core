@@ -34,10 +34,10 @@ import io.goobi.viewer.model.viewer.StructElement;
 class AbstractPageLoaderTest extends AbstractTest {
 
     /**
-     * @verifies replace numpages currectly
+     * @verifies replace numpages correctly
      */
     @Test
-    void buildPageLabelTemplate_shouldReplaceNumpagesCurrectly() throws Exception {
+    void buildPageLabelTemplate_shouldReplaceNumpagesCorrectly() throws Exception {
         StructElement se = new StructElement();
         EagerPageLoader loader = new EagerPageLoader(se);
         Assertions.assertEquals("foo 0 bar", loader.buildPageLabelTemplate("foo {numpages} bar", null));

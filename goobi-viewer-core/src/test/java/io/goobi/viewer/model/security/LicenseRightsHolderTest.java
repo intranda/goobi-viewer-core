@@ -163,6 +163,7 @@ class LicenseRightsHolderTest {
 
     /**
      * @verifies only return priv view ugc if licenseType ugc type
+     * @see License#getAvailablePrivileges(java.util.Set)
      */
     @Test
     void getAvailablePrivileges_shouldOnlyReturnPrivViewUgcIfLicenseTypeUgcType() {

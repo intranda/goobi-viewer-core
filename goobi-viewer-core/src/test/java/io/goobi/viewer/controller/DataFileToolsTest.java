@@ -41,7 +41,7 @@ class DataFileToolsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @verifies return indexed_mets path with dataRepository when given and without when null
-     * @see for#getSourceFilePath(String, String)
+     * @see DataFileTools#getSourceFilePath(String, String, String)
      */
     @Test
     void getSourceFilePath_shouldReturnIndexed_metsPathWithDataRepositoryWhenGivenAndWithoutWhenNull() {
@@ -65,7 +65,7 @@ class DataFileToolsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @verifies return indexed_lido path with dataRepository when given and without when null
-     * @see for#getSourceFilePath(String, String)
+     * @see DataFileTools#getSourceFilePath(String, String, String)
      */
     @Test
     void getSourceFilePath_shouldReturnIndexed_lidoPathWithDataRepositoryWhenGivenAndWithoutWhenNull() {
@@ -77,7 +77,7 @@ class DataFileToolsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @verifies return indexed_ead path with dataRepository when given and without when null
-     * @see for#getSourceFilePath(String, String)
+     * @see DataFileTools#getSourceFilePath(String, String, String)
      */
     @Test
     void getSourceFilePath_shouldReturnIndexed_eadPathWithDataRepositoryWhenGivenAndWithoutWhenNull() {
@@ -89,7 +89,7 @@ class DataFileToolsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @verifies return indexed_denkxweb path with dataRepository when given and without when null
-     * @see for#getSourceFilePath(String, String)
+     * @see DataFileTools#getSourceFilePath(String, String, String)
      */
     @Test
     void getSourceFilePath_shouldReturnIndexed_denkxwebPathWithDataRepositoryWhenGivenAndWithoutWhenNull() {
@@ -101,7 +101,7 @@ class DataFileToolsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @verifies throw IllegalArgumentException if fileName is null
-     * @see for#getSourceFilePath(String, String)
+     * @see DataFileTools#getSourceFilePath(String, String, String)
      */
     @Test
     void getSourceFilePath_shouldThrowIllegalArgumentExceptionIfFileNameIsNull() {
@@ -111,7 +111,7 @@ class DataFileToolsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @verifies throw IllegalArgumentException if format is unknown
-     * @see for#getSourceFilePath(String, String)
+     * @see DataFileTools#getSourceFilePath(String, String, String)
      */
     @Test
     void getSourceFilePath_shouldThrowIllegalArgumentExceptionIfFormatIsUnknown() {
@@ -183,11 +183,11 @@ class DataFileToolsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @verifies throw record not found exception if pi not dound
-     * @see for#loadMei(String, HttpServletRequest)
+     * @verifies throw record not found exception if pi not found
+     * @see DataFileTools#loadMei(String, HttpServletRequest)
      */
     @Test
-    void loadMei_shouldThrowRecordNotFoundExceptionIfPiNotDound() {
+    void loadMei_shouldThrowRecordNotFoundExceptionIfPiNotFound() {
         Assertions.assertThrows(RecordNotFoundException.class, () -> DataFileTools.loadMei("no_such_pi", null));
     }
 
@@ -199,7 +199,7 @@ class DataFileToolsTest extends AbstractDatabaseAndSolrEnabledTest {
      * @throws DAOException
      * @throws AccessDeniedException
      * @verifies return null if record has no mei
-     * @see for#loadMei(String, HttpServletRequest)
+     * @see DataFileTools#loadMei(String, HttpServletRequest)
      */
     @Test
     void loadMei_shouldReturnNullIfRecordHasNoMei()

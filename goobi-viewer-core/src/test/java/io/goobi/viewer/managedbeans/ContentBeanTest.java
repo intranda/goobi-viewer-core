@@ -65,11 +65,11 @@ class ContentBeanTest extends AbstractDatabaseEnabledTest {
 
     //Needs annotations in test system
     /**
-     * @verifies load a ll annotations
+     * @verifies load all annotations
      * @see ContentBean#getUserGeneratedContentsForDisplay
      */
     @Test
-    void getUserGeneratedContentsForDisplay_shouldLoadALlAnnotations() throws PresentationException, IndexUnreachableException, DAOException {
+    void getUserGeneratedContentsForDisplay_shouldLoadAllAnnotations() throws PresentationException, IndexUnreachableException, DAOException {
         ContentBean bean = new ContentBean();
         List<DisplayUserGeneratedContent> ugcList = bean.getUserGeneratedContentsForDisplay(PI);
         assertEquals(2, ugcList.size());

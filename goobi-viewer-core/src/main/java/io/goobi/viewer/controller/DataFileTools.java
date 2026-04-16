@@ -532,7 +532,7 @@ public final class DataFileTools {
      * @throws PresentationException
      * @throws RecordNotFoundException
      * @should return null if record has no mei
-     * @should throw record not found exception if pi not dound
+     * @should throw record not found exception if pi not found
      */
     public static String loadMei(String pi, HttpServletRequest servletRequest)
             throws AccessDeniedException, DAOException, IndexUnreachableException, IOException, PresentationException, RecordNotFoundException {

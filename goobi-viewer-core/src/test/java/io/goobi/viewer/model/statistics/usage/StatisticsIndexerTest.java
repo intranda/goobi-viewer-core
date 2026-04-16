@@ -96,7 +96,7 @@ class StatisticsIndexerTest {
      * @verifies format usage statistics query with date range and record identifier
      */
     @Test
-    void buildQuery_shouldFormatUsageStatisticsQueryWithDateRangeAndRecordIdentifier() {
+    void scenario_shouldFormatUsageStatisticsQueryWithDateRangeAndRecordIdentifier() {
         LocalDate date = LocalDate.of(2022, 8, 30);
         String query1 = String.format("+%s:%s +%s:\"%s\"", 
                 SolrConstants.DOCTYPE, 

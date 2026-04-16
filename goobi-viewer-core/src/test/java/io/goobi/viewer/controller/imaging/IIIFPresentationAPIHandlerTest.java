@@ -71,7 +71,7 @@ class IIIFPresentationAPIHandlerTest extends AbstractTest {
 
     /**
      * @verifies return correct url for single field param
-     * @see IIIFPresentationAPIHandler#getCollectionUrl()
+     * @see IIIFPresentationAPIHandler#getCollectionUrl(String)
      */
     @Test
     void getCollectionUrl_shouldReturnCorrectUrlForSingleFieldParam() throws URISyntaxException {
@@ -81,7 +81,7 @@ class IIIFPresentationAPIHandlerTest extends AbstractTest {
 
     /**
      * @verifies return correct url for field and collection params
-     * @see IIIFPresentationAPIHandler#getCollectionUrl()
+     * @see IIIFPresentationAPIHandler#getCollectionUrl(String, String)
      */
     @Test
     void getCollectionUrl_shouldReturnCorrectUrlForFieldAndCollectionParams() throws URISyntaxException {

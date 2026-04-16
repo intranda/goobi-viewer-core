@@ -50,10 +50,10 @@ class HighlightDataTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @verifies add
+     * @verifies add highlight to database
      */
     @Test
-    void getId_shouldAdd() throws DAOException {
+    void addHighlight_shouldAddHighlightToDatabase() throws DAOException {
         HighlightData object = new HighlightData();
         object.setName(new TranslatedText("Test Name"));
         object.setDateStart(LocalDate.of(2023, 6, 12));
@@ -72,11 +72,11 @@ class HighlightDataTest extends AbstractDatabaseEnabledTest {
     }
     
     /**
-     * @verifies update
-     * @see HighlightData#getImageMode
+     * @verifies update highlight in database
+     * @see IDAO#updateHighlight
      */
     @Test
-    void getImageMode_shouldUpdate() throws DAOException {
+    void updateHighlight_shouldUpdateHighlightInDatabase() throws DAOException {
         CMSMediaItem mediaItem = dao.getCMSMediaItem(1);
         HighlightData object = dao.getHighlight(1l);
         assertEquals("Objekt des Monats Januar", object.getName().getText());
@@ -117,11 +117,11 @@ class HighlightDataTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @verifies get for date
-     * @see HighlightData#getName
+     * @verifies return highlights for given date
+     * @see IDAO#getHighlightsForDate
      */
     @Test
-    void getName_shouldGetForDate() throws DAOException {
+    void getHighlightsForDate_shouldReturnHighlightsForGivenDate() throws DAOException {
         LocalDateTime time = LocalDate.of(2023, 2, 15).atStartOfDay();
         assertEquals(1, dao.getHighlightsForDate(time).size());
         assertEquals("Objekt des Monats Februar", dao.getHighlightsForDate(time).get(0).getName().getText());
@@ -135,11 +135,11 @@ class HighlightDataTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @verifies end date only
-     * @see HighlightData#setDateStart
+     * @verifies match highlights with end date only
+     * @see IDAO#getHighlightsForDate
      */
     @Test
-    void setDateStart_shouldEndDateOnly() throws DAOException {
+    void getHighlightsForDate_shouldMatchHighlightsWithEndDateOnly() throws DAOException {
         HighlightData object = new HighlightData();
         object.setDateEnd(LocalDate.of(2022, 5, 1));
         object.setDateStart(null);
@@ -149,11 +149,11 @@ class HighlightDataTest extends AbstractDatabaseEnabledTest {
     }
     
     /**
-     * @verifies startd date only
-     * @see HighlightData#setDateStart
+     * @verifies match highlights with start date only
+     * @see IDAO#getHighlightsForDate
      */
     @Test
-    void setDateStart_shouldStartdDateOnly() throws DAOException {
+    void getHighlightsForDate_shouldMatchHighlightsWithStartDateOnly() throws DAOException {
         HighlightData object = new HighlightData();
         object.setDateStart(LocalDate.of(2022, 5, 1));
         object.setDateEnd(null);
@@ -163,11 +163,11 @@ class HighlightDataTest extends AbstractDatabaseEnabledTest {
     }
     
     /**
-     * @verifies no dates
-     * @see HighlightData#setDateStart
+     * @verifies match highlights with no dates set
+     * @see IDAO#getHighlightsForDate
      */
     @Test
-    void setDateStart_shouldNoDates() throws DAOException {
+    void getHighlightsForDate_shouldMatchHighlightsWithNoDatesSet() throws DAOException {
         HighlightData object = new HighlightData();
         object.setDateStart(null);
         object.setDateEnd(null);

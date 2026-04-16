@@ -191,7 +191,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
 
     /**
      * @verifies return collection with 1 element
-     * @see providing#getMetadataValuesForLanguage(SolrDocument, String)
+     * @see SolrTools#getMetadataValuesForLanguage(SolrDocument, String)
      */
     @Test
     void getMetadataValuesForLanguage_shouldReturnCollectionWith1Element() {
@@ -217,7 +217,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
 
     /**
      * @verifies return 2 for given input
-     * @see providing#getMultiLanguageFieldValueMap(SolrDocument)
+     * @see SolrTools#getMultiLanguageFieldValueMap(SolrDocument)
      */
     @Test
     void getMultiLanguageFieldValueMap_shouldReturn2ForGivenInput() {
@@ -250,7 +250,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see providing#getAvailableValuesForField(final String, final String)
+     * @see SolrTools#getAvailableValuesForField(String, String)
      * @verifies return all entire values
      */
     @Test
@@ -303,7 +303,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
 
     /**
      * @verifies return expected value for given input
-     * @see providing#escapeSpecialCharacters(String)
+     * @see SolrTools#escapeSpecialCharacters(String)
      */
     @Test
     void escapeSpecialCharacters_shouldReturnExpectedValueForGivenInput() {
@@ -317,7 +317,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
 
     /**
      * @verifies return expected value for given input
-     * @see providing#unescapeSpecialCharacters(String)
+     * @see SolrTools#unescapeSpecialCharacters(String)
      */
     @Test
     void unescapeSpecialCharacters_shouldReturnExpectedValueForGivenInput() {
@@ -340,7 +340,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
 
     /**
      * @verifies return true for known syntax error messages
-     * @see providing#isQuerySyntaxError(Exception)
+     * @see SolrTools#isQuerySyntaxError(Exception)
      */
     @Test
     void isQuerySyntaxError_shouldReturnTrueForKnownSyntaxErrorMessages() {
@@ -357,7 +357,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
 
     /**
      * @verifies return false for non syntax errors
-     * @see providing#isQuerySyntaxError(Exception)
+     * @see SolrTools#isQuerySyntaxError(Exception)
      */
     @Test
     void isQuerySyntaxError_shouldReturnFalseForNonSyntaxErrors() {
@@ -387,7 +387,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
 
     /**
      * @verifies return true for language-coded field names
-     * @see providing#isLanguageCodedField(String)
+     * @see SolrTools#isLanguageCodedField(String)
      */
     @Test
     void isLanguageCodedField_shouldReturnTrueForLanguageCodedFieldNames() {
@@ -398,7 +398,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
 
     /**
      * @verifies return false for non-language-coded field names
-     * @see providing#isLanguageCodedField(String)
+     * @see SolrTools#isLanguageCodedField(String)
      */
     @Test
     void isLanguageCodedField_shouldReturnFalseForNonLanguageCodedFieldNames() {
@@ -410,7 +410,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
 
     /**
      * @verifies strip language suffix
-     * @see providing#getBaseFieldName(String)
+     * @see SolrTools#getBaseFieldName(String)
      */
     @Test
     void getBaseFieldName_shouldStripLanguageSuffix() {
@@ -420,7 +420,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
 
     /**
      * @verifies return field name unchanged if no language suffix present
-     * @see providing#getBaseFieldName(String)
+     * @see SolrTools#getBaseFieldName(String)
      */
     @Test
     void getBaseFieldName_shouldReturnFieldNameUnchangedIfNoLanguageSuffixPresent() {
@@ -429,7 +429,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
 
     /**
      * @verifies return language code from field name
-     * @see providing#getLanguage(String)
+     * @see SolrTools#getLanguage(String)
      */
     @Test
     void getLanguage_shouldReturnLanguageCodeFromFieldName() {
@@ -439,7 +439,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
 
     /**
      * @verifies return null if no language suffix present
-     * @see providing#getLanguage(String)
+     * @see SolrTools#getLanguage(String)
      */
     @Test
     void getLanguage_shouldReturnNullIfNoLanguageSuffixPresent() {

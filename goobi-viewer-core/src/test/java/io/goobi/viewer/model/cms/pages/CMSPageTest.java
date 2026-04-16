@@ -63,10 +63,10 @@ class CMSPageTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @verifies persist page
-     * @see CMSPage#getTitle
+     * @see CMSPage#addCMSPage
      */
     @Test
-    void getTitle_shouldPersistPage() throws DAOException {
+    void persistPage_shouldPersistPage() throws DAOException {
 
         CMSPage page = new CMSPage();
         page.getTitleTranslations().setValue("Titel", Locale.ENGLISH);
@@ -85,10 +85,10 @@ class CMSPageTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @verifies persist page with content
-     * @see CMSPage#removeComponent
+     * @see CMSPage#addComponent
      */
     @Test
-    void removeComponent_shouldPersistPageWithContent() throws DAOException {
+    void persistPage_shouldPersistPageWithContent() throws DAOException {
 
         CMSPage page = new CMSPage();
         page.getTitleTranslations().setValue("Titel", Locale.ENGLISH);

@@ -86,10 +86,10 @@ class UploadJobTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @verifies set status to error of process rejected
+     * @verifies set status to error if process rejected
      */
     @Test
-    void updateStatus_shouldSetStatusToErrorOfProcessRejected() throws Exception {
+    void updateStatus_shouldSetStatusToErrorIfProcessRejected() throws Exception {
         UploadJob uj = new UploadJob();
         ProcessStatusResponse psr = new ProcessStatusResponse();
         psr.setId(1);

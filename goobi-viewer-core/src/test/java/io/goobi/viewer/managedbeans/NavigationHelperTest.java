@@ -177,7 +177,7 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see NavigationHelper#getRecordUrl(String,String,int)
+     * @see NavigationHelper#getRecordUrl(String,String,int,boolean,boolean)
      * @verifies return /object/{PI}/ URL for monograph record type
      */
     @Test
@@ -238,7 +238,7 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
      * @verifies return expected value for given input
      */
     @Test
-    void setCmsPage_shouldReturnExpectedValueForGivenInput() throws DAOException, IndexUnreachableException, PresentationException, ViewerConfigurationException {
+    void setCurrentPage_shouldReturnExpectedValueForGivenInput() throws DAOException, IndexUnreachableException, PresentationException, ViewerConfigurationException {
         NavigationHelper nh = new NavigationHelper();
         CMSPageContentManager contentManager = Mockito.mock(CMSPageContentManager.class);
         CMSTemplateManager templateManager = Mockito.mock(CMSTemplateManager.class);

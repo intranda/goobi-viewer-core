@@ -43,6 +43,7 @@ class PullThemeHandlerTest {
 
     /**
      * @verifies parse branch revision and message
+     * @see XmlTools#getDocumentFromString
      */
     @Test
     void getDocumentFromString_shouldParseBranchRevisionAndMessage() throws JDOMException, IOException {

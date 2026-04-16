@@ -179,11 +179,11 @@ class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @verifies filled texts are complete
-     * @see CmsRecordNoteEditBean#getNote
+     * @verifies confirm filled texts are complete
+     * @see CmsRecordNoteEditBean#isComplete
      */
     @Test
-    void getNote_shouldFilledTextsAreComplete() {
+    void isComplete_shouldConfirmFilledTextsAreComplete() {
         CMSSingleRecordNote note = new CMSSingleRecordNote("PI1");
         bean.setNote(note);
 
@@ -199,11 +199,11 @@ class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @verifies translation empy if no fields filled
-     * @see CmsRecordNoteEditBean#getNote
+     * @verifies return empty translation if no fields filled
+     * @see CmsRecordNoteEditBean#isEmpty
      */
     @Test
-    void getNote_shouldTranslationEmpyIfNoFieldsFilled() {
+    void isEmpty_shouldReturnTrueIfNoFieldsFilled() {
         CMSSingleRecordNote note = new CMSSingleRecordNote("PI1");
         bean.setNote(note);
 
@@ -218,11 +218,11 @@ class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @verifies translation not complete if not all fields filled
-     * @see CmsRecordNoteEditBean#getNote
+     * @verifies return not complete if not all fields filled
+     * @see CmsRecordNoteEditBean#isComplete
      */
     @Test
-    void getNote_shouldTranslationNotCompleteIfNotAllFieldsFilled() {
+    void isComplete_shouldReturnFalseIfNotAllFieldsFilled() {
         CMSRecordNote note = new CMSSingleRecordNote("PI1");
         bean.setNote(note);
 
@@ -238,11 +238,11 @@ class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @verifies translation complete if same fields filles as in default language
-     * @see CmsRecordNoteEditBean#getNote
+     * @verifies return complete if same fields filled as in default language
+     * @see CmsRecordNoteEditBean#isComplete
      */
     @Test
-    void getNote_shouldTranslationCompleteIfSameFieldsFillesAsInDefaultLanguage() {
+    void isComplete_shouldReturnTrueIfSameFieldsFilledAsInDefaultLanguage() {
         CMSSingleRecordNote note = new CMSSingleRecordNote("PI1");
         bean.setNote(note);
 
@@ -257,11 +257,11 @@ class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @verifies translation complete if all fields filled
-     * @see CmsRecordNoteEditBean#getNote
+     * @verifies return complete if all fields filled
+     * @see CmsRecordNoteEditBean#isComplete
      */
     @Test
-    void getNote_shouldTranslationCompleteIfAllFieldsFilled() {
+    void isComplete_shouldReturnTrueIfAllFieldsFilled() {
         CMSSingleRecordNote note = new CMSSingleRecordNote("PI1");
         bean.setNote(note);
 
@@ -280,10 +280,10 @@ class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
     /**
      * @throws DAOException
      * @see CmsRecordNoteEditBean#save()
-     * @verifies do nothing if node null
+     * @verifies do nothing if note null
      */
     @Test
-    void save_shouldDoNothingIfNodeNull() {
+    void save_shouldDoNothingIfNoteNull() {
         assertNull(bean.getNote());
         bean.save();
         assertNull(bean.getNote());
