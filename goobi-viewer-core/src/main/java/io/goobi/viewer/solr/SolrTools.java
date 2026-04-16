@@ -629,6 +629,7 @@ public final class SolrTools {
         // These indicate invalid input (HTTP 400), not server/auth failures (HTTP 403/500).
         return e.getMessage() != null && (e.getMessage().startsWith("org.apache.solr.search.SyntaxError")
                 || e.getMessage().contains("Cannot parse")
+                || e.getMessage().contains("parsing error")
                 || e.getMessage().contains("Invalid Number")
                 || e.getMessage().contains("undefined field")
                 || e.getMessage().contains("field can't be found")

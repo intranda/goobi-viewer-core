@@ -340,6 +340,8 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
         assertTrue(SolrTools.isQuerySyntaxError(new Exception("'rows' parameter cannot be negative")));
         assertTrue(SolrTools.isQuerySyntaxError(new Exception("expected ']' at position 175")));
         assertTrue(SolrTools.isQuerySyntaxError(new Exception("SyntaxError in query")));
+        assertTrue(SolrTools.isQuerySyntaxError(
+                new Exception("Error from server at http://localhost:8983/solr/current/select: parsing error")));
     }
 
     /**
