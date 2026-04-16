@@ -103,10 +103,10 @@ public class BrowseBean implements Serializable {
     /** Term list for the current result page (browsing menu). Used for displaying. */
     // volatile: published atomically to prevent ConcurrentModificationException when JSF iterates
     // these lists via c:forEach while another session request replaces or populates them
-    private volatile List<String> browseTermList;
+    private volatile List<String> browseTermList; //NOSONAR S3077: list replaced, never mutated
     /** Escaped term list for the current result page (browsing menu). Used for URL construction. */
-    private volatile List<String> browseTermListEscaped;
-    private volatile List<Long> browseTermHitCountList;
+    private volatile List<String> browseTermListEscaped; //NOSONAR S3077: list replaced, never mutated
+    private volatile List<Long> browseTermHitCountList; //NOSONAR S3077: list replaced, never mutated
     private Map<String, List<String>> availableStringFilters = new HashMap<>();
     /** This is used for filtering term browsing by the starting letter. */
     private String currentStringFilter = "";
