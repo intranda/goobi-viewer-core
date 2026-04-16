@@ -48,6 +48,7 @@ public class VoyagerSceneBuilder {
     private final Map<URI, Path> models = new LinkedHashMap<>();
     private final String name;
     private String unit = "mm";
+    private double[] translation = null;
 
     public VoyagerSceneBuilder(String name) {
         this.name = name;
@@ -55,6 +56,21 @@ public class VoyagerSceneBuilder {
 
     public VoyagerSceneBuilder setUnit(String unit) {
         this.unit = unit;
+        return this;
+    }
+
+    /**
+     * Sets a translation offset applied to every node in the scene, expressed as
+     * {@code [x, y, z]} in the scene's native units.  Pass the negated bounding-box
+     * centre of the model to make Voyager rotate around the object's true centre.
+     *
+     * @param x translation along the X axis
+     * @param y translation along the Y axis
+     * @param z translation along the Z axis
+     * @return this builder
+     */
+    public VoyagerSceneBuilder setTranslation(double x, double y, double z) {
+        this.translation = new double[] { x, y, z };
         return this;
     }
 
@@ -100,6 +116,9 @@ public class VoyagerSceneBuilder {
         JSONObject node = new JSONObject();
         node.put("name", this.name);
         node.put("model", index);
+        if (this.translation != null) {
+            node.put("translation", new JSONArray(this.translation));
+        }
         return node;
     }
 
