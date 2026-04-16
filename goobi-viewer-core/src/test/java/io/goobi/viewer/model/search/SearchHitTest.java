@@ -525,7 +525,8 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @verifies generate HTML table row fragment with count thumbnail image and title
+     * @see SearchHit#generateNotificationFragment(int)
+     * @verifies generate HTML table row fragment with count, thumbnail image, and title
      */
     @Test
     void generateNotificationFragment_shouldGenerateHTMLTableRowFragmentWithCountThumbnailImageAndTitle() throws Exception {
@@ -547,5 +548,20 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
                 + "/api/v1/records/PPN517154005/files/images/00000001.tif/full/!10,11/0/default.jpg" + "\" alt=\"" + title
                 + "\" /></td><td>" + title
                 + "</td></tr>", fragment);
+    }
+
+    /**
+     * @see SearchHit#SearchHit(HitType, BrowseElement, SolrDocument, Map, Locale, SearchHitFactory)
+     * @verifies set authorityDataIdentifier correctly
+     */
+    @Test
+    void constructor_shouldSetAuthorityDataIdentifierCorrectly() throws Exception {
+        // Provide searchTerms containing a NORM_IDENTIFIER entry so the constructor extracts it
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put(NormDataImporter.FIELD_IDENTIFIER, new HashSet<>(Arrays.asList("gnd_12345")));
+
+        // browseElement may be null; only the authorityDataIdentifier extraction path is under test
+        SearchHit hit = new SearchHit(HitType.DOCSTRCT, null, null, searchTerms, Locale.ENGLISH, null);
+        Assertions.assertEquals("gnd_12345", hit.getAuthorityDataIdentifier());
     }
 }

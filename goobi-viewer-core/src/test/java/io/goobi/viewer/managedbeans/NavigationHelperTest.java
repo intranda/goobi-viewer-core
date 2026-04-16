@@ -151,7 +151,7 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see NavigationHelper#setStatusMapValue(String,String)
-     * @verifies store given key value pair in status map
+     * @verifies store given key-value pair in status map
      */
     @Test
     void setStatusMapValue_shouldStoreGivenKeyValuePairInStatusMap() {
@@ -178,7 +178,7 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see NavigationHelper#getRecordUrl(String,String,int,boolean,boolean)
-     * @verifies return object PIURL for monograph record type
+     * @verifies return /object/{PI}/ URL for monograph record type
      */
     @Test
     void getRecordUrl_shouldReturnObjectPIURLForMonographRecordType() {
@@ -383,6 +383,36 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
         };
         assertTrue(nhBadPath.getLicenceIconResources(Collections.singletonList("brokenIcon")).isEmpty(),
                 "Directory path (ending in '/') must not reach ui:include");
+    }
+
+    /**
+     * @see NavigationHelper#getTranslationWithParams(String,String[])
+     * @verifies escape quotation marks
+     */
+    @Test
+    void getTranslationWithParams_shouldEscapeQuotationMarks() {
+        NavigationHelper nh = new NavigationHelper();
+        // Use a non-existent key containing a double quote; ViewerResourceBundle returns the key as-is
+        // when no translation is found. StringEscapeUtils.escapeJava converts " to \"
+        String keyWithQuote = "test\"key";
+        String result = nh.getTranslationWithParams(keyWithQuote);
+        // After Java-escaping, the double quote should be escaped with a backslash
+        assertTrue(result.contains("\\\""), "Double quotes should be Java-escaped");
+    }
+
+    /**
+     * @see NavigationHelper#getTranslation(String,String)
+     * @verifies escape quotation marks
+     */
+    @Test
+    void getTranslation_shouldEscapeQuotationMarks() {
+        NavigationHelper nh = new NavigationHelper();
+        // Use a non-existent key containing a double quote; ViewerResourceBundle returns the key as-is.
+        // The 2-arg overload delegates to the 3-arg overload with escape=true.
+        String keyWithQuote = "test\"key";
+        String result = nh.getTranslation(keyWithQuote, null);
+        // After Java-escaping, the double quote should be escaped with a backslash
+        assertTrue(result.contains("\\\""), "Double quotes should be Java-escaped");
     }
 
 }

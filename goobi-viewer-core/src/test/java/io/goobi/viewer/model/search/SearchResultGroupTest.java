@@ -21,12 +21,24 @@
  */
 package io.goobi.viewer.model.search;
 
+import java.io.File;
+import java.util.List;
+
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.controller.Configuration;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
 
-class SearchResultGroupTest {
+class SearchResultGroupTest extends AbstractTest {
+
+    @BeforeAll
+    public static void setUpClass() throws Exception {
+        AbstractTest.setUpClass();
+    }
 
     /**
      * @see SearchResultGroup#isDisplayExpandUrl()
@@ -62,5 +74,72 @@ class SearchResultGroupTest {
         SearchResultGroup group = new SearchResultGroup("customGroup", "", 5);
         group.setHitsCount(10);
         Assertions.assertTrue(group.isDisplayExpandUrl());
+    }
+
+    /**
+     * @see SearchResultGroup#getConfiguredResultGroups()
+     * @verifies return correct groups
+     */
+    @Test
+    void getConfiguredResultGroups_shouldReturnCorrectGroups() {
+        // Test config has 3 result groups enabled: lido_objects, monographs, stories
+        List<SearchResultGroup> groups = SearchResultGroup.getConfiguredResultGroups();
+        Assertions.assertEquals(3, groups.size());
+        Assertions.assertEquals("lido_objects", groups.get(0).getName());
+        Assertions.assertEquals("SOURCEDOCFORMAT:LIDO", groups.get(0).getQuery());
+        Assertions.assertEquals("monographs", groups.get(1).getName());
+        Assertions.assertEquals("DOCSTRCT:monograph", groups.get(1).getQuery());
+        Assertions.assertEquals("stories", groups.get(2).getName());
+    }
+
+    /**
+     * @see SearchResultGroup#getConfiguredResultGroups()
+     * @verifies return default group if none are configured
+     */
+    @Test
+    void getConfiguredResultGroups_shouldReturnDefaultGroupIfNoneAreConfigured() {
+        // Use a config that has resultGroups enabled but with no group elements (no_templates has no resultGroups section at all,
+        // so isSearchResultGroupsEnabled returns false — use a config that returns enabled=true but empty groups list instead).
+        // Since the no_templates config has no resultGroups, isSearchResultGroupsEnabled returns false, which yields an empty list,
+        // and then the method adds a default group. We inject a config without resultGroups section to simulate "no groups configured".
+        Configuration originalConfig = DataManager.getInstance().getConfiguration();
+        try {
+            // Config without resultGroups section — isSearchResultGroupsEnabled returns false (default), getSearchResultGroups returns empty
+            DataManager.getInstance()
+                    .injectConfiguration(
+                            new Configuration(new File("src/test/resources/config_viewer_no_templates.test.xml").getAbsolutePath()));
+            List<SearchResultGroup> groups = SearchResultGroup.getConfiguredResultGroups();
+            // When disabled, method creates empty list and then adds default group
+            Assertions.assertEquals(1, groups.size());
+            Assertions.assertEquals(StringConstants.DEFAULT_NAME, groups.get(0).getName());
+        } finally {
+            // Restore original configuration
+            DataManager.getInstance().injectConfiguration(originalConfig);
+        }
+    }
+
+    /**
+     * @see SearchResultGroup#getConfiguredResultGroups()
+     * @verifies return default group if groups disabled
+     */
+    @Test
+    void getConfiguredResultGroups_shouldReturnDefaultGroupIfGroupsDisabled() {
+        // When result groups are disabled, the method should return a list with just the default group
+        Configuration originalConfig = DataManager.getInstance().getConfiguration();
+        try {
+            // Config without resultGroups section — isSearchResultGroupsEnabled returns false by default
+            DataManager.getInstance()
+                    .injectConfiguration(
+                            new Configuration(new File("src/test/resources/config_viewer_no_templates.test.xml").getAbsolutePath()));
+            // Verify groups are indeed disabled in this config
+            Assertions.assertFalse(DataManager.getInstance().getConfiguration().isSearchResultGroupsEnabled());
+            List<SearchResultGroup> groups = SearchResultGroup.getConfiguredResultGroups();
+            Assertions.assertFalse(groups.isEmpty());
+            Assertions.assertEquals(1, groups.size());
+            Assertions.assertEquals(StringConstants.DEFAULT_NAME, groups.get(0).getName());
+        } finally {
+            // Restore original configuration
+            DataManager.getInstance().injectConfiguration(originalConfig);
+        }
     }
 }

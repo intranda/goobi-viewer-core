@@ -32,7 +32,8 @@ import io.goobi.viewer.AbstractTest;
 class ArchiveTreeTest extends AbstractTest {
 
     /**
-     * @verifies set tree fully loaded false if tree incomplete
+     * @see ArchiveTree#checkTreeFullyLoaded(java.util.List)
+     * @verifies set treeFullyLoaded false if tree incomplete
      */
     @Test
     void checkTreeFullyLoaded_shouldSetTreeFullyLoadedFalseIfTreeIncomplete() throws Exception {

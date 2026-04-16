@@ -112,4 +112,38 @@ class TOCElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertTrue(url.contains("/5/"), "URL should contain page number");
         Assertions.assertTrue(url.contains("LOG_0003"), "URL should contain logId");
     }
+
+    /**
+     * @see TOCElement#getUrl()
+     * @verifies return URL containing page type, PI, page number and logId for reading mode view
+     */
+    @Test
+    void getUrl_shouldReturnURLContainingPageTypePIPageNumberAndLogIdForReadingModeView() throws Exception {
+        // Create a non-anchor element with image content so that its default URL uses the image/object page type
+        TOCElement tef = new TOCElement(new SimpleMetadataValue("Label"), "3", "three", "789", "LOG_0002", 1, "PPN456", null, false, false, true,
+                "image", null, null);
+        String url = tef.getUrl();
+        // The no-arg getUrl() returns urlPrefix + urlSuffix built in the constructor; verify all components are present
+        Assertions.assertTrue(url.contains("PPN456"), "URL should contain PI");
+        Assertions.assertTrue(url.contains("/3/"), "URL should contain page number");
+        Assertions.assertTrue(url.contains("LOG_0002"), "URL should contain logId");
+    }
+
+    /**
+     * @see TOCElement#getUrl(String)
+     * @verifies construct reading mode url correctly
+     */
+    @Test
+    void getUrl_shouldConstructReadingModeUrlCorrectly() throws Exception {
+        // The viewImage branch in getUrl(String) builds a URL using PageType.viewImage,
+        // which represents the standard image reading mode
+        TOCElement tef = new TOCElement(new SimpleMetadataValue("Label"), "7", "seven", "321", "LOG_0005", 1, "PPN789", null, false, false, true,
+                "image", null, null);
+        String url = tef.getUrl(PageType.viewImage.getName());
+        // Verify the URL contains the viewImage page type name plus all identifiers
+        Assertions.assertTrue(url.contains("/" + PageType.viewImage.getName() + "/"), "URL should contain viewImage page type");
+        Assertions.assertTrue(url.contains("PPN789"), "URL should contain PI");
+        Assertions.assertTrue(url.contains("/7/"), "URL should contain page number");
+        Assertions.assertTrue(url.contains("LOG_0005"), "URL should contain logId");
+    }
 }

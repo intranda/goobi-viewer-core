@@ -2070,4 +2070,65 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     void prepareQuery_shouldWrapFieldValueQueryInPlusParenNotation() {
         assertEquals("+(foo:bar)", SearchHelper.prepareQuery("foo:bar"));
     }
+
+    /**
+     * @see SearchHelper#prepareQuery(String)
+     * @verifies wrap query correctly
+     */
+    @Test
+    void prepareQuery_shouldWrapQueryCorrectly() {
+        // Single-arg prepareQuery wraps non-empty query in "+(...)" notation
+        assertEquals("+(ISWORK:true)", SearchHelper.prepareQuery("ISWORK:true"));
+        assertEquals("+(foo AND bar)", SearchHelper.prepareQuery("foo AND bar"));
+    }
+
+    /**
+     * @see SearchHelper#prepareQuery(String)
+     * @verifies wrap field:value query in +() notation
+     */
+    @Test
+    void prepareQuery_shouldWrapFieldValueQueryInPlusParenNotation2() {
+        // Verify that a field:value style query is wrapped in +() notation by the single-arg overload
+        assertEquals("+(MD_TITLE:test)", SearchHelper.prepareQuery("MD_TITLE:test"));
+        assertEquals("+(DC:collection1)", SearchHelper.prepareQuery("DC:collection1"));
+    }
+
+    /**
+     * @see SearchHelper#prepareQuery(String)
+     * @verifies wrap non-null query in parentheses
+     */
+    @Test
+    void prepareQuery_shouldWrapNonNullQueryInParentheses2() {
+        // Single-arg overload wraps non-null queries in "+(...)" which includes parentheses
+        String result = SearchHelper.prepareQuery("some query");
+        assertTrue(result.startsWith("+("));
+        assertTrue(result.endsWith(")"));
+        assertEquals("+(some query)", result);
+    }
+
+    /**
+     * @see SearchHelper#prepareQuery(String,String)
+     * @verifies prepare non-empty queries correctly
+     */
+    @Test
+    void prepareQuery_shouldPrepareNonEmptyQueriesCorrectly() {
+        // Two-arg overload wraps non-empty queries in plain parentheses (no + prefix)
+        assertEquals("(FOO:bar)", SearchHelper.prepareQuery("FOO:bar", null));
+        assertEquals("(ISWORK:true)", SearchHelper.prepareQuery("ISWORK:true", "fallback:query"));
+        assertEquals("(complex AND query)", SearchHelper.prepareQuery("complex AND query", ""));
+    }
+
+    /**
+     * @see SearchHelper#prepareQuery(String,String)
+     * @verifies prepare empty queries correctly
+     */
+    @Test
+    void prepareQuery_shouldPrepareEmptyQueriesCorrectly() {
+        // Two-arg overload falls back to docstructWhitelistFilterQuery when query is empty
+        assertEquals("DOCSTRCT:monograph", SearchHelper.prepareQuery(null, "DOCSTRCT:monograph"));
+        assertEquals("DOCSTRCT:monograph", SearchHelper.prepareQuery("", "DOCSTRCT:monograph"));
+        // When both query and whitelist filter are empty, falls back to ALL_RECORDS_QUERY
+        assertEquals(SearchHelper.ALL_RECORDS_QUERY, SearchHelper.prepareQuery(null, ""));
+        assertEquals(SearchHelper.ALL_RECORDS_QUERY, SearchHelper.prepareQuery("", null));
+    }
 }

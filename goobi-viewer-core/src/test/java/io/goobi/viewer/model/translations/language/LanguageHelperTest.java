@@ -35,8 +35,8 @@ import io.goobi.viewer.AbstractTest;
 class LanguageHelperTest extends AbstractTest {
 
     /**
-     * @verifies resolve both ISO 639 1 and ISO 639 2 codes
-     * @see LanguageHelper#getLanguage(final String)
+     * @verifies resolve both iso 639-1 and iso 639-2 codes
+     * @see LanguageHelper#getLanguage(String)
      */
     @Test
     void getLanguage_shouldResolveBothIso639_1AndIso639_2Codes() {

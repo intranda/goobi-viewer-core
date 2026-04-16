@@ -119,6 +119,84 @@ class DataFileToolsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see DataFileTools#getSourceFilePath(String, String, String)
+     * @verifies construct METS file path correctly
+     */
+    @Test
+    void getSourceFilePath_shouldConstructMetsFilePathCorrectly() {
+        // Verify METS format resolves to the indexed_mets folder
+        Assertions.assertEquals("src/test/resources/data/viewer/data/1/indexed_mets/PPN123.xml",
+                DataFileTools.getSourceFilePath("PPN123.xml", "1", SolrConstants.SOURCEDOCFORMAT_METS));
+        Assertions.assertEquals("src/test/resources/data/viewer/indexed_mets/PPN123.xml",
+                DataFileTools.getSourceFilePath("PPN123.xml", null, SolrConstants.SOURCEDOCFORMAT_METS));
+    }
+
+    /**
+     * @see DataFileTools#getSourceFilePath(String, String, String)
+     * @verifies construct METS_MARC file path correctly
+     */
+    @Test
+    void getSourceFilePath_shouldConstructMetsMarcFilePathCorrectly() {
+        // Verify METS_MARC format also resolves to the indexed_mets folder (same as METS)
+        Assertions.assertEquals("src/test/resources/data/viewer/data/1/indexed_mets/PPN456.xml",
+                DataFileTools.getSourceFilePath("PPN456.xml", "1", SolrConstants.SOURCEDOCFORMAT_METS_MARC));
+        Assertions.assertEquals("src/test/resources/data/viewer/indexed_mets/PPN456.xml",
+                DataFileTools.getSourceFilePath("PPN456.xml", null, SolrConstants.SOURCEDOCFORMAT_METS_MARC));
+    }
+
+    /**
+     * @see DataFileTools#getSourceFilePath(String, String, String)
+     * @verifies construct LIDO file path correctly
+     */
+    @Test
+    void getSourceFilePath_shouldConstructLidoFilePathCorrectly() {
+        // Verify LIDO format resolves to the indexed_lido folder
+        Assertions.assertEquals("src/test/resources/data/viewer/data/1/indexed_lido/PPN789.xml",
+                DataFileTools.getSourceFilePath("PPN789.xml", "1", SolrConstants.SOURCEDOCFORMAT_LIDO));
+        Assertions.assertEquals("src/test/resources/data/viewer/indexed_lido/PPN789.xml",
+                DataFileTools.getSourceFilePath("PPN789.xml", null, SolrConstants.SOURCEDOCFORMAT_LIDO));
+    }
+
+    /**
+     * @see DataFileTools#getSourceFilePath(String, String, String)
+     * @verifies construct EAD file path correctly
+     */
+    @Test
+    void getSourceFilePath_shouldConstructEadFilePathCorrectly() {
+        // Verify EAD format resolves to the indexed_ead folder
+        Assertions.assertEquals("src/test/resources/data/viewer/data/1/indexed_ead/PPN101.xml",
+                DataFileTools.getSourceFilePath("PPN101.xml", "1", SolrConstants.SOURCEDOCFORMAT_EAD));
+        Assertions.assertEquals("src/test/resources/data/viewer/indexed_ead/PPN101.xml",
+                DataFileTools.getSourceFilePath("PPN101.xml", null, SolrConstants.SOURCEDOCFORMAT_EAD));
+    }
+
+    /**
+     * @see DataFileTools#getSourceFilePath(String, String, String)
+     * @verifies construct DenkXweb file path correctly
+     */
+    @Test
+    void getSourceFilePath_shouldConstructDenkXwebFilePathCorrectly() {
+        // Verify DENKXWEB format resolves to the indexed_denkxweb folder
+        Assertions.assertEquals("src/test/resources/data/viewer/data/1/indexed_denkxweb/PPN202.xml",
+                DataFileTools.getSourceFilePath("PPN202.xml", "1", SolrConstants.SOURCEDOCFORMAT_DENKXWEB));
+        Assertions.assertEquals("src/test/resources/data/viewer/indexed_denkxweb/PPN202.xml",
+                DataFileTools.getSourceFilePath("PPN202.xml", null, SolrConstants.SOURCEDOCFORMAT_DENKXWEB));
+    }
+
+    /**
+     * @see DataFileTools#getTextFilePath(String, String, String)
+     * @verifies return correct path
+     */
+    @Test
+    void getTextFilePath_shouldReturnCorrectPath() throws Exception {
+        // Verify ALTO text file path resolves correctly for a known PI
+        String path = DataFileTools.getTextFilePath(PI_KLEIUNIV, "00000001.xml", SolrConstants.FILENAME_ALTO);
+        Assertions.assertNotNull(path);
+        Assertions.assertTrue(path.contains("alto"));
+        Assertions.assertTrue(path.endsWith("00000001.xml"));
+    }
+
+    /**
      * @verifies return correct folder if no data repository used
      */
     @Test

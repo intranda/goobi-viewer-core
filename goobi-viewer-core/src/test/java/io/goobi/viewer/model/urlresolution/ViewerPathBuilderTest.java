@@ -91,8 +91,8 @@ class ViewerPathBuilderTest extends AbstractTest {
     }
 
     /**
-     * @verifies strip scheme host port and context path from URL and return remaining path
      * @see ViewerPathBuilder#createPath(HttpServletRequest)
+     * @verifies strip scheme, host, port and context path from URL and return remaining path
      */
     @Test
     void createPath_shouldStripSchemeHostPortAndContextPathFromURLAndReturnRemainingPath() throws Exception {

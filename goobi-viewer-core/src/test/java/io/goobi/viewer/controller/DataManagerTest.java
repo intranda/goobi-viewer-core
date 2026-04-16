@@ -50,7 +50,8 @@ class DataManagerTest {
     }
 
     /**
-     * @verifies not add module if its already registered
+     * @see DataManager#registerModule(io.goobi.viewer.modules.IModule)
+     * @verifies not add module if it's already registered
      */
     @Test
     void registerModule_shouldNotAddModuleIfItsAlreadyRegistered() {

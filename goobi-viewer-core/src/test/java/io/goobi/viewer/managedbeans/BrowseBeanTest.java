@@ -91,7 +91,7 @@ class BrowseBeanTest extends AbstractTest {
 
     /**
      * @see BrowseBean#getCollectionHierarchy(String,String)
-     * @verifies return slash separated ancestor chain for dot delimited collection name
+     * @verifies return slash-separated ancestor chain for dot-delimited collection name
      */
     @Test
     void getCollectionHierarchy_shouldReturnSlashSeparatedAncestorChainForDotDelimitedCollectionName() {

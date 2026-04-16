@@ -23,7 +23,11 @@ package io.goobi.viewer.api.rest.filters;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -117,5 +121,102 @@ class PdfRequestFilterTest extends AbstractDatabaseAndSolrEnabledTest {
         filter.filter(context);
 
         Mockito.verify(context).abortWith(Mockito.any());
+    }
+
+    /**
+     * @see PdfRequestFilter#checkPageAllowed(String, String, int, int, HttpServletRequest)
+     * @verifies return false if session unavailable
+     */
+    @Test
+    void checkPageAllowed_shouldReturnFalseIfSessionUnavailable() throws Exception {
+        // Request with null session should return false
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getSession()).thenReturn(null);
+
+        Assertions.assertFalse(PdfRequestFilter.checkPageAllowed("PPN123", "00000001.tif", 50, 10, request));
+
+        // Null request should also return false
+        Assertions.assertFalse(PdfRequestFilter.checkPageAllowed("PPN123", "00000001.tif", 50, 10, null));
+    }
+
+    /**
+     * @see PdfRequestFilter#checkPageAllowed(String, String, int, int, HttpServletRequest)
+     * @verifies return false if no session attribute exists yet
+     */
+    @Test
+    void checkPageAllowed_shouldReturnFalseIfNoSessionAttributeExistsYet() throws Exception {
+        // Session exists but has no pdf_quota attribute yet; the method initializes it and then
+        // checks whether the quota allows the requested page. With a 0% quota (0 pages allowed),
+        // even the first page request must be rejected.
+        HttpSession session = Mockito.mock(HttpSession.class);
+        Mockito.when(session.getAttribute("pdf_quota")).thenReturn(null);
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getSession()).thenReturn(session);
+
+        // 0% quota means 0 allowed pages, so even with empty quota map the page is rejected
+        Assertions.assertFalse(PdfRequestFilter.checkPageAllowed("PPN123", "00000001.tif", 0, 10, request));
+    }
+
+    /**
+     * @see PdfRequestFilter#checkPageAllowed(String, String, int, int, HttpServletRequest)
+     * @verifies return true if page already part of quota
+     */
+    @Test
+    void checkPageAllowed_shouldReturnTrueIfPageAlreadyPartOfQuota() throws Exception {
+        // Pre-populate the quota map with the requested page so the method recognizes it
+        Map<String, Set<String>> quotaMap = new HashMap<>();
+        Set<String> pages = new HashSet<>();
+        pages.add("00000001.tif");
+        quotaMap.put("PPN123", pages);
+
+        HttpSession session = Mockito.mock(HttpSession.class);
+        Mockito.when(session.getAttribute("pdf_quota")).thenReturn(quotaMap);
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getSession()).thenReturn(session);
+
+        // Page is already in the quota set, so it should be allowed regardless of percentage
+        Assertions.assertTrue(PdfRequestFilter.checkPageAllowed("PPN123", "00000001.tif", 10, 10, request));
+    }
+
+    /**
+     * @see PdfRequestFilter#checkPageAllowed(String, String, int, int, HttpServletRequest)
+     * @verifies return false if quota already filled
+     */
+    @Test
+    void checkPageAllowed_shouldReturnFalseIfQuotaAlreadyFilled() throws Exception {
+        // Pre-populate the quota with the maximum allowed pages (1 page at 10% of 10 total)
+        Map<String, Set<String>> quotaMap = new HashMap<>();
+        Set<String> pages = new HashSet<>();
+        pages.add("00000001.tif");
+        quotaMap.put("PPN123", pages);
+
+        HttpSession session = Mockito.mock(HttpSession.class);
+        Mockito.when(session.getAttribute("pdf_quota")).thenReturn(quotaMap);
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getSession()).thenReturn(session);
+
+        // 10% of 10 = 1 allowed page, and 1 page is already in the set, so a new page must be rejected
+        Assertions.assertFalse(PdfRequestFilter.checkPageAllowed("PPN123", "00000002.tif", 10, 10, request));
+    }
+
+    /**
+     * @see PdfRequestFilter#checkPageAllowed(String, String, int, int, HttpServletRequest)
+     * @verifies return true and add page to map if quota not yet filled
+     */
+    @Test
+    void checkPageAllowed_shouldReturnTrueAndAddPageToMapIfQuotaNotYetFilled() throws Exception {
+        // Start with an empty quota map so the method can add the first page
+        Map<String, Set<String>> quotaMap = new HashMap<>();
+
+        HttpSession session = Mockito.mock(HttpSession.class);
+        Mockito.when(session.getAttribute("pdf_quota")).thenReturn(quotaMap);
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getSession()).thenReturn(session);
+
+        // 50% of 10 = 5 allowed pages; quota is empty, so the page should be accepted and added
+        Assertions.assertTrue(PdfRequestFilter.checkPageAllowed("PPN123", "00000001.tif", 50, 10, request));
+        // Verify the page was actually added to the quota map
+        Assertions.assertNotNull(quotaMap.get("PPN123"));
+        Assertions.assertTrue(quotaMap.get("PPN123").contains("00000001.tif"));
     }
 }

@@ -59,23 +59,21 @@ class IIIFUrlHandlerTest extends AbstractTest {
     }
 
     /**
-     * Test method for
-     * {@link io.goobi.viewer.controller.imaging.IIIFUrlHandler#getIIIFImageUrl(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, int)}.
-     * @verifies return url from file
-     * @see IIIFUrlHandler#getIIIFImageUrl
+     * @see IIIFUrlHandler#getIIIFImageUrl(String, String, String, String, String, String, String)
+     * @verifies url from file
      */
     @Test
-    void getIIIFImageUrl_shouldReturnUrlFromFile() {
+    void getIIIFImageUrl_shouldUrlFromFile() {
         String url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
         Assertions.assertEquals("/api/v1/records/1234/files/images/filename.tif/full/max/0/default.jpg", url);
     }
 
     /**
-     * @verifies return url from local url
-     * @see IIIFUrlHandler#getIIIFImageUrl
+     * @see IIIFUrlHandler#getIIIFImageUrl(String, String, String, String, String, String, String)
+     * @verifies url from local url
      */
     @Test
-    void getIIIFImageUrl_shouldReturnUrlFromLocalUrl() {
+    void getIIIFImageUrl_shouldUrlFromLocalUrl() {
         fileUrl = "http://localhost/image/filename.tif";
         String url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
         Assertions.assertEquals("/api/v1/images/external/http:U002FU002FlocalhostU002FimageU002Ffilename.tif/full/max/0/default.jpg",
@@ -83,22 +81,22 @@ class IIIFUrlHandlerTest extends AbstractTest {
     }
 
     /**
-     * @verifies return url from external image url
-     * @see IIIFUrlHandler#getIIIFImageUrl
+     * @see IIIFUrlHandler#getIIIFImageUrl(String, String, String, String, String, String, String)
+     * @verifies url from external image url
      */
     @Test
-    void getIIIFImageUrl_shouldReturnUrlFromExternalImageUrl() {
+    void getIIIFImageUrl_shouldUrlFromExternalImageUrl() {
         fileUrl = "http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/full/full/0/native.jpg";
         String url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
         Assertions.assertEquals("http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/full/max/0/default.jpg", url);
     }
 
     /**
-     * @verifies return url from local file url
-     * @see IIIFUrlHandler#getIIIFImageUrl
+     * @see IIIFUrlHandler#getIIIFImageUrl(String, String, String, String, String, String, String)
+     * @verifies url from local file url
      */
     @Test
-    void getIIIFImageUrl_shouldReturnUrlFromLocalFileUrl() {
+    void getIIIFImageUrl_shouldUrlFromLocalFileUrl() {
         fileUrl = "file:///image/filename.tif";
         String url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
         Assertions.assertEquals("/api/v1/images/external/file:U002FU002FU002FimageU002Ffilename.tif/full/max/0/default.jpg",
@@ -106,22 +104,22 @@ class IIIFUrlHandlerTest extends AbstractTest {
     }
 
     /**
-     * @verifies return url from local file url with space
-     * @see IIIFUrlHandler#getIIIFImageUrl
+     * @see IIIFUrlHandler#getIIIFImageUrl(String, String, String, String, String, String, String)
+     * @verifies url from local file url with space
      */
     @Test
-    void getIIIFImageUrl_shouldReturnUrlFromLocalFileUrlWithSpace() {
+    void getIIIFImageUrl_shouldUrlFromLocalFileUrlWithSpace() {
         fileUrl = "file:///image/filename 01.tif";
         String url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
         Assertions.assertEquals("/api/v1/images/external/file:U002FU002FU002FimageU002Ffilename%2001.tif/full/max/0/default.jpg", url);
     }
 
     /**
-     * @verifies return url from windows file url
-     * @see IIIFUrlHandler#getIIIFImageUrl
+     * @see IIIFUrlHandler#getIIIFImageUrl(String, String, String, String, String, String, String)
+     * @verifies url from windows file url
      */
     @Test
-    void getIIIFImageUrl_shouldReturnUrlFromWindowsFileUrl() {
+    void getIIIFImageUrl_shouldUrlFromWindowsFileUrl() {
         fileUrl = "file:///C:/opt/digiverso/viewer/cms_media/filename.tif";
         String url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
         Assertions.assertEquals(
