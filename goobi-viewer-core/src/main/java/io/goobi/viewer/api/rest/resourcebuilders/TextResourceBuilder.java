@@ -469,8 +469,9 @@ public class TextResourceBuilder {
                 logger.error(e.getMessage(), e);
             }
         } else {
+            // Fallback: look for corresponding ALTO file when no plaintext exists
             file = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getAltoFolder(),
-                    DataManager.getInstance().getConfiguration().getAltoFolder(), fileName.replaceAll("(i?)\\.txt", ".xml"));
+                    DataManager.getInstance().getConfiguration().getAltoFolder(), fileName.replaceAll("(?i)\\.txt", ".xml"));
             if (file != null && Files.isRegularFile(file)) {
                 try {
                     return ALTOTools.getFulltext(file, StringTools.DEFAULT_ENCODING);
@@ -516,27 +517,7 @@ public class TextResourceBuilder {
             }));
         }
 
-        Map<java.nio.file.Path, String> fileMapFromAlto = null;
-        // Replaced filesystem iteration with single Solr batch query for ALTO-derived fulltext.
-        List<java.nio.file.Path> altoFiles = getFilesFromSolr(pi, SolrConstants.FILENAME_ALTO,
-                DataManager.getInstance().getConfiguration().getAltoFolder(),
-                DataManager.getInstance().getConfiguration().getAltoFolder(), request);
-        if (!altoFiles.isEmpty()) {
-            logger.debug("Converting ALTO files from {}", altoFiles.get(0).getParent().toAbsolutePath());
-            fileMapFromAlto = altoFiles.stream()
-                    .collect(Collectors.toMap(
-                            p -> Paths.get(p.toString().replaceAll("(i?)\\.(alto|xml)", ".txt")),
-                            p -> {
-                                try {
-                                    return ALTOTools.getFulltext(p, StringTools.DEFAULT_ENCODING);
-                                } catch (IOException e) {
-                                    logger.error("Error reading file {}", p, e);
-                                    return "";
-                                }
-                            }));
-        }
-
-        // Add collected plaintext files
+        // Add collected plaintext files first to know which pages already have text
         final Set<String> fileNames = new HashSet<>();
         if (fileMapFromPlaintext != null && !fileMapFromPlaintext.isEmpty()) {
             for (Entry<Path, String> entry : fileMapFromPlaintext.entrySet()) {
@@ -546,13 +527,27 @@ public class TextResourceBuilder {
             }
         }
 
-        // Add text files converted from ALTO. Only add files whose name wasn't already collected from plain text resources.
-        if (fileMapFromAlto != null && !fileMapFromAlto.isEmpty()) {
-            for (Entry<Path, String> entry : fileMapFromAlto.entrySet()) {
-                if (!fileNames.contains(entry.getKey().getFileName().toString())) {
-                    ret.put(entry.getKey(), entry.getValue());
-                }
-            }
+        // Only parse ALTO files for pages that have no plaintext yet (skip expensive XML parsing for pages with existing plaintext)
+        List<java.nio.file.Path> altoFiles = getFilesFromSolr(pi, SolrConstants.FILENAME_ALTO,
+                DataManager.getInstance().getConfiguration().getAltoFolder(),
+                DataManager.getInstance().getConfiguration().getAltoFolder(), request);
+        if (!altoFiles.isEmpty()) {
+            logger.debug("Converting ALTO files from {}", altoFiles.get(0).getParent().toAbsolutePath());
+            altoFiles.stream()
+                    .filter(p -> {
+                        // Skip ALTO files for which plaintext already exists
+                        String txtName = p.getFileName().toString().replaceAll("(?i)\\.(alto|xml)", ".txt");
+                        return !fileNames.contains(txtName);
+                    })
+                    .forEach(p -> {
+                        String txtName = p.getFileName().toString().replaceAll("(?i)\\.(alto|xml)", ".txt");
+                        try {
+                            String text = ALTOTools.getFulltext(p, StringTools.DEFAULT_ENCODING);
+                            ret.put(Paths.get(p.toString().replaceAll("(?i)\\.(alto|xml)", ".txt")), text);
+                        } catch (IOException e) {
+                            logger.error("Error reading file {}", p, e);
+                        }
+                    });
         }
 
         return ret;
