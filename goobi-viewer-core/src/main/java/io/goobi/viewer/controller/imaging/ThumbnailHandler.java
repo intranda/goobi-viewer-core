@@ -144,6 +144,12 @@ public class ThumbnailHandler {
      *
      * @param page physical page element to render as thumbnail
      * @return the thumbnail image URL for the given page at the configured default size
+     * @should return empty string
+     * @should page
+     * @should external iiif image url
+     * @should external iiif image info url
+     * @should thumbnail url
+     * @should c ms media thumbnail url
      */
     public String getThumbnailUrl(PhysicalElement page) {
         return getThumbnailUrl(page, DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
@@ -378,7 +384,13 @@ public class ThumbnailHandler {
     public static ImageFileFormat getImageFileFormat(PhysicalElement page, String format) {
         if ("MASTER".equalsIgnoreCase(format) && page != null) {
             logger.trace("Fetching master image format via mime type: {}", page.getMimeType());
-            return ImageFileFormat.getImageFileFormatFromMimeType(page.getMimeType());
+            ImageFileFormat iff = ImageFileFormat.getImageFileFormatFromMimeType(page.getMimeType());
+            // Fall back to file extension if the mime type is not recognized (e.g. "image/tif" instead of "image/tiff")
+            if (iff == null) {
+                logger.trace("Mime type not recognized, falling back to file extension: {}", page.getFileNameExtension());
+                iff = ImageFileFormat.getImageFileFormatFromFileExtension(page.getFileNameExtension());
+            }
+            return iff;
         }
         ImageFileFormat iff = ImageFileFormat.getImageFileFormatFromFileExtension(format);
         if (iff == null && page != null) {
@@ -397,6 +409,10 @@ public class ThumbnailHandler {
      * @return the thumbnail image URL for the given page at the given scale
      */
     public String getThumbnailUrl(PhysicalElement page, Scale scale) {
+        // Guard against null page to avoid NPE when no page is loaded
+        if (page == null) {
+            return "";
+        }
         ImageFileFormat format = ImageFileFormat.getImageFileFormatFromMimeType(page.getMimeType());
         if (format == null) {
             format = ImageFileFormat.JPG;
@@ -624,6 +640,8 @@ public class ThumbnailHandler {
      * @param page a {)@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @return the url of the entire, max-size image in the original format. If no Watermark needs to be included and forwarding images is allowed in
      *         contentServer, then this streams the original image file to the client
+     * @should return expected value for given input
+     * @should fall back to file extension
      */
     public String getFullImageUrl(PhysicalElement page) {
         return getFullImageUrl(page, Scale.MAX, "MASTER");
@@ -847,7 +865,7 @@ public class ThumbnailHandler {
         } else if (mediaType.isMEI() || StringUtils.isNotBlank(doc.getMetadataValue(SolrConstants.FILENAME_MEI))) {
             ret = getThumbnailPath(MEI_THUMB).toString();
         } else if (logger.isWarnEnabled()) {
-            logger.warn("Mime type of '{}' not supported: {}", doc.getLuceneId(), mimeType);
+            logger.warn("Mime type of '{}' (file: {}) not supported: {}", doc.getPi(), getFilename(doc).orElse("unknown"), mimeType);
         }
 
         return ret;
@@ -1139,6 +1157,8 @@ public class ThumbnailHandler {
     /**
      * @param filename CMS media file name for which to build the API URL
      * @return Generated URL
+     * @should return non null result
+     * @should return expected value for given input
      */
     public static String getCMSMediaImageApiUrl(String filename) {
         if (DataManager.getInstance().getConfiguration().isUseIIIFApiUrlForCmsMediaUrls()) {

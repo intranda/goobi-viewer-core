@@ -29,11 +29,7 @@
                 function updateToc(message) {
                     let info = JSON.parse(message);
                     if (info.iddoc) {
-                        let selector = "[data-iddoc='iddoc_" + info.iddoc + "']";
-                        document
-                            .querySelectorAll('.widget-toc__element.active, .widget-toc__element .active')
-                            .forEach((ele) => ele.classList.remove('active'));
-                        document.querySelector(selector)?.classList.add('active');
+                        viewerJS.widgetToc.setActive(info.iddoc);
                     }
                 }
             </script>

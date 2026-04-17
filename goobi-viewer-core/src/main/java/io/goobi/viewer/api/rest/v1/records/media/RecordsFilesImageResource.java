@@ -43,6 +43,7 @@ import de.intranda.api.services.Service;
 import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
@@ -190,7 +191,13 @@ public class RecordsFilesImageResource extends ImageResource {
 
             return super.getPdf();
         } catch (ContentLibException e) {
-            logger.error(e.toString(), e);
+            // ServiceNotAllowedException means the access filter denied the request (403).
+            // This is expected behavior, not an application error — downgrade to DEBUG.
+            if (e instanceof ServiceNotAllowedException) {
+                logger.debug("PDF access denied: {}", e.getMessage());
+            } else {
+                logger.error(e.toString(), e);
+            }
             throw e;
         } catch (NullPointerException | IllegalArgumentException e) {
             logger.error(e.toString(), e);

@@ -43,7 +43,6 @@ import io.goobi.viewer.model.viewer.StringPair;
 class SolrToolsTest extends AbstractSolrEnabledTest {
 
     /**
-     * @see SolrTools#getFieldValueMap(SolrDocument)
      * @verifies return all fields in the given doc except page urns
      */
     @Test
@@ -58,7 +57,6 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrTools#getMetadataValues(SolrDocument,String)
      * @verifies return all values for the given field
      */
     @Test
@@ -70,11 +68,10 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrTools#getMetadataValues(SolrDocument,String)
-     * @verifies parse dates correctly
+     * @verifies return date field values as ISO 8601 formatted strings
      */
     @Test
-    void getMetadataValues_shouldParseDatesCorrectly() {
+    void getMetadataValues_shouldReturnDateFieldValuesAsISO8601FormattedStrings() {
         SolrDocument doc = new SolrDocument();
         LocalDateTime ldt = LocalDateTime.of(2025, 03, 06, 17, 20, 30);
         doc.addField(SolrConstants.DATE_PUBLICRELEASEDATE, DateTools.convertLocalDateTimeToDateViaInstant(ldt, false));
@@ -84,7 +81,6 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrTools#getSingleFieldStringValue(SolrDocument,String)
      * @verifies not return null as string if value is null
      */
     @Test
@@ -95,21 +91,73 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
 
     /**
      * @see SolrTools#getSingleFieldStringValue(SolrDocument,String)
-     * @verifies return value as string correctly
+     * @verifies convert numeric field value to its string representation
      */
     @Test
-    void getSingleFieldStringValue_shouldReturnValueAsStringCorrectly() {
+    void getSingleFieldStringValue_shouldConvertNumericFieldValueToItsStringRepresentation() {
         SolrDocument doc = new SolrDocument();
         doc.addField("NUM", 1337);
         assertEquals("1337", SolrTools.getSingleFieldStringValue(doc, "NUM"));
     }
 
     /**
-     * @see SolrTools#getSolrSortFieldsAsList(String,String,String)
-     * @verifies split fields correctly
+     * @see SolrTools#getAsInt(Object)
+     * @verifies return int value correctly
      */
     @Test
-    void getSolrSortFieldsAsList_shouldSplitFieldsCorrectly() {
+    void getAsInt_shouldReturnIntValueCorrectly() {
+        // Passing an Integer object should return the same value
+        assertEquals(Integer.valueOf(42), SolrTools.getAsInt(42));
+        assertEquals(Integer.valueOf(0), SolrTools.getAsInt(0));
+        assertEquals(Integer.valueOf(-7), SolrTools.getAsInt(-7));
+        Assertions.assertNull(SolrTools.getAsInt(null));
+    }
+
+    /**
+     * @see SolrTools#getAsInt(Object)
+     * @verifies parse int from string correctly
+     */
+    @Test
+    void getAsInt_shouldParseIntFromStringCorrectly() {
+        // Passing a String representation should be parsed to Integer
+        assertEquals(Integer.valueOf(123), SolrTools.getAsInt("123"));
+        assertEquals(Integer.valueOf(-99), SolrTools.getAsInt("-99"));
+        // Non-numeric string should return null
+        Assertions.assertNull(SolrTools.getAsInt("abc"));
+    }
+
+    /**
+     * @see SolrTools#getAsLong(Object)
+     * @verifies return long value correctly
+     */
+    @Test
+    void getAsLong_shouldReturnLongValueCorrectly() {
+        // Passing a Long object should return the same value
+        assertEquals(Long.valueOf(42L), SolrTools.getAsLong(42L));
+        assertEquals(Long.valueOf(0L), SolrTools.getAsLong(0L));
+        assertEquals(Long.valueOf(-7L), SolrTools.getAsLong(-7L));
+        Assertions.assertNull(SolrTools.getAsLong(null));
+    }
+
+    /**
+     * @see SolrTools#getAsLong(Object)
+     * @verifies parse long from string correctly
+     */
+    @Test
+    void getAsLong_shouldParseLongFromStringCorrectly() {
+        // Passing a String representation should be parsed to Long
+        assertEquals(Long.valueOf(123L), SolrTools.getAsLong("123"));
+        assertEquals(Long.valueOf(-99L), SolrTools.getAsLong("-99"));
+        // Non-numeric string should return null
+        Assertions.assertNull(SolrTools.getAsLong("abc"));
+    }
+
+    /**
+     * @see SolrTools#getSolrSortFieldsAsList(String,String,String)
+     * @verifies split multiple sort fields with directions and default to asc when direction omitted
+     */
+    @Test
+    void getSolrSortFieldsAsList_shouldSplitMultipleSortFieldsWithDirectionsAndDefaultToAscWhenDirectionOmitted() {
         List<StringPair> result = SolrTools.getSolrSortFieldsAsList("SORT_A; SORT_B, desc;SORT_C,asc", ";", ",");
         Assertions.assertNotNull(result);
         assertEquals(3, result.size());
@@ -123,10 +171,10 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
 
     /**
      * @see SolrTools#getSolrSortFieldsAsList(String,String,String)
-     * @verifies split single field correctly
+     * @verifies parse single sort field with direction and trim surrounding whitespace
      */
     @Test
-    void getSolrSortFieldsAsList_shouldSplitSingleFieldCorrectly() {
+    void getSolrSortFieldsAsList_shouldParseSingleSortFieldWithDirectionAndTrimSurroundingWhitespace() {
         List<StringPair> result = SolrTools.getSolrSortFieldsAsList("SORT_A , desc ", ";", ",");
         Assertions.assertNotNull(result);
         assertEquals(1, result.size());
@@ -162,7 +210,6 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrTools#isHasImages(SolrDocument)
      * @verifies return correct value for docsctrct docs
      */
     @Test
@@ -173,7 +220,6 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrTools#isHasImages(SolrDocument)
      * @verifies return correct value for page docs
      */
     @Test
@@ -186,7 +232,6 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrTools#isHasImages(SolrDocument)
      * @verifies return correct value for iiif manifests in file name
      */
     @Test
@@ -196,8 +241,12 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
         Assertions.assertTrue(SolrTools.isHasImages(doc));
     }
 
+    /**
+     * @verifies return collection with 1 element
+     * @see SolrTools#getMetadataValuesForLanguage(SolrDocument, String)
+     */
     @Test
-    void testGetMetadataValuesForLanguage() {
+    void getMetadataValuesForLanguage_shouldReturnCollectionWith1Element() {
         SolrDocument doc = new SolrDocument();
         doc.addField("field_A", "value_A");
         doc.addField("field_B_LANG_EN", "field_B_en");
@@ -218,8 +267,12 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
         assertEquals("field_B_en_2", mapB.get("en").get(1));
     }
 
+    /**
+     * @verifies return 2 for given input
+     * @see SolrTools#getMultiLanguageFieldValueMap(SolrDocument)
+     */
     @Test
-    void testGetMultiLanguageFieldValueMap() {
+    void getMultiLanguageFieldValueMap_shouldReturn2ForGivenInput() {
         SolrDocument doc = new SolrDocument();
         doc.addField("field_A", "value_A");
         doc.addField("field_B", "value_B");
@@ -248,6 +301,10 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
         Assertions.assertFalse(values.isEmpty());
     }
 
+    /**
+     * @see SolrTools#getAvailableValuesForField(String, String)
+     * @verifies return all entire values
+     */
     @Test
     void getAvailableValuesForField_shouldReturnAllEntireValues() throws Exception {
         List<String> values = SolrTools.getAvailableValuesForField("MD_PLACEPUBLISH", SolrConstants.ISWORK + ":true");
@@ -288,16 +345,20 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
 
     /**
      * @see SolrTools#extractExceptionMessageHtmlTitle(String)
-     * @verifies return title content correctly
+     * @verifies extract text between title tags from HTML string
      */
     @Test
-    void extractExceptionMessageHtmlTitle_shouldReturnTitleContentCorrectly() {
+    void extractExceptionMessageHtmlTitle_shouldExtractTextBetweenTitleTagsFromHTMLString() {
         String html = "<html><head><title>foo bar</title></head><body><h1>foo</h1></body</html>";
         assertEquals("foo bar", SolrTools.extractExceptionMessageHtmlTitle(html));
     }
 
+    /**
+     * @verifies return expected value for given input
+     * @see SolrTools#escapeSpecialCharacters(String)
+     */
     @Test
-    void test_escapeSpecialCharacters() {
+    void escapeSpecialCharacters_shouldReturnExpectedValueForGivenInput() {
         assertEquals("x\\\"\\>\\<svG onLoad=alert\\(\\\"Hello_XSS_World\\\"\\)\\>",
                 SolrTools.escapeSpecialCharacters("x\"><svG onLoad=alert(\"Hello_XSS_World\")>"));
         assertEquals("x\\\"\\>\\<svG onLoad=alert\\(\\\"Hello_XSS_World\\\"\\)\\>",
@@ -306,8 +367,12 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
         assertEquals("LOG_0004", SolrTools.escapeSpecialCharacters("LOG_0004"));
     }
 
+    /**
+     * @verifies return expected value for given input
+     * @see SolrTools#unescapeSpecialCharacters(String)
+     */
     @Test
-    void test_unescapeSpecialCharacters() {
+    void unescapeSpecialCharacters_shouldReturnExpectedValueForGivenInput() {
         assertEquals("x\"><svG onLoad=alert(\"Hello_XSS_World\")>",
                 SolrTools.unescapeSpecialCharacters("x\\\"\\>\\<svG onLoad=alert\\(\\\"Hello_XSS_World\\\"\\)\\>"));
         assertEquals("x\"><svG onLoad=alert(\"Hello_XSS_World\")>",
@@ -326,8 +391,8 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrTools#isQuerySyntaxError(Exception)
      * @verifies return true for known syntax error messages
+     * @see SolrTools#isQuerySyntaxError(Exception)
      */
     @Test
     void isQuerySyntaxError_shouldReturnTrueForKnownSyntaxErrorMessages() {
@@ -340,11 +405,13 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
         assertTrue(SolrTools.isQuerySyntaxError(new Exception("'rows' parameter cannot be negative")));
         assertTrue(SolrTools.isQuerySyntaxError(new Exception("expected ']' at position 175")));
         assertTrue(SolrTools.isQuerySyntaxError(new Exception("SyntaxError in query")));
+        assertTrue(SolrTools.isQuerySyntaxError(
+                new Exception("Error from server at http://localhost:8983/solr/current/select: parsing error")));
     }
 
     /**
+     * @verifies return false for non syntax errors
      * @see SolrTools#isQuerySyntaxError(Exception)
-     * @verifies return false for non-syntax errors
      */
     @Test
     void isQuerySyntaxError_shouldReturnFalseForNonSyntaxErrors() {
@@ -370,5 +437,68 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     @Test
     void cleanUpQuery_shouldKeepSingleBraces() {
         assertEquals("\\{u.a.", SolrTools.cleanUpQuery("\\{u.a."));
+    }
+
+    /**
+     * @verifies return true for language-coded field names
+     * @see SolrTools#isLanguageCodedField(String)
+     */
+    @Test
+    void isLanguageCodedField_shouldReturnTrueForLanguageCodedFieldNames() {
+        assertTrue(SolrTools.isLanguageCodedField("MD_TITLE_LANG_DE"));
+        assertTrue(SolrTools.isLanguageCodedField("MD_TITLE_LANG_DEU"));
+        assertTrue(SolrTools.isLanguageCodedField("FIELD_LANG_EN"));
+    }
+
+    /**
+     * @verifies return false for non-language-coded field names
+     * @see SolrTools#isLanguageCodedField(String)
+     */
+    @Test
+    void isLanguageCodedField_shouldReturnFalseForNonLanguageCodedFieldNames() {
+        assertFalse(SolrTools.isLanguageCodedField("MD_TITLE"));
+        assertFalse(SolrTools.isLanguageCodedField("MD_TITLE_LANG_"));
+        assertFalse(SolrTools.isLanguageCodedField(""));
+        assertFalse(SolrTools.isLanguageCodedField(null));
+    }
+
+    /**
+     * @verifies strip language suffix
+     * @see SolrTools#getBaseFieldName(String)
+     */
+    @Test
+    void getBaseFieldName_shouldStripLanguageSuffix() {
+        assertEquals("MD_TITLE", SolrTools.getBaseFieldName("MD_TITLE_LANG_DE"));
+        assertEquals("MD_TITLE", SolrTools.getBaseFieldName("MD_TITLE_LANG_DEU"));
+    }
+
+    /**
+     * @verifies return field name unchanged if no language suffix present
+     * @see SolrTools#getBaseFieldName(String)
+     */
+    @Test
+    void getBaseFieldName_shouldReturnFieldNameUnchangedIfNoLanguageSuffixPresent() {
+        assertEquals("MD_TITLE", SolrTools.getBaseFieldName("MD_TITLE"));
+    }
+
+    /**
+     * @verifies return language code from field name
+     * @see SolrTools#getLanguage(String)
+     */
+    @Test
+    void getLanguage_shouldReturnLanguageCodeFromFieldName() {
+        assertEquals("DE", SolrTools.getLanguage("MD_TITLE_LANG_DE"));
+        assertEquals("DEU", SolrTools.getLanguage("MD_TITLE_LANG_DEU"));
+    }
+
+    /**
+     * @verifies return null if no language suffix present
+     * @see SolrTools#getLanguage(String)
+     */
+    @Test
+    void getLanguage_shouldReturnNullIfNoLanguageSuffixPresent() {
+        Assertions.assertNull(SolrTools.getLanguage("MD_TITLE"));
+        Assertions.assertNull(SolrTools.getLanguage(""));
+        Assertions.assertNull(SolrTools.getLanguage(null));
     }
 }

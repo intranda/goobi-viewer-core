@@ -22,6 +22,8 @@
 package io.goobi.viewer.model.metadata;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Locale;
@@ -31,11 +33,18 @@ import org.apache.solr.common.SolrDocument;
 import org.junit.jupiter.api.Test;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
+import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.solr.SolrConstants;
 
-class MetadataContainerTest {
+class MetadataContainerTest extends AbstractTest {
 
+    /**
+     * @verifies translate fields from single document
+     */
     @Test
-    void test_translatedFieldsFromSingleDocument() {
+    void getValues_shouldTranslateFieldsFromSingleDocument() {
 
         SolrDocument doc = new SolrDocument(Map.of(
                 "MD_ROLE_LANG_FR", "Curateur.rice",
@@ -51,8 +60,11 @@ class MetadataContainerTest {
         assertEquals("Curateur.rice", record.getValues("MD_ROLE", Locale.FRANCE).get(0));
     }
 
+    /**
+     * @verifies translate fields from multiple documents
+     */
     @Test
-    void test_translatedFieldsFromMultipleDocuments() {
+    void getValues_shouldTranslateFieldsFromMultipleDocuments() {
 
         SolrDocument main = new SolrDocument(Map.of(
                 "PI", "1234"));
@@ -89,8 +101,44 @@ class MetadataContainerTest {
         assertEquals("Curateur.rice", record.getValues("MD_ROLE", Locale.FRANCE).get(0));
     }
 
+    /**
+     * Verify that {@code createMetadataEntity(StructElement)} strips the {@code _UNTOKENIZED}
+     * suffix and merges the base field and its tokenized variant under a single map key, so that
+     * the resulting container contains exactly one entry per logical field name.
+     * @verifies merge untokenized fields into base field key
+     */
     @Test
-    void test_getPartiallyTranslatedValues() {
+    void getMetadata_shouldMergeUntokenizedFieldsIntoBaseFieldKey() throws IndexUnreachableException {
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.IDDOC, "1");
+        doc.setField(SolrConstants.ISWORK, "true");
+        doc.setField("MD_TITLE", "My Title");
+        doc.setField("MD_TITLE_UNTOKENIZED", "My Title");
+        doc.setField("MD_AUTHOR", "Some Author");
+        // MD_AUTHOR has no UNTOKENIZED variant, so it appears exactly once
+        StructElement element = new StructElement("1", doc);
+
+        MetadataContainer container = MetadataContainer.createMetadataEntity(element);
+
+        // MD_TITLE_UNTOKENIZED must not survive as an independent key
+        assertFalse(container.getMetadata().containsKey("MD_TITLE_UNTOKENIZED"),
+                "MD_TITLE_UNTOKENIZED must not appear as a separate key after createMetadataEntity");
+        // The base key MD_TITLE must be present and contain values from both source fields
+        assertTrue(container.getMetadata().containsKey("MD_TITLE"),
+                "MD_TITLE must be present after deduplication");
+        List<IMetadataValue> titleValues = container.getMetadata().get("MD_TITLE");
+        assertEquals(2, titleValues.size(),
+                "MD_TITLE must accumulate values from both MD_TITLE and MD_TITLE_UNTOKENIZED");
+        // MD_AUTHOR has no UNTOKENIZED sibling: exactly one value
+        assertEquals(1, container.getMetadata().get("MD_AUTHOR").size(),
+                "MD_AUTHOR must appear with exactly one value when no UNTOKENIZED variant exists");
+    }
+
+    /**
+     * @verifies get partially translated values
+     */
+    @Test
+    void getFirstValue_shouldGetPartiallyTranslatedValues() {
         SolrDocument main = new SolrDocument(Map.of(
                 "PI", "1234",
                 "NORM_ALTNAME_LANG_EN", List.of("Saltbourg")));

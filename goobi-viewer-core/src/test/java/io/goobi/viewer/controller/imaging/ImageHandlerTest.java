@@ -78,8 +78,12 @@ class ImageHandlerTest extends AbstractTest {
 
     }
 
+    /**
+     * @verifies return expected value for given input
+     * @see ImageHandler#getImageUrl
+     */
     @Test
-    void testGetImageUrlLocal() {
+    void getImageUrl_shouldReturnExpectedValueForGivenInput() {
         PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
                 .setPhysId("PHYS_0001")
                 .setFilePath("00000001.tif")
@@ -95,8 +99,11 @@ class ImageHandlerTest extends AbstractTest {
         Assertions.assertEquals(TestUtils.APPLICATION_ROOT_URL + "api/v1/records/1234/files/images/00000001.tif/info.json?pageType=viewImage", url);
     }
 
+    /**
+     * @verifies encode special characters in pi and filename
+     */
     @Test
-    void testGetImageUrlLocal_handleSpecialCharacters() {
+    void getImageUrl_shouldEncodeSpecialCharactersInPiAndFilename() {
         PhysicalElement page = new PhysicalElementBuilder().setPi("PI 1234")
                 .setPhysId("PHYS_0001")
                 .setFilePath("ab 00000001.tif")
@@ -116,8 +123,12 @@ class ImageHandlerTest extends AbstractTest {
 
     }
 
+    /**
+     * @verifies return external url unmodified when filepath is absolute url with info json
+     * @see ImageHandler#getImageUrl(PhysicalElement, PageType)
+     */
     @Test
-    void testGetImageUrlExternal() {
+    void getImageUrl_shouldReturnExternalUrlUnmodifiedWhenFilepathIsAbsoluteUrlWithInfoJson() {
         PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
                 .setPhysId("PHYS_0001")
                 .setFilePath("http://otherServer/images/00000001.tif/info.json")
@@ -133,8 +144,12 @@ class ImageHandlerTest extends AbstractTest {
         Assertions.assertEquals("http://otherServer/images/00000001.tif/info.json", url);
     }
 
+    /**
+     * @verifies proxy external url through internal api when filepath lacks info json
+     * @see ImageHandler#getImageUrl(PhysicalElement, PageType)
+     */
     @Test
-    void testGetImageUrlInternal() {
+    void getImageUrl_shouldProxyExternalUrlThroughInternalApiWhenFilepathLacksInfoJson() {
         PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
                 .setPhysId("PHYS_0001")
                 .setFilePath("http://exteral/restricted/images/00000001.tif")
@@ -153,8 +168,12 @@ class ImageHandlerTest extends AbstractTest {
                 url);
     }
 
+    /**
+     * @verifies return expected value for given input
+     * @see ImageHandler#getImageInformation
+     */
     @Test
-    void testGetImageInformationFromPage()
+    void getImageInformation_shouldReturnExpectedValueForGivenInput()
             throws URISyntaxException, ContentLibException, IndexUnreachableException, ViewerConfigurationException, DAOException {
         PhysicalElement page = Mockito.mock(PhysicalElement.class);
         Mockito.when(page.getFilepath()).thenReturn("00000318.tif");
@@ -173,8 +192,11 @@ class ImageHandlerTest extends AbstractTest {
         Assertions.assertEquals(3, info.getTiles().get(0).getScaleFactors().get(2));
     }
 
+    /**
+     * @verifies encode special characters and resolve back to paths
+     */
     @Test
-    void testResolveURIs() throws URISyntaxException {
+    void toURI_shouldEncodeSpecialCharactersAndResolveBackToPaths() throws URISyntaxException {
         String stringExternal = "https://localhost:8080/a/b/c d";
         String stringInternal = "file:/a/b/c d#yxwg=123,52,564,213";
         String stringRelative = "a/b/c d [1]-falls.jpg";
@@ -195,8 +217,11 @@ class ImageHandlerTest extends AbstractTest {
 
     }
 
+    /**
+     * @verifies encode spaces in filename
+     */
     @Test
-    void testGetImageInformationFromPage_filenameWithSpaces()
+    void getImageInformation_shouldEncodeSpacesInFilename()
             throws URISyntaxException, ContentLibException, IndexUnreachableException, ViewerConfigurationException, DAOException,
             UnsupportedEncodingException {
         PhysicalElement page = Mockito.mock(PhysicalElement.class);
@@ -215,8 +240,11 @@ class ImageHandlerTest extends AbstractTest {
         Assertions.assertEquals(page.getImageHeight(), info.getHeight());
     }
 
+    /**
+     * @verifies encode umlauts in filename
+     */
     @Test
-    void testGetImageInformationFromPage_filenameWithUmlauts()
+    void getImageInformation_shouldEncodeUmlautsInFilename()
             throws URISyntaxException, ContentLibException, IndexUnreachableException, ViewerConfigurationException, DAOException {
         PhysicalElement page = Mockito.mock(PhysicalElement.class);
         Mockito.when(page.getFilepath()).thenReturn("unrühmliches-Bild.tif");
@@ -233,8 +261,11 @@ class ImageHandlerTest extends AbstractTest {
         Assertions.assertEquals(page.getImageHeight(), info.getHeight());
     }
 
+    /**
+     * @verifies use external url as id when filepath is absolute url
+     */
     @Test
-    void testGetImageInformationFromPage_externalImage()
+    void getImageInformation_shouldUseExternalUrlAsIdWhenFilepathIsAbsoluteUrl()
             throws URISyntaxException, ContentLibException, IndexUnreachableException, ViewerConfigurationException, DAOException {
         PhysicalElement page = Mockito.mock(PhysicalElement.class);
         Mockito.when(page.getFilepath()).thenReturn("https://other-site/iiif/unrühmliches-Bild.tif");

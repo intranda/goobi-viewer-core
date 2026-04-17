@@ -132,6 +132,7 @@ public class RecordSectionResource {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return non null result
      */
     @GET
     @jakarta.ws.rs.Path(RECORDS_SECTIONS_RIS_TEXT)

@@ -59,8 +59,11 @@ class TocWriterTest extends AbstractDatabaseAndSolrEnabledTest {
         super.setUp();
     }
 
+    /**
+     * @verifies create pdf document from toc element list
+     */
     @Test
-    void testCreateRandomPdf() throws FileNotFoundException, IOException, WriteTocException {
+    void createPdfDocument_shouldCreatePdfDocumentFromTocElementList() throws FileNotFoundException, IOException, WriteTocException {
         File outputFile = new File("target/toc.pdf");
         assertFalse(outputFile.exists());
         List<TOCElement> list = new ArrayList<>();

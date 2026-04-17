@@ -60,7 +60,6 @@ class SolrEADParserTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrEADParser#formatDate(Document)
      * @verifies format timestamp correctly
      */
     @Test

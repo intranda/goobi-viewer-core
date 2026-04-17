@@ -44,16 +44,20 @@ class RISExportTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     void RISExport_shouldSetFileNameCorrectly() throws Exception {
+        // Verify that the constructor sets a non-null fileName with expected prefix and suffix
         RISExport export = new RISExport();
         Assertions.assertNotNull(export.getFileName());
+        Assertions.assertTrue(export.getFileName().startsWith("viewer_search_"),
+                "fileName should start with 'viewer_search_'");
+        Assertions.assertTrue(export.getFileName().endsWith(".ris"),
+                "fileName should end with '.ris'");
     }
 
     /**
-     * @see RISExport#executeSearch(String,String,List,List,Map,Map,Locale,int,HttpServletRequest,HttpServletResponse)
-     * @verifies execute search correctly
+     * @verifies return search hits matching the given PI query
      */
     @Test
-    void executeSearch_shouldExecuteSearchCorrectly() throws Exception {
+    void executeSearch_shouldReturnSearchHitsMatchingTheGivenPIQuery() throws Exception {
         TestUtils.mockFacesContext();
         RISExport export = new RISExport();
         export.executeSearch(SolrConstants.PI + ":" + PI_KLEIUNIV, null, null, null, null, Locale.ENGLISH, 0);
@@ -61,7 +65,6 @@ class RISExportTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see RISExport#isHasResults()
      * @verifies return correct value
      */
     @Test

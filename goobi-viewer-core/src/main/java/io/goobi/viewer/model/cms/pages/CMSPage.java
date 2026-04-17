@@ -652,6 +652,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      * getTitle.
      *
      * @return the CMS page title in the default language
+     * @should persist page
      */
     public String getTitle() {
         return this.title.getTextOrDefault();
@@ -1127,7 +1128,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      * Exports relevant page contents as JDOM2 document for indexing.
      * 
      * @return {@link Document}
-     * @should create doc correctly
+     * @should create XML document with localized titles, categories, and text components
      */
     public Document exportAsXml() {
         Document doc = new Document();
@@ -1147,13 +1148,10 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
             eleCategories.addContent(new Element("category").setText(cat.getName()));
         }
 
-        // Texts from content items
-        List<TranslatedText> texts = getComponents()
-                .stream()
-                .map(CMSComponent::getTranslatableContentItems)
-                .flatMap(List::stream)
-                .map(CMSContentItem::getContent)
-                .map(TranslatableCMSContent.class::cast)
+        // Texts from content items — read directly from the persisted JPA entities so that
+        // exportAsXml() works even before initialiseCMSComponents() has been called.
+        List<TranslatedText> texts = this.persistentComponents.stream()
+                .flatMap(c -> c.getTranslatableContentItems().stream())
                 .map(TranslatableCMSContent::getText)
                 .toList();
 
@@ -1240,8 +1238,14 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     public List<CMSComponent> getComponents() {
-        if (!this.cmsComponentsInitialized && !this.persistentComponents.isEmpty()) {
-            logger.error("CMSComponents not initialized. Call initialiseCMSComponents to do so");
+        // Only warn when persistentComponents exist but cmsComponents is empty — this means
+        // initialiseCMSComponents() was never called on a DB-loaded page.  When addComponent()
+        // is used directly (e.g. in tests or the admin editor), cmsComponents is already
+        // populated without the flag being set, so cmsComponents.isEmpty() == false and the
+        // warning is correctly suppressed.
+        if (!this.cmsComponentsInitialized && !this.persistentComponents.isEmpty() && this.cmsComponents.isEmpty()) {
+            logger.error("CMSComponents not initialized. Call initialiseCMSComponents to do so",
+                    new IllegalStateException("Caller stack trace for diagnosis"));
         }
         return this.cmsComponents;
     }

@@ -199,8 +199,8 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
     /**
      * setFirstAndLastPageOrder.
      *
-     * @should set first page order correctly
-     * @should set last page order correctly
+     * @should set first page order to 1 for loaded struct element
+     * @should set last page order to total number of pages for loaded struct element
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     protected final void setFirstAndLastPageOrder() throws IndexUnreachableException {
@@ -238,8 +238,8 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
      *
      * @param pageNumber physical page order number; -1 to ignore
      * @param fileName file name to match; null to ignore
-     * @should load page correctly via page number
-     * @should load page correctly via file name
+     * @should return PhysicalElement with matching order when loaded by page number
+     * @should return PhysicalElement with matching order when loaded by file name
      * @should return null if page not found
      * @return the loaded PhysicalElement matching the given page number or file name, or null if not found
      * @throws io.goobi.viewer.exceptions.PresentationException if any.

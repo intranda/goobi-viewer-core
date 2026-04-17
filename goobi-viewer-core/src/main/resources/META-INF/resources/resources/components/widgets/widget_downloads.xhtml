@@ -687,7 +687,7 @@
                         data-target="pageRangeDownload">
                         <div
                             rendered="#{configurationBean.pdfPageRangeEnabled and 
-										displayConditions.matchRecord('{pageType:[viewObject, cmsPage], contentType:[IMAGE], accessCondition:DOWNLOAD_PDF}')}"
+										displayConditions.matchRecord('{pageType:[viewObject, viewFullscreen, cmsPage], contentType:[IMAGE], accessCondition:DOWNLOAD_PDF}')}"
                             jsf:id="pdfRangeDownloads"
                             visibility-class="widget-element"
                             class="widget-downloads__page-range-downloads-inner">

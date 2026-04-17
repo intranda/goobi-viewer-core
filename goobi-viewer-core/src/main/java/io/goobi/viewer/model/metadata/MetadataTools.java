@@ -530,8 +530,8 @@ public final class MetadataTools {
      * @return the metadata value after all applicable replace rules have been applied
      * @throws PresentationException
      * @throws IndexUnreachableException
-     * @should apply rules correctly
-     * @should apply conditional rules correctly
+     * @should apply conditional replace rule only when PI matches the condition
+     * @should apply char string and regex replace rules to transform the input value
      */
     public static String applyReplaceRules(String value, List<MetadataReplaceRule> replaceRules, String pi)
             throws IndexUnreachableException, PresentationException {
@@ -580,7 +580,7 @@ public final class MetadataTools {
      *
      * @param type gndspec type code to look up.
      * @return MetadataGroupType value corresponding to the given gndspec type
-     * @should map values correctly
+     * @should map GND type codes and named types to the corresponding MetadataGroupType
      */
     public static String findMetadataGroupType(String type) {
         if (type == null) {

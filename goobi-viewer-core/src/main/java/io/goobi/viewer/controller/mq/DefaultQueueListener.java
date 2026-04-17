@@ -240,7 +240,14 @@ public class DefaultQueueListener {
             try {
                 this.conn.close();
             } catch (JMSException e) {
-                log.warn("Error closing connection for queue listener {}", queueType, e);
+                // During shutdown the ActiveMQ transport may already be closed (EOFException /
+                // TransportDisposedIOException) before the JMS client gets to send a close frame.
+                // This is a known race condition and harmless — the connection is gone either way.
+                if (this.conn.isTransportFailed()) {
+                    log.debug("Connection for queue listener {} was already disposed at shutdown", queueType);
+                } else {
+                    log.warn("Error closing connection for queue listener {}", queueType, e);
+                }
             }
         }
         if (this.thread != null) {

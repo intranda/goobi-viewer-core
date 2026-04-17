@@ -711,6 +711,7 @@ public class ConfigurationBean implements Serializable {
      * isPageBrowseStep2Visible.
      *
      * @return true if the second configured page browse step is valid and should be displayed, false otherwise
+     * @should page browse configuration
      */
     public boolean isPageBrowseStep2Visible() {
         List<Integer> steps = DataManager.getInstance().getConfiguration().getPageBrowseSteps();

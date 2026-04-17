@@ -15,7 +15,7 @@
     <composite:implementation>
         <ui:repeat
             var="widgetName"
-            value="#{configurationBean.getSidebarWidgetsForView(navigationHelper.currentView)}">
+            value="#{configurationBean.getSidebarWidgetsForView(cmsBean.effectiveSidebarView != null ? cmsBean.effectiveSidebarView : navigationHelper.currentView)}">
             <!-- WIDGET VIEWS -->
             <ui:fragment rendered="#{widgetName == 'views'}">
                 <widgetComponent:widget_views

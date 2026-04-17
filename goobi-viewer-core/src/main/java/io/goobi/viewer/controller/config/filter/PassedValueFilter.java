@@ -97,6 +97,9 @@ public final class PassedValueFilter extends AbstractFilterConfiguration {
      * @param value the value to test. May contain {@link VariableReplacer} expressions
      * @param vr a variable replacer containing values to test
      * @return whether conditions apply and the object represented by the variable replacer passes the filter
+     * @should pass show filter
+     * @should block show filter
+     * @should block conditions apply
      */
     public boolean passes(String value, VariableReplacer vr) {
         if (this.applies(vr)) {

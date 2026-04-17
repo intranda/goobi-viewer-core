@@ -469,6 +469,7 @@ public class CMSMediaResource {
      *         not have rights to upload media, or a CONFLICT response if a file of the same name already exists in the cms media foler
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
+    @Hidden
     @POST
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -491,7 +492,10 @@ public class CMSMediaResource {
 
             Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                     DataManager.getInstance().getConfiguration().getCmsMediaFolder());
-            Path mediaFile = cmsMediaFolder.resolve(StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename)));
+            // Sanitize to ASCII so that non-ASCII characters (e.g. en-dash) do not end up in the
+            // Content-Location HTTP header, where Tomcat would reject them with IllegalArgumentException
+            Path mediaFile = cmsMediaFolder.resolve(
+                    StringTools.sanitizeFilenameToAscii(StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename))));
             return writeMediaFile(uploadedInputStream, cmsMediaFolder, mediaFile);
         } catch (RestApiException e) {
             return Response.status(e.getStatus()).entity(e.getMessage()).build();

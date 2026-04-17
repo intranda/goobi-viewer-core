@@ -32,7 +32,6 @@ import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
 class LeanPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
-     * @see LeanPageLoader#getNumPages()
      * @verifies return size correctly
      */
     @Test
@@ -48,7 +47,6 @@ class LeanPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see LeanPageLoader#getPage(int)
      * @verifies return correct page
      */
     @Test
@@ -62,7 +60,6 @@ class LeanPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see LeanPageLoader#getPage(int)
      * @verifies return null if pageOrder smaller than firstPageOrder
      */
     @Test
@@ -75,7 +72,6 @@ class LeanPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see LeanPageLoader#getPage(int)
      * @verifies return null if pageOrder larger than lastPageOrder
      */
     @Test
@@ -88,7 +84,6 @@ class LeanPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see LeanPageLoader#getPageForFileName(String)
      * @verifies return the correct page
      */
     @Test
@@ -102,7 +97,6 @@ class LeanPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see LeanPageLoader#getPageForFileName(String)
      * @verifies return null if file name not found
      */
     @Test
@@ -115,11 +109,10 @@ class LeanPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see LeanPageLoader#setFirstAndLastPageOrder()
-     * @verifies set first page order correctly
+     * @verifies set first page order to 1 for loaded struct element
      */
     @Test
-    void setFirstAndLastPageOrder_shouldSetFirstPageOrderCorrectly() throws Exception {
+    void setFirstAndLastPageOrder_shouldSetFirstPageOrderTo1ForLoadedStructElement() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
         Assertions.assertNotNull(se);
         LeanPageLoader pageLoader = new LeanPageLoader(se, se.getNumPages());
@@ -127,11 +120,10 @@ class LeanPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see LeanPageLoader#setFirstAndLastPageOrder()
-     * @verifies set last page order correctly
+     * @verifies set last page order to total number of pages for loaded struct element
      */
     @Test
-    void setFirstAndLastPageOrder_shouldSetLastPageOrderCorrectly() throws Exception {
+    void setFirstAndLastPageOrder_shouldSetLastPageOrderToTotalNumberOfPagesForLoadedStructElement() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
         Assertions.assertNotNull(se);
         LeanPageLoader pageLoader = new LeanPageLoader(se, se.getNumPages());
@@ -139,11 +131,10 @@ class LeanPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see LeanPageLoader#loadPage(int,String)
-     * @verifies load page correctly via page number
+     * @verifies return PhysicalElement with matching order when loaded by page number
      */
     @Test
-    void loadPage_shouldLoadPageCorrectlyViaPageNumber() throws Exception {
+    void loadPage_shouldReturnPhysicalElementWithMatchingOrderWhenLoadedByPageNumber() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
         Assertions.assertNotNull(se);
         LeanPageLoader pageLoader = new LeanPageLoader(se, -1);
@@ -153,11 +144,10 @@ class LeanPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see LeanPageLoader#loadPage(int,String)
-     * @verifies load page correctly via file name
+     * @verifies return PhysicalElement with matching order when loaded by file name
      */
     @Test
-    void loadPage_shouldLoadPageCorrectlyViaFileName() throws Exception {
+    void loadPage_shouldReturnPhysicalElementWithMatchingOrderWhenLoadedByFileName() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
         Assertions.assertNotNull(se);
         LeanPageLoader pageLoader = new LeanPageLoader(se, -1);
@@ -167,7 +157,6 @@ class LeanPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see LeanPageLoader#loadPage(int,String)
      * @verifies return null if page not found
      */
     @Test
@@ -176,5 +165,6 @@ class LeanPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertNotNull(se);
         LeanPageLoader pageLoader = new LeanPageLoader(se, -1);
         PhysicalElement pe = pageLoader.loadPage(-1, "NOTFOUND.tif");
+        Assertions.assertNull(pe);
     }
 }

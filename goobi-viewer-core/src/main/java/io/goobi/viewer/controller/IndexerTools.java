@@ -31,6 +31,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -58,6 +61,13 @@ public final class IndexerTools {
 
     private static final Logger logger = LogManager.getLogger(IndexerTools.class);
 
+    // Executor for background re-indexing tasks; daemon threads ensure JVM shutdown is not blocked.
+    private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool(r -> {
+        Thread t = new Thread(r, "indexer-tools-worker");
+        t.setDaemon(true);
+        return t;
+    });
+
     /** Constant <code>SUFFIX_FULLTEXT_CROWDSOURCING="_txtcrowd"</code>. */
     public static final String SUFFIX_FULLTEXT_CROWDSOURCING = "_txtcrowd";
     /** Constant <code>SUFFIX_ALTO_CROWDSOURCING="_altocrowd"</code>. */
@@ -71,6 +81,22 @@ public final class IndexerTools {
     }
 
     /**
+     * Shuts down the background re-indexing executor. Called by {@link io.goobi.viewer.ContextListener}
+     * during application shutdown. Waits up to 5 seconds for running tasks to finish.
+     * @should complete without exception
+     */
+    public static void shutdown() {
+        EXECUTOR.shutdownNow();
+        try {
+            if (!EXECUTOR.awaitTermination(5, TimeUnit.SECONDS)) {
+                logger.warn("IndexerTools executor did not terminate within 5 seconds");
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    /**
      * Re-index in background thread to significantly decrease saving times.
      *
      * @param pi record identifier to re-index
@@ -81,7 +107,8 @@ public final class IndexerTools {
 
     public static void triggerReIndexRecord(String pi, List<? extends IndexAugmenter> augmenters) {
         logger.debug("Re-indexing record {}", pi);
-        new Thread(() -> {
+        // Submit to managed executor instead of creating an untracked thread
+        EXECUTOR.submit(() -> {
             try {
                 if (!reIndexRecord(pi, augmenters)) {
                     logger.error("Failed to re-index  record {}", pi);
@@ -93,7 +120,7 @@ public final class IndexerTools {
                 logger.error("Failed to reindex record {}: {}", pi, e.getMessage(), e);
                 Messages.error("reIndexRecordFailure");
             }
-        }).start();
+        });
     }
 
     /**
@@ -103,14 +130,15 @@ public final class IndexerTools {
      */
     public static void triggerReIndexCMSPage(CMSPage page, List<? extends IndexAugmenter> augmenters) {
         logger.debug("Re-indexing CMS page {}", page.getId());
-        new Thread(() -> {
+        // Submit to managed executor instead of creating an untracked thread
+        EXECUTOR.submit(() -> {
             if (!reIndexCMSPage(page, augmenters)) {
                 logger.error("Failed to re-index CMS page {}", page);
                 Messages.error("reIndexCmsPageFailure");
             } else {
                 Messages.info("reIndexCmsPageSuccess");
             }
-        }).start();
+        });
     }
 
     /**
@@ -333,11 +361,11 @@ public final class IndexerTools {
      *
      * @param pi record identifier to delete
      * @param createTraceDocument true to create a .delete trace document, false to purge completely
-     * @should create delete file correctly
-     * @should create purge file correctly
      * @param hotfolderPath path to the indexer hotfolder
      * @return true if the deletion trigger file was successfully created in the hotfolder, false otherwise
      * @throws java.io.IOException if any.
+     * @should create .delete file in hotfolder when trace flag is true
+     * @should create .purge file in hotfolder when trace flag is false
      */
     public static synchronized boolean deleteRecord(String pi, boolean createTraceDocument, Path hotfolderPath) throws IOException {
         if (pi == null) {

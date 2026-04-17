@@ -188,6 +188,8 @@ public class RecordResource {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return non null result
+     * @should return 404 for given input
      */
     @GET
     @jakarta.ws.rs.Path(RECORDS_RIS_TEXT)

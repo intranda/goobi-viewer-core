@@ -531,9 +531,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     /**
      * 
      * @return filePath if mime type is image; alternative file path otherwise
-     * @should return filePath if mime type image
      * @should return tiff if available
-     * @should return jpeg if availabel
+     * @should return image if base mime type not found
      */
     public String getImageFilepath() {
 
@@ -1612,6 +1611,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      * @return true if user has access permission; false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
+      * @should return true if access allowed for this page
+      * @should return false if access denied for this page
      */
     public boolean isAccessPermissionFulltext() throws IndexUnreachableException, DAOException {
         HttpServletRequest request = null;

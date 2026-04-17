@@ -14,6 +14,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.toc.TOC;
 import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.PageType;
@@ -25,16 +26,22 @@ import jakarta.servlet.http.HttpServletRequest;
 
 class VisibilityConditionTest {
 
+    /**
+     * @verifies read condition
+     */
     @Test
-    void testReadCondition() {
+    void getMimeType_shouldReadCondition() {
         VisibilityConditionInfo info = new VisibilityConditionInfo();
         info.setMimeType(List.of("image"));
         VisibilityCondition cond = new VisibilityCondition(info);
         Assertions.assertTrue(cond.getMimeType().matches(List.of("image")));
     }
 
+    /**
+     * @verifies match configured file type condition
+     */
     @Test
-    void testFileTypeCondition() {
+    void getFileTypes_shouldMatchFileTypeCondition() {
         VisibilityConditionInfo info = new VisibilityConditionInfo();
         info.setContentType(List.of("IMAGE"));
         VisibilityCondition cond = new VisibilityCondition(info);
@@ -42,16 +49,22 @@ class VisibilityConditionTest {
         Assertions.assertFalse(cond.getFileTypes().matches(List.of(FileType.EPUB)));
     }
 
+    /**
+     * @verifies read unknown condition
+     */
     @Test
-    void testReadUnknownCondition() {
+    void getMimeType_shouldReadUnknownCondition() {
         VisibilityConditionInfo info = new VisibilityConditionInfo();
         info.setMimeType(List.of("images"));
         VisibilityCondition cond = new VisibilityCondition(info);
         Assertions.assertFalse(cond.getMimeType().matches(List.of("image")));
     }
 
+    /**
+     * @verifies match any mime type when only numPages is set
+     */
     @Test
-    void testOtherCondition() {
+    void getMimeType_shouldMatchAnyMimeTypeWhenOnlyNumPagesIsSet() {
         VisibilityConditionInfo info = new VisibilityConditionInfo();
         info.setNumPages("2");
         VisibilityCondition cond = new VisibilityCondition(info);
@@ -60,8 +73,11 @@ class VisibilityConditionTest {
         Assertions.assertTrue(cond.getNumPages().matches(312));
     }
 
+    /**
+     * @verifies match when mime type condition matches record
+     */
     @Test
-    void test_matchesRecord_mimeType()
+    void matchesRecord_shouldMatchMimeType()
             throws IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException, ViewerConfigurationException {
 
         RecordPropertyCache cache = new RecordPropertyCache();
@@ -74,8 +90,11 @@ class VisibilityConditionTest {
         Assertions.assertTrue(condMimeType.matchesRecord(PageType.viewImage, viewManager, request, cache));
     }
 
+    /**
+     * @verifies match when doc type condition matches record
+     */
     @Test
-    void test_matchesRecord_docType()
+    void matchesRecord_shouldMatchDocType()
             throws IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException, ViewerConfigurationException {
 
         RecordPropertyCache cache = new RecordPropertyCache();
@@ -86,6 +105,60 @@ class VisibilityConditionTest {
         infoDocType.setDocType(List.of("subStruct"));
         VisibilityCondition condDocType = new VisibilityCondition(infoDocType);
         Assertions.assertTrue(condDocType.matchesRecord(PageType.viewImage, viewManager, request, cache));
+    }
+
+    /**
+     * When the pageType condition does not match the current view, no access-condition check should
+     * be performed. Previously, checkAccess() ran before views.matches(), so a Solr query was
+     * issued even when the pageType alone would have disqualified the condition.
+     * @verifies skip access check when page type does not match
+     */
+    @Test
+    void matchesRecord_shouldSkipAccessCheckWhenPageTypeFails()
+            throws IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException, ViewerConfigurationException {
+
+        RecordPropertyCache cache = Mockito.spy(new RecordPropertyCache());
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        ViewManager viewManager = createRecord();
+
+        // Condition requires viewFulltext — but current view is viewObject
+        VisibilityConditionInfo info = new VisibilityConditionInfo();
+        info.setPageType(List.of("viewFulltext"));
+        info.setAccessCondition("VIEW_FULLTEXT");
+        VisibilityCondition condition = new VisibilityCondition(info);
+
+        boolean result = condition.matchesRecord(PageType.viewObject, viewManager, request, cache);
+
+        Assertions.assertFalse(result, "Condition should fail because pageType does not match");
+        // getPermissionForRecord must NOT have been called since pageType short-circuits first
+        Mockito.verify(cache, Mockito.never()).getPermissionForRecord(Mockito.any(), Mockito.any(), Mockito.any());
+    }
+
+    /**
+     * When no contentType condition is specified, getFileTypesForRecord() must not be called,
+     * avoiding an unnecessary Solr query for all page filenames.
+     * @verifies skip file type query when contentType condition is absent
+     */
+    @Test
+    void matchesRecord_shouldSkipFileTypeQueryWhenConditionAbsent()
+            throws IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException, ViewerConfigurationException {
+
+        RecordPropertyCache cache = Mockito.spy(new RecordPropertyCache());
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        ViewManager viewManager = createRecord();
+
+        // Condition has no contentType — only accessCondition
+        VisibilityConditionInfo info = new VisibilityConditionInfo();
+        info.setAccessCondition("DOWNLOAD_PDF");
+        VisibilityCondition condition = new VisibilityCondition(info);
+
+        // Mock the access permission so we can reach the fileTypes check
+        Mockito.doReturn(AccessPermission.granted()).when(cache).getPermissionForRecord(Mockito.any(), Mockito.any(), Mockito.any());
+
+        condition.matchesRecord(PageType.viewObject, viewManager, request, cache);
+
+        // getFileTypesForRecord must NOT have been called since no contentType condition exists
+        Mockito.verify(cache, Mockito.never()).getFileTypesForRecord(Mockito.any(), Mockito.anyBoolean());
     }
 
     protected ViewManager createRecord() throws IndexUnreachableException, PresentationException, DAOException {

@@ -302,7 +302,8 @@ public abstract class AbstractBuilder {
         displayFields.addAll(eventFields);
 
         for (String field : getMetadataFields(ele)) {
-            if (contained(field, displayFields) && !field.endsWith(SolrConstants.SUFFIX_UNTOKENIZED) && !field.matches(".*_LANG_\\w{2,3}")) {
+            // Use SolrTools.isLanguageCodedField() instead of per-call Pattern.compile() via String.matches()
+            if (contained(field, displayFields) && !field.endsWith(SolrConstants.SUFFIX_UNTOKENIZED) && !SolrTools.isLanguageCodedField(field)) {
                 String configuredLabel = this.config.getIIIFMetadataLabel(field);
                 String label = StringUtils.isNotBlank(configuredLabel) ? configuredLabel
                         : (field.contains("/") ? field.substring(field.indexOf("/") + 1) : field);
@@ -356,6 +357,7 @@ public abstract class AbstractBuilder {
      * @param field Solr field name to look up
      * @param displayFields list of configured display field names (may contain wildcards)
      * @return true if displayFields contains field; false otherwise
+     * @should return true for given input
      */
     protected boolean contained(String field, List<String> displayFields) {
         return displayFields.stream().anyMatch(displayField -> matches(field, displayField));
@@ -494,6 +496,7 @@ public abstract class AbstractBuilder {
      * getEventFields.
      *
      * @return a map of event type names to their associated Solr field names, as configured for IIIF
+     * @should return non null result
      */
     protected Map<String, List<String>> getEventFields() {
         List<String> eventStrings = this.config.getIIIFEventFields();
@@ -637,6 +640,7 @@ public abstract class AbstractBuilder {
      *
      * @param pi persistent identifier of the record
      * @return the manifest URI for the given record, using an external URL if configured
+     * @should not contain placeholder when valid pi
      */
     public URI getManifestURI(String pi) {
         // A null or blank PI causes the {pi} URL placeholder to remain unsubstituted, which

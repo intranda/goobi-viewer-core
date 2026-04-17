@@ -111,6 +111,8 @@ public class ContentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws DAOException
+     * @should return unmodifiable list
+     * @should load a ll annotations
      */
     public List<DisplayUserGeneratedContent> getUserGeneratedContentsForDisplay(String pi)
             throws PresentationException, IndexUnreachableException, DAOException {

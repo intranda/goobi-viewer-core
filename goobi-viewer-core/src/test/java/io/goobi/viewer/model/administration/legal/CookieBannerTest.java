@@ -34,8 +34,29 @@ import io.goobi.viewer.exceptions.DAOException;
 
 class CookieBannerTest extends AbstractDatabaseEnabledTest {
 
+    /**
+     * @see CookieBanner#getIgnoreList()
+     * @verifies persistence
+     */
     @Test
-    void testPersistence() throws DAOException {
+    void getIgnoreList_shouldPersistence() throws DAOException {
+        // Verify that the ignore list survives a DAO round-trip
+        CookieBanner banner = new CookieBanner();
+        banner.setIgnoreList(Arrays.asList(1L, 5L, 10L));
+        DataManager.getInstance().getDao().saveCookieBanner(banner);
+
+        CookieBanner loaded = DataManager.getInstance().getDao().getCookieBanner();
+        assertNotNull(loaded);
+        assertNotNull(loaded.getIgnoreList());
+        assertEquals(3, loaded.getIgnoreList().size());
+        assertTrue(loaded.getIgnoreList().containsAll(Arrays.asList(1L, 5L, 10L)));
+    }
+
+    /**
+     * @verifies persist and restore via copy constructor
+     */
+    @Test
+    void constructor_shouldPersistAndRestoreViaCopyConstructor() throws DAOException {
         CookieBanner banner = new CookieBanner();
         banner.setActive(true);
         banner.setIgnoreList(Arrays.asList(1l,5l,10l));

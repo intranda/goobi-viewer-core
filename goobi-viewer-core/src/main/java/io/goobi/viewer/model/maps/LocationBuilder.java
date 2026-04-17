@@ -46,6 +46,12 @@ public class LocationBuilder {
 
     private static final Logger logger = LogManager.getLogger(Search.class);
 
+    // Compiled once at class load; reused across all getLocations() and getPoints() calls
+    private static final Pattern POLYGON_PATTERN =
+            Pattern.compile("POLYGON\\(\\([0-9.\\-,E\\s]+\\)\\)"); //NOSONAR no catastrophic backtracking detected
+    private static final Pattern POINT_PATTERN =
+            Pattern.compile("([0-9\\.\\-E]+)\\s([0-9\\.\\-E]+)"); //NOSONAR no catastrophic backtracking detected
+
     @SuppressWarnings("rawtypes")
     public List<IArea> getLocations(Object solrValue) {
         List<IArea> locs = new ArrayList<>();
@@ -58,13 +64,12 @@ public class LocationBuilder {
             return locs;
         } else if (solrValue instanceof String) {
             String s = (String) solrValue;
-            Matcher polygonMatcher =
-                    Pattern.compile("POLYGON\\(\\([0-9.\\-,E\\s]+\\)\\)").matcher(s); //NOSONAR no catastrophic backtracking detected
+            Matcher polygonMatcher = POLYGON_PATTERN.matcher(s);
             while (polygonMatcher.find()) {
                 String match = polygonMatcher.group();
                 locs.add(new Polygon(getPoints(match)));
                 s = s.replace(match, "");
-                polygonMatcher = Pattern.compile("POLYGON\\(\\([0-9.\\-,E\\s]+\\)\\)").matcher(s); //NOSONAR no catastrophic backtracking detected
+                polygonMatcher = POLYGON_PATTERN.matcher(s);
             }
             if (StringUtils.isNotBlank(s)) {
                 locs.addAll(Arrays.asList(getPoints(s)).stream().map(p -> new Point(p[0], p[1])).collect(Collectors.toList()));
@@ -84,7 +89,7 @@ public class LocationBuilder {
      */
     private double[][] getPoints(String value) {
         List<double[]> points = new ArrayList<>();
-        Matcher matcher = Pattern.compile("([0-9\\.\\-E]+)\\s([0-9\\.\\-E]+)").matcher(value); //NOSONAR   no catastrophic backtracking detected
+        Matcher matcher = POINT_PATTERN.matcher(value);
         while (matcher.find() && matcher.groupCount() == 2) {
             points.add(parsePoint(matcher.group(1), matcher.group(2)));
         }

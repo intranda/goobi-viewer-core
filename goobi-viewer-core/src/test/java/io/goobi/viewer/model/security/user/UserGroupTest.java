@@ -33,10 +33,10 @@ class UserGroupTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see UserGroup#getMemberCount()
-     * @verifies count correctly
+     * @verifies return total of owner plus distinct members without double-counting the owner
      */
     @Test
-    void getMemberCount_shouldCountCorrectly() throws Exception {
+    void getMemberCount_shouldReturnTotalOfOwnerPlusDistinctMembersWithoutDoubleCountingTheOwner() throws Exception {
         {   //owner + user
             UserGroup ug = DataManager.getInstance().getDao().getUserGroup(1);
             Assertions.assertNotNull(ug);
@@ -55,7 +55,6 @@ class UserGroupTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see UserGroup#getMembers()
      * @verifies return all members
      */
     @Test

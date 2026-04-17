@@ -37,10 +37,10 @@ class CitationTest extends AbstractTest {
 
     /**
      * @see Citation#getCitationString(String)
-     * @verifies return apa html citation correctly
+     * @verifies return APA-style HTML citation containing italic title and year
      */
     @Test
-    void getCitationString_shouldReturnApaHtmlCitationCorrectly() throws Exception {
+    void getCitationString_shouldReturnAPAStyleHTMLCitationContainingItalicTitleAndYear() throws Exception {
         Map<String, List<String>> fields = new HashMap<>();
         fields.put(CitationDataProvider.AUTHOR, Collections.singletonList("Zahn, Timothy"));
         fields.put(CitationDataProvider.TITLE, Collections.singletonList("Thrawn"));
@@ -57,10 +57,10 @@ class CitationTest extends AbstractTest {
 
     /**
      * @see Citation#getCitationString(String)
-     * @verifies return apa html plaintext correctly
+     * @verifies return APA-style plaintext citation with author, year, and title
      */
     @Test
-    void getCitationString_shouldReturnApaHtmlPlaintextCorrectly() throws Exception {
+    void getCitationString_shouldReturnAPAStylePlaintextCitationWithAuthorYearAndTitle() throws Exception {
         Map<String, List<String>> fields = new HashMap<>();
         fields.put(CitationDataProvider.AUTHOR, Collections.singletonList("Zahn, Timothy"));
         fields.put(CitationDataProvider.TITLE, Collections.singletonList("Thrawn"));
@@ -75,6 +75,9 @@ class CitationTest extends AbstractTest {
         Assertions.assertEquals("Zahn, T. (2017). Thrawn.", s, s);
     }
 
+    /**
+     * @verifies throw exception
+     */
     @Test
     void getCitationString_shouldThrowException() throws Exception {
         Map<String, List<String>> fields = new HashMap<>();

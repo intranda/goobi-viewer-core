@@ -33,6 +33,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -58,10 +62,10 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchFacets#resetActiveFacets()
-     * @verifies reset facets correctly
+     * @verifies reset active facet string to default dash value
      */
     @Test
-    void resetActiveFacets_shouldResetFacetsCorrectly() {
+    void resetActiveFacets_shouldResetActiveFacetStringToDefaultDashValue() {
         SearchFacets facets = new SearchFacets();
         facets.setActiveFacetString("foo:bar;;");
         Assertions.assertEquals("foo%3Abar%3B%3B", facets.getActiveFacetString());
@@ -70,7 +74,6 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#generateFacetPrefix(List,boolean)
      * @verifies encode slashed and backslashes
      */
     @Test
@@ -140,7 +143,6 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#parseFacetString(String,List,Map)
      * @verifies use label from labelMap if available
      */
     @Test
@@ -211,15 +213,12 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#getActiveFacetString()
      * @verifies contain queries from all FacetItems
      */
     @Test
     void getActiveFacetString_shouldContainQueriesFromAllFacetItems() throws Exception {
         SearchFacets facets = new SearchFacets();
-        for (int i = 0; i < 3; ++i) {
-            facets.getActiveFacets().add(new FacetItem(new StringBuilder().append("FIELD").append(i).append(":value").append(i).toString(), false));
-        }
+        facets.setActiveFacetString("FIELD0:value0;;FIELD1:value1;;FIELD2:value2;;");
         Assertions.assertEquals(3, facets.getActiveFacets().size());
         String facetString = facets.getActiveFacetString();
         try {
@@ -237,7 +236,7 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchFacets#getActiveFacetString()
-     * @verifies return hyphen if currentFacets empty
+     * @verifies return hyphen if active facets empty
      */
     @Test
     void getActiveFacetString_shouldReturnHyphenIfActiveFacetsEmpty() {
@@ -248,10 +247,10 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchFacets#removeFacetAction(String,String)
-     * @verifies remove facet correctly
+     * @verifies remove only the exact matching facet without affecting similarly prefixed entries
      */
     @Test
-    void removeFacetAction_shouldRemoveFacetCorrectly() {
+    void removeFacetAction_shouldRemoveOnlyTheExactMatchingFacetWithoutAffectingSimilarlyPrefixedEntries() {
         SearchFacets facets = new SearchFacets();
         facets.setActiveFacetString("DOCSTRCT:a;;MD_TITLE:bob;;MD_TITLE:b;;");
         Assertions.assertEquals(3, facets.getActiveFacets().size());
@@ -276,7 +275,6 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#removeFacetAction(String,String)
      * @verifies sanitize triple semicolons to double after removal
      */
     @Test
@@ -322,7 +320,7 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchFacets#generateSimpleFacetFilterQueries(boolean)
-     * @verifies generate query correctly
+     * @verifies generate queries correctly
      */
     @Test
     void generateSimpleFacetFilterQueries_shouldGenerateQueriesCorrectly() {
@@ -388,7 +386,6 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#generateSimpleFacetFilterQueries(boolean)
      * @verifies combine facet queries if field name same
      */
     @Test
@@ -438,7 +435,18 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#isFacetCurrentlyUsed(IFacetItem)
+     * @see SearchFacets#isFacetStringCurrentlyUsed(String)
+     * @verifies return false for blank link
+     */
+    @Test
+    void isFacetStringCurrentlyUsed_shouldReturnFalseForBlankLink() {
+        SearchFacets facets = new SearchFacets();
+        Assertions.assertFalse(facets.isFacetStringCurrentlyUsed(null));
+        Assertions.assertFalse(facets.isFacetStringCurrentlyUsed(""));
+        Assertions.assertFalse(facets.isFacetStringCurrentlyUsed("  "));
+    }
+
+    /**
      * @verifies return correct value
      */
     @Test
@@ -460,6 +468,21 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
         facets.getMinValues().put(SolrConstants.YEAR, "1");
         facets.getMaxValues().put(SolrConstants.YEAR, "10");
         Assertions.assertTrue(facets.isHasRangeFacets());
+    }
+
+    /**
+     * @see SearchFacets#isHasRangeFacets()
+     * @verifies not throw NPE when map value is null
+     */
+    @Test
+    void isHasRangeFacets_shouldNotThrowNPEWhenMapValueIsNull() throws Exception {
+        // Simulates the race condition where resetSliderRange() clears the map between
+        // containsKey() and get(), leaving the key with a null value in the map.
+        SearchFacets facets = new SearchFacets();
+        facets.getMinValues().put(SolrConstants.YEAR, null);
+        facets.getMaxValues().put(SolrConstants.YEAR, null);
+        Assertions.assertDoesNotThrow(facets::isHasRangeFacets);
+        Assertions.assertFalse(facets.isHasRangeFacets());
     }
 
     /**
@@ -523,16 +546,15 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     void isHasWrongLanguageCode_shouldReturnFalseIfLanguageCodeDifferentButActiveFacetSelected() {
         SearchFacets facets = new SearchFacets();
-        facets.getActiveFacets().add(new FacetItem("MD_TITLE_LANG_DE:somevalue", false));
+        facets.setActiveFacetString("MD_TITLE_LANG_DE:somevalue;;");
         Assertions.assertFalse(facets.isHasWrongLanguageCode("MD_TITLE_LANG_DE", "en"));
     }
 
     /**
-     * @see SearchFacets#updateFacetItem(String,String,List,boolean)
-     * @verifies update facet item correctly
+     * @verifies replace existing facet item value with parsed range values when field matches
      */
     @Test
-    void updateFacetItem_shouldUpdateFacetItemCorrectly() {
+    void updateFacetItem_shouldReplaceExistingFacetItemValueWithParsedRangeValuesWhenFieldMatches() {
         List<IFacetItem> items = new ArrayList<>(2);
         items.add(new FacetItem("FIELD1:foo", false));
         items.add(new FacetItem("FIELD2:bar", false));
@@ -544,11 +566,10 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#updateFacetItem(String,String,List,boolean)
-     * @verifies add new item correctly
+     * @verifies append new facet item to list when no item with matching field exists
      */
     @Test
-    void updateFacetItem_shouldAddNewItemCorrectly() {
+    void updateFacetItem_shouldAppendNewFacetItemToListWhenNoItemWithMatchingFieldExists() {
         List<IFacetItem> items = new ArrayList<>(2);
         items.add(new FacetItem("FIELD1:foo", false));
         SearchFacets.updateFacetItem("FIELD2", "bar", items, false);
@@ -558,7 +579,6 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#populateAbsoluteMinMaxValuesForField(String)
      * @verifies populate values correctly
      */
     @Test
@@ -571,7 +591,6 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#populateAbsoluteMinMaxValuesForField(String)
      * @verifies add all values to list
      */
     @Test
@@ -586,7 +605,29 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#populateAbsoluteMinMaxValuesForField(String)
+     * @see SearchFacets#getValueRange(String)
+     * @verifies return empty list when field not in valueRanges
+     */
+    @Test
+    void getValueRange_shouldReturnEmptyListWhenFieldNotInValueRanges() throws Exception {
+        SearchFacets facets = new SearchFacets();
+        List<Integer> result = facets.getValueRange("NONEXISTENT_FIELD");
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.isEmpty());
+    }
+
+    /**
+     * @see SearchFacets#getValueRangeAsJsonMap(String)
+     * @verifies return empty json when field not in valueRanges
+     */
+    @Test
+    void getValueRangeAsJsonMap_shouldReturnEmptyJsonWhenFieldNotInValueRanges() {
+        SearchFacets facets = new SearchFacets();
+        String result = facets.getValueRangeAsJsonMap("NONEXISTENT_FIELD");
+        Assertions.assertEquals("[]", result);
+    }
+
+    /**
      * @verifies use configured min max values correctly
      */
     @Test
@@ -598,8 +639,11 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals("2024", facets.getAbsoluteMaxRangeValue(SolrConstants.CALENDAR_YEAR));
     }
 
+    /**
+     * @verifies facet escaping
+     */
     @Test
-    void testFacetEscaping()
+    void getActiveFacetString_shouldFacetEscaping()
             throws UnsupportedEncodingException, PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         TestUtils.mockFacesContext();
 
@@ -607,10 +651,8 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
         String geoJson =
                 "{\"type\":\"rectangle\",\"vertices\":[[52.27468490157105,12.831527289994273],[52.78227376368535,12.831527289994273],[52.78227376368535,13.864873763618117],[52.27468490157105,13.864873763618117],[52.27468490157105,12.831527289994273]]}";
 
-        //create SearchFacets with GeoFacetItem
-        GeoFacetItem item = new GeoFacetItem("WKT_COORDS");
+        // setGeoFacetFeature adds the GeoFacetItem to activeFacets internally
         SearchFacets facets = new SearchFacets();
-        facets.getActiveFacets().add(item);
         facets.setGeoFacetFeature(geoJson);
 
         //facet string written to url (escaped in browser)
@@ -627,8 +669,8 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#isUnselectedValuesAvailable()
      * @verifies return null if field or value null
+     * @see SearchFacets#getFacet(String, String)
      */
     @Test
     void getFacet_shouldReturnNullIfFieldOrValueNull() {
@@ -638,7 +680,6 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#isUnselectedValuesAvailable()
      * @verifies return correct facet item
      */
     @Test
@@ -649,7 +690,6 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#isUnselectedValuesAvailable()
      * @verifies return true if a facet field has selectable values
      */
     @Test
@@ -667,7 +707,6 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#isUnselectedValuesAvailable()
      * @verifies return false of no selectable values found
      */
     @Test
@@ -684,8 +723,8 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#getAvailableFacetsListSizeForField(String)
      * @verifies return zero for unknown field
+     * @see SearchFacets#getAvailableFacetsListSizeForField(String)
      */
     @Test
     void getAvailableFacetsListSizeForField_shouldReturnZeroForUnknownField() {
@@ -694,7 +733,6 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#getAvailableFacetsListSizeForField(String)
      * @verifies return correct size
      */
     @Test
@@ -705,8 +743,8 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#isFacetListSizeSufficient(String)
      * @verifies return false for unknown field
+     * @see SearchFacets#isFacetListSizeSufficient(String)
      */
     @Test
     void isFacetListSizeSufficient_shouldReturnFalseForUnknownField() {
@@ -715,7 +753,6 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#isFacetListSizeSufficient(String)
      * @verifies return false for single item field
      */
     @Test
@@ -726,7 +763,6 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#isFacetListSizeSufficient(String)
      * @verifies return true for field with two or more items
      */
     @Test
@@ -737,7 +773,6 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#isUnselectedValuesAvailable()
      * @verifies return false if only range facets available
      */
     @Test
@@ -748,5 +783,382 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
 
         facets.setActiveFacetString("FIELD:foo;;");
         Assertions.assertFalse(facets.isUnselectedValuesAvailable());
+    }
+
+    /**
+     * @see SearchFacets#isFacetExpanded(String)
+     * @verifies return false if value null
+     */
+    @Test
+    void isFacetExpanded_shouldReturnFalseIfValueNull() {
+        // Verify that isFacetExpanded returns false when the field has never been set (map returns null)
+        SearchFacets facets = new SearchFacets();
+        Assertions.assertFalse(facets.isFacetExpanded("NONEXISTENT_FIELD"));
+    }
+
+    /**
+     * @see SearchFacets#isFacetExpanded(String)
+     * @verifies return true if value true
+     */
+    @Test
+    void isFacetExpanded_shouldReturnTrueIfValueTrue() {
+        // Verify that isFacetExpanded returns true after expandFacet has been called for the field
+        SearchFacets facets = new SearchFacets();
+        facets.expandFacet("DC");
+        Assertions.assertTrue(facets.isFacetExpanded("DC"));
+    }
+
+    /**
+     * @see SearchFacets#updateFacetItem(String, String, List, boolean)
+     * @verifies update facet item correctly
+     */
+    @Test
+    void updateFacetItem_shouldUpdateFacetItemCorrectly() {
+        // Verify that an existing facet item for the given field gets its value replaced
+        List<IFacetItem> items = new ArrayList<>(1);
+        items.add(new FacetItem("FIELD1:oldvalue", false));
+        SearchFacets.updateFacetItem("FIELD1", "newvalue", items, false);
+        Assertions.assertEquals(1, items.size());
+        Assertions.assertEquals("FIELD1", items.get(0).getField());
+        Assertions.assertEquals("newvalue", items.get(0).getValue());
+    }
+
+    /**
+     * @see SearchFacets#updateFacetItem(String, String, List, boolean)
+     * @verifies add new item correctly
+     */
+    @Test
+    void updateFacetItem_shouldAddNewItemCorrectly() {
+        // Verify that a new facet item is appended when no existing item matches the field
+        List<IFacetItem> items = new ArrayList<>(1);
+        items.add(new FacetItem("FIELD1:foo", false));
+        SearchFacets.updateFacetItem("FIELD2", "bar", items, false);
+        Assertions.assertEquals(2, items.size());
+        Assertions.assertEquals("FIELD2", items.get(1).getField());
+        Assertions.assertEquals("bar", items.get(1).getValue());
+    }
+
+    /**
+     * Regression guard for the replacement of Collections.synchronizedMap with ConcurrentHashMap.
+     * Verifies that concurrent reads and writes to availableFacets do not throw
+     * ConcurrentModificationException or any other concurrency error.
+     *
+     * @see SearchFacets#getAvailableFacets()
+     * @verifies not throw under concurrent access
+     */
+    @Test
+    void getAvailableFacets_shouldNotThrowUnderConcurrentAccess() throws Exception {
+        SearchFacets facets = new SearchFacets();
+        int threads = 20;
+        ExecutorService executor = Executors.newFixedThreadPool(threads);
+        List<Future<?>> futures = new ArrayList<>();
+
+        // 10 writers
+        for (int i = 0; i < 10; i++) {
+            final int idx = i;
+            futures.add(executor.submit(() -> {
+                facets.getAvailableFacets().put("FIELD_" + idx, new ArrayList<>());
+            }));
+        }
+        // 10 readers iterating the full entry set
+        for (int i = 0; i < 10; i++) {
+            futures.add(executor.submit(() -> {
+                new ArrayList<>(facets.getAvailableFacets().entrySet());
+            }));
+        }
+
+        executor.shutdown();
+        executor.awaitTermination(5, TimeUnit.SECONDS);
+
+        // f.get() rethrows any ExecutionException wrapping ConcurrentModificationException
+        for (Future<?> f : futures) {
+            f.get();
+        }
+    }
+
+    // ====================== getLimitedFacetListForField tests ======================
+
+    /**
+     * @see SearchFacets#getLimitedFacetListForField(String)
+     * @verifies return full DC facet list if expanded
+     */
+    @Test
+    void getLimitedFacetListForField_shouldReturnFullDCFacetListIfExpanded() {
+        // DC has initialElementNumber=4 in test config; put 6 items and expand
+        SearchFacets facets = new SearchFacets();
+        List<IFacetItem> items = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            items.add(new FacetItem("DC:val" + i, false));
+        }
+        facets.getAvailableFacets().put(SolrConstants.DC, items);
+        facets.expandFacet(SolrConstants.DC);
+
+        List<IFacetItem> result = facets.getLimitedFacetListForField(SolrConstants.DC);
+        Assertions.assertEquals(6, result.size());
+    }
+
+    /**
+     * @see SearchFacets#getLimitedFacetListForField(String)
+     * @verifies return full DC facet list if list size less than default
+     */
+    @Test
+    void getLimitedFacetListForField_shouldReturnFullDCFacetListIfListSizeLessThanDefault() {
+        // DC has initialElementNumber=4; put only 3 items (less than 4)
+        SearchFacets facets = new SearchFacets();
+        List<IFacetItem> items = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            items.add(new FacetItem("DC:val" + i, false));
+        }
+        facets.getAvailableFacets().put(SolrConstants.DC, items);
+
+        List<IFacetItem> result = facets.getLimitedFacetListForField(SolrConstants.DC);
+        Assertions.assertEquals(3, result.size());
+    }
+
+    /**
+     * @see SearchFacets#getLimitedFacetListForField(String)
+     * @verifies return reduced DC facet list if list size larger than default
+     */
+    @Test
+    void getLimitedFacetListForField_shouldReturnReducedDCFacetListIfListSizeLargerThanDefault() {
+        // DC has initialElementNumber=4; put 6 items and do NOT expand
+        SearchFacets facets = new SearchFacets();
+        List<IFacetItem> items = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            items.add(new FacetItem("DC:val" + i, false));
+        }
+        facets.getAvailableFacets().put(SolrConstants.DC, items);
+
+        List<IFacetItem> result = facets.getLimitedFacetListForField(SolrConstants.DC);
+        // Should be trimmed to initialElementNumber=4
+        Assertions.assertEquals(4, result.size());
+    }
+
+    /**
+     * @see SearchFacets#getLimitedFacetListForField(String)
+     * @verifies return full facet list if expanded
+     */
+    @Test
+    void getLimitedFacetListForField_shouldReturnFullFacetListIfExpanded() {
+        // MD_PLACEPUBLISH has initialElementNumber=16; put 20 items and expand
+        SearchFacets facets = new SearchFacets();
+        List<IFacetItem> items = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            items.add(new FacetItem("MD_PLACEPUBLISH:city" + i, false));
+        }
+        facets.getAvailableFacets().put("MD_PLACEPUBLISH", items);
+        facets.expandFacet("MD_PLACEPUBLISH");
+
+        List<IFacetItem> result = facets.getLimitedFacetListForField("MD_PLACEPUBLISH");
+        Assertions.assertEquals(20, result.size());
+    }
+
+    /**
+     * @see SearchFacets#getLimitedFacetListForField(String)
+     * @verifies return full facet list if list size less than default
+     */
+    @Test
+    void getLimitedFacetListForField_shouldReturnFullFacetListIfListSizeLessThanDefault() {
+        // MD_PLACEPUBLISH has initialElementNumber=16; put only 10 items
+        SearchFacets facets = new SearchFacets();
+        List<IFacetItem> items = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            items.add(new FacetItem("MD_PLACEPUBLISH:city" + i, false));
+        }
+        facets.getAvailableFacets().put("MD_PLACEPUBLISH", items);
+
+        List<IFacetItem> result = facets.getLimitedFacetListForField("MD_PLACEPUBLISH");
+        Assertions.assertEquals(10, result.size());
+    }
+
+    /**
+     * @see SearchFacets#getLimitedFacetListForField(String)
+     * @verifies return reduced facet list if list size larger than default
+     */
+    @Test
+    void getLimitedFacetListForField_shouldReturnReducedFacetListIfListSizeLargerThanDefault() {
+        // MD_PLACEPUBLISH has initialElementNumber=16; put 20 items, do NOT expand
+        SearchFacets facets = new SearchFacets();
+        List<IFacetItem> items = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            items.add(new FacetItem("MD_PLACEPUBLISH:city" + i, false));
+        }
+        facets.getAvailableFacets().put("MD_PLACEPUBLISH", items);
+
+        List<IFacetItem> result = facets.getLimitedFacetListForField("MD_PLACEPUBLISH");
+        // Should be trimmed to initialElementNumber=16
+        Assertions.assertEquals(16, result.size());
+    }
+
+    /**
+     * @see SearchFacets#getLimitedFacetListForField(String)
+     * @verifies not contain currently used facets
+     */
+    @Test
+    void getLimitedFacetListForField_shouldNotContainCurrentlyUsedFacets() {
+        // Put 3 items in available facets and mark one as active
+        SearchFacets facets = new SearchFacets();
+        List<IFacetItem> items = new ArrayList<>();
+        items.add(new FacetItem("MD_PLACEPUBLISH:cityA", false));
+        items.add(new FacetItem("MD_PLACEPUBLISH:cityB", false));
+        items.add(new FacetItem("MD_PLACEPUBLISH:cityC", false));
+        facets.getAvailableFacets().put("MD_PLACEPUBLISH", items);
+
+        // Activate one facet so it becomes "currently used"
+        facets.setActiveFacetString("MD_PLACEPUBLISH:cityB;;");
+
+        List<IFacetItem> result = facets.getLimitedFacetListForField("MD_PLACEPUBLISH");
+        // The active facet "cityB" should be removed from the available list
+        Assertions.assertEquals(2, result.size());
+        for (IFacetItem item : result) {
+            Assertions.assertNotEquals("cityB", item.getValue());
+        }
+    }
+
+    // ====================== isDisplayFacetExpandLink tests ======================
+
+    /**
+     * @see SearchFacets#isDisplayFacetExpandLink(String)
+     * @verifies return true if DC facet collapsed and has more elements than default
+     */
+    @Test
+    void isDisplayFacetExpandLink_shouldReturnTrueIfDCFacetCollapsedAndHasMoreElementsThanDefault() {
+        // DC has initialElementNumber=4; put 6 items, do NOT expand
+        SearchFacets facets = new SearchFacets();
+        List<IFacetItem> items = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            items.add(new FacetItem("DC:val" + i, false));
+        }
+        facets.getAvailableFacets().put(SolrConstants.DC, items);
+
+        Assertions.assertTrue(facets.isDisplayFacetExpandLink(SolrConstants.DC));
+    }
+
+    /**
+     * @see SearchFacets#isDisplayFacetExpandLink(String)
+     * @verifies return true if facet collapsed and has more elements than default
+     */
+    @Test
+    void isDisplayFacetExpandLink_shouldReturnTrueIfFacetCollapsedAndHasMoreElementsThanDefault() {
+        // MD_PLACEPUBLISH has initialElementNumber=16; put 20 items, do NOT expand
+        SearchFacets facets = new SearchFacets();
+        List<IFacetItem> items = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            items.add(new FacetItem("MD_PLACEPUBLISH:city" + i, false));
+        }
+        facets.getAvailableFacets().put("MD_PLACEPUBLISH", items);
+
+        Assertions.assertTrue(facets.isDisplayFacetExpandLink("MD_PLACEPUBLISH"));
+    }
+
+    /**
+     * @see SearchFacets#isDisplayFacetExpandLink(String)
+     * @verifies return false if DC facet expanded
+     */
+    @Test
+    void isDisplayFacetExpandLink_shouldReturnFalseIfDCFacetExpanded() {
+        // DC has initialElementNumber=4; put 6 items, expand
+        SearchFacets facets = new SearchFacets();
+        List<IFacetItem> items = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            items.add(new FacetItem("DC:val" + i, false));
+        }
+        facets.getAvailableFacets().put(SolrConstants.DC, items);
+        facets.expandFacet(SolrConstants.DC);
+
+        Assertions.assertFalse(facets.isDisplayFacetExpandLink(SolrConstants.DC));
+    }
+
+    /**
+     * @see SearchFacets#isDisplayFacetExpandLink(String)
+     * @verifies return false if facet expanded
+     */
+    @Test
+    void isDisplayFacetExpandLink_shouldReturnFalseIfFacetExpanded() {
+        // MD_PLACEPUBLISH has initialElementNumber=16; put 20 items, expand
+        SearchFacets facets = new SearchFacets();
+        List<IFacetItem> items = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            items.add(new FacetItem("MD_PLACEPUBLISH:city" + i, false));
+        }
+        facets.getAvailableFacets().put("MD_PLACEPUBLISH", items);
+        facets.expandFacet("MD_PLACEPUBLISH");
+
+        Assertions.assertFalse(facets.isDisplayFacetExpandLink("MD_PLACEPUBLISH"));
+    }
+
+    /**
+     * @see SearchFacets#isDisplayFacetExpandLink(String)
+     * @verifies return false if DC facet smaller than default
+     */
+    @Test
+    void isDisplayFacetExpandLink_shouldReturnFalseIfDCFacetSmallerThanDefault() {
+        // DC has initialElementNumber=4; put only 3 items
+        SearchFacets facets = new SearchFacets();
+        List<IFacetItem> items = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            items.add(new FacetItem("DC:val" + i, false));
+        }
+        facets.getAvailableFacets().put(SolrConstants.DC, items);
+
+        Assertions.assertFalse(facets.isDisplayFacetExpandLink(SolrConstants.DC));
+    }
+
+    /**
+     * @see SearchFacets#isDisplayFacetExpandLink(String)
+     * @verifies return false if facet smaller than default
+     */
+    @Test
+    void isDisplayFacetExpandLink_shouldReturnFalseIfFacetSmallerThanDefault() {
+        // MD_PLACEPUBLISH has initialElementNumber=16; put only 10 items
+        SearchFacets facets = new SearchFacets();
+        List<IFacetItem> items = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            items.add(new FacetItem("MD_PLACEPUBLISH:city" + i, false));
+        }
+        facets.getAvailableFacets().put("MD_PLACEPUBLISH", items);
+
+        Assertions.assertFalse(facets.isDisplayFacetExpandLink("MD_PLACEPUBLISH"));
+    }
+
+    // ====================== getAllAvailableFacets tests ======================
+
+    /**
+     * @see SearchFacets#getAllAvailableFacets()
+     * @verifies return all facet items in correct order
+     */
+    @Test
+    void getAllAvailableFacets_shouldReturnAllFacetItemsInCorrectOrder() {
+        // The test config defines these facet fields in order:
+        // DC (hierarchical), YEAR (range), MD_CREATOR (hierarchical), MD_PLACEPUBLISH (regular),
+        // WKT_COORDS (geo), MD_PERSON (skipInWidget), BOOL_HASIMAGES (boolean)
+        // getAllAvailableFacets returns types "", "boolean", "hierarchical" and excludes skipInWidget.
+        // So expected fields in order: DC, MD_CREATOR, MD_PLACEPUBLISH, BOOL_HASIMAGES
+        SearchFacets facets = new SearchFacets();
+        facets.getAvailableFacets().put(SolrConstants.DC, new ArrayList<>(Collections.singletonList(new FacetItem("DC:collection1", false))));
+        facets.getAvailableFacets().put("YEAR", new ArrayList<>(Collections.singletonList(new FacetItem("YEAR:2020", false))));
+        facets.getAvailableFacets().put("MD_CREATOR", new ArrayList<>(Collections.singletonList(new FacetItem("MD_CREATOR:author1", false))));
+        facets.getAvailableFacets().put("MD_PLACEPUBLISH", new ArrayList<>(Collections.singletonList(new FacetItem("MD_PLACEPUBLISH:Berlin", false))));
+        facets.getAvailableFacets().put("WKT_COORDS", new ArrayList<>(Collections.singletonList(new FacetItem("WKT_COORDS:point", false))));
+        facets.getAvailableFacets().put("BOOL_HASIMAGES", new ArrayList<>(Collections.singletonList(new FacetItem("BOOL_HASIMAGES:true", false))));
+
+        Map<String, List<IFacetItem>> result = facets.getAllAvailableFacets();
+
+        // YEAR (range), WKT_COORDS (geo), and MD_PERSON (skipInWidget) should be excluded
+        Assertions.assertFalse(result.containsKey("YEAR"), "Range field YEAR should not be included");
+        Assertions.assertFalse(result.containsKey("WKT_COORDS"), "Geo field WKT_COORDS should not be included");
+
+        // Verify the returned map contains the expected fields
+        Assertions.assertTrue(result.containsKey(SolrConstants.DC));
+        Assertions.assertTrue(result.containsKey("MD_CREATOR"));
+        Assertions.assertTrue(result.containsKey("MD_PLACEPUBLISH"));
+        Assertions.assertTrue(result.containsKey("BOOL_HASIMAGES"));
+
+        // Verify the order matches the configuration order (LinkedHashMap preserves insertion order)
+        List<String> keys = new ArrayList<>(result.keySet());
+        Assertions.assertEquals(SolrConstants.DC, keys.get(0));
+        Assertions.assertEquals("MD_CREATOR", keys.get(1));
+        Assertions.assertEquals("MD_PLACEPUBLISH", keys.get(2));
+        Assertions.assertEquals("BOOL_HASIMAGES", keys.get(3));
     }
 }

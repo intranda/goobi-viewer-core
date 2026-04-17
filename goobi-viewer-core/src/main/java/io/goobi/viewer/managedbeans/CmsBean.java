@@ -89,6 +89,8 @@ import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.model.viewer.ViewManager;
 import io.goobi.viewer.model.viewer.collections.Sorting;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
@@ -543,6 +545,112 @@ public class CmsBean implements Serializable {
     }
 
     /**
+     * Returns true if the current request is a CMS page in a work context, i.e. if the URL-injected
+     * {@code currentWorkPi} matches the {@code relatedPI} of the current CMS page.
+     * <p>
+     * This method is safe to call from JSTL {@code c:if} at view-build time because it
+     * does not throw checked exceptions. It avoids the session-stale-PI problem of checking
+     * {@code currentWorkPi} alone by also verifying the current page's {@code relatedPI}.
+     *
+     * @return true if {@code currentWorkPi} is non-blank and equals the current page's relatedPI
+     * @should return false when current work pi is blank
+     * @should return true when current work pi matches related PI
+     * @should return false when current work pi does not match related PI
+     */
+    public boolean isCmsWorkPageContext() {
+        // currentWorkPi is set by OCPSoft Rewrite URL injection (/page/{PI}/{pageId}/) before the
+        // JSF lifecycle, so it is reliable at JSTL view-build time. Checking relatedPI in addition
+        // prevents session-stale values from activating the work sidebar on unrelated CMS pages.
+        return StringUtils.isNotBlank(currentWorkPi)
+                && currentWorkPi.equals(getCurrentPage().getRelatedPI());
+    }
+
+    /**
+     * Returns the sidebar view name for the work associated with the current CMS page.
+     * The returned value matches the view names used in {@code sidebar.views.view} configuration
+     * (e.g. "object", "metadata", "toc"), not the Java enum names.
+     * Falls back to {@link NavigationHelper#getCurrentView()} if no related work is loaded.
+     *
+     * @return the sidebar view name for the work's default page (e.g. "object", "metadata", "toc"),
+     *         or the current navigation view as fallback
+     * @throws IndexUnreachableException if the Solr index is unreachable when checking if the related work is loaded
+     * @should return current navigation view when no related work is loaded
+     * @should return current navigation view when no related work loaded
+     */
+    public String getRelatedWorkDefaultView() throws IndexUnreachableException {
+        if (!isRelatedWorkLoaded()) {
+            return navigationHelper != null ? navigationHelper.getCurrentView() : PageType.viewMetadata.getRawName();
+        }
+        ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
+        if (adb == null || adb.getViewManager() == null) {
+            return navigationHelper != null ? navigationHelper.getCurrentView() : PageType.viewMetadata.getRawName();
+        }
+        ViewManager vm = adb.getViewManager();
+        // Guard against null when Solr is temporarily unavailable and topStructElement cannot be loaded
+        StructElement topStruct = vm.getTopStructElement();
+        if (topStruct == null) {
+            return navigationHelper != null ? navigationHelper.getCurrentView() : PageType.viewMetadata.getRawName();
+        }
+        return determineWorkDefaultView(
+                topStruct.getDocStructType(),
+                vm.getMimeType(),
+                adb.isAnchor() || adb.isGroup(),
+                vm.isHasPages());
+    }
+
+    /**
+     * Determines the sidebar view name for a work based on its properties.
+     * Uses {@link PageType#getRawName()} to return the raw enum path ("object", "metadata", "toc")
+     * that matches the keys in the {@code sidebar.views.view} configuration, independent of any
+     * URL-path remapping configured in {@code config_viewer.xml}.
+     * Package-private to allow unit testing without a JSF context.
+     *
+     * @param docStructType the logical document structure type (e.g. "monograph")
+     * @param mimeType the primary MIME type of the work (e.g. "image/jpeg")
+     * @param anchorOrGroup true if the work is an anchor or group record
+     * @param hasPages true if the work has image pages
+     * @return the sidebar view name of the determined {@link PageType}
+     * @should return object when work has images
+     * @should return metadata when work has no images
+     * @should return toc for anchor work
+     */
+    static String determineWorkDefaultView(String docStructType, String mimeType, boolean anchorOrGroup, boolean hasPages) {
+        PageType pageType = PageType.determinePageType(docStructType, mimeType, anchorOrGroup, hasPages, false);
+        // viewImage is the legacy alias for the image viewer; normalise to viewObject since only "object"
+        // has a sidebar config entry. Both page types display the same image viewer.
+        if (pageType == PageType.viewImage) {
+            pageType = PageType.viewObject;
+        }
+        // getRawName() returns the hardcoded enum path ("object", "metadata", "toc"), independent of any
+        // URL-path remapping in config_viewer.xml. The sidebar config uses these raw names.
+        return pageType.getRawName();
+    }
+
+    /**
+     * Returns the sidebar view name appropriate for the current CMS page context, or null if no override is needed.
+     * Called from {@code record_sidebar.xhtml} to determine which sidebar widgets to render without going through
+     * JSF composite attributes (which cause ContextualCompositeValueExpression infinite recursion in ui:repeat).
+     * When null is returned, the caller falls back to {@code navigationHelper.currentView}.
+     *
+     * @return sidebar view name such as "object", "metadata", "toc", or null if not on a CMS page with a loaded work
+     * @should return null when no current page
+     * @should return null when page has no related work
+     */
+    public String getEffectiveSidebarView() {
+        if (currentPage == null) {
+            return null;
+        }
+        try {
+            if (isRelatedWorkLoaded()) {
+                return getRelatedWorkDefaultView();
+            }
+        } catch (IndexUnreachableException e) {
+            logger.warn("Could not determine related work default view for CMS sidebar: {}", e.getMessage());
+        }
+        return null;
+    }
+
+    /**
      * isLinkedFromNavBar.
      *
      * @param page CMS page to check for navigation bar links
@@ -597,6 +705,7 @@ public class CmsBean implements Serializable {
      * Getter for the field <code>currentPage</code>.
      *
      * @return the currently active CMS page, or an empty CMSPage if none is set
+     * @should page
      */
     public CMSPage getCurrentPage() {
         if (currentPage == null) {
@@ -835,6 +944,7 @@ public class CmsBean implements Serializable {
      * @param hits List of search hits to group
      * @param groupingField Solr field name to group hits by
      * @return List&lt;Entry&lt;String, List&lt;SearchHit&gt;&gt;&gt;
+     * @should return collection with 3 elements
      */
     public List<Entry<String, List<SearchHit>>> getGroupedQueryResults(List<SearchHit> hits, String groupingField) {
 
@@ -919,6 +1029,7 @@ public class CmsBean implements Serializable {
      * getLuceneFields.
      *
      * @return a list of all Solr field names excluding internal, facet, and norm fields
+     * @should return true for given input
      */
     public List<String> getLuceneFields() {
         return getLuceneFields(false, false);
@@ -971,6 +1082,7 @@ public class CmsBean implements Serializable {
      *
      * @return a list of all CMS static pages mapping viewer page types to CMS pages
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return non empty collection for given input
      */
     public List<CMSStaticPage> getStaticPages() throws DAOException {
         if (this.staticPages == null) {
@@ -1060,6 +1172,7 @@ public class CmsBean implements Serializable {
      * @param page static page whose existing mapping is excluded from filtering
      * @return A list of all cmsPages not yet registered to a static page
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return 2 for given input
      */
     public List<CMSPage> getAvailableCmsPages(CMSStaticPage page) throws DAOException {
         List<CMSPage> allPages = getAllCMSPages().stream()
@@ -1097,6 +1210,7 @@ public class CmsBean implements Serializable {
      * Saves static page status for all cms pages.
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+      * @should save cms pages
      */
     public void saveStaticPages() throws DAOException {
         for (CMSStaticPage page : getStaticPages()) {

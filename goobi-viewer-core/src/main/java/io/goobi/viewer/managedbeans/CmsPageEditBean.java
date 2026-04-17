@@ -173,6 +173,9 @@ public class CmsPageEditBean implements Serializable {
      * savePageAndForwardToEdit.
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+      * @should save page
+      * @should save as template
+      * @should save page no admin
      */
     public void savePageAndForwardToEdit() throws DAOException {
         this.saveSelectedPage();
@@ -190,6 +193,9 @@ public class CmsPageEditBean implements Serializable {
      * Adds the current page to the database, if it doesn't exist or updates it otherwise.
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should save page
+     * @should save as template
+     * @should save page no admin
      */
     public void saveSelectedPage() throws DAOException {
         logger.trace("saveSelectedPage");
@@ -274,6 +280,7 @@ public class CmsPageEditBean implements Serializable {
      *
      * @return Return view
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+      * @should delete page for given input
      */
     public String deleteSelectedPage() throws DAOException {
         if (deletePage(selectedPage)) {
@@ -289,6 +296,7 @@ public class CmsPageEditBean implements Serializable {
      * @param page Page to delete
      * @return true if deletion was successful; false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should delete page for given input
      */
     public boolean deletePage(CMSPage page) throws DAOException {
         if (this.dao == null || page == null || page.getId() == null) {
@@ -418,6 +426,11 @@ public class CmsPageEditBean implements Serializable {
      * Getter for the field <code>selectedPage</code>.
      *
      * @return the CMS page currently selected for editing
+     * @should new page
+     * @should new page from template
+     * @should new page from template with title and pi
+     * @should edit page
+     * @should save page
      */
     public CMSPage getSelectedPage() {
         return selectedPage;
@@ -645,6 +658,7 @@ public class CmsPageEditBean implements Serializable {
      *
      * @param component CMS component to remove from the selected page
      * @return true if the component was successfully removed from the page, false otherwise
+     * @should return true for given input
      */
     public boolean deleteComponent(CMSComponent component) {
         return this.selectedPage.removeComponent(component);
@@ -652,6 +666,7 @@ public class CmsPageEditBean implements Serializable {
 
     /**
      * addComponent.
+     * @should return true for given input
      */
     public void addComponent() {
         if (addComponent(getSelectedPage(), getSelectedComponent())) {
@@ -701,7 +716,12 @@ public class CmsPageEditBean implements Serializable {
         if (!user.hasPrivilegeForAllCategories()) {
             List<CMSCategory> allowedCategories = user.getAllowedCategories(cmsBean.getAllCategories());
             if (page.getCategories().isEmpty() && !allowedCategories.isEmpty()) {
-                page.setCategories(allowedCategories.subList(0, 1));
+                // Use a defensive copy instead of a raw subList view: User.getAllowedCategories()
+                // can return the original allCategories list directly (for superusers/full-access),
+                // so subList(0,1) would be a live view of a shared list. If that list is modified
+                // by a concurrent request, JSF's ListDataModel.isRowAvailable() throws
+                // ConcurrentModificationException during rendering.
+                page.setCategories(new ArrayList<>(allowedCategories.subList(0, 1)));
             }
         }
 
@@ -829,7 +849,16 @@ public class CmsPageEditBean implements Serializable {
 
     /**
      * Setter for unit tests.
-     * 
+     *
+
+     */
+    void setCmsBean(CmsBean cmsBean) {
+        this.cmsBean = cmsBean;
+    }
+
+    /**
+     * Setter for unit tests.
+     *
 
      */
     void setFacesContext(FacesContext facesContext) {

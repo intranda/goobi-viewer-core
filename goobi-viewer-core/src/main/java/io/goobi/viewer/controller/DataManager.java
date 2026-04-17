@@ -142,10 +142,14 @@ public final class DataManager {
     /**
      * Getter for the field <code>modules</code>.
      *
-     * @return the list of all registered viewer modules
+     * <p>Returns a defensive copy to prevent {@link java.util.ConcurrentModificationException}
+     * when JSF's {@code c:forEach} iterates the list while a background thread registers
+     * a new module via {@link #registerModule(IModule)}.</p>
+     *
+     * @return a snapshot of all registered viewer modules
      */
     public List<IModule> getModules() {
-        return modules;
+        return new ArrayList<>(modules);
     }
 
     /**
@@ -207,8 +211,8 @@ public final class DataManager {
      * registerModule.
      *
      * @param module module instance to register
-     * @should not add module if it's already registered
      * @return true if the module was successfully registered, false if a module with the same ID is already registered
+     * @should not add module if it's already registered
      */
     public boolean registerModule(IModule module) {
         if (module == null) {
@@ -301,6 +305,8 @@ public final class DataManager {
      * a closed client from being silently replaced by a new one.
      *
      * @throws IOException if closing the client fails
+     * @should close searchIndex without calling checkReloadNeeded
+     * @should close client without check reload needed
      */
     public void closeSearchIndex() throws IOException {
         if (searchIndex != null) {

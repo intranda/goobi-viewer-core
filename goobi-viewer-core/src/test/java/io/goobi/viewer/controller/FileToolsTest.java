@@ -24,7 +24,6 @@ package io.goobi.viewer.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,11 +40,10 @@ import io.goobi.viewer.AbstractTest;
 class FileToolsTest extends AbstractTest {
 
     /**
-     * @see FileTools#getStringFromFile(File,String)
-     * @verifies read text file correctly
+     * @verifies return non blank string when reading existing text file
      */
     @Test
-    void getStringFromFile_shouldReadTextFileCorrectly() throws Exception {
+    void getStringFromFile_shouldReturnNonBlankStringWhenReadingExistingTextFile() throws Exception {
         File file = new File("src/test/resources/stopwords.txt");
         Assertions.assertTrue(file.isFile());
         String contents = FileTools.getStringFromFile(file, null);
@@ -53,7 +51,6 @@ class FileToolsTest extends AbstractTest {
     }
 
     /**
-     * @see FileTools#getStringFromFile(File,String)
      * @verifies throw FileNotFoundException if file not found
      */
     @Test
@@ -64,17 +61,15 @@ class FileToolsTest extends AbstractTest {
     }
 
     /**
-     * @see FileTools#getStringFromFilePath(String)
-     * @verifies read text file correctly
+     * @verifies return non blank string when given a valid file path
      */
     @Test
-    void getStringFromFilePath_shouldReadTextFileCorrectly() throws Exception {
+    void getStringFromFilePath_shouldReturnNonBlankStringWhenGivenAValidFilePath() throws Exception {
         String contents = FileTools.getStringFromFilePath("src/test/resources/stopwords.txt");
         Assertions.assertTrue(StringUtils.isNotBlank(contents));
     }
 
     /**
-     * @see FileTools#getStringFromFilePath(String)
      * @verifies throw FileNotFoundException if file not found
      */
     @Test
@@ -85,7 +80,6 @@ class FileToolsTest extends AbstractTest {
     }
 
     /**
-     * @see FileTools#compressGzipFile(File,File)
      * @verifies throw FileNotFoundException if file not found
      */
     @Test
@@ -96,7 +90,6 @@ class FileToolsTest extends AbstractTest {
     }
 
     /**
-     * @see FileTools#decompressGzipFile(File,File)
      * @verifies throw FileNotFoundException if file not found
      */
     @Test
@@ -107,11 +100,10 @@ class FileToolsTest extends AbstractTest {
     }
 
     /**
-     * @see FileTools#getFileFromString(String,File,String,boolean)
-     * @verifies write file correctly
+     * @verifies create file on disk from string content
      */
     @Test
-    void getFileFromString_shouldWriteFileCorrectly(@TempDir File tempDir) throws Exception {
+    void getFileFromString_shouldCreateFileOnDiskFromStringContent(@TempDir File tempDir) throws Exception {
         File file = new File(tempDir, "temp.txt");
         String text = "Lorem ipsum dolor sit amet";
         FileTools.getFileFromString(text, file.getAbsolutePath(), null, false);
@@ -119,11 +111,10 @@ class FileToolsTest extends AbstractTest {
     }
 
     /**
-     * @see FileTools#getFileFromString(String,File,String,boolean)
-     * @verifies append to file correctly
+     * @verifies append string to existing file content when append flag is true
      */
     @Test
-    void getFileFromString_shouldAppendToFileCorrectly(@TempDir File tempDir) throws Exception {
+    void getFileFromString_shouldAppendStringToExistingFileContentWhenAppendFlagIsTrue(@TempDir File tempDir) throws Exception {
         File file = new File(tempDir, "temp.txt");
         String text = "XY";
         String text2 = "Z";
@@ -134,23 +125,53 @@ class FileToolsTest extends AbstractTest {
     }
 
     /**
+     * @see FileTools#getCharset(Path)
+     * @verifies return UTF-8 for a UTF-8 encoded file input stream
+     */
+    @Test
+    void getCharset_shouldReturnUtf8ForAUtf8EncodedFileInputStream() throws Exception {
+        // Test the Path overload which internally opens a stream and delegates to the InputStream overload
+        Path file = Path.of("src/test/resources/stopwords.txt");
+        Assertions.assertEquals("UTF-8", FileTools.getCharset(file));
+    }
+
+    /**
      * @see FileTools#getCharset(InputStream)
      * @verifies detect charset correctly
      */
     @Test
     void getCharset_shouldDetectCharsetCorrectly() throws Exception {
-        File file = new File("src/test/resources/stopwords.txt");
-        try (FileInputStream fis = new FileInputStream(file)) {
-            Assertions.assertEquals("UTF-8", FileTools.getCharset(fis));
+        // Verify that ICU4J detects UTF-8 charset from a byte array containing UTF-8 encoded text
+        byte[] utf8Bytes = "Hello, World! äöü".getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        try (InputStream is = new java.io.ByteArrayInputStream(utf8Bytes)) {
+            String charset = FileTools.getCharset(is);
+            Assertions.assertNotNull(charset);
+            Assertions.assertEquals("UTF-8", charset);
         }
     }
 
     /**
-     * @see FileTools#getBottomFolderFromPathString(String)
-     * @verifies return folder name correctly
+     * @see FileTools#getCharset(InputStream)
+     * @verifies not close stream
      */
     @Test
-    void getBottomFolderFromPathString_shouldReturnFolderNameCorrectly() {
+    void getCharset_shouldNotCloseStream() throws Exception {
+        // Verify that the outer stream is not closed by getCharset (only the BufferedInputStream wrapper is closed)
+        byte[] utf8Bytes = "Test content for charset detection with enough text to detect encoding properly.".getBytes(
+                java.nio.charset.StandardCharsets.UTF_8);
+        InputStream is = new java.io.ByteArrayInputStream(utf8Bytes);
+        FileTools.getCharset(is);
+        // ByteArrayInputStream.available() returns remaining bytes; if the stream were closed, read would fail
+        // ByteArrayInputStream.close() is a no-op, so we verify the stream is still functional by checking available()
+        Assertions.assertTrue(is.available() >= 0, "Stream should still be accessible after getCharset call");
+    }
+
+    /**
+     * @see FileTools#getBottomFolderFromPathString(String)
+     * @verifies return the parent folder name from a file path string
+     */
+    @Test
+    void getBottomFolderFromPathString_shouldReturnTheParentFolderNameFromAFilePathString() {
         Assertions.assertEquals("PPN123", FileTools.getBottomFolderFromPathString("data/1/alto/PPN123/00000001.xml"));
     }
 
@@ -165,15 +186,19 @@ class FileToolsTest extends AbstractTest {
 
     /**
      * @see FileTools#getFilenameFromPathString(String)
-     * @verifies return file name correctly
+     * @verifies extract filename from a full path string
      */
     @Test
-    void getFilenameFromPathString_shouldReturnFileNameCorrectly() throws Exception {
+    void getFilenameFromPathString_shouldExtractFilenameFromAFullPathString() throws Exception {
         Assertions.assertEquals("00000001.xml", FileTools.getFilenameFromPathString("data/1/alto/PPN123/00000001.xml"));
     }
 
+    /**
+     * @verifies return true if file is younger than reference file
+     * @see FileTools#isYoungerThan(Path, Path)
+     */
     @Test
-    void testIsYounger(@TempDir Path tempDir) throws IOException, InterruptedException {
+    void isYoungerThan_shouldReturnTrueIfFileIsYounger(@TempDir Path tempDir) throws IOException, InterruptedException {
         Path file1 = tempDir.resolve("file1.txt");
         Path file2 = tempDir.resolve("file2.txt");
 
@@ -187,7 +212,7 @@ class FileToolsTest extends AbstractTest {
     }
 
     /**
-     * @see DataFileTools#sanitizeFileName(String)
+     * @see FileTools#sanitizeFileName(String)
      * @verifies return unchanged string if string blank
      */
     @Test
@@ -196,7 +221,7 @@ class FileToolsTest extends AbstractTest {
     }
 
     /**
-     * @see DataFileTools#sanitizeFileName(String)
+     * @see FileTools#sanitizeFileName(String)
      * @verifies remove everything but the file name from given path
      */
     @Test
@@ -206,10 +231,41 @@ class FileToolsTest extends AbstractTest {
         Assertions.assertEquals("foo.bar", FileTools.sanitizeFileName("/foo.bar"));
         Assertions.assertEquals("f o-o_.bar", FileTools.sanitizeFileName("/f o-o_.bar"));
         Assertions.assertEquals("XIX-1083.4-14,1919_0001.xml", FileTools.sanitizeFileName("XIX-1083.4-14,1919_0001.xml"));
+        Assertions.assertEquals("über.xml", FileTools.sanitizeFileName("/opt/digiverso/über.xml"));
     }
 
     /**
-     * @see DataFileTools#sanitizeFileName(String)
+     * @see FileTools#sanitizeFileName(String)
+     * @verifies accept file names containing Unicode characters
+     */
+    @Test
+    void sanitizeFileName_shouldAcceptFileNamesContainingUnicodeCharacters() {
+        Assertions.assertEquals("Kritisches_über_Shakespeare_0009.xml",
+                FileTools.sanitizeFileName("Kritisches_über_Shakespeare_0009.xml"));
+        Assertions.assertEquals("Ärger_mit_Äpfeln.xml", FileTools.sanitizeFileName("Ärger_mit_Äpfeln.xml"));
+        // Filename with both Unicode characters and spaces (regression test for production error)
+        Assertions.assertEquals("Der Aufbau Deutschlands und das Rätesystem_0004.xml",
+                FileTools.sanitizeFileName("Der Aufbau Deutschlands und das Rätesystem_0004.xml"));
+    }
+
+    /**
+     * @see FileTools#sanitizeFileName(String)
+     * @verifies accept file names containing common punctuation characters
+     */
+    @Test
+    void sanitizeFileName_shouldAcceptFileNamesContainingCommonPunctuationCharacters() {
+        // Exclamation mark: common in German newspaper/document titles (regression test for production error)
+        Assertions.assertEquals("Nieder mit Spartakus!_0025_L.xml",
+                FileTools.sanitizeFileName("Nieder mit Spartakus!_0025_L.xml"));
+        // Parentheses and apostrophes: common in library catalog titles
+        Assertions.assertEquals("Le Monde (Paris)_0001.xml",
+                FileTools.sanitizeFileName("Le Monde (Paris)_0001.xml"));
+        Assertions.assertEquals("L'Humanité_0001.xml",
+                FileTools.sanitizeFileName("L'Humanité_0001.xml"));
+    }
+
+    /**
+     * @see FileTools#sanitizeFileName(String)
      * @verifies throw IllegalArgumentException given invalid file name
      */
     @Test

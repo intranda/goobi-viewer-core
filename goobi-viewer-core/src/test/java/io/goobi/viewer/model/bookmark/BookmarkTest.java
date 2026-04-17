@@ -64,8 +64,12 @@ class BookmarkTest extends AbstractDatabaseAndSolrEnabledTest {
         super.tearDown();
     }
 
+    /**
+     * @verifies return non null result
+     * @see Bookmark#getMetadataElement
+     */
     @Test
-    void testGetMetadataElement() throws IndexUnreachableException, PresentationException {
+    void getMetadataElement_shouldReturnNonNullResult() throws IndexUnreachableException, PresentationException {
         Bookmark bookmarkWork = new Bookmark(PI, null, TITLE);
         Bookmark bookmarkChapter = new Bookmark(PI, LOGID, TITLE);
         Bookmark bookmarkPage = new Bookmark(PI, null, PAGE);

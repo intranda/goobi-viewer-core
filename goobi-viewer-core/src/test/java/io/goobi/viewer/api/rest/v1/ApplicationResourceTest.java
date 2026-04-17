@@ -38,9 +38,11 @@ class ApplicationResourceTest extends AbstractRestApiTest {
 
     /**
      * Test method for {@link io.goobi.viewer.api.rest.v1.ApplicationResource#getApiInfo()}.
+     * @verifies return non null result
+     * @see ApplicationResource#getApiInfo
      */
     @Test
-    void testGetApiInfo() {
+    void getApiInfo_shouldReturnNonNullResult() {
         try (Response response = target(urls.path().build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)

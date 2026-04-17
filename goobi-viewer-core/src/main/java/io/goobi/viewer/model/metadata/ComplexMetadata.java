@@ -96,8 +96,13 @@ public final class ComplexMetadata {
     }
 
     public static List<ComplexMetadata> getMetadataFromDocuments(Collection<SolrDocument> docs) {
-        Map<Object, List<SolrDocument>> docMap =
-                docs.stream().collect(Collectors.toMap(doc -> doc.getFieldValue(MD_REFID), List::of, ListUtils::union));
+        // Group documents by MD_REFID using computeIfAbsent (O(n)) instead of toMap+ListUtils::union
+        // (O(n²) due to repeated list copies on each duplicate key). Null keys (docs without MD_REFID)
+        // are supported by HashMap and mark untranslated metadata entries.
+        Map<Object, List<SolrDocument>> docMap = new HashMap<>();
+        for (SolrDocument doc : docs) {
+            docMap.computeIfAbsent(doc.getFieldValue(MD_REFID), k -> new ArrayList<>()).add(doc);
+        }
         List<ComplexMetadata> translatedMetadata = docMap.entrySet()
                 .stream()
                 .filter(e -> e.getKey() != null)

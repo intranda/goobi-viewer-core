@@ -45,7 +45,6 @@
     &__entry {
         display: flex;
         align-items: center;
-        padding-left: 0.5rem;
         cursor: pointer;
         padding-top: 0.3rem;
         padding-bottom: 0.3rem;
@@ -56,7 +55,7 @@
         &.-onpage {
             border: none;
             border-left: 4px solid @blue;
-            margin-left: -4px;
+            padding-left: 0.5rem;
         }
     }
     &__type {
@@ -105,11 +104,11 @@
         margin-right: auto;
     }
     &__entry {
-        padding-left: 0;
-        padding-right: 0.5rem;
         &.-onpage {
             border-right: 4px solid @blue;
             border-left: none;
+            padding-right: 0.5rem;
+            padding-left: 0;
         }
     }
 }

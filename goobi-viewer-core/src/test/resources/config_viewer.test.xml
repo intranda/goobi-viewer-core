@@ -436,7 +436,7 @@
             </static>
 		</sorting>
 		<facets>
-			<field type="hierarchical" initialElementNumber=" 4" priorityValues="collection2;collection1" descriptionKey="facet_description_dc">DC</field>
+			<field type="hierarchical" initialElementNumber=" 4" priorityValues="collection2;collection1" descriptionKey="facet_description_dc" alwaysApplyToUnfilteredHits="true">DC</field>
 			<field type="range" minValue="-1000" maxValue="2050" labelField="MD_FIELDLABEL" sortOrder="numerical"
                 translateLabels="false" style="graph">YEAR</field>
 			<field type="hierarchical" labelField="MD_FIRSTNAME" sortOrder="alphabetical" translateLabels="false">MD_CREATOR</field>
@@ -1111,6 +1111,9 @@
                     </value>
                     <value content="VGWORT" description="COPYRIGHT_DESCRIPTION_VGWORT">
                         <icon>paragraph50.svg</icon>
+                    </value>
+                    <value content="NO_ICONS" description="COPYRIGHT_DESCRIPTION_NO_ICONS">
+                        <!-- No icon elements: Apache Commons Configuration returns [""] here, which must be filtered -->
                     </value>
                 </license>
             </widget>

@@ -31,7 +31,6 @@ import io.goobi.viewer.model.viewer.StructElement;
 class MetadataViewTest {
 
     /**
-     * @see MetadataView#isVisible(StructElement)
      * @verifies return true if condition null or empty
      */
     @Test
@@ -51,7 +50,6 @@ class MetadataViewTest {
     }
 
     /**
-     * @see MetadataView#isVisible(StructElement)
      * @verifies return true if field value pair found
      */
     @Test
@@ -63,7 +61,6 @@ class MetadataViewTest {
     }
 
     /**
-     * @see MetadataView#isVisible(StructElement)
      * @verifies return false if field value pair not found
      */
     @Test
@@ -75,7 +72,6 @@ class MetadataViewTest {
     }
 
     /**
-     * @see MetadataView#isVisible(StructElement)
      * @verifies return true if field name found
      */
     @Test
@@ -87,7 +83,6 @@ class MetadataViewTest {
     }
 
     /**
-     * @see MetadataView#isVisible(StructElement)
      * @verifies return false if field name not found
      */
     @Test

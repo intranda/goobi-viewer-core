@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Year;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -117,6 +119,10 @@ public class Metadata implements MetadataListElement, Serializable {
      * ID of the owning StructElement. Used for constructing unique value IDs, where required.
      */
     private String ownerStructElementIddoc;
+    /** PI (persistent identifier) of the owning record; set during populate() for diagnostic logging. */
+    private String ownerPi;
+    /** Logical structure ID (logid) of the owning StructElement; set during populate() for diagnostic logging. */
+    private String ownerLogid;
     private CitationProcessorWrapper citationProcessorWrapper;
     private int indentation = 0;
     private final List<MetadataValue> values = new ArrayList<>();
@@ -143,6 +149,8 @@ public class Metadata implements MetadataListElement, Serializable {
         this.accessGranted = orig.accessGranted;
         this.ownerDocstrctType = orig.ownerDocstrctType;
         this.ownerStructElementIddoc = orig.ownerStructElementIddoc;
+        this.ownerPi = orig.ownerPi;
+        this.ownerLogid = orig.ownerLogid;
         this.citationProcessorWrapper = orig.citationProcessorWrapper;
         this.indentation = orig.indentation;
         this.values.addAll(orig.values.stream()
@@ -422,8 +430,8 @@ public class Metadata implements MetadataListElement, Serializable {
      * @param options additional key/value options (e.g. NORM_TYPE)
      * @param groupType value of METADATATYPE, if available
      * @param locale locale for value translation and formatting
-     * @should add multivalued param values correctly
-     * @should set group type correctly
+     * @should store multiple values for a single param index preserving order
+     * @should set groupTypeForUrl on the metadata value when group type is provided
      */
     public void setParamValue(int valueIndex, int paramIndex, List<String> inValues, String paramLabel, String url,
             Map<String, String> options, String groupType, Locale locale) {
@@ -511,25 +519,39 @@ public class Metadata implements MetadataListElement, Serializable {
                 case DATEFIELD:
                     String outputPattern = StringUtils.isNotBlank(param.getOutputPattern()) ? param.getOutputPattern()
                             : BeanUtils.getNavigationHelper().getDatePattern();
-                    String altOutputPattern = outputPattern.replace("dd/", "");
                     try {
+                        // Step 1: Full date (ISO yyyy-MM-dd, or custom inputPattern)
                         LocalDate date = StringUtils.isNotEmpty(param.getInputPattern())
                                 ? LocalDate.parse(value, DateTimeFormatter.ofPattern(param.getInputPattern()))
                                 : LocalDate.parse(value);
                         value = date.format(DateTimeFormatter.ofPattern(outputPattern));
                     } catch (DateTimeParseException e) {
-                        // No-day format hack
+                        // Step 2: Year-month (ISO yyyy-MM, or custom inputPattern) – strip day-related characters
+                        // from output pattern. Replace uppercase Y (week-based year) with y to avoid
+                        // UnsupportedTemporalTypeException.
                         try {
-                            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(altOutputPattern);
-                            LocalDate date = LocalDate.parse(value + "-01");
-                            value = date.format(dateTimeFormatter);
+                            YearMonth yearMonth = StringUtils.isNotEmpty(param.getInputPattern())
+                                    ? YearMonth.parse(value, DateTimeFormatter.ofPattern(param.getInputPattern()))
+                                    : YearMonth.parse(value);
+                            String monthYearPattern = outputPattern.replaceAll("d+[^A-Za-z]?|[^A-Za-z]?d+", "")
+                                    .replace("Y", "y").trim();
+                            value = yearMonth.format(DateTimeFormatter.ofPattern(monthYearPattern));
                         } catch (DateTimeParseException e1) {
-                            // LocalDateTime
+                            // Step 3: Full datetime (ISO yyyy-MM-dd'T'HH:mm:ss)
                             try {
-                                LocalDateTime date = LocalDateTime.parse(value);
-                                value = date.format(DateTimeFormatter.ofPattern(outputPattern));
+                                LocalDateTime dateTime = LocalDateTime.parse(value);
+                                value = dateTime.format(DateTimeFormatter.ofPattern(outputPattern));
                             } catch (DateTimeParseException e2) {
-                                logger.warn("Error parsing '{}' as date or datetime", value);
+                                // Step 4: Year only (ISO yyyy, or custom inputPattern) – output the numeric year directly
+                                try {
+                                    Year year = StringUtils.isNotEmpty(param.getInputPattern())
+                                            ? Year.parse(value, DateTimeFormatter.ofPattern(param.getInputPattern()))
+                                            : Year.parse(value);
+                                    value = String.valueOf(year.getValue());
+                                } catch (DateTimeParseException e3) {
+                                    logger.warn("Error parsing '{}' as date or datetime for field '{}' (PI: {}, logid: {})",
+                                            value, paramLabel, ownerPi, ownerLogid);
+                                }
                             }
                         }
                     }
@@ -786,6 +808,10 @@ public class Metadata implements MetadataListElement, Serializable {
      * Checks whether any parameter values are set. 'empty' seems to be a reserved word in JSF, so use 'blank'.
      *
      * @return true if all paramValues are empty or blank; false otherwise.
+     * @should return true if all paramValues are empty
+     * @should return false if at least one paramValue is not empty
+     * @should return true if all values have different ownerIddoc
+     * @should return true if at least one value has same ownerIddoc
      */
     public boolean isBlank() {
         return isBlank(null);
@@ -830,6 +856,7 @@ public class Metadata implements MetadataListElement, Serializable {
      * @return true if at least one value was populated successfully, false otherwise
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @should store pi and logid from struct element
      */
     public boolean populate(StructElement se, String ownerIddoc, List<StringPair> sortFields, Locale locale)
             throws IndexUnreachableException, PresentationException {
@@ -864,6 +891,9 @@ public class Metadata implements MetadataListElement, Serializable {
         }
 
         this.ownerStructElementIddoc = ownerIddoc;
+        // Store PI and logid so setParamValue() can include them in diagnostic log messages.
+        this.ownerPi = se.getPi();
+        this.ownerLogid = se.getLogid();
         ownerDocstrctType = se.getDocStructType();
 
         if (StringUtils.isNotEmpty(citationTemplate)) {
@@ -1377,6 +1407,26 @@ public class Metadata implements MetadataListElement, Serializable {
         return this;
     }
 
+    /**
+     * Returns the PI (persistent identifier) of the owning record, as set during {@link #populate}.
+     * May be null if this metadata was not populated from a StructElement.
+     *
+     * @return PI of the owning record, or null
+     */
+    public String getOwnerPi() {
+        return ownerPi;
+    }
+
+    /**
+     * Returns the logical structure ID (logid) of the owning StructElement, as set during {@link #populate}.
+     * May be null if this metadata was not populated from a StructElement.
+     *
+     * @return logid of the owning StructElement, or null
+     */
+    public String getOwnerLogid() {
+        return ownerLogid;
+    }
+
     public Metadata setFilterQuery(String filterQuery) {
         this.filterQuery = filterQuery;
         return this;
@@ -1465,10 +1515,10 @@ public class Metadata implements MetadataListElement, Serializable {
      * @param language two-letter language code to match field variants against
      * @param field metadata field name to filter by; null to include all fields
      * @return Metadata list without any fields with non-matching language; original list if no language is given
-     * @should return language-specific version of a field
      * @should return generic version if no language specific version is found
      * @should preserve metadata field order
-     * @should filter by desired field name correctly
+     * @should return only metadata entries matching the given field name and language
+     * @should return languagespecific version of a field
      */
     public static List<Metadata> filterMetadata(List<Metadata> metadataList, String language, String field) {
         // logger.trace("filterMetadataByLanguage: {}", recordLanguage); //NOSONAR Debug

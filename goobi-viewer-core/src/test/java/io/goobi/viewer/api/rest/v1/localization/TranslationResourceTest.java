@@ -47,9 +47,11 @@ class TranslationResourceTest extends AbstractRestApiTest {
      * 
      * @throws JsonProcessingException
      * @throws JsonMappingException
+     * @verifies return non null result
+     * @see TranslationResource#getTranslations
      */
     @Test
-    void testGetTranslations() throws JsonMappingException, JsonProcessingException {
+    void getTranslations_shouldReturnNonNullResult() throws JsonMappingException, JsonProcessingException {
         try (Response response = target(urls.path(LOCALIZATION, LOCALIZATION_TRANSLATIONS).build())
                 .queryParam("keys", "cancel,ok")
                 .request()

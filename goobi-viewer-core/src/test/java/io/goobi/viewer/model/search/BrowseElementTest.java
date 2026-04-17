@@ -22,6 +22,10 @@
 package io.goobi.viewer.model.search;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,6 +47,8 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
 
 class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -52,7 +58,6 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see BrowseElement#addSortFieldsToMetadata(StructElement,List)
      * @verifies add sort fields correctly
      */
     @Test
@@ -72,7 +77,6 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see BrowseElement#addSortFieldsToMetadata(StructElement,List,Set)
      * @verifies not add fields on ignore list
      */
     @Test
@@ -87,7 +91,6 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see BrowseElement#addSortFieldsToMetadata(StructElement,List)
      * @verifies not add fields already in the list
      */
     @Test
@@ -152,8 +155,11 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals("foo  bar", be.getFulltextForHtml());
     }
 
+    /**
+     * @verifies return Mein Titel for given input
+     */
     @Test
-    void test_createMultiLanguageLabel() throws IndexUnreachableException {
+    void createMultiLanguageLabel_shouldReturnMeinTitelForGivenInput() throws IndexUnreachableException {
         BrowseElement browseElement = new BrowseElement("PI", 0, "bla", "text", Locale.ENGLISH, "/data/1", "url");
         StructElement structElement = new StructElement(new SolrDocument(Map.of(
                 SolrConstants.IDDOC, Long.valueOf(12345),
@@ -166,11 +172,330 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals("Mein Titel", label.getValueOrFallback(Locale.FRENCH)); // French is not among the Faces languages
     }
 
+    // -- Tests for initDocstructHierarchy --
+
+    /**
+     * @verifies populate struct elements
+     */
+    @Test
+    void initDocstructHierarchy_shouldPopulateStructElements() throws Exception {
+        StructElement se = new StructElement(new SolrDocument(Map.of(
+                SolrConstants.IDDOC, "1",
+                SolrConstants.ISWORK, "true",
+                SolrConstants.PI, "PPN_WORK",
+                SolrConstants.DOCSTRCT, "Monograph")));
+        BrowseElement be = new BrowseElement(se, Collections.singletonMap(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>()),
+                Locale.ENGLISH, null, null, null);
+        assertFalse(be.getStructElements().isEmpty());
+        assertEquals("Monograph", be.getStructElements().get(0).getDocStructType());
+    }
+
+    // -- Tests for initDocType --
+
+    /**
+     * @verifies set doc type
+     */
+    @Test
+    void initDocType_shouldSetDocType() throws Exception {
+        StructElement se = new StructElement();
+        se.setPi("PPN123");
+        se.getMetadataFields().put(SolrConstants.DOCTYPE, Collections.singletonList("DOCSTRCT"));
+        BrowseElement be = new BrowseElement(se, Collections.singletonMap(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>()),
+                Locale.ENGLISH, null, null, null);
+        assertEquals(DocType.DOCSTRCT, be.getDocType());
+    }
+
+    /**
+     * @verifies set metadataGroupType for METADATA doctype
+     */
+    @Test
+    void initDocType_shouldSetMetadataGroupTypeForMetadataDocType() throws Exception {
+        StructElement se = new StructElement();
+        se.setPi("PPN123");
+        se.getMetadataFields().put(SolrConstants.DOCTYPE, Collections.singletonList("METADATA"));
+        se.getMetadataFields().put(SolrConstants.METADATATYPE, Collections.singletonList("PERSON"));
+        se.getMetadataFields().put(SolrConstants.LABEL, Collections.singletonList("MD_AUTHOR"));
+        BrowseElement be = new BrowseElement(se, Collections.singletonMap(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>()),
+                Locale.ENGLISH, null, null, null);
+        assertEquals(DocType.METADATA, be.getDocType());
+        assertEquals(MetadataGroupType.PERSON, be.getMetadataGroupType());
+        assertEquals("MD_AUTHOR", be.getOriginalFieldName());
+    }
+
+    // -- Tests for initCoreFields --
+
+    /**
+     * @verifies copy core fields
+     */
+    @Test
+    void initCoreFields_shouldCopyCoreFields() throws Exception {
+        StructElement se = new StructElement(new SolrDocument(Map.of(
+                SolrConstants.IDDOC, "99",
+                SolrConstants.ISWORK, "true",
+                SolrConstants.PI, "PPN_CORE",
+                SolrConstants.DOCSTRCT, "Monograph",
+                SolrConstants.LOGID, "LOG_0001")));
+        BrowseElement be = new BrowseElement(se, Collections.singletonMap(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>()),
+                Locale.ENGLISH, null, null, null);
+        assertEquals("PPN_CORE", be.getPi());
+        assertEquals("99", be.getIddoc());
+        assertEquals("LOG_0001", be.getLogId());
+        assertEquals("Monograph", be.getDocStructType());
+        assertTrue(be.isWork());
+        assertFalse(be.isAnchor());
+    }
+
+    /**
+     * @verifies return early if pi null
+     */
+    @Test
+    void initCoreFields_shouldReturnEarlyIfPiNull() throws Exception {
+        StructElement se = new StructElement();
+        // No PI set — constructor should return early
+        BrowseElement be = new BrowseElement(se, Collections.singletonMap(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>()),
+                Locale.ENGLISH, null, null, null);
+        assertNull(be.getPi());
+        assertNull(be.getUrl());
+    }
+
+    // -- Tests for resolveMimeType --
+
+    /**
+     * @verifies set mime type
+     */
+    @Test
+    void resolveMimeType_shouldSetMimeType() throws Exception {
+        StructElement se = new StructElement(new SolrDocument(Map.of(
+                SolrConstants.IDDOC, "1",
+                SolrConstants.ISWORK, "true",
+                SolrConstants.PI, "PPN_MIME",
+                SolrConstants.DOCSTRCT, "Monograph",
+                SolrConstants.MIMETYPE, "image/tiff")));
+        BrowseElement be = new BrowseElement(se, Collections.singletonMap(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>()),
+                Locale.ENGLISH, null, null, null);
+        assertTrue(be.isHasImages());
+    }
+
+    // -- Tests for resolveImageNo --
+
+    /**
+     * @verifies use order field
+     */
+    @Test
+    void resolveImageNo_shouldUseOrderField() throws Exception {
+        StructElement se = new StructElement(new SolrDocument(Map.of(
+                SolrConstants.IDDOC, "1",
+                SolrConstants.ISWORK, "true",
+                SolrConstants.PI, "PPN_IMG",
+                SolrConstants.DOCSTRCT, "Monograph",
+                SolrConstants.ORDER, "42")));
+        BrowseElement be = new BrowseElement(se, Collections.singletonMap(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>()),
+                Locale.ENGLISH, null, null, null);
+        assertEquals(42, be.getImageNo());
+    }
+
+    /**
+     * @verifies use thumb page no
+     */
+    @Test
+    void resolveImageNo_shouldUseThumbPageNo() throws Exception {
+        StructElement se = new StructElement(new SolrDocument(Map.of(
+                SolrConstants.IDDOC, "1",
+                SolrConstants.ISWORK, "true",
+                SolrConstants.PI, "PPN_THUMB",
+                SolrConstants.DOCSTRCT, "Monograph",
+                SolrConstants.THUMBPAGENO, "7")));
+        BrowseElement be = new BrowseElement(se, Collections.singletonMap(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>()),
+                Locale.ENGLISH, null, null, null);
+        assertEquals(7, be.getImageNo());
+    }
+
+    /**
+     * @verifies default to one
+     */
+    @Test
+    void resolveImageNo_shouldDefaultToOne() throws Exception {
+        StructElement se = new StructElement(new SolrDocument(Map.of(
+                SolrConstants.IDDOC, "1",
+                SolrConstants.ISWORK, "true",
+                SolrConstants.PI, "PPN_DEF",
+                SolrConstants.DOCSTRCT, "Monograph")));
+        BrowseElement be = new BrowseElement(se, Collections.singletonMap(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>()),
+                Locale.ENGLISH, null, null, null);
+        assertEquals(1, be.getImageNo());
+    }
+
+    // -- Tests for initThumbnail --
+
+    /**
+     * @verifies not fail if thumbs null
+     */
+    @Test
+    void initThumbnail_shouldNotFailIfThumbsNull() throws Exception {
+        StructElement se = new StructElement(new SolrDocument(Map.of(
+                SolrConstants.IDDOC, "1",
+                SolrConstants.ISWORK, "true",
+                SolrConstants.PI, "PPN_NO_THUMB",
+                SolrConstants.DOCSTRCT, "Monograph")));
+        BrowseElement be = new BrowseElement(se, Collections.singletonMap(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>()),
+                Locale.ENGLISH, null, null, null);
+        assertNull(be.getThumbnailUrl());
+    }
+
+    // -- Tests for initMediaFlags --
+
+    /**
+     * @verifies set hasImages for image mime type
+     */
+    @Test
+    void initMediaFlags_shouldSetHasImagesForImageMimeType() throws Exception {
+        StructElement se = new StructElement(new SolrDocument(Map.of(
+                SolrConstants.IDDOC, "1",
+                SolrConstants.ISWORK, "true",
+                SolrConstants.PI, "PPN_IMG2",
+                SolrConstants.DOCSTRCT, "Monograph",
+                SolrConstants.MIMETYPE, "image/jpeg")));
+        BrowseElement be = new BrowseElement(se, Collections.singletonMap(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>()),
+                Locale.ENGLISH, null, null, null);
+        assertTrue(be.isHasImages());
+        assertFalse(be.isHasMedia());
+    }
+
+    /**
+     * @verifies set has media for sandboxed html
+     */
+    @Test
+    void initMediaFlags_shouldSetHasMediaForSandboxedHtml() throws Exception {
+        StructElement se = new StructElement();
+        se.setPi("PPN123");
+        se.setDocStructType("Monograph");
+        se.getMetadataFields().put(SolrConstants.MIMETYPE, Collections.singletonList("text/html-sandboxed"));
+        BrowseElement be = new BrowseElement(se, Collections.singletonMap(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>()),
+                Locale.ENGLISH, null, null, null);
+        assertFalse(be.isHasImages());
+        assertTrue(be.isHasMedia());
+    }
+
+    /**
+     * @verifies detect TEI files
+     */
+    @Test
+    void initMediaFlags_shouldDetectTeiFiles() throws Exception {
+        StructElement se = new StructElement();
+        se.setPi("PPN123");
+        se.getMetadataFields().put(SolrConstants.FILENAME_TEI + "_DE", Collections.singletonList("tei_de.xml"));
+        BrowseElement be = new BrowseElement(se, Collections.singletonMap(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>()),
+                Locale.ENGLISH, null, null, null);
+        assertTrue(be.isHasTeiFiles());
+    }
+
+    /**
+     * @verifies set record languages
+     */
+    @Test
+    void initMediaFlags_shouldSetRecordLanguages() throws Exception {
+        StructElement se = new StructElement();
+        se.setPi("PPN123");
+        se.getMetadataFields().put(SolrConstants.LANGUAGE, List.of("de", "en"));
+        BrowseElement be = new BrowseElement(se, Collections.singletonMap(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>()),
+                Locale.ENGLISH, null, null, null);
+        assertNotNull(be.getRecordLanguages());
+        assertEquals(2, be.getRecordLanguages().size());
+        assertTrue(be.getRecordLanguages().contains("de"));
+        assertTrue(be.getRecordLanguages().contains("en"));
+    }
+
+    /**
+     * @verifies not set flags for unknown mime type
+     */
+    @Test
+    void initMediaFlags_shouldNotSetFlagsForUnknownMimeType() throws Exception {
+        StructElement se = new StructElement();
+        se.setPi("PPN123");
+        se.getMetadataFields().put(SolrConstants.MIMETYPE, Collections.singletonList("application/octet-stream"));
+        BrowseElement be = new BrowseElement(se, Collections.singletonMap(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>()),
+                Locale.ENGLISH, null, null, null);
+        assertFalse(be.isHasImages());
+        assertFalse(be.isHasMedia());
+        assertEquals(PageType.viewMetadata, be.determinePageType());
+    }
+
+    /**
+     * @see BrowseElement#determinePageType()
+     * @verifies return metadata page type for pdf mime type without images
+     */
+    @Test
+    void determinePageType_shouldReturnMetadataPageTypeForPdfMimeTypeWithoutImages() throws Exception {
+        // PDF without images should resolve to metadata view
+        StructElement se = new StructElement();
+        se.setPi("PPN123");
+        se.setDocStructType("Monograph");
+        se.getMetadataFields().put(SolrConstants.MIMETYPE, Collections.singletonList("application/pdf"));
+        BrowseElement be = new BrowseElement(se, Collections.singletonMap(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>()),
+                Locale.ENGLISH, null, null, null);
+        assertFalse(be.isHasImages());
+        assertFalse(be.isHasMedia());
+        assertEquals(PageType.viewMetadata, be.determinePageType());
+    }
+
+    /**
+     * @see BrowseElement#determinePageType()
+     * @verifies return object page type for pdf mime type with images
+     */
+    @Test
+    void determinePageType_shouldReturnObjectPageTypeForPdfMimeTypeWithImages() throws Exception {
+        // PDF with images should resolve to object view
+        StructElement se = new StructElement(new SolrDocument(Map.of(
+                SolrConstants.IDDOC, "12345",
+                SolrConstants.ISWORK, "true",
+                SolrConstants.PI, "PPN123",
+                SolrConstants.DOCSTRCT, "Monograph",
+                SolrConstants.MIMETYPE, "application/pdf",
+                SolrConstants.BOOL_IMAGEAVAILABLE, "true")));
+        BrowseElement be = new BrowseElement(se, Collections.singletonMap(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>()),
+                Locale.ENGLISH, null, null, null);
+        assertTrue(be.isHasImages());
+        assertEquals(PageType.viewObject, be.determinePageType());
+    }
+
+    /**
+     * @see BrowseElement#determinePageType()
+     * @verifies return object page type for audio mime type
+     */
+    @Test
+    void determinePageType_shouldReturnObjectPageTypeForAudioMimeType() throws Exception {
+        // Audio should resolve to object view via hasMedia flag
+        StructElement se = new StructElement();
+        se.setPi("PPN123");
+        se.setDocStructType("Monograph");
+        se.getMetadataFields().put(SolrConstants.MIMETYPE, Collections.singletonList("audio/mpeg"));
+        BrowseElement be = new BrowseElement(se, Collections.singletonMap(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>()),
+                Locale.ENGLISH, null, null, null);
+        assertTrue(be.isHasMedia());
+        assertEquals(PageType.viewObject, be.determinePageType());
+    }
+
+    /**
+     * @see BrowseElement#determinePageType()
+     * @verifies return object page type for video mime type
+     */
+    @Test
+    void determinePageType_shouldReturnObjectPageTypeForVideoMimeType() throws Exception {
+        // Video should resolve to object view via hasMedia flag
+        StructElement se = new StructElement();
+        se.setPi("PPN123");
+        se.setDocStructType("Monograph");
+        se.getMetadataFields().put(SolrConstants.MIMETYPE, Collections.singletonList("video/mp4"));
+        BrowseElement be = new BrowseElement(se, Collections.singletonMap(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>()),
+                Locale.ENGLISH, null, null, null);
+        assertTrue(be.isHasMedia());
+        assertEquals(PageType.viewObject, be.determinePageType());
+    }
+
     /**
      * PDF record without image derivatives should resolve to metadata view.
      *
-     * @see BrowseElement#determinePageType()
-     * @verifies return metadata page type for pdf mime type without images
+     * @verifies return metadata for pdf without images
      */
     @Test
     void determinePageType_shouldReturnMetadataForPdfWithoutImages() throws Exception {
@@ -189,8 +514,7 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     /**
      * PDF record with image derivatives (BOOL_IMAGEAVAILABLE=true) should resolve to object view.
      *
-     * @see BrowseElement#determinePageType()
-     * @verifies return object page type for pdf mime type with images
+     * @verifies return object for pdf with images
      */
     @Test
     void determinePageType_shouldReturnObjectForPdfWithImages() throws Exception {
@@ -211,8 +535,7 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     /**
      * Audio record should still resolve to object view via hasMedia.
      *
-     * @see BrowseElement#determinePageType()
-     * @verifies return object page type for audio mime type
+     * @verifies return object for audio
      */
     @Test
     void determinePageType_shouldReturnObjectForAudio() throws Exception {
@@ -230,8 +553,7 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     /**
      * Video record should still resolve to object view via hasMedia.
      *
-     * @see BrowseElement#determinePageType()
-     * @verifies return object page type for video mime type
+     * @verifies return object for video
      */
     @Test
     void determinePageType_shouldReturnObjectForVideo() throws Exception {

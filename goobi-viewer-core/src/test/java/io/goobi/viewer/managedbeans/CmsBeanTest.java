@@ -84,39 +84,57 @@ class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         super.tearDown();
     }
 
+    /**
+     * @verifies return the current page
+     */
     @Test
-    void testPage() {
+    void getCurrentPage_shouldReturnTheCurrentPage() {
         CMSPage page = new CMSPage();
         CmsBean bean = new CmsBean(templateManager, navigationHelper);
         bean.setCurrentPage(page);
         Assertions.assertEquals(page, bean.getCurrentPage());
     }
 
+    /**
+     * @verifies return true for given input
+     * @see CmsBean#getLuceneFields()
+     */
     @Test
-    void testGetLuceneFields() {
+    void getLuceneFields_shouldReturnTrueForGivenInput() {
         List<String> fields = new CmsBean().getLuceneFields();
         Assertions.assertTrue(fields.contains("DC"), "Lucene field 'DC' is missing");
         Assertions.assertTrue(fields.contains("LABEL"), "Lucene field 'LABEL' is missing");
         Assertions.assertTrue(fields.contains("FILENAME"), "Lucene field 'FILENAME' is missing");
     }
 
+    /**
+     * @verifies return non empty collection for given input
+     * @see CmsBean#getStaticPages()
+     */
     @Test
-    void testGetStaticPages() throws DAOException {
+    void getStaticPages_shouldReturnNonEmptyCollectionForGivenInput() throws DAOException {
         CmsBean bean = new CmsBean();
         List<CMSStaticPage> staticPages = bean.getStaticPages();
         Assertions.assertFalse(staticPages.isEmpty());
     }
 
+    /**
+     * @verifies return 2 for given input
+     */
     @Test
-    void testGetAvailableCmsPages() throws DAOException {
+    void getAvailableCmsPages_shouldReturn2ForGivenInput() throws DAOException {
         CmsBean bean = new CmsBean();
         List<CMSPage> allPages = DataManager.getInstance().getDao().getAllCMSPages();
         List<CMSPage> availablePages = bean.getAvailableCmsPages(null);
         Assertions.assertEquals(2, allPages.size() - availablePages.size());
     }
 
+    /**
+     * @verifies save cms pages
+     * @see CmsBean#saveStaticPages
+     */
     @Test
-    void testSaveCMSPages() throws DAOException {
+    void saveStaticPages_shouldSaveCmsPages() throws DAOException {
         CmsBean bean = new CmsBean();
 
         CMSPage page = new CMSPage();
@@ -140,8 +158,12 @@ class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertNull(staticPage.getCmsPageOptional().orElse(null));
     }
 
+    /**
+     * @verifies return collection with 3 elements
+     * @see CmsBean#getGroupedQueryResults(List<SearchHit>, String)
+     */
     @Test
-    void testGetGroupedQueryResults() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+    void getGroupedQueryResults_shouldReturnCollectionWith3Elements() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         CmsBean bean = new CmsBean();
 
         String groupField = "GROUPING";
@@ -193,7 +215,6 @@ class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see CmsBean#createStaticPageList()
      * @verifies return pages in specified order
      */
     @Test
@@ -217,6 +238,107 @@ class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertTrue(fields.size() > 2);
         Assertions.assertEquals(SolrConstants.SORT_RELEVANCE, fields.get(0));
         Assertions.assertEquals(SolrConstants.SORT_RANDOM, fields.get(1));
+    }
+
+    /**
+     * @see CmsBean#determineWorkDefaultView(String, String, boolean, boolean)
+     * @verifies return object when work has images
+     */
+    @Test
+    void determineWorkDefaultView_shouldReturnObjectWhenWorkHasImages() {
+        String result = CmsBean.determineWorkDefaultView("monograph", "image/jpeg", false, true);
+        Assertions.assertEquals("object", result);
+    }
+
+    /**
+     * @see CmsBean#determineWorkDefaultView(String, String, boolean, boolean)
+     * @verifies return metadata when work has no images
+     */
+    @Test
+    void determineWorkDefaultView_shouldReturnMetadataWhenWorkHasNoImages() {
+        String result = CmsBean.determineWorkDefaultView("monograph", "application/pdf", false, false);
+        Assertions.assertEquals("metadata", result);
+    }
+
+    /**
+     * @see CmsBean#determineWorkDefaultView(String, String, boolean, boolean)
+     * @verifies return toc for anchor work
+     */
+    @Test
+    void determineWorkDefaultView_shouldReturnTocForAnchorWork() {
+        String result = CmsBean.determineWorkDefaultView("periodical", "image/jpeg", true, true);
+        Assertions.assertEquals("toc", result);
+    }
+
+    /**
+     * @verifies return current navigation view when no related work loaded
+     */
+    @Test
+    void getRelatedWorkDefaultView_shouldReturnCurrentNavigationViewWhenNoRelatedWorkLoaded() throws Exception {
+        NavigationHelper nav = new NavigationHelper();
+        CmsBean bean = new CmsBean(templateManager, nav);
+        CMSPage page = new CMSPage();
+        bean.setCurrentPage(page);
+        String result = bean.getRelatedWorkDefaultView();
+        Assertions.assertEquals(nav.getCurrentView(), result);
+    }
+
+    /**
+     * @see CmsBean#getEffectiveSidebarView()
+     * @verifies return null when no current page
+     */
+    @Test
+    void getEffectiveSidebarView_shouldReturnNullWhenNoCurrentPage() {
+        CmsBean bean = new CmsBean(templateManager, navigationHelper);
+        Assertions.assertNull(bean.getEffectiveSidebarView());
+    }
+
+    /**
+     * @verifies return null when page has no related work
+     */
+    @Test
+    void getEffectiveSidebarView_shouldReturnNullWhenPageHasNoRelatedWork() {
+        CmsBean bean = new CmsBean(templateManager, navigationHelper);
+        CMSPage page = new CMSPage();
+        bean.setCurrentPage(page);
+        Assertions.assertNull(bean.getEffectiveSidebarView());
+    }
+
+    /**
+     * @verifies return false when current work pi is blank
+     */
+    @Test
+    void isCmsWorkPageContext_shouldReturnFalseWhenCurrentWorkPiIsBlank() {
+        CmsBean bean = new CmsBean(templateManager, navigationHelper);
+        CMSPage page = new CMSPage();
+        page.setRelatedPI("PI123");
+        bean.setCurrentPage(page);
+        Assertions.assertFalse(bean.isCmsWorkPageContext());
+    }
+
+    /**
+     * @verifies return true when current work pi matches related PI
+     */
+    @Test
+    void isCmsWorkPageContext_shouldReturnTrueWhenCurrentWorkPiMatchesRelatedPI() {
+        CmsBean bean = new CmsBean(templateManager, navigationHelper);
+        bean.setCurrentWorkPi("PI123");
+        CMSPage page = new CMSPage();
+        page.setRelatedPI("PI123");
+        bean.setCurrentPage(page);
+        Assertions.assertTrue(bean.isCmsWorkPageContext());
+    }
+
+    /**
+     * @verifies return false when current work pi does not match related PI
+     */
+    @Test
+    void isCmsWorkPageContext_shouldReturnFalseWhenCurrentWorkPiDoesNotMatchRelatedPI() {
+        CmsBean bean = new CmsBean(templateManager, navigationHelper);
+        bean.setCurrentWorkPi("PI123");
+        CMSPage page = new CMSPage();
+        bean.setCurrentPage(page);
+        Assertions.assertFalse(bean.isCmsWorkPageContext());
     }
 
 }

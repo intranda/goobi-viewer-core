@@ -141,16 +141,16 @@ public final class TocMaker {
      * @param mimeType Mime type determines the target URL of the TOC element.
      * @param tocCurrentPage Current page of a paginated TOC.
      * @param hitsPerPage Hits per page of a paginated TOC.
-     * @should generate volume TOC with siblings correctly
-     * @should generate volume TOC without siblings correctly
-     * @should generate anchor TOC correctly
-     * @should paginate anchor TOC correctly
+     * @should return anchor element followed by all volume elements when siblings excluded
+     * @should return anchor plus all child volumes when generating anchor TOC
+     * @should return different volume subsets per page when anchor TOC is paginated
      * @should throw IllegalArgumentException if structElement is null
      * @should throw IllegalArgumentException if toc is null
      * @return a linked map of view names to their TOC element lists, preserving insertion order
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should include anchor element full volume tree and sibling volume top elements in TOC
      */
     public static Map<String, List<TOCElement>> generateToc(TOC toc, StructElement structElement, boolean addAllSiblings, String mimeType,
             int tocCurrentPage, int hitsPerPage) throws PresentationException, IndexUnreachableException, DAOException {
@@ -195,7 +195,7 @@ public final class TocMaker {
                     .add(new TOCElement(label, null, null, String.valueOf(structElement.getLuceneId()), null, level, structElement.getPi(), null,
                             false, true, false, mimeType, docstruct, footerId));
             // ++level;
-            buildGroupToc(ret.get(StringConstants.DEFAULT_NAME), DataManager.getInstance().getConfiguration().getRecordGroupIdentifierFields(),
+            buildGroupToc(ret.get(StringConstants.DEFAULT_NAME), new ArrayList<>(structElement.getGroupMemberships().keySet()),
                     structElement.getPi(), sourceFormatPdfAllowed, mimeType);
         } else if (structElement.isAnchor()) {
             // MultiVolume
@@ -490,7 +490,7 @@ public final class TocMaker {
 
         List<String> volumeFieldList = getSolrFieldsToFetch("_VOLUMES");
         //add group fields to display connections to groups (convolutes, series,...)
-        volumeFieldList.addAll(DataManager.getInstance().getConfiguration().getRecordGroupIdentifierFields());
+        volumeFieldList.add(SolrConstants.PREFIX_GROUPID + "*");
         // Add TOC volume grouping field for the given volume docstruct type to the list of fields to return
         String tocGroupField = DataManager.getInstance().getConfiguration().getTocVolumeGroupFieldForTemplate(anchorDocstructType);
         if (tocGroupField != null) {
@@ -691,6 +691,17 @@ public final class TocMaker {
 
         // Loosely referenced children (e.g. anchor volumes)
         if (StringUtils.isNotEmpty(ancestorField)) {
+            // Guard: skip the sibling query for documents that are outside the current navigation
+            // path. For those documents, addSiblings will always be false (evaluated below at
+            // line 725) and any children found by the query would never be added to the TOC.
+            // Without this guard, a journal with N volumes fires N useless sibling queries per
+            // page load, producing 60-140 second response times for large serials (observed:
+            // 2101 queries for PI "1374945714", causing a 74-second metadata page load).
+            // The addTocElementsRecursively() call above has already added this document to ret,
+            // so it still appears as a leaf entry in the TOC.
+            if (mainDocumentChain != null && !mainDocumentChain.contains(iddoc)) {
+                return;
+            }
             String queryValue;
             if (ancestorField.startsWith(SolrConstants.IDDOC)) {
                 queryValue = (String) doc.getFieldValue(SolrConstants.IDDOC);

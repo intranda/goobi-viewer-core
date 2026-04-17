@@ -46,8 +46,12 @@ class MediaHandlerTest extends AbstractTest {
         handler = new MediaHandler();
     }
 
+    /**
+     * @verifies return expected value for given input
+     * @see MediaHandler#getMediaUrl(String, String, String, String)
+     */
     @Test
-    void testGetMediaUrl() throws IllegalRequestException {
+    void getMediaUrl_shouldReturnExpectedValueForGivenInput() throws IllegalRequestException {
         String mediaUrl = handler.getMediaUrl("audio", "ogg", "1234", "audio.ogg");
         Assertions.assertEquals(TestUtils.APPLICATION_ROOT_URL + "api/v1/records/1234/files/audio/ogg/audio.ogg", mediaUrl);
     }

@@ -87,6 +87,10 @@ public final class SolrTools {
 
     private static final String MULTILANGUAGE_FIELD_REGEX = "(\\w+)_LANG_(\\w{2,3})";
     private static final String SUFFIX_LANGUAGE_REGEX = SolrConstants.MIDFIX_LANG + "([A-Z]{2,3})$";
+    // Pre-compiled patterns for language-field detection to avoid per-call Pattern.compile() overhead
+    private static final Pattern MULTILANGUAGE_FIELD_PATTERN = Pattern.compile(MULTILANGUAGE_FIELD_REGEX);
+    private static final Pattern SUFFIX_LANGUAGE_PATTERN = Pattern.compile(SUFFIX_LANGUAGE_REGEX);
+    private static final Pattern LANG_SUFFIX_PATTERN = Pattern.compile("_LANG_\\w{2,3}");
 
     /** Reusable Random object. */
     private static Random random = new SecureRandom();
@@ -104,8 +108,8 @@ public final class SolrTools {
      * @param solrSortFields comma-separated Solr sort field string to parse
      * @param splitFieldsBy String by which the individual field configurations are split
      * @param splitNameOrderBy String by which the field name and sorting order are split
-     * @should split fields correctly
-     * @should split single field correctly
+     * @should split multiple sort fields with directions and default to asc when direction omitted
+     * @should parse single sort field with direction and trim surrounding whitespace
      * @should throw IllegalArgumentException if solrSortFields is null
      * @should throw IllegalArgumentException if splitFieldsBy is null
      * @should throw IllegalArgumentException if splitNameOrderBy is null
@@ -270,7 +274,7 @@ public final class SolrTools {
      *
      * @param doc Solr document to read from
      * @param field Solr field name to retrieve
-     * @should return value as string correctly
+     * @should convert numeric field value to its string representation
      * @should not return null as string if value is null
      * @return the string value of the given Solr field, or null if the field is absent or its value is null
      */
@@ -330,7 +334,7 @@ public final class SolrTools {
      * @param fieldName Solr field name to retrieve values for
      * @return a list of all string values for the given field in the given Solr document
      * @should return all values for the given field
-     * @should parse dates correctly
+     * @should return date field values as ISO 8601 formatted strings
      */
     public static List<String> getMetadataValues(SolrDocument doc, String fieldName) {
         if (doc == null) {
@@ -387,7 +391,7 @@ public final class SolrTools {
      *
      * @param doc Solr document to convert to a multi-language value map
      * @return a map of field names to their multi-language metadata values, excluding IMAGEURN_OAI and PAGEURNS
-     * @should return all fields in the given doc except page urns
+     * @should return 2 for given input
      */
     public static Map<String, List<IMetadataValue>> getMultiLanguageFieldValueMap(SolrDocument doc) {
         Map<String, List<IMetadataValue>> ret = new HashMap<>();
@@ -439,6 +443,7 @@ public final class SolrTools {
      * @param key the metadata key without the '_LANG_...' suffix
      * @return A map with keys for each language and lists of all found metadata values for this language. Metadata that match the given key but have
      *         no language information are listed as language {@code _DEFAULT}
+     * @should return collection with 1 element
      */
     public static Map<String, List<String>> getMetadataValuesForLanguage(SolrDocument doc, String key) {
         if (doc == null) {
@@ -451,7 +456,9 @@ public final class SolrTools {
         List<String> fieldNames =
                 doc.getFieldNames()
                         .stream()
-                        .filter(field -> field.equals(key) || field.matches(key + "_LANG_\\w{2,3}"))
+                        // Use pre-compiled LANG_SUFFIX_PATTERN instead of String.matches() to avoid per-call Pattern.compile()
+                        .filter(field -> field.equals(key)
+                                || (field.startsWith(key + "_LANG_") && LANG_SUFFIX_PATTERN.matcher(field.substring(key.length())).matches()))
                         .collect(Collectors.toList());
         Map<String, List<String>> map = new HashMap<>(fieldNames.size());
         for (String languageField : fieldNames) {
@@ -489,7 +496,8 @@ public final class SolrTools {
                     .toList();
             for (String languageField : fieldNames) {
                 String locale = null;
-                if (languageField.matches(key + "_LANG_\\w{2,3}")) {
+                // Use pre-compiled LANG_SUFFIX_PATTERN instead of String.matches() to avoid per-call Pattern.compile()
+                if (languageField.startsWith(key + "_LANG_") && LANG_SUFFIX_PATTERN.matcher(languageField.substring(key.length())).matches()) {
                     locale = languageField.substring(languageField.lastIndexOf(SolrConstants.MIDFIX_LANG) + 6).toLowerCase();
                 } else {
                     locale = MultiLanguageMetadataValue.DEFAULT_LANGUAGE;
@@ -585,9 +593,12 @@ public final class SolrTools {
     /**
      * @param fieldName Solr field name to check for language encoding
      * @return true if fieldName contains _LANG_; false otherwise
+     * @should return true for language-coded field names
+     * @should return false for non-language-coded field names
      */
     public static boolean isLanguageCodedField(String fieldName) {
-        return StringUtils.isNotBlank(fieldName) && fieldName.matches(MULTILANGUAGE_FIELD_REGEX);
+        // Use pre-compiled pattern instead of String.matches() to avoid per-call Pattern.compile()
+        return StringUtils.isNotBlank(fieldName) && MULTILANGUAGE_FIELD_PATTERN.matcher(fieldName).matches();
     }
 
     /**
@@ -615,12 +626,15 @@ public final class SolrTools {
      *
      * @param e exception thrown by Solr to inspect
      * @return true if the exception indicates a Solr query syntax or validation error (HTTP 400), false otherwise
+     * @should return true for known syntax error messages
+     * @should return false for non syntax errors
      */
     public static boolean isQuerySyntaxError(Exception e) {
         // Check for known Solr query/parameter validation error messages.
         // These indicate invalid input (HTTP 400), not server/auth failures (HTTP 403/500).
         return e.getMessage() != null && (e.getMessage().startsWith("org.apache.solr.search.SyntaxError")
                 || e.getMessage().contains("Cannot parse")
+                || e.getMessage().contains("parsing error")
                 || e.getMessage().contains("Invalid Number")
                 || e.getMessage().contains("undefined field")
                 || e.getMessage().contains("field can't be found")
@@ -636,7 +650,7 @@ public final class SolrTools {
      * @return Extracted message
      * @should return empty string if exceptionMessage empty
      * @should return exceptionMessage if no pattern match found
-     * @should return title content correctly
+     * @should extract text between title tags from HTML string
      */
     public static String extractExceptionMessageHtmlTitle(String exceptionMessage) {
         if (StringUtils.isEmpty(exceptionMessage)) {
@@ -781,6 +795,7 @@ public final class SolrTools {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @should return all existing values for the given field
+     * @should return all entire values
      */
     public static List<String> getAvailableValuesForField(final String field, final String filterQuery)
             throws PresentationException, IndexUnreachableException {
@@ -929,6 +944,7 @@ public final class SolrTools {
      *
      * @param string the string to escape
      * @return the escaped string. if the original string is null, null is also returned
+     * @should return expected value for given input
      */
     public static String escapeSpecialCharacters(String string) {
         if (StringUtils.isNotBlank(string)) {
@@ -942,6 +958,7 @@ public final class SolrTools {
      *
      * @param string the string to unescape
      * @return the unescaped string
+     * @should return expected value for given input
      */
     public static String unescapeSpecialCharacters(String string) {
         if (StringUtils.isNotBlank(string)) {
@@ -970,10 +987,13 @@ public final class SolrTools {
      *
      * @param fieldName Solr field name possibly containing a language suffix
      * @return fieldName without language suffix
+     * @should strip language suffix
+     * @should return field name unchanged if no language suffix present
      */
     public static String getBaseFieldName(String fieldName) {
         if (StringUtils.isNotBlank(fieldName)) {
-            return fieldName.replaceAll(SUFFIX_LANGUAGE_REGEX, "");
+            // Use pre-compiled pattern instead of String.replaceAll() to avoid per-call Pattern.compile()
+            return SUFFIX_LANGUAGE_PATTERN.matcher(fieldName).replaceAll("");
         }
         return fieldName;
     }
@@ -982,10 +1002,13 @@ public final class SolrTools {
      *
      * @param fieldName Solr field name from which to extract the language code
      * @return language part of fieldName
+     * @should return language code from field name
+     * @should return null if no language suffix present
      */
     public static String getLanguage(String fieldName) {
         if (StringUtils.isNotBlank(fieldName)) {
-            Matcher matcher = Pattern.compile(SUFFIX_LANGUAGE_REGEX).matcher(fieldName);
+            // Use pre-compiled pattern instead of Pattern.compile() on every call
+            Matcher matcher = SUFFIX_LANGUAGE_PATTERN.matcher(fieldName);
             if (matcher.find()) {
                 return matcher.group(1);
             }

@@ -50,7 +50,6 @@ class ActivityCollectionBuiderTest extends AbstractSolrEnabledTest {
     /**
      * @throws IndexUnreachableException
      * @throws PresentationException
-     * @see ActivityCollectionBuider#getDocs(Long,Long)
      * @verifies only return topstructs
      */
     @Test
@@ -66,8 +65,11 @@ class ActivityCollectionBuiderTest extends AbstractSolrEnabledTest {
         }
     }
 
+    /**
+     * @verifies count all create and update events
+     */
     @Test
-    void buildCollection_countAllEvents() throws PresentationException, IndexUnreachableException {
+    void buildCollection_shouldCountAllCreateAndUpdateEvents() throws PresentationException, IndexUnreachableException {
 
         FacetField field1 = new FacetField("DATEUPDATED");
         field1.add("200", 2);
@@ -109,8 +111,11 @@ class ActivityCollectionBuiderTest extends AbstractSolrEnabledTest {
 
     }
 
+    /**
+     * @verifies count only events after start date
+     */
     @Test
-    void buildCollection_countAllEventsAfterDate() throws PresentationException, IndexUnreachableException {
+    void buildCollection_shouldCountOnlyEventsAfterStartDate() throws PresentationException, IndexUnreachableException {
 
         FacetField field1 = new FacetField("DATEUPDATED");
         field1.add("200", 2);

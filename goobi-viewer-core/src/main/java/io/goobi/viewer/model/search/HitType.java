@@ -51,8 +51,7 @@ public enum HitType {
      * 
      * @param name hit type name to look up
      * @return {@link HitType} matching given name; null if none found
-     * @should return all known types correctly
-     * @should return null if name unknown
+     * @should resolve known name aliases like OVERVIEWPAGE to the corresponding HitType
      */
     public static HitType getByName(String name) {
         if (name != null) {

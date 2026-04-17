@@ -326,10 +326,13 @@ public final class AccessConditionUtils {
             }
 
             Map<String, AccessPermission> ret = HashMap.newHashMap(requiredAccessConditions.size());
+            // Resolve user once before the loop to avoid repeated expensive session attribute scans
+            // (findInstanceInSessionAttributes) when requiredAccessConditions has multiple entries.
+            User resolvedUser = user != null ? user : retrieveUserFromContext(session);
             for (Entry<String, Set<String>> entry : requiredAccessConditions.entrySet()) {
                 Set<String> pageAccessConditions = entry.getValue();
                 AccessPermission access = checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), pageAccessConditions,
-                        privilegeName, user == null ? retrieveUserFromContext(session) : user, ipAddress,
+                        privilegeName, resolvedUser, ipAddress,
                         ClientApplicationManager.getClientFromSession(session), query);
                 ret.put(entry.getKey(), access);
             }
@@ -345,20 +348,216 @@ public final class AccessConditionUtils {
      * 
      * @param session The session in which the user data is stored
      * @return The user logged into the given session. May be null if no user is logged in
+     * @should return null for null session
+     * @should return user from direct session attribute
+     * @should return null without session scan when cdi returns null user
+     * @should return user via session scan when stored under non standard key
      */
     public static User retrieveUserFromContext(HttpSession session) {
         try {
             UserBean userBean = BeanUtils.getUserBean(); //CDI lookup, faster than scanning session
             if (userBean != null) {
-                User user = userBean.getUser();
-                if (user != null) {
-                    return user;
-                }
+                // CDI is active and authoritative for the current session. Return the user directly,
+                // even if null (anonymous). Falling through to the session scan for anonymous users
+                // is redundant: CDI and the session share the same @SessionScoped UserBean instance,
+                // so the scan cannot return a different result — only O(N) overhead over all session
+                // attributes under potential lock contention from parallel request threads.
+                return userBean.getUser();
             }
         } catch (ContextNotActiveException e) {
-            // No CDI context (background thread) - fall through to session scan
+            // No CDI context (background thread) — fall through to session scan as the only option
         }
         return BeanUtils.getUserFromSession(session); //expensive scan of whole session. Only as fallback
+    }
+
+    /**
+     * Fetches and pre-evaluates access permissions for all pages of a record in a single batch
+     * Solr query, avoiding O(n) per-page Solr queries during IIIF manifest generation.
+     *
+     * <p>Steps:
+     * <ol>
+     *   <li>One Solr query: {@code +PI_TOPSTRUCT:pi +DOCTYPE:PAGE} (fields: ORDER, ACCESSCONDITION)</li>
+     *   <li>One DAO call: {@code getRecordLicenseTypes()}</li>
+     *   <li>One user + IP resolution from {@code request}</li>
+     *   <li>In-memory evaluation of VIEW_IMAGES, VIEW_FULLTEXT, DOWNLOAD_PAGE_PDF per page</li>
+     * </ol>
+     *
+     * @param pi persistent identifier of the record
+     * @param request HTTP servlet request for user and client IP resolution; may be null
+     * @return populated {@link PagePermissions};
+     *         {@link PagePermissions#EMPTY} when pi is blank, when no pages are found,
+     *         or when a Solr/DAO error occurs (logged at WARN)
+     * @should return granted permissions for open access record
+     * @should return empty for blank pi
+     * @should return empty for null pi
+     */
+    public static PagePermissions fetchPagePermissions(String pi, HttpServletRequest request) {
+        if (StringUtils.isBlank(pi)) {
+            return PagePermissions.EMPTY;
+        }
+
+        // Single Solr query for all pages of this record – avoids O(n) per-page queries
+        String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi
+                + " +" + SolrConstants.DOCTYPE + ":" + DocType.PAGE;
+        try {
+            SolrDocumentList pageDocs = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(query, SolrSearchIndex.MAX_HITS, null,
+                            Arrays.asList(SolrConstants.ORDER, SolrConstants.ACCESSCONDITION));
+            if (pageDocs == null || pageDocs.isEmpty()) {
+                return PagePermissions.EMPTY;
+            }
+
+            // Resolve shared context once – reused across all pages to avoid repeated lookups
+            List<LicenseType> licenseTypes = DataManager.getInstance().getDao().getRecordLicenseTypes();
+            User user = retrieveUserFromContext(request != null ? request.getSession() : null);
+            String ipAddress = NetTools.getIpAddress(request);
+            Optional<ClientApplication> client = ClientApplicationManager.getClientFromRequest(request);
+
+            Map<Integer, AccessPermission> imageMap = HashMap.newHashMap(pageDocs.size());
+            Map<Integer, AccessPermission> fulltextMap = HashMap.newHashMap(pageDocs.size());
+            Map<Integer, AccessPermission> pdfMap = HashMap.newHashMap(pageDocs.size());
+
+            for (SolrDocument doc : pageDocs) {
+                Object orderObj = doc.getFieldValue(SolrConstants.ORDER);
+                if (orderObj == null) {
+                    continue;
+                }
+                int order = ((Number) orderObj).intValue();
+
+                Collection<Object> acValues = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
+                Set<String> accessConditions = acValues != null
+                        ? acValues.stream().map(Object::toString).collect(Collectors.toSet())
+                        : Collections.emptySet();
+
+                // Evaluate all three privilege types against this page's access conditions
+                imageMap.put(order, checkAccessPermission(licenseTypes, accessConditions,
+                        IPrivilegeHolder.PRIV_VIEW_IMAGES, user, ipAddress, client, query));
+                fulltextMap.put(order, checkAccessPermission(licenseTypes, accessConditions,
+                        IPrivilegeHolder.PRIV_VIEW_FULLTEXT, user, ipAddress, client, query));
+                pdfMap.put(order, checkAccessPermission(licenseTypes, accessConditions,
+                        IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF, user, ipAddress, client, query));
+            }
+
+            return new PagePermissions(imageMap, fulltextMap, pdfMap);
+
+        } catch (PresentationException | IndexUnreachableException | DAOException e) {
+            logger.warn("Failed to prefetch page permissions for PI '{}': {}", pi, e.getMessage());
+            return PagePermissions.EMPTY;
+        }
+    }
+
+    /**
+     * Fetches the list of filenames accessible to the current user for a given record and Solr
+     * filename field, using a single batch Solr query. Permissions are evaluated in memory —
+     * no further Solr queries are issued per file.
+     *
+     * <p>Steps:
+     * <ol>
+     *   <li>One Solr query: {@code +PI_TOPSTRUCT:pi +DOCTYPE:PAGE +filenameField:[* TO *]}</li>
+     *   <li>One DAO call: {@code getRecordLicenseTypes()}</li>
+     *   <li>One user + IP resolution from {@code request}</li>
+     *   <li>In-memory evaluation of {@code privilegeType} per page document</li>
+     * </ol>
+     *
+     * <p>Only bare filenames are returned (e.g. {@code 00000001.xml}), not full Solr paths
+     * (e.g. {@code alto/PI/00000001.xml}). Results are ordered by page {@code ORDER}.
+     *
+     * @param pi persistent identifier of the record; blank input returns an empty list immediately
+     * @param filenameField Solr field to query, e.g. {@code SolrConstants.FILENAME_ALTO}
+     * @param privilegeType privilege to check, e.g. {@code IPrivilegeHolder.PRIV_VIEW_FULLTEXT}
+     * @param request HTTP servlet request for user and IP resolution; {@code null} = anonymous
+     * @return ordered list of accessible bare filenames; empty list on any error (fail-safe)
+     * @should return empty list for blank pi
+     * @should return empty list for null pi
+     * @should return filenames for open access record
+     * @should return empty list for record with no files indexed
+     * @should return bare filenames not full paths
+     * @should work for fulltext field
+     * @should return empty list for restricted record anonymous
+     */
+    public static List<String> fetchAccessibleFileNames(String pi, String filenameField,
+            String privilegeType, HttpServletRequest request) {
+        if (StringUtils.isBlank(pi)) {
+            return Collections.emptyList();
+        }
+
+        // Single Solr query for all pages that have a value in filenameField
+        String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi
+                + " +" + SolrConstants.DOCTYPE + ":" + DocType.PAGE
+                + " +" + filenameField + ":[* TO *]";
+
+        // Separate query for permission evaluation — omits the filename-field filter so that
+        // moving-wall licence types are evaluated against the full page set, consistent with
+        // the approach used in fetchPagePermissions.
+        String permissionQuery = "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi
+                + " +" + SolrConstants.DOCTYPE + ":" + DocType.PAGE;
+        try {
+            SolrDocumentList docs = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(query, SolrSearchIndex.MAX_HITS, null,
+                            Arrays.asList(filenameField, SolrConstants.ACCESSCONDITION,
+                                    SolrConstants.ORDER));
+            if (docs == null || docs.isEmpty()) {
+                return Collections.emptyList();
+            }
+
+            // Resolve shared context once — reused for every page to avoid repeated lookups
+            List<LicenseType> licenseTypes = DataManager.getInstance().getDao().getRecordLicenseTypes();
+            User user = retrieveUserFromContext(request != null ? request.getSession() : null);
+            String ipAddress = NetTools.getIpAddress(request);
+            Optional<ClientApplication> client = ClientApplicationManager.getClientFromRequest(request);
+
+            // Sort by ORDER to preserve canonical reading order; docs without ORDER are excluded
+            // (consistent with fetchPagePermissions which skips null-ORDER documents)
+            docs.sort((a, b) -> {
+                Object ao = a.getFieldValue(SolrConstants.ORDER);
+                Object bo = b.getFieldValue(SolrConstants.ORDER);
+                if (ao == null && bo == null) {
+                    return 0;
+                }
+                if (ao == null) {
+                    return 1; // null sorts last, to be skipped
+                }
+                if (bo == null) {
+                    return -1;
+                }
+                return Integer.compare(((Number) ao).intValue(), ((Number) bo).intValue());
+            });
+
+            List<String> result = new ArrayList<>();
+            for (SolrDocument doc : docs) {
+                if (doc.getFieldValue(SolrConstants.ORDER) == null) {
+                    continue;
+                }
+                Object rawValue = doc.getFieldValue(filenameField);
+                if (rawValue == null) {
+                    continue;
+                }
+                // Strip any leading path component (e.g. "alto/PI/00000001.xml" → "00000001.xml")
+                String bareFilename = FilenameUtils.getName(rawValue.toString());
+
+                Collection<Object> acValues = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
+                Set<String> accessConditions = acValues != null
+                        ? acValues.stream().map(Object::toString).collect(Collectors.toSet())
+                        : Collections.emptySet();
+
+                // checkAccessPermission is a pure in-memory evaluation — no further Solr call.
+                // permissionQuery (page-scoped, without filename-field filter) is used for
+                // moving-wall licence-type evaluation, consistent with fetchPagePermissions.
+                AccessPermission access = checkAccessPermission(licenseTypes, accessConditions,
+                        privilegeType, user, ipAddress, client, permissionQuery);
+                if (access.isGranted()) {
+                    result.add(bareFilename);
+                }
+            }
+            return result;
+
+        } catch (PresentationException | IndexUnreachableException | DAOException e) {
+            logger.warn("Failed to fetch accessible file names for PI '{}', field '{}': {}",
+                    pi, filenameField, e.getMessage());
+            return Collections.emptyList();
+        }
     }
 
     /**
@@ -726,6 +925,13 @@ public final class AccessConditionUtils {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return true if required access conditions empty
+     * @should return true if ip range allows access
+     * @should return true if required access conditions contain only open access
+     * @should return true if all license types allow privilege by default
+     * @should return false if not all license types allow privilege by default
+     * @should return true if ip range allows access to all conditions
+     * @should not return true if no ip range matches
      */
     public static AccessPermission checkAccessPermission(Set<String> requiredAccessConditions, String privilegeName, String query,
             HttpServletRequest request) throws IndexUnreachableException, PresentationException, DAOException {
@@ -1238,8 +1444,6 @@ public final class AccessConditionUtils {
      * @should throw RecordNotFoundException if record not found
      * @should return 100 if record has no quota value
      * @should return 100 if record open access
-     * @should return 0 if no license configured
-     * @should return actual quota value if found
      */
     public static int getPdfDownloadQuotaForRecord(String pi)
             throws PresentationException, IndexUnreachableException, DAOException, RecordNotFoundException {
@@ -1349,6 +1553,7 @@ public final class AccessConditionUtils {
      * @param dao DAO instance used to retrieve licenses and IP ranges
      * @return List<License>
      * @throws DAOException
+     * @should return empty collection for given input
      */
     public static List<License> getApplyingLicenses(Optional<User> user, String ipAddress, LicenseType type, IDAO dao) throws DAOException {
         List<License> licenses = dao.getLicenses(type);
@@ -1420,6 +1625,7 @@ public final class AccessConditionUtils {
      * @param attributeValue permission value to store in the session
      * @param session HTTP session to store the attribute in
      * @return true if successful; false otherwise
+     * @should return false for given input
      */
     public static boolean addSessionPermission(String attributeName, Object attributeValue, HttpSession session) {
         // logger.trace("addSessionPermission: {}", attributeName); //NOSONAR Debug
@@ -1427,7 +1633,13 @@ public final class AccessConditionUtils {
             return false;
         }
 
-        session.setAttribute(attributeName, attributeValue);
+        // Guard against sessions that were invalidated concurrently (e.g. session timeout during TOC build)
+        try {
+            session.setAttribute(attributeName, attributeValue);
+        } catch (IllegalStateException e) {
+            logger.debug("Cannot store session permission '{}': session has already been invalidated", attributeName);
+            return false;
+        }
         return true;
     }
 
@@ -1442,7 +1654,15 @@ public final class AccessConditionUtils {
             return 0;
         }
 
-        Enumeration<String> attributeNames = session.getAttributeNames();
+        // Guard against sessions that were invalidated concurrently
+        Enumeration<String> attributeNames;
+        try {
+            attributeNames = session.getAttributeNames();
+        } catch (IllegalStateException e) {
+            logger.debug("Cannot clear session permissions: session has already been invalidated");
+            return 0;
+        }
+
         Set<String> attributesToRemove = new HashSet<>();
         while (attributeNames.hasMoreElements()) {
             String attribute = attributeNames.nextElement();
@@ -1454,9 +1674,13 @@ public final class AccessConditionUtils {
         int ret = 0;
         if (!attributesToRemove.isEmpty()) {
             for (String attribute : attributesToRemove) {
-                session.removeAttribute(attribute);
-                ret++;
-                logger.trace("Removed session attribute: {}", attribute);
+                try {
+                    session.removeAttribute(attribute);
+                    ret++;
+                    logger.trace("Removed session attribute: {}", attribute);
+                } catch (IllegalStateException e) {
+                    logger.debug("Cannot remove session attribute '{}': session has already been invalidated", attribute);
+                }
             }
         }
 

@@ -200,7 +200,7 @@ public class ArchiveManager implements Serializable {
      * @throws IllegalStateException
      * @throws PresentationException
      * @throws IndexUnreachableException
-     * @should load ArchiveTree correctly
+     * @should update database
      */
     public ArchiveTree getArchiveTree(String resourceId) throws IllegalStateException, PresentationException, IndexUnreachableException {
         logger.trace("getArchiveTree: {}", resourceId);
@@ -224,6 +224,7 @@ public class ArchiveManager implements Serializable {
      * 
      * @param name node type name to look up in the configuration
      * @return {@link NodeType}
+     * @should return collection for given input
      */
     public NodeType getNodeType(String name) {
         return this.nodeTypes.computeIfAbsent(name, n -> {
@@ -282,6 +283,7 @@ public class ArchiveManager implements Serializable {
     /**
      * 
      * @return List<ArchiveResource>
+     * @should return 2 for given input
      */
     public List<ArchiveResource> getDatabases() {
         List<ArchiveResource> databases = new ArrayList<>(this.archives.keySet());
@@ -297,6 +299,7 @@ public class ArchiveManager implements Serializable {
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @should return neighbors correctly
+     * @should return pair of optional neighbor IDs with empty optional when no neighbor exists
      */
     public static Pair<Optional<String>, Optional<String>> findIndexedNeighbours(String entryId)
             throws PresentationException, IndexUnreachableException {
@@ -397,6 +400,8 @@ public class ArchiveManager implements Serializable {
      *
      * @param resourceId the resource identifier of the archive to look up
      * @return the matching {@link ArchiveResource}, or null if not found or resourceId is blank
+     * @should add new archive
+     * @should remove archive
      */
     public ArchiveResource getArchive(String resourceId) {
         logger.trace("getArchive: {}", resourceId);

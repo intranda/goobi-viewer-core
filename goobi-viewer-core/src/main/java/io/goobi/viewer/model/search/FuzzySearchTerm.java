@@ -112,6 +112,7 @@ public class FuzzySearchTerm {
      * 
      * @param text single word to test against this fuzzy search term
      * @return boolean
+     * @should special characters
      */
     public boolean matches(final String text) {
         String t = cleanup(text);

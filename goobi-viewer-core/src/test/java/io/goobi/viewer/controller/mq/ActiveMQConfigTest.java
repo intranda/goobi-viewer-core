@@ -40,23 +40,39 @@ class ActiveMQConfigTest {
         this.config = new ActiveMQConfig(Paths.get(activeMqConfigPath));
     }
     
+    /**
+     * @verifies read uri
+     * @see ActiveMQConfig#getConnectorURI
+     */
     @Test
-    void testReadURI() {
+    void getConnectorURI_shouldReadUri() {
         assertEquals("tcp://0.0.0.0:61618", config.getConnectorURI());
     }
     
+    /**
+     * @verifies read user name
+     * @see ActiveMQConfig#getUsernameAdmin
+     */
     @Test
-    void testReadUserName() {
+    void getUsernameAdmin_shouldReadUserName() {
         assertEquals("testadmin", config.getUsernameAdmin());
     }
     
+    /**
+     * @verifies read password
+     * @see ActiveMQConfig#getPasswordAdmin
+     */
     @Test
-    void testReadPassword() {
+    void getPasswordAdmin_shouldReadPassword() {
         assertEquals("test", config.getPasswordAdmin());
     }
     
+    /**
+     * @verifies read scheduler directory
+     * @see ActiveMQConfig#getSchedulerDirectory
+     */
     @Test
-    void testReadSchedulerDirectory() {
+    void getSchedulerDirectory_shouldReadSchedulerDirectory() {
         assertEquals("src/test/resources/activemq/scheduler", config.getSchedulerDirectory());
     }
 

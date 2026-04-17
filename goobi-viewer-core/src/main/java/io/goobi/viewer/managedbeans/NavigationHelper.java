@@ -124,6 +124,15 @@ public class NavigationHelper implements Serializable {
     private BreadcrumbBean breadcrumbBean;
     @Inject
     private CmsBean cmsBean;
+    // Injected directly to avoid per-call CDI bean lookup via BeanUtils (Weld StackWalker overhead)
+    @Inject
+    private ActiveDocumentBean activeDocumentBean;
+    @Inject
+    private BrowseBean browseBean;
+    @Inject
+    private SearchBean searchBean;
+    @Inject
+    private CalendarBean calendarBean;
 
     /** Constant <code>KEY_CURRENT_VIEW="currentView"</code>. */
     protected static final String KEY_CURRENT_VIEW = "currentView";
@@ -174,6 +183,26 @@ public class NavigationHelper implements Serializable {
         this.cmsBean = cmsBean;
     }
 
+    /** Setter for testing — allows injecting a mock ActiveDocumentBean without CDI. */
+    public void setActiveDocumentBean(ActiveDocumentBean activeDocumentBean) {
+        this.activeDocumentBean = activeDocumentBean;
+    }
+
+    /** Setter for testing — allows injecting a mock BrowseBean without CDI. */
+    public void setBrowseBean(BrowseBean browseBean) {
+        this.browseBean = browseBean;
+    }
+
+    /** Setter for testing — allows injecting a mock SearchBean without CDI. */
+    public void setSearchBean(SearchBean searchBean) {
+        this.searchBean = searchBean;
+    }
+
+    /** Setter for testing — allows injecting a mock CalendarBean without CDI. */
+    public void setCalendarBean(CalendarBean calendarBean) {
+        this.calendarBean = calendarBean;
+    }
+
     /**
      * init.
      */
@@ -201,6 +230,7 @@ public class NavigationHelper implements Serializable {
      * searchPage.
      *
      * @return the search page name after setting it as the current navigation page
+      * @should return expected value for given input
      */
     public String searchPage() {
         this.setCurrentPage(SEARCH_PAGE);
@@ -249,6 +279,7 @@ public class NavigationHelper implements Serializable {
      * setCmsPage.
      *
      * @param isCmsPage true if the current page is a CMS page
+     * @should return expected value for given input
      */
     public void setCmsPage(boolean isCmsPage) {
         this.isCmsPage = isCmsPage;
@@ -273,13 +304,24 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * 
+     * Sets the CMS page as the current page for navigation purposes.
+     *
+     * <p>Skips execution on JSF postback requests to avoid triggering during AJAX calls,
+     * which could conflict with parallel record loads. This mirrors the former
+     * {@code <f:viewAction onPostback="false">} behavior that was declared in the view.
+     *
      * @param cmsPage CMS page to set as current page
      */
     public void setCurrentPage(CMSPage cmsPage) {
+        // Skip on postbacks to avoid conflicting with parallel record loads triggered by AJAX requests.
+        // FacesContext may be null in non-JSF contexts (e.g. tests), in which case we proceed normally.
+        FacesContext ctx = FacesContext.getCurrentInstance();
+        if (ctx != null && ctx.isPostback()) {
+            return;
+        }
         try {
-            //call "setCurrentView" first, because it calls setCurrentPage which needs to be overwritten by the 
-            //call to "setCurrentPage" here
+            // Call setCurrentView first because it internally calls setCurrentPage,
+            // which must be overwritten by the subsequent explicit call below.
             setCurrentView(cmsBean.isRelatedWorkLoaded() ? PageType.cmsPageOfWork.name() : PageType.cmsPage.name());
             setCurrentPage(getCMSPageNavigationId(cmsPage), false, !cmsBean.isRelatedWorkLoaded(), true);
         } catch (IndexUnreachableException e) {
@@ -292,6 +334,7 @@ public class NavigationHelper implements Serializable {
      * Setter for the field <code>currentPage</code>.
      *
      * @param currentPage page name to set as current
+     * @should return expected value for given input
      */
     public void setCurrentPage(String currentPage) {
         logger.trace("setCurrentPage: {}", currentPage);
@@ -306,6 +349,10 @@ public class NavigationHelper implements Serializable {
      * Specific error types (e.g. recordNotFound, download) are passed through directly so that their own message keys are used as the page title.
      *
      * @param errorType the error type string set by the exception handler; may be null
+     * @should map null and generic error types to error
+     * @should pass through specific error types unchanged
+     * @should map generic types to error
+     * @should pass through specific error types
      */
     public void setCurrentPageForError(String errorType) {
         if (errorType == null || "general".equals(errorType) || "general_no_url".equals(errorType)) {
@@ -375,7 +422,7 @@ public class NavigationHelper implements Serializable {
     /**
      * Returns the manually selected view type (will be used for search result browsing, if set).
      *
-     * @should return value correctly
+     * @should return preferred view value from status map
      * @return the manually selected view type name, or null if none has been set
      */
     public String getPreferredView() {
@@ -385,7 +432,7 @@ public class NavigationHelper implements Serializable {
     /**
      * Sets the manually selected view type (will be used for search result browsing, if set).
      *
-     * @should set value correctly
+     * @should store given value under preferred view key in status map
      * @param preferredView view type name to set as preferred
      */
     public void setPreferredView(String preferredView) {
@@ -512,6 +559,7 @@ public class NavigationHelper implements Serializable {
      * @param pageType page type for which the breadcrumb hierarchy is built
      * @param labels optional label overrides for each breadcrumb level
      * @return List<LabeledLink>
+     * @should return collection with 3 elements
      */
     protected List<LabeledLink> createAdminBreadcrumbs(PageType pageType, List<List<String>> labels) {
         PageType breadcrumbType = pageType;
@@ -594,7 +642,7 @@ public class NavigationHelper implements Serializable {
      * getCurrentView.
      *
      * @return the name of the currently selected content view
-     * @should return value correctly
+     * @should return current view value from status map
      */
     public String getCurrentView() {
         return statusMap.get(KEY_CURRENT_VIEW);
@@ -604,7 +652,7 @@ public class NavigationHelper implements Serializable {
      * Sets the currently selected content view name.
      *
      * @param currentView view name to set as current
-     * @should set value correctly
+     * @should store given value under current view key in status map
      */
     public void setCurrentView(String currentView) {
         logger.trace("{}: {}", KEY_CURRENT_VIEW, currentView);
@@ -696,11 +744,11 @@ public class NavigationHelper implements Serializable {
 
         // Make sure browsing terms are reloaded, so that locale-specific sorting can be applied
         if (SEARCH_TERM_LIST_PAGE.equals(getCurrentPage())) {
-            BrowseBean bb = BeanUtils.getBrowseBean();
-            if (bb != null) {
-                bb.resetTerms();
+            // Use injected field instead of per-call BeanUtils CDI lookup
+            if (browseBean != null) {
+                browseBean.resetTerms();
                 try {
-                    bb.searchTerms();
+                    browseBean.searchTerms();
                 } catch (IndexUnreachableException | PresentationException e) {
                     logger.error(e.getMessage(), e);
                 } catch (RedirectException e) {
@@ -711,15 +759,15 @@ public class NavigationHelper implements Serializable {
 
         // Also set ActiveDocumentBean.selectedRecordLanguage, so that multilingual metadata
         // values etc. are displayed in the selected language as well
-        ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
-        if (adb != null) {
-            adb.setSelectedRecordLanguage(inLocale);
+        // Use injected field instead of per-call BeanUtils CDI lookup
+        if (activeDocumentBean != null) {
+            activeDocumentBean.setSelectedRecordLanguage(inLocale);
         }
 
         // Reset advanced search parameters so that the SearchQueryItems have correct language fields
-        SearchBean sb = BeanUtils.getSearchBean();
-        if (sb != null && sb.getActiveSearchType() == SearchHelper.SEARCH_TYPE_ADVANCED) {
-            sb.resetAdvancedSearchParameters();
+        // Use injected field instead of per-call BeanUtils CDI lookup
+        if (searchBean != null && searchBean.getActiveSearchType() == SearchHelper.SEARCH_TYPE_ADVANCED) {
+            searchBean.resetAdvancedSearchParameters();
         }
     }
 
@@ -948,7 +996,7 @@ public class NavigationHelper implements Serializable {
      * setMenuPage.
      *
      * @param page menu page name to store in the status map
-     * @should set value correctly
+     * @should store given value under menu page key in status map
      */
     public void setMenuPage(String page) {
         statusMap.put(KEY_MENU_PAGE, page);
@@ -957,7 +1005,7 @@ public class NavigationHelper implements Serializable {
     /**
      * getMenuPage.
      *
-     * @should return value correctly
+     * @should return menu page value from status map
      * @return the currently active menu page name stored in the status map
      */
     public String getMenuPage() {
@@ -991,6 +1039,7 @@ public class NavigationHelper implements Serializable {
      *
      * @return the subtheme name determined from current cmsPage or current document. If {@link Configuration#getSubthemeDiscriminatorField} is blank,
      *         always return an empty string
+     * @should return empty string if viewManager is null
      */
     public String determineCurrentSubThemeDiscriminatorValue() {
         // Automatically set the sub-theme discriminator value to the
@@ -998,7 +1047,7 @@ public class NavigationHelper implements Serializable {
         String subThemeDiscriminatorValue = "";
         String discriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
         if (StringUtils.isNotBlank(discriminatorField)) {
-            ActiveDocumentBean activeDocumentBean = BeanUtils.getActiveDocumentBean();
+            // Use injected field instead of per-call BeanUtils CDI lookup
             ViewManager viewManager = activeDocumentBean != null ? activeDocumentBean.getViewManager() : null;
             if (viewManager != null && getCurrentPageType().isDocumentPage()) {
                 // If a record is loaded, get the value from the record's value
@@ -1025,7 +1074,7 @@ public class NavigationHelper implements Serializable {
      * setSubThemeDiscriminatorValue.
      *
      * @param subThemeDiscriminatorValue discriminator value identifying the active sub-theme
-     * @should set value correctly
+     * @should store discriminator value in status map when CMS page is set
      */
     public void setSubThemeDiscriminatorValue(String subThemeDiscriminatorValue) {
         logger.trace("setSubThemeDiscriminatorValue: {}", subThemeDiscriminatorValue);
@@ -1035,11 +1084,10 @@ public class NavigationHelper implements Serializable {
         statusMap.put(KEY_SUBTHEME_DISCRIMINATOR_VALUE, subThemeDiscriminatorValue);
         if ((StringUtils.isBlank(subThemeDiscriminatorValue) && StringUtils.isNotBlank(previousSubThemeDiscriminatorValue)
                 || (StringUtils.isNotBlank(subThemeDiscriminatorValue) && !subThemeDiscriminatorValue.equals(previousSubThemeDiscriminatorValue)))) {
-            BrowseBean browseBean = BeanUtils.getBrowseBean();
+            // Use injected fields instead of per-call BeanUtils CDI lookup
             if (browseBean != null) {
                 browseBean.resetAllLists();
             }
-            CalendarBean calendarBean = BeanUtils.getCalendarBean();
             if (calendarBean != null) {
                 try {
                     calendarBean.resetYears();
@@ -1244,7 +1292,7 @@ public class NavigationHelper implements Serializable {
      * @param anchorOrGroup true if the record is an anchor or group
      * @param hasImages true if the record has image pages
      * @return Record URL
-     * @should construct url correctly
+     * @should return /object/{PI}/ URL for monograph record type
      */
     public String getRecordUrl(String pi, String docStructType, int order, boolean anchorOrGroup, boolean hasImages) {
         PageType pageType = PageType.determinePageType(docStructType, "image/tiff", anchorOrGroup, hasImages, false);
@@ -1422,7 +1470,7 @@ public class NavigationHelper implements Serializable {
      * setSelectedNewsArticle.
      *
      * @param art identifier or key of the selected news article
-     * @should set value correctly
+     * @should store given value under selected news article key in status map
      */
     public void setSelectedNewsArticle(String art) {
         statusMap.put(KEY_SELECTED_NEWS_ARTICLE, art);
@@ -1431,7 +1479,7 @@ public class NavigationHelper implements Serializable {
     /**
      * getSelectedNewsArticle.
      *
-     * @should return value correctly
+     * @should return selected news article value from status map
      * @return the identifier of the currently selected news article stored in the status map
      */
     public String getSelectedNewsArticle() {
@@ -1441,8 +1489,10 @@ public class NavigationHelper implements Serializable {
     /**
      * Purges all traces of the currently loaded record from ActiveDocumentBean.
      */
-    private static void resetCurrentDocument() {
-        ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
+    // Converted from static to instance method to use injected activeDocumentBean
+    // instead of per-call BeanUtils CDI lookup (Weld StackWalker overhead)
+    private void resetCurrentDocument() {
+        ActiveDocumentBean adb = activeDocumentBean;
         if (adb != null) {
             if (!adb.isRecordLoaded()) {
                 logger.trace("No record loaded, no need to reset.");
@@ -1488,7 +1538,7 @@ public class NavigationHelper implements Serializable {
      * getStatusMapValue.
      *
      * @param key status map key to look up
-     * @should return value correctly
+     * @should return value stored under given key in status map
      * @return the value associated with the given key in the navigation status map
      */
     public String getStatusMapValue(String key) {
@@ -1500,7 +1550,7 @@ public class NavigationHelper implements Serializable {
      *
      * @param key status map key to set
      * @param value value to associate with the key
-     * @should set value correctly
+     * @should store given key-value pair in status map
      */
     public void setStatusMapValue(String key, String value) {
         statusMap.put(key, value);
@@ -1881,10 +1931,15 @@ public class NavigationHelper implements Serializable {
      * @return Resource path
      */
     public String getResource(String path, List<String> alternativeSuffixes) {
+        if (StringUtils.isBlank(path)) {
+            logger.warn("getResource called with blank path");
+            return "";
+        }
         FileResourceManager fileResourceManager = DataManager.getInstance().getFileResourceManager();
         if (fileResourceManager != null) {
             Path themePath = fileResourceManager.getThemeResourcePath(path);
-            if (Files.exists(themePath)) {
+            // Use isRegularFile instead of exists to avoid returning directory paths
+            if (Files.isRegularFile(themePath)) {
                 String ret = fileResourceManager.getThemeResourceURI(path).toString();
                 return ret;
             } else if (!alternativeSuffixes.isEmpty()) {
@@ -1898,6 +1953,29 @@ public class NavigationHelper implements Serializable {
             return fileResourceManager.getCoreResourceURI(path).toString();
         }
         return "";
+    }
+
+    /**
+     * Resolves a list of licence icon names to their resource URIs, filtering out any icons whose resolved path is blank or a
+     * directory (trailing slash). This method is intended for use in Facelets templates that pass the result directly to
+     * {@code <ui:include>}, where an invalid path would cause a {@code TagAttributeException} at view-build time.
+     *
+     * @param icons list of icon file names (e.g. "cc0.svg"); blank entries are ignored
+     * @return ordered list of resolved resource URIs suitable for use as {@code <ui:include src="...">} values
+     * @should return empty list for blank icons
+     * @should return empty list for null input
+     * @should filter out paths resolving to directories
+     */
+    public List<String> getLicenceIconResources(List<String> icons) {
+        if (icons == null || icons.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return icons.stream()
+                .filter(icon -> icon != null && !icon.isBlank())
+                .map(icon -> getResource("images/licence/" + icon))
+                // Exclude blank results and directory paths (ending with '/') that would crash ui:include
+                .filter(path -> path != null && !path.isBlank() && !path.endsWith("/"))
+                .collect(Collectors.toList());
     }
 
     private Optional<String> findResource(String path, Path themePath, String suffix) {
@@ -1955,12 +2033,15 @@ public class NavigationHelper implements Serializable {
      * @param language language code used to look up the configured default sort field
      * @return {@link ViewerPath}
      */
-    private static ViewerPath setupRandomSearchSeed(ViewerPath path, String language) {
+    // Converted from static to instance method to use injected searchBean
+    // instead of per-call BeanUtils CDI lookup (Weld StackWalker overhead)
+    private ViewerPath setupRandomSearchSeed(ViewerPath path, String language) {
         String defaultSortField = DataManager.getInstance().getConfiguration().getDefaultSortField(language);
         if (SolrConstants.SORT_RANDOM.equalsIgnoreCase(defaultSortField)) {
             String parameterPath = path.getParameterPath().toString();
             if (StringUtils.isBlank(parameterPath) || parameterPath.matches("\\/?-\\/-\\/\\d+\\/-\\/-\\/?")) {
-                SearchBean sb = BeanUtils.getSearchBean();
+                // Use injected field instead of per-call BeanUtils CDI lookup
+                SearchBean sb = searchBean;
                 if (sb != null) {
                     String pageUrl = PrettyUrlTools.getRelativePageUrl("newSearch5",
                             sb.getActiveContext(),

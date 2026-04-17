@@ -33,11 +33,10 @@ import io.goobi.viewer.AbstractTest;
 class DateToolsTest extends AbstractTest {
 
     /**
-     * @see DateTools#getLocalDate(Date,String)
-     * @verifies format date correctly for the given language
+     * @verifies format date using locale specific pattern for german and english
      */
     @Test
-    void getLocalDate_shouldFormatDateCorrectlyForTheGivenLanguage() throws Exception {
+    void getLocalDate_shouldFormatDateUsingLocaleSpecificPatternForGermanAndEnglish() throws Exception {
         LocalDateTime date = LocalDateTime.now()
                 .withYear(1980)
                 .withMonth(7)
@@ -50,7 +49,6 @@ class DateToolsTest extends AbstractTest {
     }
 
     /**
-     * @see DateTools#getLocalDate(Date,String)
      * @verifies use English format for unknown languages
      */
     @Test
@@ -67,10 +65,10 @@ class DateToolsTest extends AbstractTest {
 
     /**
      * @see DateTools#parseDateTimeFromString(String,boolean)
-     * @verifies parse iso date formats correctly
+     * @verifies parse ISO date variants including with millis t separator z suffix and year month only
      */
     @Test
-    void parseDateTimeFromString_shouldParseIsoDateFormatsCorrectly() throws Exception {
+    void parseDateTimeFromString_shouldParseISODateVariantsIncludingWithMillisTSeparatorZSuffixAndYearMonthOnly() throws Exception {
         {
             LocalDateTime date = DateTools.parseDateTimeFromString("2017-12-19 00:00:00", false);
             Assertions.assertNotNull(date);
@@ -117,10 +115,10 @@ class DateToolsTest extends AbstractTest {
 
     /**
      * @see DateTools#parseDateTimeFromString(String,boolean)
-     * @verifies parse german date formats correctly
+     * @verifies parse german dd m myyyy format with and without time component
      */
     @Test
-    void parseDateTimeFromString_shouldParseGermanDateFormatsCorrectly() throws Exception {
+    void parseDateTimeFromString_shouldParseGermanDdMMyyyyFormatWithAndWithoutTimeComponent() throws Exception {
         {
             LocalDateTime date = DateTools.parseDateTimeFromString("19.12.2017", false);
             Assertions.assertNotNull(date);
@@ -142,10 +140,10 @@ class DateToolsTest extends AbstractTest {
 
     /**
      * @see DateTools#parseDateTimeFromString(String,boolean)
-     * @verifies parse english date formats correctly
+     * @verifies parse english m mddyyyy format with and without AM/PM time
      */
     @Test
-    void parseDateTimeFromString_shouldParseEnglishDateFormatsCorrectly() throws Exception {
+    void parseDateTimeFromString_shouldParseEnglishMMddyyyyFormatWithAndWithoutAMPMTime() throws Exception {
         {
             LocalDateTime date = DateTools.parseDateTimeFromString("12/20/2017", false);
             Assertions.assertNotNull(date);
@@ -167,10 +165,10 @@ class DateToolsTest extends AbstractTest {
 
     /**
      * @see DateTools#parseDateTimeFromString(String,boolean)
-     * @verifies parse chinese date formats correctly
+     * @verifies parse dot separated yyyy m mdd date format
      */
     @Test
-    void parseDateTimeFromString_shouldParseChineseDateFormatsCorrectly() throws Exception {
+    void parseDateTimeFromString_shouldParseDotSeparatedYyyyMMddDateFormat() throws Exception {
         LocalDateTime date = DateTools.parseDateTimeFromString("2017.12.19", false);
         Assertions.assertNotNull(date);
         Assertions.assertEquals(2017, date.getYear());
@@ -180,10 +178,10 @@ class DateToolsTest extends AbstractTest {
 
     /**
      * @see DateTools#parseDateTimeFromString(String,boolean)
-     * @verifies parse japanese date formats correctly
+     * @verifies parse slash separated yyyy m mdd date format
      */
     @Test
-    void parseDateTimeFromString_shouldParseJapaneseDateFormatsCorrectly() throws Exception {
+    void parseDateTimeFromString_shouldParseSlashSeparatedYyyyMMddDateFormat() throws Exception {
         LocalDateTime date = DateTools.parseDateTimeFromString("2017/12/19", false);
         Assertions.assertNotNull(date);
         Assertions.assertEquals(2017, date.getYear());
@@ -226,10 +224,10 @@ class DateToolsTest extends AbstractTest {
 
     /**
      * @see DateTools#parseMultipleDatesFromString(String)
-     * @verifies parse single date correctly
+     * @verifies return single-element list when input contains one date
      */
     @Test
-    void parseMultipleDatesFromString_shouldParseSingleDateCorrectly() throws Exception {
+    void parseMultipleDatesFromString_shouldReturnSingleElementListWhenInputContainsOneDate() throws Exception {
         List<LocalDateTime> result = DateTools.parseMultipleDatesFromString("2018-11-20");
         Assertions.assertEquals(1, result.size());
         Assertions.assertEquals("2018-11-20", DateTools.format(result.get(0), DateTools.FORMATTERISO8601DATE, false));
@@ -237,10 +235,10 @@ class DateToolsTest extends AbstractTest {
 
     /**
      * @see DateTools#parseMultipleDatesFromString(String)
-     * @verifies parse multiple dates correctly
+     * @verifies split slash-separated date string into individual parsed dates
      */
     @Test
-    void parseMultipleDatesFromString_shouldParseMultipleDatesCorrectly() throws Exception {
+    void parseMultipleDatesFromString_shouldSplitSlashSeparatedDateStringIntoIndividualParsedDates() throws Exception {
         List<LocalDateTime> result = DateTools.parseMultipleDatesFromString("2018-11-19 / 2018-11-20");
         Assertions.assertEquals(2, result.size());
         Assertions.assertEquals("2018-11-19", DateTools.format(result.get(0), DateTools.FORMATTERISO8601DATE, false));
@@ -249,10 +247,10 @@ class DateToolsTest extends AbstractTest {
 
     /**
      * @see DateTools#parseMultipleDatesFromString(String)
-     * @verifies parse dates in parentheses correctly
+     * @verifies strip parentheses from dates before parsing slash-separated input
      */
     @Test
-    void parseMultipleDatesFromString_shouldParseDatesInParenthesesCorrectly() throws Exception {
+    void parseMultipleDatesFromString_shouldStripParenthesesFromDatesBeforeParsingSlashSeparatedInput() throws Exception {
         List<LocalDateTime> result = DateTools.parseMultipleDatesFromString("(2018-11-19) / (2018-11-20)");
         Assertions.assertEquals(2, result.size());
         Assertions.assertEquals("2018-11-19", DateTools.format(result.get(0), DateTools.FORMATTERISO8601DATE, false));
@@ -261,10 +259,10 @@ class DateToolsTest extends AbstractTest {
 
     /**
      * @see DateTools#getLocalDateTimeFromMillis(long,boolean)
-     * @verifies create LocalDateTime correctly
+     * @verifies convert epoch millis to LocalDateTime with matching year, month, day, hour, and minute
      */
     @Test
-    void getLocalDateTimeFromMillis_shouldCreateLocalDateTimeCorrectly() throws Exception {
+    void getLocalDateTimeFromMillis_shouldConvertEpochMillisToLocalDateTimeWithMatchingYearMonthDayHourAndMinute() throws Exception {
         LocalDateTime ldt = DateTools.getLocalDateTimeFromMillis(1603905300000L, true);
         Assertions.assertNotNull(ldt);
         Assertions.assertEquals(2020, ldt.getYear());

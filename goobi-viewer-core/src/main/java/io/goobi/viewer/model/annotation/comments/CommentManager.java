@@ -30,6 +30,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -63,6 +66,13 @@ public class CommentManager implements AnnotationLister<Comment> {
 
     private static final Logger logger = LogManager.getLogger(CommentManager.class);
 
+    // Executor for async e-mail notifications; daemon threads ensure JVM shutdown is not blocked.
+    private static final ExecutorService NOTIFICATION_EXECUTOR = Executors.newCachedThreadPool(r -> {
+        Thread t = new Thread(r, "comment-notification-worker");
+        t.setDaemon(true);
+        return t;
+    });
+
     private final AnnotationSaver saver;
     private final AnnotationDeleter deleter;
     private final List<ChangeNotificator> notificators;
@@ -84,6 +94,22 @@ public class CommentManager implements AnnotationLister<Comment> {
     }
 
     /**
+     * Shuts down the background e-mail notification executor. Called by {@link io.goobi.viewer.ContextListener}
+     * during application shutdown. Waits up to 5 seconds for in-flight notifications to finish.
+     * @should complete without exception
+     */
+    public static void shutdown() {
+        NOTIFICATION_EXECUTOR.shutdownNow();
+        try {
+            if (!NOTIFICATION_EXECUTOR.awaitTermination(5, TimeUnit.SECONDS)) {
+                logger.warn("CommentManager notification executor did not terminate within 5 seconds");
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    /**
      *
      * @param text raw comment text entered by the user
      * @param creator user creating the comment
@@ -91,6 +117,9 @@ public class CommentManager implements AnnotationLister<Comment> {
      * @param pageOrder page number the comment is attached to
      * @param license license string to apply to the comment
      * @param publicationStatus initial publication status of the comment
+     * @should create
+     * @should modify
+     * @should delete
      */
     public void createComment(String text, User creator, String pi, Integer pageOrder, String license, PublicationStatus publicationStatus) {
         String textCleaned = checkAndCleanScripts(text, creator, pi, pageOrder);
@@ -101,24 +130,20 @@ public class CommentManager implements AnnotationLister<Comment> {
             saver.save(comment);
             notificators.parallelStream().forEach(n -> {
                 if (n.getClass().equals(CommentMailNotificator.class)) {
-                    Thread fileChangedObserver = new Thread(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            try {
-                                // Send notification mails to each user group that receives notifications
-                                Set<UserGroup> groups = getNotificationUserGroupsForRecord(pi);
-                                Set<String> usedAddresses = new HashSet<>();
-                                for (UserGroup group : groups) {
-                                    populateRecipientsForGroup(group, (CommentMailNotificator) n, usedAddresses);
-                                    n.notifyCreation(comment, BeanUtils.getLocale(), viewerRootUrl);
-                                }
-                            } catch (DAOException | IndexUnreachableException | PresentationException e) {
-                                logger.error(e.getMessage());
+                    // Submit to managed executor instead of creating an untracked thread
+                    NOTIFICATION_EXECUTOR.submit(() -> {
+                        try {
+                            // Send notification mails to each user group that receives notifications
+                            Set<UserGroup> groups = getNotificationUserGroupsForRecord(pi);
+                            Set<String> usedAddresses = new HashSet<>();
+                            for (UserGroup group : groups) {
+                                populateRecipientsForGroup(group, (CommentMailNotificator) n, usedAddresses);
+                                n.notifyCreation(comment, BeanUtils.getLocale(), viewerRootUrl);
                             }
+                        } catch (DAOException | IndexUnreachableException | PresentationException e) {
+                            logger.error(e.getMessage());
                         }
                     });
-                    fileChangedObserver.start();
                 } else {
                     n.notifyCreation(comment, BeanUtils.getLocale(), viewerRootUrl);
                 }
@@ -134,6 +159,7 @@ public class CommentManager implements AnnotationLister<Comment> {
      * @param text new comment text provided by the editor
      * @param editor user performing the edit
      * @param publicationStatus updated publication status for the comment
+      * @should modify
      */
     public void editComment(Comment comment, String text, User editor, PublicationStatus publicationStatus) {
         String textCleaned = checkAndCleanScripts(text, editor, comment.getTargetPI(), comment.getTargetPageOrder());
@@ -146,24 +172,20 @@ public class CommentManager implements AnnotationLister<Comment> {
             saver.save(editedComment);
             notificators.parallelStream().forEach(n -> {
                 if (n.getClass().equals(CommentMailNotificator.class)) {
-                    Thread fileChangedObserver = new Thread(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            try {
-                                // Send notification mails to each user group that receives notifications
-                                Set<UserGroup> groups = getNotificationUserGroupsForRecord(editedComment.getTargetPI());
-                                Set<String> usedAddresses = new HashSet<>();
-                                for (UserGroup group : groups) {
-                                    populateRecipientsForGroup(group, (CommentMailNotificator) n, usedAddresses);
-                                    n.notifyEdit(comment, editedComment, BeanUtils.getLocale(), viewerRootUrl);
-                                }
-                            } catch (DAOException | IndexUnreachableException | PresentationException e) {
-                                logger.error(e.getMessage());
+                    // Submit to managed executor instead of creating an untracked thread
+                    NOTIFICATION_EXECUTOR.submit(() -> {
+                        try {
+                            // Send notification mails to each user group that receives notifications
+                            Set<UserGroup> groups = getNotificationUserGroupsForRecord(editedComment.getTargetPI());
+                            Set<String> usedAddresses = new HashSet<>();
+                            for (UserGroup group : groups) {
+                                populateRecipientsForGroup(group, (CommentMailNotificator) n, usedAddresses);
+                                n.notifyEdit(comment, editedComment, BeanUtils.getLocale(), viewerRootUrl);
                             }
+                        } catch (DAOException | IndexUnreachableException | PresentationException e) {
+                            logger.error(e.getMessage());
                         }
                     });
-                    fileChangedObserver.start();
                 } else {
                     n.notifyEdit(comment, editedComment, BeanUtils.getLocale(), viewerRootUrl);
                 }
@@ -211,6 +233,7 @@ public class CommentManager implements AnnotationLister<Comment> {
     /**
      *
      * @param comment the comment to delete
+      * @should delete
      */
     public void deleteComment(Comment comment) {
         try {

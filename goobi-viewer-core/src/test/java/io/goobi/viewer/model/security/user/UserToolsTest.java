@@ -34,7 +34,6 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
 class UserToolsTest extends AbstractDatabaseEnabledTest {
 
     /**
-     * @see UserTools#deleteBookmarkListsForUser(User)
      * @verifies delete all bookmark lists owned by user
      */
     @Test
@@ -48,7 +47,6 @@ class UserToolsTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see UserTools#deleteSearchesForUser(User)
      * @verifies delete all searches owned by user
      */
     @Test
@@ -62,7 +60,6 @@ class UserToolsTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see UserTools#deleteUserGroupOwnedByUser(User)
      * @verifies delete all user groups owned by user
      */
     @Test
@@ -81,11 +78,10 @@ class UserToolsTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see UserTools#deleteUserPublicContributions(User)
-     * @verifies delete all user public content correctly
+     * @verifies delete user comments and remove user from campaign record statistics
      */
     @Test
-    void deleteUserPublicContributions_shouldDeleteAllUserPublicContentCorrectly() throws Exception {
+    void deleteUserPublicContributions_shouldDeleteUserCommentsAndRemoveUserFromCampaignRecordStatistics() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(2);
         Assertions.assertNotNull(user);
         UserTools.deleteUserPublicContributions(user);
@@ -101,11 +97,10 @@ class UserToolsTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see UserTools#anonymizeUserPublicContributions(User)
-     * @verifies anonymize all user public content correctly
+     * @verifies replace user as comment creator and campaign reviewer with anonymous identity
      */
     @Test
-    void anonymizeUserPublicContributions_shouldAnonymizeAllUserPublicContentCorrectly() throws Exception {
+    void anonymizeUserPublicContributions_shouldReplaceUserAsCommentCreatorAndCampaignReviewerWithAnonymousIdentity() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(2);
         Assertions.assertNotNull(user);
         Assertions.assertTrue(UserTools.anonymizeUserPublicContributions(user));

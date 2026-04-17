@@ -105,8 +105,12 @@ class LitteraProviderTest extends AbstractDatabaseEnabledTest {
         provider = new LitteraProvider("external", "", "http://" + SERVERURL + ":" + SERVERPORT + "/externauth", "", 1000l);
     }
 
+    /**
+     * @verifies return true for given input
+     * @see LitteraProvider#login
+     */
     @Test
-    void testLogin() throws AuthenticationProviderException, InterruptedException, ExecutionException {
+    void login_shouldReturnTrueForGivenInput() throws AuthenticationProviderException, InterruptedException, ExecutionException {
         Assertions.assertFalse(provider.login(user_id, user_pw).get().isRefused());
         Assertions.assertTrue(provider.login(user_id_invalid, user_pw).get().isRefused());
         Assertions.assertTrue(provider.login(user_id, user_pw_invalid).get().isRefused());

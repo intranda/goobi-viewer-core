@@ -51,6 +51,8 @@ public class HttpResponseFilter implements Filter {
 
     private static boolean preventProxyCaching = DataManager.getInstance().getConfiguration().isPreventProxyCaching();
     private static String alwaysCacheRegex = "/css|jquery|primefaces|\\.js|\\.gif|\\.png|\\.ico|\\.jpg|\\.jpeg";
+    // Pre-compiled pattern for cache regex — avoids Pattern.compile() on every HTTP request
+    private static final Pattern ALWAYS_CACHE_PATTERN = Pattern.compile(alwaysCacheRegex);
 
     /** {@inheritDoc} */
     @Override
@@ -69,8 +71,7 @@ public class HttpResponseFilter implements Filter {
             //            logger.debug(httpRequest.getRequestURI());
 
             // Only disable caching if the URI doesn't match the regex
-            Pattern p = Pattern.compile(alwaysCacheRegex);
-            Matcher m = p.matcher(httpRequest.getRequestURI());
+            Matcher m = ALWAYS_CACHE_PATTERN.matcher(httpRequest.getRequestURI());
             if (!m.find()) {
                 //                logger.debug(httpRequest.getRequestURI());
                 HttpServletResponse httpResponse = (HttpServletResponse) response;

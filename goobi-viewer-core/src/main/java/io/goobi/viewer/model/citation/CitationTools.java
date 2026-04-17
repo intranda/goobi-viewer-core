@@ -74,8 +74,8 @@ public final class CitationTools {
      * @should set correct value for record type
      * @should set correct value for docstruct type
      * @should set correct value for image type
-     * @should fall back to topstruct value correctly
-     * @should apply pattern correctly
+     * @should use topstruct field value when topstruct fallback is enabled on image level link
+     * @should replace value and page placeholders in link pattern with resolved field and page number
      */
     public static List<CitationLink> generateCitationLinksForLevel(List<CitationLink> allLinks, CitationLinkLevel level, ViewManager viewManager)
             throws PresentationException, IndexUnreachableException {

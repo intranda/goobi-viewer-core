@@ -276,8 +276,7 @@ public class DisplayConditions implements Serializable {
         if (viewManager == null) {
             return false;
         }
-        return condition.matchesPage(getPageType(), viewManager.getCurrentPage(), httpRequest,
-                propertyCache);
+        return condition.matchesPage(getPageType(), viewManager.getCurrentPage(), httpRequest, propertyCache);
     }
 
     /**

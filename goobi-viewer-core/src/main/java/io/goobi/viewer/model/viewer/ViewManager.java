@@ -39,6 +39,7 @@ import java.io.PipedOutputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -190,14 +191,18 @@ public class ViewManager implements Serializable {
     /** Top level document. */
     private StructElement topStructElement;
 
+    // Cached result of getHighwirePressMetaTags() — topStructElement and downloadResources are
+    // stable for the lifetime of this ViewManager, so the output never changes.
+    private String highwireMetaTagsCache = null;
+
     /** Currently selected document. */
     private StructElement currentStructElement;
 
     private IPageLoader pageLoader;
     private PhysicalElement representativePage;
 
-    /** Table of contents object. */
-    private TOC toc;
+    /** Table of contents object. Volatile so that the post-lock write in ActiveDocumentBean.update() is immediately visible to all threads. */
+    private volatile TOC toc;
 
     private int rotate = 0;
     private int zoomSlider;
@@ -207,8 +212,11 @@ public class ViewManager implements Serializable {
     private String dropdownSelected = "";
     private int currentThumbnailPage = 1;
     private String pi;
-    private Boolean accessPermissionPdf = null;
-    private Boolean allowUserComments = null;
+    // volatile ensures the lazily-computed access-permission cache is visible across threads
+    // that now call isAccessPermissionPdf() concurrently after the bean's synchronized guard
+    // was removed (see ActiveDocumentBean Task 6/7).
+    private volatile Boolean accessPermissionPdf = null;
+    private volatile Boolean allowUserComments = null;
     /** True if an access ticket is required before anything in this record may be viewed.. Value is set during the access permission check. */
     private boolean recordAccessTicketRequired = false;
     private List<StructElementStub> docHierarchy = null;
@@ -632,6 +640,7 @@ public class ViewManager implements Serializable {
      * @return the URL to the master image of the given page, optionally appending watermark parameters
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should url-encode watermarkId containing special characters
      */
     public String getMasterImageUrl(Scale scale, PhysicalElement page) throws IndexUnreachableException, DAOException {
 
@@ -728,11 +737,17 @@ public class ViewManager implements Serializable {
      * @return Image URL
      */
     private String getCurrentImageUrl(PageType view, int size) {
-        StringBuilder sb = new StringBuilder(imageDeliveryBean.getThumbs().getThumbnailUrl(getCurrentPage(), size, size));
+        // Guard against null current page: return null so EL expressions like
+        // "currentImageUrl != null" correctly evaluate to false instead of throwing NPE
+        PhysicalElement page = getCurrentPage();
+        if (page == null) {
+            return null;
+        }
+        StringBuilder sb = new StringBuilder(imageDeliveryBean.getThumbs().getThumbnailUrl(page, size, size));
         try {
             if (DataManager.getInstance().getConfiguration().getFooterHeight(new ViewAttributes(this, view)) > 0) {
                 sb.append("?ignoreWatermark=false");
-                sb.append(imageDeliveryBean.getFooter().getWatermarkTextIfExists(getCurrentPage()).map(text -> {
+                sb.append(imageDeliveryBean.getFooter().getWatermarkTextIfExists(page).map(text -> {
                     try {
                         return "&watermarkText=" + URLEncoder.encode(text, StringTools.DEFAULT_ENCODING);
                     } catch (UnsupportedEncodingException e) {
@@ -765,6 +780,8 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws ViewerConfigurationException
+     * @should return empty string if page is null
+     * @should return expected value for given input
      */
     public String getPageDownloadUrl(final DownloadOption option, PhysicalElement page)
             throws IndexUnreachableException, DAOException, ViewerConfigurationException {
@@ -806,6 +823,7 @@ public class ViewManager implements Serializable {
      * @param configuredMaxSize maximum allowed image dimensions from configuration
      * @param imageFilename file name used to determine the actual image format
      * @return List<DownloadOption>
+     * @should return non null result
      */
     public static List<DownloadOption> getDownloadOptionsForImage(
             List<DownloadOption> configuredOptions,
@@ -1084,7 +1102,7 @@ public class ViewManager implements Serializable {
     /**
      * rotateLeft.
      *
-     * @should rotate correctly
+     * @should decrement rotation by 90 degrees and wrap from 0 to 270
      * @return null (JSF navigation outcome; rotation is applied as a side effect)
      */
     public String rotateLeft() {
@@ -1103,7 +1121,7 @@ public class ViewManager implements Serializable {
     /**
      * rotateRight.
      *
-     * @should rotate correctly
+     * @should increment rotation by 90 degrees and wrap from 270 to 0
      * @return null (JSF navigation outcome; rotation is applied as a side effect)
      */
     public String rotateRight() {
@@ -1408,6 +1426,7 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws IDDOCNotFoundException
+     * @should return non null result
      */
     public void setCurrentImageOrderString(String currentImageOrderString)
             throws IndexUnreachableException, PresentationException, IDDOCNotFoundException {
@@ -1607,6 +1626,8 @@ public class ViewManager implements Serializable {
      * @return a list of physical pages for the current thumbnail page
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return correct PhysicalElements for a thumbnail page
+     * @should return correct physical elements for a thumbnail page with start page two
      */
     public List<PhysicalElement> getImagesSection() throws IndexUnreachableException, DAOException {
         return getImagesSection(DataManager.getInstance().getConfiguration().getViewerThumbnailsPerPage());
@@ -1780,8 +1801,8 @@ public class ViewManager implements Serializable {
      *
      * @return DFG Viewer link
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @should construct default url correctly
-     * @should construct url from custom field correctly
+     * @should return DFG viewer link using default source file URL when no custom field set
+     * @should return d f g viewer link using URL encoded m d 2 d f g v i e w e r URL field value
      */
     public String getLinkForDFGViewer() throws IndexUnreachableException {
         if (topStructElement != null && SolrConstants.SOURCEDOCFORMAT_METS.equals(topStructElement.getSourceDocFormat()) && isHasPages()) {
@@ -1979,6 +2000,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return empty string if current page is null
      */
     public String getTeiUrl() throws ViewerConfigurationException, IndexUnreachableException, DAOException {
         // Guard against null current page (e.g. when no page is selected yet)
@@ -2050,6 +2072,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return empty string if current page is null
      */
     public String getFulltextUrl() throws ViewerConfigurationException, PresentationException, IndexUnreachableException, DAOException {
         // Guard against null current page (e.g. when the record has no pages yet)
@@ -2101,6 +2124,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws URISyntaxException
+     * @should return non null result
      */
     public String getPdfDownloadLink() throws IndexUnreachableException, PresentationException, ViewerConfigurationException, URISyntaxException {
         return getPdfDownloadLink(null);
@@ -2175,11 +2199,11 @@ public class ViewManager implements Serializable {
     /**
      * Returns the pdf download link for a pdf of all pages from this.firstPdfPage to this.lastPdfPage (inclusively).
      *
-     * @should construct url correctly
      * @return the PDF download URL for the selected page range
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should include dollar-separated filenames for selected page range in PDF URL
      */
     public String getPdfPartDownloadLink() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("getPdfPartDownloadLink: {}-{}", firstPdfPage, lastPdfPage);
@@ -2570,6 +2594,7 @@ public class ViewManager implements Serializable {
      * @return true if the percentage of pages with full-text content is below the configured warning threshold, false otherwise
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should return true if there are no pages
      */
     public boolean isBelowFulltextThreshold() throws PresentationException, IndexUnreachableException {
         int threshold = DataManager.getInstance().getConfiguration().getFulltextPercentageWarningThreshold();
@@ -2598,18 +2623,24 @@ public class ViewManager implements Serializable {
     }
 
     public long getPageCountWithFulltext() throws IndexUnreachableException, PresentationException {
-        return DataManager.getInstance()
-                .getSearchIndex()
-                .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
-                        .append(':')
-                        .append(pi)
-                        .append(" +")
-                        .append(SolrConstants.DOCTYPE)
-                        .append(":PAGE")
-                        .append(" +")
-                        .append(SolrConstants.FULLTEXTAVAILABLE)
-                        .append(":true")
-                        .toString());
+        // Lazy cache: the fulltext page count is immutable for a given record within a session,
+        // so repeated calls (e.g. from isBelowFulltextThreshold and FileType.getTypesForRecord)
+        // reuse the cached value instead of issuing a new Solr query each time.
+        if (pagesWithFulltext == null) {
+            pagesWithFulltext = DataManager.getInstance()
+                    .getSearchIndex()
+                    .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
+                            .append(':')
+                            .append(pi)
+                            .append(" +")
+                            .append(SolrConstants.DOCTYPE)
+                            .append(":PAGE")
+                            .append(" +")
+                            .append(SolrConstants.FULLTEXTAVAILABLE)
+                            .append(":true")
+                            .toString());
+        }
+        return pagesWithFulltext;
     }
 
     /**
@@ -2760,6 +2791,9 @@ public class ViewManager implements Serializable {
      * @throws PresentationException
      */
     public Map<String, List<String>> getFilenamesByMimeType(boolean localFilesOnly) throws IndexUnreachableException, PresentationException {
+        // Fetch both FILENAME and MIMETYPE from Solr — using the pre-indexed MIMETYPE
+        // field avoids calling getMimeTypeViaFileName() for every page, which would invoke
+        // Files.probeContentType() (potentially filesystem I/O per file) 7000+ times.
         List<SolrDocument> pageDocs = DataManager.getInstance()
                 .getSearchIndex()
                 .getDocs(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
@@ -2771,17 +2805,31 @@ public class ViewManager implements Serializable {
                         .append(" +")
                         .append(SolrConstants.FILENAME)
                         .append(":*")
-                        .toString(), List.of(SolrConstants.FILENAME));
+                        .toString(), List.of(SolrConstants.FILENAME, SolrConstants.MIMETYPE));
         return Optional.ofNullable(pageDocs)
                 .orElse(Collections.emptyList())
                 .stream()
-                .map(doc -> doc.getFieldValue(SolrConstants.FILENAME))
-                .map(Object::toString)
-                .filter(path -> !localFilesOnly || !path.matches("(?i)^https?:.*"))
-                .collect(Collectors.toMap(
-                        this::getMimeTypeViaFileName,
-                        List::of,
-                        (set1, set2) -> new ArrayList<>(CollectionUtils.union(set1, set2))));
+                .filter(doc -> doc.getFieldValue(SolrConstants.FILENAME) != null)
+                .filter(doc -> {
+                    String filename = doc.getFieldValue(SolrConstants.FILENAME).toString();
+                    return !localFilesOnly || !filename.matches("(?i)^https?:.*");
+                })
+                // Use groupingBy instead of toMap+merger to avoid O(n²) list copying when many
+                // documents share the same MIME type (e.g. 7034 pages all returning image/png).
+                // The old toMap merger called CollectionUtils.union() on an ever-growing list for
+                // each collision, resulting in ~n²/2 total element copies and multi-second delays.
+                .collect(Collectors.groupingBy(
+                        doc -> {
+                            // Prefer MIMETYPE from Solr index; fall back to extension-based detection
+                            String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
+                            if (StringUtils.isNotBlank(mimeType)) {
+                                return mimeType;
+                            }
+                            return getMimeTypeViaFileName(doc.getFieldValue(SolrConstants.FILENAME).toString());
+                        },
+                        Collectors.mapping(
+                                doc -> doc.getFieldValue(SolrConstants.FILENAME).toString(),
+                                Collectors.toList())));
     }
 
     /**
@@ -2790,11 +2838,33 @@ public class ViewManager implements Serializable {
      * @return {@link String}
      */
     public String getMimeTypeViaFileName(String filename) {
-        try {
-            return FileTools.getMimeTypeFromFile(Path.of(filename));
-        } catch (IOException e) {
-            return "unknown";
+        // Use extension-based detection only — avoids FileTools.getMimeTypeFromFile() which
+        // calls Files.probeContentType() (filesystem/JNI overhead). When this method is
+        // invoked for thousands of Solr page documents the per-call cost multiplies to seconds.
+        String ext = filename.contains(".")
+                ? filename.substring(filename.lastIndexOf('.') + 1).toLowerCase()
+                : "";
+        // URLConnection.guessContentTypeFromName is a pure in-memory extension lookup
+        String mimeType = URLConnection.guessContentTypeFromName("x." + ext);
+        if (StringUtils.isNotBlank(mimeType)) {
+            return mimeType;
         }
+        // Fallback for formats not in URLConnection's built-in table
+        return switch (ext) {
+            case "tif", "tiff" -> "image/tiff";
+            case "jp2", "jpx", "j2k" -> "image/jp2";
+            case "pdf" -> "application/pdf";
+            case "epub" -> "application/epub+zip";
+            case "mp3" -> "audio/mpeg";
+            case "mp4" -> "video/mp4";
+            case "ogg" -> "audio/ogg";
+            case "webm" -> "video/webm";
+            case "xml", "alto" -> "application/xml";
+            case "mxf" -> "video/mxf";
+            case "obj", "ply", "stl", "fbx", "gltf", "glb" -> "object/" + ext;
+            case "x3d", "x3dv", "x3db" -> "model/x3d+XXX";
+            default -> "application/octet-stream";
+        };
     }
 
     public MimeType getMediaType() {
@@ -2802,18 +2872,24 @@ public class ViewManager implements Serializable {
     }
 
     public Long getPageCountWithAlto() throws IndexUnreachableException, PresentationException {
-        return DataManager.getInstance()
-                .getSearchIndex()
-                .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
-                        .append(':')
-                        .append(pi)
-                        .append(" +")
-                        .append(SolrConstants.DOCTYPE)
-                        .append(":PAGE")
-                        .append(" +")
-                        .append(SolrConstants.FILENAME_ALTO)
-                        .append(":*")
-                        .toString());
+        // Lazy cache: the ALTO page count is immutable for a given record within a session,
+        // so repeated calls (e.g. from isAltoAvailableForWork and FileType.getTypesForRecord)
+        // reuse the cached value instead of issuing a new Solr query each time.
+        if (pagesWithAlto == null) {
+            pagesWithAlto = DataManager.getInstance()
+                    .getSearchIndex()
+                    .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
+                            .append(':')
+                            .append(pi)
+                            .append(" +")
+                            .append(SolrConstants.DOCTYPE)
+                            .append(":PAGE")
+                            .append(" +")
+                            .append(SolrConstants.FILENAME_ALTO)
+                            .append(":*")
+                            .toString());
+        }
+        return pagesWithAlto;
     }
 
     /**
@@ -2906,6 +2982,7 @@ public class ViewManager implements Serializable {
      * record.
      *
      * @return true if there is at least one downloadable original content file available for this record, false otherwise
+     * @should display download widget
      */
     public boolean isDisplayContentDownloadMenu() {
         try {
@@ -2925,6 +3002,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws IOException
+     * @should list download links for work
      */
     public List<LabeledLink> getContentDownloadLinksForWork() throws IOException, PresentationException, IndexUnreachableException, DAOException {
         AlphanumCollatorComparator comparator = new AlphanumCollatorComparator(null);
@@ -3057,21 +3135,25 @@ public class ViewManager implements Serializable {
      */
     public List<StructElementStub> getCurrentDocumentHierarchy() throws IndexUnreachableException {
         if (docHierarchy == null) {
-            docHierarchy = new LinkedList<>();
-
+            // Build into a local variable first, then assign to the field only once complete.
+            // This prevents other threads from observing a partially-built LinkedList and racing
+            // with Collections.reverse(), which caused NPE in LinkedList$ListItr.next().
+            LinkedList<StructElementStub> temp = new LinkedList<>();
             StructElement curDoc = getCurrentStructElement();
             while (curDoc != null) {
-                docHierarchy.add(curDoc.createStub());
+                temp.add(curDoc.createStub());
                 curDoc = curDoc.getParent();
             }
-            Collections.reverse(docHierarchy);
+            Collections.reverse(temp);
+            docHierarchy = temp;
         }
 
         logger.trace("docHierarchy size: {}", docHierarchy.size());
         if (!DataManager.getInstance().getConfiguration().getIncludeAnchorInTitleBreadcrumbs() && !docHierarchy.isEmpty()) {
-            return docHierarchy.subList(1, docHierarchy.size());
+            // Return a defensive copy to avoid exposing the internal list to callers.
+            return new ArrayList<>(docHierarchy.subList(1, docHierarchy.size()));
         }
-        return docHierarchy;
+        return new ArrayList<>(docHierarchy);
     }
 
     /**
@@ -3119,12 +3201,17 @@ public class ViewManager implements Serializable {
      * @return String with tags
      */
     public String getHighwirePressMetaTags() {
-        try {
-            return MetadataTools.generateHighwirePressMetaTags(this.topStructElement, getDownloadResources());
-        } catch (IndexUnreachableException | ViewerConfigurationException | PresentationException e) {
-            logger.error(e.getMessage(), e);
-            return "";
+        if (highwireMetaTagsCache == null) {
+            // topStructElement and downloadResources are stable for the lifetime of this ViewManager,
+            // so the result is computed once and reused to avoid a repeated Solr call for the anchor.
+            try {
+                highwireMetaTagsCache = MetadataTools.generateHighwirePressMetaTags(this.topStructElement, getDownloadResources());
+            } catch (IndexUnreachableException | ViewerConfigurationException | PresentationException e) {
+                logger.error(e.getMessage(), e);
+                highwireMetaTagsCache = "";
+            }
         }
+        return highwireMetaTagsCache;
     }
 
     /**
@@ -3154,7 +3241,11 @@ public class ViewManager implements Serializable {
     public List<String> getVersionHistory() throws PresentationException, IndexUnreachableException {
         logger.trace("getVersionHistory");
         if (versionHistory == null) {
-            versionHistory = new ArrayList<>();
+            // Build into a local list first, then assign atomically. This prevents
+            // ArrayIndexOutOfBoundsException caused by two threads (e.g. multiple browser tabs)
+            // concurrently writing into the same non-thread-safe ArrayList when versionHistory
+            // was assigned before population was complete.
+            List<String> result = new ArrayList<>();
 
             String versionLabelField = DataManager.getInstance().getConfiguration().getVersionLabelField();
 
@@ -3185,7 +3276,7 @@ public class ViewManager implements Serializable {
                     }
                 }
                 Collections.reverse(next);
-                versionHistory.addAll(next);
+                result.addAll(next);
             }
 
             // This version
@@ -3197,7 +3288,7 @@ public class ViewManager implements Serializable {
             jsonObj.put("id", getPi());
             jsonObj.put("year", topStructElement.getMetadataValue(SolrConstants.MD_YEARPUBLISH));
             jsonObj.put("order", "0"); // "0" identifies the currently loaded version
-            versionHistory.add(jsonObj.toString());
+            result.add(jsonObj.toString());
 
             String prevVersionIdentifierField = DataManager.getInstance().getConfiguration().getPreviousVersionIdentifierField();
             if (StringUtils.isNotEmpty(prevVersionIdentifierField)) {
@@ -3228,8 +3319,10 @@ public class ViewManager implements Serializable {
                         break;
                     }
                 }
-                versionHistory.addAll(previous);
+                result.addAll(previous);
             }
+
+            versionHistory = result;
         }
 
         //		logger.trace("Version history size: {}", versionHistory.size()); //NOSONAR Debug
@@ -3395,6 +3488,22 @@ public class ViewManager implements Serializable {
      */
     public String getMimeType() {
         return mimeType;
+    }
+
+    /**
+     * Returns true if this record contains only downloadable files (mime type "application") and no displayable image pages.
+     *
+     * @return true if the record's primary MIME type is "application", false otherwise
+     * @should return true if mimeType is application
+     * @should return false if mimeType is not application
+     * @should return true for application mime type
+     * @should return false for image mime type
+     */
+    public boolean isFilesOnly() {
+        if (filesOnly == null) {
+            filesOnly = "application".equalsIgnoreCase(getMimeType());
+        }
+        return filesOnly;
     }
 
     /**
@@ -3849,6 +3958,7 @@ public class ViewManager implements Serializable {
      * @return List of configured citation links for the given levelName, populated with values
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @should update cite links on page change
      */
     public List<CitationLink> getSidebarWidgetUsageCitationLinksForLevel(String levelName) throws PresentationException, IndexUnreachableException {
         // logger.trace("getSidebarWidgetUsageCitationLinksForLevel: {}", levelName); //NOSONAR Debug
@@ -3955,6 +4065,7 @@ public class ViewManager implements Serializable {
      * @return an integer list
      * @throws IndexUnreachableException If the page numbers could not be read from SOLR
      * @throws IllegalArgumentException If the pageOrder is not within the range of page numbers of the current record or if range is less than zero
+     * @should get elements around page
      */
     public List<Integer> getPageRangeAroundPage(int pageOrder, int range, boolean fillToSize) throws IndexUnreachableException {
 

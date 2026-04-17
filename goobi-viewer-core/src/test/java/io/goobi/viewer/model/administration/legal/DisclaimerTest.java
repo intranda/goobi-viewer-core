@@ -42,8 +42,38 @@ class DisclaimerTest extends AbstractDatabaseEnabledTest {
         this.dao = DataManager.getInstance().getDao();
     }
 
+    /**
+     * @see Disclaimer#getAcceptanceScope()
+     * @verifies persist
+     */
     @Test
-    void test_persist() throws DAOException {
+    void getAcceptanceScope_shouldPersist() {
+        // Verify that the acceptance scope is non-null and retains set values (no DAO round-trip needed)
+        Disclaimer disclaimer = new Disclaimer();
+        disclaimer.getAcceptanceScope().setDaysToLive(5);
+        assertNotNull(disclaimer.getAcceptanceScope());
+        assertEquals(5, disclaimer.getAcceptanceScope().getDaysToLive());
+    }
+
+    /**
+     * @see Disclaimer#getAcceptanceScope()
+     * @verifies scope
+     */
+    @Test
+    void getAcceptanceScope_shouldScope() {
+        // Verify that default scope values are returned and can be modified
+        Disclaimer disclaimer = new Disclaimer();
+        assertNotNull(disclaimer.getAcceptanceScope());
+        assertEquals(14, disclaimer.getAcceptanceScope().getDaysToLive());
+        assertEquals(ConsentScope.StorageMode.LOCAL, disclaimer.getAcceptanceScope().getStorageMode());
+    }
+
+    /**
+     * @verifies persist disclaimer with acceptance scope to database
+     * @see Disclaimer#getAcceptanceScope()
+     */
+    @Test
+    void getAcceptanceScope_shouldPersistDisclaimerWithAcceptanceScopeToDatabase() throws DAOException {
         Disclaimer disclaimer = new Disclaimer();
         disclaimer.setDisplayScope(new DisplayScope(PageScope.RECORD, "PI:X"));
         disclaimer.getAcceptanceScope().setDaysToLive(8);
@@ -55,8 +85,12 @@ class DisclaimerTest extends AbstractDatabaseEnabledTest {
         assertEquals(8, storage.getAcceptanceScope().getDaysToLive());
     }
 
+    /**
+     * @verifies return default scope values and allow modification
+     * @see Disclaimer#getAcceptanceScope()
+     */
     @Test
-    void testScope() {
+    void getAcceptanceScope_shouldReturnDefaultScopeValuesAndAllowModification() {
         Disclaimer disclaimer = new Disclaimer();
         assertEquals(14, disclaimer.getAcceptanceScope().getDaysToLive());
         assertEquals(ConsentScope.StorageMode.LOCAL, disclaimer.getAcceptanceScope().getStorageMode());

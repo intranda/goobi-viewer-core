@@ -956,6 +956,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
      * Getter for the field <code>id</code>.
      *
      * @return the database identifier of this user
+     * @should parse numeric user ID from URI path segment
      */
     public Long getId() {
         return id;

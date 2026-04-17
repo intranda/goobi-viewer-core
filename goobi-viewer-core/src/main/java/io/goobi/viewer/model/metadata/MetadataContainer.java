@@ -33,7 +33,6 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 
@@ -151,6 +150,8 @@ public class MetadataContainer {
      * 
      * @param key the field name for which to get the metadata value
      * @return List<String>
+     * @should translated fields from single document
+     * @should translated fields from multiple documents
      */
     public List<String> getValues(String key) {
         return this.get(key).stream().map(value -> value.getValueOrFallback(null)).filter(StringUtils::isNotEmpty).collect(Collectors.toList());
@@ -161,6 +162,7 @@ public class MetadataContainer {
      * 
      * @param key the field name for which to get the metadata value
      * @return First value for the given key; empty string if not found
+     * @should get partially translated values
      */
     public String getFirstValue(String key) {
         return this.get(key).stream().findFirst().flatMap(IMetadataValue::getValue).orElse("");
@@ -306,12 +308,17 @@ public class MetadataContainer {
     }
 
     public static MetadataContainer createMetadataEntity(StructElement doc) {
+        // Strip _UNTOKENIZED suffix so that e.g. MD_TITLE and MD_TITLE_UNTOKENIZED both map to MD_TITLE.
+        // Use groupingBy+mapping (O(n)) instead of toMap+ListUtils::union (O(n²) due to repeated list
+        // copies whenever several source fields collapse to the same deduplicated key).
         Map<String, List<IMetadataValue>> translatedMetadata = doc.getMetadataFields()
                 .keySet()
                 .stream()
-                .collect(
-                        Collectors.toMap(field -> field.replaceAll("_UNTOKENIZED$", ""), field -> List.of(doc.getMultiLanguageMetadataValue(field)),
-                                ListUtils::union));
+                .collect(Collectors.groupingBy(
+                        field -> field.replaceAll("_UNTOKENIZED$", ""),
+                        Collectors.mapping(
+                                field -> doc.getMultiLanguageMetadataValue(field),
+                                Collectors.toList())));
         MetadataContainer entity =
                 new MetadataContainer(doc.getMetadataValue(SolrConstants.IDDOC), doc.getMultiLanguageDisplayLabel(), translatedMetadata);
         return entity;

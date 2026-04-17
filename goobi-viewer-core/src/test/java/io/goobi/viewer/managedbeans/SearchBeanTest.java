@@ -29,6 +29,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
@@ -64,10 +69,10 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchBean#clearSearchItemLists()
-     * @verifies clear map correctly
+     * @verifies empty the advanced search select items map
      */
     @Test
-    void clearSearchItemLists_shouldClearMapCorrectly() throws Exception {
+    void clearSearchItemLists_shouldEmptyTheAdvancedSearchSelectItemsMap() throws Exception {
         searchBean.getAdvancedSearchSelectItems(SolrConstants.DOCSTRCT, "en", false);
         Assertions.assertFalse(searchBean.getAdvancedSearchSelectItems().isEmpty());
         searchBean.clearSearchItemLists();
@@ -76,10 +81,10 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchBean#resetSimpleSearchParameters()
-     * @verifies reset variables correctly
+     * @verifies clear searchString to empty and searchStringForUrl to dash
      */
     @Test
-    void resetSimpleSearchParameters_shouldResetVariablesCorrectly() {
+    void resetSimpleSearchParameters_shouldClearSearchStringToEmptyAndSearchStringForUrlToDash() {
         searchBean.setSearchString("test");
         assertEquals("test", searchBean.getSearchString());
         assertEquals("test", searchBean.getSearchStringForUrl());
@@ -91,20 +96,20 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchBean#resetAdvancedSearchParameters()
-     * @verifies reset variables correctly
+     * @verifies reinitialize advanced search query group with three default query items
      */
     @Test
-    void resetAdvancedSearchParameters_shouldResetVariablesCorrectly() {
+    void resetAdvancedSearchParameters_shouldReinitializeAdvancedSearchQueryGroupWithThreeDefaultQueryItems() {
         searchBean.resetAdvancedSearchParameters();
         assertEquals(3, searchBean.getAdvancedSearchQueryGroup().getQueryItems().size());
     }
 
     /**
      * @see SearchBean#resetAdvancedSearchParameters()
-     * @verifies re-select collection correctly
+     * @verifies preserve active DC facet value in the DC query item after reset
      */
     @Test
-    void resetAdvancedSearchParameters_shouldReselectCollectionCorrectly() {
+    void resetAdvancedSearchParameters_shouldPreserveActiveDCFacetValueInTheDCQueryItemAfterReset() {
         searchBean.getFacets().setActiveFacetString("DC:col");
 
         searchBean.resetAdvancedSearchParameters();
@@ -138,7 +143,6 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchBean#mirrorAdvancedSearchCurrentCollection()
      * @verifies set collection item correctly
      */
     @Test
@@ -161,7 +165,6 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchBean#mirrorAdvancedSearchCurrentCollection()
      * @verifies reset collection item correctly
      */
     @Test
@@ -189,10 +192,10 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchBean#mirrorAdvancedSearchCurrentHierarchicalFacets()
-     * @verifies mirror facet items to search query items correctly
+     * @verifies copy active hierarchical facet values into corresponding advanced search query items
      */
     @Test
-    void mirrorAdvancedSearchCurrentHierarchicalFacets_shouldMirrorFacetItemsToSearchQueryItemsCorrectly() {
+    void mirrorAdvancedSearchCurrentHierarchicalFacets_shouldCopyActiveHierarchicalFacetValuesIntoCorrespondingAdvancedSearchQueryItems() {
         searchBean.resetAdvancedSearchParameters();
         assertEquals(3, searchBean.getAdvancedSearchQueryGroup().getQueryItems().size());
         SearchQueryItem item1 = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
@@ -251,7 +254,6 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchBean#mirrorAdvancedSearchCurrentHierarchicalFacets()
      * @verifies change nothing if facet already exists in query items
      */
     @Test
@@ -275,6 +277,91 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         }
         Assertions.assertNotNull(dcItem);
         assertTrue(StringUtils.isEmpty(dcItem.getValue()));
+    }
+
+    /**
+     * @see SearchBean#mirrorAdvancedSearchCurrentHierarchicalFacets()
+     * @verifies add extra search query item if all items full
+     */
+    @Test
+    void mirrorAdvancedSearchCurrentHierarchicalFacets_shouldAddExtraSearchQueryItemIfAllItemsFull() {
+        searchBean.resetAdvancedSearchParameters();
+        List<SearchQueryItem> items = searchBean.getAdvancedSearchQueryGroup().getQueryItems();
+        int initialSize = items.size();
+
+        // Occupy all existing items so none can be re-used for a new facet
+        for (SearchQueryItem item : new java.util.ArrayList<>(items)) {
+            item.setField(SolrConstants.DC);
+            item.setValue("occupied");
+        }
+
+        // One DC facet whose value does not match any occupied item → a new item must be created
+        searchBean.getFacets().setActiveFacetString("DC:newValue");
+        searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets();
+
+        assertEquals(initialSize + 1, searchBean.getAdvancedSearchQueryGroup().getQueryItems().size());
+        SearchQueryItem newItem = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(initialSize);
+        assertEquals(SolrConstants.DC, newItem.getField());
+        assertEquals("newValue", newItem.getValue());
+    }
+
+    /**
+     * @verifies not throw CME when called concurrently
+     */
+    @Test
+    void mirrorAdvancedSearchCurrentHierarchicalFacets_shouldNotThrowCMEWhenCalledConcurrently() throws Exception {
+        // SearchBean is @SessionScoped: multiple request threads share the same instance.
+        // Before the fix, iterating the live queryItems list while another thread (or a prior
+        // outer-loop iteration) added a new SearchQueryItem caused a ConcurrentModificationException.
+        searchBean.resetAdvancedSearchParameters();
+
+        // Occupy all existing items to force new item creation (the add path that caused the CME)
+        for (SearchQueryItem item : new java.util.ArrayList<>(searchBean.getAdvancedSearchQueryGroup().getQueryItems())) {
+            item.setField(SolrConstants.DC);
+            item.setValue("occupied");
+        }
+        searchBean.getFacets().setActiveFacetString("DC:a;;DC:b;;DC:c;;DC:d;;DC:e");
+
+        int threadCount = 10;
+        AtomicReference<Throwable> caught = new AtomicReference<>();
+        CountDownLatch ready = new CountDownLatch(threadCount);
+        CountDownLatch start = new CountDownLatch(1);
+        ExecutorService pool = Executors.newFixedThreadPool(threadCount);
+
+        for (int i = 0; i < threadCount; i++) {
+            pool.submit(() -> {
+                ready.countDown();
+                try {
+                    start.await();
+                    searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets();
+                } catch (Throwable t) {
+                    caught.compareAndSet(null, t);
+                }
+            });
+        }
+
+        ready.await();
+        start.countDown();
+        pool.shutdown();
+        pool.awaitTermination(5, TimeUnit.SECONDS);
+
+        Assertions.assertNull(caught.get(), "mirrorAdvancedSearchCurrentHierarchicalFacets() must not throw under concurrent access");
+    }
+
+    /**
+     * @see SearchBean#mirrorAdvancedSearchCurrentHierarchicalFacets()
+     * @verifies not throw NPE when queryItems contains null elements
+     */
+    @Test
+    void mirrorAdvancedSearchCurrentHierarchicalFacets_shouldNotThrowNPEWhenQueryItemsContainsNullElements() {
+        searchBean.resetAdvancedSearchParameters();
+        // Simulate the race condition in which init()'s clear() races with the ArrayList copy
+        // constructor: clear() nulls backing-array slots before resetting size, so a concurrent
+        // new ArrayList<>(list) can capture null elements. Inject one directly to reproduce the
+        // failure path without needing actual thread-timing.
+        searchBean.getAdvancedSearchQueryGroup().getQueryItems().add(null);
+        searchBean.getFacets().setActiveFacetString("DC:a");
+        Assertions.assertDoesNotThrow(() -> searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets());
     }
 
     /**
@@ -450,7 +537,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchBean#generateAdvancedSearchMainQuery(boolean)
-     * @verifies add multiple facets for the same field correctly if field already in current facets
+     * @verifies add multiple facets for the same field correctly if field already in active facets
      */
     @Test
     void generateAdvancedSearchMainQuery_shouldAddMultipleFacetsForTheSameFieldCorrectlyIfFieldAlreadyInActiveFacets() throws Exception {
@@ -503,7 +590,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchBean#generateAdvancedSearchMainQuery(boolean)
-     * @verifies not add more facets if field value combo already in current facets
+     * @verifies not add more facets if field value combo already in active facets
      */
     @Test
     void generateAdvancedSearchMainQuery_shouldNotAddMoreFacetsIfFieldValueComboAlreadyInActiveFacets() throws Exception {
@@ -630,10 +717,10 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchBean#increaseCurrentHitIndex()
-     * @verifies increase index correctly
+     * @verifies increase hit index by operand value within bounds
      */
     @Test
-    void increaseCurrentHitIndex_shouldIncreaseIndexCorrectly() {
+    void increaseCurrentHitIndex_shouldIncreaseHitIndexByOperandValueWithinBounds() {
         searchBean.setCurrentSearch(new Search());
         searchBean.getCurrentSearch().setHitsCount(10);
 
@@ -658,10 +745,10 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchBean#increaseCurrentHitIndex()
-     * @verifies decrease index correctly
+     * @verifies decrease hit index by negative operand value within bounds
      */
     @Test
-    void increaseCurrentHitIndex_shouldDecreaseIndexCorrectly() {
+    void increaseCurrentHitIndex_shouldDecreaseHitIndexByNegativeOperandValueWithinBounds() {
         searchBean.setCurrentSearch(new Search());
         searchBean.getCurrentSearch().setHitsCount(10);
 
@@ -730,8 +817,11 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals(0, searchBean.getCurrentHitIndex());
     }
 
+    /**
+     * @verifies extract hierarchical facet values from facet string
+     */
     @Test
-    void testGetHierarchicalFacets() {
+    void getHierarchicalFacets_shouldExtractHierarchicalFacetValuesFromFacetString() {
         String facetString = "DC:sonstiges.ocr.antiqua;;DOCSTRCT:monograph;;MD_TOPICS_UNTOKENIZED:schulbuch";
         List<String> hierarchicalFacetFields = Arrays.asList(new String[] { "A", "MD_TOPICS", "B", "DC", "C" });
 
@@ -742,8 +832,8 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchBean#getAdvancedSearchAllowedFields()
      * @verifies omit languaged fields for other languages
+     * @see SearchBean#getAdvancedSearchAllowedFields()
      */
     @Test
     void getAdvancedSearchAllowedFields_shouldOmitLanguagedFieldsForOtherLanguages() {
@@ -772,8 +862,8 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchBean#getAdvancedSearchAllowedFields()
      * @verifies addSearchFilters
+     * @see SearchBean#getAdvancedSearchAllowedFields()
      */
     @Test
     void getAdvancedSearchAllowedFields_shouldAddSearchFilters() {
@@ -804,11 +894,10 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchBean#findCurrentHitIndex(String,int,boolean)
-     * @verifies set currentHitIndex correctly
+     * @verifies set currentHitIndex to the position of the given PI in the search result list
      */
     @Test
-    void findCurrentHitIndex_shouldSetCurrentHitIndexCorrectly() throws Exception {
+    void findCurrentHitIndex_shouldSetCurrentHitIndexToThePositionOfTheGivenPIInTheSearchResultList() throws Exception {
         DataManager.getInstance().getConfiguration().overrideValue("search.resultGroups[@enabled]", false);
         searchBean.setCurrentSearch(new Search());
         searchBean.getCurrentSearch().setPage(1);
@@ -920,10 +1009,10 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchBean#getSearchSortingOptions()
-     * @verifies return options correctly
+     * @verifies return sorting options with language specific default field first
      */
     @Test
-    void getSearchSortingOptions_shouldReturnOptionsCorrectly() {
+    void getSearchSortingOptions_shouldReturnSortingOptionsWithLanguageSpecificDefaultFieldFirst() {
         Collection<SearchSortingOption> options = searchBean.getSearchSortingOptions("en");
         String defaultSorting = DataManager.getInstance().getConfiguration().getDefaultSortField("en");
         assertEquals("SORT_TITLE_LANG_EN", defaultSorting);
@@ -957,10 +1046,10 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchBean#searchAdvanced(boolean)
-     * @verifies generate search string correctly
+     * @verifies generate internal search string from advanced search query items
      */
     @Test
-    void searchAdvanced_shouldGenerateSearchStringCorrectly() {
+    void searchAdvanced_shouldGenerateInternalSearchStringFromAdvancedSearchQueryItems() {
         Assertions.assertTrue(StringUtils.isEmpty(searchBean.getSearchStringInternal()));
         searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0).setField(SolrConstants.PI);
         searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0).setValue(PI_KLEIUNIV);
@@ -984,20 +1073,20 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchBean#searchToday()
-     * @verifies set search string correctly
+     * @verifies set search string starting with MONTHDAY field
      */
     @Test
-    void searchToday_shouldSetSearchStringCorrectly() {
+    void searchToday_shouldSetSearchStringStartingWithMONTHDAYField() {
         searchBean.searchToday();
         Assertions.assertTrue(searchBean.getSearchStringInternal().startsWith(SolrConstants.MONTHDAY));
     }
 
     /**
      * @see SearchBean#setActiveResultGroupName(String)
-     * @verifies select result group correctly
+     * @verifies store and return the given result group name
      */
     @Test
-    void setActiveResultGroupName_shouldSelectResultGroupCorrectly() {
+    void setActiveResultGroupName_shouldStoreAndReturnTheGivenResultGroupName() {
         SearchBean sb = new SearchBean();
         assertEquals("-", sb.getActiveResultGroupName());
 
@@ -1034,8 +1123,8 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchBean#setActiveResultGroupName(String)
      * @verifies not change hitsPerPageSetterCalled value
+     * @see SearchBean#setHitsPerPageNoTrigger(int)
      */
     @Test
     void setHitsPerPageNoTrigger_shouldNotChangeHitsPerPageSetterCalledValue() {
@@ -1044,5 +1133,85 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         sb.setHitsPerPageNoTrigger(5);
         Assertions.assertFalse(sb.isHitsPerPageSetterCalled());
+    }
+
+    /**
+     * @verifies not throw NPE when called concurrently
+     */
+    @Test
+    void resetSearchResults_shouldNotThrowNPEWhenCalledConcurrently() throws Exception {
+        // SearchBean is @SessionScoped: multiple request threads (e.g. two browser tabs)
+        // share the same instance. Before the fix, a TOCTOU race between the null-check
+        // and the field access in resetSearchResults() caused a NullPointerException.
+        int threadCount = 10;
+        AtomicReference<Throwable> caught = new AtomicReference<>();
+        CountDownLatch ready = new CountDownLatch(threadCount);
+        CountDownLatch start = new CountDownLatch(1);
+        ExecutorService pool = Executors.newFixedThreadPool(threadCount);
+
+        searchBean.setCurrentSearch(new Search());
+
+        for (int i = 0; i < threadCount; i++) {
+            pool.submit(() -> {
+                ready.countDown();
+                try {
+                    start.await();
+                    // Reset and immediately re-set currentSearch to keep the race alive.
+                    searchBean.setCurrentSearch(new Search());
+                    searchBean.resetSearchResults();
+                } catch (Throwable t) {
+                    caught.compareAndSet(null, t);
+                }
+            });
+        }
+
+        ready.await();
+        start.countDown();
+        pool.shutdown();
+        pool.awaitTermination(5, TimeUnit.SECONDS);
+
+        Assertions.assertNull(caught.get(), "resetSearchResults() must not throw under concurrent access");
+    }
+
+    /**
+     * @verifies return null if currentHitIndex is negative
+     * @see SearchBean#getPreviousElement()
+     */
+    @Test
+    void getPreviousElement_shouldReturnNullIfCurrentHitIndexIsNegative() throws Exception {
+        // Default state: currentHitIndex == -1 (simulates a concurrent reset)
+        Assertions.assertNull(searchBean.getPreviousElement());
+    }
+
+    /**
+     * @verifies return null if currentSearch is null
+     * @see SearchBean#getPreviousElement()
+     */
+    @Test
+    void getPreviousElement_shouldReturnNullIfCurrentSearchIsNull() throws Exception {
+        searchBean.setCurrentHitIndex(5);
+        Assertions.assertNull(searchBean.getCurrentSearch());
+        Assertions.assertNull(searchBean.getPreviousElement());
+    }
+
+    /**
+     * @verifies return null if currentHitIndex is negative
+     * @see SearchBean#getNextElement()
+     */
+    @Test
+    void getNextElement_shouldReturnNullIfCurrentHitIndexIsNegative() throws Exception {
+        // Default state: currentHitIndex == -1 (simulates a concurrent reset)
+        Assertions.assertNull(searchBean.getNextElement());
+    }
+
+    /**
+     * @verifies return null if currentSearch is null
+     * @see SearchBean#getNextElement()
+     */
+    @Test
+    void getNextElement_shouldReturnNullIfCurrentSearchIsNull() throws Exception {
+        searchBean.setCurrentHitIndex(5);
+        Assertions.assertNull(searchBean.getCurrentSearch());
+        Assertions.assertNull(searchBean.getNextElement());
     }
 }

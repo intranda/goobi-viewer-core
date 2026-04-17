@@ -30,7 +30,7 @@ class PIInSolrValidatorTest extends AbstractSolrEnabledTest {
 
     /**
      * @see PIInSolrValidator#validatePi(String)
-     * @verifies true if pi exists
+     * @verifies return true if pi exists
      */
     @Test
     void validatePi_shouldReturnTrueIfPiExists() throws Exception {

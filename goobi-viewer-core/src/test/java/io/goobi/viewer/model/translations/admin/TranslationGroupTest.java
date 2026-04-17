@@ -35,7 +35,6 @@ import io.goobi.viewer.solr.SolrConstants;
 class TranslationGroupTest extends AbstractSolrEnabledTest {
 
     /**
-     * @see TranslationGroup#getEntryCount()
      * @verifies return correct count
      */
     @Test
@@ -47,11 +46,10 @@ class TranslationGroupTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see TranslationGroup#getFilteredEntries()
-     * @verifies filter by key correctly
+     * @verifies return only entries whose key contains the filter string case insensitively
      */
     @Test
-    void getFilteredEntries_shouldFilterByKeyCorrectly() throws Exception {
+    void getFilteredEntries_shouldReturnOnlyEntriesWhoseKeyContainsTheFilterStringCaseInsensitively() throws Exception {
         TranslationGroup group = TranslationGroup.create(0, TranslationGroupType.CORE_STRINGS, "group", null, 1);
         group.getItems().add(TranslationGroupItem.create(TranslationGroupType.SOLR_FIELD_NAMES, "FOO", false));
         group.getItems().add(TranslationGroupItem.create(TranslationGroupType.SOLR_FIELD_NAMES, "bar", false));
@@ -68,11 +66,10 @@ class TranslationGroupTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see TranslationGroup#getFilteredEntries()
-     * @verifies filter by value correctly
+     * @verifies return only entries whose translation value contains the filter string
      */
     @Test
-    void getFilteredEntries_shouldFilterByValueCorrectly() throws Exception {
+    void getFilteredEntries_shouldReturnOnlyEntriesWhoseTranslationValueContainsTheFilterString() throws Exception {
         TranslationGroup group = TranslationGroup.create(0, TranslationGroupType.CORE_STRINGS, "group", null, 1);
         TranslationGroupItem item = TranslationGroupItem.create(TranslationGroupType.SOLR_FIELD_NAMES, "item", false);
         group.getItems().add(item);
@@ -106,7 +103,6 @@ class TranslationGroupTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see TranslationGroup#selectEntry(int)
      * @verifies only select unfinished entries
      */
     @Test
@@ -164,7 +160,6 @@ class TranslationGroupTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see TranslationGroup#selectEntry(int)
      * @verifies select fully translated entries if all are fully translated
      */
     @Test
@@ -229,7 +224,6 @@ class TranslationGroupTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see TranslationGroup#selectEntry(int)
      * @verifies resume at the end when moving past first element
      */
     @Test
@@ -274,7 +268,6 @@ class TranslationGroupTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see TranslationGroup#selectEntry(int)
      * @verifies resume at the beginning when moving past last element
      */
     @Test
@@ -319,7 +312,6 @@ class TranslationGroupTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see TranslationGroup#isHasEntries()
      * @verifies return false if group has no entries
      */
     @Test
@@ -330,7 +322,6 @@ class TranslationGroupTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see TranslationGroup#isHasEntries()
      * @verifies return true if group has entries
      */
     @Test

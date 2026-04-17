@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.rss;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
@@ -30,6 +31,7 @@ import org.junit.jupiter.api.Test;
 import com.rometools.rome.feed.synd.SyndFeed;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.controller.DataManager;
 
 class RSSFeedTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -39,11 +41,11 @@ class RSSFeedTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see RSSFeed#createRss(String,String,List,String,int)
-     * @verifies produce feed correctly
+     * @verifies return non null synd feed with requested number of entries
+     * @see RSSFeed#createRss(String, String, int)
      */
     @Test
-    void createRss_shouldProduceFeedCorrectly() throws Exception {
+    void createRss_shouldReturnNonNullSyndFeedWithRequestedNumberOfEntries() throws Exception {
         SyndFeed feed = RSSFeed.createRss("https://example.com", "PI:*", null, "en", 10, null, true);
         Assertions.assertNotNull(feed);
         Assertions.assertEquals(10, feed.getEntries().size());
@@ -51,14 +53,43 @@ class RSSFeedTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see RSSFeed#createRssFeed(String,String,List,int,String)
-     * @verifies produce feed correctly
+     * @verifies return non null channel with requested number of items
+     * @see RSSFeed#createRssFeed(String, String, int)
      */
     @Test
-    void createRssFeed_shouldProduceFeedCorrectly() throws Exception {
+    void createRssFeed_shouldReturnNonNullChannelWithRequestedNumberOfItems() throws Exception {
         Channel channel = RSSFeed.createRssFeed("https://example.com", "PI:*", null, 10, "en", null, true);
         Assertions.assertNotNull(channel);
         Assertions.assertEquals(10, channel.getItems().size());
         // TODO in-detail assertions
+    }
+
+    /**
+     * @see RSSFeed#createRssFeed(String, String, List, int, String, String, boolean)
+     * @verifies produce feed correctly
+     */
+    @Test
+    void createRssFeed_shouldProduceFeedCorrectly() throws Exception {
+        // Verify that the feed contains correct metadata (title, link, language) and non-empty items
+        String rootPath = "https://example.com/viewer";
+        Channel channel = RSSFeed.createRssFeed(rootPath, "PI:*", Collections.emptyList(), 5, "de", null, true);
+        Assertions.assertNotNull(channel);
+        // Feed link should match the provided rootPath
+        Assertions.assertEquals(rootPath, channel.getLink());
+        // Feed language should match the requested language
+        Assertions.assertEquals("de", channel.getLanguage());
+        // Feed title should come from configuration
+        Assertions.assertEquals(DataManager.getInstance().getConfiguration().getRssTitle(), channel.getTitle());
+        // Feed description should come from configuration
+        Assertions.assertEquals(DataManager.getInstance().getConfiguration().getRssDescription(), channel.getDescription());
+        // Publication date must be set
+        Assertions.assertNotNull(channel.getPubDate());
+        // Number of items should not exceed the requested count
+        Assertions.assertTrue(channel.getItems().size() <= 5);
+        Assertions.assertFalse(channel.getItems().isEmpty());
+        // Each item should have a non-blank title
+        for (RssItem item : channel.getItems()) {
+            Assertions.assertNotNull(item.getTitle());
+        }
     }
 }

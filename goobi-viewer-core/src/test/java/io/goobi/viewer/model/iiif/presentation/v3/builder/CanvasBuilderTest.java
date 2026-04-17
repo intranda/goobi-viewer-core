@@ -16,8 +16,12 @@
 package io.goobi.viewer.model.iiif.presentation.v3.builder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
+import java.awt.Dimension;
 import java.net.URISyntaxException;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -29,6 +33,8 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.security.AccessPermission;
+import io.goobi.viewer.model.security.PagePermissions;
 import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 
@@ -41,8 +47,12 @@ class CanvasBuilderTest extends AbstractSolrEnabledTest {
     ApiUrls urls = new ApiUrls("http://localhost:8080/viewer/api/v2");
     CanvasBuilder builder = new CanvasBuilder(urls, null);
 
+    /**
+     * @verifies include image
+     * @see CanvasBuilder#build
+     */
     @Test
-    void test_build_shouldIncludeImage()
+    void build_shouldIncludeImage()
             throws ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException, DAOException {
 
         PhysicalElement element = Mockito.mock(PhysicalElement.class);
@@ -74,6 +84,72 @@ class CanvasBuilderTest extends AbstractSolrEnabledTest {
             assertEquals("https://viewer.goobi.io/api/v1/records/PI_01/files/images/00000001.tif/full/!10,11/0/default.jpg", imageId);
         }
 
+    }
+
+    /**
+     * When a non-empty PagePermissions is pre-loaded onto the builder, build(page) must NOT call
+     * page.isAccessPermissionImage() or page.isAccessPermissionFulltext() — the pre-fetched map
+     * is used instead, eliminating per-page Solr queries in the manifest loop.
+     * @verifies build for given input
+     */
+    @Test
+    void build_shouldBuildForGivenInput()
+            throws ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException, DAOException {
+
+        PhysicalElement element = Mockito.mock(PhysicalElement.class);
+        Mockito.when(element.getPi()).thenReturn("PI_01");
+        Mockito.when(element.getOrder()).thenReturn(1);
+        Mockito.when(element.getOrderLabel()).thenReturn("eins");
+        Mockito.when(element.isFulltextAvailable()).thenReturn(false);
+        Mockito.when(element.isHasImage()).thenReturn(true);
+        Mockito.when(element.getFileName()).thenReturn("00000001.tif");
+        Mockito.when(element.getFilepath()).thenReturn("00000001.tif");
+        Mockito.when(element.getMediaType()).thenReturn(new MimeType("image/tiff"));
+        Mockito.when(element.getMimeType()).thenReturn("image/tiff");
+
+        // Inject non-empty pre-fetched permissions via package-private setter
+        builder.setPagePermissions(new PagePermissions(
+                Map.of(1, AccessPermission.granted()),
+                Map.of(1, AccessPermission.granted()),
+                Map.of(1, AccessPermission.granted())));
+
+        builder.build(element);
+
+        // With pre-fetched permissions, CanvasBuilder's own addImageResource must NOT call
+        // page.isAccessPermissionImage() — only AbstractBuilder.getThumbnail() still calls it once.
+        // Total: exactly 1 invocation instead of the 2 that occurred before this optimization.
+        verify(element, Mockito.times(1)).isAccessPermissionImage();
+        // Fulltext is never called (fulltext not available in this test, so the block is skipped)
+        verify(element, never()).isAccessPermissionFulltext();
+    }
+
+    /**
+     * @verifies return 1200 for given input
+     */
+    @Test
+    void build_shouldReturn1200ForGivenInput()
+            throws ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException, DAOException {
+
+        PhysicalElement element = Mockito.mock(PhysicalElement.class);
+        Mockito.when(element.getPi()).thenReturn("PI_01");
+        Mockito.when(element.getOrder()).thenReturn(1);
+        Mockito.when(element.getOrderLabel()).thenReturn("1");
+        Mockito.when(element.getFileName()).thenReturn("00000001.tif");
+        Mockito.when(element.getFilepath()).thenReturn("00000001.tif");
+        Mockito.when(element.getMediaType()).thenReturn(new MimeType("image/tiff"));
+        Mockito.when(element.getMimeType()).thenReturn("image/tiff");
+        // No individual size → would normally trigger disk I/O via getImageInformation()
+        Mockito.when(element.getImageWidth()).thenReturn(0);
+        Mockito.when(element.getImageHeight()).thenReturn(0);
+
+        // Inject pre-fetched dimension cache: must be used instead of disk I/O
+        builder.setPageDimensions(Map.of(1, new Dimension(1200, 800)));
+
+        // If the cache is consulted: canvas dimensions are set correctly, no ContentLibException thrown
+        // (getImageInformation() would throw trying to read "00000001.tif" from disk in a test env)
+        Canvas3 canvas = builder.build(element);
+        assertEquals(1200, canvas.getWidth());
+        assertEquals(800, canvas.getHeight());
     }
 
 }

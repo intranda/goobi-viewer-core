@@ -119,6 +119,7 @@ public class ManifestBuilder extends AbstractBuilder {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should build non-blank manifest json
      */
     public AbstractPresentationModelElement2 generateManifest(StructElement ele, List<Integer> pagesToInclude)
             throws URISyntaxException, PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException {
@@ -358,6 +359,7 @@ public class ManifestBuilder extends AbstractBuilder {
      * @param ele the top-level structure element of the record
      * @param page optional single page; if present, page-level rendering URLs are used
      * @throws URISyntaxException
+     * @should add viewer rendering with correct url
      */
     public void addRenderings(AbstractPresentationModelElement2 manifest, StructElement ele, Optional<PhysicalElement> page) {
 

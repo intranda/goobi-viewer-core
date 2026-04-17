@@ -47,7 +47,7 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see TocMaker#getSolrFieldsToFetch()
+     * @see TocMaker#getSolrFieldsToFetch(String)
      * @verifies return both static and configured fields
      */
     @Test
@@ -59,11 +59,10 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see TocMaker#generateToc(TOC,StructElement,boolean,String,int,int)
-     * @verifies generate volume TOC with siblings correctly
+     * @verifies include anchor element full volume tree and sibling volume top elements in TOC
      */
     @Test
-    void generateToc_shouldGenerateVolumeTOCWithSiblingsCorrectly() throws Exception {
+    void generateToc_shouldIncludeAnchorElementFullVolumeTreeAndSiblingVolumeTopElementsInTOC() throws Exception {
         String iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648_1891");
         Assertions.assertNotNull(iddoc);
         StructElement structElement = new StructElement(iddoc);
@@ -88,11 +87,10 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see TocMaker#generateToc(TOC,StructElement,boolean,String,int,int)
-     * @verifies generate volume TOC without siblings correctly
+     * @verifies return anchor element followed by all volume elements when siblings excluded
      */
     @Test
-    void generateToc_shouldGenerateVolumeTOCWithoutSiblingsCorrectly() throws Exception {
+    void generateToc_shouldReturnAnchorElementFollowedByAllVolumeElementsWhenSiblingsExcluded() throws Exception {
         String iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648_1891");
         Assertions.assertNotNull(iddoc);
         StructElement structElement = new StructElement(iddoc);
@@ -110,11 +108,10 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see TocMaker#generateToc(TOC,StructElement,boolean,String,int)
-     * @verifies generate anchor TOC correctly
+     * @verifies return anchor plus all child volumes when generating anchor TOC
      */
     @Test
-    void generateToc_shouldGenerateAnchorTOCCorrectly() throws Exception {
+    void generateToc_shouldReturnAnchorPlusAllChildVolumesWhenGeneratingAnchorTOC() throws Exception {
         String iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648");
         Assertions.assertNotNull(iddoc);
         StructElement structElement = new StructElement(iddoc);
@@ -131,11 +128,10 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see TocMaker#generateToc(TOC,StructElement,boolean,String,int,int)
-     * @verifies paginate anchor TOC correctly
+     * @verifies return different volume subsets per page when anchor TOC is paginated
      */
     @Test
-    void generateToc_shouldPaginateAnchorTOCCorrectly() throws Exception {
+    void generateToc_shouldReturnDifferentVolumeSubsetsPerPageWhenAnchorTOCIsPaginated() throws Exception {
         String iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648");
         Assertions.assertNotNull(iddoc);
         StructElement structElement = new StructElement(iddoc);
@@ -177,7 +173,6 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see TocMaker#generateToc(TOC,StructElement,boolean,String,int)
      * @verifies throw IllegalArgumentException if structElement is null
      */
     @Test
@@ -188,7 +183,6 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see TocMaker#generateToc(TOC,StructElement,boolean,String,int)
      * @verifies throw IllegalArgumentException if toc is null
      */
     @Test
@@ -201,7 +195,6 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see TocMaker#buildLabel(SolrDocument)
      * @verifies build configured label correctly
      */
     @Test
@@ -222,7 +215,6 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see TocMaker#buildLabel(SolrDocument,String)
      * @verifies fill remaining parameters correctly if docstruct fallback used
      */
     @Test
@@ -237,7 +229,24 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see TocMaker#createOrderedGroupDocMap(List,List,String)
+     * Test that parseVolumeLabelConfig extracts all brace-delimited field names
+     * from the label configuration string.
+     *
+     * @see TocMaker#parseVolumeLabelConfig(String)
+     * @verifies parse all field names correctly
+     */
+    @Test
+    void parseVolumeLabelConfig_shouldParseAllFieldNamesCorrectly() {
+        // Configuration string with three placeholder fields in braces
+        List<String> fields = TocMaker.parseVolumeLabelConfig("Number {CURRENTNO}: {MD_TITLE} ({YEAR})");
+        Assertions.assertNotNull(fields);
+        Assertions.assertEquals(3, fields.size());
+        Assertions.assertEquals("CURRENTNO", fields.get(0));
+        Assertions.assertEquals("MD_TITLE", fields.get(1));
+        Assertions.assertEquals("YEAR", fields.get(2));
+    }
+
+    /**
      * @verifies create correctly sorted map
      */
     @Test

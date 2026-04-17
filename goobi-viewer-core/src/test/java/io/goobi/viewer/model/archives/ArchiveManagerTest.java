@@ -84,14 +84,22 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
         }
     }
 
+    /**
+     * @verifies return 2 for given input
+     * @see ArchiveManager#getDatabases()
+     */
     @Test
-    void testGetDatabases() {
+    void getDatabases_shouldReturn2ForGivenInput() {
         ArchiveManager archiveManager = new ArchiveManager(eadParser);
         assertEquals(2, archiveManager.getDatabases().size());
     }
 
+    /**
+     * @verifies return collection for given input
+     * @see ArchiveManager#getNodeType(String)
+     */
     @Test
-    void testGetNodeTypes() {
+    void getNodeType_shouldReturnCollectionForGivenInput() {
         ArchiveManager archiveManager = new ArchiveManager(eadParser);
         assertEquals("collection", archiveManager.getNodeType("collection").getName());
         assertEquals("folder", archiveManager.getNodeType("folder").getName());
@@ -103,8 +111,12 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
         assertEquals("video", archiveManager.getNodeType("video").getName());
     }
 
+    /**
+     * @verifies return archive tree for known resource ids
+     * @see ArchiveManager#getArchiveTree(String)
+     */
     @Test
-    void testGetDatabase() throws Exception {
+    void getArchiveTree_shouldReturnArchiveTreeForKnownResourceIds() throws Exception {
         {
             ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser));
             ArchiveTree tree = archiveManager.getArchiveTree("r1");
@@ -122,16 +134,23 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
         }
     }
 
+    /**
+     * @verifies update database
+     * @see ArchiveManager#getArchiveTree(String)
+     */
     @Test
-    void testUpdateDatabase() throws Exception {
+    void getArchiveTree_shouldUpdateDatabase() throws Exception {
         ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser));
         archiveManager.getArchiveTree("r1");
         archiveManager.getArchiveTree("r1");
         Mockito.verify(archiveManager, Mockito.times(1)).loadDatabase(Mockito.any(), Mockito.any());
     }
 
+    /**
+     * @verifies add new archive
+     */
     @Test
-    void testAddNewArchive() {
+    void getArchive_shouldAddNewArchive() {
         assertNotNull(possibleDatabases);
         ArchiveManager archiveManager = new ArchiveManager(eadParser);
 
@@ -143,8 +162,12 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
         assertNotNull(archiveManager.getArchive("r3"));
     }
 
+    /**
+     * @verifies remove archive
+     * @see ArchiveManager#getArchive(String)
+     */
     @Test
-    void testRemoveArchive() {
+    void getArchive_shouldRemoveArchive() {
         assertNotNull(possibleDatabases);
         ArchiveManager archiveManager = new ArchiveManager(eadParser);
         possibleDatabases.remove(1);
@@ -167,18 +190,22 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
         assertNotNull(tree);
     }
 
+    /**
+     * @verifies map legacy icon name to current icon
+     * @see NodeType#NodeType(String, String)
+     */
     @Test
-    void testLegacyIconMapping() {
+    void NodeType_shouldMapLegacyIcon() {
         NodeType nodeType = new NodeType("legacy", "fa fa-file-video-o");
         assertEquals("video", nodeType.getIcon());
     }
 
     /**
      * @see ArchiveManager#findIndexedNeighbours(String)
-     * @verifies return neighbors correctly
+     * @verifies return pair of optional neighbor IDs with empty optional when no neighbor exists
      */
     @Test
-    void findIndexedNeighbours_shouldRecturnNeighborsCorrectly() throws Exception {
+    void findIndexedNeighbours_shouldReturnPairOfOptionalNeighborIDsWithEmptyOptionalWhenNoNeighborExists() throws Exception {
         Pair<Optional<String>, Optional<String>> result = ArchiveManager.findIndexedNeighbours("A91x36057394742965620181205135958381");
         assertNotNull(result);
         assertEquals("A91x28075361251831020181205135958451", result.getLeft().get());
@@ -189,5 +216,42 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
         Assertions.assertTrue(result.getLeft().isEmpty());
         assertEquals("A91x36057394742965620181205135958381", result.getRight().get());
 
+    }
+
+    /**
+     * Verifies that findIndexedNeighbours returns the correct left (previous) and right (next)
+     * neighbor PIs for a given EAD node ID. The test index contains two linked archive records;
+     * this test verifies both neighbors are resolved correctly when queried from either side.
+     *
+     * @see ArchiveManager#findIndexedNeighbours(String)
+     * @verifies return neighbors correctly
+     */
+    @Test
+    void findIndexedNeighbours_shouldReturnNeighborsCorrectly() throws Exception {
+        // The test index has two archive-linked records:
+        //   node A91x28075361251831020181205135958451 (sorted first) -> no left, right exists
+        //   node A91x36057394742965620181205135958381 (sorted second) -> left exists, no right
+        // Verify the neighbor relationship from the first node's perspective
+        Pair<Optional<String>, Optional<String>> result =
+                ArchiveManager.findIndexedNeighbours("A91x28075361251831020181205135958451");
+        assertNotNull(result);
+        // First node has no predecessor
+        Assertions.assertTrue(result.getLeft().isEmpty());
+        // First node has a successor
+        Assertions.assertTrue(result.getRight().isPresent());
+
+        // Verify the neighbor relationship from the second node's perspective
+        Pair<Optional<String>, Optional<String>> result2 =
+                ArchiveManager.findIndexedNeighbours("A91x36057394742965620181205135958381");
+        assertNotNull(result2);
+        // Second node has a predecessor
+        Assertions.assertTrue(result2.getLeft().isPresent());
+        // Second node has no successor
+        Assertions.assertTrue(result2.getRight().isEmpty());
+
+        // Successor of the first node points to the second node's PI
+        assertEquals("A91x36057394742965620181205135958381", result.getRight().get());
+        // Predecessor of the second node points to the first node's PI
+        assertEquals("A91x28075361251831020181205135958451", result2.getLeft().get());
     }
 }

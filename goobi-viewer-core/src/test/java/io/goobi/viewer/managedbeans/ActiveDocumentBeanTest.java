@@ -22,6 +22,7 @@
 package io.goobi.viewer.managedbeans;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -40,8 +41,11 @@ import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
+import io.goobi.viewer.exceptions.IllegalUrlParameterException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
+import io.goobi.viewer.model.toc.TOC;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.ViewManager;
 
 class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -77,10 +81,10 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see ActiveDocumentBean#update()
-     * @verifies create ViewManager correctly
+     * @verifies initialize ViewManager with matching PI and struct elements after update
      */
     @Test
-    void update_shouldCreateViewManagerCorrectly() throws Exception {
+    void update_shouldInitializeViewManagerWithMatchingPIAndStructElementsAfterUpdate() throws Exception {
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("1");
         adb.update();
@@ -99,10 +103,49 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see ActiveDocumentBean#update()
-     * @verifies update ViewManager correctly if LOGID has changed
+     * @verifies set toc on view manager after update
      */
     @Test
-    void update_shouldUpdateViewManagerCorrectlyIfLOGIDHasChanged() throws Exception {
+    void update_shouldSetTocOnViewManagerAfterUpdate() throws Exception {
+        // TOC is now built outside the synchronized block (post-lock, via tocTarget).
+        // Verify that the resulting TOC is published to the ViewManager before update() returns.
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        adb.setImageToShow("1");
+        adb.update();
+        Assertions.assertNotNull(adb.getViewManager());
+        Assertions.assertNotNull(adb.getViewManager().getToc(),
+                "ViewManager.getToc() must be non-null after update() completes");
+    }
+
+    /**
+     * @verifies rebuild and cache toc when view manager toc is null
+     * @see ActiveDocumentBean#getToc()
+     */
+    @Test
+    void getToc_shouldRebuildAndCacheTocWhenViewManagerTocIsNull() throws Exception {
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        adb.setImageToShow("1");
+        adb.update();
+        Assertions.assertNotNull(adb.getViewManager());
+
+        // Simulate a state where the TOC was cleared (e.g. after a page-navigation
+        // that does not trigger a full update()). The slow path in getToc() must
+        // rebuild it via createTOC() without holding the ViewManager monitor.
+        adb.getViewManager().setToc(null);
+
+        TOC rebuilt = adb.getToc();
+        Assertions.assertNotNull(rebuilt, "getToc() must rebuild a non-null TOC via the slow path");
+
+        // Fast path: subsequent call must return the same cached instance (no rebuild)
+        Assertions.assertSame(rebuilt, adb.getToc(), "getToc() must return the cached TOC on the second call");
+    }
+
+    /**
+     * @see ActiveDocumentBean#update()
+     * @verifies create new ViewManager instance when LOGID changes between updates
+     */
+    @Test
+    void update_shouldCreateNewViewManagerInstanceWhenLOGIDChangesBetweenUpdates() throws Exception {
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("1");
         adb.update();
@@ -139,17 +182,17 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see ActiveDocumentBean#setPersistentIdentifier(String)
-     * @verifies determine currentElementIddoc correctly
+     * @verifies resolve topDocumentIddoc from Solr when PI is set
      */
     @Test
-    void setPersistentIdentifier_shouldDetermineCurrentElementIddocCorrectly() throws Exception {
+    void setPersistentIdentifier_shouldResolveTopDocumentIddocFromSolrWhenPIIsSet() throws Exception {
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         assertEquals(iddocKleiuniv, adb.topDocumentIddoc);
     }
 
     /**
      * @see ActiveDocumentBean#setPersistentIdentifier(String)
-     * @verifies preserve lastReceivedIdentifier after reset when identifier not found
+     * @verifies preserve last received identifier when not found
      */
     @Test
     void setPersistentIdentifier_shouldPreserveLastReceivedIdentifierWhenNotFound() throws Exception {
@@ -164,11 +207,11 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ActiveDocumentBean#getNextUrl(String,int)
+     * @see ActiveDocumentBean#getPageUrlRelativeToCurrentPage(int)
      * @verifies increase image number by given step
      */
     @Test
-    void getNextUrl_shouldIncreaseImageNumberByGivenStep() throws Exception {
+    void getPageUrlRelativeToCurrentPage_shouldIncreaseImageNumberByGivenStep() throws Exception {
         adb.setNavigationHelper(navigationHelper);
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("10");
@@ -177,11 +220,11 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ActiveDocumentBean#getNextUrl(String,int)
+     * @see ActiveDocumentBean#getPageUrlRelativeToCurrentPage(int)
      * @verifies go no higher than last page
      */
     @Test
-    void getNextUrl_shouldGoNoHigherThanLastPage() throws Exception {
+    void getPageUrlRelativeToCurrentPage_shouldGoNoHigherThanLastPage() throws Exception {
         adb.setNavigationHelper(navigationHelper);
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("15");
@@ -191,11 +234,11 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ActiveDocumentBean#getPrevUrl(String,int)
+     * @see ActiveDocumentBean#getPreviousPageUrl(int)
      * @verifies decrease image number by given step
      */
     @Test
-    void getPrevUrl_shouldDecreaseImageNumberByGivenStep() throws Exception {
+    void getPreviousPageUrl_shouldDecreaseImageNumberByGivenStep() throws Exception {
         adb.setNavigationHelper(navigationHelper);
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("10");
@@ -204,11 +247,11 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ActiveDocumentBean#getPrevUrl(String,int)
+     * @see ActiveDocumentBean#getPreviousPageUrl(int)
      * @verifies go no lower than first page order
      */
     @Test
-    void getPrevUrl_shouldGoNoLowerThanFirstPageOrder() throws Exception {
+    void getPreviousPageUrl_shouldGoNoLowerThanFirstPageOrder() throws Exception {
         adb.setNavigationHelper(navigationHelper);
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("2");
@@ -221,11 +264,11 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ActiveDocumentBean#getPageUrl(String,int)
+     * @see ActiveDocumentBean#getPageUrl(String)
      * @verifies construct url correctly
      */
     @Test
-    void getUrl_shouldConstructUrlCorrectly() throws Exception {
+    void getPageUrl_shouldConstructUrlCorrectly() throws Exception {
         adb.setNavigationHelper(navigationHelper);
         navigationHelper.setLocaleString("en");
         adb.setPersistentIdentifier(PI_KLEIUNIV);
@@ -272,8 +315,8 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ActiveDocumentBean#getPageUrlRelativeToCurrentPage(int)
      * @verifies return correct page in single page mode
+     * @see ActiveDocumentBean#getPageUrl(final String, String)
      */
     @Test
     void getPageUrl_shouldReturnCorrectPageInSinglePageMode() throws Exception {
@@ -291,8 +334,8 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ActiveDocumentBean#getPageUrlRelativeToCurrentPage(int)
      * @verifies return correct range in double page mode if currently showing one page
+     * @see ActiveDocumentBean#getPageUrl(final String, String)
      */
     @Test
     void getPageUrl_shouldReturnCorrectRangeInDoublePageModeIfCurrentlyShowingOnePage() throws Exception {
@@ -332,8 +375,8 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ActiveDocumentBean#getPageUrlRelativeToCurrentPage(int)
      * @verifies return correct range in double page mode if currently showing two pages
+     * @see ActiveDocumentBean#getPageUrl(final String, String)
      */
     @Test
     void getPageUrl_shouldReturnCorrectRangeInDoublePageModeIfCurrentlyShowingTwoPages() throws Exception {
@@ -353,8 +396,8 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ActiveDocumentBean#getPageUrlRelativeToCurrentPage(int)
      * @verifies return correct range in double page mode if current page double image
+     * @see ActiveDocumentBean#getPageUrl(final String, String)
      */
     @Test
     void getPageUrl_shouldReturnCorrectRangeInDoublePageModeIfCurrentPageDoubleImage() throws Exception {
@@ -411,10 +454,10 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see ActiveDocumentBean#getRelativeUrlTags()
-     * @verifies generate tags correctly
+     * @verifies return non blank link tags when record is loaded
      */
     @Test
-    void getRelativeUrlTags_shouldGenerateTagsCorrectly() throws Exception {
+    void getRelativeUrlTags_shouldReturnNonBlankLinkTagsWhenRecordIsLoaded() throws Exception {
         adb.setPersistentIdentifier(AbstractSolrEnabledTest.PI_KLEIUNIV);
         adb.setImageToShow("3");
         adb.update();
@@ -430,12 +473,322 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ActiveDocumentBean#getToc()
      * @verifies return null when viewManager is null
+     * @see ActiveDocumentBean#getToc()
      */
     @Test
     void getToc_shouldReturnNullWhenViewManagerIsNull() throws Exception {
         // Fresh bean has viewManager == null
         assertNull(adb.getToc());
+    }
+
+    /**
+     * @see ActiveDocumentBean#createTOC()
+     * @verifies return empty toc when view manager is null
+     */
+    @Test
+    void createTOC_shouldReturnEmptyTocWhenViewManagerIsNull() throws Exception {
+        // createTOC() reads this.viewManager once into a local variable (TOCTOU fix).
+        // Before the fix, reset() on another thread could null out viewManager between
+        // the null-check and getMimeType() access, causing an NPE.  We cannot reproduce
+        // that race deterministically, but we verify the boundary condition: with
+        // viewManager == null (as it would be after reset()), createTOC() must return a
+        // non-null empty TOC rather than throw.
+        java.lang.reflect.Method m = ActiveDocumentBean.class.getDeclaredMethod("createTOC");
+        m.setAccessible(true);
+        // viewManager is null on a fresh bean — the condition after a concurrent reset()
+        Object result = m.invoke(adb);
+        Assertions.assertNotNull(result, "createTOC() must return a non-null empty TOC when viewManager is null");
+    }
+
+    /**
+     * @see ActiveDocumentBean#setTocCurrentPage(String)
+     * @verifies throw illegal url parameter exception for non numeric value
+     */
+    @Test
+    void setTocCurrentPage_shouldThrowIllegalUrlParameterExceptionForNonNumericValue() {
+        // A record PI like "15849354_1940" (periodical volume) can end up in the
+        // tocCurrentPage URL slot when a mismatched PrettyFaces pattern injects it.
+        // The setter must reject it with IllegalUrlParameterException so that
+        // MyExceptionHandler treats it as an invalid URL (WARN) rather than ERROR.
+        Assertions.assertThrows(IllegalUrlParameterException.class, () -> adb.setTocCurrentPage("15849354_1940"));
+        Assertions.assertThrows(IllegalUrlParameterException.class, () -> adb.setTocCurrentPage("15592719_2011_00"));
+        Assertions.assertThrows(IllegalUrlParameterException.class, () -> adb.setTocCurrentPage("notANumber"));
+    }
+
+    /**
+     * @verifies not throw NPE when current page is null
+     * @see ActiveDocumentBean#getFullscreenImageUrl()
+     */
+    @Test
+    void getFullscreenImageUrl_shouldNotThrowNPEWhenCurrentPageIsNull() throws Exception {
+        // Simulate a ViewManager in double-page mode where the page loader hasn't
+        // populated the current page yet (getCurrentPage() == null).
+        ViewManager mockViewManager = Mockito.mock(ViewManager.class);
+        Mockito.when(mockViewManager.isDoublePageMode()).thenReturn(true);
+        Mockito.when(mockViewManager.getCurrentPage()).thenReturn(null);
+
+        adb.setNavigationHelper(navigationHelper);
+        // viewManager is private; inject via reflection
+        java.lang.reflect.Field vmField = ActiveDocumentBean.class.getDeclaredField("viewManager");
+        vmField.setAccessible(true);
+        vmField.set(adb, mockViewManager);
+
+        // Must not throw NullPointerException
+        Assertions.assertDoesNotThrow(() -> adb.getFullscreenImageUrl());
+    }
+
+    /**
+     * @verifies not throw NPE when current page is null
+     */
+    @Test
+    void getPageUrlRelativeToCurrentPage_shouldNotThrowNPEWhenCurrentPageIsNull() throws Exception {
+        // Simulate a ViewManager in double-page mode where the page loader hasn't populated
+        // the current page yet (getCurrentPage() == null). This reproduces the TOCTOU scenario
+        // where reset() nulls the pageLoader between the first and second getCurrentPage() calls.
+        ViewManager mockViewManager = Mockito.mock(ViewManager.class);
+        Mockito.when(mockViewManager.isDoublePageMode()).thenReturn(true);
+        Mockito.when(mockViewManager.getCurrentPage()).thenReturn(null);
+        StructElement mockStructElement = Mockito.mock(StructElement.class);
+        Mockito.when(mockViewManager.getTopStructElement()).thenReturn(mockStructElement);
+        Mockito.when(mockStructElement.isRtl()).thenReturn(false);
+        Mockito.when(mockViewManager.getCurrentLeftPage()).thenReturn(java.util.Optional.empty());
+        Mockito.when(mockViewManager.getCurrentRightPage()).thenReturn(java.util.Optional.empty());
+        Mockito.when(mockViewManager.getCurrentImageOrder()).thenReturn(1);
+        Mockito.when(mockViewManager.getPage(Mockito.anyInt())).thenReturn(java.util.Optional.empty());
+
+        adb.setNavigationHelper(navigationHelper);
+        java.lang.reflect.Field vmField = ActiveDocumentBean.class.getDeclaredField("viewManager");
+        vmField.setAccessible(true);
+        vmField.set(adb, mockViewManager);
+
+        // Must not throw NullPointerException
+        Assertions.assertDoesNotThrow(() -> adb.getPageUrlRelativeToCurrentPage(1));
+    }
+
+    /**
+     * @see ActiveDocumentBean#getPageUrlRelativeToCurrentPage(int)
+     * @verifies not throw NPE when viewManager is null
+     */
+    @Test
+    void getPageUrlRelativeToCurrentPage_shouldNotThrowNPEWhenViewManagerIsNull() throws Exception {
+        // A fresh bean has viewManager == null, which is the state after a concurrent reset().
+        // Before the single-volatile-read fix, calling this method with a null viewManager
+        // would either throw NPE (if no null-check existed) or still be racy (if the volatile
+        // field was read twice: once for the null-check and once for field access).
+        adb.setNavigationHelper(navigationHelper);
+        // viewManager is null on a fresh bean — assert no NPE
+        Assertions.assertDoesNotThrow(() -> adb.getPageUrlRelativeToCurrentPage(1));
+    }
+
+    /**
+     * Verify that unsynchronized read-only getters do not throw under concurrent access
+     * after a record has been loaded.
+     *
+     * @see ActiveDocumentBean#getPersistentIdentifier()
+     * @see ActiveDocumentBean#getTocCurrentPage()
+     * @see ActiveDocumentBean#getLogid()
+     * @see ActiveDocumentBean#getAction()
+     * @see ActiveDocumentBean#getCurrentThumbnailPage()
+     * @verifies be thread safe after record load
+     */
+    @Test
+    void getPersistentIdentifier_shouldBeThreadSafeAfterRecordLoad() throws Exception {
+        adb.setNavigationHelper(navigationHelper);
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        adb.setImageToShow("1");
+        adb.update();
+
+        int threadCount = 10;
+        java.util.concurrent.ExecutorService exec = java.util.concurrent.Executors.newFixedThreadPool(threadCount);
+        java.util.List<java.util.concurrent.Future<String>> futures = new java.util.ArrayList<>();
+
+        for (int i = 0; i < threadCount; i++) {
+            futures.add(exec.submit(() -> {
+                // These must all return consistent, non-null values concurrently
+                String pi = adb.getPersistentIdentifier();
+                String tocPage = adb.getTocCurrentPage();
+                String logid = adb.getLogid();
+                String action = adb.getAction();
+                int thumbPage = adb.getCurrentThumbnailPage();
+                return pi + "|" + tocPage + "|" + logid + "|" + action + "|" + thumbPage;
+            }));
+        }
+
+        exec.shutdown();
+        exec.awaitTermination(10, java.util.concurrent.TimeUnit.SECONDS);
+
+        for (java.util.concurrent.Future<String> f : futures) {
+            String result = f.get(); // propagates any exceptions thrown in reader threads
+            Assertions.assertTrue(result.startsWith(PI_KLEIUNIV + "|"),
+                    "getPersistentIdentifier() must return the loaded PI; got: " + result);
+            Assertions.assertTrue(result.contains("|1|"),
+                    "getTocCurrentPage() must return '1'; got: " + result);
+        }
+    }
+
+    /**
+     * @verifies return non null geo map when no record loaded
+     * @see ActiveDocumentBean#getGeoMap()
+     */
+    @Test
+    void getGeoMap_shouldReturnNonNullGeoMapWhenNoRecordLoaded() throws Exception {
+        // Fresh bean has viewManager == null; getRecordGeoMap() returns an empty RecordGeoMap
+        // whose getGeoMap() returns a new (empty) GeoMap — not null
+        assertFalse(adb.isRecordLoaded());
+        Assertions.assertNotNull(adb.getGeoMap());
+    }
+
+    /**
+     * @verifies return GeoMap for loaded record
+     * @see ActiveDocumentBean#getGeoMap()
+     */
+    @Test
+    void getGeoMap_shouldReturnGeoMapForLoadedRecord() throws Exception {
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        adb.update();
+        assertTrue(adb.isRecordLoaded());
+        // GeoMap may be empty (no geo-coordinate fields configured in test), but must not be null
+        Assertions.assertNotNull(adb.getGeoMap());
+    }
+
+    /**
+     * @verifies cache result for same PI
+     * @see ActiveDocumentBean#getRecordGeoMap()
+     */
+    @Test
+    void getRecordGeoMap_shouldCacheResultForSamePI() throws Exception {
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        adb.update();
+        assertTrue(adb.isRecordLoaded());
+        // Two calls must return the same RecordGeoMap instance (cached after first build)
+        io.goobi.viewer.model.maps.RecordGeoMap first = adb.getRecordGeoMap();
+        io.goobi.viewer.model.maps.RecordGeoMap second = adb.getRecordGeoMap();
+        Assertions.assertSame(first, second, "getRecordGeoMap() must return the cached instance on repeated calls");
+    }
+
+    /**
+     * @verifies return false when no record loaded
+     * @see ActiveDocumentBean#isAllowUserComments()
+     */
+    @Test
+    void isAllowUserComments_shouldReturnFalseWhenNoRecordLoaded() throws Exception {
+        assertFalse(adb.isRecordLoaded());
+        assertFalse(adb.isAllowUserComments());
+    }
+
+    /**
+     * @verifies return false when comments disabled globally
+     * @see ActiveDocumentBean#isAllowUserComments()
+     */
+    @Test
+    void isAllowUserComments_shouldReturnFalseWhenCommentsDisabledGlobally() throws Exception {
+        // Test DB: core CommentGroup exists (core_type=1) but has enabled=0 → disabled globally
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        adb.update();
+        assertTrue(adb.isRecordLoaded());
+        assertFalse(adb.isAllowUserComments());
+    }
+
+    /**
+     * @verifies not throw NPE if allow user comments reset concurrently
+     * @see ActiveDocumentBean#isAllowUserComments()
+     */
+    @Test
+    void isAllowUserComments_shouldNotThrowNPEIfAllowUserCommentsResetConcurrently() throws Exception {
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        adb.update();
+        assertTrue(adb.isRecordLoaded());
+        // Prime the cache (returns false: comments globally disabled in test DB)
+        assertFalse(adb.isAllowUserComments());
+        // Simulate the race: resetAllowUserComments() sets allowUserComments back to null
+        adb.resetAccess();
+        // The next call must not throw NullPointerException (Boolean.TRUE.equals handles null).
+        // Re-evaluates: still disabled globally → false.
+        assertFalse(adb.isAllowUserComments());
+    }
+
+    /**
+     * @verifies use default image when no identifier set
+     * @see ActiveDocumentBean#setRepresentativeImage()
+     */
+    @Test
+    void setRepresentativeImage_shouldUseDefaultImageWhenNoIdentifierSet() throws Exception {
+        // lastReceivedIdentifier is null → skip Solr, image stays "1"
+        Mockito.when(navigationHelper.getCurrentPageType()).thenReturn(io.goobi.viewer.model.viewer.PageType.viewImage);
+        adb.setNavigationHelper(navigationHelper);
+        adb.setRepresentativeImage();
+        assertEquals("1", adb.getImageToShow());
+    }
+
+    /**
+     * @verifies use default image when identifier is dash sentinel
+     * @see ActiveDocumentBean#setRepresentativeImage()
+     */
+    @Test
+    void setRepresentativeImage_shouldUseDefaultImageWhenIdentifierIsDashSentinel() throws Exception {
+        // lastReceivedIdentifier == "-" is treated as "no record" → skip Solr, image stays "1"
+        Mockito.when(navigationHelper.getCurrentPageType()).thenReturn(io.goobi.viewer.model.viewer.PageType.viewImage);
+        adb.setNavigationHelper(navigationHelper);
+        adb.setLastReceivedIdentifier("-");
+        adb.setRepresentativeImage();
+        assertEquals("1", adb.getImageToShow());
+    }
+
+    /**
+     * @see ActiveDocumentBean#getRelativeUrlTags()
+     * @verifies generate canonical without page number for first page
+     */
+    @Test
+    void getRelativeUrlTags_shouldGenerateCanonicalWithoutPageNumberForFirstPage() throws Exception {
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        adb.setImageToShow("1");
+        adb.update();
+        assertTrue(adb.isRecordLoaded());
+
+        // Use a real NavigationHelper so getCurrentView() returns a consistent value
+        NavigationHelper nh = new NavigationHelper();
+        // viewImage page type; getName() returns the configured or raw name ("image")
+        nh.setCurrentView(PageType.viewImage.getName());
+        adb.setNavigationHelper(nh);
+
+        String result = adb.getRelativeUrlTags();
+        String linkCanonical = "\n<link rel=\"canonical\" href=\"";
+        String linkEnd = "\" />";
+        assertTrue(result.contains(linkCanonical), "Expected a canonical link tag in result, got: " + result);
+
+        int start = result.indexOf(linkCanonical) + linkCanonical.length();
+        int end = result.indexOf(linkEnd, start);
+        String canonicalHref = result.substring(start, end);
+        // Page 1 canonical must contain the PI but must not append the page number
+        assertTrue(canonicalHref.contains(PI_KLEIUNIV), "Canonical URL must contain the PI");
+        assertFalse(canonicalHref.endsWith("/1/"), "Canonical URL for page 1 must not end with /1/");
+    }
+
+    /**
+     * @see ActiveDocumentBean#getRelativeUrlTags()
+     * @verifies generate canonical with page number for non first page
+     */
+    @Test
+    void getRelativeUrlTags_shouldGenerateCanonicalWithPageNumberForNonFirstPage() throws Exception {
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        adb.setImageToShow("3");
+        adb.update();
+        assertTrue(adb.isRecordLoaded());
+
+        NavigationHelper nh = new NavigationHelper();
+        nh.setCurrentView(PageType.viewImage.getName());
+        adb.setNavigationHelper(nh);
+
+        String result = adb.getRelativeUrlTags();
+        String linkCanonical = "\n<link rel=\"canonical\" href=\"";
+        String linkEnd = "\" />";
+        assertTrue(result.contains(linkCanonical), "Expected a canonical link tag in result, got: " + result);
+
+        int start = result.indexOf(linkCanonical) + linkCanonical.length();
+        int end = result.indexOf(linkEnd, start);
+        String canonicalHref = result.substring(start, end);
+        // Page 3 canonical must end with the page number
+        assertTrue(canonicalHref.endsWith("/3/"), "Canonical URL for page 3 must end with /3/, got: " + canonicalHref);
     }
 }

@@ -84,6 +84,11 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.LinkingProperty.LinkingTarget;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.PagePermissions;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -104,6 +109,28 @@ public class SequenceBuilder extends AbstractBuilder {
     protected ImageDeliveryBean imageDelivery = BeanUtils.getImageDeliveryBean();
     private BuildMode buildMode = BuildMode.IIIF;
     private PageType preferedView = PageType.viewObject;
+    private PagePermissions pagePermissions = PagePermissions.EMPTY;
+    // Cached page dimensions keyed by ORDER; populated in addBaseSequence() before the page loop.
+    // Empty map means no batch data available — falls back to per-page disk I/O in getSize().
+    private Map<Integer, Dimension> pageDimensions = Map.of();
+
+    /**
+     * Injects pre-fetched page permissions; package-private to allow test injection without reflection.
+     *
+     * @param pagePermissions pre-fetched permissions to use instead of per-page Solr queries
+     */
+    void setPagePermissions(PagePermissions pagePermissions) {
+        this.pagePermissions = pagePermissions;
+    }
+
+    /**
+     * Injects pre-fetched page dimensions; package-private to allow test injection without reflection.
+     *
+     * @param pageDimensions map of page ORDER to Dimension, replacing the per-page disk I/O fallback
+     */
+    void setPageDimensions(Map<Integer, Dimension> pageDimensions) {
+        this.pageDimensions = pageDimensions;
+    }
 
     /**
      * Creates a new SequenceBuilder instance.
@@ -145,6 +172,10 @@ public class SequenceBuilder extends AbstractBuilder {
 
         if (BuildMode.IIIF.equals(buildMode) || BuildMode.THUMBS.equals(buildMode)) {
             IPageLoader pageLoader = AbstractPageLoader.create(doc, pagesToInclude);
+            // Pre-fetch all page permissions and dimensions in one batch each before the loop,
+            // avoiding O(n) Solr queries and O(n) disk reads during canvas construction.
+            this.pagePermissions = AccessConditionUtils.fetchPagePermissions(doc.getPi(), request);
+            this.pageDimensions = fetchPageDimensions(doc.getPi());
 
             Map<Integer, Canvas2> canvasMap = new HashMap<>();
             for (int i = pageLoader.getFirstPageOrder(); i <= pageLoader.getLastPageOrder(); ++i) {
@@ -303,6 +334,8 @@ public class SequenceBuilder extends AbstractBuilder {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws DAOException
+     * @should return 1200 for given input
+     * @should generate canvas for given input
      */
     public Canvas2 generateCanvas(String pi, PhysicalElement page)
             throws URISyntaxException, ViewerConfigurationException, IndexUnreachableException, PresentationException, DAOException {
@@ -335,7 +368,9 @@ public class SequenceBuilder extends AbstractBuilder {
                     if (IIIFUrlResolver.isIIIFImageUrl(thumbnailUrl)) {
                         URI imageInfoURI = new URI(IIIFUrlResolver.getIIIFImageBaseUrl(thumbnailUrl));
                         ImageInformation imageInfo = new ImageInformation(imageInfoURI.toString());
-                        if (!page.isAccessPermissionImage()) {
+                        // Use pre-fetched permissions if available; fall back to per-page Solr query otherwise.
+                        if (!(pagePermissions.isEmpty() ? page.isAccessPermissionImage()
+                                : pagePermissions.isImageGranted(page.getOrder()))) {
                             for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getFileName())) {
                                 imageInfo.addService(service);
                             }
@@ -429,6 +464,7 @@ public class SequenceBuilder extends AbstractBuilder {
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should return true for given input
      */
     public Map<AnnotationType, AnnotationList> addOtherContent(StructElement doc, PhysicalElement page, Canvas2 canvas, boolean populate)
             throws URISyntaxException, IndexUnreachableException, ViewerConfigurationException {
@@ -566,19 +602,68 @@ public class SequenceBuilder extends AbstractBuilder {
             if (page.hasIndividualSize()) {
                 size.setSize(page.getImageWidth(), page.getImageHeight());
             } else {
-                try {
-                    ImageInformation info = imageDelivery.getImages().getImageInformation(page);
-                    size.setSize(info.getWidth(), info.getHeight());
-                    /*
-                     * Catch NoClassDefFoundError which occurs if imageio-libs are missing.
-                     * Currently this is true in a testing environment, so we just catch it here to pass the tests
-                     */
-                } catch (NoClassDefFoundError | ContentLibException | URISyntaxException e) {
-                    logger.error("Unable to retrieve image size for {}: {}", page, e.toString());
+                // Use pre-fetched dimension cache before falling back to per-page disk I/O.
+                // The cache is populated by fetchPageDimensions() before the sequence page loop.
+                Dimension cached = pageDimensions.get(page.getOrder());
+                if (cached != null) {
+                    size.setSize(cached.width, cached.height);
+                } else {
+                    try {
+                        ImageInformation info = imageDelivery.getImages().getImageInformation(page);
+                        size.setSize(info.getWidth(), info.getHeight());
+                        /*
+                         * Catch NoClassDefFoundError which occurs if imageio-libs are missing.
+                         * Currently this is true in a testing environment, so we just catch it here to pass the tests
+                         */
+                    } catch (NoClassDefFoundError | ContentLibException | URISyntaxException e) {
+                        logger.error("Unable to retrieve image size for {}: {}", page, e.toString());
+                    }
                 }
             }
         }
         return size;
+    }
+
+    /**
+     * Fetches image dimensions (WIDTH, HEIGHT) for all pages of the given record in one Solr
+     * query. Called once before the page loop in addBaseSequence() to avoid O(n) disk reads
+     * via ImageHandler.getImageInformation() in getSize().
+     *
+     * @param pi persistent identifier of the record whose page dimensions to fetch
+     * @return map of page ORDER to Dimension; empty map on error or if no dimension data indexed
+     */
+    private Map<Integer, Dimension> fetchPageDimensions(String pi) {
+        if (org.apache.commons.lang3.StringUtils.isBlank(pi)) {
+            return Map.of();
+        }
+        String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi
+                + " +" + SolrConstants.DOCTYPE + ":" + DocType.PAGE;
+        try {
+            org.apache.solr.common.SolrDocumentList docs = DataManager.getInstance().getSearchIndex()
+                    .search(query, SolrSearchIndex.MAX_HITS, null,
+                            List.of(SolrConstants.ORDER, SolrConstants.WIDTH, SolrConstants.HEIGHT));
+            if (docs == null || docs.isEmpty()) {
+                return Map.of();
+            }
+            Map<Integer, Dimension> map = new HashMap<>();
+            for (org.apache.solr.common.SolrDocument doc : docs) {
+                Object orderObj = doc.getFieldValue(SolrConstants.ORDER);
+                Object widthObj = doc.getFieldValue(SolrConstants.WIDTH);
+                Object heightObj = doc.getFieldValue(SolrConstants.HEIGHT);
+                if (orderObj == null || widthObj == null || heightObj == null) {
+                    continue;
+                }
+                int w = ((Number) widthObj).intValue();
+                int h = ((Number) heightObj).intValue();
+                if (w > 0 && h > 0) {
+                    map.put(((Number) orderObj).intValue(), new Dimension(w, h));
+                }
+            }
+            return map;
+        } catch (IndexUnreachableException | PresentationException e) {
+            logger.warn("Failed to pre-fetch page dimensions for {}: {}", pi, e.getMessage());
+            return Map.of();
+        }
     }
 
     /**

@@ -27,11 +27,14 @@ import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_FILES_IMAGE;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_FILES_IMAGE_PDF;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_FILES_PLAINTEXT;
 
+import java.awt.Dimension;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -65,6 +68,11 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
 import io.goobi.viewer.model.iiif.presentation.v3.builder.LinkingProperty.LinkingTarget;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.PagePermissions;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -83,6 +91,29 @@ public class CanvasBuilder extends AbstractBuilder {
     private final ImageHandler images;
     private final AbstractApiUrlManager imageUrlManager = DataManager.getInstance().getRestApiManager().getIIIFContentApiManager();
 
+    private PagePermissions pagePermissions = PagePermissions.EMPTY;
+    // Cached page dimensions keyed by ORDER; populated by preparePageDimensions() before the page loop.
+    // Empty map means no batch data available — falls back to per-page disk I/O in addImageResource().
+    private Map<Integer, Dimension> pageDimensions = Map.of();
+
+    /**
+     * Injects pre-fetched page permissions; package-private to allow test injection without reflection.
+     *
+     * @param pagePermissions pre-fetched permissions to use instead of per-page Solr queries
+     */
+    void setPagePermissions(PagePermissions pagePermissions) {
+        this.pagePermissions = pagePermissions;
+    }
+
+    /**
+     * Injects pre-fetched page dimensions; package-private to allow test injection without reflection.
+     *
+     * @param pageDimensions map of page ORDER to Dimension, replacing the per-page disk I/O fallback
+     */
+    void setPageDimensions(Map<Integer, Dimension> pageDimensions) {
+        this.pageDimensions = pageDimensions;
+    }
+
     /**
      * @param apiUrlManager URL manager providing API endpoint paths
      * @param request current HTTP servlet request
@@ -90,6 +121,58 @@ public class CanvasBuilder extends AbstractBuilder {
     public CanvasBuilder(AbstractApiUrlManager apiUrlManager, HttpServletRequest request) {
         super(apiUrlManager, request);
         this.images = new ImageHandler(urls);
+    }
+
+    /**
+     * Pre-fetches access permissions for all pages of the given record in one Solr query.
+     * Must be called before the page loop (from
+     * {@link ManifestBuilder}) to enable O(1) per-page lookups instead of O(n) Solr queries.
+     *
+     * @param pi persistent identifier of the record whose pages to pre-fetch
+     */
+    public void preparePagePermissions(String pi) {
+        // Single batch fetch instead of one Solr query per page per privilege type
+        this.pagePermissions = AccessConditionUtils.fetchPagePermissions(pi, this.request);
+    }
+
+    /**
+     * Pre-fetches image dimensions (WIDTH, HEIGHT) for all pages of the given record in one Solr
+     * query. Must be called before the page loop (from {@link ManifestBuilder}) to avoid O(n)
+     * disk reads via ImageHandler.getImageInformation() in addImageResource().
+     *
+     * @param pi persistent identifier of the record whose page dimensions to pre-fetch
+     */
+    public void preparePageDimensions(String pi) {
+        if (org.apache.commons.lang3.StringUtils.isBlank(pi)) {
+            return;
+        }
+        String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi
+                + " +" + SolrConstants.DOCTYPE + ":" + DocType.PAGE;
+        try {
+            org.apache.solr.common.SolrDocumentList docs = DataManager.getInstance().getSearchIndex()
+                    .search(query, SolrSearchIndex.MAX_HITS, null,
+                            List.of(SolrConstants.ORDER, SolrConstants.WIDTH, SolrConstants.HEIGHT));
+            if (docs == null || docs.isEmpty()) {
+                return;
+            }
+            Map<Integer, Dimension> map = new HashMap<>();
+            for (org.apache.solr.common.SolrDocument doc : docs) {
+                Object orderObj = doc.getFieldValue(SolrConstants.ORDER);
+                Object widthObj = doc.getFieldValue(SolrConstants.WIDTH);
+                Object heightObj = doc.getFieldValue(SolrConstants.HEIGHT);
+                if (orderObj == null || widthObj == null || heightObj == null) {
+                    continue;
+                }
+                int w = ((Number) widthObj).intValue();
+                int h = ((Number) heightObj).intValue();
+                if (w > 0 && h > 0) {
+                    map.put(((Number) orderObj).intValue(), new Dimension(w, h));
+                }
+            }
+            this.pageDimensions = map;
+        } catch (IndexUnreachableException | PresentationException e) {
+            logger.warn("Failed to pre-fetch page dimensions for {}: {}", pi, e.getMessage());
+        }
     }
 
     /**
@@ -102,6 +185,9 @@ public class CanvasBuilder extends AbstractBuilder {
      * @throws ContentLibException
      * @throws URISyntaxException
      * @throws DAOException
+     * @should return 1200 for given input
+     * @should include image
+     * @should build for given input
      */
     public Canvas3 build(String pi, int order)
             throws PresentationException, IndexUnreachableException, ContentLibException, URISyntaxException, DAOException {
@@ -196,7 +282,9 @@ public class CanvasBuilder extends AbstractBuilder {
         if (page.isFulltextAvailable()) {
             URI annoPageUri = this.urls.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_TEXT).params(page.getPi(), page.getOrder()).buildURI();
             AnnotationPage ret = new AnnotationPage(annoPageUri, false);
-            if (!page.isAccessPermissionFulltext()) {
+            // Use pre-fetched permissions when available; fall back to per-page check for single-canvas builds
+            if (!(pagePermissions.isEmpty() ? page.isAccessPermissionFulltext()
+                    : pagePermissions.isFulltextGranted(page.getOrder()))) {
                 // Add auth services
                 for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getAltoFileName())) {
                     ret.addService(service);
@@ -277,12 +365,20 @@ public class CanvasBuilder extends AbstractBuilder {
             canvas.setWidth(page.getImageWidth());
             canvas.setHeight(page.getImageHeight());
         } else {
-            try {
-                ImageInformation info = images.getImageInformation(page);
-                canvas.setWidth(info.getWidth());
-                canvas.setHeight(info.getHeight());
-            } catch (ContentLibException e) {
-                logger.warn("Cannot set canvas size", e);
+            // Use pre-fetched dimension cache before falling back to per-page disk I/O.
+            // The cache is populated by preparePageDimensions() before the manifest page loop.
+            Dimension cached = pageDimensions.get(page.getOrder());
+            if (cached != null) {
+                canvas.setWidth(cached.width);
+                canvas.setHeight(cached.height);
+            } else {
+                try {
+                    ImageInformation info = images.getImageInformation(page);
+                    canvas.setWidth(info.getWidth());
+                    canvas.setHeight(info.getHeight());
+                } catch (ContentLibException e) {
+                    logger.warn("Cannot set canvas size", e);
+                }
             }
         }
 
@@ -297,7 +393,9 @@ public class CanvasBuilder extends AbstractBuilder {
                 String escFilename = StringTools.encodeUrl(filename);
                 String imageId = imageUrlManager.path(ApiUrls.RECORDS_FILES_IMAGE).params(page.getPi(), escFilename).build();
                 ImageResource imageResource = new ImageResource(imageId, thumbWidth, thumbHeight);
-                boolean access = page.isAccessPermissionImage();
+                // Use pre-fetched permissions when available; fall back to per-page check for single-canvas builds
+                boolean access = pagePermissions.isEmpty() ? page.isAccessPermissionImage()
+                        : pagePermissions.isImageGranted(page.getOrder());
                 if (!access) {
                     for (ImageInformation ii : imageResource.getServices()) {
                         for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getFileName())) {
@@ -343,7 +441,9 @@ public class CanvasBuilder extends AbstractBuilder {
             LinkingProperty pdf =
                     new LinkingProperty(LinkingTarget.PDF, createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPDF()));
             LabeledResource resource = pdf.getResource(uri);
-            if (!page.isAccessPermissionFulltext()) {
+            // Use pre-fetched permissions when available; fall back to per-page check for single-canvas builds
+            if (!(pagePermissions.isEmpty() ? page.isAccessPermissionFulltext()
+                    : pagePermissions.isFulltextGranted(page.getOrder()))) {
                 resource.addService(AuthorizationFlowTools.getAuthServices("/pdf/" + page.getPi() + "/" + page.getAltoFileName() + "/").get(0));
                 logger.trace("Added auth services for PDF.");
             }
@@ -355,7 +455,9 @@ public class CanvasBuilder extends AbstractBuilder {
             LinkingProperty alto =
                     new LinkingProperty(LinkingTarget.ALTO, createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingAlto()));
             LabeledResource resource = alto.getResource(uri);
-            if (!page.isAccessPermissionFulltext()) {
+            // Use pre-fetched permissions when available; fall back to per-page check for single-canvas builds
+            if (!(pagePermissions.isEmpty() ? page.isAccessPermissionFulltext()
+                    : pagePermissions.isFulltextGranted(page.getOrder()))) {
                 // Add auth services
                 for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getAltoFileName())) {
                     resource.addService(service);
@@ -376,7 +478,9 @@ public class CanvasBuilder extends AbstractBuilder {
             LinkingProperty text = new LinkingProperty(LinkingTarget.PLAINTEXT,
                     createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPlaintext()));
             LabeledResource resource = text.getResource(uri);
-            if (!page.isAccessPermissionFulltext()) {
+            // Use pre-fetched permissions when available; fall back to per-page check for single-canvas builds
+            if (!(pagePermissions.isEmpty() ? page.isAccessPermissionFulltext()
+                    : pagePermissions.isFulltextGranted(page.getOrder()))) {
                 // Add auth services
                 for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getAltoFileName())) {
                     resource.addService(service);

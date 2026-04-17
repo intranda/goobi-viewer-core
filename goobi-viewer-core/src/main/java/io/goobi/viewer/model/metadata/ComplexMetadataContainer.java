@@ -57,10 +57,14 @@ public class ComplexMetadataContainer {
     }
 
     public ComplexMetadataContainer(Collection<SolrDocument> metadataDocs, Predicate<String> fieldNameFilter) {
+        // Use groupingBy (O(n)) instead of toMap+ComplexMetadataList::union (O(n²) due to repeated
+        // list copies when multiple ComplexMetadata entries share the same field name).
         this.metadataMap = ComplexMetadata.getMetadataFromDocuments(metadataDocs)
                 .stream()
                 .filter(doc -> fieldNameFilter.test(doc.getField()))
-                .collect(Collectors.toMap(ComplexMetadata::getField, ComplexMetadataList::new, ComplexMetadataList::union));
+                .collect(Collectors.groupingBy(
+                        ComplexMetadata::getField,
+                        Collectors.collectingAndThen(Collectors.toList(), ComplexMetadataList::new)));
     }
 
     public List<ComplexMetadata> getMetadata(String field, Locale sortLanguage, String filterField, String filterValue,

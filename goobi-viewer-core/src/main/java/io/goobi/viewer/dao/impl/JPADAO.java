@@ -117,6 +117,7 @@ import jakarta.persistence.Persistence;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
 import jakarta.persistence.RollbackException;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
@@ -727,7 +728,8 @@ public class JPADAO implements IDAO {
      * {@inheritDoc}
      *
      * @see io.goobi.viewer.dao.IDAO#updateUserGroup(io.goobi.viewer.model.security.user.UserGroup)
-     * @should set id on new license
+     * @should persist changed name without altering total count
+     * @should not duplicate licenses and deleting license should not delete group
      */
     @Override
     public boolean updateUserGroup(UserGroup userGroup) throws DAOException {
@@ -1309,8 +1311,8 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      * 
-     * @should filter results correctly
-     * @should sort results correctly
+     * @should return only license types matching name and description filter
+     * @should return license types sorted by name in both ascending and descending order
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -1353,8 +1355,8 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      * 
-     * @should sort results correctly
-     * @should filter results correctly
+     * @should return core license types sorted by name for both sort directions
+     * @should return matching core license types when filter matches and empty list when filter has no match
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -2206,9 +2208,9 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * @should sort results correctly
-     * @should filter results correctly
-     * @should apply target pi filter correctly
+     * @should return comments ordered by body field in descending order
+     * @should return only comments matching combined targetPI and body filter
+     * @should return only comments belonging to given target PI set
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -2257,7 +2259,7 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * @should sort correctly
+     * @should return user comments sorted by dateCreated or dateModified with given limit
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -2404,7 +2406,7 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      * 
-     * @should update rows correctly
+     * @should reassign all comments from old owner to new owner and return updated row count
      */
     @Override
     public int changeCommentsOwner(User fromUser, User toUser) throws DAOException {
@@ -2440,9 +2442,9 @@ public class JPADAO implements IDAO {
      * @return the number of comments deleted
      * @throws DAOException if a database error occurs
      * @see io.goobi.viewer.dao.IDAO#deleteComments(java.lang.String, io.goobi.viewer.model.security.user.User)
-     * @should delete comments for pi correctly
-     * @should delete comments for user correctly
-     * @should delete comments for pi and user correctly
+     * @should remove all comments matching given PI and return deleted count
+     * @should remove only comments owned by given user and leave others intact
+     * @should remove only comments matching both PI and user when both are given
      * @should not delete anything if both pi and creator are null
      */
     @Override
@@ -3880,7 +3882,7 @@ public class JPADAO implements IDAO {
      * @return the total number of database rows deleted across all statistic tables
      * @throws DAOException
      * @see io.goobi.viewer.dao.IDAO#deleteCampaignStatisticsForUser(io.goobi.viewer.model.security.user.User)
-     * @should remove user from creators and reviewers lists correctly
+     * @should remove user from all annotator and reviewer lists across campaign statistics
      */
     @Override
     public int deleteCampaignStatisticsForUser(User user) throws DAOException {
@@ -3928,7 +3930,7 @@ public class JPADAO implements IDAO {
      * @throws DAOException if a database error occurs
      * @see io.goobi.viewer.dao.IDAO#changeCampaignStatisticContributors(io.goobi.viewer.model.security.user.User,
      *      io.goobi.viewer.model.security.user.User)
-     * @should replace user in creators and reviewers lists correctly
+     * @should replace source user with target user in all annotator and reviewer lists
      */
     @Override
     public int changeCampaignStatisticContributors(User fromUser, User toUser) throws DAOException {
@@ -4046,9 +4048,9 @@ public class JPADAO implements IDAO {
      * {@inheritDoc}
      *
      * @should return correct count
-     * @should filter correctly
-     * @should filter for users correctly
-     * @should apply target pi filter correctly
+     * @should return count matching filter when filtering by targetPageOrder
+     * @should return different counts when filtering by different owner users
+     * @should return count restricted to given target PI set
      */
     @Override
     public long getCommentCount(Map<String, String> filters, User owner, Set<String> targetPIs) throws DAOException {
@@ -4357,7 +4359,8 @@ public class JPADAO implements IDAO {
                 sbQuery.deleteCharAt(sbQuery.length() - 1);
             }
 
-            Query q = em.createQuery(sbQuery.toString());
+            // Use typed query to avoid unchecked conversion warning
+            TypedQuery<CMSArchiveConfig> q = em.createQuery(sbQuery.toString(), CMSArchiveConfig.class);
             params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
 
             return q.setFirstResult(first).setMaxResults(pageSize).setFlushMode(FlushModeType.COMMIT).getResultList();
@@ -4605,6 +4608,7 @@ public class JPADAO implements IDAO {
      * @param allowedCategoryIds category IDs the user may view; null means no restriction
      * @return the JPQL WHERE clause fragment restricting CMS page visibility, possibly empty
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
+     * @should return expected value for given input
      */
     public static String createCMSPageFilter(Map<String, Object> params, String pageParameter, List<Long> allowedTemplates,
             List<String> allowedSubthemes, List<String> allowedCategoryIds) throws AccessDeniedException {
@@ -4984,7 +4988,7 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      * 
-     * @should sort correctly
+     * @should return annotations in ascending and descending id order based on sort flag
      * @should throw IllegalArgumentException if sortField unknown
      */
     @Override
@@ -5275,7 +5279,7 @@ public class JPADAO implements IDAO {
      * {@inheritDoc}
      *
      * @should return correct rows
-     * @should filter by campaign name correctly
+     * @should return only annotations whose campaign name matches the filter value
      */
     @Override
     public List<CrowdsourcingAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending,
@@ -6691,7 +6695,7 @@ public class JPADAO implements IDAO {
             commitTransaction(em);
             return true;
         } catch (PersistenceException e) {
-            logger.error("Error saving disclaimer", e);
+            logger.error("Error saving client application", e);
             handleException(em);
             return false;
         } finally {
@@ -6778,7 +6782,7 @@ public class JPADAO implements IDAO {
             commitTransaction(em);
             return true;
         } catch (PersistenceException e) {
-            logger.error("Error saving disclaimer", e);
+            logger.error("Error saving usage statistics", e);
             handleException(em);
             return false;
         } finally {
@@ -6797,7 +6801,7 @@ public class JPADAO implements IDAO {
             commitTransaction(em);
             return true;
         } catch (PersistenceException e) {
-            logger.error("Error saving disclaimer", e);
+            logger.error("Error saving usage statistics", e);
             handleException(em);
             return false;
         } finally {

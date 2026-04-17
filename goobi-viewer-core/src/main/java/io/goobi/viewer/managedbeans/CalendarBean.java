@@ -686,6 +686,7 @@ public class CalendarBean implements Serializable {
      * @return a list of CalendarItemCentury objects for each century that has at least one indexed record
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should get all centuries
      */
     public List<CalendarItemCentury> getAllActiveCenturies() throws PresentationException, IndexUnreachableException {
         if (allActiveCenturies == null) {
@@ -1032,6 +1033,7 @@ public class CalendarBean implements Serializable {
      * 
      * @param currentWeek Week item to prepend empty days to
      * @param date First day of the month
+     * @should add days before monday
      */
     protected static void addEmptyDays(CalendarItemWeek currentWeek, LocalDate date) {
 

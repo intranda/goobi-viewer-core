@@ -376,7 +376,7 @@ public class BreadcrumbBean implements Serializable {
      * @param collection Full collection string containing all levels
      * @param field Solr field
      * @param splittingChar character used to split collection hierarchy levels
-     * @should create breadcrumbs correctly
+     * @should add one breadcrumb per hierarchy level with encoded collection URLs
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */

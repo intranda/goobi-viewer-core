@@ -260,11 +260,11 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                         }
                     }
                 }
-                // Use a separate if (not else if) so that a field configured in both
-                // ancestorIdentifierFields and recordGroupIdentifierFields (e.g. GROUPID_NEWSPAPER)
-                // is correctly recognized as a group membership, enabling the calendar widget
-                // for newspapers indexed without a traditional PI_ANCHOR structure.
-                if (DataManager.getInstance().getConfiguration().getRecordGroupIdentifierFields().contains(fieldName)) {
+                // Use a separate if (not else if) so that a GROUPID_ field configured in
+                // ancestorIdentifierFields (e.g. GROUPID_NEWSPAPER) is correctly recognized
+                // as a group membership, enabling the calendar widget for newspapers indexed
+                // without a traditional PI_ANCHOR structure.
+                if (fieldName.startsWith(SolrConstants.PREFIX_GROUPID)) {
                     groupMemberships.put(fieldName, (String) doc.getFieldValue(fieldName));
                 }
             }
@@ -287,7 +287,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                     }
                 }
             }
-        } catch (PresentationException e) {
+        } catch (PresentationException | IndexUnreachableException e) {
             // Catch exception to skip the rest of the code block, but do not do anything (already logged elsewhere)
             logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
         }
@@ -368,7 +368,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * Loads and returns the immediate parent StructElement of this element.
      *
      * @return {@link io.goobi.viewer.model.viewer.StructElement}
-     * @should return parent correctly
+     * @should return parent StructElement with matching Lucene ID for child element
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public StructElement getParent() throws IndexUnreachableException {
@@ -410,6 +410,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @return true if at least one Solr document references this element as its parent, false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @should return true if element has children
      */
     public boolean isHasChildren() throws IndexUnreachableException, PresentationException {
         if (hasChildren == null) {
@@ -430,13 +431,13 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * will be returned. If no topStruct element is found because no metadata {@link io.goobi.viewer.solr.SolrConstants#IDDOC_TOPSTRUCT} is found or
      * because it could not be resolved, null is returned
      *
-     * @should retrieve top struct correctly
      * @should return self if topstruct
      * @should return self if anchor
      * @should return self if group
      * @return the top-level StructElement for this record, or null if it cannot be resolved
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should return top level struct element different from child element with expected lucene i d
      */
     public StructElement getTopStruct() throws PresentationException, IndexUnreachableException {
         if (work || anchor || isGroup()) {
@@ -571,7 +572,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @param width a int.
      * @param height a int.
      * @return Image URL
-     * @should construct url correctly
+     * @should return IIIF image URL with given width and height constraints
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getImageUrl(int width, int height) throws ViewerConfigurationException {
@@ -770,7 +771,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * Returns a stub representation of this object that only contains simple members to conserve memory.
      *
      * @return the lightweight StructElementStub representation of this element
-     * @should create stub correctly
+     * @should copy all fields including PI, logid, doctype, label, and metadata to stub
      */
     public StructElementStub createStub() {
         StructElementStub ret = new StructElementStub(luceneId);

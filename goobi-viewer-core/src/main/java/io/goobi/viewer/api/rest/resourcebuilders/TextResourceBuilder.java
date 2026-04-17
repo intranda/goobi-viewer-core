@@ -78,6 +78,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.UncheckedPresentationException;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
@@ -120,6 +121,7 @@ public class TextResourceBuilder {
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws ContentLibException
+     * @should throw ContentNotFoundException if no fulltext files found
      */
     public StreamingOutput getFulltextAsZip(String pi, HttpServletRequest request)
             throws IOException, PresentationException, IndexUnreachableException, ContentLibException {
@@ -168,7 +170,9 @@ public class TextResourceBuilder {
         String zipFileName = pi + "_alto.zip";
         String foldername = DataManager.getInstance().getConfiguration().getAltoFolder();
         String crowdsourcingFolderName = DataManager.getInstance().getConfiguration().getAltoCrowdsourcingFolder();
-        List<Path> files = getFiles(pi, foldername, crowdsourcingFolderName, null, request);
+        // Replaced filesystem iteration with single Solr batch query to avoid O(n) per-file
+        // permission checks and to exclude legacy filenames no longer known to the index.
+        List<Path> files = getFilesFromSolr(pi, SolrConstants.FILENAME_ALTO, foldername, crowdsourcingFolderName, request);
 
         // Return 404 if no ALTO files exist for this record instead of letting
         // FileTools.compressZipFile throw an IllegalArgumentException
@@ -183,7 +187,8 @@ public class TextResourceBuilder {
             throws IOException, PresentationException, IndexUnreachableException {
         String foldername = DataManager.getInstance().getConfiguration().getAltoFolder();
         String crowdsourcingFolderName = DataManager.getInstance().getConfiguration().getAltoCrowdsourcingFolder();
-        List<Path> files = getFiles(pi, foldername, crowdsourcingFolderName, null, request);
+        // Replaced filesystem iteration with single Solr batch query (see getAltoAsZip).
+        List<Path> files = getFilesFromSolr(pi, SolrConstants.FILENAME_ALTO, foldername, crowdsourcingFolderName, request);
 
         StringBuilder sb = new StringBuilder();
         for (Path path : files) {
@@ -464,8 +469,9 @@ public class TextResourceBuilder {
                 logger.error(e.getMessage(), e);
             }
         } else {
+            // Fallback: look for corresponding ALTO file when no plaintext exists
             file = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getAltoFolder(),
-                    DataManager.getInstance().getConfiguration().getAltoFolder(), fileName.replaceAll("(i?)\\.txt", ".xml"));
+                    DataManager.getInstance().getConfiguration().getAltoFolder(), fileName.replaceAll("(?i)\\.txt", ".xml"));
             if (file != null && Files.isRegularFile(file)) {
                 try {
                     return ALTOTools.getFulltext(file, StringTools.DEFAULT_ENCODING);
@@ -493,12 +499,15 @@ public class TextResourceBuilder {
     public Map<java.nio.file.Path, String> getFulltextMap(String pi, HttpServletRequest request)
             throws IOException, PresentationException, IndexUnreachableException {
         Map<java.nio.file.Path, String> ret = new TreeMap<>();
-        List<java.nio.file.Path> fulltextFiles = getFiles(pi, DataManager.getInstance().getConfiguration().getFulltextCrowdsourcingFolder(),
-                DataManager.getInstance().getConfiguration().getFulltextFolder(), "(i?).*\\.txt", request);
+        // Replaced filesystem iteration with single Solr batch query for fulltext files.
+        List<java.nio.file.Path> fulltextFiles = getFilesFromSolr(pi, SolrConstants.FILENAME_FULLTEXT,
+                DataManager.getInstance().getConfiguration().getFulltextCrowdsourcingFolder(),
+                DataManager.getInstance().getConfiguration().getFulltextFolder(), request);
 
         Map<java.nio.file.Path, String> fileMapFromPlaintext = null;
         if (!fulltextFiles.isEmpty()) {
-            logger.debug("Collecting plaintext files from {}", fulltextFiles.get(0).getParent().toAbsolutePath());
+            logger.debug("{}: Collecting {} plaintext files from {}", pi, fulltextFiles.size(),
+                    fulltextFiles.get(0).getParent().toAbsolutePath());
             fileMapFromPlaintext = fulltextFiles.stream().collect(Collectors.toMap(p -> p, p -> {
                 try {
                     return FileTools.getStringFromFile(p.toFile(), StringTools.DEFAULT_ENCODING);
@@ -509,25 +518,7 @@ public class TextResourceBuilder {
             }));
         }
 
-        Map<java.nio.file.Path, String> fileMapFromAlto = null;
-        List<java.nio.file.Path> altoFiles = getFiles(pi, DataManager.getInstance().getConfiguration().getAltoFolder(),
-                DataManager.getInstance().getConfiguration().getAltoFolder(), "(i?).*\\.(alto|xml)", request);
-        if (!altoFiles.isEmpty()) {
-            logger.debug("Converting ALTO files from {}", altoFiles.get(0).getParent().toAbsolutePath());
-            fileMapFromAlto = altoFiles.stream()
-                    .collect(Collectors.toMap(
-                            p -> Paths.get(p.toString().replaceAll("(i?)\\.(alto|xml)", ".txt")),
-                            p -> {
-                                try {
-                                    return ALTOTools.getFulltext(p, StringTools.DEFAULT_ENCODING);
-                                } catch (IOException e) {
-                                    logger.error("Error reading file {}", p, e);
-                                    return "";
-                                }
-                            }));
-        }
-
-        // Add collected plaintext files
+        // Add collected plaintext files first to know which pages already have text
         final Set<String> fileNames = new HashSet<>();
         if (fileMapFromPlaintext != null && !fileMapFromPlaintext.isEmpty()) {
             for (Entry<Path, String> entry : fileMapFromPlaintext.entrySet()) {
@@ -537,38 +528,66 @@ public class TextResourceBuilder {
             }
         }
 
-        // Add text files converted from ALTO. Only add files whose name wasn't already collected from plain text resources.
-        if (fileMapFromAlto != null && !fileMapFromAlto.isEmpty()) {
-            for (Entry<Path, String> entry : fileMapFromAlto.entrySet()) {
-                if (!fileNames.contains(entry.getKey().getFileName().toString())) {
-                    ret.put(entry.getKey(), entry.getValue());
-                }
-            }
+        // Only parse ALTO files for pages that have no plaintext yet (skip expensive XML parsing for pages with existing plaintext)
+        List<java.nio.file.Path> altoFiles = getFilesFromSolr(pi, SolrConstants.FILENAME_ALTO,
+                DataManager.getInstance().getConfiguration().getAltoFolder(),
+                DataManager.getInstance().getConfiguration().getAltoFolder(), request);
+        if (!altoFiles.isEmpty()) {
+            // Filter out ALTO files for which plaintext already exists before parsing
+            List<java.nio.file.Path> altoFilesToConvert = altoFiles.stream()
+                    .filter(p -> {
+                        String txtName = p.getFileName().toString().replaceAll("(?i)\\.(alto|xml)", ".txt");
+                        return !fileNames.contains(txtName);
+                    })
+                    .toList();
+            logger.debug("{}: {} ALTO files found, {} need conversion ({} skipped due to existing plaintext)",
+                    pi, altoFiles.size(), altoFilesToConvert.size(), altoFiles.size() - altoFilesToConvert.size());
+            altoFilesToConvert.forEach(p -> {
+                        try {
+                            String text = ALTOTools.getFulltext(p, StringTools.DEFAULT_ENCODING);
+                            ret.put(Paths.get(p.toString().replaceAll("(?i)\\.(alto|xml)", ".txt")), text);
+                        } catch (IOException e) {
+                            logger.error("Error reading file {}", p, e);
+                        }
+                    });
         }
 
         return ret;
     }
 
     /**
-     * getFiles.
+     * Fetches the accessible file paths for a record by querying Solr for canonical filenames,
+     * evaluating access conditions in memory (one batch Solr query total), and resolving each
+     * bare filename to a filesystem {@link java.nio.file.Path}.
      *
-     * @param pi persistent identifier used to locate the data directory
-     * @param foldername primary folder name to search for files
-     * @param altFoldername fallback folder name if primary is missing
-     * @param filter optional filename regex pattern; null matches all files
+     * <p>Files present in Solr but absent from disk are silently skipped.
+     * Legacy filenames on disk that are absent from Solr are never returned.
+     *
+     * @param pi persistent identifier of the record
+     * @param filenameField Solr field to query, e.g. {@code SolrConstants.FILENAME_ALTO}
+     * @param foldername primary data folder name (e.g. alto, fulltext)
+     * @param altFoldername fallback folder name (e.g. alto_crowdsourcing)
      * @param request current HTTP servlet request for access checking
-     * @return sorted, access-filtered list of matching file paths
-     * @throws java.io.IOException if any.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @return accessible file paths ordered by Solr page ORDER; empty list if none accessible
      */
-    private static List<java.nio.file.Path> getFiles(String pi, String foldername, String altFoldername, String filter, HttpServletRequest request)
-            throws IOException, PresentationException, IndexUnreachableException {
-
-        java.nio.file.Path folder1 = DataFileTools.getDataFilePath(pi, foldername, null, null);
-        java.nio.file.Path folder2 = DataFileTools.getDataFilePath(pi, altFoldername, null, null);
-
-        return getFiles(folder1, folder2, filter, request);
+    private static List<java.nio.file.Path> getFilesFromSolr(String pi, String filenameField,
+            String foldername, String altFoldername, HttpServletRequest request) {
+        List<String> filenames = AccessConditionUtils.fetchAccessibleFileNames(
+                pi, filenameField, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, request);
+        List<java.nio.file.Path> result = new ArrayList<>(filenames.size());
+        for (String filename : filenames) {
+            try {
+                java.nio.file.Path path = DataFileTools.getDataFilePath(pi, foldername, altFoldername, filename);
+                // Skip files that Solr knows about but which no longer exist on disk
+                if (path != null && Files.isRegularFile(path)) {
+                    result.add(path);
+                }
+            } catch (PresentationException | IndexUnreachableException e) {
+                // Log and skip individual files that cannot be resolved; do not abort the whole list
+                logger.error("Error resolving data file path for {}/{}: {}", pi, filename, e.getMessage());
+            }
+        }
+        return result;
     }
 
     /**
@@ -585,6 +604,9 @@ public class TextResourceBuilder {
             HttpServletRequest request) throws IOException {
 
         List<java.nio.file.Path> files = new ArrayList<>();
+        // Resolve the current user once for all access checks in this method to avoid
+        // repeated expensive session attribute scans (findInstanceInSessionAttributes) per file.
+        User currentUser = AccessConditionUtils.retrieveUserFromContext(request != null ? request.getSession() : null);
 
         if (folder != null && Files.isDirectory(folder)) {
             try (Stream<java.nio.file.Path> paths = Files.list(folder)
@@ -594,7 +616,7 @@ public class TextResourceBuilder {
                             return AccessConditionUtils
                                     .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null,
                                             p.getParent().getFileName().toString(), p.getFileName().toString(),
-                                            IPrivilegeHolder.PRIV_VIEW_FULLTEXT, NetTools.getIpAddress(request))
+                                            IPrivilegeHolder.PRIV_VIEW_FULLTEXT, NetTools.getIpAddress(request), currentUser)
                                     .isGranted();
                         } catch (IndexUnreachableException | DAOException e) {
                             logger.error(e.getMessage());
@@ -615,7 +637,7 @@ public class TextResourceBuilder {
                             return AccessConditionUtils
                                     .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null,
                                             p.getParent().getFileName().toString(), p.getFileName().toString(),
-                                            IPrivilegeHolder.PRIV_VIEW_FULLTEXT, NetTools.getIpAddress(request))
+                                            IPrivilegeHolder.PRIV_VIEW_FULLTEXT, NetTools.getIpAddress(request), currentUser)
                                     .isGranted();
                         } catch (IndexUnreachableException | DAOException e) {
                             logger.error(e.getMessage());

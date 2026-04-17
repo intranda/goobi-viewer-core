@@ -41,10 +41,13 @@ import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.SocketBean;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.annotation.comments.CommentManager;
+import io.goobi.viewer.websockets.UserEndpoint;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
@@ -117,25 +120,53 @@ public class ContextListener implements ServletContextListener {
     /** {@inheritDoc} */
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        // Shut down the task thread pool first so no running task can re-open resources
-        // that are about to be closed (e.g. the Solr client).
-        DataManager.getInstance().getRestApiJobManager().shutdown();
-        SocketBean.shutdownExecutor();
-        SearchBean.shutdown();
+        // Shut down background re-indexing first: it uses Solr, which must still be open at this point.
+        logger.info("Shutting down IndexerTools executor...");
+        IndexerTools.shutdown();
+        logger.info("IndexerTools executor stopped.");
 
+        // Shut down comment notification executor: it uses the DAO, which must still be open.
+        logger.info("Shutting down CommentManager notification executor...");
+        CommentManager.shutdown();
+        logger.info("CommentManager notification executor stopped.");
+
+        // Shut down the task thread pool so no running task can re-open resources
+        // that are about to be closed (e.g. the Solr client).
+        logger.info("Shutting down REST API job manager...");
+        DataManager.getInstance().getRestApiJobManager().shutdown();
+        logger.info("REST API job manager stopped.");
+
+        logger.info("Shutting down SocketBean executor...");
+        SocketBean.shutdownExecutor();
+        logger.info("SocketBean executor stopped.");
+
+        logger.info("Shutting down SearchBean executor...");
+        SearchBean.shutdown();
+        logger.info("SearchBean executor stopped.");
+
+        logger.info("Shutting down UserEndpoint timers...");
+        UserEndpoint.shutdown();
+        logger.info("UserEndpoint timers stopped.");
+
+        logger.info("Shutting down DAO...");
         try {
             DataManager.getInstance().getDao().shutdown();
-            logger.info("Successfully stopped DAO");
+            logger.info("DAO stopped.");
         } catch (DAOException e) {
             logger.error("Error stopping DAO", e);
         }
+
         // Close EhCache. ContentServerCacheManager.close() also shuts down EhCache's static
         // async-flush executor (MappedPageSource.ASYNC_FLUSH_EXECUTOR) so the
         // "MappedByteBufferSource Async Flush Thread" terminates cleanly on undeploy.
+        logger.info("Closing content server cache...");
         ContentServerCacheManager.getInstance().close();
+        logger.info("Content server cache closed.");
+
+        logger.info("Closing Solr client...");
         try {
             DataManager.getInstance().closeSearchIndex();
-            logger.info("Successfully closed Solr client");
+            logger.info("Solr client closed.");
             // Http2SolrClient uses Jetty threads (h2sc-*) and HttpClient scheduler threads
             // that do not terminate synchronously on close(). Wait briefly so Tomcat does not
             // report them as memory leaks.
@@ -151,8 +182,15 @@ public class ContextListener implements ServletContextListener {
         } catch (IOException e) {
             logger.error("Error closing Solr client", e);
         }
+
+        logger.info("Shutting down LanguageHelper...");
         DataManager.getInstance().getLanguageHelper().shutdown();
+        logger.info("LanguageHelper stopped.");
+
+        logger.info("Shutting down ViewerResourceBundle...");
         ViewerResourceBundle.shutdown();
+        logger.info("ViewerResourceBundle stopped.");
+
         Enumeration<Driver> drivers = DriverManager.getDrivers();
         while (drivers.hasMoreElements()) {
             try {

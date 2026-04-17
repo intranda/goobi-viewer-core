@@ -82,6 +82,7 @@ public class ArchiveMetadataBean implements Serializable {
      * @param entry The entry which metadata to return
      * @return the metadata list for the given entry
      * @throws PresentationException If the metadata list had to be created and an error occurred while doing so
+     * @should load and return metadata for archive entry
      */
     public ArchiveEntryMetadataList getMetadata(ArchiveEntry entry) throws PresentationException {
         if (!isMetadataLoaded(entry.getId())) {

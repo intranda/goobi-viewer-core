@@ -135,8 +135,12 @@ class UserBeanTest extends AbstractDatabaseEnabledTest {
         });
     }
 
+    /**
+     * @verifies set active non suspended user after successful login
+     * @see UserBean#login
+     */
     @Test
-    void testLogin_valid() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
+    void login_shouldSetActiveNonSuspendedUserAfterSuccessfulLogin() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
         bean.setEmail(userActive_email);
         bean.setPassword(userActive_pwHash);
         Assertions.assertNull(bean.getUser());
@@ -146,8 +150,12 @@ class UserBeanTest extends AbstractDatabaseEnabledTest {
         Assertions.assertFalse(bean.getUser().isSuspended());
     }
 
+    /**
+     * @verifies return null user when password is wrong
+     * @see UserBean#login()
+     */
     @Test
-    void testLogin_invalid() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
+    void login_shouldReturnNullUserWhenPasswordIsWrong() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
         bean.setEmail(userActive_email);
         bean.setPassword(userSuspended_pwHash);
         Assertions.assertNull(bean.getUser());
@@ -155,8 +163,12 @@ class UserBeanTest extends AbstractDatabaseEnabledTest {
         Assertions.assertNull(bean.getUser());
     }
 
+    /**
+     * @verifies return null user when email is unknown
+     * @see UserBean#login()
+     */
     @Test
-    void testLogin_unknown() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
+    void login_shouldReturnNullUserWhenEmailIsUnknown() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
         bean.setEmail(userActive_email + "test");
         bean.setPassword(userActive_pwHash);
         Assertions.assertNull(bean.getUser());
@@ -164,8 +176,12 @@ class UserBeanTest extends AbstractDatabaseEnabledTest {
         Assertions.assertNull(bean.getUser());
     }
 
+    /**
+     * @verifies return null user when account is suspended
+     * @see UserBean#login()
+     */
     @Test
-    void testLogin_suspended() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
+    void login_shouldReturnNullUserWhenAccountIsSuspended() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
         
         bean.setEmail(userSuspended_email);
         bean.setPassword(userSuspended_pwHash);

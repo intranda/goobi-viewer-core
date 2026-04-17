@@ -254,6 +254,7 @@ public class AnnotationResource {
      * @throws ContentLibException
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @should return non null result
      */
     @GET
     @jakarta.ws.rs.Path(ANNOTATIONS_ANNOTATION)
@@ -278,6 +279,7 @@ public class AnnotationResource {
      * @throws ContentLibException
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @should return non null result
      */
     @GET
     @jakarta.ws.rs.Path(ANNOTATIONS_COMMENT)

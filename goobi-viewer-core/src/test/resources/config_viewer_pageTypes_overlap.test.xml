@@ -4,6 +4,7 @@
     <configFolder>src/test/resources/</configFolder>
     <viewerHome>src/test/resources/data/viewer/</viewerHome>
     <dataRepositoriesHome>src/test/resources/data/viewer/data/</dataRepositoriesHome>
+    <stopwordsFile>src/test/resources/stopwords.txt</stopwordsFile>
 
     <viewer>
         <pageTypes>

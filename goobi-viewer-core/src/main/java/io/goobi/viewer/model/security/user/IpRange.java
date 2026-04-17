@@ -159,7 +159,6 @@ public class IpRange extends AbstractLicensee implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @should return true if condition is open access
      * @should return true if ip range has license
      * @should return false if ip range has no license
      * @should return true if condition list empty

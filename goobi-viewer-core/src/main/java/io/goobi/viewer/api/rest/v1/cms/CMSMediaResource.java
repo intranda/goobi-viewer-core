@@ -539,7 +539,10 @@ public class CMSMediaResource {
         }
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder());
-        Path mediaFile = cmsMediaFolder.resolve(StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename)));
+        // Sanitize to ASCII so that non-ASCII characters (e.g. en-dash) do not end up in the
+        // Content-Location HTTP header, where Tomcat would reject them with IllegalArgumentException
+        Path mediaFile = cmsMediaFolder.resolve(
+                StringTools.sanitizeFilenameToAscii(StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename))));
         try {
             Optional<User> user = getUser();
             if (!user.isPresent()) {

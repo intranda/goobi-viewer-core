@@ -168,7 +168,7 @@ public class AdminLicenseBean implements Serializable {
      *
      * @return Two SelectItemGroups for core and regular license types
      * @throws DAOException
-     * @should group license types in select item groups correctly
+     * @should return two SelectItemGroups with 1 core and 5 non-core license types
      */
     public List<SelectItem> getGroupedLicenseTypeSelectItems() throws DAOException {
         List<LicenseType> licenseTypes = getAllLicenseTypes();

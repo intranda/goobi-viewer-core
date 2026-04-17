@@ -40,6 +40,7 @@ import io.goobi.viewer.managedbeans.ActiveDocumentBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -250,11 +251,12 @@ public class MetadataElement implements Serializable {
             if (metadata.getLabel().equals(SolrConstants.URN) || metadata.getLabel().equals(SolrConstants.IMAGEURN_OAI)) {
                 // TODO remove bean retrieval
                 ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
-                if (adb != null && adb.getViewManager() != null && adb.getViewManager().getCurrentPage() != null
-                        && adb.getViewManager().getCurrentPage().getUrn() != null && !adb.getViewManager().getCurrentPage().getUrn().equals("")) {
+                // Assign currentPage to a local variable to avoid TOCTOU race condition with concurrent AJAX requests
+                PhysicalElement currentPage = (adb != null && adb.getViewManager() != null) ? adb.getViewManager().getCurrentPage() : null;
+                if (currentPage != null && currentPage.getUrn() != null && !currentPage.getUrn().isEmpty()) {
                     Metadata newMetadata =
                             new Metadata(String.valueOf(se.getLuceneId()), metadata.getLabel(), metadata.getMasterValue(),
-                                    adb.getViewManager().getCurrentPage().getUrn());
+                                    currentPage.getUrn());
                     sidebarMetadataList.add(newMetadata);
                 }
             } else {
@@ -437,7 +439,11 @@ public class MetadataElement implements Serializable {
      * @return the list of {@link Metadata} objects, optionally truncated at the fold index
      */
     public List<Metadata> getMetadataList(boolean beforeFold) {
-        List<Metadata> mdList = (beforeFold && isHasMetadataListFold()) ? metadataList.subList(0, this.metadataFoldIndex) : metadataList;
+        // Use a defensive copy of the subList to prevent ConcurrentModificationException when this
+        // MetadataElement is held by a session-scoped bean (e.g., HighlightsBean) and accessed concurrently.
+        List<Metadata> mdList = (beforeFold && isHasMetadataListFold())
+                ? new ArrayList<>(metadataList.subList(0, this.metadataFoldIndex))
+                : metadataList;
         return Metadata.filterMetadata(mdList, selectedRecordLanguage, null);
     }
 
@@ -445,13 +451,17 @@ public class MetadataElement implements Serializable {
      * Alias for {@link #getMetadataList(boolean) getMetadataList(true)}.
      *
      * @return the list of {@link Metadata} objects that appear before the fold index
+     * @should get fold position
      */
     public List<Metadata> getMetadataListBeforeFold() {
         return getMetadataList(true);
     }
 
     public List<Metadata> getMetadataListAfterFold() {
-        List<Metadata> mdList = isHasMetadataListFold() ? metadataList.subList(this.metadataFoldIndex, this.metadataList.size()) : metadataList;
+        // Use a defensive copy of the subList to prevent ConcurrentModificationException (same reason as getMetadataList).
+        List<Metadata> mdList = isHasMetadataListFold()
+                ? new ArrayList<>(metadataList.subList(this.metadataFoldIndex, this.metadataList.size()))
+                : metadataList;
         return Metadata.filterMetadata(mdList, selectedRecordLanguage, null);
     }
 

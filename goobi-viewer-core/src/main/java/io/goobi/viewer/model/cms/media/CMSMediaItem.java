@@ -429,6 +429,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
      * setImportant.
      *
      * @param important true sets priority to IMPORTANT, false to DEFAULT
+     * @should toggle priority between default and important
      */
     public void setImportant(boolean important) {
         this.priority = important ? Priority.IMPORTANT : Priority.DEFAULT;
@@ -478,7 +479,8 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
                 }
                 return uri;
             } catch (URISyntaxException e) {
-                logger.error("Unable to create uri from {}", getLink());
+                // Log at WARN level only — this is a data quality issue (user entered non-URI text), not a system error
+                logger.warn("Unable to create uri from {}", getLink());
                 return null;
             }
         }

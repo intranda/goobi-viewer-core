@@ -73,9 +73,10 @@ class MyExceptionHandlerTest {
      * When the response is already committed, MyExceptionHandler must not access Flash at all.
      * Accessing flash.put() on a committed response causes Mojarra to attempt setting a Set-Cookie
      * header, triggering JSF1095 warnings.
+     * @verifies not use flash when response committed
      */
     @Test
-    void handle_responseCommitted_doesNotUseFlash() throws Exception {
+    void handle_shouldNotUseFlashWhenResponseCommitted() throws Exception {
         FacesContext mockFc = ContextMocker.mockFacesContext();
         ExternalContext mockEc = mockFc.getExternalContext();
 
@@ -92,9 +93,10 @@ class MyExceptionHandlerTest {
 
     /**
      * When the response is not yet committed, session attributes must be set and a redirect must be triggered.
+     * @verifies response not committed uses session
      */
     @Test
-    void handle_responseNotCommitted_usesSession() throws Exception {
+    void handle_shouldResponseNotCommittedUsesSession() throws Exception {
         FacesContext mockFc = ContextMocker.mockFacesContext();
         ExternalContext mockEc = mockFc.getExternalContext();
         HttpSession mockSession = mock(HttpSession.class);
@@ -117,8 +119,8 @@ class MyExceptionHandlerTest {
     }
 
     /**
-     * @see MyExceptionHandler#putNavigationState(Map, HttpSession)
-     * @verifies not throw if NavigationHelper proxy throws IllegalStateException due to invalidated session
+     * @verifies not throw if session invalidated during nav helper access
+     * @see MyExceptionHandler#putNavigationState(Map<String, Object>, HttpSession)
      */
     @Test
     void putNavigationState_shouldNotThrowIfSessionInvalidatedDuringNavHelperAccess() {
@@ -144,9 +146,10 @@ class MyExceptionHandlerTest {
      * A PrettyException wrapping a ConverterException (e.g. non-numeric page number in URL path)
      * must be handled as an invalid URL — downgraded to WARN, not logged as ERROR.
      * The handler must redirect to an error page rather than crashing.
+     * @verifies pretty exception with converter exception treated as invalid url
      */
     @Test
-    void handle_prettyExceptionWithConverterException_treatedAsInvalidUrl() throws Exception {
+    void handle_shouldPrettyExceptionWithConverterExceptionTreatedAsInvalidUrl() throws Exception {
         FacesContext mockFc = ContextMocker.mockFacesContext();
         ExternalContext mockEc = mockFc.getExternalContext();
         HttpSession mockSession = mock(HttpSession.class);
@@ -183,9 +186,10 @@ class MyExceptionHandlerTest {
      * A PrettyException wrapping a StringIndexOutOfBoundsException (e.g. a malformed facet value
      * in a CMS page URL) must be handled as an invalid URL — downgraded to WARN, not logged as ERROR.
      * The handler must redirect to an error page rather than crashing.
+     * @verifies pretty exception with string index out of bounds exception treated as invalid url
      */
     @Test
-    void handle_prettyExceptionWithStringIndexOutOfBoundsException_treatedAsInvalidUrl() throws Exception {
+    void handle_shouldPrettyExceptionWithStringIndexOutOfBoundsExceptionTreatedAsInvalidUrl() throws Exception {
         FacesContext mockFc = ContextMocker.mockFacesContext();
         ExternalContext mockEc = mockFc.getExternalContext();
         HttpSession mockSession = mock(HttpSession.class);
