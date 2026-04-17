@@ -118,6 +118,43 @@ public final class DataFileTools {
     }
 
     /**
+     * Returns the root paths of all media directories across every configured data repository,
+     * including the viewer-home media directory for records that are not assigned to any repository.
+     *
+     * <p>Each returned path has the form {@code …/mediaFolder/} and may or may not exist on disk.
+     * Callers should check {@link Files#isDirectory(Path, java.nio.file.LinkOption...)} before
+     * attempting to list contents.
+     *
+     * @return list of media root {@link Path}s; never {@code null}
+     */
+    public static List<Path> getAllMediaRoots() {
+        Configuration config = DataManager.getInstance().getConfiguration();
+        String mediaFolder = config.getMediaFolder();
+
+        List<Path> roots = new java.util.ArrayList<>();
+
+        // records stored directly in viewerHome (no data repository)
+        roots.add(Paths.get(config.getViewerHome(), mediaFolder));
+
+        // one media root per data repository sub-directory
+        String reposHome = config.getDataRepositoriesHome();
+        if (StringUtils.isNotBlank(reposHome)) {
+            Path reposRoot = Paths.get(reposHome);
+            if (Files.isDirectory(reposRoot)) {
+                try (Stream<Path> repos = Files.list(reposRoot)) {
+                    repos.filter(Files::isDirectory)
+                            .map(repo -> repo.resolve(mediaFolder))
+                            .forEach(roots::add);
+                } catch (IOException e) {
+                    logger.warn("Error listing data repositories in {}: {}", reposRoot, e.toString());
+                }
+            }
+        }
+
+        return roots;
+    }
+
+    /**
      * Constructs the pdf folder path for the given pi, either directly in viewer-home or within a data repository.
      *
      * @param pi The work PI. This is both the actual name of the folder and the identifier used to look up data repository in solr
