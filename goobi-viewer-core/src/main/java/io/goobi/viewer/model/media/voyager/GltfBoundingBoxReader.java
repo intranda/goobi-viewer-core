@@ -35,16 +35,16 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
- * Reads the axis-aligned bounding box center of a GLTF 2.0 or GLB 3D model
- * without a dedicated GLTF library.
+ * Reads the axis-aligned bounding box center of a GLTF 2.0 or GLB 3D model without a dedicated GLTF library.
  *
- * <p>The GLTF 2.0 specification requires that every vertex-position accessor
- * carries {@code min} and {@code max} arrays.  This class extracts those values
- * directly from the JSON metadata, making binary buffer parsing unnecessary.
+ * <p>
+ * The GLTF 2.0 specification requires that every vertex-position accessor carries {@code min} and {@code max} arrays. This class extracts those
+ * values directly from the JSON metadata, making binary buffer parsing unnecessary.
  *
- * <p>All methods are static; this class is not meant to be instantiated.
+ * <p>
+ * All methods are static; this class is not meant to be instantiated.
  */
-public class GltfBoundingBoxReader {
+public final class GltfBoundingBoxReader {
 
     private GltfBoundingBoxReader() {
     }
@@ -53,8 +53,8 @@ public class GltfBoundingBoxReader {
      * Returns the axis-aligned bounding box of all meshes in the given GLTF or GLB file.
      *
      * @param gltfFile path to a {@code .gltf} or {@code .glb} file
-     * @return {@code double[2][3]} where {@code [0]} is the global min and {@code [1]} is the global max;
-     *         both are {@code [0,0,0]} if no POSITION accessor min/max data is found
+     * @return {@code double[2][3]} where {@code [0]} is the global min and {@code [1]} is the global max; both are {@code [0,0,0]} if no POSITION
+     *         accessor min/max data is found
      * @throws IOException if the file cannot be read
      */
     public static double[][] computeBounds(Path gltfFile) throws IOException {
@@ -66,8 +66,7 @@ public class GltfBoundingBoxReader {
      * Computes the bounding-box centre of all meshes in the given GLTF or GLB file.
      *
      * @param gltfFile path to a {@code .gltf} or {@code .glb} file
-     * @return {@code double[3]} with {@code [x, y, z]} of the centre;
-     *         {@code [0, 0, 0]} if no POSITION accessor min/max data is found
+     * @return {@code double[3]} with {@code [x, y, z]} of the centre; {@code [0, 0, 0]} if no POSITION accessor min/max data is found
      * @throws IOException if the file cannot be read
      */
     public static double[] computeCenter(Path gltfFile) throws IOException {
@@ -76,8 +75,7 @@ public class GltfBoundingBoxReader {
     }
 
     /**
-     * Reads the GLTF JSON from a file.  For GLB files the 12-byte binary header
-     * is skipped and only the first (JSON) chunk is parsed.
+     * Reads the GLTF JSON from a file. For GLB files the 12-byte binary header is skipped and only the first (JSON) chunk is parsed.
      */
     static JSONObject readGltfJson(Path file) throws IOException {
         String ext = FilenameUtils.getExtension(file.getFileName().toString()).toLowerCase();
@@ -90,11 +88,12 @@ public class GltfBoundingBoxReader {
     /**
      * Extracts the JSON chunk from a GLB binary file.
      *
-     * <p>GLB layout:
+     * <p>
+     * GLB layout:
      * <ul>
-     *   <li>12-byte file header: magic (4), version (4), total length (4)</li>
-     *   <li>First chunk header: chunk length (4, LE), chunk type (4)</li>
-     *   <li>First chunk data: {@code chunkLength} bytes of UTF-8 JSON</li>
+     * <li>12-byte file header: magic (4), version (4), total length (4)</li>
+     * <li>First chunk header: chunk length (4, LE), chunk type (4)</li>
+     * <li>First chunk data: {@code chunkLength} bytes of UTF-8 JSON</li>
      * </ul>
      */
     private static JSONObject readGlbJson(Path file) throws IOException {
@@ -116,16 +115,17 @@ public class GltfBoundingBoxReader {
     /**
      * Returns the world-space axis-aligned bounding box from a parsed GLTF root JSON object.
      *
-     * <p>When the asset contains a scene graph ({@code scenes} + {@code nodes}), the method
-     * traverses it and applies each node's transform (matrix or TRS) to the POSITION accessor
-     * min/max values before accumulating the global AABB.  This correctly handles models whose
-     * root node carries a scale, rotation, or translation.
+     * <p>
+     * When the asset contains a scene graph ({@code scenes} + {@code nodes}), the method traverses it and applies each node's transform (matrix or
+     * TRS) to the POSITION accessor min/max values before accumulating the global AABB. This correctly handles models whose root node carries a
+     * scale, rotation, or translation.
      *
-     * <p>Falls back to a flat accessor scan when the asset has no scene graph (e.g. test data).
+     * <p>
+     * Falls back to a flat accessor scan when the asset has no scene graph (e.g. test data).
      *
      * @param gltfJson the root {@link JSONObject} of a GLTF asset
-     * @return {@code double[2][3]} where {@code [0]} is the global min and {@code [1]} is the global max;
-     *         both are {@code [0,0,0]} if no POSITION accessor with {@code min}/{@code max} is found
+     * @return {@code double[2][3]} where {@code [0]} is the global min and {@code [1]} is the global max; both are {@code [0,0,0]} if no POSITION
+     *         accessor with {@code min}/{@code max} is found
      */
     static double[][] computeBoundsFromJson(JSONObject gltfJson) {
         JSONArray scenes = gltfJson.optJSONArray("scenes");
@@ -161,8 +161,7 @@ public class GltfBoundingBoxReader {
      * Computes the bounding-box centre from a parsed GLTF root JSON object.
      *
      * @param gltfJson the root {@link JSONObject} of a GLTF asset
-     * @return {@code double[3]} centre coordinates, or {@code [0, 0, 0]} if no
-     *         POSITION accessor with {@code min}/{@code max} is found
+     * @return {@code double[3]} centre coordinates, or {@code [0, 0, 0]} if no POSITION accessor with {@code min}/{@code max} is found
      */
     static double[] computeCenterFromJson(JSONObject gltfJson) {
         return centerOf(computeBoundsFromJson(gltfJson));

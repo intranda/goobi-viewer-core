@@ -112,7 +112,7 @@ class Center3DObjectHandlerTest {
         assertTrue(Files.exists(svxFile), "SVX file should have been created");
 
         JSONObject svx = new JSONObject(Files.readString(svxFile));
-        JSONArray nodes = svx.getJSONArray("nodes");
+        JSONArray nodes = svx.getJSONArray("models");
         assertEquals(1, nodes.length());
 
         JSONArray translation = nodes.getJSONObject(0).getJSONArray("translation");
