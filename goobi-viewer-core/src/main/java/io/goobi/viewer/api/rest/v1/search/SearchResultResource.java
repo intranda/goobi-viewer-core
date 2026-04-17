@@ -22,15 +22,26 @@
 package io.goobi.viewer.api.rest.v1.search;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RIS_FILE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.SEARCH_EXPORT_FORMAT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.SEARCH_EXPORT_XML;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocumentList;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
@@ -43,11 +54,15 @@ import io.goobi.viewer.api.rest.bindings.AccessConditionBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.resourcebuilders.RisResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.export.ExportFormat;
 import io.goobi.viewer.model.export.RISExport;
+import io.goobi.viewer.model.export.SolrDocXmlExport;
+import io.goobi.viewer.model.export.XsltSearchExport;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchFacets;
@@ -57,26 +72,57 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
- * REST resource for exporting search results in OpenSearch and RIS bibliographic formats.
+ * REST resource for exporting search results in various bibliographic and data formats.
+ *
+ * <p>Provides a fixed endpoint for raw Solr XML export and a generic, config-driven
+ * endpoint that applies an XSLT stylesheet for formats such as RIS, Endnote XML or BibTeX.
+ * New export formats can be added at runtime by configuring a {@code <format>} element in
+ * {@code config_viewer.xml} and dropping the corresponding XSLT file into the config or
+ * classpath directory — no Java code changes required.
  */
 @Path(ApiUrls.SEARCH)
 @ViewerRestServiceBinding
 public class SearchResultResource {
+
+    private static final Logger logger = LogManager.getLogger(SearchResultResource.class);
 
     @Context
     private HttpServletRequest servletRequest;
     @Context
     private HttpServletResponse servletResponse;
 
+    /**
+     * Default constructor required by JAX-RS.
+     */
     public SearchResultResource() {
-
+        // Required by JAX-RS
     }
 
+    /**
+     * Constructor for programmatic instantiation (e.g. in tests).
+     *
+     * @param servletRequest the HTTP servlet request
+     * @param servletResponse the HTTP servlet response
+     */
     public SearchResultResource(HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
         this.servletRequest = servletRequest;
         this.servletResponse = servletResponse;
     }
 
+    /**
+     * Downloads the current search results as an RIS file using the Java-based RIS generation.
+     *
+     * @param query the Solr search query string
+     * @param sortString the sort order string
+     * @param activeFacetString the active facet filter string
+     * @param proximitySearchDistance maximum word distance for proximity search
+     * @return a {@link Response} containing the RIS file as a streamed download
+     * @throws PresentationException if the query cannot be parsed
+     * @throws IndexUnreachableException if the Solr index is unreachable
+     * @throws DAOException if a database error occurs
+     * @throws ContentLibException if the RIS temp file cannot be created
+     * @throws ViewerConfigurationException if the viewer configuration is invalid
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_RIS_FILE)
     @Produces({ MediaType.TEXT_PLAIN })
@@ -86,8 +132,6 @@ public class SearchResultResource {
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     @AccessConditionBinding
     public Response getRISAsFile(
-            // Previously declared as @PathParam but the path template /search/ris has no {param} segments,
-            // so these were never populated. Changed to @QueryParam so callers can actually pass them.
             @Parameter(description = "Search query string") @QueryParam("query") @DefaultValue("") String query,
             @Parameter(description = "Sort string for the search results") @QueryParam("sortString") @DefaultValue("") String sortString,
             @Parameter(description = "Active facet filter string") @QueryParam("activeFacetString") @DefaultValue("") String activeFacetString,
@@ -111,5 +155,130 @@ public class SearchResultResource {
             new RisResourceBuilder(servletRequest, servletResponse).writeRIS(export.getSearchHits());
         }
         return Response.status(Status.OK).build();
+    }
+
+    /**
+     * Exports the current search results as raw Solr-style XML.
+     *
+     * @param query the Solr search query string
+     * @param activeFacetString the active facet filter string
+     * @param rows maximum number of results to return (default 100)
+     * @return a {@link Response} containing the Solr XML
+     * @throws PresentationException if the query cannot be parsed
+     * @throws IndexUnreachableException if the Solr index is unreachable
+     */
+    @GET
+    @jakarta.ws.rs.Path(SEARCH_EXPORT_XML)
+    @Produces({ MediaType.APPLICATION_XML })
+    @Operation(tags = { "search" }, summary = "Export search results as Solr XML")
+    @ApiResponse(responseCode = "200", description = "Solr XML containing the matching documents")
+    @ApiResponse(responseCode = "400", description = "Invalid search query or parameters")
+    @ApiResponse(responseCode = "500", description = "Solr index unreachable or XML serialisation error")
+    @AccessConditionBinding
+    public Response getSearchResultsAsXml(
+            @Parameter(description = "Search query string") @QueryParam("query") @DefaultValue("*:*") String query,
+            @Parameter(description = "Active facet filter string") @QueryParam("activeFacetString") @DefaultValue("") String activeFacetString,
+            @Parameter(description = "Maximum number of results") @QueryParam("rows") @DefaultValue("100") int rows)
+            throws PresentationException, IndexUnreachableException {
+        SolrDocumentList docs = executeSolrQuery(query, activeFacetString, rows);
+
+        try {
+            String xml = SolrDocXmlExport.toXmlString(docs);
+            return Response.ok(xml, MediaType.APPLICATION_XML).build();
+        } catch (ParserConfigurationException | TransformerException e) {
+            logger.error("Error serialising Solr results to XML", e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("XML serialisation error").build();
+        }
+    }
+
+    /**
+     * Generic export endpoint that transforms search results via a config-driven XSLT stylesheet.
+     *
+     * <p>The {@code format} path parameter is matched against the {@code name} attribute of
+     * {@code <format>} elements in {@code config_viewer.xml}. If the format is not configured
+     * the endpoint returns 404; if it is configured but disabled it returns 403.
+     *
+     * <p>To add a new export format, simply add a {@code <format>} element to the configuration
+     * and drop the XSLT stylesheet into the viewer config directory or the classpath:
+     * <pre>{@code
+     * <format name="marc" enabled="true" xslt="solr2marc.xsl"
+     *         contentType="application/xml" fileExtension="xml" />
+     * }</pre>
+     *
+     * @param format the export format name (e.g. "endnote", "bibtex", "ris")
+     * @param query the Solr search query string
+     * @param activeFacetString the active facet filter string
+     * @param rows maximum number of results to return (default 100)
+     * @return a {@link Response} with the transformed content
+     * @throws PresentationException if the query cannot be parsed
+     * @throws IndexUnreachableException if the Solr index is unreachable
+     */
+    @GET
+    @jakarta.ws.rs.Path(SEARCH_EXPORT_FORMAT)
+    @Operation(tags = { "search" }, summary = "Export search results in a configured format (e.g. endnote, bibtex, ris)")
+    @ApiResponse(responseCode = "200", description = "Transformed export in the requested format")
+    @ApiResponse(responseCode = "400", description = "Invalid search query or parameters")
+    @ApiResponse(responseCode = "403", description = "The requested export format is disabled")
+    @ApiResponse(responseCode = "404", description = "The requested export format is not configured")
+    @ApiResponse(responseCode = "500", description = "Solr index unreachable or XSLT transformation error")
+    @AccessConditionBinding
+    public Response getSearchResultsAsFormat(
+            @Parameter(description = "Export format name as configured in config_viewer.xml") @PathParam("format") String format,
+            @Parameter(description = "Search query string") @QueryParam("query") @DefaultValue("*:*") String query,
+            @Parameter(description = "Active facet filter string") @QueryParam("activeFacetString") @DefaultValue("") String activeFacetString,
+            @Parameter(description = "Maximum number of results") @QueryParam("rows") @DefaultValue("100") int rows)
+            throws PresentationException, IndexUnreachableException {
+
+        // Look up the format in all configured formats (including disabled ones) for proper error reporting
+        List<ExportFormat> allFormats = DataManager.getInstance().getConfiguration().getSearchExportFormats();
+        Optional<ExportFormat> match = allFormats.stream()
+                .filter(f -> format.equals(f.getName()))
+                .findFirst();
+
+        if (match.isEmpty()) {
+            return Response.status(Status.NOT_FOUND).entity("Unknown export format: " + format).build();
+        }
+        ExportFormat exportFormat = match.get();
+        if (!exportFormat.isEnabled()) {
+            return Response.status(Status.FORBIDDEN).entity("Export format is disabled: " + format).build();
+        }
+
+        SolrDocumentList docs = executeSolrQuery(query, activeFacetString, rows);
+
+        try {
+            String result = XsltSearchExport.transform(docs, exportFormat.getXslt());
+            String fileName = "search_export." + exportFormat.getFileExtension();
+            return Response.ok(result, exportFormat.getContentType())
+                    .header("Content-Disposition", "attachment; filename=\"" + fileName + "\"")
+                    .build();
+        } catch (ParserConfigurationException | TransformerException e) {
+            logger.error("Error transforming Solr results to format '{}'", format, e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("XSLT transformation error").build();
+        }
+    }
+
+    /**
+     * Executes a Solr query with optional facet filters and returns the raw document list.
+     *
+     * @param query the raw search query string
+     * @param activeFacetString the active facet filter string (may be empty)
+     * @param rows maximum number of documents to return
+     * @return the matching Solr documents
+     * @throws PresentationException if the query cannot be parsed
+     * @throws IndexUnreachableException if the Solr index is unreachable
+     */
+    private SolrDocumentList executeSolrQuery(String query, String activeFacetString, int rows)
+            throws PresentationException, IndexUnreachableException {
+        String currentQuery = SearchHelper.prepareQuery(query);
+        String finalQuery = SearchHelper.buildFinalQuery(currentQuery, true, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
+
+        SearchFacets facets = new SearchFacets();
+        if (activeFacetString != null && !activeFacetString.isEmpty()) {
+            facets.setActiveFacetString(activeFacetString);
+        }
+        List<String> filterQueries = facets.generateFacetFilterQueries(true);
+
+        return DataManager.getInstance().getSearchIndex().search(finalQuery, 0, rows, null, null, null, filterQueries, null)
+                .getResults();
     }
 }

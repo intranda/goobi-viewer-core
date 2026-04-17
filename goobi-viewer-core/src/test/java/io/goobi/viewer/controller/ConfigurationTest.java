@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -57,6 +58,7 @@ import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkType;
 import io.goobi.viewer.model.export.ExportFieldConfiguration;
+import io.goobi.viewer.model.export.ExportFormat;
 import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.maps.GeomapItemFilter;
@@ -2791,6 +2793,63 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void isSearchExcelExportEnabled_shouldReturnCorrectValue() {
         assertTrue(DataManager.getInstance().getConfiguration().isSearchExcelExportEnabled());
+    }
+
+    /**
+     * @see Configuration#getSearchExportFormats()
+     * @verifies return all configured formats
+     */
+    @Test
+    void getSearchExportFormats_shouldReturnAllConfiguredFormats() {
+        List<ExportFormat> formats = DataManager.getInstance().getConfiguration().getSearchExportFormats();
+        assertNotNull(formats);
+        // Test config has 4 formats: ris (enabled), endnote (enabled), bibtex (enabled), disabled (disabled)
+        assertEquals(4, formats.size());
+        assertEquals("ris", formats.get(0).getName());
+        assertTrue(formats.get(0).isEnabled());
+        assertEquals("solr2ris.xsl", formats.get(0).getXslt());
+        assertEquals("text/plain", formats.get(0).getContentType());
+        assertEquals("ris", formats.get(0).getFileExtension());
+
+        assertEquals("endnote", formats.get(1).getName());
+        assertTrue(formats.get(1).isEnabled());
+        assertEquals("application/xml", formats.get(1).getContentType());
+
+        assertEquals("bibtex", formats.get(2).getName());
+        assertTrue(formats.get(2).isEnabled());
+        assertEquals("bib", formats.get(2).getFileExtension());
+    }
+
+    /**
+     * @see Configuration#getSearchExportFormat(String)
+     * @verifies return matching format
+     */
+    @Test
+    void getSearchExportFormat_shouldReturnMatchingFormat() {
+        Optional<ExportFormat> format = DataManager.getInstance().getConfiguration().getSearchExportFormat("endnote");
+        assertTrue(format.isPresent());
+        assertEquals("endnote", format.get().getName());
+        assertEquals("solr2endnote.xsl", format.get().getXslt());
+    }
+
+    /**
+     * @see Configuration#getSearchExportFormat(String)
+     * @verifies return empty optional for disabled format
+     */
+    @Test
+    void getSearchExportFormat_shouldReturnEmptyOptionalForDisabledFormat() {
+        Optional<ExportFormat> format = DataManager.getInstance().getConfiguration().getSearchExportFormat("disabled");
+        assertTrue(format.isEmpty());
+    }
+
+    /**
+     * @see Configuration#getSearchExportFormat(String)
+     * @verifies return empty optional for unknown name
+     */
+    @Test
+    void getSearchExportFormat_shouldReturnEmptyOptionalForUnknownName() {
+        Optional<ExportFormat> format = DataManager.getInstance().getConfiguration().getSearchExportFormat("nonexistent");
+        assertTrue(format.isEmpty());
     }
 
     /**
