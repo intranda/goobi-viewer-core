@@ -574,6 +574,11 @@ public class SearchQueryItem implements Serializable {
      * @should append proximity search distance to FULLTEXT phrase query
      * @should build solr queries for o r a n d phrase search multi value and multi line item configurations
      * @should add fuzzy search operator with hyphen
+     * @should normalize CALENDAR_DAY value to yyyyMMdd when given as locale date
+     * @should emit single day match when datepicker value2 is blank
+     * @should normalize CALENDAR_DAY range boundary values to yyyyMMdd
+     * @should build CALENDAR_DAY range when both values are set even without datepicker config
+     * @should emit nested IDDOC join so page fulltext hits honor the CALENDAR_DAY range
      */
     public String generateQuery(Set<String> searchTerms, boolean aggregateHits, boolean allowFuzzySearch) {
         StringBuilder sbItem = new StringBuilder();
@@ -648,16 +653,49 @@ public class SearchQueryItem implements Serializable {
             }
             sbItem.append('(');
 
-            // Datepicker range: convert locale-dependent dates to yyyyMMdd and query YEARMONTHDAY
-            if (isDatepicker() && line.getValues().size() > 1 && StringUtils.isNotBlank(line.getValues().get(1))) {
+            // Datepicker / YEARMONTHDAY: convert locale-dependent dates to yyyyMMdd and build
+            // a range or single-day query. Triggered when the field is configured as a datepicker
+            // OR when the queried field is CALENDAR_DAY directly (e.g. searchInRecord(piField, piValue,
+            // date1, date2), where the queryItem is built programmatically and may not have the
+            // datepicker/range flags set in the field config — without this, value2 would be silently
+            // dropped and only the start date would reach Solr.
+            if ((isDatepicker() || SolrConstants.CALENDAR_DAY.equals(field))
+                    && !line.getValues().isEmpty() && StringUtils.isNotBlank(line.getValues().get(0))) {
                 String val1 = convertDatepickerValueToSolrDate(line.getValues().get(0).trim());
-                String val2 = convertDatepickerValueToSolrDate(line.getValues().get(1).trim());
-                sbItem.append(SolrConstants.CALENDAR_DAY)
-                        .append(":[")
-                        .append(val1)
-                        .append(" TO ")
-                        .append(val2)
-                        .append(']');
+                String dateClause;
+                if (line.getValues().size() > 1 && StringUtils.isNotBlank(line.getValues().get(1))) {
+                    String val2 = convertDatepickerValueToSolrDate(line.getValues().get(1).trim());
+                    logger.debug("generateQuery: CALENDAR_DAY range branch, val1={}, val2={} (field={}, isDatepicker={})",
+                            val1, val2, field, isDatepicker());
+                    dateClause = SolrConstants.CALENDAR_DAY + ":[" + val1 + " TO " + val2 + ']';
+                } else {
+                    logger.debug("generateQuery: CALENDAR_DAY single-day branch, val1={} (field={}, isDatepicker={})",
+                            val1, field, isDatepicker());
+                    dateClause = SolrConstants.CALENDAR_DAY + ':' + val1;
+                }
+                // YEARMONTHDAY is only indexed on the docstruct that actually carries a date
+                // metadata (typically an Issue/volume level doc), never on PAGE docs. Without
+                // help, an inner query like +(FULLTEXT:vaduz) +(YEARMONTHDAY:[...]) can never
+                // match a page — pages have FULLTEXT but no YEARMONTHDAY, so newspaper-style
+                // "word + date range" searches would silently drop every page hit.
+                //
+                // The nested Solr join below makes page docs eligible by linking them to their
+                // parent issue via IDDOC / IDDOC_OWNER: {!join from=IDDOC to=IDDOC_OWNER}
+                // finds the issue docs whose YEARMONTHDAY is in range, grabs each issue IDDOC,
+                // then matches any doc whose IDDOC_OWNER points at that IDDOC — those are the
+                // pages of the matching issues. Combining the two with OR keeps the direct
+                // issue match (so metadata sub-hits at the docstruct level still appear) and
+                // adds the page-level fulltext matches on top. Calendar widget / REST queries
+                // bypass generateQuery() and keep hitting the raw YEARMONTHDAY field, so the
+                // calendar heatmap counts stay on issue level.
+                sbItem.append(dateClause)
+                        .append(" _query_:\"{!join from=")
+                        .append(SolrConstants.IDDOC)
+                        .append(" to=")
+                        .append(SolrConstants.IDDOC_OWNER)
+                        .append('}')
+                        .append(dateClause)
+                        .append('"');
             }
             // Phrase search operator: just the whole value in quotation marks
             else if (phrase || isDisplaySelectItems()) {
@@ -779,6 +817,14 @@ public class SearchQueryItem implements Serializable {
                                     }
                                     break;
                             }
+                            // Defensive normalization: YEARMONTHDAY is a numeric Solr field expecting yyyyMMdd.
+                            // If the user (or a bookmarked URL) supplies a locale-dependent date like
+                            // "11.01.1995" or "1/11/1995", convert it here so Solr doesn't reject the query.
+                            // Covers paths where the datepicker range branch isn't taken
+                            // (non-datepicker config, single-value entry, URL-based deep links).
+                            if (SolrConstants.CALENDAR_DAY.equals(field)) {
+                                val = convertDatepickerValueToSolrDate(val);
+                            }
 
                             if (val.contains("-") && !isRange()) {
                                 if (allowFuzzySearch) {
@@ -807,7 +853,13 @@ public class SearchQueryItem implements Serializable {
                                 if (isRange() && line.getValues().size() > 1 && StringUtils.isNotBlank(line.getValues().get(1))) {
                                     // Range search
                                     String val1 = ClientUtils.escapeQueryChars(useValue).replace("\\-", "-");
-                                    String val2 = ClientUtils.escapeQueryChars(line.getValues().get(1).trim()).replace("\\-", "-");
+                                    // For CALENDAR_DAY normalize val2 the same way val was normalized above
+                                    // so ranges like "11.01.1995 TO 31.12.1995" become "19950111 TO 19951231".
+                                    String rawVal2 = line.getValues().get(1).trim();
+                                    if (SolrConstants.CALENDAR_DAY.equals(field)) {
+                                        rawVal2 = convertDatepickerValueToSolrDate(rawVal2);
+                                    }
+                                    String val2 = ClientUtils.escapeQueryChars(rawVal2).replace("\\-", "-");
                                     if (SolrConstants.YEAR.equals(field) || field.startsWith(SolrConstants.PREFIX_MDNUM)) {
                                         // Prevent exception if not a number
                                         if (StringTools.parseInt(val1).isEmpty()) {
@@ -881,15 +933,25 @@ public class SearchQueryItem implements Serializable {
 
     /**
      * Converts a locale-dependent datepicker value (DE: "dd.MM.yyyy", EN: "MM/dd/yyyy") to Solr's yyyyMMdd format.
+     * <p>
+     * Values that are already in the expected 8-digit yyyyMMdd format are passed through silently.
+     * Values that look like a locale date attempt (contain "." or "/") but fail to parse are returned
+     * unchanged and logged at WARN level. Any other input (plain words, partial years, ...) is returned
+     * as-is without logging, since this method is also called defensively on arbitrary query item values.
      *
-     * @param value Date string from Flatpickr
+     * @param value Date string from Flatpickr, a plain text input, or a URL-encoded bookmark value
      * @return Date formatted as yyyyMMdd, or the original value if parsing fails
      * @should convert german dates correctly
      * @should convert english dates correctly
      * @should return value if it could not be parsed
+     * @should pass through already converted values silently
      */
     static String convertDatepickerValueToSolrDate(String value) {
         if (StringUtils.isBlank(value)) {
+            return value;
+        }
+        // Already in Solr yyyyMMdd format (e.g. "19950111") — return unchanged, no log noise.
+        if (value.length() == 8 && value.chars().allMatch(Character::isDigit)) {
             return value;
         }
         // Flatpickr sends locale-dependent formats without zero-padding:
@@ -906,6 +968,8 @@ public class SearchQueryItem implements Serializable {
                 } catch (NumberFormatException | java.time.DateTimeException e) {
                     logger.warn("Unable to parse DE datepicker value: {}", value);
                 }
+            } else {
+                logger.warn("Unable to parse DE datepicker value: {}", value);
             }
         } else if (value.contains("/")) {
             // English format: m/d/yyyy
@@ -919,9 +983,11 @@ public class SearchQueryItem implements Serializable {
                 } catch (NumberFormatException | java.time.DateTimeException e) {
                     logger.warn("Unable to parse EN datepicker value: {}", value);
                 }
+            } else {
+                logger.warn("Unable to parse EN datepicker value: {}", value);
             }
         }
-        logger.warn("Unable to parse datepicker value: {}", value);
+        // Non-date-like input: return unchanged without logging (defensive call path).
         return value;
     }
 }
