@@ -61,7 +61,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -155,17 +154,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.UriBuilder;
 
 /**
- * Holds the full state of the currently open record: document structure, physical pages, TOC,
- * image delivery settings, and navigation. Created by
- * {@link io.goobi.viewer.managedbeans.ActiveDocumentBean} when a record is opened and discarded
- * when a new record is loaded or the session ends.
+ * Holds the full state of the currently open record: document structure, physical pages, TOC, image delivery settings, and navigation. Created by
+ * {@link io.goobi.viewer.managedbeans.ActiveDocumentBean} when a record is opened and discarded when a new record is loaded or the session ends.
  *
- * <p><b>Lifecycle:</b> Instantiated per record-open inside the session-scoped
- * {@code ActiveDocumentBean}; not a CDI bean itself.
+ * <p>
+ * <b>Lifecycle:</b> Instantiated per record-open inside the session-scoped {@code ActiveDocumentBean}; not a CDI bean itself.
  *
- * <p><b>Thread safety:</b> Not thread-safe on its own. All access is expected to occur on the
- * JSF request thread of the owning session. The surrounding {@code ActiveDocumentBean} guards
- * concurrent access with {@code synchronized} blocks where necessary.
+ * <p>
+ * <b>Thread safety:</b> Not thread-safe on its own. All access is expected to occur on the JSF request thread of the owning session. The surrounding
+ * {@code ActiveDocumentBean} guards concurrent access with {@code synchronized} blocks where necessary.
  */
 public class ViewManager implements Serializable {
 
@@ -595,7 +592,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String getCurrentObjectUrl() throws IndexUnreachableException, DAOException {
-        return imageDeliveryBean.getObjects3D().getObjectUrl(pi, getCurrentPage().getFirstFileName());
+        return imageDeliveryBean.getObjects3D().getObjectUrl(pi, getCurrentPage().getFileName());
     }
 
     /**
@@ -2319,12 +2316,10 @@ public class ViewManager implements Serializable {
         this.allowUserComments = null;
     }
 
-    
     public Boolean isAllowUserComments() {
         return allowUserComments;
     }
 
-    
     public void setAllowUserComments(Boolean allowUserComments) {
         this.allowUserComments = allowUserComments;
     }
@@ -2347,7 +2342,6 @@ public class ViewManager implements Serializable {
         return recordAccessTicketRequired;
     }
 
-    
     public void setRecordAccessTicketRequired(Boolean recordAccessTicketRequired) {
         this.recordAccessTicketRequired = recordAccessTicketRequired;
     }
@@ -2355,8 +2349,8 @@ public class ViewManager implements Serializable {
     /**
      * isDisplayMetadataPdfLink.
      *
-     * @return true if the metadata PDF download link should be shown (record is a top-level work, PDF
-     *         is enabled in config, and access is permitted), false otherwise
+     * @return true if the metadata PDF download link should be shown (record is a top-level work, PDF is enabled in config, and access is permitted),
+     *         false otherwise
      */
     public boolean isDisplayMetadataPdfLink() {
         return topStructElement != null && topStructElement.isWork() && DataManager.getInstance().getConfiguration().isMetadataPdfEnabled()
@@ -2744,12 +2738,10 @@ public class ViewManager implements Serializable {
         return workHasTEIFiles;
     }
 
-    
     public TOC getToc() {
         return toc;
     }
 
-    
     public void setToc(TOC toc) {
         this.toc = toc;
     }
@@ -3052,7 +3044,7 @@ public class ViewManager implements Serializable {
      * Returns <code>topDocument</code>. If the IDDOC of <code>topDocument</code> is different from <code>topDocumentIddoc</code>,
      * <code>topDocument</code> is reloaded.
      *
-
+     * 
      * @throws IndexUnreachableException
      */
     private StructElement loadTopStructElement() throws IndexUnreachableException {
@@ -3816,8 +3808,8 @@ public class ViewManager implements Serializable {
     /**
      * isDisplayCiteLinkDocstruct.
      *
-     * @return true if citation links are enabled, a current structure element is loaded, and it differs
-     *         from the top-level structure element, false otherwise
+     * @return true if citation links are enabled, a current structure element is loaded, and it differs from the top-level structure element, false
+     *         otherwise
      */
     public boolean isDisplayCiteLinkDocstruct() {
         return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetCitationCitationLinks() && currentStructElement != null
@@ -3933,22 +3925,18 @@ public class ViewManager implements Serializable {
         return "";
     }
 
-    
     public String getCitationStyle() {
         return citationStyle;
     }
 
-    
     public void setCitationStyle(String citationStyle) {
         this.citationStyle = citationStyle;
     }
 
-    
     public CitationProcessorWrapper getCitationProcessorWrapper() {
         return citationProcessorWrapper;
     }
 
-    
     public void setCitationProcessorWrapper(CitationProcessorWrapper citationProcessorWrapper) {
         this.citationProcessorWrapper = citationProcessorWrapper;
     }
@@ -4057,7 +4045,8 @@ public class ViewManager implements Serializable {
      * <li>the 'pageOrder' is as far in the middle of the list as possible without violating any of the other points</li>
      * </ul>
      *
-     * <p>Used in thumbnailPaginator.xhtml to calculate the pages to display.
+     * <p>
+     * Used in thumbnailPaginator.xhtml to calculate the pages to display.
      * 
      * @param pageOrder The current page number around which to center the numbers
      * @param range The number of numbers to include above and below the current page number, if possible
