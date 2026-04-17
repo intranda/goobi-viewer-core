@@ -50,6 +50,7 @@ import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.solr.SolrConstants;
@@ -147,11 +148,12 @@ public class MetsResolver extends HttpServlet {
         SolrDocument doc = hits.get(0);
         id = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
 
-        // If the user has no listing privilege for this record, act as if it does not exist
-        boolean access = false;
+        // If the user has no listing privilege for this record, act as if it does not exist.
+        // Keep the full AccessPermission (not just the boolean) so the denial reason — access
+        // conditions from the Solr doc and any ticket requirements — can be logged below.
+        AccessPermission permission;
         try {
-            access =
-                    AccessConditionUtils.checkAccessPermissionBySolrDoc(doc, query, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, request).isGranted();
+            permission = AccessConditionUtils.checkAccessPermissionBySolrDoc(doc, query, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, request);
         } catch (IndexUnreachableException | DAOException e) {
             logger.error(e.getMessage(), e);
             try {
@@ -161,8 +163,10 @@ public class MetsResolver extends HttpServlet {
             }
             return;
         }
-        if (!access) {
-            logger.debug("User may not download metadata for {}", id);
+        if (!permission.isGranted()) {
+            logger.debug("User may not download metadata for {} (access conditions: {}, access ticket required: {}, download ticket required: {})",
+                    id, doc.getFieldValues(SolrConstants.ACCESSCONDITION), permission.isAccessTicketRequired(),
+                    permission.isDownloadTicketRequired());
             try {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);
             } catch (IOException e) {
