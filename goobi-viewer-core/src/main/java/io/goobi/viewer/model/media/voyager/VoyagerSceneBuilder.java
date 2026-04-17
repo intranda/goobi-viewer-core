@@ -38,8 +38,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
- * Builder that constructs a Smithsonian Voyager scene document (JSON) for one or more 3D model assets,
- * including asset metadata, scene nodes, and derivative descriptions.
+ * Builder that constructs a Smithsonian Voyager scene document (JSON) for one or more 3D model assets, including asset metadata, scene nodes, and
+ * derivative descriptions.
  */
 public class VoyagerSceneBuilder {
 
@@ -49,6 +49,8 @@ public class VoyagerSceneBuilder {
     private final String name;
     private String unit = "mm";
     private double[] translation = null;
+    private double[] boundsMin = null;
+    private double[] boundsMax = null;
 
     public VoyagerSceneBuilder(String name) {
         this.name = name;
@@ -60,9 +62,12 @@ public class VoyagerSceneBuilder {
     }
 
     /**
-     * Sets a translation offset applied to every node in the scene, expressed as
-     * {@code [x, y, z]} in the scene's native units.  Pass the negated bounding-box
-     * centre of the model to make Voyager rotate around the object's true centre.
+     * Sets the model-level translation stored in the SVX {@code models[i].translation} field, expressed as {@code [x, y, z]} in the scene's native
+     * units.
+     *
+     * <p>
+     * Voyager uses this field (together with {@code model.boundingBox}) to compute the orbit pivot. Pass the negated world-space bounding-box centre
+     * so that the pivot lands at the scene origin and Voyager orbits around the object's true geometric centre.
      *
      * @param x translation along the X axis
      * @param y translation along the Y axis
@@ -71,6 +76,21 @@ public class VoyagerSceneBuilder {
      */
     public VoyagerSceneBuilder setTranslation(double x, double y, double z) {
         this.translation = new double[] { x, y, z };
+        return this;
+    }
+
+    /**
+     * Sets the axis-aligned bounding box of the model in its local coordinate space, as read from the GLTF accessor min/max values. Used to embed a
+     * {@code boundingBox} in the SVX model entry so Voyager can correctly position the orbit pivot, and to compute a reasonable initial camera
+     * distance.
+     *
+     * @param min lower corner {@code [x, y, z]}
+     * @param max upper corner {@code [x, y, z]}
+     * @return this builder
+     */
+    public VoyagerSceneBuilder setBounds(double[] min, double[] max) {
+        this.boundsMin = min.clone();
+        this.boundsMax = max.clone();
         return this;
     }
 
@@ -84,13 +104,15 @@ public class VoyagerSceneBuilder {
         JSONArray models = new JSONArray(this.models.entrySet().stream().map(e -> createModel(e.getKey(), e.getValue())).toList());
         JSONArray nodes = new JSONArray(IntStream.range(0, models.length()).mapToObj(this::createNode).toList());
         JSONArray scenes = new JSONArray(List.of(createScene(IntStream.range(0, nodes.length()).toArray())));
+        JSONArray setups = new JSONArray(List.of(createSetup()));
 
         JSONObject json = new JSONObject();
         json.put("asset", createAsset());
-        json.put("scene", 0); //always set the first scene
+        json.put("scene", 0);
         json.put("scenes", scenes);
         json.put("nodes", nodes);
         json.put("models", models);
+        json.put("setups", setups);
 
         return json.toString();
     }
@@ -109,16 +131,49 @@ public class VoyagerSceneBuilder {
         scene.put("name", this.name);
         scene.put("units", this.unit);
         scene.put("nodes", new JSONArray(nodes));
+        scene.put("setup", 0);
         return scene;
+    }
+
+    private JSONObject createSetup() {
+        double distance = computeCameraDistance();
+
+        JSONObject orbitParams = new JSONObject();
+        orbitParams.put("orbit", new JSONArray(new double[] { 0.0, -20.0, 0.0 }));
+        orbitParams.put("offset", new JSONArray(new double[] { 0.0, 0.0, distance }));
+        orbitParams.put("minOrbit", new JSONArray(new Object[] { -90.0, JSONObject.NULL, JSONObject.NULL }));
+        orbitParams.put("maxOrbit", new JSONArray(new Object[] { 90.0, JSONObject.NULL, JSONObject.NULL }));
+        orbitParams.put("minOffset", new JSONArray(new Object[] { JSONObject.NULL, JSONObject.NULL, 0.1 }));
+        orbitParams.put("maxOffset", new JSONArray(new Object[] { JSONObject.NULL, JSONObject.NULL, 10000.0 }));
+
+        JSONObject navigation = new JSONObject();
+        navigation.put("type", "Orbit");
+        navigation.put("enabled", true);
+        navigation.put("autoZoom", true);
+        navigation.put("lightsFollowCamera", true);
+        navigation.put("autoRotation", false);
+        navigation.put("orbit", orbitParams);
+
+        JSONObject setup = new JSONObject();
+        setup.put("units", this.unit);
+        setup.put("navigation", navigation);
+        return setup;
+    }
+
+    private double computeCameraDistance() {
+        if (boundsMin == null || boundsMax == null) {
+            return 1000.0;
+        }
+        double dx = boundsMax[0] - boundsMin[0];
+        double dy = boundsMax[1] - boundsMin[1];
+        double dz = boundsMax[2] - boundsMin[2];
+        return Math.sqrt(dx * dx + dy * dy + dz * dz) * 2.0;
     }
 
     private JSONObject createNode(int index) {
         JSONObject node = new JSONObject();
         node.put("name", this.name);
         node.put("model", index);
-        if (this.translation != null) {
-            node.put("translation", new JSONArray(this.translation));
-        }
         return node;
     }
 
@@ -129,6 +184,17 @@ public class VoyagerSceneBuilder {
     private JSONObject createModel(URI modelUri, Path modelPath, String unit) {
         JSONObject model = new JSONObject();
         model.put("units", unit);
+
+        if (translation != null) {
+            model.put("translation", new JSONArray(translation));
+        }
+
+        if (boundsMin != null && boundsMax != null) {
+            JSONObject bbox = new JSONObject();
+            bbox.put("min", new JSONArray(boundsMin));
+            bbox.put("max", new JSONArray(boundsMax));
+            model.put("boundingBox", bbox);
+        }
 
         JSONObject derivative = new JSONObject();
         derivative.put("usage", "Web3D");

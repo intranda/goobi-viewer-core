@@ -133,7 +133,12 @@ public class Center3DObjectHandler implements MessageHandler<MessageStatus> {
         }
 
         try {
-            double[] center = GltfBoundingBoxReader.computeCenter(modelFile);
+            double[][] bounds = GltfBoundingBoxReader.computeBounds(modelFile);
+            double[] center = {
+                    (bounds[0][0] + bounds[1][0]) / 2.0,
+                    (bounds[0][1] + bounds[1][1]) / 2.0,
+                    (bounds[0][2] + bounds[1][2]) / 2.0
+            };
             logger.debug("Bounding-box centre for {}/{}: [{}, {}, {}]", pi, filename, center[0], center[1], center[2]);
 
             AbstractApiUrlManager urlManager = resolveUrlManager();
@@ -142,6 +147,7 @@ public class Center3DObjectHandler implements MessageHandler<MessageStatus> {
             String scene = new VoyagerSceneBuilder(baseFilename)
                     .addModel(modelUri, modelFile)
                     .setTranslation(-center[0], -center[1], -center[2])
+                    .setBounds(bounds[0], bounds[1])
                     .build();
 
             boolean overwriting = Files.exists(svxFile);
