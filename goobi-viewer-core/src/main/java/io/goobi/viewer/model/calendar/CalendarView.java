@@ -82,6 +82,8 @@ public class CalendarView implements Serializable {
      * @should return true if number of items sufficient
      */
     public boolean isDisplay() throws PresentationException, IndexUnreachableException {
+        List<String> years = getVolumeYears(); // must precede hits check: auto-populates calendarItems via setYear() when year is null
+
         int hits = 0;
         for (CalendarItemMonth item : calendarItems) {
             if (item.getHits() > 0) {
@@ -92,7 +94,8 @@ public class CalendarView implements Serializable {
             }
         }
 
-        return hits > 1 || getVolumeYears().size() > 1;
+        logger.trace("isDisplay: {}", hits > 1 || years.size() > 1);
+        return hits > 1 || years.size() > 1;
     }
 
     /**
