@@ -514,11 +514,23 @@ public final class SearchHelper {
      * @param searchTerms map of search terms per field
      * @param factory factory used for search hit creation and term matching
      * @return {@link SolrDocumentList}
+     * @should keep DOCSTRCT child docs when search terms are empty
+     * @should keep DOCSTRCT child docs when search terms are null
+     * @should require search term match when search terms are present
      */
-    private static SolrDocumentList filterChildDocs(SolrDocumentList docs, String mainIdDoc, Map<String, Set<String>> searchTerms,
+    static SolrDocumentList filterChildDocs(SolrDocumentList docs, String mainIdDoc, Map<String, Set<String>> searchTerms,
             SearchHitFactory factory) {
         SolrDocumentList filteredList = new SolrDocumentList();
         Map<String, SolrDocument> ownerDocs = new HashMap<>();
+        // When the search has no text-highlightable term (e.g. a pure YEARMONTHDAY date-range
+        // query from the calendar TocView, whose searchTerms map ends up only carrying structural
+        // fields such as PI_ANCHOR / PI_TOPSTRUCT / TITLE_TERMS extracted from the query), the
+        // term-based containment check can't mark DOCSTRCT children as relevant — they would all
+        // be dropped, leaving the user with zero sub-hits even though the expand already returned
+        // the matching issues. In that situation we trust the expand result and pass them through.
+        boolean noTextSearchTerms = !hasTextSearchTerm(searchTerms);
+        logger.debug("filterChildDocs: {} incoming child docs, noTextSearchTerms={}, searchTerms keys={}",
+                docs.size(), noTextSearchTerms, searchTerms != null ? searchTerms.keySet() : "null");
         for (SolrDocument doc : docs) {
             HitType hitType = getHitType(doc);
             String ownerIDDoc = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC_OWNER);
@@ -545,7 +557,10 @@ public final class SearchHelper {
                     }
                 }
             } else if (hitType == HitType.DOCSTRCT) {
-                if (ownerDocs.containsKey(iddoc)) {
+                if (noTextSearchTerms) {
+                    // Date-range or other non-text expand match: trust the expand result
+                    filteredList.add(doc);
+                } else if (ownerDocs.containsKey(iddoc)) {
                     ownerDocs.remove(iddoc);
                     filteredList.add(doc);
                 } else {
@@ -555,6 +570,7 @@ public final class SearchHelper {
 
         }
         filteredList.setNumFound(filteredList.size());
+        logger.debug("filterChildDocs: {} docs passed the filter (from {} incoming)", filteredList.size(), docs.size());
         return filteredList;
     }
 
@@ -562,6 +578,49 @@ public final class SearchHelper {
         return !factory
                 .findAdditionalMetadataFieldsContainingSearchTerms(SolrTools.getFieldValueMap(doc), searchTerms, Collections.emptySet(), "", "")
                 .isEmpty();
+    }
+
+    /**
+     * Returns true if the given search terms map contains any entry that represents a user-entered
+     * text term worth highlighting (DEFAULT / FULLTEXT / NORMDATATERMS / UGCTERMS / SEARCHTERMS_ARCHIVE
+     * / CMS_TEXT_ALL, or any explicit MD_* field term). Structural-only fields like PI_ANCHOR,
+     * PI_TOPSTRUCT, DC, DOCSTRCT, DOCTYPE, TITLE_TERMS are ignored, because
+     * {@link #extractSearchTermsFromQuery(String, String)} adds those automatically from the
+     * assembled query even when the user did not type anything.
+     *
+     * @param searchTerms map extracted from the current query
+     * @return true if a text-highlightable term is present; false otherwise
+     * @should return false for null map
+     * @should return false when only structural fields are present
+     * @should return true when DEFAULT field has values
+     * @should return true when an MD_ field has values
+     * @should return false when text field has only empty value set
+     */
+    static boolean hasTextSearchTerm(Map<String, Set<String>> searchTerms) {
+        if (searchTerms == null || searchTerms.isEmpty()) {
+            return false;
+        }
+        for (Map.Entry<String, Set<String>> entry : searchTerms.entrySet()) {
+            if (entry.getValue() == null || entry.getValue().isEmpty()) {
+                continue;
+            }
+            String field = entry.getKey();
+            switch (field) {
+                case SolrConstants.DEFAULT:
+                case SolrConstants.FULLTEXT:
+                case SolrConstants.NORMDATATERMS:
+                case SolrConstants.UGCTERMS:
+                case SolrConstants.SEARCHTERMS_ARCHIVE:
+                case SolrConstants.CMS_TEXT_ALL:
+                    return true;
+                default:
+                    if (field != null && field.startsWith("MD_")) {
+                        return true;
+                    }
+                    break;
+            }
+        }
+        return false;
     }
 
     /**
