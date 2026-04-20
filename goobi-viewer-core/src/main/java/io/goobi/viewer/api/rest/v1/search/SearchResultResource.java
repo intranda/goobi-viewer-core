@@ -75,11 +75,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 /**
  * REST resource for exporting search results in various bibliographic and data formats.
  *
- * <p>Provides a fixed endpoint for raw Solr XML export and a generic, config-driven
- * endpoint that applies an XSLT stylesheet for formats such as RIS, Endnote XML or BibTeX.
- * New export formats can be added at runtime by configuring a {@code <format>} element in
- * {@code config_viewer.xml} and dropping the corresponding XSLT file into the config or
- * classpath directory — no Java code changes required.
+ * <p>
+ * Provides a fixed endpoint for raw Solr XML export and a generic, config-driven endpoint that applies an XSLT stylesheet for formats such as RIS,
+ * Endnote XML or BibTeX. New export formats can be added at runtime by configuring a {@code <format>} element in {@code config_viewer.xml} and
+ * dropping the corresponding XSLT file into the config or classpath directory — no Java code changes required.
  */
 @Path(ApiUrls.SEARCH)
 @ViewerRestServiceBinding
@@ -123,6 +122,7 @@ public class SearchResultResource {
      * @throws DAOException if a database error occurs
      * @throws ContentLibException if the RIS temp file cannot be created
      * @throws ViewerConfigurationException if the viewer configuration is invalid
+     * @deprecated Superseded by <code>getSearchResultsAsFormat()</code>
      */
     @GET
     @jakarta.ws.rs.Path(RECORDS_RIS_FILE)
@@ -132,12 +132,13 @@ public class SearchResultResource {
     @ApiResponse(responseCode = "400", description = "Invalid search query or parameters")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     @AccessConditionBinding
+    @Deprecated(since = "26.04")
     public Response getRISAsFile(
             @Parameter(description = "Search query string") @QueryParam("query") @DefaultValue("") String query,
             @Parameter(description = "Sort string for the search results") @QueryParam("sortString") @DefaultValue("") String sortString,
             @Parameter(description = "Active facet filter string") @QueryParam("activeFacetString") @DefaultValue("") String activeFacetString,
-            @Parameter(description = "Maximum word distance for proximity search") @QueryParam("proximitySearchDistance")
-                    @DefaultValue("0") int proximitySearchDistance)
+            @Parameter(
+                    description = "Maximum word distance for proximity search") @QueryParam("proximitySearchDistance") @DefaultValue("0") int proximitySearchDistance)
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException, ViewerConfigurationException {
         String currentQuery = SearchHelper.prepareQuery(query);
         String finalQuery = SearchHelper.buildFinalQuery(currentQuery, true, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
@@ -163,12 +164,10 @@ public class SearchResultResource {
      *
      * @param query the Solr search query string
      * @param activeFacetString the active facet filter string
-     * @param sortString semicolon-separated sort fields (e.g. {@code "SORT_TITLE;!IDDOC"});
-     *        prefix a field with {@code !} for descending order
-     * @param proximitySearchDistance maximum word distance for proximity-search snippet
-     *        highlighting; has no effect on the Solr query or the exported field values
-     * @param rows maximum number of results to return (default 100); use a value {@code <= 0}
-     *        to fetch all results in batches of 100
+     * @param sortString semicolon-separated sort fields (e.g. {@code "SORT_TITLE;!IDDOC"}); prefix a field with {@code !} for descending order
+     * @param proximitySearchDistance maximum word distance for proximity-search snippet highlighting; has no effect on the Solr query or the exported
+     *            field values
+     * @param rows maximum number of results to return (default 100); use a value {@code <= 0} to fetch all results in batches of 100
      * @return a {@link Response} containing the Solr XML
      * @throws PresentationException if the query cannot be parsed
      * @throws IndexUnreachableException if the Solr index is unreachable
@@ -184,10 +183,10 @@ public class SearchResultResource {
     public Response getSearchResultsAsXml(
             @Parameter(description = "Search query string") @QueryParam("query") @DefaultValue("*:*") String query,
             @Parameter(description = "Active facet filter string") @QueryParam("activeFacetString") @DefaultValue("") String activeFacetString,
-            @Parameter(description = "Semicolon-separated sort fields; prefix with ! for descending")
-            @QueryParam("sortString") @DefaultValue("") String sortString,
-            @Parameter(description = "Proximity-search highlight distance (no effect on exported values)")
-            @QueryParam("proximitySearchDistance") @DefaultValue("0") int proximitySearchDistance,
+            @Parameter(
+                    description = "Semicolon-separated sort fields; prefix with ! for descending") @QueryParam("sortString") @DefaultValue("") String sortString,
+            @Parameter(
+                    description = "Proximity-search highlight distance (no effect on exported values)") @QueryParam("proximitySearchDistance") @DefaultValue("0") int proximitySearchDistance,
             @Parameter(description = "Maximum number of results; <= 0 fetches all") @QueryParam("rows") @DefaultValue("100") int rows)
             throws PresentationException, IndexUnreachableException {
         SolrDocumentList docs = executeSolrQuery(query, activeFacetString, sortString, proximitySearchDistance, rows);
@@ -204,12 +203,14 @@ public class SearchResultResource {
     /**
      * Generic export endpoint that transforms search results via a config-driven XSLT stylesheet.
      *
-     * <p>The {@code format} path parameter is matched against the {@code name} attribute of
-     * {@code <format>} elements in {@code config_viewer.xml}. If the format is not configured
-     * the endpoint returns 404; if it is configured but disabled it returns 403.
+     * <p>
+     * The {@code format} path parameter is matched against the {@code name} attribute of {@code <format>} elements in {@code config_viewer.xml}. If
+     * the format is not configured the endpoint returns 404; if it is configured but disabled it returns 403.
      *
-     * <p>To add a new export format, simply add a {@code <format>} element to the configuration
-     * and drop the XSLT stylesheet into the viewer config directory or the classpath:
+     * <p>
+     * To add a new export format, simply add a {@code <format>} element to the configuration and drop the XSLT stylesheet into the viewer config
+     * directory or the classpath:
+     * 
      * <pre>{@code
      * <format name="marc" enabled="true" xslt="solr2marc.xsl"
      *         contentType="application/xml" fileExtension="xml" />
@@ -218,10 +219,9 @@ public class SearchResultResource {
      * @param format the export format name (e.g. "endnote", "bibtex", "ris")
      * @param query the Solr search query string
      * @param activeFacetString the active facet filter string
-     * @param sortString semicolon-separated sort fields (e.g. {@code "SORT_TITLE;!IDDOC"});
-     *        prefix a field with {@code !} for descending order
-     * @param proximitySearchDistance maximum word distance for proximity-search snippet
-     *        highlighting; has no effect on the Solr query or the exported field values
+     * @param sortString semicolon-separated sort fields (e.g. {@code "SORT_TITLE;!IDDOC"}); prefix a field with {@code !} for descending order
+     * @param proximitySearchDistance maximum word distance for proximity-search snippet highlighting; has no effect on the Solr query or the exported
+     *            field values
      * @return a {@link Response} with the transformed content
      * @throws PresentationException if the query cannot be parsed
      * @throws IndexUnreachableException if the Solr index is unreachable
@@ -239,10 +239,10 @@ public class SearchResultResource {
             @Parameter(description = "Export format name as configured in config_viewer.xml") @PathParam("format") String format,
             @Parameter(description = "Search query string") @QueryParam("query") @DefaultValue("*:*") String query,
             @Parameter(description = "Active facet filter string") @QueryParam("activeFacetString") @DefaultValue("") String activeFacetString,
-            @Parameter(description = "Semicolon-separated sort fields; prefix with ! for descending")
-            @QueryParam("sortString") @DefaultValue("") String sortString,
-            @Parameter(description = "Proximity-search highlight distance (no effect on exported values)")
-            @QueryParam("proximitySearchDistance") @DefaultValue("0") int proximitySearchDistance)
+            @Parameter(
+                    description = "Semicolon-separated sort fields; prefix with ! for descending") @QueryParam("sortString") @DefaultValue("") String sortString,
+            @Parameter(
+                    description = "Proximity-search highlight distance (no effect on exported values)") @QueryParam("proximitySearchDistance") @DefaultValue("0") int proximitySearchDistance)
             throws PresentationException, IndexUnreachableException {
 
         // Look up the format in all configured formats (including disabled ones) for proper error reporting
@@ -276,17 +276,16 @@ public class SearchResultResource {
     /**
      * Executes a Solr query with optional facet filters and returns the raw document list.
      *
-     * <p>When {@code rows <= 0} all matching documents are fetched in batches of 100,
-     * mirroring the behaviour of {@link RISExport#executeSearch}. Otherwise exactly
-     * {@code rows} documents are returned in a single query.
+     * <p>
+     * When {@code rows <= 0} all matching documents are fetched in batches of 100, mirroring the behaviour of {@link RISExport#executeSearch}.
+     * Otherwise exactly {@code rows} documents are returned in a single query.
      *
      * @param query the raw search query string
      * @param activeFacetString the active facet filter string (may be empty)
-     * @param sortString semicolon-separated sort fields (e.g. {@code "SORT_TITLE;!IDDOC"});
-     *        prefix a field with {@code !} for descending order; {@code null} or blank for
-     *        default Solr ordering
-     * @param proximitySearchDistance accepted for API compatibility with the legacy
-     *        {@code /search/ris} endpoint; has no effect on the Solr query or returned fields
+     * @param sortString semicolon-separated sort fields (e.g. {@code "SORT_TITLE;!IDDOC"}); prefix a field with {@code !} for descending order;
+     *            {@code null} or blank for default Solr ordering
+     * @param proximitySearchDistance accepted for API compatibility with the legacy {@code /search/ris} endpoint; has no effect on the Solr query or
+     *            returned fields
      * @param rows maximum number of documents to return; {@code <= 0} fetches all results
      * @return the matching Solr documents
      * @throws PresentationException if the query cannot be parsed
@@ -318,7 +317,8 @@ public class SearchResultResource {
             for (int i = 0; i < totalBatches; i++) {
                 int first = i * batchSize;
                 int thisBatch = (int) Math.min(batchSize, totalHits - first);
-                SolrDocumentList batch = DataManager.getInstance().getSearchIndex()
+                SolrDocumentList batch = DataManager.getInstance()
+                        .getSearchIndex()
                         .search(finalQuery, first, thisBatch, sortFields, null, null, filterQueries, null)
                         .getResults();
                 all.addAll(batch);
@@ -326,7 +326,8 @@ public class SearchResultResource {
             return all;
         }
 
-        return DataManager.getInstance().getSearchIndex()
+        return DataManager.getInstance()
+                .getSearchIndex()
                 .search(finalQuery, 0, rows, sortFields, null, null, filterQueries, null)
                 .getResults();
     }
