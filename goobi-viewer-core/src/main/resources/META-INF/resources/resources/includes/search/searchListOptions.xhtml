@@ -89,7 +89,29 @@
                 </div>
             </ui:fragment>
 
-            <!-- SEARCH EXPORT (RIS) -->
+            <!-- SEARCH EXPORT (XSLT formats: RIS, Endnote, BibTeX, …) -->
+            <ui:repeat value="#{configurationBean.enabledSearchExportFormats}" var="exportFormat">
+                <div class="search-list__format-export">
+                    <h:outputLink
+                        value="#{request.contextPath}/api/v1/search/export/#{exportFormat.name}"
+                        styleClass="btn btn--icon search-list__option-button"
+                        title="#{msg['search_export_'.concat(exportFormat.name)]}">
+                        <f:param name="query" value="#{search.searchString}" />
+                        <f:param name="activeFacetString" value="#{search.facets.activeFacetString}" />
+                        <f:param name="sortString" value="#{search.sortString}" />
+                        <f:passThroughAttribute name="data-toggle" value="tooltip" />
+                        <f:passThroughAttribute name="data-placement" value="top" />
+                        <f:passThroughAttribute name="aria-label" value="#{msg['search_export_'.concat(exportFormat.name)]}" />
+                        <util:icon
+                            icon="file-text"
+                            svgClass="icon" />
+                    </h:outputLink>
+                </div>
+            </ui:repeat>
+
+            <!--
+            SEARCH EXPORT (RIS) — legacy widget, replaced by the XSLT format repeat above.
+            Kept for reference until the old /api/v1/search/ris endpoint is retired.
             <ui:fragment rendered="#{configurationBean.searchRisExportEnabled}">
                 <div class="search-list__ris-export">
                     <h:form
@@ -97,7 +119,7 @@
                         prependId="false">
                         <h:commandLink
                             id="risDownloadButton"
-                            styleClass="btn btn--icon search-list__option-button ris-export-trigger"
+                            styleClass="btn btn- -icon search-list__option-button ris-export-trigger"
                             action="#{searchBean.exportSearchAsRisAction}"
                             title="#{msg.searchExportRIS}">
                             <util:icon
@@ -123,6 +145,7 @@
                     </h:form>
                 </div>
             </ui:fragment>
+            -->
 
             <div class="search-list__toggle-thumbs">
                 <button

@@ -24,6 +24,7 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -41,6 +42,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.export.ExportFormat;
 import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.maps.GeomapItemFilter;
@@ -860,8 +862,24 @@ public class ConfigurationBean implements Serializable {
      *
      * @return true if exporting search results in RIS format is enabled, false otherwise
      */
+    @Deprecated(since = "26.04", forRemoval = true)
     public boolean isSearchRisExportEnabled() {
         return DataManager.getInstance().getConfiguration().isSearchRisExportEnabled();
+    }
+
+    /**
+     * Returns all enabled XSLT-based search export formats configured in {@code config_viewer.xml} under {@code search/export/format}. Disabled
+     * formats are excluded so the list can be iterated directly in templates.
+     *
+     * @return list of enabled {@link ExportFormat}s; never null
+     */
+    public List<ExportFormat> getEnabledSearchExportFormats() {
+        return DataManager.getInstance()
+                .getConfiguration()
+                .getSearchExportFormats()
+                .stream()
+                .filter(ExportFormat::isEnabled)
+                .toList();
     }
 
     /**
@@ -982,7 +1000,8 @@ public class ConfigurationBean implements Serializable {
     /**
      * isDisplaySidebarRssFeed.
      *
-     * <p>s
+     * <p>
+     * s
      *
      * @return true if the RSS feed widget should be displayed in the sidebar, false otherwise
      * @should return correct value
