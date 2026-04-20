@@ -67,6 +67,7 @@ import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.viewer.StringPair;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -162,7 +163,12 @@ public class SearchResultResource {
      *
      * @param query the Solr search query string
      * @param activeFacetString the active facet filter string
-     * @param rows maximum number of results to return (default 100)
+     * @param sortString semicolon-separated sort fields (e.g. {@code "SORT_TITLE;!IDDOC"});
+     *        prefix a field with {@code !} for descending order
+     * @param proximitySearchDistance maximum word distance for proximity-search snippet
+     *        highlighting; has no effect on the Solr query or the exported field values
+     * @param rows maximum number of results to return (default 100); use a value {@code <= 0}
+     *        to fetch all results in batches of 100
      * @return a {@link Response} containing the Solr XML
      * @throws PresentationException if the query cannot be parsed
      * @throws IndexUnreachableException if the Solr index is unreachable
@@ -178,9 +184,11 @@ public class SearchResultResource {
     public Response getSearchResultsAsXml(
             @Parameter(description = "Search query string") @QueryParam("query") @DefaultValue("*:*") String query,
             @Parameter(description = "Active facet filter string") @QueryParam("activeFacetString") @DefaultValue("") String activeFacetString,
-            @Parameter(description = "Maximum number of results") @QueryParam("rows") @DefaultValue("100") int rows)
+            @Parameter(description = "Semicolon-separated sort fields; prefix with ! for descending") @QueryParam("sortString") @DefaultValue("") String sortString,
+            @Parameter(description = "Proximity-search highlight distance (no effect on exported values)") @QueryParam("proximitySearchDistance") @DefaultValue("0") int proximitySearchDistance,
+            @Parameter(description = "Maximum number of results; <= 0 fetches all") @QueryParam("rows") @DefaultValue("100") int rows)
             throws PresentationException, IndexUnreachableException {
-        SolrDocumentList docs = executeSolrQuery(query, activeFacetString, rows);
+        SolrDocumentList docs = executeSolrQuery(query, activeFacetString, sortString, proximitySearchDistance, rows);
 
         try {
             String xml = SolrDocXmlExport.toXmlString(docs);
@@ -208,7 +216,10 @@ public class SearchResultResource {
      * @param format the export format name (e.g. "endnote", "bibtex", "ris")
      * @param query the Solr search query string
      * @param activeFacetString the active facet filter string
-     * @param rows maximum number of results to return (default 100)
+     * @param sortString semicolon-separated sort fields (e.g. {@code "SORT_TITLE;!IDDOC"});
+     *        prefix a field with {@code !} for descending order
+     * @param proximitySearchDistance maximum word distance for proximity-search snippet
+     *        highlighting; has no effect on the Solr query or the exported field values
      * @return a {@link Response} with the transformed content
      * @throws PresentationException if the query cannot be parsed
      * @throws IndexUnreachableException if the Solr index is unreachable
@@ -226,7 +237,8 @@ public class SearchResultResource {
             @Parameter(description = "Export format name as configured in config_viewer.xml") @PathParam("format") String format,
             @Parameter(description = "Search query string") @QueryParam("query") @DefaultValue("*:*") String query,
             @Parameter(description = "Active facet filter string") @QueryParam("activeFacetString") @DefaultValue("") String activeFacetString,
-            @Parameter(description = "Maximum number of results") @QueryParam("rows") @DefaultValue("100") int rows)
+            @Parameter(description = "Semicolon-separated sort fields; prefix with ! for descending") @QueryParam("sortString") @DefaultValue("") String sortString,
+            @Parameter(description = "Proximity-search highlight distance (no effect on exported values)") @QueryParam("proximitySearchDistance") @DefaultValue("0") int proximitySearchDistance)
             throws PresentationException, IndexUnreachableException {
 
         // Look up the format in all configured formats (including disabled ones) for proper error reporting
@@ -243,7 +255,7 @@ public class SearchResultResource {
             return Response.status(Status.FORBIDDEN).entity("Export format is disabled: " + format).build();
         }
 
-        SolrDocumentList docs = executeSolrQuery(query, activeFacetString, rows);
+        SolrDocumentList docs = executeSolrQuery(query, activeFacetString, sortString, proximitySearchDistance, 0);
 
         try {
             String result = XsltSearchExport.transform(docs, exportFormat.getXslt());
@@ -260,14 +272,24 @@ public class SearchResultResource {
     /**
      * Executes a Solr query with optional facet filters and returns the raw document list.
      *
+     * <p>When {@code rows <= 0} all matching documents are fetched in batches of 100,
+     * mirroring the behaviour of {@link RISExport#executeSearch}. Otherwise exactly
+     * {@code rows} documents are returned in a single query.
+     *
      * @param query the raw search query string
      * @param activeFacetString the active facet filter string (may be empty)
-     * @param rows maximum number of documents to return
+     * @param sortString semicolon-separated sort fields (e.g. {@code "SORT_TITLE;!IDDOC"});
+     *        prefix a field with {@code !} for descending order; {@code null} or blank for
+     *        default Solr ordering
+     * @param proximitySearchDistance accepted for API compatibility with the legacy
+     *        {@code /search/ris} endpoint; has no effect on the Solr query or returned fields
+     * @param rows maximum number of documents to return; {@code <= 0} fetches all results
      * @return the matching Solr documents
      * @throws PresentationException if the query cannot be parsed
      * @throws IndexUnreachableException if the Solr index is unreachable
      */
-    private SolrDocumentList executeSolrQuery(String query, String activeFacetString, int rows)
+    private static SolrDocumentList executeSolrQuery(String query, String activeFacetString, String sortString,
+            int proximitySearchDistance, int rows)
             throws PresentationException, IndexUnreachableException {
         String currentQuery = SearchHelper.prepareQuery(query);
         String finalQuery = SearchHelper.buildFinalQuery(currentQuery, true, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
@@ -278,7 +300,30 @@ public class SearchResultResource {
         }
         List<String> filterQueries = facets.generateFacetFilterQueries(true);
 
-        return DataManager.getInstance().getSearchIndex().search(finalQuery, 0, rows, null, null, null, filterQueries, null)
+        List<StringPair> sortFields = (sortString != null && !sortString.isBlank())
+                ? SearchHelper.parseSortString(sortString, null)
+                : null;
+
+        if (rows <= 0) {
+            long totalHits = DataManager.getInstance().getSearchIndex().getHitCount(finalQuery, filterQueries);
+            int batchSize = 100;
+            int totalBatches = (int) Math.ceil((double) totalHits / batchSize);
+            SolrDocumentList all = new SolrDocumentList();
+            all.setNumFound(totalHits);
+            all.setStart(0);
+            for (int i = 0; i < totalBatches; i++) {
+                int first = i * batchSize;
+                int thisBatch = (int) Math.min(batchSize, totalHits - first);
+                SolrDocumentList batch = DataManager.getInstance().getSearchIndex()
+                        .search(finalQuery, first, thisBatch, sortFields, null, null, filterQueries, null)
+                        .getResults();
+                all.addAll(batch);
+            }
+            return all;
+        }
+
+        return DataManager.getInstance().getSearchIndex()
+                .search(finalQuery, 0, rows, sortFields, null, null, filterQueries, null)
                 .getResults();
     }
 }

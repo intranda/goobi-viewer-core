@@ -22,7 +22,9 @@
 package io.goobi.viewer.model.export;
 
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -37,6 +39,8 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+
+import io.goobi.viewer.controller.StringConstants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -77,7 +81,59 @@ public final class SolrDocXmlExport {
     }
 
     /**
+     * Returns a sanitized copy of the given document list: access-restricted values are removed
+     * and multi-valued fields are deduplicated. The original list is not modified.
+     *
+     * <p>A value is considered access-restricted if it equals
+     * {@link StringConstants#ACCESSCONDITION_METADATA_ACCESS_RESTRICTED}. For multi-valued
+     * fields, duplicate values are collapsed into one, preserving insertion order.
+     *
+     * @param docs the list to sanitize; must not be null
+     * @return a new {@link SolrDocumentList} with the same {@code numFound}/{@code start}
+     *         metadata but with cleaned document fields
+     * @should remove access-restricted values from multi-valued fields
+     * @should remove fields whose single value is access-restricted
+     * @should deduplicate multi-valued fields preserving insertion order
+     * @should leave documents with no restricted or duplicate values unchanged
+     */
+    public static SolrDocumentList sanitize(SolrDocumentList docs) {
+        SolrDocumentList result = new SolrDocumentList();
+        result.setNumFound(docs.getNumFound());
+        result.setStart(docs.getStart());
+
+        for (SolrDocument srcDoc : docs) {
+            SolrDocument cleanDoc = new SolrDocument();
+            for (Map.Entry<String, Object> entry : srcDoc.entrySet()) {
+                String fieldName = entry.getKey();
+                Object value = entry.getValue();
+                if (value instanceof Collection<?> coll) {
+                    LinkedHashSet<Object> seen = new LinkedHashSet<>();
+                    for (Object item : coll) {
+                        if (!StringConstants.ACCESSCONDITION_METADATA_ACCESS_RESTRICTED
+                                .equals(String.valueOf(item))) {
+                            seen.add(item);
+                        }
+                    }
+                    if (!seen.isEmpty()) {
+                        cleanDoc.addField(fieldName, new ArrayList<>(seen));
+                    }
+                } else {
+                    if (!StringConstants.ACCESSCONDITION_METADATA_ACCESS_RESTRICTED
+                            .equals(String.valueOf(value))) {
+                        cleanDoc.addField(fieldName, value);
+                    }
+                }
+            }
+            result.add(cleanDoc);
+        }
+        return result;
+    }
+
+    /**
      * Converts the given Solr document list to a DOM {@link Document}.
+     *
+     * <p>The document list is {@link #sanitize(SolrDocumentList) sanitized} before serialization:
+     * access-restricted values are removed and multi-valued fields are deduplicated.
      *
      * @param docs the Solr documents to serialise; must not be null
      * @return DOM document in Solr response format
@@ -87,6 +143,7 @@ public final class SolrDocXmlExport {
         if (docs == null) {
             throw new IllegalArgumentException("docs may not be null");
         }
+        docs = sanitize(docs);
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();

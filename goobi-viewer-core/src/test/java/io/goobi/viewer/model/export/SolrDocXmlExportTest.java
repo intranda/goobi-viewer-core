@@ -21,15 +21,20 @@
  */
 package io.goobi.viewer.model.export;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
+import java.util.Collection;
 
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.junit.jupiter.api.Test;
+
+import io.goobi.viewer.controller.StringConstants;
 
 class SolrDocXmlExportTest {
 
@@ -100,5 +105,100 @@ class SolrDocXmlExportTest {
     @Test
     void toXmlDocument_shouldThrowOnNull() {
         assertThrows(IllegalArgumentException.class, () -> SolrDocXmlExport.toXmlDocument(null));
+    }
+
+    /**
+     * @see SolrDocXmlExport#sanitize(SolrDocumentList)
+     * @verifies remove access-restricted values from multi-valued fields
+     */
+    @Test
+    void sanitize_shouldRemoveRestrictedValuesFromMultiValuedField() {
+        SolrDocumentList docs = new SolrDocumentList();
+        docs.setNumFound(1);
+        SolrDocument doc = new SolrDocument();
+        doc.addField("MD_AUTHOR", Arrays.asList("Doe, John", StringConstants.ACCESSCONDITION_METADATA_ACCESS_RESTRICTED, "Smith, Jane"));
+        docs.add(doc);
+
+        SolrDocumentList result = SolrDocXmlExport.sanitize(docs);
+
+        assertEquals(1, result.size());
+        @SuppressWarnings("unchecked")
+        Collection<Object> authors = (Collection<Object>) result.get(0).getFieldValue("MD_AUTHOR");
+        assertNotNull(authors);
+        assertEquals(2, authors.size());
+        assertTrue(authors.stream().noneMatch(v -> StringConstants.ACCESSCONDITION_METADATA_ACCESS_RESTRICTED.equals(v)));
+        assertTrue(authors.stream().anyMatch(v -> "Doe, John".equals(v)));
+        assertTrue(authors.stream().anyMatch(v -> "Smith, Jane".equals(v)));
+    }
+
+    /**
+     * @see SolrDocXmlExport#sanitize(SolrDocumentList)
+     * @verifies remove fields whose single value is access-restricted
+     */
+    @Test
+    void sanitize_shouldRemoveSingleValuedFieldIfRestricted() {
+        SolrDocumentList docs = new SolrDocumentList();
+        docs.setNumFound(1);
+        SolrDocument doc = new SolrDocument();
+        doc.addField("MD_TITLE", "A Title");
+        doc.addField("MD_AUTHOR", StringConstants.ACCESSCONDITION_METADATA_ACCESS_RESTRICTED);
+        docs.add(doc);
+
+        SolrDocumentList result = SolrDocXmlExport.sanitize(docs);
+
+        assertEquals(1, result.size());
+        SolrDocument cleanDoc = result.get(0);
+        assertNotNull(cleanDoc.getFieldValue("MD_TITLE"));
+        assertFalse(cleanDoc.containsKey("MD_AUTHOR"), "Restricted single-value field should be removed");
+    }
+
+    /**
+     * @see SolrDocXmlExport#sanitize(SolrDocumentList)
+     * @verifies deduplicate multi-valued fields preserving insertion order
+     */
+    @Test
+    void sanitize_shouldDeduplicateMultiValuedFields() {
+        SolrDocumentList docs = new SolrDocumentList();
+        docs.setNumFound(1);
+        SolrDocument doc = new SolrDocument();
+        doc.addField("MD_SUBJECT", Arrays.asList("History", "Science", "History", "Art", "Science"));
+        docs.add(doc);
+
+        SolrDocumentList result = SolrDocXmlExport.sanitize(docs);
+
+        @SuppressWarnings("unchecked")
+        Collection<Object> subjects = (Collection<Object>) result.get(0).getFieldValue("MD_SUBJECT");
+        assertNotNull(subjects);
+        assertEquals(3, subjects.size(), "Duplicates should be removed");
+        // First occurrence of each value must be retained
+        Object[] arr = subjects.toArray();
+        assertEquals("History", arr[0]);
+        assertEquals("Science", arr[1]);
+        assertEquals("Art", arr[2]);
+    }
+
+    /**
+     * @see SolrDocXmlExport#sanitize(SolrDocumentList)
+     * @verifies leave documents with no restricted or duplicate values unchanged
+     */
+    @Test
+    void sanitize_shouldLeaveCleanDocumentUnchanged() {
+        SolrDocumentList docs = new SolrDocumentList();
+        docs.setNumFound(1);
+        SolrDocument doc = new SolrDocument();
+        doc.addField("PI", "PPN12345");
+        doc.addField("MD_TITLE", "Clean Title");
+        doc.addField("MD_AUTHOR", Arrays.asList("Author One", "Author Two"));
+        docs.add(doc);
+
+        SolrDocumentList result = SolrDocXmlExport.sanitize(docs);
+
+        assertEquals(1, result.size());
+        SolrDocument cleanDoc = result.get(0);
+        assertEquals("PPN12345", cleanDoc.getFieldValue("PI"));
+        assertEquals("Clean Title", cleanDoc.getFieldValue("MD_TITLE"));
+        @SuppressWarnings("unchecked")
+        Collection<Object> authors = (Collection<Object>) cleanDoc.getFieldValue("MD_AUTHOR");
+        assertEquals(2, authors.size());
     }
 }
