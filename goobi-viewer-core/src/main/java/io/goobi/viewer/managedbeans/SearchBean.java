@@ -552,6 +552,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     /**
      * Resets variables that hold search result data. Does not reset search parameter variables such as type, filter or collection.
+     * 
      * @should not throw NullPointerException under concurrent access
      * @should not throw NPE when called concurrently
      */
@@ -579,6 +580,9 @@ public class SearchBean implements SearchInterface, Serializable {
 
     /**
      * Resets general search options and type specific options for currently unused types.
+     */
+    /**
+     * @should clear advancedSearchOrigin
      */
     public void resetSearchParameters() {
         resetSearchParameters(false, true);
@@ -933,6 +937,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should set advancedSearchOrigin from cms page when current page is a cms page
      */
     public void executeSearch() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         executeSearch("");
@@ -951,6 +956,10 @@ public class SearchBean implements SearchInterface, Serializable {
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.debug("executeSearch; searchString: {}", searchStringInternal);
         mirrorAdvancedSearchCurrentHierarchicalFacets();
+
+        if (this.navigationHelper != null && this.navigationHelper.isCmsPage()) {
+            this.advancedSearchOrigin = new AdvancedSearchOrigin(this.navigationHelper.getCurrentCMSPage());
+        }
 
         // Create SearchQueryGroup from query
         if (activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED && advancedSearchQueryGroup.isBlank()) {
@@ -3033,6 +3042,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @param date1 Start date for the calendar day range filter
      * @param date2 End date for the calendar day range filter
      * @return Navigation outcome
+     * @should set advancedSearchOrigin with pi label and docstrct from active document
      */
     public String searchInRecord(String piField, String piValue, String date1, String date2) {
         logger.trace("searchInRecord: {}:{}", piField, piValue);

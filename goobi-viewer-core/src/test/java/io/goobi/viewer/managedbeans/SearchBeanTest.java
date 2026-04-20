@@ -35,17 +35,26 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import java.util.Locale;
+
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
+import io.goobi.viewer.model.search.AdvancedSearchOrigin;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchFacets;
@@ -54,6 +63,8 @@ import io.goobi.viewer.model.search.SearchQueryGroup;
 import io.goobi.viewer.model.search.SearchQueryItem;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.model.search.SearchSortingOption;
+import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.model.viewer.ViewManager;
 import io.goobi.viewer.solr.SolrConstants;
 
 class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -1213,5 +1224,84 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         searchBean.setCurrentHitIndex(5);
         Assertions.assertNull(searchBean.getCurrentSearch());
         Assertions.assertNull(searchBean.getNextElement());
+    }
+
+    /**
+     * @verifies set advancedSearchOrigin with pi label and docstrct from active document
+     * @see SearchBean#searchInRecord(String, String, String, String)
+     */
+    @Test
+    void searchInRecord_shouldSetAdvancedSearchOriginWithRecordData() {
+        try (MockedStatic<BeanUtils> mockedBeanUtils = mockStatic(BeanUtils.class)) {
+            mockedBeanUtils.when(BeanUtils::getLocale).thenReturn(Locale.ENGLISH);
+            searchBean.resetAdvancedSearchParameters();
+
+            ActiveDocumentBean adb = mock(ActiveDocumentBean.class);
+            ViewManager vm = mock(ViewManager.class);
+            StructElement se = mock(StructElement.class);
+            when(adb.getViewManager()).thenReturn(vm);
+            when(vm.getTopStructElement()).thenReturn(se);
+            when(se.getLabel()).thenReturn("Test Record");
+            when(se.getDocStructType()).thenReturn("Monograph");
+            mockedBeanUtils.when(BeanUtils::getActiveDocumentBean).thenReturn(adb);
+
+            searchBean.searchInRecord("PI_TOPSTRUCT", "PI_001", null, null);
+
+            AdvancedSearchOrigin origin = searchBean.getAdvancedSearchOrigin();
+            Assertions.assertNotNull(origin);
+            Assertions.assertEquals("PI_001", origin.getPi());
+            Assertions.assertTrue(origin.isRecordOrigin());
+        }
+    }
+
+    /**
+     * @verifies set advancedSearchOrigin from cms page when current page is a cms page
+     * @see SearchBean#executeSearch()
+     */
+    @Test
+    void executeSearch_shouldSetAdvancedSearchOriginWhenCurrentPageIsCmsPage() throws Exception {
+        CMSPage page = new CMSPage();
+        page.setId(42L);
+
+        NavigationHelper navHelper = mock(NavigationHelper.class);
+        when(navHelper.isCmsPage()).thenReturn(true);
+        when(navHelper.getCurrentCMSPage()).thenReturn(page);
+        when(navHelper.getSubThemeDiscriminatorQuerySuffix()).thenReturn("");
+        when(navHelper.getLocale()).thenReturn(Locale.ENGLISH);
+        searchBean.setNavigationHelper(navHelper);
+
+        searchBean.executeSearch();
+
+        AdvancedSearchOrigin origin = searchBean.getAdvancedSearchOrigin();
+        Assertions.assertNotNull(origin);
+        Assertions.assertEquals(42L, origin.getCmsPageId());
+        Assertions.assertTrue(origin.isCmsPageOrigin());
+    }
+
+    /**
+     * @verifies clear advancedSearchOrigin
+     * @see SearchBean#resetSearchParameters()
+     */
+    @Test
+    void resetSearchParameters_shouldClearAdvancedSearchOrigin() throws Exception {
+        CMSPage page = new CMSPage();
+        page.setId(42L);
+
+        NavigationHelper navHelper = mock(NavigationHelper.class);
+        when(navHelper.isCmsPage()).thenReturn(true);
+        when(navHelper.getCurrentCMSPage()).thenReturn(page);
+        when(navHelper.getSubThemeDiscriminatorQuerySuffix()).thenReturn("");
+        when(navHelper.getLocale()).thenReturn(Locale.ENGLISH);
+        searchBean.setNavigationHelper(navHelper);
+
+        searchBean.executeSearch();
+        Assertions.assertNotNull(searchBean.getAdvancedSearchOrigin());
+
+        try (MockedStatic<BeanUtils> mockedBeanUtils = mockStatic(BeanUtils.class)) {
+            mockedBeanUtils.when(BeanUtils::getLocale).thenReturn(Locale.ENGLISH);
+            searchBean.resetSearchParameters();
+        }
+
+        Assertions.assertNull(searchBean.getAdvancedSearchOrigin());
     }
 }

@@ -230,7 +230,7 @@ public class NavigationHelper implements Serializable {
      * searchPage.
      *
      * @return the search page name after setting it as the current navigation page
-      * @should return expected value for given input
+     * @should return expected value for given input
      */
     public String searchPage() {
         this.setCurrentPage(SEARCH_PAGE);
@@ -306,9 +306,9 @@ public class NavigationHelper implements Serializable {
     /**
      * Sets the CMS page as the current page for navigation purposes.
      *
-     * <p>Skips execution on JSF postback requests to avoid triggering during AJAX calls,
-     * which could conflict with parallel record loads. This mirrors the former
-     * {@code <f:viewAction onPostback="false">} behavior that was declared in the view.
+     * <p>
+     * Skips execution on JSF postback requests to avoid triggering during AJAX calls, which could conflict with parallel record loads. This mirrors
+     * the former {@code <f:viewAction onPostback="false">} behavior that was declared in the view.
      *
      * @param cmsPage CMS page to set as current page
      */
@@ -1063,6 +1063,14 @@ public class NavigationHelper implements Serializable {
             }
         }
         return subThemeDiscriminatorValue;
+    }
+
+    public CMSPage getCurrentCMSPage() {
+        if (cmsBean != null) {
+            return cmsBean.getCurrentPage();
+        } else {
+            return null;
+        }
     }
 
     public void setSubThemeDiscriminatorValue() {
@@ -1956,9 +1964,9 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * Resolves a list of licence icon names to their resource URIs, filtering out any icons whose resolved path is blank or a
-     * directory (trailing slash). This method is intended for use in Facelets templates that pass the result directly to
-     * {@code <ui:include>}, where an invalid path would cause a {@code TagAttributeException} at view-build time.
+     * Resolves a list of licence icon names to their resource URIs, filtering out any icons whose resolved path is blank or a directory (trailing
+     * slash). This method is intended for use in Facelets templates that pass the result directly to {@code <ui:include>}, where an invalid path
+     * would cause a {@code TagAttributeException} at view-build time.
      *
      * @param icons list of icon file names (e.g. "cc0.svg"); blank entries are ignored
      * @return ordered list of resolved resource URIs suitable for use as {@code <ui:include src="...">} values
