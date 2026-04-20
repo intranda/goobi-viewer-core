@@ -143,7 +143,7 @@ public final class SolrDocXmlExport {
         if (docs == null) {
             throw new IllegalArgumentException("docs may not be null");
         }
-        docs = sanitize(docs);
+        SolrDocumentList sanitized = sanitize(docs);
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
@@ -151,11 +151,11 @@ public final class SolrDocXmlExport {
 
         Element resultEl = xmlDoc.createElement("result");
         resultEl.setAttribute("name", "response");
-        resultEl.setAttribute("numFound", String.valueOf(docs.getNumFound()));
-        resultEl.setAttribute("start", String.valueOf(docs.getStart()));
+        resultEl.setAttribute("numFound", String.valueOf(sanitized.getNumFound()));
+        resultEl.setAttribute("start", String.valueOf(sanitized.getStart()));
         xmlDoc.appendChild(resultEl);
 
-        for (SolrDocument solrDoc : docs) {
+        for (SolrDocument solrDoc : sanitized) {
             Element docEl = xmlDoc.createElement("doc");
             resultEl.appendChild(docEl);
 

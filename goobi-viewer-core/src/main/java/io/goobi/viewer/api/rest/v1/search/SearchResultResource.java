@@ -184,8 +184,10 @@ public class SearchResultResource {
     public Response getSearchResultsAsXml(
             @Parameter(description = "Search query string") @QueryParam("query") @DefaultValue("*:*") String query,
             @Parameter(description = "Active facet filter string") @QueryParam("activeFacetString") @DefaultValue("") String activeFacetString,
-            @Parameter(description = "Semicolon-separated sort fields; prefix with ! for descending") @QueryParam("sortString") @DefaultValue("") String sortString,
-            @Parameter(description = "Proximity-search highlight distance (no effect on exported values)") @QueryParam("proximitySearchDistance") @DefaultValue("0") int proximitySearchDistance,
+            @Parameter(description = "Semicolon-separated sort fields; prefix with ! for descending")
+            @QueryParam("sortString") @DefaultValue("") String sortString,
+            @Parameter(description = "Proximity-search highlight distance (no effect on exported values)")
+            @QueryParam("proximitySearchDistance") @DefaultValue("0") int proximitySearchDistance,
             @Parameter(description = "Maximum number of results; <= 0 fetches all") @QueryParam("rows") @DefaultValue("100") int rows)
             throws PresentationException, IndexUnreachableException {
         SolrDocumentList docs = executeSolrQuery(query, activeFacetString, sortString, proximitySearchDistance, rows);
@@ -237,8 +239,10 @@ public class SearchResultResource {
             @Parameter(description = "Export format name as configured in config_viewer.xml") @PathParam("format") String format,
             @Parameter(description = "Search query string") @QueryParam("query") @DefaultValue("*:*") String query,
             @Parameter(description = "Active facet filter string") @QueryParam("activeFacetString") @DefaultValue("") String activeFacetString,
-            @Parameter(description = "Semicolon-separated sort fields; prefix with ! for descending") @QueryParam("sortString") @DefaultValue("") String sortString,
-            @Parameter(description = "Proximity-search highlight distance (no effect on exported values)") @QueryParam("proximitySearchDistance") @DefaultValue("0") int proximitySearchDistance)
+            @Parameter(description = "Semicolon-separated sort fields; prefix with ! for descending")
+            @QueryParam("sortString") @DefaultValue("") String sortString,
+            @Parameter(description = "Proximity-search highlight distance (no effect on exported values)")
+            @QueryParam("proximitySearchDistance") @DefaultValue("0") int proximitySearchDistance)
             throws PresentationException, IndexUnreachableException {
 
         // Look up the format in all configured formats (including disabled ones) for proper error reporting
