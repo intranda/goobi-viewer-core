@@ -125,10 +125,10 @@ public class SearchResultResource {
     public Response getSearchResultsAsXml(
             @Parameter(description = "Search query string") @QueryParam("query") @DefaultValue("*:*") String query,
             @Parameter(description = "Active facet filter string") @QueryParam("activeFacetString") @DefaultValue("") String activeFacetString,
-            @Parameter(
-                    description = "Semicolon-separated sort fields; prefix with ! for descending") @QueryParam("sortString") @DefaultValue("") String sortString,
-            @Parameter(
-                    description = "Proximity-search highlight distance (no effect on exported values)") @QueryParam("proximitySearchDistance") @DefaultValue("0") int proximitySearchDistance,
+            @Parameter(description = "Semicolon-separated sort fields; prefix with ! for descending")
+            @QueryParam("sortString") @DefaultValue("") String sortString,
+            @Parameter(description = "Proximity-search highlight distance (no effect on exported values)")
+            @QueryParam("proximitySearchDistance") @DefaultValue("0") int proximitySearchDistance,
             @Parameter(description = "Maximum number of results; <= 0 fetches all") @QueryParam("rows") @DefaultValue("100") int rows)
             throws PresentationException, IndexUnreachableException {
         SolrDocumentList docs = executeSolrQuery(query, activeFacetString, sortString, proximitySearchDistance, rows);
@@ -162,8 +162,8 @@ public class SearchResultResource {
      * @param query the Solr search query string
      * @param activeFacetString the active facet filter string
      * @param sortString semicolon-separated sort fields (e.g. {@code "SORT_TITLE;!IDDOC"}); prefix a field with {@code !} for descending order
-     * @param proximitySearchDistance maximum word distance for proximity-search snippet highlighting; has no effect on the Solr query or the exported
-     *            field values
+     * @param proximitySearchDistance maximum word distance for proximity-search snippet highlighting;
+     *        has no effect on the Solr query or the exported field values
      * @return a {@link Response} with the transformed content
      * @throws PresentationException if the query cannot be parsed
      * @throws IndexUnreachableException if the Solr index is unreachable
@@ -181,10 +181,11 @@ public class SearchResultResource {
             @Parameter(description = "Export format name as configured in config_viewer.xml") @PathParam("format") String format,
             @Parameter(description = "Search query string") @QueryParam("query") @DefaultValue("*:*") String query,
             @Parameter(description = "Active facet filter string") @QueryParam("activeFacetString") @DefaultValue("") String activeFacetString,
+            @Parameter(description = "Semicolon-separated sort fields; prefix with ! for descending")
+            @QueryParam("sortString") @DefaultValue("") String sortString,
             @Parameter(
-                    description = "Semicolon-separated sort fields; prefix with ! for descending") @QueryParam("sortString") @DefaultValue("") String sortString,
-            @Parameter(
-                    description = "Proximity-search highlight distance (no effect on exported values)") @QueryParam("proximitySearchDistance") @DefaultValue("0") int proximitySearchDistance)
+                    description = "Proximity-search highlight distance (no effect on exported values)")
+            @QueryParam("proximitySearchDistance") @DefaultValue("0") int proximitySearchDistance)
             throws PresentationException, IndexUnreachableException {
 
         // Look up the format in all configured formats (including disabled ones) for proper error reporting
@@ -219,8 +220,8 @@ public class SearchResultResource {
      * Executes a Solr query with optional facet filters and returns the raw document list.
      *
      * <p>
-     * When {@code rows <= 0} all matching documents are fetched in batches of 100.
-     * Otherwise exactly {@code rows} documents are returned in a single query.
+     * When {@code rows <= 0} all matching documents are fetched in batches of 100. Otherwise exactly {@code rows} documents are returned in a single
+     * query.
      *
      * @param query the raw search query string
      * @param activeFacetString the active facet filter string (may be empty)
