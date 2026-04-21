@@ -1100,6 +1100,7 @@ public final class AccessConditionUtils {
      * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should remove PRIV_ attributes of the previous pi on pi change
      */
     @SuppressWarnings("unchecked")
     public static AccessPermission checkAccessPermissionByIdentifierAndFileNameWithSessionMap(HttpSession session, String pi,
@@ -1118,12 +1119,22 @@ public final class AccessConditionUtils {
             // logger.trace("Session attribute not found, creating new"); //NOSONAR Debug
         }
         // logger.debug("Permissions found, " + permissions.size() + " items."); //NOSONAR Debug
-        // new pi -> create an new empty map in the session
+        // new pi -> remove PRIV_ caches tied to the previous pi so they do not accumulate
         if (session != null && !pi.equals(session.getAttribute("currentPi"))) {
+            // Previously only the current attributeName was removed, which left stale
+            // PRIV_VIEW_IMAGES_<oldPi>_*, PRIV_DOWNLOAD_PDF_<oldPi>_* etc. lingering in the
+            // session (observed as 3 million attributes on ZLB's crawler session). Capture the
+            // previous pi *before* overwriting currentPi, then remove only PRIV_ keys that refer
+            // to the old pi — this preserves caches for other pis so multi-tab users do not pay
+            // a Solr roundtrip on every tab switch. refs #27880
+            String oldPi = (String) session.getAttribute("currentPi");
             session.setAttribute("currentPi", pi);
+            if (oldPi != null) {
+                removePrivAttributesForPi(session, oldPi);
+            }
             session.removeAttribute(attributeName);
             permissions = new HashMap<>();
-            // logger.trace("PI has changed, permissions map reset."); //NOSONAR Debug
+            // logger.trace("PI has changed, old-pi PRIV_ attributes purged."); //NOSONAR Debug
         }
         String key = new StringBuilder(pi).append('_').append(contentFileName).toString();
         // pi already checked -> look in the session
@@ -1685,6 +1696,54 @@ public final class AccessConditionUtils {
         }
 
         return ret;
+    }
+
+    /**
+     * Removes all PRIV_* session attributes whose key references the given pi. The key schemes
+     * used in this class are
+     * <ul>
+     *   <li>{@code PRIV_<privilegeType>_<pi>_<fileName>} (see line 1113),</li>
+     *   <li>{@code PRIV_<privilegeName>_<identifier>} (see line 756),</li>
+     *   <li>{@code PRIV_DOWNLOAD_ORIGINAL_CONTENT_<identifier>} (see line 828).</li>
+     * </ul>
+     * The middle-match catches the first scheme, the suffix-match catches the other two.
+     *
+     * <p>Package-private so the unit test can exercise it in isolation from the Solr/DB-backed
+     * permission pipeline. refs #27880
+     *
+     * @param session HTTP session whose attribute table is inspected
+     * @param pi persistent identifier whose cached PRIV_* attributes should be removed
+     * @return number of attributes removed
+     * @should remove only PRIV_ attributes of the given pi
+     */
+    static int removePrivAttributesForPi(HttpSession session, String pi) {
+        if (session == null || pi == null) {
+            return 0;
+        }
+        Enumeration<String> attributeNames;
+        try {
+            attributeNames = session.getAttributeNames();
+        } catch (IllegalStateException e) {
+            return 0;
+        }
+        Set<String> toRemove = new HashSet<>();
+        String middle = "_" + pi + "_";
+        String suffix = "_" + pi;
+        while (attributeNames.hasMoreElements()) {
+            String name = attributeNames.nextElement();
+            if (name.startsWith(IPrivilegeHolder.PREFIX_PRIV)
+                    && (name.contains(middle) || name.endsWith(suffix))) {
+                toRemove.add(name);
+            }
+        }
+        for (String name : toRemove) {
+            try {
+                session.removeAttribute(name);
+            } catch (IllegalStateException e) {
+                logger.debug("Cannot remove session attribute '{}': session has already been invalidated", name);
+            }
+        }
+        return toRemove.size();
     }
 
     /**
