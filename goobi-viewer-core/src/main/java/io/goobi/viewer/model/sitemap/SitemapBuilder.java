@@ -73,6 +73,19 @@ public class SitemapBuilder {
         updateSitemap(outputPath, rootUrl);
     }
 
+    /**
+     * Starts a single-threaded sitemap generation run. Only one generation may be active at a time;
+     * concurrent calls throw {@link AccessDeniedException}. After completion the static worker
+     * thread reference is cleared so the captured {@link Sitemap} instance becomes eligible for
+     * GC.
+     *
+     * @param outputPath Destination directory for the generated sitemap XML files
+     * @param viewerRootUrl Viewer root URL used in sitemap &lt;loc&gt; elements
+     * @throws AccessDeniedException if a generation is already in progress
+     * @throws JSONException if the status JSON cannot be constructed
+     * @throws PresentationException if the worker thread reported a failure or was interrupted
+     * @should null worker thread after completion
+     */
     public void updateSitemap(String outputPath, String viewerRootUrl) throws AccessDeniedException, JSONException, PresentationException {
 
         JSONObject ret = new JSONObject();
@@ -125,7 +138,14 @@ public class SitemapBuilder {
                 workerThread.join();
             } catch (InterruptedException e) {
                 workerThread.interrupt();
+                Thread.currentThread().interrupt();
                 throw new PresentationException("Processing interrupted");
+            } finally {
+                // Release the static reference so the worker thread object, its captured Runnable
+                // and the Sitemap (with its JDOM document tree, up to ~1 GB for large catalogs)
+                // become eligible for garbage collection immediately after generation finishes.
+                // Previously the reference lingered until the next daily sitemap run. refs #27880
+                workerThread = null;
             }
             if (!Integer.valueOf(HttpServletResponse.SC_OK).equals(ret.getInt("status"))) {
                 throw new PresentationException(ret.getString("message"));
