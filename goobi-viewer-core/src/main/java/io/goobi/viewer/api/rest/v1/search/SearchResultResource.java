@@ -21,12 +21,10 @@
  */
 package io.goobi.viewer.api.rest.v1.search;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RIS_FILE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.SEARCH_EXPORT_FORMAT;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.SEARCH_EXPORT_XML;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -49,21 +47,15 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import io.goobi.viewer.api.rest.bindings.AccessConditionBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
-import io.goobi.viewer.api.rest.resourcebuilders.RisResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.export.ExportFormat;
-import io.goobi.viewer.model.export.RISExport;
 import io.goobi.viewer.model.export.SolrDocXmlExport;
 import io.goobi.viewer.model.export.XsltSearchExport;
-import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -107,56 +99,6 @@ public class SearchResultResource {
     public SearchResultResource(HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
         this.servletRequest = servletRequest;
         this.servletResponse = servletResponse;
-    }
-
-    /**
-     * Downloads the current search results as an RIS file using the Java-based RIS generation.
-     *
-     * @param query the Solr search query string
-     * @param sortString the sort order string
-     * @param activeFacetString the active facet filter string
-     * @param proximitySearchDistance maximum word distance for proximity search
-     * @return a {@link Response} containing the RIS file as a streamed download
-     * @throws PresentationException if the query cannot be parsed
-     * @throws IndexUnreachableException if the Solr index is unreachable
-     * @throws DAOException if a database error occurs
-     * @throws ContentLibException if the RIS temp file cannot be created
-     * @throws ViewerConfigurationException if the viewer configuration is invalid
-     * @deprecated Superseded by <code>getSearchResultsAsFormat()</code>
-     */
-    @GET
-    @jakarta.ws.rs.Path(RECORDS_RIS_FILE)
-    @Produces({ MediaType.TEXT_PLAIN })
-    @Operation(tags = { "search" }, summary = "Download current search as RIS export file")
-    @ApiResponse(responseCode = "200", description = "RIS export file for the current search results")
-    @ApiResponse(responseCode = "400", description = "Invalid search query or parameters")
-    @ApiResponse(responseCode = "500", description = "Solr index unreachable")
-    @AccessConditionBinding
-    @Deprecated(since = "26.04")
-    public Response getRISAsFile(
-            @Parameter(description = "Search query string") @QueryParam("query") @DefaultValue("") String query,
-            @Parameter(description = "Sort string for the search results") @QueryParam("sortString") @DefaultValue("") String sortString,
-            @Parameter(description = "Active facet filter string") @QueryParam("activeFacetString") @DefaultValue("") String activeFacetString,
-            @Parameter(
-                    description = "Maximum word distance for proximity search") @QueryParam("proximitySearchDistance") @DefaultValue("0") int proximitySearchDistance)
-            throws PresentationException, IndexUnreachableException, DAOException, ContentLibException, ViewerConfigurationException {
-        String currentQuery = SearchHelper.prepareQuery(query);
-        String finalQuery = SearchHelper.buildFinalQuery(currentQuery, true, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
-        Locale locale = Locale.ENGLISH;
-
-        Search search = new Search();
-        search.setSortString(sortString);
-
-        SearchFacets facets = new SearchFacets();
-        facets.setActiveFacetString(activeFacetString);
-        List<String> filterQueries = facets.generateFacetFilterQueries(true);
-
-        RISExport export = new RISExport();
-        export.executeSearch(finalQuery, null, filterQueries, null, null, locale, proximitySearchDistance);
-        if (export.isHasResults()) {
-            new RisResourceBuilder(servletRequest, servletResponse).writeRIS(export.getSearchHits());
-        }
-        return Response.status(Status.OK).build();
     }
 
     /**
@@ -277,15 +219,14 @@ public class SearchResultResource {
      * Executes a Solr query with optional facet filters and returns the raw document list.
      *
      * <p>
-     * When {@code rows <= 0} all matching documents are fetched in batches of 100, mirroring the behaviour of {@link RISExport#executeSearch}.
+     * When {@code rows <= 0} all matching documents are fetched in batches of 100.
      * Otherwise exactly {@code rows} documents are returned in a single query.
      *
      * @param query the raw search query string
      * @param activeFacetString the active facet filter string (may be empty)
      * @param sortString semicolon-separated sort fields (e.g. {@code "SORT_TITLE;!IDDOC"}); prefix a field with {@code !} for descending order;
      *            {@code null} or blank for default Solr ordering
-     * @param proximitySearchDistance accepted for API compatibility with the legacy {@code /search/ris} endpoint; has no effect on the Solr query or
-     *            returned fields
+     * @param proximitySearchDistance accepted for API compatibility; has no effect on the Solr query or returned fields
      * @param rows maximum number of documents to return; {@code <= 0} fetches all results
      * @return the matching Solr documents
      * @throws PresentationException if the query cannot be parsed

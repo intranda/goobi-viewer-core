@@ -28,7 +28,6 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.model.export.RISExport;
 import jakarta.mail.Message;
 
 class EMailSenderTest extends AbstractTest {

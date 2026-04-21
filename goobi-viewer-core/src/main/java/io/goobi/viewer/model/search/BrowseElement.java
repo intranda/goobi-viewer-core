@@ -149,8 +149,6 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     private String contextObject;
     private String url;
     @JsonIgnore
-    private String risExport;
-    @JsonIgnore
     private String sidebarPrevUrl;
     @JsonIgnore
     private String sidebarNextUrl;
@@ -330,9 +328,6 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         }
         if (hierarchy.top() != null && hierarchy.top().isLidoRecord()) {
             populateEvents(hierarchy.top(), searchTerms);
-        }
-        if (DataManager.getInstance().getConfiguration().isSearchRisExportEnabled()) {
-            risExport = MetadataTools.generateRIS(structElement);
         }
     }
 
@@ -1228,13 +1223,8 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         return sb.toString();
     }
 
-    
-    public String getRisExport() {
-        return risExport;
-    }
-
     /**
-     * 
+     *
      * @return List of field names in the metadata list
      */
     public Set<String> getMetadataFieldNames() {

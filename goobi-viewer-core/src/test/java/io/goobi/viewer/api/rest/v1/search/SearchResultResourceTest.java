@@ -21,20 +21,12 @@
  */
 package io.goobi.viewer.api.rest.v1.search;
 
-import java.util.List;
-import java.util.Locale;
-
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
-import io.goobi.viewer.TestUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
 
 class SearchResultResourceTest extends AbstractDatabaseEnabledTest {
 
@@ -46,18 +38,5 @@ class SearchResultResourceTest extends AbstractDatabaseEnabledTest {
         super.setUp();
         this.servletRequest = Mockito.mock(HttpServletRequest.class);
         this.servletResponse = Mockito.mock(HttpServletResponse.class);
-    }
-
-    /**
-     * @see SearchResultResource#getSearchHitChildren(List,String,int,Locale)
-     * @verifies return null if searchHits null
-     */
-    @Test
-    void getSearchHitChildren_shouldReturnNullIfSearchHitsNull() throws Exception {
-        TestUtils.mockFacesContext();
-        
-        SearchResultResource resource = new SearchResultResource(this.servletRequest, this.servletResponse);
-        Response response = resource.getRISAsFile("PI:AC13451894", "", "", 0);
-        Assertions.assertEquals(Status.OK.getStatusCode(), response.getStatus());
     }
 }
