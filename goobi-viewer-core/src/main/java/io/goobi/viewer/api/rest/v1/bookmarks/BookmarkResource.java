@@ -173,8 +173,6 @@ public class BookmarkResource {
             @Parameter(description = "The id of the bookmark list",
                     schema = @Schema(minimum = "1", maximum = "9223372036854775807")) @PathParam("listId") Long id)
             throws DAOException, IOException, RestApiException {
-        // Enforce the schema minimum=1: listId=0 is technically parseable as Long but has no valid
-        // bookmark list associated and would silently return the session list instead.
         requireValidListId(id);
         return builder.getBookmarkListById(id);
     }
