@@ -65,8 +65,6 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_LIST_JSON = "/json/{template}";
 
     public static final String RECORDS_RECORD = "/records/{pi}";
-    public static final String RECORDS_RIS_TEXT = "/ris.txt";
-    public static final String RECORDS_RIS_FILE = "/ris";
     public static final String RECORDS_TOC = "/toc";
     public static final String RECORDS_ANNOTATIONS = "/annotations";
     public static final String RECORDS_CMDI_LANG = "/cmdi/{lang}";
@@ -100,8 +98,6 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_CALENDAR_MONTHS = "/months";
 
     public static final String RECORDS_SECTIONS = "/records/{pi}/sections/{divId}";
-    public static final String RECORDS_SECTIONS_RIS_TEXT = "/ris.txt";
-    public static final String RECORDS_SECTIONS_RIS_FILE = "/ris";
     public static final String RECORDS_SECTIONS_RANGE = "/range";
     public static final String RECORDS_SECTIONS_PDF = "/pdf";
     public static final String RECORDS_SECTIONS_PDF_INFO = "/pdf/info.json";
