@@ -722,6 +722,22 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see AccessConditionUtils#fetchPagePermissions(String, jakarta.servlet.http.HttpServletRequest)
+     * @verifies populate all six privilege maps for open access record
+     */
+    @Test
+    void fetchPagePermissions_shouldPopulateAllSixPrivilegeMapsForOpenAccessRecord() throws Exception {
+        PagePermissions result = AccessConditionUtils.fetchPagePermissions(PI_KLEIUNIV, null);
+        assertFalse(result.isEmpty());
+        assertTrue(result.isImageGranted(1));
+        assertTrue(result.isThumbnailGranted(1));
+        assertTrue(result.isZoomGranted(1));
+        assertTrue(result.isDownloadGranted(1));
+        assertTrue(result.isFulltextGranted(1));
+        assertTrue(result.isPdfGranted(1));
+    }
+
+    /**
      * @see AccessConditionUtils#removePrivAttributesForPi(HttpSession, String)
      * @verifies remove only PRIV_ attributes of the given pi
      */
