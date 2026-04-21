@@ -22,8 +22,12 @@
 package io.goobi.viewer.model.viewer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
 
 import java.awt.Dimension;
 import java.io.IOException;
@@ -39,6 +43,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
@@ -58,14 +63,17 @@ import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
 import io.goobi.viewer.model.job.download.DownloadOption;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.CopyrightIndicatorLicense;
 import io.goobi.viewer.model.security.CopyrightIndicatorStatus;
 import io.goobi.viewer.model.security.CopyrightIndicatorStatus.Status;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
-import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.solr.SolrConstants;
 import jakarta.faces.context.FacesContext;
 
@@ -945,6 +953,113 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         Map<Integer, String> result = viewManager.getMimeTypesForLoadedPages();
         Assertions.assertNotNull(result);
         Assertions.assertTrue(result.isEmpty());
+    }
+
+    /**
+     * Verifies that the SEQUENCE navigation branch of {@link ViewManager#getImageInfos(PageType)}
+     * batch-prefetches and seeds the five per-page privileges on every {@link PhysicalElement}.
+     * The open-access kleiuniv fixture must come back granted for every page after the call.
+     *
+     * @see ViewManager#getImageInfos(io.goobi.viewer.model.viewer.PageType)
+     * @verifies seed all five privileges on all pages in sequence mode
+     */
+    @Test
+    void getImageInfos_shouldSeedAllFivePrivilegesOnAllPagesInSequenceMode() throws Exception {
+        StructElement se = new StructElement(iddocKleiuniv);
+        Assertions.assertNotNull(se);
+        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
+        viewManager.setPageNavigation(PageNavigation.SEQUENCE);
+
+        // Directly verify the batch path is invoked in SEQUENCE mode. Without this MockedStatic
+        // probe, the post-call assertions would pass even without the production change, because
+        // PhysicalElement.getAccessPermission has a lazy fallback that populates the map on a
+        // miss — green assertions alone cannot distinguish "seeded" from "lazily resolved".
+        try (MockedStatic<AccessConditionUtils> acu =
+                Mockito.mockStatic(AccessConditionUtils.class, Mockito.CALLS_REAL_METHODS)) {
+            viewManager.getImageInfos(PageType.viewObject);
+            acu.verify(() -> AccessConditionUtils.fetchPagePermissions(anyString(), any()), times(1));
+        }
+
+        List<PhysicalElement> pages = viewManager.getAllPages();
+        assertFalse(pages.isEmpty(), "fixture must supply at least one page");
+        for (PhysicalElement page : pages) {
+            // Every privilege must be accessible; the batch prefetch must have either seeded
+            // the value or left the PhysicalElement in a state where the fallback still resolves.
+            assertNotNull(page.getAccessPermission(IPrivilegeHolder.PRIV_VIEW_IMAGES));
+            assertNotNull(page.getAccessPermission(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS));
+            assertNotNull(page.getAccessPermission(IPrivilegeHolder.PRIV_ZOOM_IMAGES));
+            assertNotNull(page.getAccessPermission(IPrivilegeHolder.PRIV_DOWNLOAD_IMAGES));
+            assertNotNull(page.getAccessPermission(IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF));
+            assertTrue(page.getAccessPermission(IPrivilegeHolder.PRIV_VIEW_IMAGES).isGranted(),
+                    "open-access fixture must be granted for page " + page.getOrder());
+        }
+    }
+
+    /**
+     * Verifies that SINGLE page navigation does NOT trigger the batch-prefetch path.
+     * Guards against an accidental prefetch in single-page mode, where it would be wasted work.
+     *
+     * @see ViewManager#getImageInfos(io.goobi.viewer.model.viewer.PageType)
+     * @verifies not batch prefetch in single page mode
+     */
+    @Test
+    void getImageInfos_shouldNotBatchPrefetchInSinglePageMode() throws Exception {
+        StructElement se = new StructElement(iddocKleiuniv);
+        Assertions.assertNotNull(se);
+        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
+        viewManager.setPageNavigation(PageNavigation.SINGLE);
+
+        try (MockedStatic<AccessConditionUtils> acu =
+                Mockito.mockStatic(AccessConditionUtils.class, Mockito.CALLS_REAL_METHODS)) {
+            viewManager.getImageInfos(PageType.viewObject);
+            acu.verify(() -> AccessConditionUtils.fetchPagePermissions(anyString(), any()), times(0));
+        }
+    }
+
+    /**
+     * Non-regression: a record with restrictive access conditions must still come back as
+     * denied after the batch prefetch. Guards against the risk that the batch query (page-scoped,
+     * no per-file filter) silently grants access where the per-file path would deny it.
+     *
+     * @see ViewManager#getImageInfos(io.goobi.viewer.model.viewer.PageType)
+     * @verifies preserve denied decision for restricted record in sequence mode
+     */
+    @Test
+    void getImageInfos_shouldPreserveDeniedDecisionForRestrictedRecordInSequenceMode() throws Exception {
+        // PI_ACCESS_RESTRICTED = "557335825" has a moving wall — released in 2041.
+        // See ActiveDocumentBeanTest.update_shouldThrowRecordNotFoundExceptionIfListingNotAllowedByDefault
+        // for the same fixture used to assert restricted access.
+        String restrictedIddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("557335825");
+        org.junit.jupiter.api.Assumptions.assumeTrue(restrictedIddoc != null,
+                "Skipping: 557335825 not present in test Solr index");
+
+        // Disable the localhost full-access shortcut; otherwise the fallback would grant access
+        // from the loopback IP regardless of any license rule. Reset via try/finally to avoid
+        // polluting subsequent tests that rely on the default configuration.
+        boolean previous = DataManager.getInstance().getConfiguration().isFullAccessForLocalhost();
+        DataManager.getInstance().getConfiguration().overrideValue("accessConditions.fullAccessForLocalhost", false);
+        Assertions.assertFalse(DataManager.getInstance().getConfiguration().isFullAccessForLocalhost());
+        try {
+            StructElement se = new StructElement(restrictedIddoc);
+            Assertions.assertNotNull(se);
+            ViewManager viewManager =
+                    new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
+            viewManager.setPageNavigation(PageNavigation.SEQUENCE);
+
+            viewManager.getImageInfos(PageType.viewObject);
+
+            List<PhysicalElement> pages = viewManager.getAllPages();
+            org.junit.jupiter.api.Assumptions.assumeTrue(!pages.isEmpty(),
+                    "Skipping: restricted fixture 557335825 has no pages in test Solr");
+            for (PhysicalElement page : pages) {
+                AccessPermission imagePerm = page.getAccessPermission(IPrivilegeHolder.PRIV_VIEW_IMAGES);
+                assertNotNull(imagePerm, "prefetch must seed every page, even restricted ones");
+                assertFalse(imagePerm.isGranted(),
+                        "restricted fixture must stay denied for page " + page.getOrder());
+            }
+        } finally {
+            DataManager.getInstance().getConfiguration().overrideValue("accessConditions.fullAccessForLocalhost", previous);
+        }
     }
 
 }
