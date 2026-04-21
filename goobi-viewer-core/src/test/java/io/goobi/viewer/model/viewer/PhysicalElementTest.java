@@ -21,15 +21,24 @@
  */
 package io.goobi.viewer.model.viewer;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.managedbeans.ContextMocker;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.AccessPermission;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 import jakarta.faces.component.UIViewRoot;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
@@ -175,6 +184,105 @@ class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
     void isFulltextAccessPermission_shouldReturnFalseIfAccessDeniedForThisPage() throws Exception {
         PhysicalElement pe = new PhysicalElementBuilder().setPi("1164781693_1792000902").setFilePath("EPN_77071899X_0002.tif").build();
         Assertions.assertFalse(pe.isAccessPermissionFulltext());
+    }
+
+    /**
+     * @see PhysicalElement#seedAccessPermission(String, AccessPermission)
+     * @verifies cache prefetched permission without triggering lookup
+     */
+    @Test
+    void seedAccessPermission_shouldCachePrefetchedPermissionWithoutTriggeringLookup() throws Exception {
+        PhysicalElement page = new PhysicalElement("PHYS_0001", "00000001.tif", 1,
+                "Seite 1", "urn:test:1", "http://purl", "PI_TEST", "image/tiff", null);
+
+        AccessPermission prefetched = AccessPermission.granted();
+        page.seedAccessPermission(IPrivilegeHolder.PRIV_VIEW_IMAGES, prefetched);
+
+        assertSame(prefetched, page.getAccessPermission(IPrivilegeHolder.PRIV_VIEW_IMAGES));
+    }
+
+    /**
+     * @see PhysicalElement#seedAccessPermission(String, AccessPermission)
+     * @verifies not overwrite previously cached permission
+     */
+    @Test
+    void seedAccessPermission_shouldNotOverwritePreviouslyCachedPermission() throws Exception {
+        PhysicalElement page = new PhysicalElement("PHYS_0001", "00000001.tif", 1,
+                "Seite 1", "urn:test:1", "http://purl", "PI_TEST", "image/tiff", null);
+
+        AccessPermission first = AccessPermission.granted();
+        AccessPermission second = AccessPermission.denied();
+        page.seedAccessPermission(IPrivilegeHolder.PRIV_VIEW_IMAGES, first);
+        page.seedAccessPermission(IPrivilegeHolder.PRIV_VIEW_IMAGES, second);
+
+        assertSame(first, page.getAccessPermission(IPrivilegeHolder.PRIV_VIEW_IMAGES));
+    }
+
+    /**
+     * @see PhysicalElement#seedAccessPermission(String, AccessPermission)
+     * @verifies ignore null permission
+     */
+    @Test
+    void seedAccessPermission_shouldIgnoreNullPermission() throws Exception {
+        PhysicalElement page = new PhysicalElement("PHYS_0001", "00000001.tif", 1,
+                "Seite 1", "urn:test:1", "http://purl", "PI_TEST", "image/tiff", null);
+
+        page.seedAccessPermission(IPrivilegeHolder.PRIV_VIEW_IMAGES, null);
+        // Should fall through to denied() default, not NPE
+        assertNotNull(page.getAccessPermission(IPrivilegeHolder.PRIV_VIEW_IMAGES));
+    }
+
+    /**
+     * @see PhysicalElement#isAccessPermissionImageZoom()
+     * @verifies return seeded zoom permission without triggering lookup
+     */
+    @Test
+    void isAccessPermissionImageZoom_shouldReturnSeededZoomPermissionWithoutTriggeringLookup() throws Exception {
+        PhysicalElement page = new PhysicalElement("PHYS_0001", "00000001.tif", 1,
+                "Seite 1", "urn:test:1", "http://purl", "PI_TEST", "image/tiff", null);
+        page.seedAccessPermission(IPrivilegeHolder.PRIV_ZOOM_IMAGES, AccessPermission.granted());
+
+        try (MockedStatic<AccessConditionUtils> acu = Mockito.mockStatic(AccessConditionUtils.class)) {
+            assertTrue(page.isAccessPermissionImageZoom());
+            acu.verifyNoInteractions();
+        }
+    }
+
+    /**
+     * @see PhysicalElement#isAccessPermissionImageDownload()
+     * @verifies return seeded download permission without triggering lookup
+     */
+    @Test
+    void isAccessPermissionImageDownload_shouldReturnSeededDownloadPermissionWithoutTriggeringLookup() throws Exception {
+        PhysicalElement page = new PhysicalElement("PHYS_0001", "00000001.tif", 1,
+                "Seite 1", "urn:test:1", "http://purl", "PI_TEST", "image/tiff", null);
+        page.seedAccessPermission(IPrivilegeHolder.PRIV_DOWNLOAD_IMAGES, AccessPermission.denied());
+
+        try (MockedStatic<AccessConditionUtils> acu = Mockito.mockStatic(AccessConditionUtils.class)) {
+            assertFalse(page.isAccessPermissionImageDownload());
+            acu.verifyNoInteractions();
+        }
+    }
+
+    /**
+     * @see PhysicalElement#isAccessPermissionPdf()
+     * @verifies not trigger lookup when pdf permission is seeded
+     */
+    @Test
+    void isAccessPermissionPdf_shouldNotTriggerLookupWhenPdfPermissionIsSeeded() throws Exception {
+        PhysicalElement page = new PhysicalElement("PHYS_0001", "00000001.tif", 1,
+                "Seite 1", "urn:test:1", "http://purl", "PI_TEST", "image/tiff", null);
+        page.seedAccessPermission(IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF, AccessPermission.granted());
+
+        try (MockedStatic<AccessConditionUtils> acu = Mockito.mockStatic(AccessConditionUtils.class)) {
+            // Only asserts the fast path does NOT call AccessConditionUtils. The Configuration
+            // gate (isPagePdfEnabled) and the mime-type gate still run locally; if either is
+            // false in the default fixture configuration, isAccessPermissionPdf correctly
+            // returns false without hitting AccessConditionUtils — acu.verifyNoInteractions()
+            // is enough either way.
+            page.isAccessPermissionPdf();
+            acu.verifyNoInteractions();
+        }
     }
 
 }
