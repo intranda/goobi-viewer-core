@@ -155,8 +155,8 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
      * Saves the selected note to the database.
      * 
      * @should do nothing if node null
-     * @should save new note correctly
-     * @should update note correctly
+     * @should persist a new note to the database and make it retrievable by PI
+     * @should persist changed PI on an existing note when saving
      */
     public void save() {
         try {
@@ -251,6 +251,8 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     /**
      * @param label Metadata value containing the record title
      * @return {@link TranslatedText}
+     * @should create title label multi language
+     * @should create title label single value
      */
     public TranslatedText createRecordTitle(IMetadataValue label) {
         if (label instanceof MultiLanguageMetadataValue mLabel) {
@@ -266,6 +268,10 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
      *
      * @param locale the locale for which to check completeness
      * @return true if title and text of the note are complete; false otherwise;
+      * @should confirm filled texts are complete
+      * @should return false if not all fields filled
+      * @should return true if same fields filled as in default language
+      * @should return true if all fields filled
      */
     @Override
     public boolean isComplete(Locale locale) {

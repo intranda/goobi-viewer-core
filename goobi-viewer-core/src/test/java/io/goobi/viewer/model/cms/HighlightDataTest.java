@@ -49,8 +49,11 @@ class HighlightDataTest extends AbstractDatabaseEnabledTest {
         this.dao = DataManager.getInstance().getDao();
     }
 
+    /**
+     * @verifies add highlight to database
+     */
     @Test
-    void test_add() throws DAOException {
+    void addHighlight_shouldAddHighlightToDatabase() throws DAOException {
         HighlightData object = new HighlightData();
         object.setName(new TranslatedText("Test Name"));
         object.setDateStart(LocalDate.of(2023, 6, 12));
@@ -68,8 +71,12 @@ class HighlightDataTest extends AbstractDatabaseEnabledTest {
         assertEquals(ImageMode.UPLOADED_IMAGE, object.getImageMode());
     }
     
+    /**
+     * @verifies update highlight in database
+     * @see IDAO#updateHighlight
+     */
     @Test
-    void test_update() throws DAOException {
+    void updateHighlight_shouldUpdateHighlightInDatabase() throws DAOException {
         CMSMediaItem mediaItem = dao.getCMSMediaItem(1);
         HighlightData object = dao.getHighlight(1l);
         assertEquals("Objekt des Monats Januar", object.getName().getText());
@@ -91,20 +98,30 @@ class HighlightDataTest extends AbstractDatabaseEnabledTest {
         assertEquals(ImageMode.UPLOADED_IMAGE, object.getImageMode());
     }
     
+    /**
+     * @verifies reduce highlight count by one
+     */
     @Test
-    void test_delete() throws DAOException {
+    void deleteHighlight_shouldReduceHighlightCountByOne() throws DAOException {
         assertEquals(3, dao.getAllHighlights().size());
         dao.deleteHighlight(1l);
         assertEquals(2, dao.getAllHighlights().size());
     }
     
+    /**
+     * @verifies return all stored highlights
+     */
     @Test
-    void test_getAll() throws DAOException {
+    void getAllHighlights_shouldReturnAllStoredHighlights() throws DAOException {
         assertEquals(3, dao.getAllHighlights().size());
     }
 
+    /**
+     * @verifies return highlights for given date
+     * @see IDAO#getHighlightsForDate
+     */
     @Test
-    void test_getForDate() throws DAOException {
+    void getHighlightsForDate_shouldReturnHighlightsForGivenDate() throws DAOException {
         LocalDateTime time = LocalDate.of(2023, 2, 15).atStartOfDay();
         assertEquals(1, dao.getHighlightsForDate(time).size());
         assertEquals("Objekt des Monats Februar", dao.getHighlightsForDate(time).get(0).getName().getText());
@@ -117,8 +134,12 @@ class HighlightDataTest extends AbstractDatabaseEnabledTest {
         assertEquals(1, dao.getHighlightsForDate(time3).size());
     }
 
+    /**
+     * @verifies match highlights with end date only
+     * @see IDAO#getHighlightsForDate
+     */
     @Test
-    void test_EndDateOnly() throws DAOException {
+    void getHighlightsForDate_shouldMatchHighlightsWithEndDateOnly() throws DAOException {
         HighlightData object = new HighlightData();
         object.setDateEnd(LocalDate.of(2022, 5, 1));
         object.setDateStart(null);
@@ -127,8 +148,12 @@ class HighlightDataTest extends AbstractDatabaseEnabledTest {
         assertEquals(0, dao.getHighlightsForDate(LocalDate.of(2022, 6, 1).atStartOfDay()).size());
     }
     
+    /**
+     * @verifies match highlights with start date only
+     * @see IDAO#getHighlightsForDate
+     */
     @Test
-    void test_StartdDateOnly() throws DAOException {
+    void getHighlightsForDate_shouldMatchHighlightsWithStartDateOnly() throws DAOException {
         HighlightData object = new HighlightData();
         object.setDateStart(LocalDate.of(2022, 5, 1));
         object.setDateEnd(null);
@@ -137,8 +162,12 @@ class HighlightDataTest extends AbstractDatabaseEnabledTest {
         assertEquals(0, dao.getHighlightsForDate(LocalDate.of(2022, 4, 1).atStartOfDay()).size());
     }
     
+    /**
+     * @verifies match highlights with no dates set
+     * @see IDAO#getHighlightsForDate
+     */
     @Test
-    void test_noDates() throws DAOException {
+    void getHighlightsForDate_shouldMatchHighlightsWithNoDatesSet() throws DAOException {
         HighlightData object = new HighlightData();
         object.setDateStart(null);
         object.setDateEnd(null);
@@ -147,22 +176,31 @@ class HighlightDataTest extends AbstractDatabaseEnabledTest {
         assertEquals(object, dao.getHighlightsForDate(LocalDate.of(3000,1,1).atStartOfDay()).get(0));
     }
     
+    /**
+     * @verifies return one highlight per month midpoint
+     */
     @Test
-    void getCurrentObjects() throws DAOException {
+    void getHighlightsForDate_shouldReturnOneHighlightPerMonthMidpoint() throws DAOException {
         assertEquals(1, dao.getHighlightsForDate(LocalDate.of(2023,1,15).atStartOfDay()).size());
         assertEquals(1, dao.getHighlightsForDate(LocalDate.of(2023,2,15).atStartOfDay()).size());
         assertEquals(1, dao.getHighlightsForDate(LocalDate.of(2023,3,15).atStartOfDay()).size());
     }
     
+    /**
+     * @verifies return only highlights starting after given date
+     */
     @Test
-    void getFutureObjects() throws DAOException {
+    void getFutureHighlightsForDate_shouldReturnOnlyHighlightsStartingAfterGivenDate() throws DAOException {
         assertEquals(3, dao.getFutureHighlightsForDate(0, 100, "dateStart", true, null, LocalDate.of(2022,12,1).atStartOfDay()).size());
         assertEquals(1, dao.getFutureHighlightsForDate(0, 100, "dateStart", true, null, LocalDate.of(2023,2,15).atStartOfDay()).size());
         assertEquals(0, dao.getFutureHighlightsForDate(0, 100, "dateStart", true, null, LocalDate.of(2023,5,1).atStartOfDay()).size());
     }
     
+    /**
+     * @verifies return only highlights ended before given date
+     */
     @Test
-    void getPastObjects() throws DAOException {
+    void getPastHighlightsForDate_shouldReturnOnlyHighlightsEndedBeforeGivenDate() throws DAOException {
         assertEquals(0, dao.getPastHighlightsForDate(0, 100, "dateStart", true, null, LocalDate.of(2022,12,1).atStartOfDay()).size());
         assertEquals(1, dao.getPastHighlightsForDate(0, 100, "dateStart", true, null, LocalDate.of(2023,2,15).atStartOfDay()).size());
         assertEquals(3, dao.getPastHighlightsForDate(0, 100, "dateStart", true, null, LocalDate.of(2023,5,1).atStartOfDay()).size());

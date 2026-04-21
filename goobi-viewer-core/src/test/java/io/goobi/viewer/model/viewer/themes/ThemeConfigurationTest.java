@@ -66,8 +66,12 @@ class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
 
     }
 
+    /**
+     * @verifies save and load theme with all properties
+     * @see IDAO#addTheme
+     */
     @Test
-    void testSaveTheme() throws DAOException {
+    void addTheme_shouldSaveAndLoadThemeWithAllProperties() throws DAOException {
         ThemeConfiguration theme = new ThemeConfiguration(THEME_NAME);
         theme.setLabel(THEME_LABEL);
         theme.getLogo().setMediaItem(logoItem);
@@ -93,8 +97,12 @@ class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
         DataManager.getInstance().getDao().deleteTheme(theme);
     }
 
+    /**
+     * @verifies persist updated theme properties
+     * @see IDAO#updateTheme
+     */
     @Test
-    void testUpdateTheme() throws DAOException {
+    void updateTheme_shouldPersistUpdatedThemeProperties() throws DAOException {
         ThemeConfiguration theme = new ThemeConfiguration(THEME_NAME);
         theme.setLabel(THEME_LABEL);
         theme.getLogo().setMediaItem(logoItem);
@@ -132,8 +140,12 @@ class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
 
     }
 
+    /**
+     * @verifies remove theme after deletion
+     * @see IDAO#deleteTheme
+     */
     @Test
-    void testDeleteTheme() throws DAOException {
+    void deleteTheme_shouldRemoveThemeAfterDeletion() throws DAOException {
         ThemeConfiguration theme = new ThemeConfiguration(THEME_NAME);
         theme.setLabel(THEME_LABEL);
         theme.getLogo().setMediaItem(logoItem);
@@ -150,8 +162,12 @@ class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
 
     }
 
+    /**
+     * @verifies return all configured themes
+     * @see IDAO#getConfiguredThemes
+     */
     @Test
-    void testListThemes() throws DAOException {
+    void getConfiguredThemes_shouldReturnAllConfiguredThemes() throws DAOException {
 
         ThemeConfiguration theme = new ThemeConfiguration(THEME_NAME);
         theme.setLabel(THEME_LABEL);

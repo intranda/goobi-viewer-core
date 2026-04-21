@@ -49,7 +49,6 @@ class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see IdentifierResolver#doGet(HttpServletRequest,HttpServletResponse)
      * @verifies return 400 if record identifier missing
      */
     @Test
@@ -63,7 +62,6 @@ class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see IdentifierResolver#doGet(HttpServletRequest,HttpServletResponse)
      * @verifies return 404 if record not found
      */
     @Test
@@ -78,7 +76,6 @@ class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see IdentifierResolver#doGet(HttpServletRequest,HttpServletResponse)
      * @verifies return 400 if record field name bad
      */
     @Test
@@ -95,7 +92,6 @@ class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see IdentifierResolver#doGet(HttpServletRequest,HttpServletResponse)
      * @verifies return 400 if record field value bad
      */
     @Test
@@ -112,11 +108,10 @@ class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see IdentifierResolver#constructUrl(String,SolrDocument,String)
-     * @verifies construct url correctly
+     * @verifies return object page URL with PI for a regular work document
      */
     @Test
-    void constructUrl_shouldConstructUrlCorrectly() throws Exception {
+    void constructUrl_shouldReturnObjectPageURLWithPIForARegularWorkDocument() throws Exception {
         String pi = PI_KLEIUNIV;
         QueryResponse qr = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":" + pi, 0, 1, null, null, null);
         Assertions.assertEquals(1, qr.getResults().size());
@@ -124,11 +119,10 @@ class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see IdentifierResolver#constructUrl(String,SolrDocument,String)
-     * @verifies construct anchor url correctly
+     * @verifies return toc page URL for an anchor document
      */
     @Test
-    void constructUrl_shouldConstructAnchorUrlCorrectly() throws Exception {
+    void constructUrl_shouldReturnTocPageURLForAnAnchorDocument() throws Exception {
         String pi = "306653648";
         QueryResponse qr = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":" + pi, 0, 1, null, null, null);
         Assertions.assertEquals(1, qr.getResults().size());
@@ -136,11 +130,10 @@ class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see IdentifierResolver#constructUrl(SolrDocument,boolean,boolean)
-     * @verifies construct group url correctly
+     * @verifies return toc page URL for a GROUP doctype document
      */
     @Test
-    void constructUrl_shouldConstructGroupUrlCorrectly() throws Exception {
+    void constructUrl_shouldReturnTocPageURLForAGROUPDoctypeDocument() throws Exception {
         String pi = "PPN_GROUP";
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.DOCTYPE, DocType.GROUP.toString());
@@ -149,11 +142,10 @@ class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see IdentifierResolver#constructUrl(String,SolrDocument)
-     * @verifies construct page url correctly
+     * @verifies return object URL with page number and logId when resolving a page document by URN
      */
     @Test
-    void constructUrl_shouldConstructPageUrlCorrectly() throws Exception {
+    void constructUrl_shouldReturnObjectURLWithPageNumberAndLogIdWhenResolvingAPageDocumentByURN() throws Exception {
         String urn = "urn\\:nbn\\:at\\:at-akw\\:g-86493";
         String pi = "AC11442160";
         QueryResponse qr = DataManager.getInstance().getSearchIndex().search(SolrConstants.IMAGEURN + ":" + urn, 0, 1, null, null, null);
@@ -162,11 +154,10 @@ class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see IdentifierResolver#constructUrl(String,SolrDocument,boolean,boolean)
-     * @verifies construct preferred view url correctly
+     * @verifies return toc page URL when docstruct type has a preferred view configured
      */
     @Test
-    void constructUrl_shouldConstructPreferredViewUrlCorrectly() throws Exception {
+    void constructUrl_shouldReturnTocPageURLWhenDocstructTypeHasAPreferredViewConfigured() throws Exception {
         String pi = "123";
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.DOCSTRCT, "Catalogue");
@@ -176,11 +167,10 @@ class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see IdentifierResolver#constructUrl(String,SolrDocument,boolean,boolean)
-     * @verifies construct application mime type url correctly
+     * @verifies return metadata page URL when document has application mime type
      */
     @Test
-    void constructUrl_shouldConstructApplicationMimeTypeUrlCorrectly() throws Exception {
+    void constructUrl_shouldReturnMetadataPageURLWhenDocumentHasApplicationMimeType() throws Exception {
         String pi = "123";
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.DOCSTRCT, "Monograph");
@@ -191,7 +181,103 @@ class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see IdentifierResolver#parseFieldValueParameters(HttpServletRequest,Map,Map)
+     * Test that constructUrl produces a TOC URL for an anchor document (ISANCHOR = true).
+     *
+     * @see IdentifierResolver#constructUrl(SolrDocument, boolean, int)
+     * @verifies construct anchor url correctly
+     */
+    @Test
+    void constructUrl_shouldConstructAnchorUrlCorrectly() throws Exception {
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.PI_TOPSTRUCT, "PPN_ANCHOR");
+        doc.setField(SolrConstants.ISANCHOR, true);
+        doc.setField(SolrConstants.ISWORK, false);
+        // Anchor documents should resolve to the TOC page
+        String url = IdentifierResolver.constructUrl(doc, false, 1);
+        Assertions.assertTrue(url.contains("/toc/"), "Anchor URL should contain /toc/");
+        Assertions.assertTrue(url.contains("PPN_ANCHOR"), "Anchor URL should contain PI");
+    }
+
+    /**
+     * Test that constructUrl produces a TOC URL for a GROUP doctype document.
+     *
+     * @see IdentifierResolver#constructUrl(SolrDocument, boolean, int)
+     * @verifies construct group url correctly
+     */
+    @Test
+    void constructUrl_shouldConstructGroupUrlCorrectly() throws Exception {
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.PI_TOPSTRUCT, "PPN_GROUP");
+        doc.setField(SolrConstants.DOCTYPE, DocType.GROUP.toString());
+        doc.setField(SolrConstants.ISWORK, false);
+        // Group documents should resolve to the TOC page
+        String url = IdentifierResolver.constructUrl(doc, false, 1);
+        Assertions.assertTrue(url.contains("/toc/"), "Group URL should contain /toc/");
+        Assertions.assertTrue(url.contains("PPN_GROUP"), "Group URL should contain PI");
+    }
+
+    /**
+     * Test that constructUrl includes page number and logId when resolving a page-level URL.
+     *
+     * @see IdentifierResolver#constructUrl(SolrDocument, boolean, int)
+     * @verifies construct page url correctly
+     */
+    @Test
+    void constructUrl_shouldConstructPageUrlCorrectly() throws Exception {
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.PI_TOPSTRUCT, "AC11442160");
+        doc.setField(SolrConstants.ISWORK, false);
+        doc.setField(SolrConstants.LOGID, "LOG_0002");
+        doc.setField(SolrConstants.ORDER, 2);
+        doc.setField(SolrConstants.THUMBNAIL, "image.tif");
+        // Page-level resolution with order = 2 should produce an object URL containing the page number and logId
+        String url = IdentifierResolver.constructUrl(doc, true, 2);
+        Assertions.assertTrue(url.contains("AC11442160"), "Page URL should contain PI");
+        Assertions.assertTrue(url.contains("/2/"), "Page URL should contain the page order number");
+        Assertions.assertTrue(url.contains("LOG_0002"), "Page URL should contain the logId");
+    }
+
+    /**
+     * Test that constructUrl returns the preferred view URL when a docstruct type has a
+     * preferred page type configured (e.g. Catalogue -> viewToc).
+     *
+     * @see IdentifierResolver#constructUrl(SolrDocument, boolean, int)
+     * @verifies construct preferred view url correctly
+     */
+    @Test
+    void constructUrl_shouldConstructPreferredViewUrlCorrectly() throws Exception {
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.DOCSTRCT, "Catalogue");
+        doc.setField(SolrConstants.PI_TOPSTRUCT, "PPN_PREF");
+        doc.setField(SolrConstants.ISWORK, true);
+        // Catalogue has a preferred page type (viewToc) configured in the test config
+        String url = IdentifierResolver.constructUrl(doc, false, 1);
+        Assertions.assertTrue(url.contains("/toc/"), "Preferred-view URL should contain the configured page type");
+        Assertions.assertTrue(url.contains("PPN_PREF"), "Preferred-view URL should contain PI");
+    }
+
+    /**
+     * Test that constructUrl returns a metadata page URL when the document has an application
+     * MIME type (no image view possible).
+     *
+     * @see IdentifierResolver#constructUrl(SolrDocument, boolean, int)
+     * @verifies construct application mime type url correctly
+     */
+    @Test
+    void constructUrl_shouldConstructApplicationMimeTypeUrlCorrectly() throws Exception {
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.DOCSTRCT, "Monograph");
+        doc.setField(SolrConstants.PI_TOPSTRUCT, "PPN_APP");
+        doc.setField(SolrConstants.ISWORK, true);
+        doc.setField(SolrConstants.MIMETYPE, "application");
+        // Application mime type means no image view — should fall back to metadata page
+        String url = IdentifierResolver.constructUrl(doc, false, 1);
+        Assertions.assertTrue(url.contains("/metadata/"), "Application-mime-type URL should contain /metadata/");
+        Assertions.assertTrue(url.contains("PPN_APP"), "Application-mime-type URL should contain PI");
+    }
+
+    /**
+     * @see IdentifierResolver#parseFieldValueParameters(Map,Map,Map)
      * @verifies parse fields and values correctly
      */
     @Test

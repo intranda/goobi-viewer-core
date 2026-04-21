@@ -66,9 +66,11 @@ class WebApplicationExceptionMapperTest {
      * WebApplicationException. Without explicit handling this was treated as a RuntimeException
      * and promoted to HTTP 500 with the Java class name in the response body.
      * Verify that the mapper now correctly returns HTTP 400.
+     * @verifies return 400 when number format exception cause
+     * @see WebApplicationExceptionMapper#toResponse
      */
     @Test
-    void toResponse_numberFormatExceptionCause_returns400() {
+    void toResponse_shouldReturn400WhenNumberFormatExceptionCause() {
         Response response = mapper.toResponse(buildPathParamException("NaN"));
         assertEquals(400, response.getStatus());
     }
@@ -76,9 +78,11 @@ class WebApplicationExceptionMapperTest {
     /**
      * The error message returned to the client must not contain the Java class name
      * "NumberFormatException" — that is an implementation detail that must not leak.
+     * @verifies not leak java class name when number format exception cause message
+     * @see WebApplicationExceptionMapper#toResponse
      */
     @Test
-    void toResponse_numberFormatExceptionCause_messageDoesNotLeakJavaClassName() throws Exception {
+    void toResponse_shouldNotLeakJavaClassNameWhenNumberFormatExceptionCauseMessage() throws Exception {
         Response response = mapper.toResponse(buildPathParamException("NaN"));
 
         // Serialize entity to JSON the same way JAX-RS would, then inspect the string
@@ -91,9 +95,10 @@ class WebApplicationExceptionMapperTest {
      * Jersey 3.x may wrap the NumberFormatException in an ExtractorException (RuntimeException)
      * before wrapping it in a WebApplicationException. Verify that the mapper still returns 400
      * even when the NumberFormatException is one extra level deep in the cause chain.
+     * @verifies return 400 when number format exception nested in runtime exception
      */
     @Test
-    void toResponse_numberFormatExceptionNestedInRuntimeException_returns400() {
+    void toResponse_shouldReturn400WhenNumberFormatExceptionNestedInRuntimeException() {
         // Simulate: WebApplicationException → RuntimeException → NumberFormatException
         NumberFormatException innerCause = new NumberFormatException("For input string: \"NaN\"");
         RuntimeException extractorException = new RuntimeException("extraction failed", innerCause);

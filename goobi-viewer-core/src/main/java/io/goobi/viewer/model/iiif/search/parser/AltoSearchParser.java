@@ -49,6 +49,7 @@ public class AltoSearchParser extends AbstractSearchParser {
      * @param words candidate words to match against
      * @param regex regular expression to test each word's content
      * @return a list of matched word groups, where each group is a consecutive sequence of matching ALTO words
+     * @should return non null result
      */
     public List<List<Word>> findWordMatches(List<Word> words, String regex) {
         ListIterator<Word> iterator = words.listIterator();
@@ -78,6 +79,7 @@ public class AltoSearchParser extends AbstractSearchParser {
      * @param lines ALTO lines to search through
      * @param regex regular expression applied to concatenated line text
      * @return a map of character-index ranges to the ALTO lines containing the match
+     * @should return collection with 6 elements
      */
     public Map<Range<Integer>, List<Line>> findLineMatches(List<Line> lines, String regex) {
         String text = getText(lines);
@@ -99,6 +101,8 @@ public class AltoSearchParser extends AbstractSearchParser {
      *
      * @param lines ALTO lines whose content to concatenate
      * @return the concatenated text content of the given ALTO lines, joined by spaces
+     * @should return dem Herrn for given input
+     * @should return expected value for given input
      */
     public String getText(List<Line> lines) {
         return lines.stream().map(Line::getContent).collect(Collectors.joining(" "));
@@ -192,6 +196,7 @@ public class AltoSearchParser extends AbstractSearchParser {
      * @param w word whose preceding siblings to collect
      * @param maxLength maximum character count of returned text
      * @return the text content of sibling words preceding the given word, up to maxLength characters
+     * @should return preceding words with space elements
      */
     public String getPrecedingText(Word w, int maxLength) {
 
@@ -215,6 +220,7 @@ public class AltoSearchParser extends AbstractSearchParser {
      * @param w word whose following siblings to collect
      * @param maxLength maximum character count of returned text
      * @return the text content of sibling words following the given word, up to maxLength characters
+     * @should return succeeding words with space elements
      */
     public String getSucceedingText(Word w, int maxLength) {
 

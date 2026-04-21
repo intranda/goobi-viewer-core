@@ -113,6 +113,33 @@ function resolveDirs() {
     const special = theme.specialName && String(theme.specialName);
     const mainTheme = String(theme.mainTheme || 'reference');
 
+    // Discover the actual theme repo directory name under ~/git/goobi-viewer/,
+    // since it may differ from mainTheme (e.g. repo "hub-evifa" vs config "evifa").
+    const gitViewerDir = path.join(home, 'git', 'goobi-viewer');
+    let themeRepoDir = null;
+    try {
+        const entries = fs.readdirSync(gitViewerDir);
+        themeRepoDir =
+            entries.find((e) => e === `goobi-viewer-theme-${mainTheme}`) ||
+            entries.find((e) => e.startsWith('goobi-viewer-theme-') && e.includes(mainTheme)) ||
+            null;
+    } catch {
+        // gitViewerDir does not exist or is not readable — fall back to convention
+    }
+
+    // Also scan cfg.tomcat_dir for a deployed theme folder whose name may differ
+    // from mainTheme (e.g. "goobi-viewer-theme-hub-evifa" instead of "goobi-viewer-theme-evifa").
+    let tomcatThemeDir = null;
+    try {
+        const entries = fs.readdirSync(cfg.tomcat_dir);
+        tomcatThemeDir =
+            entries.find((e) => e === `goobi-viewer-theme-${mainTheme}`) ||
+            entries.find((e) => e.startsWith('goobi-viewer-theme-') && e.includes(mainTheme)) ||
+            null;
+    } catch {
+        // tomcat_dir does not exist or is not readable
+    }
+
     // Deployment target
     let deployDir;
 
@@ -120,8 +147,13 @@ function resolveDirs() {
         deployDir = path.join(cfg.tomcat_dir, `goobi-viewer-theme-${special}`);
     } else {
         const candidates = [
+            // tomcat webapps: exact config name
             path.join(cfg.tomcat_dir, `goobi-viewer-theme-${mainTheme}`),
-
+            // tomcat webapps: discovered folder name (handles repo name ≠ config name)
+            ...(tomcatThemeDir ? [path.join(cfg.tomcat_dir, tomcatThemeDir)] : []),
+            // tomcat webapps: git repo dir name
+            ...(themeRepoDir ? [path.join(cfg.tomcat_dir, themeRepoDir)] : []),
+            // dev target: conventional name
             path.join(
                 home,
                 'git',
@@ -131,6 +163,10 @@ function resolveDirs() {
                 'target',
                 'viewer'
             ),
+            // dev target: actual repo dir name
+            ...(themeRepoDir
+                ? [path.join(gitViewerDir, themeRepoDir, themeRepoDir, 'target', 'viewer')]
+                : []),
         ];
 
         deployDir = candidates.find((c) => fs.existsSync(c)) || candidates[0];
@@ -141,13 +177,20 @@ function resolveDirs() {
 
     let themeDir = process.env.GV_THEME_DIR || null;
     if (!themeDir) {
-        themeDir = path.join(
-            home,
-            'git',
-            'goobi-viewer',
-            `goobi-viewer-theme-${mainTheme}`,
-            `goobi-viewer-theme-${mainTheme}`
-        );
+        if (themeRepoDir) {
+            const innerDir = path.join(gitViewerDir, themeRepoDir, themeRepoDir);
+            themeDir = fs.existsSync(innerDir)
+                ? innerDir
+                : path.join(gitViewerDir, themeRepoDir);
+        } else {
+            themeDir = path.join(
+                home,
+                'git',
+                'goobi-viewer',
+                `goobi-viewer-theme-${mainTheme}`,
+                `goobi-viewer-theme-${mainTheme}`
+            );
+        }
     }
 
     return { DEPLOYMENT_DIR: deployDir, CORE_DIR: coreDir, THEME_DIR: themeDir };

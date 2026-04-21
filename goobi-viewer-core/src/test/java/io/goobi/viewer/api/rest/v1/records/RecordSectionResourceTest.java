@@ -70,10 +70,12 @@ class RecordSectionResourceTest extends AbstractRestApiTest {
     }
 
     /**
-     * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordResource#getRISAsFile()}.
+     * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordSectionResource#getRISAsFile()}.
+     * @verifies return non null result
+     * @see RecordSectionResource#getRISAsFile
      */
     @Test
-    void testGetRISAsFile() {
+    void getRISAsFile_shouldReturnNonNullResult() {
         try(Response response = target(urls.path(RECORDS_SECTIONS, RECORDS_SECTIONS_RIS_FILE).params(PI, DIVID).build())
                 .request()
                 .get()) {
@@ -88,10 +90,12 @@ class RecordSectionResourceTest extends AbstractRestApiTest {
     }
 
     /**
-     * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordResource#getRISAsText()}.
+     * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordSectionResource#getRISAsText()}.
+     * @verifies return non null result
+     * @see RecordSectionResource#getRISAsText()
      */
     @Test
-    void testGetRISAsText() {
+    void getRISAsText_shouldReturnNonNullResult() {
         try(Response response = target(urls.path(RECORDS_SECTIONS, RECORDS_SECTIONS_RIS_TEXT).params(PI, DIVID).build())
                 .request()
                 .accept(MediaType.TEXT_PLAIN)
@@ -104,8 +108,12 @@ class RecordSectionResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return non null result
+     * @see RecordSectionResource#getRange
+     */
     @Test
-    void testGetRange() throws JsonMappingException, JsonProcessingException {
+    void getRange_shouldReturnNonNullResult() throws JsonMappingException, JsonProcessingException {
         String url = urls.path(RECORDS_SECTIONS, RECORDS_SECTIONS_RANGE).params(PI, DIVID).build();
         try(Response response = target(url)
                 .request()

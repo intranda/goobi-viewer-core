@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.cms.legacy.CMSPageTemplate;
@@ -37,13 +38,26 @@ class CMSPageTemplateTest {
     Path themeComponentFile = Paths.get("src/test/resources/data/viewer/cms/theme_templates/custom_template_01_home.xml");
 
     
+    /**
+     * @verifies parse theme template with library and filename
+     */
     @Test
-    void testLoadLegacyThemeTemplate() {
+    void loadFromXML_shouldParseThemeTemplateWithLibraryAndFilename() {
       CMSPageTemplate template = CMSPageTemplate.loadFromXML(themeComponentFile);
       CMSComponent component = template.createCMSComponent();
       JsfComponent jsf = component.getJsfComponent();
       assertEquals("themes/mnha/cms/templates/views", jsf.getLibrary());
       assertEquals("custom_template_01_home.xhtml", jsf.getFilename());
+    }
+
+    /**
+     * @see CMSPageTemplate#loadFromXML(Path)
+     * @verifies throw IllegalArgumentException if file is null
+     */
+    @Test
+    void loadFromXML_shouldThrowIllegalArgumentExceptionIfFileIsNull() {
+        // Verify that passing null to loadFromXML throws IllegalArgumentException
+        Assertions.assertThrows(IllegalArgumentException.class, () -> CMSPageTemplate.loadFromXML(null));
     }
 
 }

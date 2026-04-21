@@ -318,7 +318,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
      *
      * @return number of members in this group
      * @throws DAOException
-     * @should count correctly
+     * @should return total of owner plus distinct members without double-counting the owner
      */
     public long getMemberCount() throws DAOException {
         List<User> users =

@@ -55,9 +55,11 @@ class CMSPageResourceTest extends AbstractRestApiTest {
      * Requesting a CMS page that does not exist in the DAO must return HTTP 404.
      * Before the fix, getCMSPage() returned null which was passed to new ViewerPage(null),
      * causing a NullPointerException and HTTP 500.
+     * @verifies return 404 when non existent id
+     * @see CMSPageResource#getPage
      */
     @Test
-    void testGetPage_nonExistentIdReturns404() {
+    void getPage_shouldReturn404WhenNonExistentId() {
         // Use an ID that is very unlikely to exist in the test database
         try (Response response = target("/cms/pages/999999")
                 .request()

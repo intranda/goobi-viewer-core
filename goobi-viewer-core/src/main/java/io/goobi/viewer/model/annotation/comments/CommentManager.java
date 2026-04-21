@@ -96,6 +96,7 @@ public class CommentManager implements AnnotationLister<Comment> {
     /**
      * Shuts down the background e-mail notification executor. Called by {@link io.goobi.viewer.ContextListener}
      * during application shutdown. Waits up to 5 seconds for in-flight notifications to finish.
+     * @should complete without exception
      */
     public static void shutdown() {
         NOTIFICATION_EXECUTOR.shutdownNow();
@@ -116,6 +117,9 @@ public class CommentManager implements AnnotationLister<Comment> {
      * @param pageOrder page number the comment is attached to
      * @param license license string to apply to the comment
      * @param publicationStatus initial publication status of the comment
+     * @should create
+     * @should modify
+     * @should delete
      */
     public void createComment(String text, User creator, String pi, Integer pageOrder, String license, PublicationStatus publicationStatus) {
         String textCleaned = checkAndCleanScripts(text, creator, pi, pageOrder);
@@ -155,6 +159,7 @@ public class CommentManager implements AnnotationLister<Comment> {
      * @param text new comment text provided by the editor
      * @param editor user performing the edit
      * @param publicationStatus updated publication status for the comment
+      * @should modify
      */
     public void editComment(Comment comment, String text, User editor, PublicationStatus publicationStatus) {
         String textCleaned = checkAndCleanScripts(text, editor, comment.getTargetPI(), comment.getTargetPageOrder());
@@ -228,6 +233,7 @@ public class CommentManager implements AnnotationLister<Comment> {
     /**
      *
      * @param comment the comment to delete
+      * @should delete
      */
     public void deleteComment(Comment comment) {
         try {

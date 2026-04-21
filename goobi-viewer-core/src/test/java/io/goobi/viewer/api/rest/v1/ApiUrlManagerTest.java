@@ -68,14 +68,20 @@ class ApiUrlManagerTest {
     public void tearDown() throws Exception {
     }
 
+    /**
+     * @verifies build url with path params substituted
+     */
     @Test
-    void testGetUrl() {
+    void path_shouldBuildUrlWithPathParamsSubstituted() {
         String url = manager.path(RECORDS_SECTIONS, RECORDS_SECTIONS_PDF).params(PI, DIVID).build();
         assertEquals(PATH_FINAL, url);
     }
 
+    /**
+     * @verifies build url with query parameters appended
+     */
     @Test
-    void testGetUrlWithQuery() {
+    void path_shouldBuildUrlWithQueryParametersAppended() {
         String url = manager.path(RECORDS_SECTIONS, RECORDS_SECTIONS_PDF)
                 .params(PI, DIVID)
                 .query(QUERY_PARAM_MAX, QUERY_PARAM_MAX_VALUE)
@@ -85,8 +91,11 @@ class ApiUrlManagerTest {
         assertEquals(PATH_FINAL_QUERIES, url);
     }
 
+    /**
+     * @verifies extract named parameter from url
+     */
     @Test
-    void testParseParameter() {
+    void parseParameter_shouldExtractNamedParameterFromUrl() {
         String pi = "PPN1234";
         String pageNo = "5";
         String id = "172";

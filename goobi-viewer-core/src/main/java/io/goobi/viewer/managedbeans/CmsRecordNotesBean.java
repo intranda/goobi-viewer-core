@@ -110,6 +110,7 @@ public class CmsRecordNotesBean implements Serializable {
      * @throws ViewerConfigurationException
      * @throws PresentationException
      * @throws IndexUnreachableException
+     * @should return expected value for given input
      */
     public String getThumbnailUrl(CMSSingleRecordNote note) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         if (StringUtils.isNotBlank(note.getRecordPi())) {

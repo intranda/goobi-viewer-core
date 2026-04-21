@@ -390,7 +390,7 @@ public class ArchiveEntry implements Serializable {
      * 
      * @return true if access granted; false otherwise
      * @should return true if access conditions empty
-     * @should check access correctly
+     * @should return false when entry has a restricted access condition
      */
     public boolean isAccessAllowed() {
         if (getAccessConditions().isEmpty()) {

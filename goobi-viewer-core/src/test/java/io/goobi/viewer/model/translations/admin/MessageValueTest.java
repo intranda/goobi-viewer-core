@@ -30,28 +30,28 @@ class MessageValueTest {
 
     /**
      * @see MessageValue#getTranslationStatus()
-     * @verifies return none status correctly
+     * @verifies return NONE when current value is empty
      */
     @Test
-    void getTranslationStatus_shouldReturnNoneStatusCorrectly() throws Exception {
+    void getTranslationStatus_shouldReturnNONEWhenCurrentValueIsEmpty() throws Exception {
         Assertions.assertEquals(TranslationStatus.NONE, new MessageValue("en", "", "value").getTranslationStatus());
     }
 
     /**
      * @see MessageValue#getTranslationStatus()
-     * @verifies return partial status correctly
+     * @verifies return PARTIAL when current value differs from default value
      */
     @Test
-    void getTranslationStatus_shouldReturnPartialStatusCorrectly() throws Exception {
+    void getTranslationStatus_shouldReturnPARTIALWhenCurrentValueDiffersFromDefaultValue() throws Exception {
         Assertions.assertEquals(TranslationStatus.PARTIAL, new MessageValue("en", "value zzz", "value").getTranslationStatus());
     }
 
     /**
      * @see MessageValue#getTranslationStatus()
-     * @verifies return full status correctly
+     * @verifies return FULL when current value matches default value
      */
     @Test
-    void getTranslationStatus_shouldReturnFullStatusCorrectly() throws Exception {
+    void getTranslationStatus_shouldReturnFULLWhenCurrentValueMatchesDefaultValue() throws Exception {
         Assertions.assertEquals(TranslationStatus.FULL, new MessageValue("en", "value", "value").getTranslationStatus());
     }
 

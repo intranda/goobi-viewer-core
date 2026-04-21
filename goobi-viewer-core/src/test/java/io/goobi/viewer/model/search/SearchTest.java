@@ -47,7 +47,6 @@ class SearchTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see Search#getAllSortFields()
      * @verifies return all fields
      */
     @Test
@@ -64,8 +63,11 @@ class SearchTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertTrue(result.contains(new StringPair(staticFields.get(0).substring(1), "desc")));
     }
 
+    /**
+     * @verifies parse geo coords point
+     */
     @Test
-    void testParseGeoCoordsPoint() {
+    void getLocations_shouldParseGeoCoordsPoint() {
         String fieldValue =
                 "[13.587443500000063 54.3766782, 13.568806999999993 54.364621, 13.57175570000004 54.38059639999999, 13.576777300000003 54.38823009999999, 13.632939999999962 54.35865]";
         List<IArea> locs = GeoCoordinateConverter.getLocations(fieldValue);
@@ -73,8 +75,11 @@ class SearchTest extends AbstractDatabaseAndSolrEnabledTest {
         Location location = new Location(locs.get(0), "Label", URI.create("#"));
     }
 
+    /**
+     * @verifies parse geo coords polygon
+     */
     @Test
-    void testParseGeoCoordsPolygon() {
+    void getLocations_shouldParseGeoCoordsPolygon() {
         String fieldValue =
                 "[POLYGON((28.88222222222222 41.13361111111111, 29.06888888888889 41.13361111111111, 29.06888888888889 40.974444444444444, 28.88222222222222 40.974444444444444, 28.88222222222222 41.13361111111111)), "
                         + "POLYGON((18.15 44.96666666666667, 30.033333333333335 44.96666666666667, 30.033333333333335 39.333333333333336, 18.15 39.333333333333336, 18.15 44.96666666666667))]";
@@ -88,8 +93,7 @@ class SearchTest extends AbstractDatabaseAndSolrEnabledTest {
      * single Solr call. Verifies that range facet min/max values for the YEAR field are populated
      * after Search.execute() runs against the test index.
      *
-     * @see Search#execute(SearchFacets, java.util.Map, int, Locale)
-     * @verifies populate YEAR range facet values
+     * @verifies populate year range facets
      */
     @Test
     void execute_shouldPopulateYearRangeFacets() throws Exception {
@@ -111,8 +115,7 @@ class SearchTest extends AbstractDatabaseAndSolrEnabledTest {
      * single Solr call. Verifies that fields with alwaysApplyToUnfilteredHits=true are populated
      * in the available-facets map after Search.execute() runs.
      *
-     * @see Search#execute(SearchFacets, java.util.Map, int, Locale)
-     * @verifies populate DC unfiltered facet
+     * @verifies populate unfiltered facets for always apply fields
      */
     @Test
     void execute_shouldPopulateUnfilteredFacetsForAlwaysApplyFields() throws Exception {

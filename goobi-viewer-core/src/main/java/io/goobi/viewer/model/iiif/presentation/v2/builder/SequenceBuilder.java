@@ -334,6 +334,8 @@ public class SequenceBuilder extends AbstractBuilder {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws DAOException
+     * @should return 1200 for given input
+     * @should generate canvas for given input
      */
     public Canvas2 generateCanvas(String pi, PhysicalElement page)
             throws URISyntaxException, ViewerConfigurationException, IndexUnreachableException, PresentationException, DAOException {
@@ -462,6 +464,7 @@ public class SequenceBuilder extends AbstractBuilder {
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should return true for given input
      */
     public Map<AnnotationType, AnnotationList> addOtherContent(StructElement doc, PhysicalElement page, Canvas2 canvas, boolean populate)
             throws URISyntaxException, IndexUnreachableException, ViewerConfigurationException {

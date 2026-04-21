@@ -40,7 +40,7 @@ class LicenseTypeTest extends AbstractTest {
     
     /**
      * @see LicenseType#setAccessTicketRequired(boolean)
-     * @verifies add or remove list privilege
+     * @verifies add or remove list priviege
      */
     @Test
     void setAccessTicketRequired_shouldAddOrRemoveListPriviege() {
@@ -53,7 +53,6 @@ class LicenseTypeTest extends AbstractTest {
     }
 
     /**
-     * @see LicenseType#getAvailablePrivileges(Set)
      * @verifies only return priv view ugc if ugc type
      */
     @Test
@@ -65,12 +64,48 @@ class LicenseTypeTest extends AbstractTest {
         Assertions.assertEquals(IPrivilegeHolder.PRIV_VIEW_UGC, result.get(0));
     }
 
+    /**
+     * @verifies exclude already granted privileges
+     */
     @Test
-    void getAvailablePrivilegesHandleNonEmptyArgument() {
+    void getAvailablePrivileges_shouldExcludeAlreadyGrantedPrivileges() {
         LicenseType type = new LicenseType();
         type.setUgcType(true);
         Set<String> privileges = new HashSet<>(Arrays.asList(IPrivilegeHolder.PRIV_VIEW_UGC));
         List<String> result = type.getAvailablePrivileges(privileges);
         Assertions.assertEquals(0, result.size());
+    }
+
+    /**
+     * @see LicenseType#setAccessTicketRequired(boolean)
+     * @verifies add or remove list privilege
+     */
+    @Test
+    void setAccessTicketRequired_shouldAddOrRemoveListPrivilege() {
+        // Setting accessTicketRequired to true adds LIST privilege, false removes it
+        LicenseType type = new LicenseType();
+        Assertions.assertFalse(type.hasPrivilegeCopy(IPrivilegeHolder.PRIV_LIST));
+        type.setAccessTicketRequired(true);
+        Assertions.assertTrue(type.hasPrivilegeCopy(IPrivilegeHolder.PRIV_LIST));
+        type.setAccessTicketRequired(false);
+        Assertions.assertFalse(type.hasPrivilegeCopy(IPrivilegeHolder.PRIV_LIST));
+    }
+
+    /**
+     * @see LicenseType#getAvailablePrivileges(Set)
+     * @verifies return record privileges if licenseType regular
+     */
+    @Test
+    void getAvailablePrivileges_shouldReturnRecordPrivilegesIfLicenseTypeRegular() {
+        // Regular (non-UGC) license type returns all record privileges
+        LicenseType type = new LicenseType("regular_type");
+        type.setUgcType(false);
+        List<String> result = type.getAvailablePrivileges(Collections.emptySet());
+        // Should contain record privileges
+        Assertions.assertTrue(result.contains(IPrivilegeHolder.PRIV_LIST));
+        Assertions.assertTrue(result.contains(IPrivilegeHolder.PRIV_VIEW_IMAGES));
+        Assertions.assertTrue(result.contains(IPrivilegeHolder.PRIV_DOWNLOAD_PDF));
+        // Should NOT contain only the single UGC privilege
+        Assertions.assertTrue(result.size() > 1);
     }
 }

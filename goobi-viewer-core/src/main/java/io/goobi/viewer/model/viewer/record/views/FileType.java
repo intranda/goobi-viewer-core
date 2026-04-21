@@ -145,6 +145,7 @@ public enum FileType {
      * @param filename the filename to parse
      * @return the appropriate mimetype. May be an empty String if the filename is blank or has no suffix; but is never null
      * @throws ContentTypeException If not mimetype could be determined
+     * @should return expected value for given input
      */
     public static String getContentTypeFor(String filename) throws ContentTypeException {
         if (StringUtils.isBlank(filename)) {

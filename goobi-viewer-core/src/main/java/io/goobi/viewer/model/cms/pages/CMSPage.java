@@ -652,6 +652,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      * getTitle.
      *
      * @return the CMS page title in the default language
+     * @should persist page
      */
     public String getTitle() {
         return this.title.getTextOrDefault();
@@ -1127,7 +1128,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      * Exports relevant page contents as JDOM2 document for indexing.
      * 
      * @return {@link Document}
-     * @should create doc correctly
+     * @should create XML document with localized titles, categories, and text components
      */
     public Document exportAsXml() {
         Document doc = new Document();

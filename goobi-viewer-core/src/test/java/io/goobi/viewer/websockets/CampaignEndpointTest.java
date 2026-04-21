@@ -79,8 +79,11 @@ class CampaignEndpointTest extends AbstractDatabaseEnabledTest {
         endpoint3.onOpen(session3, config3);
     }
 
+    /**
+     * @verifies broadcast locked pages to other sessions
+     */
     @Test
-    void test() throws IOException, DAOException {
+    void onMessage_shouldBroadcastLockedPagesToOtherSessions() throws IOException, DAOException {
         endpoint1.onMessage(createMessage(1l, "PPN1234", 0));
         endpoint2.onMessage(createMessage(1l, "PPN1234", 2));
 

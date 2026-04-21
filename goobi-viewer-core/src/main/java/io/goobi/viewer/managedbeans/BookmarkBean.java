@@ -548,6 +548,12 @@ public class BookmarkBean implements Serializable {
      * @param bookmarkListId numeric ID string of the bookmark list to load
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should throw IllegalUrlParameterException for non-numeric id
+     * @should throw IllegalUrlParameterException if bookmark list not found
+     * @should not throw for null id
+     * @should throw for non numeric id
+     * @should throw if bookmark list not found
+     * @should not throw for null
      */
     public void setCurrentBookmarkListId(String bookmarkListId) throws IllegalUrlParameterException, DAOException {
         currentBookmarkListSharedKey = null;
@@ -729,6 +735,10 @@ public class BookmarkBean implements Serializable {
      *
      * @param key share key identifying the bookmark list to load
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should throw IllegalUrlParameterException if share key not found
+     * @should not throw for null key
+     * @should throw if share key not found
+     * @should not throw for null
      */
     public void setShareKey(String key) throws DAOException, IllegalUrlParameterException {
         if (key == null) {

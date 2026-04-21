@@ -491,6 +491,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      * Getter for the field <code>label</code>.
      *
      * @return the display label (title) of this structural element
+     * @should return locale specific title if so requested
+     * @should return label if no locale specific title found
+     * @should return label if locale is null
      */
     public String getLabel() {
         return getLabel(null);
@@ -622,9 +625,8 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      * @param topStruct StructElementStub representing the top structure element.
      * @return the COinS context object string for embedding bibliographic metadata in a &lt;span&gt; element
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @should generate string element correctly
      * @should return unknown format if topstruct null
-     * @should throw illegal
+     * @should return open URL context object with URL encoded title author and page count
      */
     public String generateContextObject(String currentUrl, StructElementStub topStruct) throws PresentationException {
         StringBuilder sb = new StringBuilder("ctx_ver=Z39.88-2004&rft_val_fmt=info:ofi/fmt:kev:mtx:");

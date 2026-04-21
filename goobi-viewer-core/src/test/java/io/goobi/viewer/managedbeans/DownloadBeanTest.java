@@ -59,8 +59,12 @@ class DownloadBeanTest {
         return bean;
     }
 
+    /**
+     * @verifies throw download exception when unknown task type
+     * @see DownloadBean#downloadFileAction
+     */
     @Test
-    void downloadFileAction_unknownTaskType_throwsDownloadException() throws Exception {
+    void downloadFileAction_shouldThrowDownloadExceptionWhenUnknownTaskType() throws Exception {
         // A ViewerMessage with an unrecognised task type causes DownloadJob.from() to
         // throw IllegalArgumentException, which must be re-raised as DownloadException.
         ViewerMessage msg = new ViewerMessage("NOT_A_DOWNLOAD_TASK");
@@ -71,8 +75,12 @@ class DownloadBeanTest {
         assertThrows(DownloadException.class, bean::downloadFileAction);
     }
 
+    /**
+     * @verifies throw download exception when file not found
+     * @see DownloadBean#downloadFileAction
+     */
     @Test
-    void downloadFileAction_fileNotFound_throwsDownloadException() throws Exception {
+    void downloadFileAction_shouldThrowDownloadExceptionWhenFileNotFound() throws Exception {
         // A valid PDF download job whose target file does not exist on disk must
         // raise DownloadException rather than letting Files.size() throw IOException.
         ViewerMessage msg = new ViewerMessage(TaskType.DOWNLOAD_PDF.name());

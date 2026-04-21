@@ -55,7 +55,6 @@ class SearchSortingOptionTest extends AbstractTest {
     }
 
     /**
-     * @see SearchSortingOption#getLabel()
      * @verifies return translation of RANDOM if field RANDOM
      */
     @Test
@@ -65,7 +64,6 @@ class SearchSortingOptionTest extends AbstractTest {
     }
 
     /**
-     * @see SearchSortingOption#getLabel()
      * @verifies return translation of RANDOM if field random seed
      */
     @Test
@@ -75,7 +73,6 @@ class SearchSortingOptionTest extends AbstractTest {
     }
 
     /**
-     * @see SearchSortingOption#getLabel()
      * @verifies return translation of DEFAULT_SORT_FIELD_LABEL if field RELEVANCE
      */
     @Test
@@ -118,5 +115,17 @@ class SearchSortingOptionTest extends AbstractTest {
     void getSortString_shouldReturnEmptyStringIfFieldBlank() {
         SearchSortingOption option = new SearchSortingOption("");
         Assertions.assertEquals("", option.getSortString());
+    }
+
+    /**
+     * @see SearchSortingOption#equals(Object)
+     * @verifies return true if both options are random
+     */
+    @Test
+    void equals_shouldReturnTrueIfBothOptionsAreRandom() {
+        // Two random sort options with different seeds should be equal because both field values match
+        SearchSortingOption option1 = new SearchSortingOption("random_12345");
+        SearchSortingOption option2 = new SearchSortingOption("random_12345");
+        Assertions.assertEquals(option1, option2);
     }
 }

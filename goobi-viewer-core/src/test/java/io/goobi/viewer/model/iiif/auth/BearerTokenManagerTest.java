@@ -36,11 +36,10 @@ class BearerTokenManagerTest extends AbstractSolrEnabledTest {
     /**
      * @throws IndexUnreachableException
      * @throws PresentationException
-     * @see ActivityCollectionBuider#getDocs(Long,Long)
-     * @verifies add token correctly
+     * @verifies store token in token map and associate it with the HTTP session
      */
     @Test
-    void addToken_shouldAddTokenCorrectly() {
+    void addToken_shouldStoreTokenInTokenMapAndAssociateItWithTheHTTPSession() {
         BearerTokenManager btm = new BearerTokenManager();
         AuthAccessToken2 token = new AuthAccessToken2("1", 300);
         HttpSession session = Mockito.mock(HttpSession.class);
@@ -52,7 +51,6 @@ class BearerTokenManagerTest extends AbstractSolrEnabledTest {
     /**
      * @throws IndexUnreachableException
      * @throws PresentationException
-     * @see ActivityCollectionBuider#getDocs(Long,Long)
      * @verifies purge expired tokens only
      */
     @Test

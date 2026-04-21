@@ -38,8 +38,7 @@ class TextResourceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
 
 
     /**
-     * @see TextResourceBuilder#getFulltextMap(String,HttpServletRequest)
-     * @verifies prioritize plaintext files over alto
+     * @verifies prioritize plaintext over ALTO
      */
     @Test
     void getFulltextMap_shouldPrioritizePlaintextOverAlto() throws Exception {
@@ -54,7 +53,6 @@ class TextResourceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see TextResourceBuilder#getAltoAsZip(String,HttpServletRequest)
      * @verifies throw ContentNotFoundException if no alto files found
      */
     @Test
@@ -70,7 +68,6 @@ class TextResourceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see TextResourceBuilder#getFulltextAsZip(String,HttpServletRequest)
      * @verifies throw ContentNotFoundException if no fulltext files found
      */
     @Test

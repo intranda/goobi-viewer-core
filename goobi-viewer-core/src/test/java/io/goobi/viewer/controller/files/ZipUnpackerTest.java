@@ -39,8 +39,11 @@ class ZipUnpackerTest {
 
     private static final Path ARCHIVE_PATH = Path.of("src/test/resources/data/viewer/external-files/sampleArchive.zip").toAbsolutePath();
 
+    /**
+     * @verifies extract archive contents
+     */
     @Test
-    void test_downloadArchive(@TempDir Path tempDir) throws IOException, ArchiveSizeExceededException {
+    void extractZip_shouldExtractArchiveContents(@TempDir Path tempDir) throws IOException, ArchiveSizeExceededException {
 
         try (InputStream input = Files.newInputStream(ARCHIVE_PATH);
                 ZipInputStream zis = new ZipInputStream(input)) {
@@ -54,8 +57,11 @@ class ZipUnpackerTest {
         }
     }
 
+    /**
+     * @verifies throw exception when archive size exceeded
+     */
     @Test
-    void test_archiveSizeExceeded(@TempDir Path tempDir) throws IOException {
+    void extractZip_shouldThrowExceptionWhenArchiveSizeExceeded(@TempDir Path tempDir) throws IOException {
         ArchiveSizeExceededException thrown = assertThrows(ArchiveSizeExceededException.class,
                 () -> {
                     try (InputStream input = Files.newInputStream(ARCHIVE_PATH);
@@ -69,8 +75,11 @@ class ZipUnpackerTest {
                 String.format("Expected exception message \"%s\", but was \"%s\"", expectedMessage, thrown.getMessage()));
     }
 
+    /**
+     * @verifies throw exception when entry size exceeded
+     */
     @Test
-    void test_antrySizeExceeded(@TempDir Path tempDir) throws IOException {
+    void extractZip_shouldThrowExceptionWhenEntrySizeExceeded(@TempDir Path tempDir) throws IOException {
         ArchiveSizeExceededException thrown = assertThrows(ArchiveSizeExceededException.class,
                 () -> {
                     try (InputStream input = Files.newInputStream(ARCHIVE_PATH);

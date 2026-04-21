@@ -28,10 +28,10 @@ class BrowseTermTest {
 
     /**
      * @see BrowseTerm#addToHitCount(int)
-     * @verifies add to hit count correctly
+     * @verifies accumulate successive additions into the total hit count
      */
     @Test
-    void addToHitCount_shouldAddToHitCountCorrectly() throws Exception {
+    void addToHitCount_shouldAccumulateSuccessiveAdditionsIntoTheTotalHitCount() throws Exception {
         BrowseTerm browseTerm = new BrowseTerm("foo", null, null);
         Assertions.assertEquals(0, browseTerm.getHitCount());
 

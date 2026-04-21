@@ -50,7 +50,7 @@ class DataManagerTest {
     }
 
     /**
-     * @see DataManager#registerModule(IModule)
+     * @see DataManager#registerModule(io.goobi.viewer.modules.IModule)
      * @verifies not add module if it's already registered
      */
     @Test
@@ -207,8 +207,8 @@ class DataManagerTest {
     }
 
     /**
+     * @verifies close client without check reload needed
      * @see DataManager#closeSearchIndex()
-     * @verifies close searchIndex without calling checkReloadNeeded
      */
     @Test
     void closeSearchIndex_shouldCloseClientWithoutCheckReloadNeeded() throws Exception {
@@ -218,6 +218,22 @@ class DataManagerTest {
         DataManager.getInstance().closeSearchIndex();
 
         Mockito.verify(mockIndex, Mockito.times(1)).close();
+        Mockito.verify(mockIndex, Mockito.never()).checkReloadNeeded();
+    }
+
+    /**
+     * @see DataManager#closeSearchIndex()
+     * @verifies close searchIndex without calling checkReloadNeeded
+     */
+    @Test
+    void closeSearchIndex_shouldCloseSearchIndexWithoutCallingCheckReloadNeeded() throws Exception {
+        // Verify that closeSearchIndex() delegates directly to close() without triggering checkReloadNeeded()
+        SolrSearchIndex mockIndex = Mockito.mock(SolrSearchIndex.class);
+        DataManager.getInstance().injectSearchIndex(mockIndex);
+
+        DataManager.getInstance().closeSearchIndex();
+
+        Mockito.verify(mockIndex).close();
         Mockito.verify(mockIndex, Mockito.never()).checkReloadNeeded();
     }
 }

@@ -42,8 +42,28 @@ class ClientApplicationTest extends AbstractDatabaseEnabledTest {
         dao = DataManager.getInstance().getDao();
     }
 
+    /**
+     * @see ClientApplication#getId()
+     * @verifies save
+     */
     @Test
-    void testSave() throws DAOException {
+    void getId_shouldSave() throws DAOException {
+        // Verify that after saving, getId() returns a non-null database-generated ID
+        ClientApplication client = new ClientApplication("test-id-persist");
+        dao.saveClientApplication(client);
+        assertNotNull(client.getId());
+
+        ClientApplication loaded = dao.getClientApplication(client.getId());
+        assertNotNull(loaded);
+        assertEquals(client.getId(), loaded.getId());
+    }
+
+    /**
+     * @verifies save load and update client application via DAO
+     * @see IDAO#saveClientApplication
+     */
+    @Test
+    void saveClientApplication_shouldSaveLoadAndUpdateClientApplicationViaDao() throws DAOException {
         ClientApplication client = new ClientApplication();
         client.setClientIdentifier("abcd");
         dao.saveClientApplication(client);

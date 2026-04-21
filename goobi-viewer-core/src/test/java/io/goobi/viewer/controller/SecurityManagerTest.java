@@ -29,7 +29,6 @@ import io.goobi.viewer.AbstractTest;
 class SecurityManagerTest extends AbstractTest {
 
     /**
-     * @see SecurityManager#getDelay(int,long,long)
      * @verifies return zero if attempts zero
      */
     @Test

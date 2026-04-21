@@ -50,6 +50,7 @@ import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.solr.SolrConstants;
@@ -79,10 +80,10 @@ public class MetsResolver extends HttpServlet {
     /**
      * {@inheritDoc}
      * 
-     * @should return METS file correctly via pi
-     * @should return METS file correctly via urn
-     * @should return LIDO file correctly
-     * @should return EAD file correctly
+     * @should return HTTP 200 with valid METS XML when requested by PI
+     * @should return HTTP 200 with valid METS XML when requested by URN
+     * @should return HTTP 200 with valid LIDO XML when requested by PI
+     * @should return HTTP 200 with valid EAD XML when requested by PI
      * @should return 404 if record not in index
      * @should return 404 if file not found
      * @should return 409 if more than one record matched
@@ -147,11 +148,12 @@ public class MetsResolver extends HttpServlet {
         SolrDocument doc = hits.get(0);
         id = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
 
-        // If the user has no listing privilege for this record, act as if it does not exist
-        boolean access = false;
+        // If the user has no listing privilege for this record, act as if it does not exist.
+        // Keep the full AccessPermission (not just the boolean) so the denial reason — access
+        // conditions from the Solr doc and any ticket requirements — can be logged below.
+        AccessPermission permission;
         try {
-            access =
-                    AccessConditionUtils.checkAccessPermissionBySolrDoc(doc, query, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, request).isGranted();
+            permission = AccessConditionUtils.checkAccessPermissionBySolrDoc(doc, query, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, request);
         } catch (IndexUnreachableException | DAOException e) {
             logger.error(e.getMessage(), e);
             try {
@@ -161,8 +163,10 @@ public class MetsResolver extends HttpServlet {
             }
             return;
         }
-        if (!access) {
-            logger.debug("User may not download metadata for {}", id);
+        if (!permission.isGranted()) {
+            logger.debug("User may not download metadata for {} (access conditions: {}, access ticket required: {}, download ticket required: {})",
+                    id, doc.getFieldValues(SolrConstants.ACCESSCONDITION), permission.isAccessTicketRequired(),
+                    permission.isDownloadTicketRequired());
             try {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);
             } catch (IOException e) {

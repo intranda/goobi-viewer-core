@@ -58,8 +58,11 @@ class QuestionTest extends AbstractDatabaseEnabledTest {
         super.tearDown();
     }
 
+    /**
+     * @verifies return english translation from database
+     */
     @Test
-    void loadTranslation() throws DAOException {
+    void getText_shouldReturnEnglishTranslationFromDatabase() throws DAOException {
         Question question1 =
                 DataManager.getInstance().getDao().getCampaign(1l).getQuestions().stream().filter(q -> q.getId().equals(1l)).findFirst().orElse(null);
         Assertions.assertNotNull(question1);
@@ -68,8 +71,11 @@ class QuestionTest extends AbstractDatabaseEnabledTest {
         Assertions.assertEquals("English text", trEnglish);
     }
 
+    /**
+     * @verifies add german translation to existing question
+     */
     @Test
-    void addTranslation() throws DAOException {
+    void setText_shouldAddGermanTranslationToExistingQuestion() throws DAOException {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(1l);
         Question question1 = campaign.getQuestions().stream().filter(q -> q.getId().equals(1l)).findFirst().orElse(null);
         Assertions.assertNotNull(question1);
@@ -80,8 +86,11 @@ class QuestionTest extends AbstractDatabaseEnabledTest {
         Assertions.assertEquals(2, question1.getText().toMap().size());
     }
 
+    /**
+     * @verifies persist added translation
+     */
     @Test
-    void persistTranslation() {
+    void updateCampaign_shouldPersistAddedTranslation() {
         try {
             Campaign campaign = DataManager.getInstance().getDao().getCampaign(1l);
             Question question = campaign.getQuestions().stream().filter(q -> q.getId().equals(1l)).findFirst().orElse(null);
@@ -98,21 +107,19 @@ class QuestionTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see Question#getCampaignId(URI)
-     * @verifies extract id correctly
+     * @verifies extract campaign ID from crowdsourcing campaign URI path
      */
     @Test
-    void getCampaignId_shouldExtractIdCorrectly() throws Exception {
+    void getCampaignId_shouldExtractCampaignIDFromCrowdsourcingCampaignURIPath() throws Exception {
         Assertions.assertEquals(Long.valueOf(1234567890L),
                 Question.getCampaignId(new URI("https://example.com/viewer/crowdsourcing/campaigns/1234567890/questions/9876543210/")));
     }
 
     /**
-     * @see Question#getQuestionId(URI)
-     * @verifies extract id correctly
+     * @verifies extract question ID from crowdsourcing question URI path
      */
     @Test
-    void getQuestionId_shouldExtractIdCorrectly() throws Exception {
+    void getQuestionId_shouldExtractQuestionIDFromCrowdsourcingQuestionURIPath() throws Exception {
         Assertions.assertEquals(Long.valueOf(9876543210L),
                 Question.getQuestionId(new URI("https://example.com/viewer/crowdsourcing/campaigns/1234567890/questions/9876543210/")));
     }

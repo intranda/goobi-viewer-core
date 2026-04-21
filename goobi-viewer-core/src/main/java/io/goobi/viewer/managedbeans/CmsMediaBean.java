@@ -318,6 +318,7 @@ public class CmsMediaBean implements Serializable {
      *
      * @return a list of categorizable translated selectable CMS media items for the current page in the paginated media list
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return 4 for given input
      */
     public List<CategorizableTranslatedSelectable<CMSMediaItem>> getMediaItems() throws DAOException {
         return this.dataProvider.getPaginatorList();
@@ -390,6 +391,7 @@ public class CmsMediaBean implements Serializable {
      * @return the URL to the given CMS media item at its natural size
      * @throws java.lang.NumberFormatException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should return true for given input
      */
     public static String getMediaUrl(CMSMediaItem item) throws NumberFormatException {
         return getMediaUrl(item, null, null);
@@ -623,6 +625,7 @@ public class CmsMediaBean implements Serializable {
      * Getter for the field <code>selectedTag</code>.
      *
      * @return the tag currently selected to filter the media list
+     * @should selected tag
      */
     public String getSelectedTag() {
         return selectedTag;
@@ -633,6 +636,7 @@ public class CmsMediaBean implements Serializable {
      *
      * @return a list of all CMS categories available for media items
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return collection with 7 elements
      */
     public List<CMSCategory> getAllMediaCategories() throws DAOException {
         return DataManager.getInstance().getDao().getAllCategories();
@@ -642,6 +646,7 @@ public class CmsMediaBean implements Serializable {
      * getImageFilter.
      *
      * @return a regex matching only filenames ending with one of the supported image format suffixes
+     * @should return true for given input
      */
     public static String getImageFilter() {
         return String.format(FILE_TYPE_REGEX_TEMPLATE, IMAGE_FILE_TYPE_VALIDATION_REGEX);

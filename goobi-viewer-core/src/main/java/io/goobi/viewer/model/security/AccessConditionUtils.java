@@ -348,6 +348,10 @@ public final class AccessConditionUtils {
      * 
      * @param session The session in which the user data is stored
      * @return The user logged into the given session. May be null if no user is logged in
+     * @should return null for null session
+     * @should return user from direct session attribute
+     * @should return null without session scan when cdi returns null user
+     * @should return user via session scan when stored under non standard key
      */
     public static User retrieveUserFromContext(HttpSession session) {
         try {
@@ -375,7 +379,8 @@ public final class AccessConditionUtils {
      *   <li>One Solr query: {@code +PI_TOPSTRUCT:pi +DOCTYPE:PAGE} (fields: ORDER, ACCESSCONDITION)</li>
      *   <li>One DAO call: {@code getRecordLicenseTypes()}</li>
      *   <li>One user + IP resolution from {@code request}</li>
-     *   <li>In-memory evaluation of VIEW_IMAGES, VIEW_FULLTEXT, DOWNLOAD_PAGE_PDF per page</li>
+     *   <li>In-memory evaluation of VIEW_IMAGES, VIEW_THUMBNAILS, ZOOM_IMAGES,
+     *   DOWNLOAD_IMAGES, VIEW_FULLTEXT, DOWNLOAD_PAGE_PDF per page</li>
      * </ol>
      *
      * @param pi persistent identifier of the record
@@ -383,6 +388,10 @@ public final class AccessConditionUtils {
      * @return populated {@link PagePermissions};
      *         {@link PagePermissions#EMPTY} when pi is blank, when no pages are found,
      *         or when a Solr/DAO error occurs (logged at WARN)
+     * @should return granted permissions for open access record
+     * @should return empty for blank pi
+     * @should return empty for null pi
+     * @should populate all six privilege maps for open access record
      */
     public static PagePermissions fetchPagePermissions(String pi, HttpServletRequest request) {
         if (StringUtils.isBlank(pi)) {
@@ -408,6 +417,11 @@ public final class AccessConditionUtils {
             Optional<ClientApplication> client = ClientApplicationManager.getClientFromRequest(request);
 
             Map<Integer, AccessPermission> imageMap = HashMap.newHashMap(pageDocs.size());
+            // Added three additional privilege maps so IIIF builders and PhysicalElement seeding
+            // can rely on a single prefetch for every per-page privilege (refs #27883).
+            Map<Integer, AccessPermission> thumbnailMap = HashMap.newHashMap(pageDocs.size());
+            Map<Integer, AccessPermission> zoomMap = HashMap.newHashMap(pageDocs.size());
+            Map<Integer, AccessPermission> downloadMap = HashMap.newHashMap(pageDocs.size());
             Map<Integer, AccessPermission> fulltextMap = HashMap.newHashMap(pageDocs.size());
             Map<Integer, AccessPermission> pdfMap = HashMap.newHashMap(pageDocs.size());
 
@@ -423,16 +437,24 @@ public final class AccessConditionUtils {
                         ? acValues.stream().map(Object::toString).collect(Collectors.toSet())
                         : Collections.emptySet();
 
-                // Evaluate all three privilege types against this page's access conditions
+                // Evaluate all six privilege types against this page's access conditions; all
+                // checks reuse the shared licenseTypes/user/IP/client resolved above – no
+                // additional Solr/DAO calls are issued here.
                 imageMap.put(order, checkAccessPermission(licenseTypes, accessConditions,
                         IPrivilegeHolder.PRIV_VIEW_IMAGES, user, ipAddress, client, query));
+                thumbnailMap.put(order, checkAccessPermission(licenseTypes, accessConditions,
+                        IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, user, ipAddress, client, query));
+                zoomMap.put(order, checkAccessPermission(licenseTypes, accessConditions,
+                        IPrivilegeHolder.PRIV_ZOOM_IMAGES, user, ipAddress, client, query));
+                downloadMap.put(order, checkAccessPermission(licenseTypes, accessConditions,
+                        IPrivilegeHolder.PRIV_DOWNLOAD_IMAGES, user, ipAddress, client, query));
                 fulltextMap.put(order, checkAccessPermission(licenseTypes, accessConditions,
                         IPrivilegeHolder.PRIV_VIEW_FULLTEXT, user, ipAddress, client, query));
                 pdfMap.put(order, checkAccessPermission(licenseTypes, accessConditions,
                         IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF, user, ipAddress, client, query));
             }
 
-            return new PagePermissions(imageMap, fulltextMap, pdfMap);
+            return new PagePermissions(imageMap, thumbnailMap, zoomMap, downloadMap, fulltextMap, pdfMap);
 
         } catch (PresentationException | IndexUnreachableException | DAOException e) {
             logger.warn("Failed to prefetch page permissions for PI '{}': {}", pi, e.getMessage());
@@ -465,9 +487,9 @@ public final class AccessConditionUtils {
      * @should return empty list for null pi
      * @should return filenames for open access record
      * @should return empty list for record with no files indexed
-     * @should return empty list for restricted record when anonymous
      * @should return bare filenames not full paths
      * @should work for fulltext field
+     * @should return empty list for restricted record anonymous
      */
     public static List<String> fetchAccessibleFileNames(String pi, String filenameField,
             String privilegeType, HttpServletRequest request) {
@@ -918,6 +940,13 @@ public final class AccessConditionUtils {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return true if required access conditions empty
+     * @should return true if ip range allows access
+     * @should return true if required access conditions contain only open access
+     * @should return true if all license types allow privilege by default
+     * @should return false if not all license types allow privilege by default
+     * @should return true if ip range allows access to all conditions
+     * @should not return true if no ip range matches
      */
     public static AccessPermission checkAccessPermission(Set<String> requiredAccessConditions, String privilegeName, String query,
             HttpServletRequest request) throws IndexUnreachableException, PresentationException, DAOException {
@@ -1086,6 +1115,7 @@ public final class AccessConditionUtils {
      * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should remove PRIV_ attributes of the previous pi on pi change
      */
     @SuppressWarnings("unchecked")
     public static AccessPermission checkAccessPermissionByIdentifierAndFileNameWithSessionMap(HttpSession session, String pi,
@@ -1104,12 +1134,22 @@ public final class AccessConditionUtils {
             // logger.trace("Session attribute not found, creating new"); //NOSONAR Debug
         }
         // logger.debug("Permissions found, " + permissions.size() + " items."); //NOSONAR Debug
-        // new pi -> create an new empty map in the session
+        // new pi -> remove PRIV_ caches tied to the previous pi so they do not accumulate
         if (session != null && !pi.equals(session.getAttribute("currentPi"))) {
+            // Previously only the current attributeName was removed, which left stale
+            // PRIV_VIEW_IMAGES_<oldPi>_*, PRIV_DOWNLOAD_PDF_<oldPi>_* etc. lingering in the
+            // session (observed as 3 million attributes on ZLB's crawler session). Capture the
+            // previous pi *before* overwriting currentPi, then remove only PRIV_ keys that refer
+            // to the old pi — this preserves caches for other pis so multi-tab users do not pay
+            // a Solr roundtrip on every tab switch. refs #27880
+            String oldPi = (String) session.getAttribute("currentPi");
             session.setAttribute("currentPi", pi);
+            if (oldPi != null) {
+                removePrivAttributesForPi(session, oldPi);
+            }
             session.removeAttribute(attributeName);
             permissions = new HashMap<>();
-            // logger.trace("PI has changed, permissions map reset."); //NOSONAR Debug
+            // logger.trace("PI has changed, old-pi PRIV_ attributes purged."); //NOSONAR Debug
         }
         String key = new StringBuilder(pi).append('_').append(contentFileName).toString();
         // pi already checked -> look in the session
@@ -1430,8 +1470,6 @@ public final class AccessConditionUtils {
      * @should throw RecordNotFoundException if record not found
      * @should return 100 if record has no quota value
      * @should return 100 if record open access
-     * @should return 0 if no license configured
-     * @should return actual quota value if found
      */
     public static int getPdfDownloadQuotaForRecord(String pi)
             throws PresentationException, IndexUnreachableException, DAOException, RecordNotFoundException {
@@ -1541,6 +1579,7 @@ public final class AccessConditionUtils {
      * @param dao DAO instance used to retrieve licenses and IP ranges
      * @return List<License>
      * @throws DAOException
+     * @should return empty collection for given input
      */
     public static List<License> getApplyingLicenses(Optional<User> user, String ipAddress, LicenseType type, IDAO dao) throws DAOException {
         List<License> licenses = dao.getLicenses(type);
@@ -1612,6 +1651,7 @@ public final class AccessConditionUtils {
      * @param attributeValue permission value to store in the session
      * @param session HTTP session to store the attribute in
      * @return true if successful; false otherwise
+     * @should return false for given input
      */
     public static boolean addSessionPermission(String attributeName, Object attributeValue, HttpSession session) {
         // logger.trace("addSessionPermission: {}", attributeName); //NOSONAR Debug
@@ -1671,6 +1711,54 @@ public final class AccessConditionUtils {
         }
 
         return ret;
+    }
+
+    /**
+     * Removes all PRIV_* session attributes whose key references the given pi. The key schemes
+     * used in this class are
+     * <ul>
+     *   <li>{@code PRIV_<privilegeType>_<pi>_<fileName>} (see line 1113),</li>
+     *   <li>{@code PRIV_<privilegeName>_<identifier>} (see line 756),</li>
+     *   <li>{@code PRIV_DOWNLOAD_ORIGINAL_CONTENT_<identifier>} (see line 828).</li>
+     * </ul>
+     * The middle-match catches the first scheme, the suffix-match catches the other two.
+     *
+     * <p>Package-private so the unit test can exercise it in isolation from the Solr/DB-backed
+     * permission pipeline. refs #27880
+     *
+     * @param session HTTP session whose attribute table is inspected
+     * @param pi persistent identifier whose cached PRIV_* attributes should be removed
+     * @return number of attributes removed
+     * @should remove only PRIV_ attributes of the given pi
+     */
+    static int removePrivAttributesForPi(HttpSession session, String pi) {
+        if (session == null || pi == null) {
+            return 0;
+        }
+        Enumeration<String> attributeNames;
+        try {
+            attributeNames = session.getAttributeNames();
+        } catch (IllegalStateException e) {
+            return 0;
+        }
+        Set<String> toRemove = new HashSet<>();
+        String middle = "_" + pi + "_";
+        String suffix = "_" + pi;
+        while (attributeNames.hasMoreElements()) {
+            String name = attributeNames.nextElement();
+            if (name.startsWith(IPrivilegeHolder.PREFIX_PRIV)
+                    && (name.contains(middle) || name.endsWith(suffix))) {
+                toRemove.add(name);
+            }
+        }
+        for (String name : toRemove) {
+            try {
+                session.removeAttribute(name);
+            } catch (IllegalStateException e) {
+                logger.debug("Cannot remove session attribute '{}': session has already been invalidated", name);
+            }
+        }
+        return toRemove.size();
     }
 
     /**

@@ -21,6 +21,7 @@ import static org.mockito.Mockito.verify;
 
 import java.awt.Dimension;
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -47,8 +48,12 @@ class CanvasBuilderTest extends AbstractSolrEnabledTest {
     ApiUrls urls = new ApiUrls("http://localhost:8080/viewer/api/v2");
     CanvasBuilder builder = new CanvasBuilder(urls, null);
 
+    /**
+     * @verifies include image
+     * @see CanvasBuilder#build
+     */
     @Test
-    void test_build_shouldIncludeImage()
+    void build_shouldIncludeImage()
             throws ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException, DAOException {
 
         PhysicalElement element = Mockito.mock(PhysicalElement.class);
@@ -86,9 +91,10 @@ class CanvasBuilderTest extends AbstractSolrEnabledTest {
      * When a non-empty PagePermissions is pre-loaded onto the builder, build(page) must NOT call
      * page.isAccessPermissionImage() or page.isAccessPermissionFulltext() — the pre-fetched map
      * is used instead, eliminating per-page Solr queries in the manifest loop.
+     * @verifies build for given input
      */
     @Test
-    void test_build_usesPrefetchedPermissionsWithoutCallingPageMethods()
+    void build_shouldBuildForGivenInput()
             throws ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException, DAOException {
 
         PhysicalElement element = Mockito.mock(PhysicalElement.class);
@@ -102,9 +108,15 @@ class CanvasBuilderTest extends AbstractSolrEnabledTest {
         Mockito.when(element.getMediaType()).thenReturn(new MimeType("image/tiff"));
         Mockito.when(element.getMimeType()).thenReturn("image/tiff");
 
-        // Inject non-empty pre-fetched permissions via package-private setter
+        // Inject non-empty pre-fetched permissions via package-private setter.
+        // After PagePermissions was extended to 6 privilege maps (image, thumbnail, zoom,
+        // download, fulltext, pdf), only image/fulltext/pdf are relevant here; the other
+        // three stay empty because this test only verifies image + fulltext behaviour.
         builder.setPagePermissions(new PagePermissions(
                 Map.of(1, AccessPermission.granted()),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
                 Map.of(1, AccessPermission.granted()),
                 Map.of(1, AccessPermission.granted())));
 
@@ -119,11 +131,10 @@ class CanvasBuilderTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see CanvasBuilder#addImageResource(Canvas3, PhysicalElement)
-     * @verifies use prefetched dimension cache without calling ImageHandler when dimensions cached
+     * @verifies return 1200 for given input
      */
     @Test
-    void test_build_usesDimensionCacheWithoutCallingImageHandler()
+    void build_shouldReturn1200ForGivenInput()
             throws ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException, DAOException {
 
         PhysicalElement element = Mockito.mock(PhysicalElement.class);

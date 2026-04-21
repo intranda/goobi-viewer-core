@@ -48,7 +48,6 @@ class JsonToolsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see JsonTools#getRecordJsonObject(SolrDocument,String)
      * @verifies add all metadata
      */
     @Test
@@ -80,10 +79,10 @@ class JsonToolsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see JsonTools#formatVersionString(String)
-     * @verifies format string correctly
+     * @verifies concatenate application version build date and git revision from JSON into single line
      */
     @Test
-    void formatVersionString_shouldFormatStringCorrectly() {
+    void formatVersionString_shouldConcatenateApplicationVersionBuildDateAndGitRevisionFromJSONIntoSingleLine() {
         Assertions.assertEquals("goobi-viewer-core 1337 2020-06-30 abcdefg",
                 JsonTools.formatVersionString(
                         "{\"application\": \"goobi-viewer-core\", \"version\": \"1337\", \"build-date\": \"2020-06-30\", \"git-revision\": \"abcdefg\"}"));
@@ -100,10 +99,10 @@ class JsonToolsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see JsonTools#shortFormatVersionString(String)
-     * @verifies format string correctly
+     * @verifies return version and git revision in short format from JSON
      */
     @Test
-    void shortFormatVersionString_shouldFormatStringCorrectly() {
+    void shortFormatVersionString_shouldReturnVersionAndGitRevisionInShortFormatFromJSON() {
         Assertions.assertEquals("1337 (abcdefg)",
                 JsonTools.shortFormatVersionString(
                         "{\"application\": \"goobi-viewer-core\", \"version\": \"1337\", \"build-date\": \"2020-06-30\", \"git-revision\": \"abcdefg\"}"));
@@ -119,11 +118,10 @@ class JsonToolsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see JsonTools#createJsonObjectFromSolrDoc(SolrDocument,Map)
-     * @verifies create json object correctly
+     * @verifies map Solr fields and constant values to JSON object according to field mapping config
      */
     @Test
-    void createJsonObjectFromSolrDoc_shouldCreateJsonObjectCorrectly() {
+    void createJsonObjectFromSolrDoc_shouldMapSolrFieldsAndConstantValuesToJSONObjectAccordingToFieldMappingConfig() {
         SolrDocument doc = new SolrDocument();
         doc.addField("MD_FOO", "foo");
         doc.addField("MD_BAR", "bar");
@@ -147,7 +145,6 @@ class JsonToolsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see JsonTools#createJsonObjectFromSolrDoc(SolrDocument,Map)
      * @verifies throw IllegalArgumentException if args missing
      */
     @Test
@@ -161,8 +158,11 @@ class JsonToolsTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals("fields may not be null", e.getMessage());
     }
 
+    /**
+     * @verifies return gotcha for given input
+     */
     @Test
-    void test_getNestedValue() {
+    void getNestedValue_shouldReturnGotchaForGivenInput() {
         String directlyInObject = "{\"a\": {\"b\":\"c\"}, \"d\": \"e\", \"catch\": \"gotcha\", \"f\": \"g\"}";
         String inSubObject = "{\"a\": {\"b\":\"c\"}, \"d\": \"e\", \"h\": {\"catch\": \"gotcha\"}, \"f\": \"g\"}";
         String inArray = "{\"a\": {\"b\":\"c\"}, \"d\": \"e\", \"h\": [{\"j\": \"k\"}, {\"catch\": \"gotcha\"}], \"f\": \"g\"}";

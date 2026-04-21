@@ -40,8 +40,12 @@ import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
 
 class PageListSidebarWidgetTest extends AbstractDatabaseEnabledTest {
 
+    /**
+     * @verifies store and reload page IDs via DAO
+     * @see PageListSidebarWidget
+     */
     @Test
-    void testPersist() throws DAOException {
+    void persist_shouldStoreAndReloadPageIds() throws DAOException {
         PageListSidebarWidget widget = new PageListSidebarWidget();
         widget.getDescription().setValue("Beschreibung", Locale.GERMAN);
         widget.getDescription().setValue("Description", Locale.ENGLISH);
@@ -58,8 +62,12 @@ class PageListSidebarWidgetTest extends AbstractDatabaseEnabledTest {
         assertTrue(CollectionUtils.isEqualCollection(widget.getPageIds(), copy.getPageIds()));
     }
 
+    /**
+     * @verifies clone page list via copy constructor
+     * @see PageListSidebarWidget#PageListSidebarWidget(PageListSidebarWidget)
+     */
     @Test
-    void testClone() {
+    void copyConstructor_shouldClonePageList() {
         PageListSidebarWidget widget = new PageListSidebarWidget();
         widget.getTitle().setValue("Titel", Locale.GERMAN);
         widget.setPageIds(List.of(23l, 93l, 1023l, 2l));
@@ -69,8 +77,12 @@ class PageListSidebarWidgetTest extends AbstractDatabaseEnabledTest {
         assertTrue(CollectionUtils.isEqualCollection(widget.getPageList().getPages(), clone.getPageList().getPages()));
     }
 
+    /**
+     * @verifies return correct type
+     * @see PageListSidebarWidget#getType()
+     */
     @Test
-    void testType() {
+    void getType_shouldReturnCorrectType() {
         assertEquals(CustomWidgetType.WIDGET_CMSPAGES, new PageListSidebarWidget().getType());
     }
 }

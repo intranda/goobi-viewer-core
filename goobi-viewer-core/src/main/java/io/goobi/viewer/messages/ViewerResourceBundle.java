@@ -193,6 +193,7 @@ public class ViewerResourceBundle extends ResourceBundle {
      * Getter for the field <code>defaultLocale</code>.
      *
      * @return the default application locale, falling back to English if not configured
+     * @should return expected value for given input
      */
     public static Locale getDefaultLocale() {
         if (defaultLocale == null) {
@@ -308,6 +309,7 @@ public class ViewerResourceBundle extends ResourceBundle {
      * @param key message key to translate
      * @param locale desired locale for the translation
      * @return the translated message for the given key and locale, or the key itself if no translation is found
+     * @should return Autor for given input
      */
     public static String getTranslation(final String key, Locale locale) {
         return getTranslation(key, locale, true, true);
@@ -617,6 +619,7 @@ public class ViewerResourceBundle extends ResourceBundle {
      *
      * @param key the message key
      * @return A Multilanguage metadata value containing all found translations for the {@code key}, or the key itself if not translations were found
+     * @should return true for given input
      */
     public static IMetadataValue getTranslations(String key) {
         return getTranslations(key, true);
@@ -647,7 +650,8 @@ public class ViewerResourceBundle extends ResourceBundle {
      * Getter for the field <code>allLocales</code>.
      *
      * @return a list of all locales supported by the JSF application
-     * @should return English if no other locales found
+     * @should return collection with 2 elements
+     * @should return english for unknown languages
      */
     public static List<Locale> getAllLocales() {
         if (allLocales == null) {
@@ -749,6 +753,7 @@ public class ViewerResourceBundle extends ResourceBundle {
 
     /**
      * Creates a local messages_xx.properties file for every locale in the Faces context, if not already present.
+     * @should create locale-specific message properties files in the config folder
      */
     public static void createLocalMessageFiles() {
         createLocalMessageFiles(getAllLocales());
@@ -790,6 +795,7 @@ public class ViewerResourceBundle extends ResourceBundle {
      * @return {@link Locale}s configured in given file path
      * @throws IOException
      * @throws JDOMException
+     * @should return collection with 6 elements
      */
     public static List<Locale> getLocalesFromFile(Path facesConfigPath) throws IOException, JDOMException {
         Document doc = XmlTools.readXmlFile(facesConfigPath);

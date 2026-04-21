@@ -53,10 +53,10 @@ class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see TOC#getNumPages()
-     * @verifies calculate number correctly
+     * @verifies return ceiling division of total TOC size by page size
      */
     @Test
-    void getNumPages_shouldCalculateNumberCorrectly() {
+    void getNumPages_shouldReturnCeilingDivisionOfTotalTOCSizeByPageSize() {
         TOC toc = new TOC();
         toc.setTotalTocSize(70);
         Assertions.assertEquals(7, toc.getNumPages());
@@ -65,7 +65,6 @@ class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see TOC#getLabel(String)
      * @verifies return correct label
      */
     @Test
@@ -118,8 +117,11 @@ class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals(7, toc.getCurrentPage());
     }
 
+    /**
+     * @verifies expand ancestors of target element
+     */
     @Test
-    void expandToCurrentStruct() {
+    void buildTree_shouldExpandAncestorsOfTargetElement() {
         TOC toc = new TOC();
         Map<String, List<TOCElement>> tocElementMap = new HashMap<>();
         TOCElement top = new TOCElement(null, "1", null, "1", "LOG_0001", 0, null, null, false, false, false, null, null, null);
@@ -156,8 +158,8 @@ class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @verifies not throw NPE when group not in map
      * @see TOC#buildTree(String, int, int, int, String)
-     * @verifies not throw NPE when group not in tocElementMap
      */
     @Test
     void buildTree_shouldNotThrowNPEWhenGroupNotInMap() {
@@ -173,7 +175,25 @@ class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see TOC#getTreeViewForGroup(String)
+     * Test that buildTree does not throw an NPE when the requested group name
+     * is not present in tocElementMap.
+     *
+     * @see TOC#buildTree(String, int, int, int, String)
+     * @verifies not throw NPE when group not in tocElementMap
+     */
+    @Test
+    void buildTree_shouldNotThrowNPEWhenGroupNotInTocElementMap() {
+        TOC toc = new TOC();
+        Map<String, List<TOCElement>> map = new HashMap<>();
+        // Only add the default group — the "missingGroup" key is intentionally absent
+        map.put(StringConstants.DEFAULT_NAME, new ArrayList<>());
+        toc.setTocElementMap(map);
+
+        // Calling buildTree with a group that does not exist in the map must not throw NPE
+        Assertions.assertDoesNotThrow(() -> toc.buildTree("missingGroup", 1, 5, 0, null));
+    }
+
+    /**
      * @verifies not throw NPE when ViewManager is null
      */
     @Test

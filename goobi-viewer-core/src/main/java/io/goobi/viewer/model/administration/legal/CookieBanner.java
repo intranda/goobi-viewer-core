@@ -142,6 +142,7 @@ public class CookieBanner implements Serializable {
     /**
      *
      * @return the {@link CookieBanner#ignoreList}
+     * @should persistence
      */
     public List<Long> getIgnoreList() {
         return ignoreList;

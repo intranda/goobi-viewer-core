@@ -167,10 +167,9 @@ public class CitationLink {
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws DAOException
-     * @should construct internal record url correctly
-     * @should construct internal docstruct url correctly
-     * @should construct internal image url correctly
-     * @should construct external url correctly
+     * @should return record page URL with PI and page 1 for internal record type
+     * @should return image URL with PI and current page number for internal image type
+     * @should return docstruct URL with PI page and log id for internal docstruct type
      */
     public String getUrl(ViewManager viewManager) throws PresentationException, IndexUnreachableException, DAOException {
         // logger.trace("getUrl: {}/{}", level, field); //NOSONAR Debug

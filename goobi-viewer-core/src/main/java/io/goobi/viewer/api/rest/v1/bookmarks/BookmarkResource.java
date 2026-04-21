@@ -39,24 +39,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-import jakarta.inject.Inject;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import jakarta.ws.rs.BadRequestException;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.PATCH;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-
 import org.apache.commons.lang3.StringUtils;
 
 import de.intranda.api.iiif.presentation.v2.Collection2;
@@ -87,6 +69,23 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PATCH;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * REST resource for managing user bookmark lists including creation, sharing, and export in multiple formats.
@@ -174,8 +173,6 @@ public class BookmarkResource {
             @Parameter(description = "The id of the bookmark list",
                     schema = @Schema(minimum = "1", maximum = "9223372036854775807")) @PathParam("listId") Long id)
             throws DAOException, IOException, RestApiException {
-        // Enforce the schema minimum=1: listId=0 is technically parseable as Long but has no valid
-        // bookmark list associated and would silently return the session list instead.
         requireValidListId(id);
         return builder.getBookmarkListById(id);
     }
@@ -469,16 +466,19 @@ public class BookmarkResource {
     }
 
     /**
-     * Validates that the given bookmark list ID is at least 1.
+     * Validates that the given bookmark list ID is at least 1 if a user bookmarklist is requested
      *
-     * <p>The schema documents minimum=1, but JAX-RS does not enforce schema constraints server-side.
-     * Without this check, listId=0 silently returns the session list instead of a 400.
+     * <p>
+     * The schema documents minimum=1, but JAX-RS does not enforce schema constraints server-side. Without this check, listId=0 silently returns the
+     * session list instead of a 400.
      *
      * @param id the listId path parameter value
-     * @throws BadRequestException if id is null or less than 1
+     * @throws BadRequestException if id is null or less than 1 and {@link #builder} is no {@link SessionBookmarkResourceBuilder}
      */
     private void requireValidListId(Long id) {
-        if (id != null && id < 1) {
+        if (this.builder instanceof SessionBookmarkResourceBuilder) {
+            return;
+        } else if (id != null && id < 1) {
             throw new BadRequestException("Bookmark list ID must be at least 1, got: " + id);
         }
     }
@@ -486,9 +486,9 @@ public class BookmarkResource {
     /**
      * Parses the "max" query parameter string to an Integer.
      *
-     * <p>Returns null if the string is null, blank, the literal "null", or not a valid integer.
-     * This is needed because some clients send ?max=null (the string "null") which JAX-RS
-     * cannot auto-convert to Integer and would throw a NumberFormatException (HTTP 500).
+     * <p>
+     * Returns null if the string is null, blank, the literal "null", or not a valid integer. This is needed because some clients send ?max=null (the
+     * string "null") which JAX-RS cannot auto-convert to Integer and would throw a NumberFormatException (HTTP 500).
      *
      * @param maxStr the raw query parameter value
      * @return parsed Integer, or null if absent or invalid

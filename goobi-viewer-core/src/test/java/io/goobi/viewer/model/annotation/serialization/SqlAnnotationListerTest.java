@@ -58,13 +58,21 @@ class SqlAnnotationListerTest {
         lister = new SqlAnnotationLister(dao);
     }
 
+    /**
+     * @verifies return expected value
+     * @see SqlAnnotationLister#getAllAnnotations
+     */
     @Test
-    void testGetAllAnnotations() {
+    void getAllAnnotations_shouldReturnExpectedValue() {
         assertEquals(7, lister.getAllAnnotations().size());
     }
 
+    /**
+     * @verifies filter annotations with condition
+     * @see SqlAnnotationLister#getAnnotationCount(String, List, List, List, String, Integer)
+     */
     @Test
-    void testGetAnnotationsWithCondition() {
+    void getAnnotationCount_shouldFilterWithCondition() {
         assertEquals(1, lister.getAnnotationCount("Text 1", null, null, null, null, null));
         assertEquals(7, lister.getAnnotationCount("Text", null, null, null, null, null));
         assertEquals(2, lister.getAnnotationCount(null, Arrays.asList("commenting"), null, null, null, null));
@@ -75,8 +83,12 @@ class SqlAnnotationListerTest {
         assertEquals(7, lister.getAnnotationCount(null, null, null, null, null, null));
     }
 
+    /**
+     * @verifies paginate annotation results
+     * @see SqlAnnotationLister#getAnnotations(int, int, String, List, List, List, String, Integer, String, boolean)
+     */
     @Test
-    void testGetAnnotationPage() {
+    void getAnnotations_shouldPaginateResults() {
         assertEquals(5, lister.getAnnotations(0, 5, null, null, null, null, null, null, "", false).size());
         assertEquals(2, lister.getAnnotations(5, 5, null, null, null, null, null, null, "", false).size());
     }

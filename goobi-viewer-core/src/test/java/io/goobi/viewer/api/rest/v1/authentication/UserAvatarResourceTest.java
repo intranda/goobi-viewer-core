@@ -37,8 +37,12 @@ import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
  */
 class UserAvatarResourceTest extends AbstractRestApiTest {
 
+    /**
+     * @verifies return 404 for missing avatar
+     * @see UserAvatarResource#getMediaFileUrl(Long)
+     */
     @Test
-    void testGetMissingAvatar() {
+    void getMediaFileUrl_shouldReturn404ForMissingAvatar() {
         String url = urls.path(USERS_USER_AVATAR_IMAGE).params(1l).build();
         try (Response response = target(url)
                 .request()

@@ -45,8 +45,11 @@ import jakarta.ws.rs.core.Response;
  */
 class RSSResourceTest extends AbstractRestApiTest {
 
+    /**
+     * @verifies limit results to max parameter
+     */
     @Test
-    void testRSSJsonMax() throws JsonProcessingException {
+    void getRssJsonFeed_shouldLimitResultsToMaxParameter() throws JsonProcessingException {
         try (Response response = target(urls.path(RECORDS_RSS, RECORDS_RSS_JSON).build())
                 .queryParam("max", 5)
                 .request()
@@ -60,8 +63,11 @@ class RSSResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies set channel language from lang parameter
+     */
     @Test
-    void testRSSJsonLang() throws JsonProcessingException {
+    void getRssJsonFeed_shouldSetChannelLanguageFromLangParameter() throws JsonProcessingException {
         try (Response response = target(urls.path(RECORDS_RSS, RECORDS_RSS_JSON).build())
                 .queryParam("lang", "en")
                 .request()
@@ -75,8 +81,11 @@ class RSSResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies filter results by query parameter
+     */
     @Test
-    void testRSSJsonQuery() throws JsonProcessingException {
+    void getRssJsonFeed_shouldFilterResultsByQueryParameter() throws JsonProcessingException {
         try (Response response = target(urls.path(RECORDS_RSS, RECORDS_RSS_JSON).build())
                 .queryParam("query", "MD_TITLE:Berlin")
                 .request()
@@ -92,8 +101,11 @@ class RSSResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies filter results by query and facet parameters
+     */
     @Test
-    void testRSSJsonFacets() throws JsonProcessingException {
+    void getRssJsonFeed_shouldFilterResultsByQueryAndFacetParameters() throws JsonProcessingException {
         try (Response response = target(urls.path(RECORDS_RSS, RECORDS_RSS_JSON).build())
                 .queryParam("query", "MD_TITLE:Berlin")
                 .queryParam("facets", "DOCSTRCT:volume")
@@ -111,8 +123,11 @@ class RSSResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies filter results by subtheme parameter
+     */
     @Test
-    void testRSSJsonSubtheme() throws JsonProcessingException {
+    void getRssJsonFeed_shouldFilterResultsBySubthemeParameter() throws JsonProcessingException {
         try (Response response = target(urls.path(RECORDS_RSS, RECORDS_RSS_JSON).build())
                 .queryParam("subtheme", "subtheme2")
                 .request()
@@ -126,8 +141,11 @@ class RSSResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return xml filtered by subtheme
+     */
     @Test
-    void testRSSXmlSubtheme() {
+    void getRssFeed_shouldReturnXmlFilteredBySubtheme() {
         try (Response response = target(urls.path(RECORDS_RSS).build())
                 .queryParam("subtheme", "subtheme2")
                 .request()
@@ -138,8 +156,11 @@ class RSSResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return status 200 with xml entity
+     */
     @Test
-    void testRSSXml() {
+    void getRssFeed_shouldReturnStatus200WithXmlEntity() {
         try (Response response = target(urls.path(RECORDS_RSS).build())
                 .request()
                 .accept(MediaType.TEXT_XML)
@@ -149,8 +170,11 @@ class RSSResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return status 400 for invalid solr query
+     */
     @Test
-    void testRSSXmlBadQuery() {
+    void getRssFeed_shouldReturnStatus400ForInvalidSolrQuery() {
         // A syntactically invalid Solr query must return 400, not 500
         try (Response response = target(urls.path(RECORDS_RSS).build())
                 .queryParam("query", ":::")
@@ -161,8 +185,11 @@ class RSSResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return status 400 for invalid solr query
+     */
     @Test
-    void testRSSJsonBadQuery() throws JsonProcessingException {
+    void getRssJsonFeed_shouldReturnStatus400ForInvalidSolrQuery() throws JsonProcessingException {
         // A syntactically invalid Solr query must return 400, not 500
         try (Response response = target(urls.path(RECORDS_RSS, RECORDS_RSS_JSON).build())
                 .queryParam("query", ":::")
@@ -173,8 +200,11 @@ class RSSResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return status 400 for slash query
+     */
     @Test
-    void testRSSXmlBadQuerySlash() {
+    void getRssFeed_shouldReturnStatus400ForSlashQuery() {
         // query=/ triggers IndexUnreachableException("Error from server ...") in Solr,
         // which must map to HTTP 400, not 500
         try (Response response = target(urls.path(RECORDS_RSS).build())
@@ -186,8 +216,11 @@ class RSSResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return status 400 for slash query
+     */
     @Test
-    void testRSSJsonBadQuerySlash() {
+    void getRssJsonFeed_shouldReturnStatus400ForSlashQuery() {
         // query=/ triggers IndexUnreachableException("Error from server ...") in Solr,
         // which must map to HTTP 400, not 500
         try (Response response = target(urls.path(RECORDS_RSS, RECORDS_RSS_JSON).build())
@@ -199,8 +232,11 @@ class RSSResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return status 406 when accepting xml on json endpoint
+     */
     @Test
-    void testRSSInvalidType() throws JsonProcessingException {
+    void getRssJsonFeed_shouldReturnStatus406WhenAcceptingXmlOnJsonEndpoint() throws JsonProcessingException {
         try (Response response = target(urls.path(RECORDS_RSS, RECORDS_RSS_JSON).build())
                 .request()
                 .accept(MediaType.TEXT_XML)

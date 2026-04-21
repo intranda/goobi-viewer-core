@@ -51,10 +51,10 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see NavigationHelper#getCurrentView()
-     * @verifies return value correctly
+     * @verifies return current view value from status map
      */
     @Test
-    void getCurrentView_shouldReturnValueCorrectly() {
+    void getCurrentView_shouldReturnCurrentViewValueFromStatusMap() {
         NavigationHelper nh = new NavigationHelper();
         nh.getStatusMap().put(NavigationHelper.KEY_CURRENT_VIEW, NavigationHelper.KEY_CURRENT_VIEW + "_value");
         assertEquals(NavigationHelper.KEY_CURRENT_VIEW + "_value", nh.getCurrentView());
@@ -62,10 +62,10 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see NavigationHelper#getMenuPage()
-     * @verifies return value correctly
+     * @verifies return menu page value from status map
      */
     @Test
-    void getMenuPage_shouldReturnValueCorrectly() {
+    void getMenuPage_shouldReturnMenuPageValueFromStatusMap() {
         NavigationHelper nh = new NavigationHelper();
         nh.getStatusMap().put(NavigationHelper.KEY_MENU_PAGE, NavigationHelper.KEY_MENU_PAGE + "_value");
         assertEquals(NavigationHelper.KEY_MENU_PAGE + "_value", nh.getMenuPage());
@@ -73,10 +73,10 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see NavigationHelper#getPreferredView()
-     * @verifies return value correctly
+     * @verifies return preferred view value from status map
      */
     @Test
-    void getPreferredView_shouldReturnValueCorrectly() {
+    void getPreferredView_shouldReturnPreferredViewValueFromStatusMap() {
         NavigationHelper nh = new NavigationHelper();
         nh.getStatusMap().put(NavigationHelper.KEY_PREFERRED_VIEW, NavigationHelper.KEY_PREFERRED_VIEW + "_value");
         assertEquals(NavigationHelper.KEY_PREFERRED_VIEW + "_value", nh.getPreferredView());
@@ -84,10 +84,10 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see NavigationHelper#getSelectedNewsArticle()
-     * @verifies return value correctly
+     * @verifies return selected news article value from status map
      */
     @Test
-    void getSelectedNewsArticle_shouldReturnValueCorrectly() {
+    void getSelectedNewsArticle_shouldReturnSelectedNewsArticleValueFromStatusMap() {
         NavigationHelper nh = new NavigationHelper();
         nh.getStatusMap().put(NavigationHelper.KEY_SELECTED_NEWS_ARTICLE, NavigationHelper.KEY_SELECTED_NEWS_ARTICLE + "_value");
         assertEquals(NavigationHelper.KEY_SELECTED_NEWS_ARTICLE + "_value", nh.getSelectedNewsArticle());
@@ -95,10 +95,10 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see NavigationHelper#getStatusMapValue(String)
-     * @verifies return value correctly
+     * @verifies return value stored under given key in status map
      */
     @Test
-    void getStatusMapValue_shouldReturnValueCorrectly() {
+    void getStatusMapValue_shouldReturnValueStoredUnderGivenKeyInStatusMap() {
         NavigationHelper nh = new NavigationHelper();
         nh.getStatusMap().put("new_key", "new_value");
         assertEquals("new_value", nh.getStatusMapValue("new_key"));
@@ -106,10 +106,10 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see NavigationHelper#setCurrentView(String)
-     * @verifies set value correctly
+     * @verifies store given value under current view key in status map
      */
     @Test
-    void setCurrentView_shouldSetValueCorrectly() {
+    void setCurrentView_shouldStoreGivenValueUnderCurrentViewKeyInStatusMap() {
         NavigationHelper nh = new NavigationHelper();
         nh.setCurrentView(NavigationHelper.KEY_CURRENT_VIEW + "_value");
         assertEquals(NavigationHelper.KEY_CURRENT_VIEW + "_value", nh.getStatusMap().get(NavigationHelper.KEY_CURRENT_VIEW));
@@ -117,10 +117,10 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see NavigationHelper#setMenuPage(String)
-     * @verifies set value correctly
+     * @verifies store given value under menu page key in status map
      */
     @Test
-    void setMenuPage_shouldSetValueCorrectly() {
+    void setMenuPage_shouldStoreGivenValueUnderMenuPageKeyInStatusMap() {
         NavigationHelper nh = new NavigationHelper();
         nh.setMenuPage(NavigationHelper.KEY_MENU_PAGE + "_value");
         assertEquals(NavigationHelper.KEY_MENU_PAGE + "_value", nh.getStatusMap().get(NavigationHelper.KEY_MENU_PAGE));
@@ -128,10 +128,10 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see NavigationHelper#setPreferredView(String)
-     * @verifies set value correctly
+     * @verifies store given value under preferred view key in status map
      */
     @Test
-    void setPreferredView_shouldSetValueCorrectly() {
+    void setPreferredView_shouldStoreGivenValueUnderPreferredViewKeyInStatusMap() {
         NavigationHelper nh = new NavigationHelper();
         nh.setPreferredView(NavigationHelper.KEY_PREFERRED_VIEW + "_value");
         assertEquals(NavigationHelper.KEY_PREFERRED_VIEW + "_value", nh.getStatusMap().get(NavigationHelper.KEY_PREFERRED_VIEW));
@@ -139,10 +139,10 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see NavigationHelper#setSelectedNewsArticle(String)
-     * @verifies set value correctly
+     * @verifies store given value under selected news article key in status map
      */
     @Test
-    void setSelectedNewsArticle_shouldSetValueCorrectly() {
+    void setSelectedNewsArticle_shouldStoreGivenValueUnderSelectedNewsArticleKeyInStatusMap() {
         NavigationHelper nh = new NavigationHelper();
         nh.setSelectedNewsArticle(NavigationHelper.KEY_SELECTED_NEWS_ARTICLE + "_value");
         assertEquals(NavigationHelper.KEY_SELECTED_NEWS_ARTICLE + "_value",
@@ -151,10 +151,10 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see NavigationHelper#setStatusMapValue(String,String)
-     * @verifies set value correctly
+     * @verifies store given key-value pair in status map
      */
     @Test
-    void setStatusMapValue_shouldSetValueCorrectly() {
+    void setStatusMapValue_shouldStoreGivenKeyValuePairInStatusMap() {
         NavigationHelper nh = new NavigationHelper();
         nh.setStatusMapValue("new_key", "new_value");
         assertEquals("new_value", nh.getStatusMap().get("new_key"));
@@ -162,11 +162,10 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @throws DAOException
-     * @see NavigationHelper#setSubThemeDiscriminatorValue(String)
-     * @verifies set value correctly
+     * @verifies store discriminator value in status map when CMS page is set
      */
     @Test
-    void setSubThemeDiscriminatorValue_shouldSetValueCorrectly() throws DAOException {
+    void setSubThemeDiscriminatorValue_shouldStoreDiscriminatorValueInStatusMapWhenCMSPageIsSet() throws DAOException {
         NavigationHelper nh = new NavigationHelper();
         CmsBean cmsBean = new CmsBean();
         CMSPage cmsPage = DataManager.getInstance().getDao().getCMSPage(1);
@@ -178,18 +177,21 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see NavigationHelper#getRecordUrl(String,String,int)
-     * @verifies construct url correctly
+     * @see NavigationHelper#getRecordUrl(String,String,int,boolean,boolean)
+     * @verifies return /object/{PI}/ URL for monograph record type
      */
     @Test
-    void getRecordUrl_shouldConstructUrlCorrectly() {
+    void getRecordUrl_shouldReturnObjectPIURLForMonographRecordType() {
         NavigationHelper nh = new NavigationHelper();
         String url = nh.getRecordUrl(PI_KLEIUNIV, "monograph", 1, false, true);
         assertEquals("/object/" + PI_KLEIUNIV + "/", url);
     }
 
+    /**
+     * @verifies return collection with 3 elements
+     */
     @Test
-    void test_createAdminBreadcrumbs() {
+    void createAdminBreadcrumbs_shouldReturnCollectionWith3Elements() {
         NavigationHelper nh = new NavigationHelper();
         PageType pageType = PageType.getByName("adminTranslationsEdit");
         List<List<String>> labels = List.of(List.of("adminTranslationsEdit", "Sammlungsnamen"), List.of("foobar"));
@@ -211,8 +213,8 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see NavigationHelper#determineCurrentSubThemeDiscriminatorValue()
      * @verifies return empty string if viewManager is null
+     * @see NavigationHelper#determineCurrentSubThemeDiscriminatorValue()
      */
     @Test
     void determineCurrentSubThemeDiscriminatorValue_shouldReturnEmptyStringIfViewManagerIsNull() throws Exception {
@@ -232,8 +234,11 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
         assertEquals("", result);
     }
 
+    /**
+     * @verifies return expected value for given input
+     */
     @Test
-    void test_setCmsPageView() throws DAOException, IndexUnreachableException, PresentationException, ViewerConfigurationException {
+    void setCurrentPage_shouldReturnExpectedValueForGivenInput() throws DAOException, IndexUnreachableException, PresentationException, ViewerConfigurationException {
         NavigationHelper nh = new NavigationHelper();
         CMSPageContentManager contentManager = Mockito.mock(CMSPageContentManager.class);
         CMSTemplateManager templateManager = Mockito.mock(CMSTemplateManager.class);
@@ -253,7 +258,45 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
     /**
      * @see NavigationHelper#setCurrentPageForError(String)
      * @verifies map null and generic error types to error
+     */
+    @Test
+    void setCurrentPageForError_shouldMapNullAndGenericErrorTypesToError() {
+        NavigationHelper nh = new NavigationHelper();
+
+        // null should map to "error"
+        nh.setCurrentPageForError(null);
+        assertEquals("error", nh.getCurrentPage());
+
+        // "general" should map to "error"
+        nh.setCurrentPageForError("general");
+        assertEquals("error", nh.getCurrentPage());
+
+        // "general_no_url" should map to "error"
+        nh.setCurrentPageForError("general_no_url");
+        assertEquals("error", nh.getCurrentPage());
+    }
+
+    /**
+     * @see NavigationHelper#setCurrentPageForError(String)
      * @verifies pass through specific error types unchanged
+     */
+    @Test
+    void setCurrentPageForError_shouldPassThroughSpecificErrorTypesUnchanged() {
+        NavigationHelper nh = new NavigationHelper();
+
+        nh.setCurrentPageForError("recordNotFound");
+        assertEquals("recordNotFound", nh.getCurrentPage());
+
+        nh.setCurrentPageForError("download");
+        assertEquals("download", nh.getCurrentPage());
+
+        nh.setCurrentPageForError("viewExpired");
+        assertEquals("viewExpired", nh.getCurrentPage());
+    }
+
+    /**
+     * @verifies map generic types to error
+     * @see NavigationHelper#setCurrentPageForError(String)
      */
     @Test
     void setCurrentPageForError_shouldMapGenericTypesToError() {
@@ -271,8 +314,8 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * @verifies pass through specific error types
      * @see NavigationHelper#setCurrentPageForError(String)
-     * @verifies pass through specific error types unchanged
      */
     @Test
     void setCurrentPageForError_shouldPassThroughSpecificErrorTypes() {
@@ -312,7 +355,6 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see NavigationHelper#getLicenceIconResources(List)
      * @verifies filter out paths resolving to directories
      */
     @Test
@@ -341,6 +383,36 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
         };
         assertTrue(nhBadPath.getLicenceIconResources(Collections.singletonList("brokenIcon")).isEmpty(),
                 "Directory path (ending in '/') must not reach ui:include");
+    }
+
+    /**
+     * @see NavigationHelper#getTranslationWithParams(String,String[])
+     * @verifies escape quotation marks
+     */
+    @Test
+    void getTranslationWithParams_shouldEscapeQuotationMarks() {
+        NavigationHelper nh = new NavigationHelper();
+        // Use a non-existent key containing a double quote; ViewerResourceBundle returns the key as-is
+        // when no translation is found. StringEscapeUtils.escapeJava converts " to \"
+        String keyWithQuote = "test\"key";
+        String result = nh.getTranslationWithParams(keyWithQuote);
+        // After Java-escaping, the double quote should be escaped with a backslash
+        assertTrue(result.contains("\\\""), "Double quotes should be Java-escaped");
+    }
+
+    /**
+     * @see NavigationHelper#getTranslation(String,String)
+     * @verifies escape quotation marks
+     */
+    @Test
+    void getTranslation_shouldEscapeQuotationMarks() {
+        NavigationHelper nh = new NavigationHelper();
+        // Use a non-existent key containing a double quote; ViewerResourceBundle returns the key as-is.
+        // The 2-arg overload delegates to the 3-arg overload with escape=true.
+        String keyWithQuote = "test\"key";
+        String result = nh.getTranslation(keyWithQuote, null);
+        // After Java-escaping, the double quote should be escaped with a backslash
+        assertTrue(result.contains("\\\""), "Double quotes should be Java-escaped");
     }
 
 }

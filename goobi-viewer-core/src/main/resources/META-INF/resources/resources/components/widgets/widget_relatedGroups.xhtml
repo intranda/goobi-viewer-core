@@ -10,10 +10,10 @@
         <h:panelGroup rendered="#{activeDocumentBean.viewManager.topStructElement.groupMember or activeDocumentBean.viewManager.topStructElement.anchorChild}">
             <div
                 id="widgetRelatedGroups"
-                class="widget widget-related-groups">
+                class="widget-related-groups">
                 <!-- Group (convolutes, etc.) listing -->
                 <h:outputText rendered="#{activeDocumentBean.viewManager.topStructElement.groupMemberships.size() gt 1}">
-                    <div class="widget-related-groups__list">
+                    <div class="widget widget-related-groups__list">
                         <div class="widget__topbar widget-related-groups__topbar">
                             <h2 class="widget__title widget-related-groups__title">#{msg.recordGroupMemberships}</h2>
                         </div>

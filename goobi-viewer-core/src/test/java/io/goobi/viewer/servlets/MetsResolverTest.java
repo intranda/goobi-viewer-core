@@ -48,11 +48,10 @@ class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see MetsResolver#doGet(HttpServletRequest,HttpServletResponse)
-     * @verifies return METS file correctly via pi
+     * @verifies return HTTP 200 with valid METS XML when requested by PI
      */
     @Test
-    void doGet_shouldReturnMETSFileCorrectlyViaPi() throws Exception {
+    void doGet_shouldReturnHTTP200WithValidMETSXMLWhenRequestedByPI() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setParameter("id", PI_KLEIUNIV);
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -66,11 +65,10 @@ class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see MetsResolver#doGet(HttpServletRequest,HttpServletResponse)
-     * @verifies return METS file correctly via urn
+     * @verifies return HTTP 200 with valid METS XML when requested by URN
      */
     @Test
-    void doGet_shouldReturnMETSFileCorrectlyViaUrn() throws Exception {
+    void doGet_shouldReturnHTTP200WithValidMETSXMLWhenRequestedByURN() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setParameter("urn", "urn:nbn:de:gbv:9-g-4882158");
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -84,11 +82,10 @@ class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see MetsResolver#doGet(HttpServletRequest,HttpServletResponse)
-     * @verifies return LIDO file correctly
+     * @verifies return HTTP 200 with valid LIDO XML when requested by PI
      */
     @Test
-    void doGet_shouldReturnLIDOFileCorrectly() throws Exception {
+    void doGet_shouldReturnHTTP200WithValidLIDOXMLWhenRequestedByPI() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setParameter("id", "455820");
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -102,12 +99,11 @@ class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see MetsResolver#doGet(HttpServletRequest,HttpServletResponse)
-     * @verifies return EAD file correctly
+     * @verifies return HTTP 200 with valid EAD XML when requested by PI
      */
     @Test
     @Disabled("Enable once test indext contains an EAD record")
-    void doGet_shouldReturnEADFileCorrectly() throws Exception {
+    void doGet_shouldReturnHTTP200WithValidEADXMLWhenRequestedByPI() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setParameter("id", "TODO");
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -121,7 +117,6 @@ class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see MetsResolver#doGet(HttpServletRequest,HttpServletResponse)
      * @verifies return 404 if record not in index
      */
     @Test
@@ -149,7 +144,6 @@ class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see MetsResolver#doGet(HttpServletRequest,HttpServletResponse)
      * @verifies return 404 if file not found
      */
     @Test
@@ -177,7 +171,6 @@ class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see MetsResolver#doGet(HttpServletRequest,HttpServletResponse)
      * @verifies return 409 if more than one record matched
      */
     @Test
@@ -194,7 +187,6 @@ class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see MetsResolver#doGet(HttpServletRequest,HttpServletResponse)
      * @verifies return 400 if record identifier bad
      */
     @Test

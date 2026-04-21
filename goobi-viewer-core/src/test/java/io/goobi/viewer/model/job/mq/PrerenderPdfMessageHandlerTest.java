@@ -51,8 +51,11 @@ class PrerenderPdfMessageHandlerTest {
     Path contentServerConfigPath = Paths.get("src/test/resources/localConfig/config_contentServer_variants.xml").toAbsolutePath();
     String pi = "PPN615391702";
 
+    /**
+     * @verifies render pdfs for all images and return finish
+     */
     @Test
-    void test() throws PresentationException, IndexUnreachableException, IOException {
+    void call_shouldRenderPdfsForAllImagesAndReturnFinish() throws PresentationException, IndexUnreachableException, IOException {
 
         if (!Files.exists(pdfFolder)) {
             Files.createDirectories(pdfFolder);

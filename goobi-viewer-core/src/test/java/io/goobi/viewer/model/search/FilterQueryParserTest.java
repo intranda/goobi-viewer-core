@@ -17,8 +17,11 @@ class FilterQueryParserTest {
     private static final String URI_LAST_QUERY =
             "?jlksdf=nfkjn&filterQuery=WKT_COORDS%3A\"Intersects(POINT(11.24626+43.77925))+distErrPct%3D0\"";
 
+    /**
+     * @verifies extract filter when it appears first in query string
+     */
     @Test
-    void test_firstQuery() {
+    void getFilterQuery_shouldExtractFilterWhenFirstInQueryString() {
 
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getQueryString()).thenReturn(URI_FIRST_QUERY);
@@ -29,8 +32,11 @@ class FilterQueryParserTest {
 
     }
 
+    /**
+     * @verifies extract filter when it appears in the middle of query string
+     */
     @Test
-    void test_middleQuery() {
+    void getFilterQuery_shouldExtractFilterWhenInMiddleOfQueryString() {
 
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getQueryString()).thenReturn(URI_MIDDLE_QUERY);
@@ -41,8 +47,11 @@ class FilterQueryParserTest {
 
     }
 
+    /**
+     * @verifies extract filter when it appears last in query string
+     */
     @Test
-    void test_lastQuery() {
+    void getFilterQuery_shouldExtractFilterWhenLastInQueryString() {
 
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getQueryString()).thenReturn(URI_LAST_QUERY);

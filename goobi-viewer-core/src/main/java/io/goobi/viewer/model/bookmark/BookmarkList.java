@@ -592,7 +592,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @should generate JSON object correctly
+     * @should generate Mirador JSON with data and windowObjects arrays matching bookmark count
      */
     public String getMiradorJsonObject(String applicationRoot, String restApiUrl)
             throws ViewerConfigurationException, IndexUnreachableException, PresentationException {
@@ -727,6 +727,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
      *
      * @param bookmarkLists list of bookmark lists to sort in place
      * @should sort lists correctly
+     * @should sort bookmark lists by most recent update date descending with unmodified lists last
      */
     public static void sortBookmarkLists(List<BookmarkList> bookmarkLists) {
         if (bookmarkLists == null || bookmarkLists.isEmpty()) {

@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 class EmailValidatorTest {
 
     /**
-     * @see EmailValidator#validateEmailAddress(String)
+     * @see EmailValidator#validateEmailAddress(String, boolean)
      * @verifies match correct email addresses
      */
     @Test
@@ -39,7 +39,7 @@ class EmailValidatorTest {
     }
 
     /**
-     * @see EmailValidator#validateEmailAddress(String)
+     * @see EmailValidator#validateEmailAddress(String, boolean)
      * @verifies match entire email address only
      */
     @Test
@@ -48,7 +48,7 @@ class EmailValidatorTest {
     }
 
     /**
-     * @see EmailValidator#validateEmailAddress(String)
+     * @see EmailValidator#validateEmailAddress(String, boolean)
      * @verifies not match invalid addresses
      */
     @Test
@@ -56,8 +56,12 @@ class EmailValidatorTest {
         Assertions.assertFalse(EmailValidator.validateEmailAddress("blup", false));
     }
 
+    /**
+     * @verifies validate empty string
+     * @see EmailValidator#validateEmailAddress(String, boolean)
+     */
     @Test
-    void validateEmailAddress_validateEmptyString() throws Exception {
+    void validateEmailAddress_shouldValidateEmptyString() throws Exception {
         Assertions.assertFalse(EmailValidator.validateEmailAddress("", false));
         Assertions.assertTrue(EmailValidator.validateEmailAddress("", true));
     }

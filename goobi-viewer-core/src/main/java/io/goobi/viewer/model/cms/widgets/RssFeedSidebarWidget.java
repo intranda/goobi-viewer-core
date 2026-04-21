@@ -89,6 +89,8 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
      * A SOLR field to select and sort the listed entries by.
      *
      * @return the Solr field name used for sorting RSS feed entries
+     * @should persist
+     * @should clone
      */
     public String getSortField() {
         return sortField;
