@@ -971,6 +971,16 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
+     *
+     * @param view Record view name
+     * @param widget Widget name
+     * @return true if widget configured to show details; false otherwise; default is false
+     */
+    public boolean isSidebarWidgetForViewShowDetails(String view, String widget) {
+        return DataManager.getInstance().getConfiguration().isSidebarWidgetForViewShowDetails(view, widget);
+    }
+
+    /**
      * isDisplaySidebarBrowsingTerms.
      *
      * @return true if the browsing terms widget should be displayed in the sidebar, false otherwise

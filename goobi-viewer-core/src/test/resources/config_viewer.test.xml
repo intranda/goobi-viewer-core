@@ -1053,6 +1053,7 @@
                 <displayWidget name="views" />
                 <displayWidget name="copyright" collapsible="true" collapsedByDefault="true" />
                 <displayWidget name="search-in-current-item" />
+                <displayWidget name="related-groups" showDetails="true" />
             </view>
             <view name="toc">
                 <displayWidget name="views" />

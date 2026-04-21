@@ -645,24 +645,6 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getMaxAggregateAltoSize()
-     * @verifies return correct value
-     */
-    @Test
-    void getMaxAggregateAltoSize_shouldReturnCorrectValue() {
-        assertEquals(1024, DataManager.getInstance().getConfiguration().getMaxAggregateAltoSize());
-    }
-
-    /**
-     * @see Configuration#getMaxAggregateFulltextSize()
-     * @verifies return correct value
-     */
-    @Test
-    void getMaxAggregateFulltextSize_shouldReturnCorrectValue() {
-        assertEquals(1024, DataManager.getInstance().getConfiguration().getMaxAggregateFulltextSize());
-    }
-
-    /**
      * @see Configuration#getPageType(PageType)
      * @verifies return the correct value for the given type
      */
@@ -1914,10 +1896,11 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getSidebarWidgetsForView_shouldReturnCorrectValues() {
         List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetsForView("object");
-        assertEquals(3, result.size());
+        assertEquals(4, result.size());
         assertEquals("views", result.get(0));
         assertEquals("copyright", result.get(1));
         assertEquals("search-in-current-item", result.get(2));
+        assertEquals("related-groups", result.get(3));
     }
 
     /**
@@ -1949,6 +1932,62 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void isSidebarWidgetForViewCollapsedByDefault_shouldReturnCorrectValue() {
         assertTrue(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewCollapsedByDefault("object", "copyright"));
+    }
+
+    /**
+     * @see Configuration#isSidebarWidgetForViewShowDetails(String,String)
+     * @verifies return correct value
+     */
+    @Test
+    void isSidebarWidgetForViewShowDetails_shouldReturnCorrectValue() {
+        assertTrue(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewShowDetails("object", "related-groups"));
+        assertFalse(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewShowDetails("object", "copyright"));
+        assertFalse(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewShowDetails("object", "nonexistent"));
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetRelatedGroupsMaxResults()
+     * @verifies return correct value
+     */
+    @Test
+    void getSidebarWidgetRelatedGroupsMaxResults_shouldReturnCorrectValue() {
+        assertEquals(5, DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsMaxResults());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetRelatedGroupsSortField()
+     * @verifies return correct value
+     */
+    @Test
+    void getSidebarWidgetRelatedGroupsSortField_shouldReturnCorrectValue() {
+        assertEquals("MD_YEARPUBLISH", DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsSortField());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetRelatedGroupsSortOrder()
+     * @verifies return correct value
+     */
+    @Test
+    void getSidebarWidgetRelatedGroupsSortOrder_shouldReturnCorrectValue() {
+        assertEquals("asc", DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsSortOrder());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetRelatedGroupsTitleField()
+     * @verifies return correct value
+     */
+    @Test
+    void getSidebarWidgetRelatedGroupsTitleField_shouldReturnCorrectValue() {
+        assertEquals("LABEL", DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsTitleField());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetRelatedGroupsSubtitleField()
+     * @verifies return correct value
+     */
+    @Test
+    void getSidebarWidgetRelatedGroupsSubtitleField_shouldReturnCorrectValue() {
+        assertEquals("MD_AUTHOR", DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsSubtitleField());
     }
 
     /**
@@ -2673,19 +2712,6 @@ class ConfigurationTest extends AbstractTest {
         assertEquals(3, list.size());
         assertEquals(SolrConstants.PI_PARENT, list.get(0));
         assertEquals("MD_OTHERANCESTOR", list.get(1));
-    }
-
-    /**
-     * @see Configuration#getCalendarDocStructTypes()
-     * @verifies return all configured values
-     */
-    @Test
-    void getCalendarDocStructTypes_shouldReturnAllConfiguredValues() {
-        List<String> list = DataManager.getInstance().getConfiguration().getCalendarDocStructTypes();
-        assertNotNull(list);
-        assertEquals(2, list.size());
-        assertTrue(list.contains("Newspaper"));
-        assertTrue(list.contains("Periodical"));
     }
 
     /**

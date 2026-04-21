@@ -222,6 +222,8 @@ public class ActiveDocumentBean implements Serializable {
     /* Next docstruct URL cache. TODO Implement differently once other views beside full-screen are used. */
     private Map<String, String> nextDocstructUrlCache = new HashMap<>();
 
+    private transient List<GroupMemberDetail> groupMembershipDetails;
+
     @Inject
     @Push
     private PushContext tocUpdateChannel;
@@ -315,6 +317,7 @@ public class ActiveDocumentBean implements Serializable {
             recordDataset = null;
             pdfSizes = null;
             cachedFullPdfSize = null;
+            groupMembershipDetails = null;
 
             // Any cleanup modules need to do when a record is unloaded
             for (IModule module : DataManager.getInstance().getModules()) {
@@ -2441,6 +2444,73 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
+     * Returns detailed information about the current record's group memberships and anchor parent.
+     * Used by the related-groups widget when configured with showDetails="true".
+     *
+     * @return List of GroupMemberDetail objects with title, creator, year for each related record
+     * @throws PresentationException if any
+     * @throws IndexUnreachableException if any
+     * @should return empty list if viewManager is null
+     * @should return group memberships and anchor details
+     */
+    public List<GroupMemberDetail> getGroupMembershipDetails() throws PresentationException, IndexUnreachableException {
+        if (groupMembershipDetails != null) {
+            return groupMembershipDetails;
+        }
+
+        if (viewManager == null) {
+            return Collections.emptyList();
+        }
+
+        StructElement topStruct = viewManager.getTopStructElement();
+        List<String> pis = new ArrayList<>();
+
+        for (String pi : topStruct.getGroupMemberships().values()) {
+            if (!pis.contains(pi)) {
+                pis.add(pi);
+            }
+        }
+
+        if (topStruct.isAnchorChild() && viewManager.getAnchorPi() != null && !pis.contains(viewManager.getAnchorPi())) {
+            pis.add(viewManager.getAnchorPi());
+        }
+
+        if (pis.isEmpty()) {
+            groupMembershipDetails = Collections.emptyList();
+            return groupMembershipDetails;
+        }
+
+        String query = SolrConstants.PI + ":(" + String.join(" OR ", pis) + ")";
+        List<String> fields = List.of(SolrConstants.PI, SolrConstants.LABEL, SolrConstants.TITLE,
+                SolrConstants.PERSON_ONEFIELD, SolrConstants.MD_YEARPUBLISH,
+                SolrConstants.THUMBNAIL, SolrConstants.MIMETYPE, SolrConstants.DOCSTRCT,
+                SolrConstants.ISANCHOR, SolrConstants.ISWORK);
+        SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(query, fields);
+
+        groupMembershipDetails = new ArrayList<>();
+        if (docs != null) {
+            for (SolrDocument doc : docs) {
+                String pi = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI);
+                String title = SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL);
+                if (StringUtils.isEmpty(title)) {
+                    title = SolrTools.getSingleFieldStringValue(doc, SolrConstants.TITLE);
+                }
+                String creator = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PERSON_ONEFIELD);
+                String year = SolrTools.getSingleFieldStringValue(doc, SolrConstants.MD_YEARPUBLISH);
+                String thumbnailUrl = null;
+                try {
+                    thumbnailUrl = imageDelivery.getThumbs().getThumbnailUrl(doc, 200, 260);
+                } catch (ViewerConfigurationException e) {
+                    logger.warn("Could not generate thumbnail URL for {}: {}", pi, e.getMessage());
+                }
+                groupMembershipDetails.add(new GroupMemberDetail(pi, title, creator, year, thumbnailUrl));
+            }
+        }
+
+        return groupMembershipDetails;
+    }
+
+    /**
      * Returns a string that contains previous and/or next url <link> elements.
      *
      * @return string containing previous and/or next url <link> elements
@@ -3037,6 +3107,46 @@ public class ActiveDocumentBean implements Serializable {
             }
         }
         return this.recordDataset;
+    }
+
+    /**
+     * Holds display data for a single related group record (group membership or anchor parent).
+     */
+    public static class GroupMemberDetail {
+
+        private final String pi;
+        private final String title;
+        private final String creator;
+        private final String yearPublish;
+        private final String thumbnailUrl;
+
+        public GroupMemberDetail(String pi, String title, String creator, String yearPublish, String thumbnailUrl) {
+            this.pi = pi;
+            this.title = title;
+            this.creator = creator;
+            this.yearPublish = yearPublish;
+            this.thumbnailUrl = thumbnailUrl;
+        }
+
+        public String getPi() {
+            return pi;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public String getCreator() {
+            return creator;
+        }
+
+        public String getYearPublish() {
+            return yearPublish;
+        }
+
+        public String getThumbnailUrl() {
+            return thumbnailUrl;
+        }
     }
 
 }
