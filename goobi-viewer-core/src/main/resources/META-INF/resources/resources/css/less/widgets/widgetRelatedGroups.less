@@ -37,6 +37,175 @@
             }
         }
     }
+    &__cards {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        .widget-related-groups__card {
+            display: flex;
+            flex-direction: row;
+            align-items: stretch;
+            background: @white;
+            border: 1px solid @middlegray;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            transition: box-shadow 0.2s ease;
+
+            &:hover,
+            &:focus {
+                box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+                text-decoration: none;
+                color: inherit;
+            }
+        }
+        .widget-related-groups__card-image {
+            flex: 0 0 80px;
+            min-height: 100px;
+            overflow: hidden;
+            background: @neutralgray;
+
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+        }
+        .widget-related-groups__card-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 8px 12px;
+            min-width: 0;
+        }
+        .widget-related-groups__card-title {
+            font-size: @fontNormal;
+            font-weight: 600;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .widget-related-groups__card-creator,
+        .widget-related-groups__card-year {
+            font-size: @fontSmall;
+            color: @gray;
+            line-height: 1.4;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+}
+
+/* ==============================================================
+   Related Groups Content Section
+   style declarations for relatedGroupsSection.xhtml
+   ==============================================================*/
+.related-groups-section {
+    margin-top: 40px;
+    padding: 40px 30px;
+    background: @neutralgray;
+    border-top: 1px solid @middlegray;
+
+    &__heading {
+        font-size: 2.4rem;
+        font-weight: 300;
+        margin-bottom: 30px;
+        line-height: 1.3;
+    }
+    &__heading-link {
+        font-weight: 600;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+    &__grid {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 25px;
+        overflow-x: auto;
+        padding-bottom: 15px;
+    }
+    &__card {
+        flex: 0 0 185px;
+        display: flex;
+        flex-direction: column;
+        text-decoration: none;
+        color: inherit;
+        transition: opacity 0.2s ease;
+
+        &:hover,
+        &:focus {
+            opacity: 0.85;
+            text-decoration: none;
+            color: inherit;
+        }
+    }
+    &__card-image {
+        width: 185px;
+        height: 260px;
+        overflow: hidden;
+        background: @white;
+        border: 1px solid @middlegray;
+        margin-bottom: 10px;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+    &__card-info {
+        display: flex;
+        flex-direction: column;
+    }
+    &__card-title {
+        font-size: @fontNormal;
+        font-weight: 600;
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    &__card-creator {
+        font-size: @fontSmall;
+        color: @gray;
+        line-height: 1.4;
+        margin-top: 2px;
+    }
+    &__view-all {
+        flex: 0 0 185px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid @red;
+        background: @white;
+        text-decoration: none;
+        color: @red;
+        height: 260px;
+        transition: background-color 0.2s ease;
+
+        &:hover,
+        &:focus {
+            background-color: fade(@red, 5%);
+            text-decoration: none;
+            color: @red;
+        }
+    }
+    &__view-all-icon {
+        font-size: 3rem;
+        color: @red;
+        margin-bottom: 8px;
+    }
+    &__view-all-label {
+        font-size: @fontNormal;
+        font-weight: 600;
+        color: @red;
+    }
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
@@ -49,6 +218,21 @@
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
+    .related-groups-section {
+        padding: 25px 15px;
+
+        &__card {
+            flex: 0 0 140px;
+        }
+        &__card-image {
+            width: 140px;
+            height: 195px;
+        }
+        &__view-all {
+            flex: 0 0 140px;
+            height: 195px;
+        }
+    }
 }
 
 /* BREAKPOINT FOR SMARTPHONES */

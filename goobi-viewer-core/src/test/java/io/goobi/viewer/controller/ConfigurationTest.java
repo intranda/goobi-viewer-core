@@ -1933,6 +1933,16 @@ class ConfigurationTest extends AbstractTest {
         assertTrue(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewCollapsedByDefault("object", "copyright"));
     }
 
+    /**
+     * @see Configuration#isSidebarWidgetForViewShowDetails(String,String)
+     * @verifies return correct value
+     */
+    @Test
+    void isSidebarWidgetForViewShowDetails_shouldReturnCorrectValue() {
+        assertTrue(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewShowDetails("object", "related-groups"));
+        assertFalse(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewShowDetails("object", "copyright"));
+        assertFalse(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewShowDetails("object", "nonexistent"));
+    }
 
     /**
      * @see Configuration#getAllFacetFields()

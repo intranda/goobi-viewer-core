@@ -1353,6 +1353,30 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     *
+     * @param view Record view name
+     * @param widget Widget name
+     * @return true if widget configured to show details; false otherwise; default is false
+     * @should return correct value
+     */
+    public boolean isSidebarWidgetForViewShowDetails(String view, String widget) {
+        if (StringUtils.isEmpty(view) || StringUtils.isEmpty(widget)) {
+            return false;
+        }
+
+        HierarchicalConfiguration<ImmutableNode> viewConfig = getSidebarViewConfiguration(view.toLowerCase());
+        if (viewConfig != null) {
+            for (HierarchicalConfiguration<ImmutableNode> widgetConfig : viewConfig.configurationsAt("displayWidget")) {
+                if (widget.equals(widgetConfig.getString(XML_PATH_ATTRIBUTE_NAME))) {
+                    return widgetConfig.getBoolean("[@showDetails]", false);
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * isBrowsingMenuEnabled.
      *
      * @should return correct value
