@@ -133,6 +133,7 @@ import io.goobi.viewer.model.security.CopyrightIndicatorLicense;
 import io.goobi.viewer.model.security.CopyrightIndicatorStatus;
 import io.goobi.viewer.model.security.CopyrightIndicatorStatus.Status;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.security.PagePermissions;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.toc.TOC;
 import io.goobi.viewer.model.transkribus.TranskribusJob;
@@ -395,7 +396,26 @@ public class ViewManager implements Serializable {
                         .ifPresent(p -> infos.put(p.getOrder(), getImageInfo(p, pageType)));
                 break;
             case SEQUENCE:
+                // Batch-prefetch all five per-page privileges in a single Solr query + one DAO
+                // call and seed every PhysicalElement so the render loop's isAccessPermission*
+                // calls stay in-memory. Avoids O(n) per-page Solr/DAO traffic on sequence view
+                // (refs #27883). Reuses BeanUtils.getRequest() rather than re-implementing the
+                // FacesContext → ExternalContext → HttpServletRequest extraction inline.
+                PagePermissions prefetched = AccessConditionUtils.fetchPagePermissions(pi, BeanUtils.getRequest());
                 for (PhysicalElement page : this.getAllPages()) {
+                    if (!prefetched.isEmpty()) {
+                        int order = page.getOrder();
+                        page.seedAccessPermission(IPrivilegeHolder.PRIV_VIEW_IMAGES,
+                                prefetched.getImagePermission(order));
+                        page.seedAccessPermission(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS,
+                                prefetched.getThumbnailPermission(order));
+                        page.seedAccessPermission(IPrivilegeHolder.PRIV_ZOOM_IMAGES,
+                                prefetched.getZoomPermission(order));
+                        page.seedAccessPermission(IPrivilegeHolder.PRIV_DOWNLOAD_IMAGES,
+                                prefetched.getDownloadPermission(order));
+                        page.seedAccessPermission(IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF,
+                                prefetched.getPdfPermission(order));
+                    }
                     if (page.isHasImage()) {
                         infos.put(page.getOrder(), getImageInfo(page, pageType));
                     }
