@@ -375,7 +375,8 @@ public final class AccessConditionUtils {
      *   <li>One Solr query: {@code +PI_TOPSTRUCT:pi +DOCTYPE:PAGE} (fields: ORDER, ACCESSCONDITION)</li>
      *   <li>One DAO call: {@code getRecordLicenseTypes()}</li>
      *   <li>One user + IP resolution from {@code request}</li>
-     *   <li>In-memory evaluation of VIEW_IMAGES, VIEW_FULLTEXT, DOWNLOAD_PAGE_PDF per page</li>
+     *   <li>In-memory evaluation of VIEW_IMAGES, VIEW_THUMBNAILS, ZOOM_IMAGES,
+     *   DOWNLOAD_IMAGES, VIEW_FULLTEXT, DOWNLOAD_PAGE_PDF per page</li>
      * </ol>
      *
      * @param pi persistent identifier of the record
@@ -383,6 +384,10 @@ public final class AccessConditionUtils {
      * @return populated {@link PagePermissions};
      *         {@link PagePermissions#EMPTY} when pi is blank, when no pages are found,
      *         or when a Solr/DAO error occurs (logged at WARN)
+     * @should return granted permissions for open access record
+     * @should return empty for blank pi
+     * @should return empty for null pi
+     * @should populate all six privilege maps for open access record
      */
     public static PagePermissions fetchPagePermissions(String pi, HttpServletRequest request) {
         if (StringUtils.isBlank(pi)) {
@@ -408,6 +413,11 @@ public final class AccessConditionUtils {
             Optional<ClientApplication> client = ClientApplicationManager.getClientFromRequest(request);
 
             Map<Integer, AccessPermission> imageMap = HashMap.newHashMap(pageDocs.size());
+            // Added three additional privilege maps so IIIF builders and PhysicalElement seeding
+            // can rely on a single prefetch for every per-page privilege (refs #27883).
+            Map<Integer, AccessPermission> thumbnailMap = HashMap.newHashMap(pageDocs.size());
+            Map<Integer, AccessPermission> zoomMap = HashMap.newHashMap(pageDocs.size());
+            Map<Integer, AccessPermission> downloadMap = HashMap.newHashMap(pageDocs.size());
             Map<Integer, AccessPermission> fulltextMap = HashMap.newHashMap(pageDocs.size());
             Map<Integer, AccessPermission> pdfMap = HashMap.newHashMap(pageDocs.size());
 
@@ -423,16 +433,24 @@ public final class AccessConditionUtils {
                         ? acValues.stream().map(Object::toString).collect(Collectors.toSet())
                         : Collections.emptySet();
 
-                // Evaluate all three privilege types against this page's access conditions
+                // Evaluate all six privilege types against this page's access conditions; all
+                // checks reuse the shared licenseTypes/user/IP/client resolved above – no
+                // additional Solr/DAO calls are issued here.
                 imageMap.put(order, checkAccessPermission(licenseTypes, accessConditions,
                         IPrivilegeHolder.PRIV_VIEW_IMAGES, user, ipAddress, client, query));
+                thumbnailMap.put(order, checkAccessPermission(licenseTypes, accessConditions,
+                        IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, user, ipAddress, client, query));
+                zoomMap.put(order, checkAccessPermission(licenseTypes, accessConditions,
+                        IPrivilegeHolder.PRIV_ZOOM_IMAGES, user, ipAddress, client, query));
+                downloadMap.put(order, checkAccessPermission(licenseTypes, accessConditions,
+                        IPrivilegeHolder.PRIV_DOWNLOAD_IMAGES, user, ipAddress, client, query));
                 fulltextMap.put(order, checkAccessPermission(licenseTypes, accessConditions,
                         IPrivilegeHolder.PRIV_VIEW_FULLTEXT, user, ipAddress, client, query));
                 pdfMap.put(order, checkAccessPermission(licenseTypes, accessConditions,
                         IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF, user, ipAddress, client, query));
             }
 
-            return new PagePermissions(imageMap, fulltextMap, pdfMap);
+            return new PagePermissions(imageMap, thumbnailMap, zoomMap, downloadMap, fulltextMap, pdfMap);
 
         } catch (PresentationException | IndexUnreachableException | DAOException e) {
             logger.warn("Failed to prefetch page permissions for PI '{}': {}", pi, e.getMessage());

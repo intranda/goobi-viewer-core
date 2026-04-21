@@ -21,7 +21,9 @@
  */
 package io.goobi.viewer.model.security;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
@@ -60,6 +62,9 @@ class PagePermissionsTest {
     void nonEmpty_isNotEmpty() {
         PagePermissions pp = new PagePermissions(
                 Map.of(1, AccessPermission.granted()),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
                 Map.of(1, AccessPermission.granted()),
                 Map.of(1, AccessPermission.granted()));
         assertFalse(pp.isEmpty());
@@ -70,6 +75,9 @@ class PagePermissionsTest {
         PagePermissions pp = new PagePermissions(
                 Map.of(5, AccessPermission.granted()),
                 Collections.emptyMap(),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
                 Collections.emptyMap());
         assertTrue(pp.isImageGranted(5));
     }
@@ -78,6 +86,9 @@ class PagePermissionsTest {
     void isImageGranted_returnsFalseForDeniedOrder() {
         PagePermissions pp = new PagePermissions(
                 Map.of(5, AccessPermission.denied()),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
                 Collections.emptyMap(),
                 Collections.emptyMap());
         assertFalse(pp.isImageGranted(5));
@@ -89,6 +100,9 @@ class PagePermissionsTest {
         PagePermissions pp = new PagePermissions(
                 Map.of(5, AccessPermission.granted()),
                 Collections.emptyMap(),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
                 Collections.emptyMap());
         assertFalse(pp.isImageGranted(99));
     }
@@ -96,6 +110,9 @@ class PagePermissionsTest {
     @Test
     void isFulltextGranted_returnsTrueForGrantedOrder() {
         PagePermissions pp = new PagePermissions(
+                Collections.emptyMap(),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
                 Collections.emptyMap(),
                 Map.of(3, AccessPermission.granted()),
                 Collections.emptyMap());
@@ -107,6 +124,9 @@ class PagePermissionsTest {
         PagePermissions pp = new PagePermissions(
                 Collections.emptyMap(),
                 Collections.emptyMap(),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
                 Map.of(7, AccessPermission.denied()));
         assertFalse(pp.isPdfGranted(7));
     }
@@ -116,7 +136,157 @@ class PagePermissionsTest {
         PagePermissions pp = new PagePermissions(
                 Collections.emptyMap(),
                 Collections.emptyMap(),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
                 Map.of(7, AccessPermission.granted()));
         assertFalse(pp.isPdfGranted(99));
+    }
+
+    // --- new privilege maps: thumbnail / zoom / download ---
+
+    /**
+     * @see PagePermissions#isThumbnailGranted(int)
+     * @verifies return true for granted order
+     */
+    @Test
+    void isThumbnailGranted_shouldReturnTrueForGrantedOrder() {
+        PagePermissions perms = new PagePermissions(
+                Collections.emptyMap(),
+                Map.of(1, AccessPermission.granted()),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
+                Collections.emptyMap());
+        assertTrue(perms.isThumbnailGranted(1));
+    }
+
+    /**
+     * @see PagePermissions#isThumbnailGranted(int)
+     * @verifies return false for unknown order
+     */
+    @Test
+    void isThumbnailGranted_shouldReturnFalseForUnknownOrder() {
+        assertFalse(emptyPerms().isThumbnailGranted(99));
+    }
+
+    /**
+     * @see PagePermissions#isZoomGranted(int)
+     * @verifies return true for granted order
+     */
+    @Test
+    void isZoomGranted_shouldReturnTrueForGrantedOrder() {
+        PagePermissions perms = new PagePermissions(
+                Collections.emptyMap(),
+                Collections.emptyMap(),
+                Map.of(1, AccessPermission.granted()),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
+                Collections.emptyMap());
+        assertTrue(perms.isZoomGranted(1));
+    }
+
+    /**
+     * @see PagePermissions#isZoomGranted(int)
+     * @verifies return false for unknown order
+     */
+    @Test
+    void isZoomGranted_shouldReturnFalseForUnknownOrder() {
+        assertFalse(emptyPerms().isZoomGranted(99));
+    }
+
+    /**
+     * @see PagePermissions#isDownloadGranted(int)
+     * @verifies return true for granted order
+     */
+    @Test
+    void isDownloadGranted_shouldReturnTrueForGrantedOrder() {
+        PagePermissions perms = new PagePermissions(
+                Collections.emptyMap(),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
+                Map.of(1, AccessPermission.granted()),
+                Collections.emptyMap(),
+                Collections.emptyMap());
+        assertTrue(perms.isDownloadGranted(1));
+    }
+
+    /**
+     * @see PagePermissions#isDownloadGranted(int)
+     * @verifies return false for unknown order
+     */
+    @Test
+    void isDownloadGranted_shouldReturnFalseForUnknownOrder() {
+        assertFalse(emptyPerms().isDownloadGranted(99));
+    }
+
+    // --- raw permission accessors used by PhysicalElement seeding ---
+
+    /**
+     * @see PagePermissions#getImagePermission(int)
+     * @verifies return permission for known order
+     */
+    @Test
+    void getImagePermission_shouldReturnPermissionForKnownOrder() {
+        AccessPermission granted = AccessPermission.granted();
+        PagePermissions perms = new PagePermissions(
+                Map.of(1, granted),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
+                Collections.emptyMap());
+        assertEquals(granted, perms.getImagePermission(1));
+    }
+
+    /**
+     * @see PagePermissions#getImagePermission(int)
+     * @verifies return null for unknown order
+     */
+    @Test
+    void getImagePermission_shouldReturnNullForUnknownOrder() {
+        assertNull(emptyPerms().getImagePermission(99));
+    }
+
+    /**
+     * @see PagePermissions#getThumbnailPermission(int)
+     * @verifies return null for unknown order
+     */
+    @Test
+    void getThumbnailPermission_shouldReturnNullForUnknownOrder() {
+        assertNull(emptyPerms().getThumbnailPermission(99));
+    }
+
+    /**
+     * @see PagePermissions#getZoomPermission(int)
+     * @verifies return null for unknown order
+     */
+    @Test
+    void getZoomPermission_shouldReturnNullForUnknownOrder() {
+        assertNull(emptyPerms().getZoomPermission(99));
+    }
+
+    /**
+     * @see PagePermissions#getDownloadPermission(int)
+     * @verifies return null for unknown order
+     */
+    @Test
+    void getDownloadPermission_shouldReturnNullForUnknownOrder() {
+        assertNull(emptyPerms().getDownloadPermission(99));
+    }
+
+    /**
+     * @see PagePermissions#getPdfPermission(int)
+     * @verifies return null for unknown order
+     */
+    @Test
+    void getPdfPermission_shouldReturnNullForUnknownOrder() {
+        assertNull(emptyPerms().getPdfPermission(99));
+    }
+
+    private static PagePermissions emptyPerms() {
+        return new PagePermissions(
+                Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap(),
+                Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
     }
 }

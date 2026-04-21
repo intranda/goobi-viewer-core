@@ -21,6 +21,7 @@ import static org.mockito.Mockito.verify;
 
 import java.awt.Dimension;
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -102,9 +103,15 @@ class CanvasBuilderTest extends AbstractSolrEnabledTest {
         Mockito.when(element.getMediaType()).thenReturn(new MimeType("image/tiff"));
         Mockito.when(element.getMimeType()).thenReturn("image/tiff");
 
-        // Inject non-empty pre-fetched permissions via package-private setter
+        // Inject non-empty pre-fetched permissions via package-private setter.
+        // After PagePermissions was extended to 6 privilege maps (image, thumbnail, zoom,
+        // download, fulltext, pdf), only image/fulltext/pdf are relevant here; the other
+        // three stay empty because this test only verifies image + fulltext behaviour.
         builder.setPagePermissions(new PagePermissions(
                 Map.of(1, AccessPermission.granted()),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
                 Map.of(1, AccessPermission.granted()),
                 Map.of(1, AccessPermission.granted())));
 
