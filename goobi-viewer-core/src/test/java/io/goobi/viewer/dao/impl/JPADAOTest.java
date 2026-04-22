@@ -1103,6 +1103,21 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * @see JPADAO#getAllLicenseTypesHydrated()
+     * @verifies return all license types with overridden license types and image placeholders initialised
+     */
+    @Test
+    void getAllLicenseTypesHydrated_shouldReturnAllLicenseTypesWithOverriddenLicenseTypesAndImagePlaceholdersInitialised() throws Exception {
+        List<LicenseType> licenseTypes = DataManager.getInstance().getDao().getAllLicenseTypesHydrated();
+        assertEquals(NUM_LICENSE_TYPES, licenseTypes.size());
+        // Access lazy collections; must not throw LazyInitializationException because the EntityManager is closed.
+        for (LicenseType lt : licenseTypes) {
+            lt.getOverriddenLicenseTypes().size();
+            lt.getImagePlaceholders().size();
+        }
+    }
+
+    /**
      * @verifies return license type with privileges and overrides by id
      */
     @Test

@@ -575,6 +575,17 @@ public interface IDAO {
     public List<LicenseType> getRecordLicenseTypes() throws DAOException;
 
     /**
+     * Returns all {@link LicenseType}s with their lazy collections eagerly initialised so the returned
+     * entities are safe to use after the underlying {@link jakarta.persistence.EntityManager} is closed.
+     * Intended for consumers that cache the result across transactions (e.g. LicenseTypeCache).
+     *
+     * @return list of fully hydrated license types; never null
+     * @throws DAOException if the query fails
+     * @should return all license types with overridden license types and image placeholders initialised
+     */
+    public List<LicenseType> getAllLicenseTypesHydrated() throws DAOException;
+
+    /**
      * getLicenseTypes.
      *
      * @param first index of first result (pagination)

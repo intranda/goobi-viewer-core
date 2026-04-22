@@ -1310,7 +1310,33 @@ public class JPADAO implements IDAO {
 
     /**
      * {@inheritDoc}
-     * 
+     *
+     * @should return all license types with overridden license types and image placeholders initialised
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<LicenseType> getAllLicenseTypesHydrated() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT lt FROM LicenseType lt");
+            q.setFlushMode(FlushModeType.COMMIT);
+            List<LicenseType> result = q.getResultList();
+            // Touch lazy collections while the EntityManager is still open so the returned entities
+            // can be cached and used after close() without triggering LazyInitializationException.
+            for (LicenseType lt : result) {
+                lt.getOverriddenLicenseTypes().size();
+                lt.getImagePlaceholders().size();
+            }
+            return result;
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * @should return only license types matching name and description filter
      * @should return license types sorted by name in both ascending and descending order
      */
