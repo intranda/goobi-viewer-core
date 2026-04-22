@@ -610,6 +610,20 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * @see JPADAO#getAllIpRangesHydrated()
+     * @verifies return all IP ranges with licenses initialised
+     */
+    @Test
+    void getAllIpRangesHydrated_shouldReturnAllIpRangesWithLicensesInitialised() throws Exception {
+        List<IpRange> ipRanges = DataManager.getInstance().getDao().getAllIpRangesHydrated();
+        assertNotNull(ipRanges);
+        // Must not throw LazyInitializationException after the DAO closed its EntityManager.
+        for (IpRange range : ipRanges) {
+            range.getLicenses().size();
+        }
+    }
+
+    /**
      * @verifies return ip range with all fields by id
      */
     @Test

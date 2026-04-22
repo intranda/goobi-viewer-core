@@ -1951,6 +1951,29 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @should return all IP ranges with licenses initialised
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<IpRange> getAllIpRangesHydrated() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT ipr FROM IpRange ipr");
+            List<IpRange> result = q.getResultList();
+            // Touch lazy collections while the EntityManager is still open (see JPADAO.getAllLicenseTypesHydrated).
+            for (IpRange range : result) {
+                range.getLicenses().size();
+            }
+            return result;
+        } finally {
+            close(em);
+        }
+    }
+
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override

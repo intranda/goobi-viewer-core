@@ -832,6 +832,17 @@ public interface IDAO {
     public List<IpRange> getAllIpRanges() throws DAOException;
 
     /**
+     * Returns all {@link IpRange}s with their lazy collections eagerly initialised so the returned
+     * entities are safe to use after the underlying {@link jakarta.persistence.EntityManager} is closed.
+     * Intended for consumers that cache the result across transactions (e.g. IpRangeCache).
+     *
+     * @return list of fully hydrated IP ranges; never null
+     * @throws DAOException if the query fails
+     * @should return all IP ranges with licenses initialised
+     */
+    public List<IpRange> getAllIpRangesHydrated() throws DAOException;
+
+    /**
      * getIpRangeCount.
      *
      * @param filters map of field names to filter values
