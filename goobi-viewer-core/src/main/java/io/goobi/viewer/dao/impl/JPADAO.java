@@ -1963,6 +1963,7 @@ public class JPADAO implements IDAO {
         EntityManager em = getEntityManager();
         try {
             Query q = em.createQuery("SELECT ipr FROM IpRange ipr");
+            q.setFlushMode(FlushModeType.COMMIT);
             List<IpRange> result = q.getResultList();
             // Touch lazy collections while the EntityManager is still open (see JPADAO.getAllLicenseTypesHydrated).
             for (IpRange range : result) {

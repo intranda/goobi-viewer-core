@@ -617,6 +617,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     void getAllIpRangesHydrated_shouldReturnAllIpRangesWithLicensesInitialised() throws Exception {
         List<IpRange> ipRanges = DataManager.getInstance().getDao().getAllIpRangesHydrated();
         assertNotNull(ipRanges);
+        assertEquals(2, ipRanges.size());
         // Must not throw LazyInitializationException after the DAO closed its EntityManager.
         for (IpRange range : ipRanges) {
             range.getLicenses().size();
