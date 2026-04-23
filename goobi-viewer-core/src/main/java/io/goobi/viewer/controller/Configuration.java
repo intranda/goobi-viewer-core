@@ -2653,6 +2653,14 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * @return number of days until a UserToken expires; 0 or negative means no expiry
+     * @should return default value of 30 when not configured
+     */
+    public int getTokenExpirationDays() {
+        return getLocalInt("user.authentication.tokenExpirationDays", 30);
+    }
+
+    /**
      * isShowOpenIdConnect.
      *
      * @should return correct value

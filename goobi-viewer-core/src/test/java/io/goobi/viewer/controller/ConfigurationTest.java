@@ -4005,4 +4005,13 @@ class ConfigurationTest extends AbstractTest {
         // When no collection config exists for a field, the method returns -1 as the default
         assertEquals(-1, DataManager.getInstance().getConfiguration().getCollectionDisplayDepthForSearch("MD_NONEXISTENTFIELD"));
     }
+
+    /**
+     * @see Configuration#getTokenExpirationDays()
+     * @verifies return default value of 30 when not configured
+     */
+    @Test
+    void getTokenExpirationDays_shouldReturnDefaultValueOf30WhenNotConfigured() {
+        assertEquals(30, DataManager.getInstance().getConfiguration().getTokenExpirationDays());
+    }
 }

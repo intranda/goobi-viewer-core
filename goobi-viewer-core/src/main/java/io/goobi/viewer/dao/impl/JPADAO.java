@@ -597,6 +597,83 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public Optional<io.goobi.viewer.model.security.user.UserToken> getUserTokenByTokenHash(String tokenHash) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<io.goobi.viewer.model.security.user.UserToken> q = em.createQuery(
+                    "SELECT t FROM UserToken t WHERE t.tokenHash = :tokenHash",
+                    io.goobi.viewer.model.security.user.UserToken.class);
+            q.setParameter("tokenHash", tokenHash);
+            try {
+                return Optional.of(q.getSingleResult());
+            } catch (NoResultException e) {
+                return Optional.empty();
+            }
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean addUserToken(io.goobi.viewer.model.security.user.UserToken token) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.persist(token);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean deleteUserToken(io.goobi.viewer.model.security.user.UserToken token) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            io.goobi.viewer.model.security.user.UserToken managed =
+                    em.getReference(io.goobi.viewer.model.security.user.UserToken.class, token.getId());
+            em.remove(managed);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void deleteExpiredUserTokensForUser(io.goobi.viewer.model.security.user.User user) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.createQuery("DELETE FROM UserToken t WHERE t.user = :user AND t.expirationDate < :now")
+                    .setParameter("user", user)
+                    .setParameter("now", java.time.LocalDateTime.now())
+                    .executeUpdate();
+            commitTransaction(em);
+        } catch (PersistenceException e) {
+            handleException(em);
+        } finally {
+            close(em);
+        }
+    }
+
     // UserGroup
 
     /** {@inheritDoc} */

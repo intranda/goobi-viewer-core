@@ -22,11 +22,13 @@
 package io.goobi.viewer.api.rest.filters;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
 
@@ -34,11 +36,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.api.rest.bindings.AdminLoggedInBinding;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.SecurityManager;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.security.user.UserToken;
 
 /**
- * JAX-RS request filter that only allows requests from sessions belonging to a logged-in Goobi viewer administrator account.
+ * JAX-RS request filter that only allows requests from sessions belonging to a logged-in Goobi viewer administrator account,
+ * or with a valid Bearer token belonging to an admin user.
  *
  * @author Florian Alpers
  */
@@ -51,9 +58,51 @@ public class AdminLoggedInFilter implements ContainerRequestFilter {
     @Context
     private HttpServletRequest req;
 
-    /** {@inheritDoc} */
+    /**
+     * @param requestContext the JAX-RS request context
+     * @throws IOException
+     * @should pass request through when valid admin bearer token provided
+     * @should return 401 when bearer token belongs to non-admin user
+     * @should return 401 with token_expired when expired admin bearer token provided
+     */
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
+        String authHeader = req.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String plaintext = authHeader.substring(7);
+            String hash = SecurityManager.hashToken(plaintext);
+            try {
+                Optional<UserToken> tokenOpt = DataManager.getInstance().getDao().getUserTokenByTokenHash(hash);
+                if (tokenOpt.isEmpty()) {
+                    requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
+                            .type(MediaType.APPLICATION_JSON)
+                            .entity("{\"status\":\"error\",\"message\":\"invalid_token\"}")
+                            .build());
+                    return;
+                }
+                if (tokenOpt.get().isExpired()) {
+                    requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
+                            .type(MediaType.APPLICATION_JSON)
+                            .entity("{\"status\":\"error\",\"message\":\"token_expired\"}")
+                            .build());
+                    return;
+                }
+                User user = tokenOpt.get().getUser();
+                if (user == null || !user.isSuperuser()) {
+                    requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
+                            .entity("You must be logged in as administrator to access this resource")
+                            .build());
+                    return;
+                }
+                // Token valid and user is admin — continue
+                return;
+            } catch (DAOException e) {
+                logger.error("DAO error validating Bearer token", e);
+                requestContext.abortWith(Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
+                return;
+            }
+        }
+
         if (!isAdminLoggedIn(req)) {
             Response response = Response.status(Response.Status.UNAUTHORIZED)
                     .entity("You must be logged in as administrator to access this resource")

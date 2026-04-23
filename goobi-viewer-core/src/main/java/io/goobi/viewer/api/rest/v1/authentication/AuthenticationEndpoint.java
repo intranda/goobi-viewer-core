@@ -28,28 +28,17 @@ import java.net.URISyntaxException;
 import java.security.PublicKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.FormParam;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -66,9 +55,13 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 
+import io.goobi.viewer.api.rest.model.AuthenticationResponse;
+import io.goobi.viewer.api.rest.model.LoginRequest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.SecurityManager;
 import io.goobi.viewer.exceptions.AuthenticationException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
@@ -79,10 +72,24 @@ import io.goobi.viewer.model.security.authentication.HttpAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.HttpHeaderProvider;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.security.user.UserToken;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * REST endpoint handling user authentication, login/logout flows, and OAuth-based API token management.
@@ -170,7 +177,168 @@ public class AuthenticationEndpoint {
     }
 
     /**
+     * Authenticates a local user (e-mail + password) and returns a Bearer token.
      *
+     * @param credentials JSON body with {@code email} and {@code password} fields
+     * @return {@link Response}
+     * @should return 200 and token on valid credentials
+     * @should return token field in response on valid credentials
+     * @should return 401 on wrong password
+     * @should return 401 on unknown email
+     * @should return 401 on inactive user
+     * @should return 401 on suspended user
+     * @should return 401 on null password hash
+     * @should return 401 on null email
+     * @should return 401 on empty email
+     * @should return 429 with retryAfterSeconds on IP delay
+     * @should return 429 with retryAfterSeconds on username delay
+     * @should reset failed attempt counters on successful login
+     */
+    @POST
+    @Path(ApiUrls.AUTH_LOGIN)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Local user login",
+            description = "Authenticates a local user (e-mail + password) and returns a Bearer token.")
+    @ApiResponse(responseCode = "200", description = "Login successful; plaintext token returned in response body")
+    @ApiResponse(responseCode = "401", description = "Invalid credentials, user inactive or suspended")
+    @ApiResponse(responseCode = "429", description = "Too many failed attempts; retryAfterSeconds indicates seconds until retry")
+    @ApiResponse(responseCode = "500", description = "Internal error")
+    @Tag(name = "auth")
+    public Response login(LoginRequest credentials) {
+        String email = credentials != null ? credentials.getEmail() : null;
+        String password = credentials != null ? credentials.getPassword() : null;
+        String ipAddress = NetTools.getIpAddress(servletRequest);
+        SecurityManager securityManager = DataManager.getInstance().getSecurityManager();
+
+        // Step 1: Guard null/blank e-mail before SecurityManager calls (throws IllegalArgumentException on null)
+        if (email == null || email.isBlank()) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity(new AuthenticationResponse("error", "Invalid credentials", null, null))
+                    .build();
+        }
+
+        // Step 2: IP-based brute-force delay check
+        if (ipAddress == null) {
+            ipAddress = "unknown";
+        }
+        long ipDelay = securityManager.getDelayForIpAddress(ipAddress);
+        if (ipDelay > 0) {
+            int retryAfterSeconds = (int) Math.ceil((double) ipDelay / 1000);
+            return Response.status(429)
+                    .header("Retry-After", retryAfterSeconds)
+                    .entity(new AuthenticationResponse("error", "Too many failed attempts", null, retryAfterSeconds))
+                    .build();
+        }
+
+        // Step 3: Username-based brute-force delay check
+        long userDelay = securityManager.getDelayForUserName(email);
+        if (userDelay > 0) {
+            int retryAfterSeconds = (int) Math.ceil((double) userDelay / 1000);
+            return Response.status(429)
+                    .header("Retry-After", retryAfterSeconds)
+                    .entity(new AuthenticationResponse("error", "Too many failed attempts", null, retryAfterSeconds))
+                    .build();
+        }
+
+        // Step 4: Load user and verify credentials
+        try {
+            User user = DataManager.getInstance().getDao().getUserByEmail(email);
+            boolean valid = user != null
+                    && password != null && !password.isBlank()
+                    && user.getPasswordHash() != null
+                    && new BCrypt().checkpw(password, user.getPasswordHash())
+                    && user.isActive()
+                    && !user.isSuspended();
+
+            if (!valid) {
+                securityManager.addFailedLoginAttemptForUserName(email);
+                securityManager.addFailedLoginAttemptForIpAddress(ipAddress);
+                return Response.status(Response.Status.UNAUTHORIZED)
+                        .entity(new AuthenticationResponse("error", "Invalid credentials", null, null))
+                        .build();
+            }
+
+            // Step 5: Success — reset counters and issue a UserToken
+            securityManager.resetFailedLoginAttemptForUserName(email);
+            securityManager.resetFailedLoginAttemptForIpAddress(ipAddress);
+
+            String plaintext = UUID.randomUUID().toString();
+            String tokenHash = SecurityManager.hashToken(plaintext);
+            DataManager.getInstance().getDao().deleteExpiredUserTokensForUser(user);
+            UserToken userToken = new UserToken();
+            userToken.setUser(user);
+            userToken.setTokenHash(tokenHash);
+            int expirationDays = DataManager.getInstance().getConfiguration().getTokenExpirationDays();
+            userToken.setExpirationDate(LocalDateTime.now().plusDays(expirationDays));
+            DataManager.getInstance().getDao().addUserToken(userToken);
+
+            return Response.ok(new AuthenticationResponse("success", null, plaintext, null)).build();
+
+        } catch (DAOException e) {
+            logger.error("DAO error during login for '{}'", email, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(new AuthenticationResponse("error", "Internal error", null, null))
+                    .build();
+        }
+    }
+
+    /**
+     * Revokes a UserToken (if a Bearer token is supplied) or invalidates the current HTTP session.
+     *
+     * @return {@link Response}
+     * @should return 200 and delete token when valid bearer token provided
+     * @should return 200 when unknown bearer token provided
+     * @should return 401 when no session exists
+     * @should return 401 when session has no user attribute
+     */
+    @POST
+    @Path(ApiUrls.AUTH_LOGOUT)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Logout / revoke token",
+            description = "Revokes a UserToken when called with Authorization: Bearer, or invalidates the HTTP session.")
+    @ApiResponse(responseCode = "200", description = "Token revoked or session invalidated")
+    @ApiResponse(responseCode = "401", description = "No valid session or no authenticated user in session")
+    @Tag(name = "auth")
+    public Response logout() {
+        String authHeader = servletRequest.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String plaintext = authHeader.substring(7);
+            String hash = SecurityManager.hashToken(plaintext);
+            try {
+                DataManager.getInstance().getDao().getUserTokenByTokenHash(hash)
+                        .ifPresent(t -> {
+                            try {
+                                DataManager.getInstance().getDao().deleteUserToken(t);
+                            } catch (DAOException e) {
+                                logger.error("Failed to delete user token", e);
+                            }
+                        });
+            } catch (DAOException e) {
+                logger.error("DAO error during token lookup on logout", e);
+            }
+            return Response.ok(new AuthenticationResponse("success", null, null, null)).build();
+        }
+
+        HttpSession session = servletRequest.getSession(false);
+        if (session == null) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity(new AuthenticationResponse("error", "Not logged in", null, null))
+                    .build();
+        }
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity(new AuthenticationResponse("error", "Not logged in", null, null))
+                    .build();
+        }
+        session.invalidate();
+        return Response.ok(new AuthenticationResponse("success", null, null, null)).build();
+    }
+
+    /**
      * @param redirectUrl optional URL to redirect to after login
      * @return {@link Response}
      * @should return status 403 if redirectUrl external
@@ -293,8 +461,8 @@ public class AuthenticationEndpoint {
 
     /**
      * OpenID Connect POST callback. Parameters are read from the request body via
-     * {@link jakarta.servlet.http.HttpServletRequest#getParameter(String)} to avoid
-     * Jersey throwing {@link IllegalStateException} when Content-Type is absent.
+     * {@link jakarta.servlet.http.HttpServletRequest#getParameter(String)} to avoid Jersey throwing {@link IllegalStateException} when Content-Type
+     * is absent.
      *
      * @return {@link Response}
      * @throws IOException

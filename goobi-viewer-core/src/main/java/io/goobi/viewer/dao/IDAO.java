@@ -224,6 +224,35 @@ public interface IDAO {
      */
     public boolean deleteUser(User user) throws DAOException;
 
+    /**
+     * @param tokenHash SHA-256 hex hash of the plaintext token
+     * @return the matching UserToken, or empty if not found
+     * @throws DAOException
+     */
+    public Optional<io.goobi.viewer.model.security.user.UserToken> getUserTokenByTokenHash(String tokenHash) throws DAOException;
+
+    /**
+     * @param token UserToken to persist
+     * @return true on success
+     * @throws DAOException
+     */
+    public boolean addUserToken(io.goobi.viewer.model.security.user.UserToken token) throws DAOException;
+
+    /**
+     * @param token UserToken to delete
+     * @return true on success
+     * @throws DAOException
+     */
+    public boolean deleteUserToken(io.goobi.viewer.model.security.user.UserToken token) throws DAOException;
+
+    /**
+     * Deletes all expired tokens for the given user.
+     *
+     * @param user
+     * @throws DAOException
+     */
+    public void deleteExpiredUserTokensForUser(io.goobi.viewer.model.security.user.User user) throws DAOException;
+
     // UserGroup
 
     /**
