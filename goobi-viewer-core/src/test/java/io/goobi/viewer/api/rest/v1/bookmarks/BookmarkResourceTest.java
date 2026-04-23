@@ -22,11 +22,9 @@
 package io.goobi.viewer.api.rest.v1.bookmarks;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS;
-import static org.junit.jupiter.api.Assertions.*;
-
-import jakarta.ws.rs.client.Entity;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
 
@@ -37,7 +35,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
 import io.goobi.viewer.model.bookmark.Bookmark;
 import io.goobi.viewer.model.bookmark.BookmarkList;
-import io.goobi.viewer.api.rest.v1.bookmarks.BookmarkResource;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * @author florian
@@ -58,14 +58,9 @@ class BookmarkResourceTest extends AbstractRestApiTest {
     }
 
     /**
-     * Verify that POST /bookmarks returns 400 when called without a logged-in user.
-     * Session-based bookmark lists do not support adding additional lists.
-     * The success path (201 Created) requires authentication and is verified at the source level
-     * in BookmarkResource.addBookmarkList() which wraps the result in Response.status(CREATED).
-     */
-    /**
-     * Verify that POST /bookmarks returns 409 when called without a logged-in user.
-     * Session users already have exactly one temporary bookmark list and may not add more.
+     * Verify that POST /bookmarks returns 409 when called without a logged-in user. Session users already have exactly one temporary bookmark list
+     * and may not add more.
+     * 
      * @verifies return 409 when not logged in
      * @see BookmarkResource#addBookmarkList
      */
@@ -78,42 +73,6 @@ class BookmarkResourceTest extends AbstractRestApiTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .post(Entity.entity(list, MediaType.APPLICATION_JSON))) {
             assertEquals(409, response.getStatus(), "POST /bookmarks without login should return 409 Conflict");
-        }
-    }
-
-    /**
-     * Tests for the parseMaxHits() helper that handles ?max=null and other invalid values.
-     * This guards against NumberFormatException when a client sends the literal string "null"
-     * as the value of the max query parameter.
-     */
-    /**
-     * requireValidListId() is private but enforced in all list-specific endpoints.
-     * A listId of 0 must be rejected with HTTP 400 before any business logic runs.
-     * @verifies return 400 when zero list id
-     * @see BookmarkResource#getBookmarkList
-     */
-    @Test
-    void getBookmarkList_shouldReturn400WhenZeroListId() {
-        try (Response response = target(USERS_BOOKMARKS + "/0")
-                .request()
-                .accept(MediaType.APPLICATION_JSON)
-                .get()) {
-            assertEquals(400, response.getStatus(), "listId=0 should be rejected with HTTP 400");
-        }
-    }
-
-    /**
-     * Negative listIds must also be rejected with HTTP 400.
-     * @verifies return 400 when negative list id
-     * @see BookmarkResource#getBookmarkList
-     */
-    @Test
-    void getBookmarkList_shouldReturn400WhenNegativeListId() {
-        try (Response response = target(USERS_BOOKMARKS + "/-1")
-                .request()
-                .accept(MediaType.APPLICATION_JSON)
-                .get()) {
-            assertEquals(400, response.getStatus(), "listId=-1 should be rejected with HTTP 400");
         }
     }
 

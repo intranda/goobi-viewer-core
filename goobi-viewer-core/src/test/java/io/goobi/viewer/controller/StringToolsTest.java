@@ -38,6 +38,8 @@ import org.jsoup.safety.Safelist;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import org.apache.commons.lang3.IntegerRange;
+
 import io.goobi.viewer.solr.SolrTools;
 
 class StringToolsTest {
@@ -453,5 +455,51 @@ class StringToolsTest {
     void sanitizeFilenameToAscii_shouldCollapseConsecutiveHyphens() {
         // Two non-ASCII characters adjacent produce two hyphens which are collapsed to one
         assertEquals("a-b.png", StringTools.sanitizeFilenameToAscii("a\u2013\u2014b.png"));
+    }
+
+    /**
+     * @see StringTools#parseIntRange(String)
+     * @verifies return range from 0 to n for integer input
+     */
+    @Test
+    void parseIntRange_shouldReturnRangeFrom0ToNForIntegerInput() {
+        assertEquals(IntegerRange.of(0, 5), StringTools.parseIntRange("5"));
+    }
+
+    /**
+     * @see StringTools#parseIntRange(String)
+     * @verifies return correct range for closed interval notation
+     */
+    @Test
+    void parseIntRange_shouldReturnCorrectRangeForClosedIntervalNotation() {
+        assertEquals(IntegerRange.of(1, 5), StringTools.parseIntRange("[1,5]"));
+    }
+
+    /**
+     * @see StringTools#parseIntRange(String)
+     * @verifies return correct range for open interval notation
+     */
+    @Test
+    void parseIntRange_shouldReturnCorrectRangeForOpenIntervalNotation() {
+        assertEquals(IntegerRange.of(2, 4), StringTools.parseIntRange("(1,5)"));
+    }
+
+    /**
+     * @see StringTools#parseIntRange(String)
+     * @verifies return correct range for half open interval notation
+     */
+    @Test
+    void parseIntRange_shouldReturnCorrectRangeForHalfOpenIntervalNotation() {
+        assertEquals(IntegerRange.of(1, 4), StringTools.parseIntRange("[1,5)"));
+        assertEquals(IntegerRange.of(2, 5), StringTools.parseIntRange("(1,5]"));
+    }
+
+    /**
+     * @see StringTools#parseIntRange(String)
+     * @verifies throw IllegalArgumentException for invalid input
+     */
+    @Test
+    void parseIntRange_shouldThrowIllegalArgumentExceptionForInvalidInput() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> StringTools.parseIntRange("abc"));
     }
 }

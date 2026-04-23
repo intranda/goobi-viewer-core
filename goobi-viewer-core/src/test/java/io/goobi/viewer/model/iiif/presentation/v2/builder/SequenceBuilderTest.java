@@ -126,9 +126,15 @@ class SequenceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
         Mockito.when(page.getThumbnailUrl()).thenReturn(
                 "https://viewer.goobi.io/api/v1/records/" + PI + "/files/images/00000001.tif/full/80,/0/default.jpg");
 
-        // Inject non-empty pre-fetched permissions via package-private setter
+        // Inject non-empty pre-fetched permissions via package-private setter.
+        // After PagePermissions was extended to 6 privilege maps (image, thumbnail, zoom,
+        // download, fulltext, pdf), only image/fulltext/pdf are relevant here; the other
+        // three stay empty because this test only verifies image-access behaviour.
         sequenceBuilder.setPagePermissions(new PagePermissions(
                 Map.of(ORDER, AccessPermission.granted()),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
                 Map.of(ORDER, AccessPermission.granted()),
                 Map.of(ORDER, AccessPermission.granted())));
 

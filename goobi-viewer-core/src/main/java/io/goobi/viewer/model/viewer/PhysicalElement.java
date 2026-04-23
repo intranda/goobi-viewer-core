@@ -35,6 +35,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -158,8 +159,14 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     private boolean fulltextAvailable = false;
 
     private Boolean fulltextAccessPermission;
-    /** Map containing AccessPermission access check results and custom access denied info. */
-    private Map<String, AccessPermission> accessPermissionMap = new HashMap<>();
+    /** Map containing AccessPermission access check results and custom access denied info.
+     *  ConcurrentHashMap so that concurrent seeding (see {@link #seedAccessPermission})
+     *  and concurrent reads from {@link #getAccessPermission} cannot corrupt the map or
+     *  produce a ConcurrentModificationException. Note: {@link #getAccessPermission} still
+     *  performs a non-atomic check-then-put on a miss — under concurrent tab access two
+     *  readers may both compute the same permission before one of them wins the put. That
+     *  race predates this class and is harmless: the second put overwrites an equal value. */
+    private final Map<String, AccessPermission> accessPermissionMap = new ConcurrentHashMap<>();
     /** True if a download ticket is required before files may be downloaded. Value is set during the access permission check. */
     private Boolean bornDigitalDownloadTicketRequired = null; // TODO reset when logging in/out or persist in session
     /** File name of the full-text document in the file system. */
@@ -516,6 +523,34 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         }
 
         return accessPermissionMap.getOrDefault(privilegeName, AccessPermission.denied());
+    }
+
+    /**
+     * Seeds the internal permission cache with an already-evaluated {@link AccessPermission}
+     * for the given privilege. Called by batch prefetch paths (e.g.
+     * {@link io.goobi.viewer.model.viewer.ViewManager#getImageInfos}) so that subsequent
+     * {@link #getAccessPermission(String)} calls can skip the per-page Solr + DAO lookup.
+     *
+     * <p>Idempotent: {@code putIfAbsent} guarantees that a previously cached decision is
+     * not overwritten. {@code null} permissions are silently ignored — this matches
+     * {@link io.goobi.viewer.model.security.PagePermissions#getImagePermission(int)}
+     * et al., which return {@code null} for unknown orders; seeding such a miss as
+     * {@link AccessPermission#denied()} would poison the cache for later legitimate lookups.
+     *
+     * <p>Intended as an internal performance hook for batch prefetchers — not for general
+     * application code, which should call {@link #getAccessPermission(String)} instead.
+     *
+     * @param privilegeName access privilege name (see {@link io.goobi.viewer.model.security.IPrivilegeHolder})
+     * @param permission prefetched permission; {@code null} is ignored (no-op)
+     * @should cache prefetched permission without triggering lookup
+     * @should not overwrite previously cached permission
+     * @should ignore null permission
+     */
+    public void seedAccessPermission(String privilegeName, AccessPermission permission) {
+        if (permission == null) {
+            return;
+        }
+        accessPermissionMap.putIfAbsent(privilegeName, permission);
     }
 
     /**
@@ -1492,51 +1527,70 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * Checks if the user has the privilege {@link io.goobi.viewer.model.security.IPrivilegeHolder#PRIV_ZOOM_IMAGES} If the check fails and
-     * {@link Configuration#getUnzoomedImageAccessMaxWidth()} is greater than 0, false is returned.
+     * Checks whether the current user may zoom this image. Consults
+     * {@link #accessPermissionMap} via {@link #getAccessPermission(String)} so that repeated
+     * calls on the same page avoid hitting Solr/JDBC after a batch seed or a prior lookup.
      *
-     * @return true exactly if the user is allowed to zoom images. false otherwise
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * <p>Behaviour change (2026-04): previously returned {@code false} when no
+     * {@link jakarta.faces.context.FacesContext} was active. The new implementation runs
+     * the regular (anonymous) access check, consistent with {@link #isAccessPermissionImage()}.
+     * Non-JSF callers therefore see a real access decision instead of a blanket deny.
+     *
+     * @return true if the user has {@link IPrivilegeHolder#PRIV_ZOOM_IMAGES} for this page
+     * @throws IndexUnreachableException if any
+     * @throws DAOException if any
+     * @should return seeded zoom permission without triggering lookup
      */
     public boolean isAccessPermissionImageZoom() throws IndexUnreachableException, DAOException {
-        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
-            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-            return AccessConditionUtils
-                    .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null, pi, fileName,
-                            IPrivilegeHolder.PRIV_ZOOM_IMAGES, NetTools.getIpAddress(request))
-                    .isGranted();
-        }
-        logger.trace("FacesContext not found");
-        return false;
-
+        // Route via getAccessPermission so the seeded/cached entry in accessPermissionMap
+        // is honored and we avoid redundant Solr/JDBC lookups. Also removes the previous
+        // FacesContext hard-deny for non-JSF callers (e.g. background jobs / REST filters).
+        return getAccessPermission(IPrivilegeHolder.PRIV_ZOOM_IMAGES).isGranted();
     }
 
     /**
+     * Checks whether the current user may download this image. Consults
+     * {@link #accessPermissionMap} via {@link #getAccessPermission(String)}.
      *
-     * @return true if user has access permission; false otherwise
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * <p>Behaviour change (2026-04): previously returned {@code false} when no
+     * {@link jakarta.faces.context.FacesContext} was active. The new implementation runs
+     * the regular (anonymous) access check, consistent with {@link #isAccessPermissionImage()}.
+     *
+     * @return true if the user has {@link IPrivilegeHolder#PRIV_DOWNLOAD_IMAGES} for this page
+     * @throws IndexUnreachableException if any
+     * @throws DAOException if any
+     * @should return seeded download permission without triggering lookup
      */
     public boolean isAccessPermissionImageDownload() throws IndexUnreachableException, DAOException {
-        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
-            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-            return AccessConditionUtils
-                    .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null, pi, fileName,
-                            IPrivilegeHolder.PRIV_DOWNLOAD_IMAGES, NetTools.getIpAddress(request))
-                    .isGranted();
-        }
-        logger.trace("FacesContext not found");
-
-        return false;
+        // Route via getAccessPermission so the seeded/cached entry in accessPermissionMap
+        // is honored and we avoid redundant Solr/JDBC lookups. Also removes the previous
+        // FacesContext hard-deny for non-JSF callers.
+        return getAccessPermission(IPrivilegeHolder.PRIV_DOWNLOAD_IMAGES).isGranted();
     }
 
     /**
-     * isAccessPermissionPdf.
+     * Checks whether a page-PDF may be downloaded for this page. Two configuration gates
+     * run first (page-PDF globally enabled + media type supports image view); the access
+     * decision itself is then served from {@link #accessPermissionMap} via
+     * {@link #getAccessPermission(String)}.
      *
-     * @return true if PDF download is allowed for this page; false otherwise
+     * <p>Query-shape change (2026-04) on a cache miss: the previous implementation went via
+     * {@code AccessConditionUtils.checkAccessPermissionForPagePdf} which issued a
+     * {@code PI_TOPSTRUCT + ORDER} Solr query against in-memory access conditions. The new
+     * implementation falls through to a filename-based query for the same page. Equivalent
+     * for standard records but a different Solr query plan. When a batch prefetcher has
+     * seeded {@link #accessPermissionMap} the miss path is skipped entirely.
+     *
+     * <p>FacesContext behaviour is unchanged: both the old and new paths ran the regular
+     * access check regardless of whether a {@code FacesContext} was active (the old path
+     * simply passed {@code null} through to {@code checkAccessPermissionForPagePdf}).
+     *
+     * @return true if page-PDF download is allowed for this page; false otherwise
+     * @should not trigger lookup when pdf permission is seeded
      */
     public boolean isAccessPermissionPdf() {
+        // Preserve the two pre-existing configuration gates. Only the actual access
+        // check is rerouted through the cached accessPermissionMap.
         if (!DataManager.getInstance().getConfiguration().isPagePdfEnabled()) {
             return false;
         }
@@ -1544,13 +1598,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         if (!getMediaType().isAllowsImageView()) {
             return false;
         }
-
-        HttpServletRequest request = null;
-        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
-            request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-        }
         try {
-            return AccessConditionUtils.checkAccessPermissionForPagePdf(request, this).isGranted();
+            return getAccessPermission(IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF).isGranted();
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
             return false;

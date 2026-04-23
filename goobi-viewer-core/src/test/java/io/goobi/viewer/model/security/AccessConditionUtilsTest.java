@@ -24,6 +24,10 @@ package io.goobi.viewer.model.security;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -715,5 +719,64 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
                 "Expected fulltext access granted for page 1 of open-access record");
         assertTrue(result.isPdfGranted(1),
                 "Expected PDF access granted for page 1 of open-access record");
+    }
+
+    /**
+     * @see AccessConditionUtils#fetchPagePermissions(String, jakarta.servlet.http.HttpServletRequest)
+     * @verifies populate all six privilege maps for open access record
+     */
+    @Test
+    void fetchPagePermissions_shouldPopulateAllSixPrivilegeMapsForOpenAccessRecord() throws Exception {
+        PagePermissions result = AccessConditionUtils.fetchPagePermissions(PI_KLEIUNIV, null);
+        assertFalse(result.isEmpty());
+        assertTrue(result.isImageGranted(1));
+        assertTrue(result.isThumbnailGranted(1));
+        assertTrue(result.isZoomGranted(1));
+        assertTrue(result.isDownloadGranted(1));
+        assertTrue(result.isFulltextGranted(1));
+        assertTrue(result.isPdfGranted(1));
+    }
+
+    /**
+     * @see AccessConditionUtils#removePrivAttributesForPi(HttpSession, String)
+     * @verifies remove only PRIV_ attributes of the given pi
+     */
+    @Test
+    void removePrivAttributesForPi_shouldRemoveOnlyPrivAttributesOfTheGivenPi() {
+        // Stub HttpSession that tracks attribute state in a local map; we mutate the map via the
+        // setAttribute/removeAttribute mocks and enumerate it through getAttributeNames.
+        java.util.Map<String, Object> store = new java.util.concurrent.ConcurrentHashMap<>();
+        HttpSession session = mock(HttpSession.class);
+        when(session.getAttributeNames())
+                .thenAnswer(inv -> Collections.enumeration(new java.util.ArrayList<>(store.keySet())));
+        doAnswer(inv -> {
+            store.remove(inv.getArgument(0));
+            return null;
+        }).when(session).removeAttribute(anyString());
+
+        // PRIV_ entries for OLD_PI — must all be removed. Covers all three key schemes.
+        store.put("PRIV_VIEW_IMAGES_OLD_PI_page1.png", new java.util.HashMap<>());               // fileName scheme
+        store.put("PRIV_DOWNLOAD_PDF_OLD_PI_page1.pdf", new java.util.HashMap<>());              // fileName scheme
+        store.put("PRIV_VIEW_FULLTEXT_OLD_PI", new java.util.HashMap<>());                       // no fileName (suffix match)
+        store.put("PRIV_DOWNLOAD_ORIGINAL_CONTENT_OLD_PI", new Object());                        // no fileName (suffix match)
+        // PRIV_ entries for KEEP_PI — must remain.
+        store.put("PRIV_VIEW_IMAGES_KEEP_PI_page1.png", new java.util.HashMap<>());
+        store.put("PRIV_VIEW_FULLTEXT_KEEP_PI_page1.txt", new java.util.HashMap<>());
+        store.put("PRIV_VIEW_FULLTEXT_KEEP_PI", new java.util.HashMap<>());
+        // non-PRIV attributes must stay untouched.
+        store.put("currentPi", "OLD_PI");
+        store.put("user", new Object());
+
+        AccessConditionUtils.removePrivAttributesForPi(session, "OLD_PI");
+
+        assertFalse(store.containsKey("PRIV_VIEW_IMAGES_OLD_PI_page1.png"));
+        assertFalse(store.containsKey("PRIV_DOWNLOAD_PDF_OLD_PI_page1.pdf"));
+        assertFalse(store.containsKey("PRIV_VIEW_FULLTEXT_OLD_PI"));
+        assertFalse(store.containsKey("PRIV_DOWNLOAD_ORIGINAL_CONTENT_OLD_PI"));
+        assertTrue(store.containsKey("PRIV_VIEW_IMAGES_KEEP_PI_page1.png"));
+        assertTrue(store.containsKey("PRIV_VIEW_FULLTEXT_KEEP_PI_page1.txt"));
+        assertTrue(store.containsKey("PRIV_VIEW_FULLTEXT_KEEP_PI"));
+        assertTrue(store.containsKey("currentPi"));
+        assertTrue(store.containsKey("user"));
     }
 }
