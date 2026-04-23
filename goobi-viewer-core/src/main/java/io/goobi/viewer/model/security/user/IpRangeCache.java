@@ -50,6 +50,7 @@ public class IpRangeCache {
      * @should return all IP ranges from dao
      * @should return same instance on second call
      * @should return immutable list
+     * @should initialise lazy collections
      */
     public List<IpRange> getAllIpRanges() throws DAOException {
         return snapshot();

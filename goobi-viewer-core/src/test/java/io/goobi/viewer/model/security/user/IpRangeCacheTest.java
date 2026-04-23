@@ -34,6 +34,9 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 
+/**
+ * Integration tests for {@link IpRangeCache} against the H2 test fixture.
+ */
 class IpRangeCacheTest extends AbstractDatabaseEnabledTest {
 
     // H2 fixture contains 2 IpRange rows (see JPADAOTest#getAllIpRanges_... baseline).
@@ -74,6 +77,19 @@ class IpRangeCacheTest extends AbstractDatabaseEnabledTest {
     void getAllIpRanges_shouldReturnImmutableList() throws Exception {
         List<IpRange> result = cache.getAllIpRanges();
         assertThrows(UnsupportedOperationException.class, () -> result.add(new IpRange()));
+    }
+
+    /**
+     * @see IpRangeCache#getAllIpRanges()
+     * @verifies initialise lazy collections
+     */
+    @Test
+    void getAllIpRanges_shouldInitialiseLazyCollections() throws Exception {
+        List<IpRange> result = cache.getAllIpRanges();
+        // Must not throw LazyInitializationException after the DAO closed its EntityManager.
+        for (IpRange range : result) {
+            range.getLicenses().size();
+        }
     }
 
     /**
