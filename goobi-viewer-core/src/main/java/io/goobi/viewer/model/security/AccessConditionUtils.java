@@ -330,9 +330,10 @@ public final class AccessConditionUtils {
             // Resolve user once before the loop to avoid repeated expensive session attribute scans
             // (findInstanceInSessionAttributes) when requiredAccessConditions has multiple entries.
             User resolvedUser = user != null ? user : retrieveUserFromContext(session);
+            // Hoisted out of the loop for the same reason; the cache returns the same immutable snapshot.
+            List<LicenseType> licenseTypes = DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes();
             for (Entry<String, Set<String>> entry : requiredAccessConditions.entrySet()) {
                 Set<String> pageAccessConditions = entry.getValue();
-                List<LicenseType> licenseTypes = DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes();
                 AccessPermission access = checkAccessPermission(licenseTypes, pageAccessConditions,
                         privilegeName, resolvedUser, ipAddress,
                         ClientApplicationManager.getClientFromSession(session), query);
