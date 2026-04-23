@@ -71,8 +71,12 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.filters.UserLoggedInFilter;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.controller.DataManager;
@@ -106,6 +110,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 @jakarta.ws.rs.Path(ANNOTATIONS)
 @ViewerRestServiceBinding
 public class AnnotationResource {
+
+    private static final Logger logger = LogManager.getLogger(AnnotationResource.class);
 
     @Context
     private HttpServletRequest servletRequest;
@@ -418,10 +424,20 @@ public class AnnotationResource {
     }
 
     /**
-     *
-     * @return User from session
+     * @return User from bearer token or session
      */
     public User getUser() {
+        try {
+            User user = UserLoggedInFilter.getUserToken(servletRequest)
+                    .filter(token -> !token.isExpired())
+                    .map(token -> token.getUser())
+                    .orElse(null);
+            if (user != null) {
+                return user;
+            }
+        } catch (DAOException e) {
+            logger.warn("Error getting user from authorization token", e);
+        }
         UserBean userBean = BeanUtils.getUserBeanFromSession(servletRequest.getSession());
         if (userBean != null) {
             return userBean.getUser();

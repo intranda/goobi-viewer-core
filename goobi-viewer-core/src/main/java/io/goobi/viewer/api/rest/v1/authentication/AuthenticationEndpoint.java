@@ -303,12 +303,15 @@ public class AuthenticationEndpoint {
     @ApiResponse(responseCode = "401", description = "No valid session or no authenticated user in session")
     @Tag(name = "auth")
     public Response logout() {
+
         String authHeader = servletRequest.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String plaintext = authHeader.substring(7);
             String hash = SecurityManager.hashToken(plaintext);
             try {
-                DataManager.getInstance().getDao().getUserTokenByTokenHash(hash)
+                DataManager.getInstance()
+                        .getDao()
+                        .getUserTokenByTokenHash(hash)
                         .ifPresent(t -> {
                             try {
                                 DataManager.getInstance().getDao().deleteUserToken(t);
