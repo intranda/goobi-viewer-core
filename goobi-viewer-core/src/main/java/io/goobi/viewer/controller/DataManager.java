@@ -44,10 +44,12 @@ import io.goobi.viewer.model.archives.ArchiveManager;
 import io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.iiif.auth.BearerTokenManager;
+import io.goobi.viewer.model.security.LicenseTypeCache;
 import io.goobi.viewer.model.security.authentication.AuthResponseListener;
 import io.goobi.viewer.model.security.authentication.HttpAuthenticationProvider;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.model.security.recordlock.RecordLockManager;
+import io.goobi.viewer.model.security.user.IpRangeCache;
 import io.goobi.viewer.model.statistics.usage.UsageStatisticsRecorder;
 import io.goobi.viewer.model.translations.language.LanguageHelper;
 import io.goobi.viewer.modules.IModule;
@@ -73,6 +75,10 @@ public final class DataManager {
     private final Map<String, Map<String, String>> sessionMap = new LinkedHashMap<>();
 
     private final RecordLockManager recordLockManager = new RecordLockManager();
+
+    private final LicenseTypeCache licenseTypeCache = new LicenseTypeCache();
+
+    private final IpRangeCache ipRangeCache = new IpRangeCache();
 
     private Configuration configuration;
 
@@ -479,12 +485,31 @@ public final class DataManager {
         this.restApiManager = restApiManager;
     }
 
-    
+
     public RecordLockManager getRecordLockManager() {
         return recordLockManager;
     }
 
-    
+    /**
+     * Returns the application-scoped {@link LicenseTypeCache}. See
+     * {@code docs/superpowers/specs/2026-04-22-dao-access-cache-design.md}.
+     *
+     * @return the singleton cache instance; never null
+     */
+    public LicenseTypeCache getLicenseTypeCache() {
+        return licenseTypeCache;
+    }
+
+    /**
+     * Returns the application-scoped {@link IpRangeCache}.
+     *
+     * @return the singleton cache instance; never null
+     */
+    public IpRangeCache getIpRangeCache() {
+        return ipRangeCache;
+    }
+
+
     public TimeAnalysis getTiming() {
         return timing;
     }
