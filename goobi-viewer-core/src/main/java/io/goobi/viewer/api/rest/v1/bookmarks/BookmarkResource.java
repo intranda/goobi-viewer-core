@@ -40,12 +40,15 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.intranda.api.iiif.presentation.v2.Collection2;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.filters.UserLoggedInFilter;
 import io.goobi.viewer.api.rest.model.SuccessMessage;
 import io.goobi.viewer.api.rest.resourcebuilders.AbstractBookmarkResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.SessionBookmarkResourceBuilder;
@@ -96,6 +99,8 @@ import jakarta.ws.rs.core.Response;
 @ViewerRestServiceBinding
 public class BookmarkResource {
 
+    private static final Logger logger = LogManager.getLogger(BookmarkResource.class);
+
     private AbstractBookmarkResourceBuilder builder;
     private HttpServletRequest servletRequest;
     private HttpServletResponse servletResponse;
@@ -106,17 +111,33 @@ public class BookmarkResource {
     public BookmarkResource(@Context HttpServletRequest servletRequest, @Context HttpServletResponse servletResponse) {
         this.servletRequest = servletRequest;
         this.servletResponse = servletResponse;
-        UserBean bean = BeanUtils.getUserBeanFromSession(servletRequest.getSession());
-        if (bean != null) {
-            User currentUser = bean.getUser();
-            if (currentUser != null) {
-                builder = new UserBookmarkResourceBuilder(currentUser);
-            }
-        }
-        if (builder == null) {
+
+        User currentUser = getUser(servletRequest);
+        if (currentUser != null) {
+            builder = new UserBookmarkResourceBuilder(currentUser);
+        } else {
             HttpSession session = servletRequest.getSession();
             builder = new SessionBookmarkResourceBuilder(session);
         }
+    }
+
+    private User getUser(HttpServletRequest request) {
+        User user = null;
+        try {
+            user = UserLoggedInFilter.getUserToken(request)
+                    .filter(token -> !token.isExpired())
+                    .map(token -> token.getUser())
+                    .orElse(null);
+        } catch (DAOException e) {
+            logger.warn("Error getting user from authorization token", e);
+        }
+        if (user == null) {
+            UserBean bean = BeanUtils.getUserBeanFromSession(request.getSession());
+            if (bean != null) {
+                user = bean.getUser();
+            }
+        }
+        return user;
     }
 
     @GET

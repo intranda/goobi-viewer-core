@@ -65,43 +65,49 @@ public class UserLoggedInFilter implements ContainerRequestFilter {
      */
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        String authHeader = servletRequest.getHeader("Authorization");
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String plaintext = authHeader.substring(7);
-            String hash = SecurityManager.hashToken(plaintext);
-            try {
-                Optional<UserToken> tokenOpt = DataManager.getInstance().getDao().getUserTokenByTokenHash(hash);
-                if (tokenOpt.isEmpty()) {
-                    requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
-                            .type(MediaType.APPLICATION_JSON)
-                            .entity("{\"status\":\"error\",\"message\":\"invalid_token\"}")
-                            .build());
-                    return;
-                }
-                if (tokenOpt.get().isExpired()) {
+        try {
+            Optional<UserToken> tokenOpt = getUserToken(servletRequest);
+
+            tokenOpt.ifPresentOrElse(token -> {
+                if (token.isExpired()) {
+                    //abort: token expired
                     requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
                             .type(MediaType.APPLICATION_JSON)
                             .entity("{\"status\":\"error\",\"message\":\"token_expired\"}")
                             .build());
-                    return;
                 }
-                // Token valid — continue
-                return;
-            } catch (DAOException e) {
-                logger.error("DAO error validating Bearer token", e);
-                requestContext.abortWith(Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
-                return;
-            }
+                //token valid: continue
+            }, () -> {
+                //no token
+                if (!isUserLoggedIn(servletRequest)) {
+                    //abort: no user
+                    requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
+                            .entity("You must be logged in to access this resource")
+                            .build());
+                }
+                //user logged in: continue
+            });
+
+        } catch (DAOException e) {
+            //error reading db: abort
+            logger.error("DAO error validating Bearer token", e);
+            requestContext.abortWith(Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
+            return;
         }
 
-        if (!isUserLoggedIn(servletRequest)) {
-            requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
-                    .entity("You must be logged in to access this resource")
-                    .build());
-        }
     }
 
     public static boolean isUserLoggedIn(HttpServletRequest request) {
         return BeanUtils.getUserFromSession(request.getSession()) != null;
+    }
+
+    public static Optional<UserToken> getUserToken(HttpServletRequest request) throws DAOException {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String plaintext = authHeader.substring(7);
+            String hash = SecurityManager.hashToken(plaintext);
+            return DataManager.getInstance().getDao().getUserTokenByTokenHash(hash);
+        }
+        return Optional.empty();
     }
 }
