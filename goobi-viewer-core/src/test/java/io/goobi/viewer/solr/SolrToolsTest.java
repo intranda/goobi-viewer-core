@@ -440,6 +440,37 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
+     * @see SolrTools#cleanUpQuery(String)
+     * @verifies preserve nested solr local params
+     */
+    @Test
+    void cleanUpQuery_shouldPreserveNestedSolrLocalParams() {
+        // SearchQueryItem.generateQuery() emits a nested IDDOC→IDDOC_OWNER join inside the
+        // PI_TOPSTRUCT→PI wrapper when a CALENDAR_DAY range is combined with a text search.
+        // The previous greedy regex stripped the inner closing brace and turned the query
+        // into a near-match-all; this test pins the fix.
+        String query =
+                "+(_query_:\"{!join from=PI_TOPSTRUCT to=PI}+(+((+(GROUPID_NEWSPAPER:\\\"000476564\\\")"
+                        + " +(FULLTEXT:(abschied)) +(YEARMONTHDAY:[18780801 TO 18780831]"
+                        + " _query_:\\\"{!join from=IDDOC to=IDDOC_OWNER}YEARMONTHDAY:[18780801 TO 18780831]\\\"))))\")"
+                        + " -BOOL_HIDE:true";
+        assertEquals(query, SolrTools.cleanUpQuery(query));
+    }
+
+    /**
+     * @see SolrTools#cleanUpQuery(String)
+     * @verifies not double wrap already wrapped join parameter
+     */
+    @Test
+    void cleanUpQuery_shouldNotDoubleWrapAlreadyWrappedJoinParameter() {
+        // Repeated calls to cleanUpQuery() must be idempotent — the wrapping step has to
+        // skip tokens that are already surrounded by braces, otherwise we'd turn
+        // "{!join from=PI_TOPSTRUCT to=PI}" into "{{!join from=PI_TOPSTRUCT to=PI}}".
+        String query = "{!join from=PI_TOPSTRUCT to=PI}foo:bar";
+        assertEquals(query, SolrTools.cleanUpQuery(SolrTools.cleanUpQuery(query)));
+    }
+
+    /**
      * @verifies return true for language-coded field names
      * @see SolrTools#isLanguageCodedField(String)
      */
