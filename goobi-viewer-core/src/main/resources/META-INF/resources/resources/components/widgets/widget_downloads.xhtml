@@ -805,7 +805,7 @@
                 </ui:fragment>
                 <!-- Module contributions -->
                 <c:forEach var="module" items="#{configurationBean.modules}">
-                    <c:forEach var="contribution" items="#{module.widgetDowloadsContributions}">
+                    <c:forEach var="contribution" items="#{module.widgetDownloadsContributions}">
                         <ui:include src="/#{contribution}" />
                     </c:forEach>
                 </c:forEach>
