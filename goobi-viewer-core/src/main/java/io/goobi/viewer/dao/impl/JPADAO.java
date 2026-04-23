@@ -2069,7 +2069,11 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @should invalidate the IP range cache after a successful add
+     */
     @Override
     public boolean addIpRange(IpRange ipRange) throws DAOException {
         preQuery();
@@ -2078,6 +2082,8 @@ public class JPADAO implements IDAO {
             startTransaction(em);
             em.persist(ipRange);
             commitTransaction(em);
+            // Invalidate IpRangeCache after successful commit (design doc 2026-04-22).
+            DataManager.getInstance().getIpRangeCache().invalidate();
         } catch (PersistenceException e) {
             handleException(em);
             return false;
@@ -2087,7 +2093,11 @@ public class JPADAO implements IDAO {
         return true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @should invalidate the IP range cache after a successful update
+     */
     @Override
     public boolean updateIpRange(IpRange ipRange) throws DAOException {
         preQuery();
@@ -2096,6 +2106,8 @@ public class JPADAO implements IDAO {
             startTransaction(em);
             em.merge(ipRange);
             commitTransaction(em);
+            // Invalidate IpRangeCache after successful commit (design doc 2026-04-22).
+            DataManager.getInstance().getIpRangeCache().invalidate();
             return true;
         } catch (PersistenceException e) {
             handleException(em);
@@ -2105,7 +2117,11 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @should invalidate the IP range cache after a successful delete
+     */
     @Override
     public boolean deleteIpRange(IpRange ipRange) throws DAOException {
         preQuery();
@@ -2115,6 +2131,8 @@ public class JPADAO implements IDAO {
             IpRange o = em.getReference(IpRange.class, ipRange.getId());
             em.remove(o);
             commitTransaction(em);
+            // Invalidate IpRangeCache after successful commit (design doc 2026-04-22).
+            DataManager.getInstance().getIpRangeCache().invalidate();
             return true;
         } catch (PersistenceException e) {
             handleException(em);

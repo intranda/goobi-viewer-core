@@ -103,6 +103,7 @@ import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.tickets.AccessTicket;
 import io.goobi.viewer.model.security.tickets.AccessTicket.AccessTicketType;
 import io.goobi.viewer.model.security.user.IpRange;
+import io.goobi.viewer.model.security.user.IpRangeCache;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.security.user.UserRole;
@@ -3655,6 +3656,57 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         List<LicenseType> before = cache.getAllLicenseTypes();
         assertTrue(DataManager.getInstance().getDao().deleteLicenseType(lt), "delete must succeed for cache invalidation to occur");
         List<LicenseType> after = cache.getAllLicenseTypes();
+        assertNotSame(before, after);
+    }
+
+    /**
+     * @see JPADAO#addIpRange(IpRange)
+     * @verifies invalidate the IP range cache after a successful add
+     */
+    @Test
+    void addIpRange_shouldInvalidateIpRangeCacheAfterSuccessfulAdd() throws Exception {
+        IpRangeCache cache = DataManager.getInstance().getIpRangeCache();
+        List<IpRange> before = cache.getAllIpRanges();
+        IpRange range = new IpRange();
+        range.setName("test-range-" + System.currentTimeMillis());
+        range.setSubnetMask("10.0.0.0/24");
+        DataManager.getInstance().getDao().addIpRange(range);
+        List<IpRange> after = cache.getAllIpRanges();
+        assertNotSame(before, after);
+    }
+
+    /**
+     * @see JPADAO#updateIpRange(IpRange)
+     * @verifies invalidate the IP range cache after a successful update
+     */
+    @Test
+    void updateIpRange_shouldInvalidateIpRangeCacheAfterSuccessfulUpdate() throws Exception {
+        IpRangeCache cache = DataManager.getInstance().getIpRangeCache();
+        List<IpRange> ranges = DataManager.getInstance().getDao().getAllIpRanges();
+        assertFalse(ranges.isEmpty(), "test fixture must contain at least one IpRange");
+        IpRange range = ranges.get(0);
+        range.setDescription("updated-" + System.currentTimeMillis());
+        List<IpRange> before = cache.getAllIpRanges();
+        DataManager.getInstance().getDao().updateIpRange(range);
+        List<IpRange> after = cache.getAllIpRanges();
+        assertNotSame(before, after);
+    }
+
+    /**
+     * @see JPADAO#deleteIpRange(IpRange)
+     * @verifies invalidate the IP range cache after a successful delete
+     */
+    @Test
+    void deleteIpRange_shouldInvalidateIpRangeCacheAfterSuccessfulDelete() throws Exception {
+        // Create a dedicated test IpRange first (avoids FK entanglements with the fixture).
+        IpRange range = new IpRange();
+        range.setName("delete-test-" + System.currentTimeMillis());
+        range.setSubnetMask("10.0.0.0/24");
+        DataManager.getInstance().getDao().addIpRange(range);
+        IpRangeCache cache = DataManager.getInstance().getIpRangeCache();
+        List<IpRange> before = cache.getAllIpRanges();
+        DataManager.getInstance().getDao().deleteIpRange(range);
+        List<IpRange> after = cache.getAllIpRanges();
         assertNotSame(before, after);
     }
 }
