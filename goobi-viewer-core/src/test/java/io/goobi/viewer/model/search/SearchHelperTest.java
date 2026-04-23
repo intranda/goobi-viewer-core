@@ -1167,6 +1167,36 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @verifies skip CALENDAR_DAY item so expand does not pick up unrelated pages of date matching parents
+     * @see SearchHelper#generateAdvancedExpandQuery(SearchQueryGroup, boolean)
+     */
+    @Test
+    void generateAdvancedExpandQuery_shouldSkipCalendarDayItem() {
+        // Reproduces the searchInRecord scenario (ALL:abschied + YEARMONTHDAY:[range] within a newspaper):
+        // the date filter is already applied by the parent-level main query, so CALENDAR_DAY must not
+        // end up in the expand.q — otherwise its nested IDDOC->IDDOC_OWNER join would match every page
+        // of every date-matching issue and add spurious sub-hits for pages that don't contain the term.
+        SearchQueryGroup group = new SearchQueryGroup(
+                DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true, "en"), null);
+        group.setOperator(SearchQueryGroupOperator.AND);
+        group.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
+        group.getQueryItems().get(0).setField(SolrConstants.FULLTEXT);
+        group.getQueryItems().get(0).setValue("abschied");
+        group.getQueryItems().get(1).setOperator(SearchItemOperator.AND);
+        group.getQueryItems().get(1).setField(SolrConstants.CALENDAR_DAY);
+        group.getQueryItems().get(1).setValue("01.08.1878");
+        group.getQueryItems().get(1).setValue2("08.09.1878");
+
+        String result = SearchHelper.generateAdvancedExpandQuery(group, false);
+        Assertions.assertFalse(result.contains(SolrConstants.CALENDAR_DAY),
+                "CALENDAR_DAY must be skipped in expand.q but was: " + result);
+        Assertions.assertFalse(result.contains("{!join from=IDDOC to=IDDOC_OWNER}"),
+                "Nested IDDOC join must be skipped in expand.q but was: " + result);
+        Assertions.assertTrue(result.contains("abschied"),
+                "Text term must still be present in expand.q, was: " + result);
+    }
+
+    /**
      * @verifies switch to OR operator on fulltext items
      */
     @Test

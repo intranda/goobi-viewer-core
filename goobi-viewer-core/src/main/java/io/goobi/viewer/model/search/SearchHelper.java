@@ -3184,13 +3184,18 @@ public final class SearchHelper {
                 continue;
             }
             // logger.trace("item field: {}", item.getField()); //NOSONAR Debug
-            // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't return every single doc
+            // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't return every single doc.
+            // CALENDAR_DAY (YEARMONTHDAY) is also skipped: the date filter is already enforced on the parent-level search,
+            // and its generateQuery() emits an {!join from=IDDOC to=IDDOC_OWNER} sub-query that — in the OR-mode expand context
+            // used for search-in-record — matches every page of every date-matching issue, producing spurious sub-hits for
+            // pages that don't contain the actual search term.
             switch (item.getField()) {
                 case SolrConstants.PI_TOPSTRUCT:
                 case SolrConstants.PI_ANCHOR:
                 case SolrConstants.DC:
                 case SolrConstants.DOCSTRCT:
                 case SolrConstants.BOOKMARKS:
+                case SolrConstants.CALENDAR_DAY:
                     continue;
                 default:
                     if (item.getField().startsWith(SolrConstants.PREFIX_GROUPID)) {
