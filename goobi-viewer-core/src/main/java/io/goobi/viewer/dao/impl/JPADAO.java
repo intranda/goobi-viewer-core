@@ -1310,7 +1310,33 @@ public class JPADAO implements IDAO {
 
     /**
      * {@inheritDoc}
-     * 
+     *
+     * @should return all license types with overridden license types and image placeholders initialised
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<LicenseType> getAllLicenseTypesHydrated() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT lt FROM LicenseType lt");
+            q.setFlushMode(FlushModeType.COMMIT);
+            List<LicenseType> result = q.getResultList();
+            // Touch lazy collections while the EntityManager is still open so the returned entities
+            // can be cached and used after close() without triggering LazyInitializationException.
+            for (LicenseType lt : result) {
+                lt.getOverriddenLicenseTypes().size();
+                lt.getImagePlaceholders().size();
+            }
+            return result;
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * @should return only license types matching name and description filter
      * @should return license types sorted by name in both ascending and descending order
      */
@@ -1491,7 +1517,11 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @should invalidate the license type cache after a successful add
+     */
     @Override
     public boolean addLicenseType(LicenseType licenseType) throws DAOException {
         preQuery();
@@ -1500,6 +1530,8 @@ public class JPADAO implements IDAO {
             startTransaction(em);
             em.persist(licenseType);
             commitTransaction(em);
+            // Invalidate LicenseTypeCache after successful commit (design doc 2026-04-22).
+            DataManager.getInstance().getLicenseTypeCache().invalidate();
         } catch (PersistenceException e) {
             handleException(em);
             return false;
@@ -1509,7 +1541,11 @@ public class JPADAO implements IDAO {
         return true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @should invalidate the license type cache after a successful update
+     */
     @Override
     public boolean updateLicenseType(LicenseType licenseType) throws DAOException {
         preQuery();
@@ -1518,6 +1554,8 @@ public class JPADAO implements IDAO {
             startTransaction(em);
             em.merge(licenseType);
             commitTransaction(em);
+            // Invalidate LicenseTypeCache after successful commit (design doc 2026-04-22).
+            DataManager.getInstance().getLicenseTypeCache().invalidate();
             return true;
         } catch (PersistenceException e) {
             handleException(em);
@@ -1527,7 +1565,11 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @should invalidate the license type cache after a successful delete
+     */
     @Override
     public boolean deleteLicenseType(LicenseType licenseType) throws DAOException {
         preQuery();
@@ -1537,6 +1579,8 @@ public class JPADAO implements IDAO {
             LicenseType o = em.getReference(LicenseType.class, licenseType.getId());
             em.remove(o);
             commitTransaction(em);
+            // Invalidate LicenseTypeCache after successful commit (design doc 2026-04-22).
+            DataManager.getInstance().getLicenseTypeCache().invalidate();
             return true;
         } catch (PersistenceException e) {
             handleException(em);
@@ -1925,6 +1969,30 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @should return all IP ranges with licenses initialised
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<IpRange> getAllIpRangesHydrated() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT ipr FROM IpRange ipr");
+            q.setFlushMode(FlushModeType.COMMIT);
+            List<IpRange> result = q.getResultList();
+            // Touch lazy collections while the EntityManager is still open (see JPADAO.getAllLicenseTypesHydrated).
+            for (IpRange range : result) {
+                range.getLicenses().size();
+            }
+            return result;
+        } finally {
+            close(em);
+        }
+    }
+
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -2001,7 +2069,11 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @should invalidate the IP range cache after a successful add
+     */
     @Override
     public boolean addIpRange(IpRange ipRange) throws DAOException {
         preQuery();
@@ -2010,6 +2082,8 @@ public class JPADAO implements IDAO {
             startTransaction(em);
             em.persist(ipRange);
             commitTransaction(em);
+            // Invalidate IpRangeCache after successful commit (design doc 2026-04-22).
+            DataManager.getInstance().getIpRangeCache().invalidate();
         } catch (PersistenceException e) {
             handleException(em);
             return false;
@@ -2019,7 +2093,11 @@ public class JPADAO implements IDAO {
         return true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @should invalidate the IP range cache after a successful update
+     */
     @Override
     public boolean updateIpRange(IpRange ipRange) throws DAOException {
         preQuery();
@@ -2028,6 +2106,8 @@ public class JPADAO implements IDAO {
             startTransaction(em);
             em.merge(ipRange);
             commitTransaction(em);
+            // Invalidate IpRangeCache after successful commit (design doc 2026-04-22).
+            DataManager.getInstance().getIpRangeCache().invalidate();
             return true;
         } catch (PersistenceException e) {
             handleException(em);
@@ -2037,7 +2117,11 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @should invalidate the IP range cache after a successful delete
+     */
     @Override
     public boolean deleteIpRange(IpRange ipRange) throws DAOException {
         preQuery();
@@ -2047,6 +2131,8 @@ public class JPADAO implements IDAO {
             IpRange o = em.getReference(IpRange.class, ipRange.getId());
             em.remove(o);
             commitTransaction(em);
+            // Invalidate IpRangeCache after successful commit (design doc 2026-04-22).
+            DataManager.getInstance().getIpRangeCache().invalidate();
             return true;
         } catch (PersistenceException e) {
             handleException(em);
