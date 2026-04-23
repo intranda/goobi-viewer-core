@@ -90,6 +90,7 @@ import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.LicenseType;
+import io.goobi.viewer.model.security.LicenseTypeCache;
 import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.model.security.user.User;
@@ -1196,7 +1197,8 @@ public final class SearchHelper {
     public static void updateFilterQuerySuffix(HttpServletRequest request, String privilege)
             throws IndexUnreachableException, PresentationException, DAOException {
         String filterQuerySuffix =
-                getPersonalFilterQuerySuffix(DataManager.getInstance().getDao().getRecordLicenseTypes(),
+                // Route through cache to avoid repeated DAO round-trips per request
+                getPersonalFilterQuerySuffix(DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes(),
                         (User) Optional.ofNullable(request)
                                 .map(HttpServletRequest::getSession)
                                 .map(session -> session.getAttribute("user"))
