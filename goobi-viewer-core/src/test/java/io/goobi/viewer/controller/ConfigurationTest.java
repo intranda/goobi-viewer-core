@@ -4005,4 +4005,79 @@ class ConfigurationTest extends AbstractTest {
         // When no collection config exists for a field, the method returns -1 as the default
         assertEquals(-1, DataManager.getInstance().getConfiguration().getCollectionDisplayDepthForSearch("MD_NONEXISTENTFIELD"));
     }
+
+    /**
+     * @see Configuration#getPropertyForFacetField(String, String, String)
+     * @verifies cache resolved value across repeated calls
+     */
+    @Test
+    void getPropertyForFacetField_shouldCacheResolvedValueAcrossRepeatedCalls() throws Exception {
+        // AbstractTest#setUp rebuilds the Configuration before each test, so the cache starts empty
+        Configuration config = DataManager.getInstance().getConfiguration();
+        assertEquals(0, config.getFacetFieldPropertyCacheSize());
+
+        // First call resolves the XML lookup and stores the result
+        assertEquals("numerical", config.getSortOrder("YEAR"));
+        assertEquals(1, config.getFacetFieldPropertyCacheSize());
+
+        // Second call must return the same value without growing the cache (pure hit)
+        assertEquals("numerical", config.getSortOrder("YEAR"));
+        assertEquals(1, config.getFacetFieldPropertyCacheSize());
+
+        // A different (field, property) pair creates an independent cache entry
+        assertEquals("alphabetical", config.getSortOrder("MD_CREATOR"));
+        assertEquals(2, config.getFacetFieldPropertyCacheSize());
+    }
+
+    /**
+     * @see Configuration#getPropertyForFacetField(String, String, String)
+     * @verifies return default value for blank facet field without populating cache
+     */
+    @Test
+    void getPropertyForFacetField_shouldReturnDefaultValueForBlankFacetFieldWithoutPopulatingCache() throws Exception {
+        Configuration config = DataManager.getInstance().getConfiguration();
+        assertEquals(0, config.getFacetFieldPropertyCacheSize());
+
+        // Blank field is filtered before the cache is touched — verifies short-circuit path
+        assertEquals("fallback", config.getPropertyForFacetField("", "[@sortOrder]", "fallback"));
+        assertEquals("fallback", config.getPropertyForFacetField(null, "[@sortOrder]", "fallback"));
+        assertEquals(0, config.getFacetFieldPropertyCacheSize());
+    }
+
+    /**
+     * @see Configuration#overrideValue(String, Object)
+     * @verifies invalidate facet field property cache for facet paths
+     */
+    @Test
+    void overrideValue_shouldInvalidateFacetFieldPropertyCacheForFacetPaths() throws Exception {
+        Configuration config = DataManager.getInstance().getConfiguration();
+        // Populate the cache with at least one entry
+        assertEquals("numerical", config.getSortOrder("YEAR"));
+        assertTrue(config.getFacetFieldPropertyCacheSize() > 0);
+
+        // Any override under the search.facets.* path must clear the cache so the next lookup
+        // re-reads the XML (regardless of whether the override actually changed a value — the
+        // contract is "might be stale, drop it"). The exact XPath below is irrelevant; we are
+        // testing the invalidation hook, not the XML mutation.
+        config.overrideValue("search.facets.field(1)[@sortOrder]", "alphabetical");
+        assertEquals(0, config.getFacetFieldPropertyCacheSize());
+    }
+
+    /**
+     * @see Configuration#overrideValue(String, Object)
+     * @verifies not invalidate facet field property cache for non facet paths
+     */
+    @Test
+    void overrideValue_shouldNotInvalidateFacetFieldPropertyCacheForNonFacetPaths() throws Exception {
+        Configuration config = DataManager.getInstance().getConfiguration();
+        // Populate the cache with at least one entry
+        assertEquals("numerical", config.getSortOrder("YEAR"));
+        int populated = config.getFacetFieldPropertyCacheSize();
+        assertTrue(populated > 0);
+
+        // Overrides on unrelated config paths must leave the facet cache untouched. Keeps the
+        // invalidation tightly scoped so unrelated test setup does not pay the cache-rebuild cost.
+        config.overrideValue("viewer.theme.rootPath", "/foo");
+        assertEquals(populated, config.getFacetFieldPropertyCacheSize());
+    }
 }

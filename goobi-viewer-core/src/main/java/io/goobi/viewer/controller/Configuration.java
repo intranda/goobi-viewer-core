@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -150,7 +151,23 @@ public class Configuration extends AbstractConfiguration {
 
     static final String VALUE_DEFAULT = "_DEFAULT";
 
+    /**
+     * XML path prefix whose overrides invalidate {@link #facetFieldPropertyCache}.
+     */
+    private static final String FACET_CONFIG_PATH_PREFIX = "search.facets.";
+
     private Set<String> stopwords;
+
+    /**
+     * Caches resolved facet-field attribute lookups for {@link #getPropertyForFacetField(String, String, String)}
+     * to avoid rebuilding a {@code BaseHierarchicalConfiguration} sub-config (with full interpolator init)
+     * for every facet node on every call. The key is {@code facetField + ' ' + property} (safe: neither
+     * Solr field names nor XPath property expressions contain spaces); the value is an {@link Optional}
+     * holding the raw XML string at that property (empty = no matching node / attribute absent, so the
+     * caller must fall back to its own default). Invalidated on config reload and on
+     * {@link #overrideValue(String, Object)} for {@code search.facets.*} paths.
+     */
+    private final ConcurrentHashMap<String, Optional<String>> facetFieldPropertyCache = new ConcurrentHashMap<>();
 
     /**
      * Creates a new Configuration instance.
@@ -174,7 +191,13 @@ public class Configuration extends AbstractConfiguration {
                 logger.error(e.getMessage(), e);
             }
             builder.addEventListener(ConfigurationBuilderEvent.CONFIGURATION_REQUEST,
-                    event -> builder.getReloadingController().checkForReloading(null));
+                    event -> {
+                        // Clear the facet-field property cache on reload so it does not return stale values
+                        // after the default config file has been modified on disk.
+                        if (builder.getReloadingController().checkForReloading(null)) {
+                            facetFieldPropertyCache.clear();
+                        }
+                    });
         } else {
             logger.error("Default configuration file not found: {}; Base path is {}", builder.getFileHandler().getFile().getAbsoluteFile(),
                     builder.getFileHandler().getBasePath());
@@ -201,6 +224,9 @@ public class Configuration extends AbstractConfiguration {
                     event -> {
                         // logger.trace("request event");
                         if (builderLocal.getReloadingController().checkForReloading(null)) {
+                            // Local config changed on disk — drop cached facet-field lookups so they get
+                            // re-resolved against the freshly-parsed XML.
+                            facetFieldPropertyCache.clear();
                             if (System.currentTimeMillis() - localConfigDisabledTimestamp > 1000) {
                                 localConfigDisabled = false;
                                 logger.info("Local configuration file '{}' reloaded.", fileLocal.getAbsolutePath());
@@ -3585,28 +3611,62 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Boilerplate code for retrieving values from regular and hierarchical facet field configurations.
      *
+     * <p>Hot path: called dozens of times per facet field during every search-result render.
+     * The underlying {@code getLocalConfigurationsAt} rebuilds a fresh {@code BaseHierarchicalConfiguration}
+     * (with full {@code ConfigurationInterpolator} init) for every facet node on every call, which
+     * dominated the server-side latency on result pages with many configured facet fields. Results are
+     * therefore cached in {@link #facetFieldPropertyCache}; the cache is invalidated on config reload
+     * and on {@link #overrideValue(String, Object)} for {@code search.facets.*} paths.
+     *
      * @param facetField Facet field
      * @param property Element or attribute name to check
      * @param defaultValue Value that is returned if none was found
      * @return Found value or defaultValue
+     * @should cache resolved value across repeated calls
+     * @should return default value for blank facet field without populating cache
      */
     String getPropertyForFacetField(String facetField, String property, String defaultValue) {
         if (StringUtils.isBlank(facetField)) {
             return defaultValue;
         }
 
+        // Cache key intentionally excludes defaultValue: the cache stores the *raw* XML lookup
+        // outcome (present or absent) and only the caller controls the fallback. This keeps the
+        // cache independent of how different callers spell the default for the same property.
+        String cacheKey = facetField + ' ' + property;
+        Optional<String> cached = facetFieldPropertyCache.get(cacheKey);
+        if (cached != null) {
+            return cached.orElse(defaultValue);
+        }
+
+        Optional<String> resolved = resolveFacetFieldProperty(facetField, property);
+        facetFieldPropertyCache.put(cacheKey, resolved);
+        return resolved.orElse(defaultValue);
+    }
+
+    /**
+     * Raw XML lookup for {@link #getPropertyForFacetField(String, String, String)}, without caching.
+     * Preserves the original lookup order (regular fields first, then hierarchical fields) and the
+     * "first matching, non-null value wins" semantics of the previous inlined implementation.
+     *
+     * @param facetField non-blank facet field name
+     * @param property element or attribute path to read (e.g. {@code [@sortOrder]})
+     * @return present {@link Optional} with the XML value if a matching field node exposes this property;
+     *         empty {@link Optional} otherwise (caller applies default)
+     */
+    private Optional<String> resolveFacetFieldProperty(String facetField, String property) {
         String facetifiedField = SearchHelper.facetifyField(facetField);
+        String untokenized = facetField + SolrConstants.SUFFIX_UNTOKENIZED;
+
         // Regular fields
         List<HierarchicalConfiguration<ImmutableNode>> facetFields = getLocalConfigurationsAt("search.facets.field");
         if (facetFields != null && !facetFields.isEmpty()) {
             for (HierarchicalConfiguration<ImmutableNode> fieldConfig : facetFields) {
                 String nodeText = fieldConfig.getString(".", "");
-                if (nodeText.equals(facetField)
-                        || (facetField + SolrConstants.SUFFIX_UNTOKENIZED).equals(nodeText)
-                        || nodeText.equals(facetifiedField)) {
+                if (nodeText.equals(facetField) || untokenized.equals(nodeText) || nodeText.equals(facetifiedField)) {
                     String ret = fieldConfig.getString(property);
                     if (ret != null) {
-                        return ret;
+                        return Optional.of(ret);
                     }
                 }
             }
@@ -3616,18 +3676,44 @@ public class Configuration extends AbstractConfiguration {
         if (facetFields != null && !facetFields.isEmpty()) {
             for (HierarchicalConfiguration<ImmutableNode> fieldConfig : facetFields) {
                 String nodeText = fieldConfig.getString(".", "");
-                if (nodeText.equals(facetField)
-                        || (facetField + SolrConstants.SUFFIX_UNTOKENIZED).equals(nodeText)
-                        || nodeText.equals(facetifiedField)) {
+                if (nodeText.equals(facetField) || untokenized.equals(nodeText) || nodeText.equals(facetifiedField)) {
                     String ret = fieldConfig.getString(property);
                     if (ret != null) {
-                        return ret;
+                        return Optional.of(ret);
                     }
                 }
             }
         }
 
-        return defaultValue;
+        return Optional.empty();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Overridden to invalidate {@link #facetFieldPropertyCache} whenever a {@code search.facets.*}
+     * property is changed at runtime, so tests and admin-tooling that mutate the config see the updated
+     * value on the next lookup.
+     *
+     * @should invalidate facet field property cache for facet paths
+     * @should not invalidate facet field property cache for non facet paths
+     */
+    @Override
+    public void overrideValue(String property, Object value) {
+        super.overrideValue(property, value);
+        if (property != null && property.startsWith(FACET_CONFIG_PATH_PREFIX)) {
+            facetFieldPropertyCache.clear();
+        }
+    }
+
+    /**
+     * Exposed for unit tests that need to inspect the {@link #facetFieldPropertyCache} state.
+     * Not intended as a public API.
+     *
+     * @return the number of entries currently cached in the facet-field property cache
+     */
+    int getFacetFieldPropertyCacheSize() {
+        return facetFieldPropertyCache.size();
     }
 
     /**
