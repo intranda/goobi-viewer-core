@@ -98,6 +98,7 @@ import io.goobi.viewer.model.search.SearchResultGroup;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
+import io.goobi.viewer.model.security.LicenseTypeCache;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.tickets.AccessTicket;
 import io.goobi.viewer.model.security.tickets.AccessTicket.AccessTicketType;
@@ -3610,5 +3611,50 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertFalse(mm2.isEnabled());
         assertEquals(3, mm2.getTranslations().size());
         assertEquals("Maintenance mode EN NEW", mm.getText("en"));
+    }
+
+    /**
+     * @see JPADAO#addLicenseType(LicenseType)
+     * @verifies invalidate the license type cache after a successful add
+     */
+    @Test
+    void addLicenseType_shouldInvalidateLicenseTypeCacheAfterSuccessfulAdd() throws Exception {
+        LicenseTypeCache cache = DataManager.getInstance().getLicenseTypeCache();
+        List<LicenseType> before = cache.getAllLicenseTypes();
+        LicenseType lt = new LicenseType("new-type-" + System.currentTimeMillis());
+        DataManager.getInstance().getDao().addLicenseType(lt);
+        List<LicenseType> after = cache.getAllLicenseTypes();
+        assertNotSame(before, after);
+    }
+
+    /**
+     * @see JPADAO#updateLicenseType(LicenseType)
+     * @verifies invalidate the license type cache after a successful update
+     */
+    @Test
+    void updateLicenseType_shouldInvalidateLicenseTypeCacheAfterSuccessfulUpdate() throws Exception {
+        LicenseTypeCache cache = DataManager.getInstance().getLicenseTypeCache();
+        List<LicenseType> before = cache.getAllLicenseTypes();
+        LicenseType lt = DataManager.getInstance().getDao().getLicenseType(1);
+        lt.setDescription("updated-desc-" + System.currentTimeMillis());
+        DataManager.getInstance().getDao().updateLicenseType(lt);
+        List<LicenseType> after = cache.getAllLicenseTypes();
+        assertNotSame(before, after);
+    }
+
+    /**
+     * @see JPADAO#deleteLicenseType(LicenseType)
+     * @verifies invalidate the license type cache after a successful delete
+     */
+    @Test
+    void deleteLicenseType_shouldInvalidateLicenseTypeCacheAfterSuccessfulDelete() throws Exception {
+        LicenseTypeCache cache = DataManager.getInstance().getLicenseTypeCache();
+        // Use id=2 which has no License FK references in the test fixture (confirmed by existing test).
+        LicenseType lt = DataManager.getInstance().getDao().getLicenseType(2);
+        assertNotNull(lt, "test fixture must contain LicenseType with id 2");
+        List<LicenseType> before = cache.getAllLicenseTypes();
+        assertTrue(DataManager.getInstance().getDao().deleteLicenseType(lt), "delete must succeed for cache invalidation to occur");
+        List<LicenseType> after = cache.getAllLicenseTypes();
+        assertNotSame(before, after);
     }
 }

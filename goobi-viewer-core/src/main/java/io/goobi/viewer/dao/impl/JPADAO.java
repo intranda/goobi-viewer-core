@@ -1517,7 +1517,11 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @should invalidate the license type cache after a successful add
+     */
     @Override
     public boolean addLicenseType(LicenseType licenseType) throws DAOException {
         preQuery();
@@ -1526,6 +1530,8 @@ public class JPADAO implements IDAO {
             startTransaction(em);
             em.persist(licenseType);
             commitTransaction(em);
+            // Invalidate LicenseTypeCache after successful commit (design doc 2026-04-22).
+            DataManager.getInstance().getLicenseTypeCache().invalidate();
         } catch (PersistenceException e) {
             handleException(em);
             return false;
@@ -1535,7 +1541,11 @@ public class JPADAO implements IDAO {
         return true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @should invalidate the license type cache after a successful update
+     */
     @Override
     public boolean updateLicenseType(LicenseType licenseType) throws DAOException {
         preQuery();
@@ -1544,6 +1554,8 @@ public class JPADAO implements IDAO {
             startTransaction(em);
             em.merge(licenseType);
             commitTransaction(em);
+            // Invalidate LicenseTypeCache after successful commit (design doc 2026-04-22).
+            DataManager.getInstance().getLicenseTypeCache().invalidate();
             return true;
         } catch (PersistenceException e) {
             handleException(em);
@@ -1553,7 +1565,11 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @should invalidate the license type cache after a successful delete
+     */
     @Override
     public boolean deleteLicenseType(LicenseType licenseType) throws DAOException {
         preQuery();
@@ -1563,6 +1579,8 @@ public class JPADAO implements IDAO {
             LicenseType o = em.getReference(LicenseType.class, licenseType.getId());
             em.remove(o);
             commitTransaction(em);
+            // Invalidate LicenseTypeCache after successful commit (design doc 2026-04-22).
+            DataManager.getInstance().getLicenseTypeCache().invalidate();
             return true;
         } catch (PersistenceException e) {
             handleException(em);
