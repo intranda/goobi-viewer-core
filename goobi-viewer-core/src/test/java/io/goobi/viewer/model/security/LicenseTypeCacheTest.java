@@ -37,14 +37,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
-import io.goobi.viewer.dao.impl.JPADAOTest;
 
 /**
  * Integration tests for {@link LicenseTypeCache} against the H2 test fixture.
  */
 class LicenseTypeCacheTest extends AbstractDatabaseEnabledTest {
-
-    private static final int NUM_LICENSE_TYPES = JPADAOTest.NUM_LICENSE_TYPES;
 
     private LicenseTypeCache cache;
 

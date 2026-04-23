@@ -36,6 +36,14 @@ import io.goobi.viewer.exceptions.DAOException;
  * <p>
  * Thread-safety and invalidation contract match {@code io.goobi.viewer.model.security.LicenseTypeCache}.
  * </p>
+ *
+ * <p>
+ * Staleness note on {@code IpRange.licenses}: the hydrated {@code licenses} collection on each cached
+ * {@link IpRange} can become stale after {@code addLicense} / {@code updateLicense} / {@code deleteLicense}
+ * writes (those writes do not invalidate this cache, because the relevant access-decision code paths
+ * go through the DAO for {@code getLicenses(...)} directly). Do not rely on
+ * {@code cachedIpRange.getLicenses()} for authorisation decisions.
+ * </p>
  */
 public class IpRangeCache {
 

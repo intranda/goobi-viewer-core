@@ -39,9 +39,6 @@ import io.goobi.viewer.AbstractDatabaseEnabledTest;
  */
 class IpRangeCacheTest extends AbstractDatabaseEnabledTest {
 
-    // H2 fixture contains 2 IpRange rows (see JPADAOTest#getAllIpRanges_... baseline).
-    private static final int NUM_IP_RANGES = 2;
-
     private IpRangeCache cache;
 
     @BeforeEach

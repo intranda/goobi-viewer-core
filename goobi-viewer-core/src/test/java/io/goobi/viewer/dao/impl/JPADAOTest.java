@@ -112,10 +112,7 @@ import io.goobi.viewer.model.security.user.icon.UserAvatarOption;
 /**
  * JPADAO test suite using H2 DB.
  */
-// Made public so that NUM_LICENSE_TYPES can be referenced from cross-package test classes.
-public class JPADAOTest extends AbstractDatabaseEnabledTest {
-
-    public static final int NUM_LICENSE_TYPES = 6;
+class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     String pi = "PI_TEST";
     String title = "TITLE_TEST";
