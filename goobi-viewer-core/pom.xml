@@ -120,7 +120,7 @@
 		<jakarta.ws.rs-api.version>3.1.0</jakarta.ws.rs-api.version>
 		<jakarta.xml.bind-api.version>4.0.5</jakarta.xml.bind-api.version>
 		<java-jwt.version>4.5.1</java-jwt.version>
-		<jwks-rsa.version>0.23.0</jwks-rsa.version>
+		<jwks-rsa.version>0.23.1</jwks-rsa.version>
 		<jaxen.version>2.0.0</jaxen.version>
 		<jaxb-runtime.version>4.0.7</jaxb-runtime.version>
 		<jdom2.version>2.0.6.1</jdom2.version>
