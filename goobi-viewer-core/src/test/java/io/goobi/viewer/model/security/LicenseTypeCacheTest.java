@@ -37,14 +37,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
+import io.goobi.viewer.dao.impl.JPADAOTest;
 
 /**
  * Integration tests for {@link LicenseTypeCache} against the H2 test fixture.
  */
 class LicenseTypeCacheTest extends AbstractDatabaseEnabledTest {
 
-    /** Total number of license types in the H2 test fixture — mirrors {@code JPADAOTest#NUM_LICENSE_TYPES}. */
-    private static final int NUM_LICENSE_TYPES = 6;
+    private static final int NUM_LICENSE_TYPES = JPADAOTest.NUM_LICENSE_TYPES;
 
     private LicenseTypeCache cache;
 
@@ -131,6 +131,15 @@ class LicenseTypeCacheTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * @see LicenseTypeCache#getLicenseType(String)
+     * @verifies return null when name is null
+     */
+    @Test
+    void getLicenseType_shouldReturnNullWhenNameIsNull() throws Exception {
+        assertNull(cache.getLicenseType(null));
+    }
+
+    /**
      * @see LicenseTypeCache#getLicenseTypes(java.util.Collection)
      * @verifies return subset matching names
      */
@@ -147,6 +156,15 @@ class LicenseTypeCacheTest extends AbstractDatabaseEnabledTest {
     @Test
     void getLicenseTypes_shouldReturnEmptyListForEmptyInput() throws Exception {
         assertTrue(cache.getLicenseTypes(Collections.emptyList()).isEmpty());
+    }
+
+    /**
+     * @see LicenseTypeCache#getLicenseTypes(java.util.Collection)
+     * @verifies throw NullPointerException for null input
+     */
+    @Test
+    void getLicenseTypes_shouldThrowNullPointerExceptionForNullInput() throws Exception {
+        assertThrows(NullPointerException.class, () -> cache.getLicenseTypes(null));
     }
 
     /**

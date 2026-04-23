@@ -86,6 +86,7 @@ public class LicenseTypeCache {
      * @throws DAOException if the underlying DAO load fails
      * @should return license type by name
      * @should return null when name not found
+     * @should return null when name is null
      */
     public LicenseType getLicenseType(String name) throws DAOException {
         if (name == null) {
@@ -102,6 +103,7 @@ public class LicenseTypeCache {
      * @throws DAOException if the underlying DAO load fails
      * @should return subset matching names
      * @should return empty list for empty input
+     * @should throw NullPointerException for null input
      */
     public List<LicenseType> getLicenseTypes(Collection<String> names) throws DAOException {
         Objects.requireNonNull(names, "names");
