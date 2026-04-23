@@ -332,7 +332,8 @@ public final class AccessConditionUtils {
             User resolvedUser = user != null ? user : retrieveUserFromContext(session);
             for (Entry<String, Set<String>> entry : requiredAccessConditions.entrySet()) {
                 Set<String> pageAccessConditions = entry.getValue();
-                AccessPermission access = checkAccessPermission(DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes(), pageAccessConditions,
+                List<LicenseType> licenseTypes = DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes();
+                AccessPermission access = checkAccessPermission(licenseTypes, pageAccessConditions,
                         privilegeName, resolvedUser, ipAddress,
                         ClientApplicationManager.getClientFromSession(session), query);
                 ret.put(entry.getKey(), access);
@@ -952,7 +953,8 @@ public final class AccessConditionUtils {
     public static AccessPermission checkAccessPermission(Set<String> requiredAccessConditions, String privilegeName, String query,
             HttpServletRequest request) throws IndexUnreachableException, PresentationException, DAOException {
         User user = retrieveUserFromContext(request != null ? request.getSession() : null);
-        return checkAccessPermission(DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes(), requiredAccessConditions, privilegeName, user,
+        List<LicenseType> licenseTypes = DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes();
+        return checkAccessPermission(licenseTypes, requiredAccessConditions, privilegeName, user,
                 NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
     }
 
@@ -1585,8 +1587,9 @@ public final class AccessConditionUtils {
     public static List<License> getApplyingLicenses(Optional<User> user, String ipAddress, LicenseType type, IDAO dao) throws DAOException {
         List<License> licenses = dao.getLicenses(type);
         List<UserGroup> userGroups = user.map(User::getAllUserGroups).orElse(Collections.emptyList());
+        // Use the injected DAO here (not the cache) to preserve testability via mock injection
         List<IpRange> ipRangesApplyingToGivenIp =
-                DataManager.getInstance().getIpRangeCache().getAllIpRanges().stream().filter(range -> range.matchIp(ipAddress)).toList();
+                dao.getAllIpRanges().stream().filter(range -> range.matchIp(ipAddress)).toList();
 
         List<License> applyingLicenses = licenses.stream()
                 .filter(license -> {
