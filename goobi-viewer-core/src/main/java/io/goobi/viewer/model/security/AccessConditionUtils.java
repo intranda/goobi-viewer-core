@@ -61,6 +61,7 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.model.security.user.IpRange;
+import io.goobi.viewer.model.security.user.IpRangeCache;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.viewer.PhysicalElement;
@@ -331,7 +332,7 @@ public final class AccessConditionUtils {
             User resolvedUser = user != null ? user : retrieveUserFromContext(session);
             for (Entry<String, Set<String>> entry : requiredAccessConditions.entrySet()) {
                 Set<String> pageAccessConditions = entry.getValue();
-                AccessPermission access = checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), pageAccessConditions,
+                AccessPermission access = checkAccessPermission(DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes(), pageAccessConditions,
                         privilegeName, resolvedUser, ipAddress,
                         ClientApplicationManager.getClientFromSession(session), query);
                 ret.put(entry.getKey(), access);
@@ -377,7 +378,7 @@ public final class AccessConditionUtils {
      * <p>Steps:
      * <ol>
      *   <li>One Solr query: {@code +PI_TOPSTRUCT:pi +DOCTYPE:PAGE} (fields: ORDER, ACCESSCONDITION)</li>
-     *   <li>One DAO call: {@code getRecordLicenseTypes()}</li>
+     *   <li>One cache read: {@code getRecordLicenseTypes()}</li>
      *   <li>One user + IP resolution from {@code request}</li>
      *   <li>In-memory evaluation of VIEW_IMAGES, VIEW_THUMBNAILS, ZOOM_IMAGES,
      *   DOWNLOAD_IMAGES, VIEW_FULLTEXT, DOWNLOAD_PAGE_PDF per page</li>
@@ -411,7 +412,7 @@ public final class AccessConditionUtils {
             }
 
             // Resolve shared context once – reused across all pages to avoid repeated lookups
-            List<LicenseType> licenseTypes = DataManager.getInstance().getDao().getRecordLicenseTypes();
+            List<LicenseType> licenseTypes = DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes();
             User user = retrieveUserFromContext(request != null ? request.getSession() : null);
             String ipAddress = NetTools.getIpAddress(request);
             Optional<ClientApplication> client = ClientApplicationManager.getClientFromRequest(request);
@@ -470,7 +471,7 @@ public final class AccessConditionUtils {
      * <p>Steps:
      * <ol>
      *   <li>One Solr query: {@code +PI_TOPSTRUCT:pi +DOCTYPE:PAGE +filenameField:[* TO *]}</li>
-     *   <li>One DAO call: {@code getRecordLicenseTypes()}</li>
+     *   <li>One cache read: {@code getRecordLicenseTypes()}</li>
      *   <li>One user + IP resolution from {@code request}</li>
      *   <li>In-memory evaluation of {@code privilegeType} per page document</li>
      * </ol>
@@ -518,7 +519,7 @@ public final class AccessConditionUtils {
             }
 
             // Resolve shared context once — reused for every page to avoid repeated lookups
-            List<LicenseType> licenseTypes = DataManager.getInstance().getDao().getRecordLicenseTypes();
+            List<LicenseType> licenseTypes = DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes();
             User user = retrieveUserFromContext(request != null ? request.getSession() : null);
             String ipAddress = NetTools.getIpAddress(request);
             Optional<ClientApplication> client = ClientApplicationManager.getClientFromRequest(request);
@@ -594,7 +595,7 @@ public final class AccessConditionUtils {
         String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + page.getPi() + " +" + SolrConstants.ORDER + ":" + page.getOrder();
         try {
             User user = retrieveUserFromContext(request != null ? request.getSession() : null);
-            return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), page.getAccessConditions(),
+            return checkAccessPermission(DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes(), page.getAccessConditions(),
                     privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
         } catch (PresentationException e) {
             logger.debug(e.getMessage());
@@ -632,7 +633,7 @@ public final class AccessConditionUtils {
             if (results.size() > 0) {
                 Set<String> accessConditions =
                         results.getFirst().getFieldValues(SolrConstants.ACCESSCONDITION).stream().map(Object::toString).collect(Collectors.toSet());
-                return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), accessConditions,
+                return checkAccessPermission(DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes(), accessConditions,
                         privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
             }
 
@@ -742,7 +743,7 @@ public final class AccessConditionUtils {
             }
 
             User user = retrieveUserFromContext(request != null ? request.getSession() : null);
-            return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), requiredAccessConditions,
+            return checkAccessPermission(DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes(), requiredAccessConditions,
                     privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), originalQuery);
         } catch (PresentationException e) {
             logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
@@ -795,7 +796,7 @@ public final class AccessConditionUtils {
                     User user = retrieveUserFromContext(session);
 
                     //                    long start = System.nanoTime();
-                    List<LicenseType> nonOpenAccessLicenseTypes = DataManager.getInstance().getDao().getRecordLicenseTypes();
+                    List<LicenseType> nonOpenAccessLicenseTypes = DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes();
                     for (SolrDocument doc : results) {
                         Set<String> requiredAccessConditions = new HashSet<>();
                         Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
@@ -921,7 +922,7 @@ public final class AccessConditionUtils {
             }
 
             User user = retrieveUserFromContext(request != null ? request.getSession() : null);
-            return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), requiredAccessConditions,
+            return checkAccessPermission(DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes(), requiredAccessConditions,
                     privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
         } catch (PresentationException e) {
             logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
@@ -951,7 +952,7 @@ public final class AccessConditionUtils {
     public static AccessPermission checkAccessPermission(Set<String> requiredAccessConditions, String privilegeName, String query,
             HttpServletRequest request) throws IndexUnreachableException, PresentationException, DAOException {
         User user = retrieveUserFromContext(request != null ? request.getSession() : null);
-        return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), requiredAccessConditions, privilegeName, user,
+        return checkAccessPermission(DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes(), requiredAccessConditions, privilegeName, user,
                 NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
     }
 
@@ -1201,7 +1202,7 @@ public final class AccessConditionUtils {
             return AccessPermission.granted();
         }
 
-        LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(page.getAccessCondition());
+        LicenseType licenseType = DataManager.getInstance().getLicenseTypeCache().getLicenseType(page.getAccessCondition());
         if (licenseType == null) {
             logger.trace("LicenseType '{}' not configured, access denied.", page.getAccessCondition());
             return AccessPermission.denied();
@@ -1311,7 +1312,7 @@ public final class AccessConditionUtils {
                     return AccessPermission.granted();
                 }
                 // Check whether the requested privilege is allowed to this IP range (for all access conditions)
-                for (IpRange ipRange : DataManager.getInstance().getDao().getAllIpRanges()) {
+                for (IpRange ipRange : DataManager.getInstance().getIpRangeCache().getAllIpRanges()) {
                     if (ipRange.matchIp(remoteAddress)) {
                         useIpRange = ipRange;
                         AccessPermission access = ipRange.canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null);
@@ -1389,7 +1390,7 @@ public final class AccessConditionUtils {
         boolean containsOpenAccess =
                 requiredAccessConditions.stream().anyMatch(SolrConstants.OPEN_ACCESS_VALUE::equalsIgnoreCase);
         boolean openAccessIsConfiguredLicenceType =
-                allLicenseTypes == null ? DataManager.getInstance().getDao().getLicenseType(SolrConstants.OPEN_ACCESS_VALUE) != null
+                allLicenseTypes == null ? DataManager.getInstance().getLicenseTypeCache().getLicenseType(SolrConstants.OPEN_ACCESS_VALUE) != null
                         : allLicenseTypes.stream().anyMatch(license -> SolrConstants.OPEN_ACCESS_VALUE.equalsIgnoreCase(license.getName()));
         return containsOpenAccess && !openAccessIsConfiguredLicenceType;
     }
@@ -1497,7 +1498,7 @@ public final class AccessConditionUtils {
             return 100;
         }
 
-        List<LicenseType> relevantLicenseTypes = DataManager.getInstance().getDao().getLicenseTypes(requiredAccessConditions);
+        List<LicenseType> relevantLicenseTypes = DataManager.getInstance().getLicenseTypeCache().getLicenseTypes(requiredAccessConditions);
         // Deny access if record's license types aren't configured
         if (relevantLicenseTypes.isEmpty()) {
             logger.trace("Record '{}' hsd access conditions that aren't configured in the database", pi);
@@ -1531,7 +1532,7 @@ public final class AccessConditionUtils {
             return false;
         }
 
-        List<LicenseType> licenseTypes = DataManager.getInstance().getDao().getLicenseTypes(accessConditions);
+        List<LicenseType> licenseTypes = DataManager.getInstance().getLicenseTypeCache().getLicenseTypes(accessConditions);
         if (licenseTypes.isEmpty()) {
             return false;
         }
@@ -1585,7 +1586,7 @@ public final class AccessConditionUtils {
         List<License> licenses = dao.getLicenses(type);
         List<UserGroup> userGroups = user.map(User::getAllUserGroups).orElse(Collections.emptyList());
         List<IpRange> ipRangesApplyingToGivenIp =
-                dao.getAllIpRanges().stream().filter(range -> range.matchIp(ipAddress)).toList();
+                DataManager.getInstance().getIpRangeCache().getAllIpRanges().stream().filter(range -> range.matchIp(ipAddress)).toList();
 
         List<License> applyingLicenses = licenses.stream()
                 .filter(license -> {
