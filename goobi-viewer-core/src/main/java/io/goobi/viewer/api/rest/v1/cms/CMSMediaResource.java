@@ -102,6 +102,7 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -682,11 +683,7 @@ public class CMSMediaResource {
             }
         } else {
             logger.error("File '{}' not found.", file.toAbsolutePath());
-            try {
-                servletResponse.sendError(HttpServletResponse.SC_NOT_FOUND);
-            } catch (IOException e) {
-                throw new WebApplicationException(e);
-            }
+            throw new NotFoundException();
         }
         return "";
     }

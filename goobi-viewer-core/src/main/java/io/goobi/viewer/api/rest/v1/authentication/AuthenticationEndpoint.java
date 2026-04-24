@@ -358,7 +358,9 @@ public class AuthenticationEndpoint {
     public Response headerParameterLogin(@QueryParam("redirectUrl") String redirectUrl) {
         logger.debug("headerParameterLogin");
         if (redirectUrl != null && !isRedirectUrlAllowed(redirectUrl)) {
-            return Response.status(Response.Status.FORBIDDEN.getStatusCode(), REASON_PHRASE_ILLEGAL_REDIRECT_URL)
+            return Response.status(Response.Status.FORBIDDEN)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity(REASON_PHRASE_ILLEGAL_REDIRECT_URL)
                     .build();
         }
 
@@ -382,7 +384,9 @@ public class AuthenticationEndpoint {
             }
             if (providers.isEmpty()) {
                 logger.warn("No providers configured.");
-                return Response.status(Response.Status.FORBIDDEN.getStatusCode(), REASON_PHRASE_NO_PROVIDERS_CONFIGURED)
+                return Response.status(Response.Status.FORBIDDEN)
+                        .type(MediaType.TEXT_PLAIN)
+                        .entity(REASON_PHRASE_NO_PROVIDERS_CONFIGURED)
                         .build();
             }
 
@@ -404,7 +408,10 @@ public class AuthenticationEndpoint {
 
         if (useProvider == null) {
             logger.warn("No matching authentication provider found.");
-            return Response.status(Response.Status.FORBIDDEN.getStatusCode(), REASON_PHRASE_NO_PROVIDER_FOUND).build();
+            return Response.status(Response.Status.FORBIDDEN)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity(REASON_PHRASE_NO_PROVIDER_FOUND)
+                    .build();
         }
         logger.debug("Provider selected: {}", useProvider.getName());
 

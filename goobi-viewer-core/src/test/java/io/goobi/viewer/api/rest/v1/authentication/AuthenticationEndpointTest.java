@@ -279,7 +279,7 @@ class AuthenticationEndpointTest extends AbstractRestApiTest {
                 .request()
                 .get()) {
             assertEquals(403, response.getStatus(), "Should return status 403");
-            assertEquals(AuthenticationEndpoint.REASON_PHRASE_ILLEGAL_REDIRECT_URL, response.getStatusInfo().getReasonPhrase());
+            assertEquals(AuthenticationEndpoint.REASON_PHRASE_ILLEGAL_REDIRECT_URL, response.readEntity(String.class));
         }
     }
 
@@ -295,7 +295,7 @@ class AuthenticationEndpointTest extends AbstractRestApiTest {
                 .get()) {
             // Should not be rejected as 403 with illegal redirect URL reason - the host is whitelisted
             if (response.getStatus() == 403) {
-                assertNotEquals(AuthenticationEndpoint.REASON_PHRASE_ILLEGAL_REDIRECT_URL, response.getStatusInfo().getReasonPhrase(),
+                assertNotEquals(AuthenticationEndpoint.REASON_PHRASE_ILLEGAL_REDIRECT_URL, response.readEntity(String.class),
                         "Whitelisted host should not be rejected as illegal redirect URL");
             }
         }
@@ -312,7 +312,7 @@ class AuthenticationEndpointTest extends AbstractRestApiTest {
                 .request()
                 .get()) {
             assertEquals(403, response.getStatus(), "Should return status 403");
-            assertEquals(AuthenticationEndpoint.REASON_PHRASE_NO_PROVIDERS_CONFIGURED, response.getStatusInfo().getReasonPhrase());
+            assertEquals(AuthenticationEndpoint.REASON_PHRASE_NO_PROVIDERS_CONFIGURED, response.readEntity(String.class));
         }
     }
 
@@ -328,7 +328,7 @@ class AuthenticationEndpointTest extends AbstractRestApiTest {
                 .request()
                 .get()) {
             assertEquals(403, response.getStatus(), "Should return status 403");
-            assertEquals(AuthenticationEndpoint.REASON_PHRASE_NO_PROVIDERS_CONFIGURED, response.getStatusInfo().getReasonPhrase());
+            assertEquals(AuthenticationEndpoint.REASON_PHRASE_NO_PROVIDERS_CONFIGURED, response.readEntity(String.class));
         }
     }
 

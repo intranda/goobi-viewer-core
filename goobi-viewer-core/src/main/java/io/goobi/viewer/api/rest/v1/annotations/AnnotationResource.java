@@ -22,7 +22,6 @@
 package io.goobi.viewer.api.rest.v1.annotations;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_ALTO;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_ANNOTATION;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_COMMENT;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST;
@@ -36,6 +35,55 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocumentList;
+import org.jdom2.JDOMException;
+
+import de.intranda.api.annotation.AbstractAnnotation;
+import de.intranda.api.annotation.IAnnotation;
+import de.intranda.api.annotation.IResource;
+import de.intranda.api.annotation.IncomingAnnotation;
+import de.intranda.api.annotation.wa.SpecificResource;
+import de.intranda.api.annotation.wa.collection.AnnotationCollection;
+import de.intranda.api.annotation.wa.collection.AnnotationPage;
+import de.intranda.api.iiif.presentation.v2.Canvas2;
+import de.intranda.api.iiif.presentation.v2.Manifest2;
+import de.intranda.digiverso.ocr.alto.model.structureclasses.Page;
+import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
+import de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.filters.UserLoggedInFilter;
+import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
+import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.NotImplementedException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.faces.validators.PIValidator;
+import io.goobi.viewer.managedbeans.UserBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
+import io.goobi.viewer.model.annotation.AnnotationConverter;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
+import io.goobi.viewer.model.annotation.serialization.SqlAnnotationDeleter;
+import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.solr.SolrConstants;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.BadRequestException;
@@ -50,57 +98,6 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.SolrDocumentList;
-import org.jdom2.JDOMException;
-
-import de.intranda.api.annotation.AbstractAnnotation;
-import de.intranda.api.annotation.IAnnotation;
-import de.intranda.api.annotation.IResource;
-import de.intranda.api.annotation.IncomingAnnotation;
-import de.intranda.api.annotation.wa.SpecificResource;
-import de.intranda.api.annotation.wa.collection.AnnotationCollection;
-import de.intranda.api.annotation.wa.collection.AnnotationPage;
-import de.intranda.api.iiif.presentation.v2.Canvas2;
-import de.intranda.api.iiif.presentation.v2.Manifest2;
-import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
-import de.intranda.digiverso.ocr.alto.model.structureclasses.Page;
-import de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
-import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import io.goobi.viewer.api.rest.AbstractApiUrlManager;
-import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
-import io.goobi.viewer.api.rest.filters.UserLoggedInFilter;
-import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
-import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.NotImplementedException;
-import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.managedbeans.UserBean;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
-import io.goobi.viewer.model.annotation.AnnotationConverter;
-import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
-import io.goobi.viewer.model.annotation.serialization.SqlAnnotationDeleter;
-import io.goobi.viewer.model.security.user.User;
-import io.goobi.viewer.faces.validators.PIValidator;
-import io.goobi.viewer.model.viewer.StringPair;
-import io.goobi.viewer.solr.SolrConstants;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * REST resource managing W3C Web Annotations for records and canvas elements, supporting creation, retrieval, and deletion.
@@ -171,7 +168,8 @@ public class AnnotationResource {
     /**
      * Resolves an ALTO text element annotation by its composite identifier (pi, pageNo, elementId).
      *
-     * <p>This endpoint handles URLs generated by {@link AltoAnnotationBuilder} for ALTO TextLines, Words, and Blocks.
+     * <p>
+     * This endpoint handles URLs generated by {@link AltoAnnotationBuilder} for ALTO TextLines, Words, and Blocks.
      *
      * @param pi persistent identifier of the record
      * @param pageNo page order number (1-based)
@@ -198,8 +196,7 @@ public class AnnotationResource {
             @Parameter(description = "Page order number (1-based)",
                     schema = @Schema(minimum = "1", maximum = "2147483647")) @PathParam("pageNo") Integer pageNo,
             @Parameter(description = "ID of the ALTO element") @PathParam("elementId") String elementId,
-            @Parameter(description = "Annotation format: 'oa' for OpenAnnotation, default is WebAnnotation")
-            @QueryParam("format") String format)
+            @Parameter(description = "Annotation format: 'oa' for OpenAnnotation, default is WebAnnotation") @QueryParam("format") String format)
             throws ContentLibException, PresentationException, IndexUnreachableException {
         // Reject invalid PIs before they reach the Solr query to prevent syntax errors (HTTP 500).
         if (!PIValidator.validatePi(pi)) {
@@ -207,7 +204,8 @@ public class AnnotationResource {
         }
         // Look up the ALTO filename for this pi/pageNo via Solr
         String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi + " +" + SolrConstants.ORDER + ":" + pageNo;
-        SolrDocumentList docs = DataManager.getInstance().getSearchIndex()
+        SolrDocumentList docs = DataManager.getInstance()
+                .getSearchIndex()
                 .search(query, 1, null, List.of(SolrConstants.FILENAME_ALTO));
         if (docs == null || docs.isEmpty()) {
             throw new ContentNotFoundException("No page found for pi=" + pi + ", pageNo=" + pageNo);
@@ -270,7 +268,7 @@ public class AnnotationResource {
     @ApiResponse(responseCode = "400", description = "Invalid annotation ID")
     @ApiResponse(responseCode = "404", description = "No annotation found for the given id")
     public IAnnotation getAnnotation(@Parameter(description = "Identifier of the annotation",
-                    schema = @Schema(minimum = "1", maximum = "9223372036854775807")) @PathParam("id") Long id)
+            schema = @Schema(minimum = "1", maximum = "9223372036854775807")) @PathParam("id") Long id)
             throws DAOException, ContentLibException {
         AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
         return builder.getWebAnnotation(id).orElseThrow(() -> new ContentNotFoundException("Not annotation with id = " + id + "found"));
@@ -295,7 +293,7 @@ public class AnnotationResource {
     @ApiResponse(responseCode = "400", description = "Invalid annotation ID")
     @ApiResponse(responseCode = "404", description = "No comment annotation found for the given id")
     public IAnnotation getComment(@Parameter(description = "Identifier of the annotation",
-                    schema = @Schema(minimum = "1", maximum = "9223372036854775807")) @PathParam("id") Long id)
+            schema = @Schema(minimum = "1", maximum = "9223372036854775807")) @PathParam("id") Long id)
             throws DAOException, ContentLibException {
         AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
         return builder.getCommentWebAnnotation(id).orElseThrow(() -> new ContentNotFoundException("Not annotation with id = " + id + "found"));
@@ -359,7 +357,7 @@ public class AnnotationResource {
     @ApiResponse(responseCode = "404", description = "Annotation not found by the given id")
     @ApiResponse(responseCode = "405", description = "May not delete the annotation because it was created by another user")
     public IAnnotation deleteAnnotation(@Parameter(description = "Identifier of the annotation",
-                    schema = @Schema(minimum = "1", maximum = "9223372036854775807")) @PathParam("id") Long id)
+            schema = @Schema(minimum = "1", maximum = "9223372036854775807")) @PathParam("id") Long id)
             throws DAOException, ContentLibException {
         AnnotationConverter converter = new AnnotationConverter(urls);
         CrowdsourcingAnnotation pAnno = DataManager.getInstance().getDao().getAnnotation(id);

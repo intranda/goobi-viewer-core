@@ -26,6 +26,16 @@ import java.util.Collections;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
+import io.goobi.viewer.exceptions.AccessDeniedException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.NotImplementedException;
+import io.goobi.viewer.exceptions.PresentationException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.NotFoundException;
@@ -37,25 +47,13 @@ import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
-import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
-import io.goobi.viewer.exceptions.AccessDeniedException;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.NotImplementedException;
-import io.goobi.viewer.exceptions.PresentationException;
-
 /**
  * JAX-RS exception mapper that catches general exceptions encountered during REST API calls and creates a JSON-formatted error response.
  *
  * @author Florian Alpers
  */
 @Provider
-@ViewerRestServiceBinding
+
 public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplicationException> {
 
     private static final Logger logger = LogManager.getLogger(WebApplicationExceptionMapper.class);
