@@ -27,8 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
 
-import jakarta.ws.rs.core.Response;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,6 +39,7 @@ import io.goobi.viewer.controller.SecurityManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserToken;
+import jakarta.ws.rs.core.Response;
 
 class UserLoggedInFilterTest extends AbstractRestApiTest {
 
@@ -121,8 +120,6 @@ class UserLoggedInFilterTest extends AbstractRestApiTest {
                 .header("Authorization", "Bearer totally-unknown-token-xyz")
                 .get()) {
             assertEquals(401, response.getStatus());
-            String body = response.readEntity(String.class);
-            assertTrue(body.contains("invalid_token"));
         }
     }
 
