@@ -36,6 +36,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_LIST_SHARED_RS
 import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_PUBLIC;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -158,7 +159,7 @@ public class BookmarkResource {
     @Operation(
             tags = { "bookmarks" },
             summary = "Add a new bookmark list for the current user.")
-    @ApiResponse(responseCode = "201", description = "Bookmark list created successfully")
+    @ApiResponse(responseCode = "201", description = "Bookmark list created successfully, returns the new list")
     @ApiResponse(responseCode = "400", description = "Missing or invalid request body")
     @ApiResponse(responseCode = "409", description = "Session users may only have one bookmark list")
     @ApiResponse(responseCode = "500", description = "Error querying database")
@@ -169,13 +170,18 @@ public class BookmarkResource {
         if (list == null) {
             throw new BadRequestException("Request body must not be null");
         }
-        SuccessMessage result;
+        BookmarkList created;
         if (StringUtils.isNotBlank(list.getName())) {
-            result = builder.addBookmarkList(list.getName());
+            created = builder.addBookmarkList(list.getName());
         } else {
-            result = builder.addBookmarkList();
+            created = builder.addBookmarkList();
         }
-        return Response.status(Response.Status.CREATED).entity(result).build();
+        Response.ResponseBuilder response = Response.status(Response.Status.CREATED).entity(created);
+        if (created.getId() != null) {
+            URI location = URI.create(urls.path(ApiUrls.USERS_BOOKMARKS, ApiUrls.USERS_BOOKMARKS_LIST).params(created.getId()).build());
+            response = response.location(location);
+        }
+        return response.build();
     }
 
     @GET
@@ -263,10 +269,11 @@ public class BookmarkResource {
     @Operation(
             tags = { "bookmarks" },
             summary = "Add bookmark to list. Only pi, LogId and order are used")
-    @ApiResponse(responseCode = "201", description = "Bookmark added; returns the updated bookmark list")
+    @ApiResponse(responseCode = "201", description = "Bookmark added; returns the created bookmark")
     // 400 is returned when the path parameter {listId} cannot be parsed as a valid integer
     @ApiResponse(responseCode = "400", description = "Invalid bookmark list ID or bookmark data")
     @ApiResponse(responseCode = "404", description = "Bookmark list or record not found")
+    @ApiResponse(responseCode = "409", description = "Bookmark already exists in list")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     // Provide explicit content spec to avoid OpenAPI schema validation error ("Invalid requestBody definition").
     // type = "object" prevents schemathesis from sending primitives (e.g. the integer 0) as the request body.
@@ -280,10 +287,14 @@ public class BookmarkResource {
         if (item == null) {
             throw new BadRequestException("Request body must not be null");
         }
-        builder.addBookmarkToBookmarkList(id, item.getPi(), item.getLogId(),
+        Bookmark created = builder.addBookmarkToBookmarkList(id, item.getPi(), item.getLogId(),
                 Optional.ofNullable(item.getOrder()).map(Object::toString).orElse(null));
-        BookmarkList updatedList = builder.getBookmarkListById(id);
-        return Response.status(Response.Status.CREATED).entity(updatedList).build();
+        Response.ResponseBuilder response = Response.status(Response.Status.CREATED).entity(created);
+        if (created.getId() != null) {
+            URI location = URI.create(urls.path(ApiUrls.USERS_BOOKMARKS, ApiUrls.USERS_BOOKMARKS_ITEM).params(id, created.getId()).build());
+            response = response.location(location);
+        }
+        return response.build();
     }
 
     @GET
