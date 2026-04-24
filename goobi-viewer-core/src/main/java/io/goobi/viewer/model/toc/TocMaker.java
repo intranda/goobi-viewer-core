@@ -195,8 +195,12 @@ public final class TocMaker {
                     .add(new TOCElement(label, null, null, String.valueOf(structElement.getLuceneId()), null, level, structElement.getPi(), null,
                             false, true, false, mimeType, docstruct, footerId));
             // ++level;
-            buildGroupToc(ret.get(StringConstants.DEFAULT_NAME), new ArrayList<>(structElement.getGroupMemberships().keySet()),
-                    structElement.getPi(), sourceFormatPdfAllowed, mimeType);
+            List<String> groupIdFields = new ArrayList<>(structElement.getGroupMemberships().keySet());
+            if (groupIdFields.isEmpty() && structElement.getGroupIdField() != null) {
+                // GROUP docs typically have no GROUPID_* fields of their own; fall back to GROUPTYPE
+                groupIdFields.add(structElement.getGroupIdField());
+            }
+            buildGroupToc(ret.get(StringConstants.DEFAULT_NAME), groupIdFields, structElement.getPi(), sourceFormatPdfAllowed, mimeType);
         } else if (structElement.isAnchor()) {
             // MultiVolume
             int numVolumes = buildAnchorToc(ret, doc, sourceFormatPdfAllowed, mimeType, tocCurrentPage, hitsPerPage);
