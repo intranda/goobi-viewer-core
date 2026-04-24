@@ -1,0 +1,96 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:o="http://omnifaces.org/ui"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:util="http://goobi.io/util">
+    <composite:interface>
+        <composite:attribute
+            name="currentPageOrder"
+            required="true"
+            type="java.lang.Integer" />
+        <composite:attribute
+            name="imageSize"
+            required="false"
+            default="400"
+            type="java.lang.Integer" />
+        <composite:attribute
+            name="thumbsToFullscreen"
+            required="false"
+            default="false"
+            type="java.lang.Boolean" />
+        <composite:attribute
+            name="showPageLabel"
+            required="false"
+            default="true"
+            type="java.lang.Boolean" />
+        <composite:attribute
+            name="spaceBetween"
+            required="false"
+            default="10"
+            type="java.lang.Integer" />
+    </composite:interface>
+
+    <composite:implementation>
+    	<div class="thumbnail-slider">
+    		<div id="thumbnail-slider__#{cc.clientId}-btn-prev" class=" thumbnail-slider__btn-prev"><util:icon icon="caret-left" filled="true"/></div>
+	        <div id="#{cc.clientId}-slider" class="swiper thumbnail-slider__swiper" data-space-between="#{cc.attrs.spaceBetween}">
+
+	            <div class="swiper-wrapper">
+	                <ui:repeat
+	                    var="page"
+	                    value="#{activeDocumentBean.viewManager.allPages}">
+	                    <div class="swiper-slide thumbnail-slider__item #{page.order == cc.attrs.currentPageOrder ? '-activePage' : ''}">
+	                        <ui:fragment rendered="#{page != null}">
+	                            <h:outputLink
+	                                styleClass="thumbnail-slider__link"
+	                                value="#{cc.attrs.thumbsToFullscreen ? request.contextPath.concat('/fullscreen/').concat(activeDocumentBean.viewManager.pi).concat('/').concat(page.order).concat('/') : activeDocumentBean.getPageUrl(page.order)}#topDocAnchor">
+	                                <span class="thumbnail-slider__image-wrapper">
+	                                    <img
+	                                        data-script="fadeIn"
+	                                        loading="lazy"
+	                                        class="thumbnail-slider__image"
+	                                        alt=""
+	                                        data-viewer-thumbnail="thumbnail"
+	                                        src="#{imageDelivery.thumbs.getThumbnailUrl(page, cc.attrs.imageSize, cc.attrs.imageSize)}"
+	                                        data-viewer-access-denied-url="#{page.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />
+	                                </span>
+	                                <ui:fragment rendered="#{cc.attrs.showPageLabel}">
+                                    <div class="thumbnail-slider__link-text">#{page.order}:#{page.orderLabel}</div>
+                                </ui:fragment>
+	                            </h:outputLink>
+	                        </ui:fragment>
+	                    </div>
+	                </ui:repeat>
+	            </div>   
+	        </div>
+			<div id="thumbnail-slider__#{cc.clientId}-btn-next" class="thumbnail-slider__btn-next"><util:icon icon="caret-right" filled="true"/></div>
+        </div>
+
+        <script>
+            (function() {
+                const el = document.getElementById('#{cc.clientId}-slider');
+                const slideCount = el.querySelectorAll('.swiper-slide').length;
+                const spaceBetween = parseInt(el.dataset.spaceBetween) || 8;
+                new Swiper('##{cc.clientId}-slider', {
+                    slidesPerView: 3,
+                    spaceBetween: 10,
+                    navigation: {
+                        nextEl: '#thumbnail-slider__#{cc.clientId}-btn-next',
+                        prevEl: '#thumbnail-slider__#{cc.clientId}-btn-prev',
+                    },
+                    breakpoints: {
+                        768: {
+                            slidesPerView: Math.min(5, slideCount),
+                            spaceBetween: spaceBetween,
+                        }
+                    }
+                });
+            })();
+        </script>
+    </composite:implementation>
+</ui:composition>
