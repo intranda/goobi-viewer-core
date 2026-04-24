@@ -1141,7 +1141,9 @@ public class SolrSearchIndex implements java.io.Closeable {
     public List<DisplayUserGeneratedContent> getDisplayUserGeneratedContentsForRecord(String pi)
             throws PresentationException, IndexUnreachableException {
         if (StringUtils.isEmpty(pi)) {
-            logger.warn("Cannot fetch user generated content, no PI value given.");
+            // Include a caller stacktrace so unexpected callers (plugins/reflection/new usages)
+            // can be located; the only in-tree caller now pre-checks for empty PI
+            logger.warn("Cannot fetch user generated content, no PI value given.", new Throwable("caller stack"));
             return Collections.emptyList();
         }
 

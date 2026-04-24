@@ -156,8 +156,10 @@ public class ContentBean implements Serializable {
     public void loadUserGeneratedContentsForDisplay(String pi, HttpServletRequest request)
             throws PresentationException, IndexUnreachableException, DAOException {
         logger.trace("loadUserGeneratedContentsForDisplay");
-        if (pi == null) {
-            logger.debug("pi is null, cannot load");
+        // Strengthened from null-only check to isEmpty so blank/whitespace PIs also short-circuit
+        // and do not trigger the downstream SolrSearchIndex warning
+        if (StringUtils.isEmpty(pi)) {
+            logger.debug("pi is empty, cannot load");
             return;
         }
         List<CrowdsourcingAnnotation> allAnnotationsForRecord = DataManager.getInstance().getDao().getAnnotationsForWork(pi);

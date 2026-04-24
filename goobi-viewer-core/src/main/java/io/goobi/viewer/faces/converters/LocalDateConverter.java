@@ -66,7 +66,8 @@ public class LocalDateConverter implements Converter<LocalDate> {
             if (component != null && component.getAttributes().get(ATTRIBUTE_DATA_FORMAT) != null) {
                 String format = (String) component.getAttributes().get(ATTRIBUTE_DATA_FORMAT);
                 String result = value.format(DateTimeFormatter.ofPattern(format));
-                logger.debug("getAsString: value='{}', data-format='{}', result='{}'",
+                // Lowered to trace: per-render noise, not needed at debug level
+                logger.trace("getAsString: value='{}', data-format='{}', result='{}'",
                         value, format, result);
                 return result;
             }

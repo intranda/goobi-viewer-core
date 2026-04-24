@@ -646,13 +646,17 @@ public class ManifestBuilder extends AbstractBuilder {
      */
     private static LocalDateTime getNavDate(StructElement ele) {
         String navDateField = DataManager.getInstance().getConfiguration().getIIIFNavDateField();
-        if (StringUtils.isNotBlank(navDateField) && StringUtils.isNotBlank(ele.getMetadataValue(navDateField))) {
+        String eleValue = ele.getMetadataValue(navDateField);
+        if (StringUtils.isNotBlank(navDateField) && StringUtils.isNotBlank(eleValue)) {
             try {
-                String eleValue = ele.getMetadataValue(navDateField);
                 LocalDate date = LocalDate.parse(eleValue);
                 return date.atStartOfDay();
             } catch (NullPointerException | DateTimeParseException e) {
-                logger.warn("Unable to parse {} as Date", ele.getMetadataValue(navDateField));
+                // TODO accept year-only values (e.g. "1849") and parse them as January 1st of that year
+                //      so IIIF navDate can still be populated for records with partial date metadata
+                // Log format adjusted to include PI and source field for easier debugging of manifest
+                // generation warnings across many records
+                logger.warn("PI: '{}', unable to parse '{}' from field '{}' as date", ele.getPi(), eleValue, navDateField);
             }
         }
         return null;

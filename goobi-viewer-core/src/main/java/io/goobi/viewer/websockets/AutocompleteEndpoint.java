@@ -93,10 +93,21 @@ public class AutocompleteEndpoint {
                 .replaceAll("\\W++$", ""); //NOSONAR – false positive: anchored regex used only to trim non-word chars
     }
 
-    private static String getTerm(String messageString) {
+    /**
+     * Parses the "term" field from the incoming autocomplete message and trims surrounding whitespace.
+     *
+     * @param messageString raw JSON message received from the client
+     * @return the term value, trimmed; empty string if the field is missing
+     * @should return trimmed term when field is present
+     * @should return empty string when term field is missing
+     * @should preserve internal whitespace
+     */
+    // Package-private for unit testing; trim added so that leading/trailing whitespace from the
+    // client input does not short-circuit the autosuggestion ("contains space" guard in SearchHelper).
+    static String getTerm(String messageString) {
         JSONObject message = new JSONObject(messageString);
         if (message.has("term")) {
-            return message.getString("term");
+            return message.getString("term").trim();
         }
         return "";
     }

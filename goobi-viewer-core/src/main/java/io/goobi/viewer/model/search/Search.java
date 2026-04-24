@@ -377,7 +377,10 @@ public class Search implements Serializable {
             for (String fq : activeFacetFilterQueries) {
                 logger.debug("Facet query: {}", fq);
             }
-            logger.debug("Subelement facet query: {}", subElementQueryFilterSuffix);
+            // Skip empty subelement facet query to avoid noisy "Subelement facet query:" lines with no value
+            if (StringUtils.isNotEmpty(subElementQueryFilterSuffix)) {
+                logger.debug("Subelement facet query: {}", subElementQueryFilterSuffix);
+            }
         }
 
         String finalQuery =
