@@ -1117,7 +1117,10 @@ public class ActiveDocumentBean implements Serializable {
         if (!"-".equals(persistentIdentifier) && (vm == null || !persistentIdentifier.equals(vm.getPi()))) {
             id = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(persistentIdentifier);
             if (id == null) {
-                logger.warn("No IDDOC for identifier '{}' found.", persistentIdentifier);
+                // Demoted from WARN to DEBUG: the downstream "Record load failed" WARN in getViewManager
+                // already reports the missing PI via the RecordNotFoundException, so a WARN here produced
+                // duplicate log lines for every 404-like PI hit (bots, stale URLs, typos).
+                logger.debug("No IDDOC for identifier '{}' found.", persistentIdentifier);
             }
         }
 
