@@ -502,6 +502,63 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see ActiveDocumentBean#shouldDeferTocToCalendar(ViewManager)
+     * @verifies return false for non-anchor and non-group records
+     */
+    @Test
+    void shouldDeferTocToCalendar_shouldReturnFalseForNonAnchorAndNonGroupRecords() throws Exception {
+        // Standalone records and volumes never render the calendar TOC view, so the issue-list
+        // TOC must be built normally regardless of how many calendar years exist.
+        ViewManager vm = Mockito.mock(ViewManager.class);
+        StructElement top = Mockito.mock(StructElement.class);
+        Mockito.when(vm.getTopStructElement()).thenReturn(top);
+        Mockito.when(top.isAnchor()).thenReturn(false);
+        Mockito.when(top.isGroup()).thenReturn(false);
+        assertFalse(ActiveDocumentBean.shouldDeferTocToCalendar(vm));
+        // CalendarView must not be queried when the structural pre-check already excludes deferral
+        Mockito.verify(vm, Mockito.never()).getCalendarView();
+    }
+
+    /**
+     * @see ActiveDocumentBean#shouldDeferTocToCalendar(ViewManager)
+     * @verifies return false when only a single calendar year is indexed
+     */
+    @Test
+    void shouldDeferTocToCalendar_shouldReturnFalseWhenOnlySingleCalendarYearIsIndexed() throws Exception {
+        // With only one calendar year present the calendar branch may still render based on
+        // hits within that year, but our cheap probe deliberately falls through to the
+        // normal TOC build to avoid populating an entire year's day grid.
+        ViewManager vm = Mockito.mock(ViewManager.class);
+        StructElement top = Mockito.mock(StructElement.class);
+        io.goobi.viewer.model.calendar.CalendarView cal = Mockito.mock(io.goobi.viewer.model.calendar.CalendarView.class);
+        Mockito.when(vm.getTopStructElement()).thenReturn(top);
+        Mockito.when(top.isAnchor()).thenReturn(true);
+        Mockito.when(vm.getCalendarView()).thenReturn(cal);
+        Mockito.when(cal.getVolumeYears()).thenReturn(java.util.Collections.singletonList("2024"));
+        assertFalse(ActiveDocumentBean.shouldDeferTocToCalendar(vm));
+    }
+
+    /**
+     * @see ActiveDocumentBean#shouldDeferTocToCalendar(ViewManager)
+     * @verifies return true when more than one calendar year is indexed for an anchor or group
+     */
+    @Test
+    void shouldDeferTocToCalendar_shouldReturnTrueWhenMoreThanOneCalendarYearIsIndexedForAnchorOrGroup() throws Exception {
+        // Multi-year newspapers/periodicals: the calendar TOC view will render, so the
+        // potentially huge issue-list TOC build must be skipped to avoid blocking the
+        // request thread on hundreds of thousands of group members.
+        ViewManager vm = Mockito.mock(ViewManager.class);
+        StructElement top = Mockito.mock(StructElement.class);
+        io.goobi.viewer.model.calendar.CalendarView cal = Mockito.mock(io.goobi.viewer.model.calendar.CalendarView.class);
+        Mockito.when(vm.getTopStructElement()).thenReturn(top);
+        Mockito.when(top.isAnchor()).thenReturn(false);
+        Mockito.when(top.isGroup()).thenReturn(true);
+        Mockito.when(vm.getCalendarView()).thenReturn(cal);
+        Mockito.when(cal.getVolumeYears()).thenReturn(java.util.Arrays.asList("2022", "2023", "2024"));
+        assertTrue(ActiveDocumentBean.shouldDeferTocToCalendar(vm));
+    }
+
+    /**
      * @see ActiveDocumentBean#setTocCurrentPage(String)
      * @verifies throw illegal url parameter exception for non numeric value
      */
