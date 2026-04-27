@@ -71,6 +71,7 @@ class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see TOC#getLabel(String)
      * @verifies return correct label
      */
     @Test
@@ -618,8 +619,8 @@ class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @verifies not throw NPE when group not in map
      * @see TOC#buildTree(String, int, int, int, String)
+     * @verifies not throw NPE when group not in map
      */
     @Test
     void buildTree_shouldNotThrowNPEWhenGroupNotInMap() {
@@ -654,6 +655,7 @@ class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see TOC#getTreeViewForGroup(String)
      * @verifies not throw NPE when ViewManager is null
      */
     @Test

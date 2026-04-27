@@ -54,11 +54,12 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     void getSolrFieldsToFetch_shouldReturnBothStaticAndConfiguredFields() {
         List<?> fields = TocMaker.getSolrFieldsToFetch("_DEFAULT");
         Assertions.assertNotNull(fields);
-        // 17 REQUIRED_FIELDS + 1 new base field (MD_CREATOR; LABEL is deduped) + 2 params × 2 LANG_ variants (EN, DE fallback in tests) + 2 ancestor fields
-        Assertions.assertEquals(24, fields.size());
+        // 17 REQUIRED_FIELDS + 1 base param (MD_CREATOR; LABEL is deduped) + 2 params × 2 LANG_ variants (EN, DE) + 3 ancestor/GROUPID_* fields (#27788)
+        Assertions.assertEquals(25, fields.size());
     }
 
     /**
+     * @see TocMaker#generateToc(TOC, StructElement, boolean, String, int, int)
      * @verifies include anchor element full volume tree and sibling volume top elements in TOC
      */
     @Test
@@ -87,6 +88,7 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see TocMaker#generateToc(TOC, StructElement, boolean, String, int, int)
      * @verifies return anchor element followed by all volume elements when siblings excluded
      */
     @Test
@@ -108,6 +110,7 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see TocMaker#generateToc(TOC, StructElement, boolean, String, int, int)
      * @verifies return anchor plus all child volumes when generating anchor TOC
      */
     @Test
@@ -128,6 +131,7 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see TocMaker#generateToc(TOC, StructElement, boolean, String, int, int)
      * @verifies return different volume subsets per page when anchor TOC is paginated
      */
     @Test
@@ -173,6 +177,7 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see TocMaker#generateToc(TOC, StructElement, boolean, String, int, int)
      * @verifies throw IllegalArgumentException if structElement is null
      */
     @Test
@@ -183,6 +188,7 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see TocMaker#generateToc(TOC, StructElement, boolean, String, int, int)
      * @verifies throw IllegalArgumentException if toc is null
      */
     @Test
@@ -195,6 +201,7 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see TocMaker#buildLabel(SolrDocument, String)
      * @verifies build configured label correctly
      */
     @Test
@@ -215,6 +222,7 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see TocMaker#buildLabel(SolrDocument, String)
      * @verifies fill remaining parameters correctly if docstruct fallback used
      */
     @Test
@@ -247,6 +255,7 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see TocMaker#createOrderedGroupDocMap(List, List, String)
      * @verifies create correctly sorted map
      */
     @Test

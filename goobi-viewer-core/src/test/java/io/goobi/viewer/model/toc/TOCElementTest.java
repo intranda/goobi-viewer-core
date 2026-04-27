@@ -83,6 +83,7 @@ class TOCElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see TOCElement#getUrl()
      * @verifies return URL containing page type PI page number and log id for fullscreen view with alternate setup
      */
     @Test
