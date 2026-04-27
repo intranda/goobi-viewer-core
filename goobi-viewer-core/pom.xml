@@ -79,20 +79,20 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.8.0</alto.version>
-		<ics.version>4.2.3</ics.version>
-		<tei-conversion.version>1.3.4</tei-conversion.version>
+		<ics.version>4.2.4</ics.version>
+		<tei-conversion.version>1.4.0</tei-conversion.version>
 		<intranda-content-view.version>0.4.7</intranda-content-view.version>
 		<iiif-api-model.version>3.2.0</iiif-api-model.version>
 		<normdataimporter.version>2.1.3</normdataimporter.version>
 
 		<!-- other libraries -->
-		<activemq.version>6.2.4</activemq.version>
+		<activemq.version>6.2.5</activemq.version>
 		<angus-mail.version>2.0.5</angus-mail.version>
 		<citationstyles.version>26.2</citationstyles.version>
 		<citeproc-java.version>3.5.0</citeproc-java.version>
 		<commons-collections4.version>4.5.0</commons-collections4.version>
 		<commons-configuration2.version>2.14.0</commons-configuration2.version>
-		<commons-io.version>2.21.0</commons-io.version>
+		<commons-io.version>2.22.0</commons-io.version>
 		<commons-jxpath.version>1.4.0</commons-jxpath.version>
 		<commons-lang3.version>3.20.0</commons-lang3.version>
 		<commons-net.version>3.13.0</commons-net.version>
@@ -120,15 +120,15 @@
 		<jakarta.ws.rs-api.version>3.1.0</jakarta.ws.rs-api.version>
 		<jakarta.xml.bind-api.version>4.0.5</jakarta.xml.bind-api.version>
 		<java-jwt.version>4.5.1</java-jwt.version>
-		<jwks-rsa.version>0.23.0</jwks-rsa.version>
-		<jaxen.version>2.0.0</jaxen.version>
+		<jwks-rsa.version>0.23.1</jwks-rsa.version>
+		<jaxen.version>2.0.1</jaxen.version>
 		<jaxb-runtime.version>4.0.7</jaxb-runtime.version>
 		<jdom2.version>2.0.6.1</jdom2.version>
 		<jersey.version>3.1.11</jersey.version>
 		<jersey-guava.version>2.26-b03</jersey-guava.version>
 		<!-- https://github.com/stleary/JSON-java -->
 		<json.version>20251224</json.version>
-		<jsoup.version>1.22.1</jsoup.version>
+		<jsoup.version>1.22.2</jsoup.version>
 		<junit.version>6.0.3</junit.version>
 		<log4j.version>2.25.4</log4j.version>
 		<netty.version>4.1.119.Final</netty.version>
@@ -136,14 +136,14 @@
 		<mockito.version>5.23.0</mockito.version>
 		<mockito.agent.jar>${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar</mockito.agent.jar>
 		<mockserver.version>5.15.0</mockserver.version>
-		<omnifaces.version>4.7.5</omnifaces.version>
+		<omnifaces.version>4.7.8</omnifaces.version>
 		<openpdf.version>2.2.4</openpdf.version>
 		<poi.version>5.5.1</poi.version>
 		<prettyfaces.version>10.0.2.Final</prettyfaces.version>
 		<quartz.version>2.5.2</quartz.version>
 		<reflections.version>0.10.2</reflections.version>
 		<rome.version>2.1.0</rome.version>
-		<spring.version>6.2.17</spring.version>
+		<spring.version>6.2.18</spring.version>
 		<slf4j.version>2.0.17</slf4j.version>
 		<solr.version>9.10.1</solr.version>
 		<swagger.version>2.2.48</swagger.version>

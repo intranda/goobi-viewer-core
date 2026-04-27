@@ -31,6 +31,7 @@ import org.apache.logging.log4j.Logger;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.AdminBean;
 import io.goobi.viewer.managedbeans.AdminConfigEditorBean;
+import io.goobi.viewer.model.security.AccessConditionUtils;
 
 /**
  * HTTP session listener that tracks active user sessions and performs cleanup on session expiry.
@@ -48,7 +49,14 @@ public class SessionListener implements HttpSessionListener {
         //        }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Cleans up all resources that the session held when it is invalidated or times out. This
+     * includes record locks, admin-editor locks, and all access-permission caches stored under
+     * the {@code PRIV_} prefix.
+     *
+     * @param event servlet session event carrying the session being destroyed
+     * @should remove all PRIV_ prefixed attributes on destroy
+     */
     @Override
     public void sessionDestroyed(HttpSessionEvent event) {
         if (DataManager.getInstance().getSessionMap().remove(event.getSession().getId()) != null) {
@@ -60,6 +68,11 @@ public class SessionListener implements HttpSessionListener {
             }
             // Release file edit locks
             AdminConfigEditorBean.clearLocksForSessionId(sessionId);
+            // Remove the per-session PRIV_* access-permission cache so its entries (up to
+            // millions of AccessPermission objects on long-lived sessions) become eligible for
+            // GC. clearSessionPermissions handles IllegalStateException internally if the
+            // session has already been invalidated. refs #27880
+            AccessConditionUtils.clearSessionPermissions(event.getSession());
         }
     }
 }

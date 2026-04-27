@@ -350,7 +350,9 @@ public class ActiveDocumentBean implements Serializable {
                 logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
             } catch (RecordNotFoundException | RecordDeletedException | RecordLimitExceededException e) {
                 if (e.getMessage() != null && !"null".equals(e.getMessage()) && !"???".equals(e.getMessage())) {
-                    logger.warn("{}: {}", e.getClass().getName(), e.getMessage());
+                    // Reformatted for readability: simple class name is sufficient, and the exception
+                    // message (typically the PI, or PI:limit for RecordLimitExceeded) is highlighted in quotes
+                    logger.warn("Record load failed: '{}' ({})", e.getMessage(), e.getClass().getSimpleName());
                 }
             } catch (IndexUnreachableException | DAOException | ViewerConfigurationException e) {
                 logger.error(e.getMessage(), e);
@@ -422,7 +424,11 @@ public class ActiveDocumentBean implements Serializable {
                     lastReceivedIdentifier = null;
                 }
             }
-            logger.debug("update(): (IDDOC {} ; page {} ; thread {})", topDocumentIddoc, imageToShow, Thread.currentThread().threadId());
+            // Log format adjusted to start with the PI for easier grep/log filtering;
+            // fall back to lastReceivedIdentifier when viewManager is not yet initialized
+            String piForLog = viewManager != null ? viewManager.getPi() : lastReceivedIdentifier;
+            logger.debug("PI: '{}', update(): (IDDOC {} ; page {} ; thread {})", piForLog, topDocumentIddoc, imageToShow,
+                    Thread.currentThread().threadId());
             prevHit = null;
             nextHit = null;
             boolean doublePageMode = isDoublePageUrl();
@@ -550,7 +556,9 @@ public class ActiveDocumentBean implements Serializable {
             // If LOGID is set, update the current element
             if (StringUtils.isNotEmpty(logid) && viewManager != null && !logid.equals(viewManager.getLogId())) {
                 // TODO set new values instead of re-creating ViewManager, perhaps
-                logger.debug("Find doc by LOGID: {}", logid);
+                // Log format adjusted to start with the PI for easier grep/log filtering;
+                // viewManager is guaranteed non-null by the surrounding if-condition
+                logger.debug("PI: '{}', find doc by LOGID: {}", viewManager.getPi(), logid);
                 String query = new StringBuilder("+")
                         .append(SolrConstants.LOGID)
                         .append(":\"")
@@ -1109,7 +1117,10 @@ public class ActiveDocumentBean implements Serializable {
         if (!"-".equals(persistentIdentifier) && (vm == null || !persistentIdentifier.equals(vm.getPi()))) {
             id = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(persistentIdentifier);
             if (id == null) {
-                logger.warn("No IDDOC for identifier '{}' found.", persistentIdentifier);
+                // Demoted from WARN to DEBUG: the downstream "Record load failed" WARN in getViewManager
+                // already reports the missing PI via the RecordNotFoundException, so a WARN here produced
+                // duplicate log lines for every 404-like PI hit (bots, stale URLs, typos).
+                logger.debug("No IDDOC for identifier '{}' found.", persistentIdentifier);
             }
         }
 

@@ -1,0 +1,98 @@
+/* ==============================================================
+   Thumbnail slider
+   Style declarations for thumbnailSlider.xhtml
+   ==============================================================*/
+
+.thumbnail-slider {
+        display: flex;
+        max-width: 100%;
+        margin: 20px 0px;
+
+    &__swiper {
+       // max-width: 100%;
+        margin-left: -5px;
+        margin-right: -5px;
+        overflow: hidden;
+        flex-grow: 1;
+        padding: 5px;
+    }
+    &__item {
+        &.-activePage {
+        }
+    }
+    &__link {
+        display: flex;
+        flex-direction: column;
+        &:hover,
+        &:focus {
+           .thumbnail-slider__image {
+                opacity: 0.85;
+            }
+        }
+    }
+    &__image-wrapper {
+        display: block;
+        width: 100%;
+        overflow: hidden;
+    }
+    &__image {
+        transition: all 0.25s ease;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        aspect-ratio: ~"3 / 4";
+    }
+    &__link-text {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        padding: 5px 0px;
+    }
+    &__btn-next,
+    &__btn-prev {
+        min-width: 28px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        padding: 5px;
+        &.swiper-button-disabled {
+            opacity: 0.3;
+        }
+        &.swiper-button-lock {
+            display: none;
+        }
+        .icon-svg {
+            width: 28px;
+            height: 28px;
+        }
+    }
+    &__btn-prev {
+        justify-content: flex-start;
+        padding-inline-start: 0px;
+        .icon-svg {
+            transform: translateX(-5px);
+        }
+    }
+    &__btn-next {
+        justify-content: flex-end;
+        padding-inline-end: 0px;
+        .icon-svg {
+            transform: translateX(5px);
+        }
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {
+}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
+}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+}

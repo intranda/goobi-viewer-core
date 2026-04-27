@@ -102,4 +102,58 @@ class CitationDataProviderTest extends AbstractTest {
         Assertions.assertEquals(2017, itemData.getIssued().getDateParts()[0][0]);
 
     }
+
+    /**
+     * @see CitationDataProvider#addItemData(String,Map,CSLType)
+     * @verifies fall back to leading year when issued date has zero month or day
+     */
+    @Test
+    void addItemData_shouldFallBackToLeadingYearWhenIssuedDateHasZeroMonthOrDay() throws Exception {
+        Map<String, List<String>> fields = new HashMap<>();
+        fields.put(CitationDataProvider.TITLE, Collections.singletonList("Work"));
+        // Library catalogs occasionally deliver "YYYY-00-00" for unknown month/day.
+        // This must not propagate into citeproc's raw date parser which rejects month 0.
+        fields.put(CitationDataProvider.ISSUED, Collections.singletonList("1910-00-00"));
+
+        CitationDataProvider provider = new CitationDataProvider();
+        provider.addItemData("id", fields, CSLType.BOOK);
+        CSLItemData itemData = provider.retrieveItem("id");
+        Assertions.assertNotNull(itemData);
+        Assertions.assertNotNull(itemData.getIssued());
+        Assertions.assertNull(itemData.getIssued().getRaw(), "raw should not be set for invalid ISO dates");
+        Assertions.assertNotNull(itemData.getIssued().getDateParts());
+        Assertions.assertEquals(1910, itemData.getIssued().getDateParts()[0][0]);
+    }
+
+    /**
+     * @see CitationDataProvider#extractLeadingYearFromInvalidIsoDate(String)
+     * @verifies return year when value has zero month and day
+     */
+    @Test
+    void extractLeadingYearFromInvalidIsoDate_shouldReturnYearWhenValueHasZeroMonthAndDay() throws Exception {
+        Assertions.assertEquals(Integer.valueOf(1910), CitationDataProvider.extractLeadingYearFromInvalidIsoDate("1910-00-00"));
+        Assertions.assertEquals(Integer.valueOf(1910), CitationDataProvider.extractLeadingYearFromInvalidIsoDate("1910-00"));
+    }
+
+    /**
+     * @see CitationDataProvider#extractLeadingYearFromInvalidIsoDate(String)
+     * @verifies return null for valid iso date
+     */
+    @Test
+    void extractLeadingYearFromInvalidIsoDate_shouldReturnNullForValidIsoDate() throws Exception {
+        // Valid ISO dates keep the raw path so citeproc can format the full date.
+        Assertions.assertNull(CitationDataProvider.extractLeadingYearFromInvalidIsoDate("2017-04-11"));
+    }
+
+    /**
+     * @see CitationDataProvider#extractLeadingYearFromInvalidIsoDate(String)
+     * @verifies return null for non iso string
+     */
+    @Test
+    void extractLeadingYearFromInvalidIsoDate_shouldReturnNullForNonIsoString() throws Exception {
+        // Free-form date strings must continue to flow through the raw path.
+        Assertions.assertNull(CitationDataProvider.extractLeadingYearFromInvalidIsoDate("circa 1870"));
+        Assertions.assertNull(CitationDataProvider.extractLeadingYearFromInvalidIsoDate(""));
+        Assertions.assertNull(CitationDataProvider.extractLeadingYearFromInvalidIsoDate(null));
+    }
 }

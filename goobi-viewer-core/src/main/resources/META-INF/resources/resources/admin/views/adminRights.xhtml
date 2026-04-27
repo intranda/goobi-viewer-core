@@ -101,9 +101,14 @@
                                                         </ui:fragment>
                                                         <ui:fragment rendered="#{licensee.client != adminClientsBean.allClients}">
                                                             <h2 class="col-12">
+                                                                <!--
+                                                                    Read client data from the current licensee (LicenseRightsHolder)
+                                                                    instead of the deprecated direct License.client getter, which is
+                                                                    no longer populated for licenses configured since 2026.01.
+                                                                -->
                                                                 <util:icon-text
                                                                     icon="device-desktop"
-                                                                    text="#{license.client.name} (#{license.client.clientIdentifier})"
+                                                                    text="#{licensee.client.name} (#{licensee.client.clientIdentifier})"
                                                                     iconSvgClass="icon icon-xxl" />
                                                             </h2>
                                                         </ui:fragment>
@@ -212,10 +217,15 @@
                                             <div class="row justify-content-end admin__boxed-entry-actions">
                                                 <div class="col-3 d-flex justify-content-end">
                                                     <!-- EDIT -->
+                                                    <!--
+                                                        The licensee names were read from the deprecated direct License
+                                                        fields (user/userGroup/ipRange) and have been empty since 2026.01;
+                                                        simplify to the license type, which is always present.
+                                                    -->
                                                     <a
                                                         href="#{navigationHelper.applicationUrl}admin/rights/edit/#{license.id}/"
                                                         class="admin__boxed-entry-actions-edit"
-                                                        aria-label="#{msg.edit}: #{msg[license.licenseType.name]} | #{license.user.displayName} #{license.userGroup.name} #{license.ipRange.name}">
+                                                        aria-label="#{msg.edit}: #{msg[license.licenseType.name]}">
                                                         #{msg.edit}
                                                     </a>
 

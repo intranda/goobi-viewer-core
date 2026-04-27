@@ -39,6 +39,12 @@ import io.goobi.viewer.dao.impl.JPADAO;
  */
 public abstract class AbstractDatabaseEnabledTest extends AbstractTest {
 
+    /** Number of LicenseType rows in the shared H2 test fixture. */
+    public static final int NUM_LICENSE_TYPES = 6;
+
+    /** Number of IpRange rows in the shared H2 test fixture. */
+    public static final int NUM_IP_RANGES = 2;
+
     private static IDatabaseTester databaseTester;
 
     @BeforeAll

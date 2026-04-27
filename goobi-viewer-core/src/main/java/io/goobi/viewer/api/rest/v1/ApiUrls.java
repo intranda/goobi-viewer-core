@@ -193,6 +193,8 @@ public class ApiUrls extends AbstractApiUrlManager {
 
     public static final String TASKS = "/tasks";
     public static final String TASKS_TASK = "/{id}";
+    public static final String TASKS_CENTER_3D = "/tasks/center3d";
+    public static final String TASKS_CENTER_3D_RECORD = "/{pi}";
 
     public static final String CONTEXT = "/context";
 

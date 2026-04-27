@@ -90,6 +90,7 @@ import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.LicenseType;
+import io.goobi.viewer.model.security.LicenseTypeCache;
 import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.model.security.user.User;
@@ -1196,7 +1197,8 @@ public final class SearchHelper {
     public static void updateFilterQuerySuffix(HttpServletRequest request, String privilege)
             throws IndexUnreachableException, PresentationException, DAOException {
         String filterQuerySuffix =
-                getPersonalFilterQuerySuffix(DataManager.getInstance().getDao().getRecordLicenseTypes(),
+                // Route through cache to avoid repeated DAO round-trips per request
+                getPersonalFilterQuerySuffix(DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes(),
                         (User) Optional.ofNullable(request)
                                 .map(HttpServletRequest::getSession)
                                 .map(session -> session.getAttribute("user"))
@@ -3441,6 +3443,7 @@ public final class SearchHelper {
      * @param request HTTP servlet request whose session holds the filter query suffix
      * @param privilege Privilege to check (Connector checks a different privilege)
      * @return Filter query suffix string from the HTTP session
+     * @should use BeanUtils request fallback when initiating suffix update
      */
     static String getFilterQuerySuffix(final HttpServletRequest request, String privilege) {
         HttpServletRequest req = request;
@@ -3459,7 +3462,11 @@ public final class SearchHelper {
         // If not suffix generated yet, initiate update
         if (ret == null) {
             try {
-                updateFilterQuerySuffix(request, privilege);
+                // Use the resolved 'req' (which may have been obtained via BeanUtils fallback)
+                // instead of the original 'request' parameter. Previously the original null was
+                // propagated, causing the warning "No HttpServletRequest found, cannot set
+                // filter query." and leaving the personal access filter unset for the session.
+                updateFilterQuerySuffix(req, privilege);
                 ret = (String) session.getAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX);
             } catch (IndexUnreachableException | DAOException e) {
                 logger.error(e.getMessage(), e);

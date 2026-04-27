@@ -24,6 +24,7 @@ package io.goobi.viewer.controller.imaging;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
+import io.goobi.viewer.controller.StringTools;
 
 /**
  * Resolves urls audio or video files.
@@ -60,9 +61,10 @@ public class Object3DHandler {
      * @return the url to the media file of the given pi and filename
      */
     public String getObjectUrl(String pi, String filename) {
+        String filenameCleaned = StringTools.cleanUserGeneratedData(filename);
         if (this.urls != null) {
-            return this.urls.path(ApiUrls.RECORDS_FILES_3D).params(pi, filename).build();
+            return this.urls.path(ApiUrls.RECORDS_FILES_3D).params(pi, filenameCleaned).build();
         }
-        return this.restApiUrl + URL_TEMPLATE.replace("{identifier}", pi).replace("{filename}", filename);
+        return this.restApiUrl + URL_TEMPLATE.replace("{identifier}", pi).replace("{filename}", filenameCleaned);
     }
 }

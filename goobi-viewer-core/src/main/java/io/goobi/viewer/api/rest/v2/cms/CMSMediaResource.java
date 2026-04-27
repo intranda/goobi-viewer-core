@@ -305,30 +305,34 @@ public class CMSMediaResource {
         throw new ContentNotFoundException(FILE_NOT_FOUND_MESSAGE.replace("{}", path.toString()));
     }
 
+    // Return type changed from String to void: MediaDeliveryService streams the payload directly
+    // onto the injected HttpServletResponse, so Jersey must not try to write an extra (empty)
+    // String body on top of the already-committed response.
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_VIDEO)
     @Operation(tags = { "media" }, summary = "Stream CMS media file as video")
     @ApiResponse(responseCode = "200", description = "Video stream")
     @ApiResponse(responseCode = "404", description = "Video media file not found")
-    public String serveVideoContent(@PathParam("filename") String filename)
+    public void serveVideoContent(@PathParam("filename") String filename)
             throws PresentationException, WebApplicationException {
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder());
         Path file = cmsMediaFolder.resolve(StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename)));
-        return serveMediaContent("video", file);
+        serveMediaContent("video", file);
     }
 
+    // Return type changed from String to void, see comment on serveVideoContent.
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_AUDIO)
     @Operation(tags = { "media" }, summary = "Stream CMS media file as audio")
     @ApiResponse(responseCode = "200", description = "Audio stream")
     @ApiResponse(responseCode = "404", description = "Audio media file not found")
-    public String serveAudioContent(@PathParam("filename") String filename)
+    public void serveAudioContent(@PathParam("filename") String filename)
             throws PresentationException, WebApplicationException {
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder());
         Path file = cmsMediaFolder.resolve(StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename)));
-        return serveMediaContent("audio", file);
+        serveMediaContent("audio", file);
     }
 
     /**
@@ -649,11 +653,11 @@ public class CMSMediaResource {
      *
      * @param type media type prefix, e.g. "video" or "audio"
      * @param file path to the media file to stream
-     * @return {@link String}
      * @throws PresentationException
      * @throws WebApplicationException
      */
-    private String serveMediaContent(String type, Path file) throws PresentationException, WebApplicationException {
+    // Return type changed from String to void, see comment on serveVideoContent.
+    private void serveMediaContent(String type, Path file) throws PresentationException, WebApplicationException {
         String mimeType = type + "/" + FilenameUtils.getExtension(file.getFileName().toString());
 
         if (Files.isRegularFile(file)) {
@@ -671,7 +675,6 @@ public class CMSMediaResource {
                 throw new WebApplicationException(e);
             }
         }
-        return "";
     }
 
 }

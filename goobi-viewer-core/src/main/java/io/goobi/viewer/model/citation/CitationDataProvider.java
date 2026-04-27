@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.citation;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -67,6 +70,10 @@ public class CitationDataProvider implements ItemDataProvider {
     public static final String TRANSLATOR = "translator";
     public static final String URL = "url";
 
+    // Matches ISO-like date strings (year, year-month, year-month-day) used to detect malformed
+    // numeric dates such as "1910-00-00" that would otherwise be rejected by citeproc's date parser.
+    private static final Pattern ISO_LIKE_DATE = Pattern.compile("^(\\d{4})(?:-\\d{1,2}){0,2}$");
+
     private final Map<String, CSLItemData> itemDataMap = new TreeMap<>();
 
     /**
@@ -77,6 +84,7 @@ public class CitationDataProvider implements ItemDataProvider {
      * @return Created CSLItemData
      * @should store author name parts, issued date, URL, and ISBN in CSLItemData
      * @should parse year-only issued date into dateParts instead of raw string
+     * @should fall back to leading year when issued date has zero month or day
      */
     public CSLItemData addItemData(String id, Map<String, List<String>> fields, CSLType type) {
         CSLItemDataBuilder builder = new CSLItemDataBuilder().type(type).id(id);
@@ -156,11 +164,22 @@ public class CitationDataProvider implements ItemDataProvider {
                     break;
                 case ISSUED:
                     // Use different method for year-only values (to avoid duplicates in APA6)
+                    String issuedValue = entry.getValue().get(0);
                     try {
-                        DateTools.FORMATTERYEARONLY.parse(entry.getValue().get(0));
-                        builder.issued(Integer.valueOf(entry.getValue().get(0)));
+                        DateTools.FORMATTERYEARONLY.parse(issuedValue);
+                        builder.issued(Integer.valueOf(issuedValue));
                     } catch (DateTimeParseException e) {
-                        builder.issued(new CSLDateBuilder().raw(entry.getValue().get(0)).build());
+                        // Some sources deliver ISO-like dates with zero month/day (e.g. "1910-00-00"),
+                        // which citeproc rejects with DateTimeException ("Invalid value for MonthOfYear ... 0"),
+                        // filling the error log and rendering a red error instead of the citation.
+                        // If the value looks ISO-like but is not a valid LocalDate, fall back to the leading
+                        // year; only strings that do not look like ISO dates continue to use the raw path.
+                        Integer fallbackYear = extractLeadingYearFromInvalidIsoDate(issuedValue);
+                        if (fallbackYear != null) {
+                            builder.issued(fallbackYear);
+                        } else {
+                            builder.issued(new CSLDateBuilder().raw(issuedValue).build());
+                        }
                     }
                     break;
                 case LANGUAGE:
@@ -190,6 +209,40 @@ public class CitationDataProvider implements ItemDataProvider {
         itemDataMap.put(id, item);
 
         return item;
+    }
+
+    /**
+     * Returns the 4-digit leading year of an ISO-like date string whose full value cannot be parsed
+     * as a valid {@link LocalDate} (e.g. "1910-00-00", "1910-00", "1910-04"). Returns {@code null} for
+     * valid ISO dates (so the caller preserves the full raw value) and for strings that do not look
+     * ISO-like at all (so free-form dates continue to use the raw path).
+     *
+     * @param value metadata value from the issued field
+     * @return leading year as Integer, or null if no fallback should be applied
+     * @should return year when value has zero month and day
+     * @should return null for valid iso date
+     * @should return null for non iso string
+     */
+    static Integer extractLeadingYearFromInvalidIsoDate(String value) {
+        if (StringUtils.isBlank(value)) {
+            return null;
+        }
+        String trimmed = value.trim();
+        Matcher m = ISO_LIKE_DATE.matcher(trimmed);
+        if (!m.matches()) {
+            return null;
+        }
+        try {
+            LocalDate.parse(trimmed);
+            // Valid ISO date — keep raw behavior intact so citeproc can format the full date.
+            return null;
+        } catch (DateTimeParseException e) {
+            try {
+                return Integer.valueOf(m.group(1));
+            } catch (NumberFormatException nfe) {
+                return null;
+            }
+        }
     }
 
     @Override

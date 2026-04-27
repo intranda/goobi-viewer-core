@@ -171,29 +171,39 @@
                                                 <ui:fragment rendered="#{adminLicenseBean.isLicenseTypeInUse(licenseType)}">
                                                     <dt class="col-sm-4">#{msg.admin__license_licensee}:</dt>
                                                     <dd class="col-sm-8">
+                                                        <!--
+                                                            As of 2026.01, rights holders are stored in License.licensees
+                                                            (List<LicenseRightsHolder>) instead of the deprecated direct
+                                                            user/userGroup/ipRange/client fields on License. Iterate over
+                                                            licensees so newly configured rights holders are displayed.
+                                                        -->
                                                         <ui:repeat
                                                             var="license"
                                                             value="#{adminLicenseBean.getLicenses(licenseType)}">
-                                                            <ui:fragment rendered="#{license.user != null}">
-                                                                <span class="admin__license-user">
-                                                                    <h:outputText value="#{license.user.displayName}" />
-                                                                </span>
-                                                            </ui:fragment>
-                                                            <ui:fragment rendered="#{license.userGroup != null}">
-                                                                <span class="admin__license-user">#{license.userGroup.name}</span>
-                                                            </ui:fragment>
-                                                            <ui:fragment rendered="#{license.ipRange != null}">
-                                                                <span class="admin__license-user">
-                                                                    #{license.ipRange.name}
-                                                                    (#{license.ipRange.subnetMask})
-                                                                </span>
-                                                            </ui:fragment>
-                                                            <ui:fragment rendered="#{license.client != null}">
-                                                                <span class="admin__license-user">
-                                                                    #{license.client.isAllClients() ?
-                                                                    msg.admin__right_all_clients : license.client.name}
-                                                                </span>
-                                                            </ui:fragment>
+                                                            <ui:repeat
+                                                                var="licensee"
+                                                                value="#{license.licensees}">
+                                                                <ui:fragment rendered="#{licensee.user != null}">
+                                                                    <span class="admin__license-user">
+                                                                        <h:outputText value="#{licensee.user.displayName}" />
+                                                                    </span>
+                                                                </ui:fragment>
+                                                                <ui:fragment rendered="#{licensee.userGroup != null}">
+                                                                    <span class="admin__license-user">#{licensee.userGroup.name}</span>
+                                                                </ui:fragment>
+                                                                <ui:fragment rendered="#{licensee.ipRange != null}">
+                                                                    <span class="admin__license-user">
+                                                                        #{licensee.ipRange.name}
+                                                                        (#{licensee.ipRange.subnetMask})
+                                                                    </span>
+                                                                </ui:fragment>
+                                                                <ui:fragment rendered="#{licensee.client != null}">
+                                                                    <span class="admin__license-user">
+                                                                        #{licensee.client.isAllClients() ?
+                                                                        msg.admin__right_all_clients : licensee.client.name}
+                                                                    </span>
+                                                                </ui:fragment>
+                                                            </ui:repeat>
                                                         </ui:repeat>
                                                     </dd>
                                                 </ui:fragment>

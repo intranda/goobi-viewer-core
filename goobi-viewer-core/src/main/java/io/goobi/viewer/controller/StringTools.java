@@ -851,15 +851,13 @@ public final class StringTools {
     }
 
     /**
-     * Sanitizes a filename so that it contains only printable ASCII characters (U+0020–U+007E).
-     * Unicode letters with diacritics are first decomposed via NFD normalization and their combining
-     * marks stripped, preserving the base Latin letter (e.g. {@code ü} → {@code u}). All remaining
-     * non-ASCII characters (such as the En-Dash U+2013) are replaced with a hyphen, and consecutive
-     * hyphens are collapsed into one.
+     * Sanitizes a filename so that it contains only printable ASCII characters (U+0020–U+007E). Unicode letters with diacritics are first decomposed
+     * via NFD normalization and their combining marks stripped, preserving the base Latin letter (e.g. {@code ü} → {@code u}). All remaining
+     * non-ASCII characters (such as the En-Dash U+2013) are replaced with a hyphen, and consecutive hyphens are collapsed into one.
      *
-     * <p>HTTP response headers (e.g. {@code Content-Location}) must not contain characters outside
-     * the printable ASCII range; Tomcat rejects such headers with an {@link IllegalArgumentException}.
-     * Calling this method on the target filename during CMS media upload prevents that error.
+     * <p>
+     * HTTP response headers (e.g. {@code Content-Location}) must not contain characters outside the printable ASCII range; Tomcat rejects such
+     * headers with an {@link IllegalArgumentException}. Calling this method on the target filename during CMS media upload prevents that error.
      *
      * @param filename raw filename that may contain non-ASCII characters; may be {@code null}
      * @return filename containing only printable ASCII characters, or {@code null} if input was {@code null}
@@ -968,7 +966,18 @@ public final class StringTools {
         return text.substring(0, end) + "...";
     }
 
+    /**
+     * @should return range from 0 to n for integer input
+     * @should return correct range for closed interval notation
+     * @should return correct range for open interval notation
+     * @should return correct range for half open interval notation
+     * @should throw IllegalArgumentException for invalid input
+     */
     public static IntegerRange parseIntRange(String input) {
+
+        if (StringTools.isInteger(input)) {
+            return IntegerRange.of(0, Integer.parseInt(input));
+        }
 
         Pattern p = Pattern.compile("([\\[(])\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*([\\])])");
         Matcher m = p.matcher(input.trim());
