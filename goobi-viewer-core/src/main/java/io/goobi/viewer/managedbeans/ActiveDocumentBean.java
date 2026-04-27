@@ -183,7 +183,7 @@ public class ActiveDocumentBean implements Serializable {
     private volatile int tocCurrentPage = 1;
 
     // volatile ensures the safely-published ViewManager reference is immediately visible to all threads
-    private volatile ViewManager viewManager;
+    private volatile ViewManager viewManager; //NOSONAR S3077: reference swap only, safe publication — see B1 fix
     // volatile so that reads outside synchronized(this) in getRelativeUrlTags() see the value written
     // inside the synchronized update() block without needing the full monitor
     private volatile boolean anchor = false;
@@ -209,7 +209,7 @@ public class ActiveDocumentBean implements Serializable {
 
     // volatile so that the reference swap in getRecordGeoMap() (geoMaps = singletonMap(...))
     // is immediately visible to all threads without requiring the ADB monitor
-    private volatile Map<String, RecordGeoMap> geoMaps = new HashMap<>();
+    private volatile Map<String, RecordGeoMap> geoMaps = new HashMap<>(); //NOSONAR S3077: map replaced via singletonMap, never mutated
 
     private int reloads = 0;
 
@@ -226,8 +226,8 @@ public class ActiveDocumentBean implements Serializable {
     private PushContext tocUpdateChannel;
 
     // volatile for double-checked locking in getRecordDataset()
-    private volatile Dataset recordDataset;
-    private volatile PdfSizeCalculator pdfSizes;
+    private volatile Dataset recordDataset; //NOSONAR S3077: double-checked locking, single init
+    private volatile PdfSizeCalculator pdfSizes; //NOSONAR S3077: double-checked locking, single init
     // Cached full-record PDF size estimate derived from Solr MDNUM_FILESIZE fields
     private volatile String cachedFullPdfSize = null;
 
@@ -992,7 +992,7 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @return the LOGID of the current structural element, or "-" if at top-level document
      */
-    public String getLogid() {
+    public String getLogid() { //NOSONAR S2886: volatile field, sync would reintroduce B1 monitor contention
         // logid is volatile; String is immutable — no lock needed for a read
         if (StringUtils.isEmpty(logid)) {
             return "-";
@@ -1042,7 +1042,7 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @return the navigation action string (e.g. "nextHit", "prevHit"), or null if none set
      */
-    public String getAction() {
+    public String getAction() { //NOSONAR S2886: volatile field, sync would reintroduce B1 monitor contention
         // action is volatile; no lock needed for a single-field read
         return action;
     }
@@ -1717,7 +1717,7 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @return a int.
      */
-    public String getTocCurrentPage() {
+    public String getTocCurrentPage() { //NOSONAR S2886: volatile int, sync would reintroduce B1 monitor contention
         // tocCurrentPage is volatile; no lock needed for a single-field read
         return Integer.toString(tocCurrentPage);
     }
@@ -2092,7 +2092,7 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @return a int.
      */
-    public int getCurrentThumbnailPage() {
+    public int getCurrentThumbnailPage() { //NOSONAR S2886: volatile VM capture, sync would reintroduce B1 monitor contention
         // Capture volatile reference once; ViewManager is fully initialized before publication
         ViewManager vm = viewManager;
         return vm != null ? vm.getCurrentThumbnailPage() : 1;

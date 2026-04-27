@@ -64,7 +64,8 @@ public class RecordIdentifierValidationFilter implements ContainerRequestFilter 
             if ("records".equals(segments.get(i).getPath())) {
                 String pi = segments.get(i + 1).getPath();
                 if (!PIValidator.validatePi(pi)) {
-                    logger.warn("Rejecting request with invalid record identifier: '{}'", pi);
+                    // Sanitize user-controlled path segment before logging to prevent log injection (Sonar S5145)
+                    logger.warn("Rejecting request with invalid record identifier: '{}'", pi.replaceAll("[\r\n]", "_"));
                     requestContext.abortWith(Response.status(Status.BAD_REQUEST)
                             .type(MediaType.APPLICATION_JSON)
                             .entity(new ErrorMessage(Status.BAD_REQUEST,

@@ -48,6 +48,10 @@ import io.goobi.viewer.exceptions.DAOException;
 public class IpRangeCache {
 
     private final Object loadLock = new Object();
+    // S3077 false positive: see LicenseTypeCache — the cached list is never mutated after publication;
+    // on miss a new immutable list is built under loadLock and atomically replaced via a single
+    // volatile write (safe-publication idiom, JCIP §3.5.3). Reads stay lock-free.
+    @SuppressWarnings("java:S3077")
     private volatile List<IpRange> cache;
 
     /**
