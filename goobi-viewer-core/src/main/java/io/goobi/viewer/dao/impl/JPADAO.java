@@ -1313,7 +1313,9 @@ public class JPADAO implements IDAO {
      *
      * @should return all license types with overridden license types and image placeholders initialised
      */
-    @SuppressWarnings("unchecked")
+    // S2201 false positive: Collection.size() on a Hibernate PersistentBag/PersistentSet has the side effect of
+    // triggering a SELECT to hydrate the lazy collection. The return value is intentionally ignored here.
+    @SuppressWarnings({ "unchecked", "java:S2201" })
     @Override
     public List<LicenseType> getAllLicenseTypesHydrated() throws DAOException {
         preQuery();
@@ -1974,7 +1976,9 @@ public class JPADAO implements IDAO {
      *
      * @should return all IP ranges with licenses initialised
      */
-    @SuppressWarnings("unchecked")
+    // S2201 false positive: see JPADAO.getAllLicenseTypesHydrated() — Collection.size() on a Hibernate PersistentBag
+    // has the side effect of hydrating the lazy collection; the return value is intentionally ignored.
+    @SuppressWarnings({ "unchecked", "java:S2201" })
     @Override
     public List<IpRange> getAllIpRangesHydrated() throws DAOException {
         preQuery();

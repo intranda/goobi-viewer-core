@@ -69,6 +69,9 @@ public class SitelinkBean implements Serializable {
     // via a volatile write ensures readers (sitelinks.xhtml's <c:forEach items="#{sitelinkBean.hits}">)
     // never observe a list that another thread is still appending to — which previously caused
     // ConcurrentModificationException from Mojarra's ForEachHandler during RENDER_RESPONSE.
+    // S3077 false positive: the list is never mutated after publication; new versions are built
+    // locally and atomically replaced via a single volatile write (safe-publication idiom, JCIP §3.5.3).
+    @SuppressWarnings("java:S3077")
     private volatile List<StringPair> hits;
 
     /**

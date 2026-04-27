@@ -3633,15 +3633,17 @@ public class Configuration extends AbstractConfiguration {
         // Cache key intentionally excludes defaultValue: the cache stores the *raw* XML lookup
         // outcome (present or absent) and only the caller controls the fallback. This keeps the
         // cache independent of how different callers spell the default for the same property.
-        String cacheKey = facetField + ' ' + property;
-        Optional<String> cached = facetFieldPropertyCache.get(cacheKey);
-        if (cached != null) {
-            return cached.orElse(defaultValue);
-        }
-
-        Optional<String> resolved = resolveFacetFieldProperty(facetField, property);
-        facetFieldPropertyCache.put(cacheKey, resolved);
-        return resolved.orElse(defaultValue);
+        // ASCII Unit Separator (US, 0x1F): an explicit, non-printable separator that cannot occur
+        // in a Solr field name or XML attribute path, so the concatenated cache key is unambiguous
+        // even when facetField/property contain spaces or other punctuation.
+        String cacheKey = facetField + '\u001F' + property;
+        // computeIfAbsent collapses the previous get/null-check/put into a single atomic call:
+        // it preserves the negative-caching semantics (the resolver may return Optional.empty(), which
+        // is stored and short-circuits later lookups) and prevents duplicate resolves when concurrent
+        // threads hit the same missing key. S2789 false positive on the prior null-check is gone.
+        Optional<String> cached = facetFieldPropertyCache.computeIfAbsent(cacheKey,
+                k -> resolveFacetFieldProperty(facetField, property));
+        return cached.orElse(defaultValue);
     }
 
     /**
