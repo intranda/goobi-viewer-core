@@ -3444,6 +3444,8 @@ public final class SearchHelper {
      * @param privilege Privilege to check (Connector checks a different privilege)
      * @return Filter query suffix string from the HTTP session
      * @should use BeanUtils request fallback when initiating suffix update
+     * @should compute personal filter suffix on the fly when no session is available
+     * @should fail closed with OPENACCESS-only suffix when sessionless computation fails
      */
     static String getFilterQuerySuffix(final HttpServletRequest request, String privilege) {
         HttpServletRequest req = request;
@@ -3455,7 +3457,30 @@ public final class SearchHelper {
         }
         HttpSession session = req.getSession(false);
         if (session == null) {
-            return null;
+            // The personal filter suffix carries the AccessCondition restrictions that prevent
+            // protected records from being returned. Without a session there is no place to
+            // cache it, but it must still be computed and applied — otherwise sessionless
+            // callers (e.g. REST clients without a JSESSIONID cookie) would see records they
+            // are not allowed to see. The result is computed on the fly and not cached.
+            // If the computation throws, fall back to an OPENACCESS-only suffix so protected
+            // records remain hidden even when the DB or Solr is temporarily unreachable.
+            try {
+                // No session means no client cookie either. Calling
+                // ClientApplicationManager.getClientFromRequest here would invoke
+                // req.getSession() (without 'false') and thereby force-create a session,
+                // which contradicts the whole sessionless path.
+                return getPersonalFilterQuerySuffix(
+                        DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes(),
+                        null,
+                        NetTools.getIpAddress(req),
+                        Optional.empty(),
+                        privilege);
+            } catch (IndexUnreachableException | DAOException e) {
+                logger.error("Failed to compute sessionless filter query suffix, falling back to OPENACCESS-only", e);
+            } catch (PresentationException e) {
+                logger.error("Failed to compute sessionless filter query suffix, falling back to OPENACCESS-only: {}", e.getMessage());
+            }
+            return " +(" + SolrConstants.ACCESSCONDITION + ":\"" + SolrConstants.OPEN_ACCESS_VALUE + "\")";
         }
 
         String ret = (String) session.getAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX);
