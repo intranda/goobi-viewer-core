@@ -4,9 +4,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
 		http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>io.goobi.viewer</groupId>
+	<parent>
+		<groupId>io.goobi.viewer</groupId>
+		<artifactId>viewer</artifactId>
+		<version>${revision}</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
 	<artifactId>viewer-core</artifactId>
-	<version>26.05-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>Goobi viewer - Core</name>
 	<description>The Goobi viewer is an open source solution for the presentation of digitized cultural assets.</description>
@@ -31,32 +35,7 @@
 	</scm>
 
 
-	<repositories>
-		<repository>
-			<id>intranda-public</id>
-			<url>https://nexus.intranda.com/repository/maven-public</url>
-		</repository>
-	</repositories>
-
-
-	<distributionManagement>
-		<repository>
-			<id>intranda-releases</id>
-			<url>https://nexus.intranda.com/repository/maven-releases</url>
-		</repository>
-		<snapshotRepository>
-			<id>intranda-snapshots</id>
-			<url>https://nexus.intranda.com/repository/maven-snapshots</url>
-		</snapshotRepository>
-		<site>
-			<id>intranda-snapshots</id>
-			<url>dav:https://nexus.intranda.com/repository/maven-raw/goobi-viewer/</url>
-		</site>
-	</distributionManagement>
-
-
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<skipTests>true</skipTests>
 		<!--
 		    JS unit tests (Jest) are gated by their own flag so they can be
@@ -70,12 +49,8 @@
 		<failOnSnapshot>false</failOnSnapshot>
 		<maven.compiler.release>21</maven.compiler.release>
 
-		<!-- Sonar -->
+        <!-- Sonar project key (module-specific) -->
 		<sonar.projectKey>intranda_goobi-viewer-core</sonar.projectKey>
-		<sonar.organization>intranda</sonar.organization>
-		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
-		<sonar.java.source>21</sonar.java.source>
-		<sonar.java.target>21</sonar.java.target>
 		<!--
 		    JavaScript paths that should never be analysed:
 		      libs/  - third-party JS shipped under our resources tree
@@ -134,8 +109,6 @@
 		<dbunit.version>3.0.0</dbunit.version>
 		<eclipselink.version>4.0.9</eclipselink.version>
 		<h2.version>2.4.240</h2.version>
-		<httpclient.version>4.5.14</httpclient.version>
-		<httpcore.version>4.4.16</httpcore.version>
 		<httpmime.version>4.5.14</httpmime.version>
 		<icu.version>78.3</icu.version>
 		<jackson.version>2.21.4</jackson.version>
@@ -148,7 +121,6 @@
 		<jakarta.jstl.version>3.0.2</jakarta.jstl.version>
 		<jakarta.mail-api.version>2.1.5</jakarta.mail-api.version>
 		<jakarta.persistence.version>3.2.0</jakarta.persistence.version>
-		<jakarta.servlet-api.version>6.0.0</jakarta.servlet-api.version>
 		<jakarta.websocket.version>2.2.0</jakarta.websocket.version>
 		<jakarta.ws.rs-api.version>3.1.0</jakarta.ws.rs-api.version>
 		<jakarta.xml.bind-api.version>4.0.5</jakarta.xml.bind-api.version>
@@ -156,7 +128,6 @@
 		<jwks-rsa.version>0.24.1</jwks-rsa.version>
 		<jaxen.version>2.0.1</jaxen.version>
 		<jaxb-runtime.version>4.0.7</jaxb-runtime.version>
-		<jdom2.version>2.0.6.1</jdom2.version>
 		<jersey.version>3.1.11</jersey.version>
 		<jersey-guava.version>2.26-b03</jersey-guava.version>
 		<!-- https://github.com/stleary/JSON-java -->
@@ -188,78 +159,11 @@
 	</properties>
 
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.junit</groupId>
-				<artifactId>junit-bom</artifactId>
-				<version>${junit.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-			<!-- Force log4j-core to the same version as log4j-api to avoid transitive downgrades (CVE-2025-68161) -->
-			<dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-core</artifactId>
-				<version>${log4j.version}</version>
-			</dependency>
-			<!-- Force netty to a consistent version across all transitive sources (mockserver pulls in older 4.1.86,
-			     AWS SDK and ZooKeeper need newer versions; nearest-wins would otherwise downgrade them - CVE-2023-44487 etc.) -->
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-buffer</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-codec</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-codec-http</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-codec-http2</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-common</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-handler</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-resolver</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-transport</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-transport-native-unix-common</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-
-
 	<dependencies>
 	
 		<dependency>
 		    <groupId>de.intranda.digiverso.convert</groupId>
 			<artifactId>epubconvert</artifactId>
-			<version>1.1.2</version>
 		</dependency>
 	
 		<!-- intranda libraries -->
@@ -644,7 +548,6 @@
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
-			<version>${json.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jsoup</groupId>
@@ -1137,20 +1040,10 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.15.0</version>
-				<configuration>
-					<compilerArgs>
-						<!-- Explicitly enable annotation processing -->
-						<arg>-proc:full</arg>
-						<arg>-Xlint:deprecation</arg>
-						<arg>-Xlint:unchecked</arg>
-					</compilerArgs>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.5.5</version>
 				<configuration>
 					<skipTests>${skipTests}</skipTests>
 					<excludes>
@@ -1249,7 +1142,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.5.0</version>
 				<configuration>
 					<archive>
 						<addMavenDescriptor>false</addMavenDescriptor>
@@ -1286,7 +1178,6 @@
 			<plugin>
 				<groupId>pl.project13.maven</groupId>
 				<artifactId>git-commit-id-plugin</artifactId>
-				<version>4.9.10</version>
 				<configuration>
 					<commitIdGenerationMode>flat</commitIdGenerationMode>
 					<gitDescribe>
@@ -1304,7 +1195,6 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>buildnumber-maven-plugin</artifactId>
-				<version>3.3.0</version>
 				<configuration>
 					<shortRevisionLength>7</shortRevisionLength>
 					<doCheck>false</doCheck>
@@ -1322,7 +1212,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.12.0</version>
 				<configuration>
 					<doclint>none</doclint>
 					<failOnWarnings>true</failOnWarnings>
@@ -1359,30 +1248,10 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.14</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>report</id>
-						<phase>test</phase>
-						<goals>
-							<goal>report</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
-			<!-- used for mvn versions:display-dependency-updates -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>versions-maven-plugin</artifactId>
-				<version>2.21.0</version>
-				<configuration>
-					<rulesUri>file://${basedir}/version-number-rules.xml</rulesUri>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.owasp</groupId>
@@ -1411,7 +1280,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>3.6.0</version>
 				<dependencies>
 					<dependency>
 						<groupId>com.puppycrawl.tools</groupId>
@@ -1449,7 +1317,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.12.0</version>
 				<configuration>
 					<doclint>none</doclint>
 					<failOnWarnings>true</failOnWarnings>
@@ -1479,5 +1346,4 @@
 			</plugin>
 		</plugins>
 	</reporting>
-
 </project>

@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lido:lido xmlns:lido="http://www.lido-schema.org" xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.lido-schema.org http://www.lido-schema.org/schema/v1.0/lido-v1.0.xsd">
+   <lido:lidoRecID lido:type="http://terminology.lido-schema.org/identifier_type/local_identifier">record_naniweb_455820</lido:lidoRecID>
+   <lido:objectPublishedID lido:type="http://terminology.lido-schema.org/identifier_type/uri">http://sammlungen.uni-goettingen.de/objekt/record_naniweb_455820</lido:objectPublishedID>
+   <lido:objectPublishedID lido:type="http://terminology.lido-schema.org/identifier_type/uri">https://hdl.handle.net/21.11107/8799d6f9-aa07-49a8-b983-000df1369a29</lido:objectPublishedID>
+   <lido:category>
+      <lido:conceptID lido:type="http://terminology.lido-schema.org/identifier_type/uri">http://www.cidoc-crm.org/crm-concepts/#E20</lido:conceptID>
+      <lido:term xml:lang="en">Biological Object</lido:term>
+   </lido:category>
+   <lido:descriptiveMetadata xml:lang="de">
+      <lido:objectClassificationWrap>
+         <lido:objectWorkTypeWrap>
+            <lido:objectWorkType>
+               <lido:conceptID lido:type="URI">http://portal.wissenschaftliche-sammlungen.de/ObjectGenre/276</lido:conceptID>
+               <lido:term>Nasspräparat</lido:term>
+            </lido:objectWorkType>
+         </lido:objectWorkTypeWrap>
+         <lido:classificationWrap>
+            <lido:classification lido:type="Sonstiges">
+               <lido:term>Bromeliacea</lido:term>
+            </lido:classification>
+         </lido:classificationWrap>
+      </lido:objectClassificationWrap>
+      <lido:objectIdentificationWrap>
+         <lido:titleWrap>
+            <lido:titleSet lido:sortorder="1">
+               <lido:appellationValue xml:lang="la">Ananas sativus Schult. fil.</lido:appellationValue>
+            </lido:titleSet>
+         </lido:titleWrap>
+         <lido:repositoryWrap>
+            <lido:repositorySet lido:type="http://terminology.lido-schema.org/repositorySet_type/current_repository_or_location">
+               <lido:repositoryName>
+                  <lido:legalBodyID lido:type="http://terminology.lido-schema.org/identifier_type/uri">http://ld.zdb-services.de/resource/organisations/DE-MUS-106029</lido:legalBodyID>
+                  <lido:legalBodyName>
+                     <lido:appellationValue>Georg-August-Universität Göttingen / Zentrale Kustodie</lido:appellationValue>
+                  </lido:legalBodyName>
+                  <lido:legalBodyWeblink>https://www.uni-goettingen.de/de/440706.html</lido:legalBodyWeblink>
+               </lido:repositoryName>
+               <lido:workID>BNP_2900</lido:workID>
+               <lido:repositoryLocation>
+                  <lido:namePlaceSet>
+                     <lido:appellationValue>Zentrale Kustodie</lido:appellationValue>
+                  </lido:namePlaceSet>
+                  <lido:gml>
+                     <gml:Point>
+                        <gml:pos>51.53803 9.93484</gml:pos>
+                     </gml:Point>
+                  </lido:gml>
+                  <lido:partOfPlace>
+                     <lido:placeID lido:type="http://terminology.lido-schema.org/identifier_type/uri">http://sws.geonames.org/2918632/</lido:placeID>
+                     <lido:namePlaceSet>
+                        <lido:appellationValue />
+                     </lido:namePlaceSet>
+                     <lido:gml>
+                        <gml:Point>
+                           <gml:pos>51.53443 9.93228</gml:pos>
+                        </gml:Point>
+                     </lido:gml>
+                  </lido:partOfPlace>
+               </lido:repositoryLocation>
+            </lido:repositorySet>
+         </lido:repositoryWrap>
+      </lido:objectIdentificationWrap>
+      <lido:objectRelationWrap>
+         <lido:relatedWorksWrap>
+            <lido:relatedWorkSet>
+               <lido:relatedWork>
+                  <lido:displayObject>Botanische Nasspräparate</lido:displayObject>
+                  <lido:object>
+                     <lido:objectID lido:type="http://terminology.lido-schema.org/identifier_type/local_identifier" lido:source="Digitale Sammlung - Kulturerbe Niedersachsen">slg_1040</lido:objectID>
+                     <lido:objectNote lido:type="title">Botanische Nasspräparate</lido:objectNote>
+                  </lido:object>
+               </lido:relatedWork>
+               <lido:relatedWorkRelType>
+                  <lido:term xml:lang="en">collection</lido:term>
+                  <lido:term>Sammlung</lido:term>
+               </lido:relatedWorkRelType>
+            </lido:relatedWorkSet>
+         </lido:relatedWorksWrap>
+      </lido:objectRelationWrap>
+   </lido:descriptiveMetadata>
+   <lido:administrativeMetadata xml:lang="de">
+      <lido:recordWrap>
+         <lido:recordID lido:source="naniweb" lido:type="http://terminology.lido-schema.org/identifier_type/local_identifier">455820</lido:recordID>
+         <lido:recordType>
+            <lido:conceptID lido:type="http://terminology.lido-schema.org/identifier_type/uri">http://terminology.lido-schema.org/recordType/item-level_record</lido:conceptID>
+            <lido:term>Einzelobjekt</lido:term>
+            <lido:term xml:lang="en">item</lido:term>
+         </lido:recordType>
+         <lido:recordSource>
+            <lido:legalBodyName>
+               <lido:appellationValue>dclido</lido:appellationValue>
+            </lido:legalBodyName>
+            <lido:legalBodyWeblink>https://naniweb.gbv.de</lido:legalBodyWeblink>
+         </lido:recordSource>
+         <lido:recordRights>
+            <lido:rightsType>
+               <lido:term>Verwertungsrecht</lido:term>
+            </lido:rightsType>
+            <lido:rightsHolder>
+               <lido:legalBodyID lido:type="http://terminology.lido-schema.org/identifier_type/uri">http://ld.zdb-services.de/resource/organisations/DE-MUS-106029</lido:legalBodyID>
+               <lido:legalBodyName>
+                  <lido:appellationValue>Georg-August-Universität Göttingen / Botanische Präparate</lido:appellationValue>
+               </lido:legalBodyName>
+               <lido:legalBodyWeblink>https://www.uni-goettingen.de/de/440706.html</lido:legalBodyWeblink>
+            </lido:rightsHolder>
+         </lido:recordRights>
+         <lido:recordRights>
+            <lido:rightsType>
+               <lido:conceptID lido:type="http://terminology.lido-schema.org/identifier_type/uri">https://creativecommons.org/publicdomain/zero/1.0/deed.de</lido:conceptID>
+               <lido:term>CC0 1.0 Universell (CC0 1.0)</lido:term>
+               <lido:term xml:lang="en">CC0 1.0 Universal (CC0 1.0)</lido:term>
+            </lido:rightsType>
+         </lido:recordRights>
+         <lido:recordInfoSet lido:type="http://terminology.lido-schema.org/lido00471">
+            <lido:recordMetadataDate lido:type="http://terminology.lido-schema.org/recordMetadataDate_type/created">2018-03-13T10:14:56+01</lido:recordMetadataDate>
+            <lido:recordMetadataDate lido:type="http://terminology.lido-schema.org/recordMetadataDate_type/modified">2019-01-29T11:44:45+01</lido:recordMetadataDate>
+         </lido:recordInfoSet>
+         <lido:recordInfoSet lido:type="http://terminology.lido-schema.org/lido00470">
+            <lido:recordMetadataDate lido:type="http://terminology.lido-schema.org/recordMetadataDate_type/created">2019-11-26T08:10:03+01</lido:recordMetadataDate>
+         </lido:recordInfoSet>
+      </lido:recordWrap>
+      <lido:resourceWrap>
+         <lido:resourceSet lido:sortorder="1">
+            <lido:resourceID lido:type="http://terminology.lido-schema.org/identifier_type/local_identifier" lido:source="naniweb">record_naniweb_455820_media/record_naniweb_455820_6392.jpg</lido:resourceID>
+            <lido:resourceRepresentation lido:type="http://terminology.lido-schema.org/resourceRepresentation_type/provided_representation">
+               <lido:linkResource lido:formatResource="image/jpeg">https://sammlungen.uni-goettingen.de/rest/image/record_naniweb_455820/record_naniweb_455820_6392.jpg/full/full/0/default.jpg</lido:linkResource>
+               <lido:resourceMeasurementsSet>
+                  <lido:measurementType xml:lang="en">width</lido:measurementType>
+                  <lido:measurementUnit xml:lang="en">pixel</lido:measurementUnit>
+                  <lido:measurementValue>2832</lido:measurementValue>
+               </lido:resourceMeasurementsSet>
+               <lido:resourceMeasurementsSet>
+                  <lido:measurementType xml:lang="en">height</lido:measurementType>
+                  <lido:measurementUnit xml:lang="en">pixel</lido:measurementUnit>
+                  <lido:measurementValue>4256</lido:measurementValue>
+               </lido:resourceMeasurementsSet>
+            </lido:resourceRepresentation>
+            <lido:resourceRepresentation lido:type="http://terminology.lido-schema.org/resourceRepresentation_type/preview_representation">
+               <lido:linkResource lido:formatResource="image/jpeg">https://sammlungen.uni-goettingen.de/rest/image/record_naniweb_455820/record_naniweb_455820_6392.jpg/full/300,/0/default.jpg</lido:linkResource>
+               <lido:resourceMeasurementsSet>
+                  <lido:measurementType xml:lang="en">width</lido:measurementType>
+                  <lido:measurementUnit xml:lang="en">pixel</lido:measurementUnit>
+                  <lido:measurementValue>300</lido:measurementValue>
+               </lido:resourceMeasurementsSet>
+               <lido:resourceMeasurementsSet>
+                  <lido:measurementType xml:lang="en">height</lido:measurementType>
+                  <lido:measurementUnit xml:lang="en">pixel</lido:measurementUnit>
+                  <lido:measurementValue>451</lido:measurementValue>
+               </lido:resourceMeasurementsSet>
+            </lido:resourceRepresentation>
+            <lido:resourceDateTaken>
+               <lido:displayDate>19. Dezember 2011</lido:displayDate>
+               <lido:date>
+                  <lido:earliestDate>2011-12-19</lido:earliestDate>
+                  <lido:latestDate>2011-12-19</lido:latestDate>
+               </lido:date>
+            </lido:resourceDateTaken>
+            <lido:rightsResource>
+               <lido:rightsType>
+                  <lido:term>Urheberrecht</lido:term>
+               </lido:rightsType>
+               <lido:rightsHolder>
+                  <lido:legalBodyName>
+                     <lido:appellationValue>Stefan Eckardt</lido:appellationValue>
+                  </lido:legalBodyName>
+               </lido:rightsHolder>
+            </lido:rightsResource>
+            <lido:rightsResource>
+               <lido:rightsType>
+                  <lido:term>Verwertungsrecht</lido:term>
+               </lido:rightsType>
+               <lido:rightsHolder>
+                  <lido:legalBodyID lido:type="http://terminology.lido-schema.org/identifier_type/uri">http://ld.zdb-services.de/resource/organisations/DE-MUS-106029</lido:legalBodyID>
+                  <lido:legalBodyName>
+                     <lido:appellationValue>Georg-August-Universität Göttingen / Botanische Präparate</lido:appellationValue>
+                  </lido:legalBodyName>
+                  <lido:legalBodyWeblink>https://www.uni-goettingen.de/de/440706.html</lido:legalBodyWeblink>
+               </lido:rightsHolder>
+            </lido:rightsResource>
+            <lido:rightsResource>
+               <lido:rightsType>
+                  <lido:conceptID lido:type="http://terminology.lido-schema.org/identifier_type/uri">https://creativecommons.org/licenses/by-sa/4.0/deed.de</lido:conceptID>
+                  <lido:term>Namensnennung - Weitergabe unter gleichen Bedingungen 4.0 International (CC BY-SA 4.0)</lido:term>
+                  <lido:term xml:lang="en">Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)</lido:term>
+               </lido:rightsType>
+            </lido:rightsResource>
+         </lido:resourceSet>
+      </lido:resourceWrap>
+   </lido:administrativeMetadata>
+</lido:lido>

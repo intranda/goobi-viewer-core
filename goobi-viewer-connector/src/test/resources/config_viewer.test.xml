@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- intranda viewer 2.x configuration file (for unit tests) -->
+<!-- It is important that the encoding of the file is UTF-8, otherwise there 
+	might be problems with german umlauts in the rss feed section -->
+
+
+<config>
+
+    <configFolder>src/test/resources/</configFolder>
+
+    <!-- stopwordsFile: location of the stopword.txt file used in Solr -->
+    <stopwordsFile>src/test/resources/stopwords.txt</stopwordsFile>
+
+	<!-- ##### COLLECTION CONFIGURATION ##### -->
+	<collections>
+		<collection field="DC">
+			<!-- Collection names listed here are hidden in the collection view. It 
+				is not consistent used in RSS feed, search, tag clouds etc. and hits from 
+				this collection may appear there as well. -->
+			<blacklist>
+				<collection>collection1</collection>
+				<collection>collection2</collection>
+			</blacklist>
+		</collection>
+        <collection field="MD_OTHERCOLLECTION">
+            <!-- Collection names listed here are hidden in the collection view. It 
+                is not consistent used in RSS feed, search, tag clouds etc. and hits from 
+                this collection may appear there as well. -->
+            <blacklist>
+                <collection>collection3</collection>
+                <collection>collection4</collection>
+            </blacklist>
+        </collection>
+	</collections>
+
+</config>
+
+

@@ -40,14 +40,14 @@ RUN ["/bin/bash", "-c", "mkdir -p /opt/digiverso/{config/bin,indexer,logs,viewer
 RUN ["/bin/bash", "-c", "mkdir -p /viewer-template/{config,oai}" ]
 RUN mkdir -p ${CATALINA_HOME}/conf/Catalina/localhost/ && mkdir -p ${CATALINA_HOME}/webapps/viewer
 
-COPY goobi-viewer-core-config/src/main/resources/docker/setenv.sh ${CATALINA_HOME}/bin/setenv.sh
-COPY goobi-viewer-core-config/src/main/resources/install/ /viewer-template/config
-COPY goobi-viewer-core-config/src/main/resources/docker/stopwords /stopwords
-COPY goobi-viewer-core-config/src/main/resources/docker/viewer.xml.template ${CATALINA_HOME}/conf/
-COPY goobi-viewer-core-config/src/main/resources/docker/disable_dev_options.patch /viewer-template/
-COPY goobi-viewer-core-config/src/main/resources/docker/insert_theme_preresource.patch.template /viewer-template/
+COPY goobi-viewer-config/docker/setenv.sh ${CATALINA_HOME}/bin/setenv.sh
+COPY goobi-viewer-config/install/ /viewer-template/config
+COPY goobi-viewer-config/docker/stopwords /stopwords
+COPY goobi-viewer-config/docker/viewer.xml.template ${CATALINA_HOME}/conf/
+COPY goobi-viewer-config/docker/disable_dev_options.patch /viewer-template/
+COPY goobi-viewer-config/docker/insert_theme_preresource.patch.template /viewer-template/
 
-RUN --mount=type=bind,source=goobi-viewer-core-config/src/main/resources/docker,target=/tmp/patches,readonly \
+RUN --mount=type=bind,source=goobi-viewer-config/docker,target=/tmp/patches,readonly \
     patch --output=${CATALINA_HOME}/conf/server.xml.template ${CATALINA_HOME}/conf/server.xml < /tmp/patches/server.xml.patch && \
     patch --output=${CATALINA_HOME}/conf/context.xml.template ${CATALINA_HOME}/conf/context.xml < /tmp/patches/context.xml.patch
 
@@ -59,7 +59,7 @@ COPY --from=build-stage  /viewer/goobi-viewer-theme-reference/target/viewer.war 
 
 RUN unzip /viewer.war -d ${CATALINA_HOME}/webapps/viewer && rm /viewer.war
 
-COPY goobi-viewer-core-config/src/main/resources/docker/run.sh /
+COPY goobi-viewer-config/docker/run.sh /
 
 EXPOSE 8080
 EXPOSE 8009

@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <!-- viewerConfigFolder: contains local configuration files, i.e. this file with local modifications that override the global one -->
+    <viewerConfigFolder>src/test/resources</viewerConfigFolder>
+    
+	<identifyTags>
+		<repositoryName>OAI Frontend</repositoryName>
+		<baseURL useInRequestElement="true">http://localhost:8080/viewer/oai</baseURL>
+		<protocolVersion> 2.0</protocolVersion>
+		<adminEmail>admin@example.com</adminEmail>
+		<deletedRecord>transient</deletedRecord>
+		<granularity>YYYY-MM-DDThh:mm:ssZ</granularity>
+        <description>Lorem ipsum dolor sit amet</description>
+	</identifyTags>
+
+	<oai-identifier>
+		<namespace>http://www.openarchives.org/OAI/2.0/</namespace>
+		<repositoryIdentifier>repo</repositoryIdentifier>
+	</oai-identifier>
+
+	<solr>
+		<hitsPerToken>23</hitsPerToken>
+		<solrUrl>https://viewer-testing-index.goobi.io/solr/collection1</solrUrl>
+	</solr>
+	<oaiFolder>src/test/resources/oai/</oaiFolder>
+	<resumptionTokenFolder>src/test/resources/oai/token/</resumptionTokenFolder>
+	<urnResolverUrl>http://localhost/viewer/resolver?urn=</urnResolverUrl>
+	<piResolverUrl>http://localhost/viewer/piresolver?id=</piResolverUrl>
+	<!-- documentResolverUrl: URL to the METS/LIDO resolver -->
+	<documentResolverUrl>http://localhost/viewer/metsresolver?id=</documentResolverUrl>
+    <!-- harvestUrl: URL for havesting overview page and crowdsourcing updates -->
+    <harvestUrl>http://localhost/viewer/harvest</harvestUrl>
+    <!-- restApiUrl: Goobi viewer REST API for full-text/ALTO/TEI/CMDI and TOC retrieval -->
+    <restApiUrl>http://localhost/viewer/api/v1/</restApiUrl>
+    
+    <oai_dc>
+        <enabled>true</enabled>
+        <hitsPerToken>11</hitsPerToken>
+        <fields>
+            <template name="_DEFAULT">
+                <metadata label="title" value="{0}">
+                    <param type="field" key="MD_TITLE" />
+                </metadata>
+                <metadata label="creator" value="{0}">
+                    <param type="field" key="MD_CREATOR" />
+                </metadata>
+                <metadata label="subject" value="{0}">
+                    <param type="translatedfield" key="DC" />
+                </metadata>
+                <metadata label="publisher" value="{0}">
+                    <param type="field" key="MD_PUBLISHER" dontUseTopstructValue="false" />
+                </metadata>
+                <metadata label="date" value="{0}">
+                    <param type="field" key="MD_YEARPUBLISH" dontUseTopstructValue="false" />
+                </metadata>
+                <metadata label="type" value="{0}">
+                    <param type="translatedfield" key="DOCSTRCT" />
+                </metadata>
+                <metadata label="type" value="text" />
+                <metadata label="format" value="image/jpeg" />
+                <metadata label="format" value="application/pdf" />
+                <metadata label="identifier" value="#AUTO#" />
+                <metadata label="source" value="#AUTO#" />
+                <metadata label="rights" value="#AUTO#" />
+                <!--
+                <metadata label="url" value="http://localhost:8080/viewer/image/{0}/{1}/">
+                    <param type="field" key="PI_TOPSTRUCT" />
+                    <param type="field" key="THUMBPAGENO" />
+                </metadata>
+                -->
+                <metadata label="fulltext" value="#AUTO#" />
+                <metadata label="description" value="#TOC#" />
+            </template>
+        </fields>
+        <setSpec>
+            <field>DC</field>
+            <field>DOCSTRCT</field>
+        </setSpec>
+        <accessConditions>
+            <mapping accessCondition="Public Domain Mark 1.0">info:eu-repo/semantics/openAccess</mapping>
+            <mapping accessCondition="Rechte vorbehalten - Freier Zugang">info:eu-repo/semantics/openAccess</mapping>
+        </accessConditions>
+    </oai_dc>
+
+	<!-- ese: Value configuration for mandatory ESE fields -->
+	<ese>
+        <enabled>true</enabled>
+        <hitsPerToken>12</hitsPerToken>
+		<!-- types: Mapping of docstruct types to pre-defined values for europeana:type 
+			(@name: dostruct type; @type: ESE type) -->
+		<types>
+			<docstruct name="video" type="VIDEO" />
+			<docstruct name="audio" type="SOUND" />
+			<docstruct name="image" type="IMAGE" />
+			<docstruct name="picture" type="IMAGE" />
+			<docstruct name="painting" type="IMAGE" />
+			<docstruct name="museum_object" type="3D" />
+		</types>
+		<!-- providerField: Solr field that contains the value for europeana:provider -->
+		<providerField>MD_ACCESSCONDITIONCOPYRIGHT</providerField>
+		<!-- dataProviderField: Solr field that contains the value for europeana:dataProvider -->
+		<dataProviderField>MD_DEFAULTPROVIDER</dataProviderField>
+		<!-- defaultProvider: static default value for europeana:provider and europeana:dataProvider, 
+			in case any of the configured Solr fields provide no value -->
+		<defaultProvider>Institution XYZ</defaultProvider>
+		<!-- rightsField: Solr field that contains the value for europeana:rights 
+			(value must be a URI) -->
+		<rightsField>TODO</rightsField>
+		<!-- defaultRightsUrl: static default value for europeana:rights, in case 
+			the configured Solr field provides no value -->
+		<defaultRightsUrl>http://www.example.com/rights</defaultRightsUrl>
+	</ese>
+	
+    <mets>
+        <enabled>true</enabled>
+        <hitsPerToken>13</hitsPerToken>
+        <metsDirectory>viewer/indexed_mets/</metsDirectory>
+    </mets>
+    
+    <lido>
+        <enabled>true</enabled>
+        <hitsPerToken>14</hitsPerToken>
+        <lidoDirectory>/opt/digiverso/viewer/indexed_lido/</lidoDirectory>
+    </lido>
+	
+    <marcxml>
+        <enabled>true</enabled>
+        <hitsPerToken>15</hitsPerToken>
+        <!-- Path to MARC to MODS XSLT; Local XSLT files must be inside <oaiFolder> -->
+        <marcStylesheet>src/test/resources/oai/MODS2MARC21slim.xsl</marcStylesheet>
+    </marcxml>
+	
+	<epicur>
+        <enabled>true</enabled>
+        <hitsPerToken>16</hitsPerToken>
+	    <!-- additionalDocstructs: Docstructs whose URNs shall also be returned via Xepicur in addition to topstructs -->
+	    <additionalDocstructTypes>
+	        <docstruct>Article</docstruct>
+            <docstruct>Photograph</docstruct>
+	    </additionalDocstructTypes>
+        <blacklist>
+            <urnPrefix>urn:nbn:de:test_</urnPrefix>
+            <urnPrefix>urn:nbn:de:hidden_</urnPrefix>
+        </blacklist>
+	</epicur>
+	
+    <iv_overviewpage>
+        <enabled>true</enabled>
+        <hitsPerToken>17</hitsPerToken>
+    </iv_overviewpage>
+    
+    <iv_crowdsourcing>
+        <enabled>true</enabled>
+        <hitsPerToken>18</hitsPerToken>
+    </iv_crowdsourcing>
+    
+    <tei>
+        <enabled>true</enabled>
+        <hitsPerToken>10</hitsPerToken>
+        <versionDiscriminatorField>LANGUAGE</versionDiscriminatorField>
+    </tei>
+    
+    <cmdi>
+        <enabled>true</enabled>
+        <hitsPerToken>10</hitsPerToken>
+    </cmdi>
+
+	<sets>
+	    <allValuesSet translate="false">DC</allValuesSet>
+	    <allValuesSet>MD_WISSENSGEBIET</allValuesSet>
+		<set setName="test" setSpec="testspec" setQuery="DC:a.b.c.d" />
+	</sets>
+	
+	<!-- defaultLocale: Locale to be used for value translations. Default is 'en'. -->
+	<defaultLocale>de</defaultLocale>
+</config>

@@ -17,42 +17,325 @@
 	</scm>
 
 	<modules>
-		<module>goobi-viewer-core-config</module>
+		<module>goobi-viewer-config</module>
 		<module>goobi-viewer-core</module>
 		<module>goobi-viewer-connector</module>
 		<module>goobi-viewer-theme-reference</module>
 	</modules>
 
-	<properties>
-		<revision>25.11-SNAPSHOT</revision>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<failOnSnapshot>false</failOnSnapshot>
-	</properties>
-
 	<repositories>
 		<repository>
-			<id>intranda-public</id>
-			<url>https://nexus.intranda.com/repository/maven-public</url>
+			<id>intranda-nexus</id>
+			<url>${nexus.repository.url}</url>
 		</repository>
 	</repositories>
 
-	<distributionManagement>
-		<repository>
-			<id>intranda-releases</id>
-			<url>https://nexus.intranda.com/repository/maven-releases</url>
-		</repository>
-		<snapshotRepository>
-			<id>intranda-snapshots</id>
-			<url>https://nexus.intranda.com/repository/maven-snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
+	<properties>
+		<revision>dev-SNAPSHOT</revision>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<failOnSnapshot>false</failOnSnapshot>
+		<nexus.repository.url>https://nexus.intranda.com/repository/maven-public</nexus.repository.url>
+
+		<!-- Common build settings -->
+		<maven.compiler.release>21</maven.compiler.release>
+		<skipTests>true</skipTests>
+		<skipDependencyCheck>true</skipDependencyCheck>
+		<skipCheckstyle>true</skipCheckstyle>
+		<checkstyle.max.violations>0</checkstyle.max.violations>
+		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
+		<buildDate>${maven.build.timestamp}</buildDate>
+
+		<!-- Sonar (shared) -->
+		<sonar.organization>intranda</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		<sonar.java.source>21</sonar.java.source>
+		<sonar.java.target>21</sonar.java.target>
+
+		<!-- Shared dependency versions (later of the previous drifts preferred) -->
+		<checkstyle.version>13.4.0</checkstyle.version>
+		<commons-configuration2.version>2.14.0</commons-configuration2.version>
+		<commons-io.version>2.21.0</commons-io.version>
+		<commons-jxpath.version>1.4.0</commons-jxpath.version>
+		<commons-lang3.version>3.20.0</commons-lang3.version>
+		<epubconvert.version>1.1.2</epubconvert.version>
+		<httpclient.version>4.5.14</httpclient.version>
+		<httpcore.version>4.4.16</httpcore.version>
+		<jakarta.servlet-api.version>6.0.0</jakarta.servlet-api.version>
+		<jakarta.transaction-api.version>2.0.1</jakarta.transaction-api.version>
+		<jackson.version>2.21.2</jackson.version>
+		<jdom2.version>2.0.6.1</jdom2.version>
+		<json.version>20251224</json.version>
+		<junit.version>6.0.3</junit.version>
+		<log4j.version>2.25.4</log4j.version>
+		<netty.version>4.1.119.Final</netty.version>
+		<solr.version>9.10.1</solr.version>
+
+		<!-- Shared plugin versions -->
+		<maven-enforcer-plugin.version>3.6.2</maven-enforcer-plugin.version>
+		<maven-dependency-plugin.version>3.10.0</maven-dependency-plugin.version>
+		<maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
+		<maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
+		<maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
+		<maven-war-plugin.version>3.4.0</maven-war-plugin.version>
+		<maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
+		<maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
+		<maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
+		<git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
+		<buildnumber-maven-plugin.version>3.3.0</buildnumber-maven-plugin.version>
+		<jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
+		<versions-maven-plugin.version>2.21.0</versions-maven-plugin.version>
+		<dependency-check-maven.version>12.2.0</dependency-check-maven.version>
+		<flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<!-- JUnit BOM (shared by core and connector) -->
+			<dependency>
+				<groupId>org.junit</groupId>
+				<artifactId>junit-bom</artifactId>
+				<version>${junit.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+			<!-- Jackson BOM: aligns jackson-core/databind/annotations/dataformat/datatype to a single release train -->
+			<dependency>
+				<groupId>com.fasterxml.jackson</groupId>
+				<artifactId>jackson-bom</artifactId>
+				<version>${jackson.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+			<!-- Shared direct dependencies between core and connector -->
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-configuration2</artifactId>
+				<version>${commons-configuration2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>${commons-io.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-jxpath</groupId>
+				<artifactId>commons-jxpath</artifactId>
+				<version>${commons-jxpath.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>${commons-lang3.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.intranda.digiverso.convert</groupId>
+				<artifactId>epubconvert</artifactId>
+				<version>${epubconvert.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpclient</artifactId>
+				<version>${httpclient.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpcore</artifactId>
+				<version>${httpcore.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.servlet</groupId>
+				<artifactId>jakarta.servlet-api</artifactId>
+				<version>${jakarta.servlet-api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.transaction</groupId>
+				<artifactId>jakarta.transaction-api</artifactId>
+				<version>${jakarta.transaction-api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jdom</groupId>
+				<artifactId>jdom2</artifactId>
+				<version>${jdom2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.json</groupId>
+				<artifactId>json</artifactId>
+				<version>${json.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-api</artifactId>
+				<version>${log4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.solr</groupId>
+				<artifactId>solr-solrj</artifactId>
+				<version>${solr.version}</version>
+			</dependency>
+
+			<!-- Force log4j-core to the same version as log4j-api to avoid transitive downgrades (CVE-2025-68161) -->
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-core</artifactId>
+				<version>${log4j.version}</version>
+			</dependency>
+
+			<!-- Force netty to a consistent version across all transitive sources (mockserver pulls in older 4.1.86,
+			     AWS SDK and ZooKeeper need newer versions; nearest-wins would otherwise downgrade them - CVE-2023-44487 etc.) -->
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-buffer</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-codec</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-codec-http</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-codec-http2</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-common</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-handler</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-resolver</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-transport</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-transport-native-unix-common</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-enforcer-plugin</artifactId>
+					<version>${maven-enforcer-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>${maven-dependency-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>${maven-compiler-plugin.version}</version>
+					<configuration>
+						<compilerArgs>
+							<arg>-proc:full</arg>
+							<arg>-Xlint:deprecation</arg>
+							<arg>-Xlint:unchecked</arg>
+						</compilerArgs>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>${maven-surefire-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>${maven-jar-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-war-plugin</artifactId>
+					<version>${maven-war-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>${maven-resources-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>${maven-javadoc-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-checkstyle-plugin</artifactId>
+					<version>${maven-checkstyle-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>pl.project13.maven</groupId>
+					<artifactId>git-commit-id-plugin</artifactId>
+					<version>${git-commit-id-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>buildnumber-maven-plugin</artifactId>
+					<version>${buildnumber-maven-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.jacoco</groupId>
+					<artifactId>jacoco-maven-plugin</artifactId>
+					<version>${jacoco-maven-plugin.version}</version>
+					<executions>
+						<execution>
+							<goals>
+								<goal>prepare-agent</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>report</id>
+							<phase>test</phase>
+							<goals>
+								<goal>report</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>versions-maven-plugin</artifactId>
+					<version>${versions-maven-plugin.version}</version>
+					<configuration>
+						<rulesUri>file://${basedir}/version-number-rules.xml</rulesUri>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.owasp</groupId>
+					<artifactId>dependency-check-maven</artifactId>
+					<version>${dependency-check-maven.version}</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
-				<version>3.6.2</version>
 				<executions>
 					<execution>
 						<id>enforce-maven</id>
@@ -76,7 +359,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>flatten-maven-plugin</artifactId>
-				<version>1.6.0</version>
+				<version>${flatten-maven-plugin.version}</version>
 				<configuration>
 					<updatePomFile>true</updatePomFile>
 					<flattenMode>resolveCiFriendliesOnly</flattenMode>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+    <urls>
+        <!--
+        <metadata>
+            <sourcefile>http://localhost:8080/viewer/sourcefile?id=</sourcefile>
+            <marc>http://localhost:8080/viewer/oai?verb=GetRecord&amp;metadataPrefix=marcxml&amp;identifier=</marc>
+            <dc>http://localhost:8080/viewer/oai?verb=GetRecord&amp;metadataPrefix=oai_dc&amp;identifier=</dc>
+            <ese>http://localhost:8080/viewer/oai?verb=GetRecord&amp;metadataPrefix=europeana&amp;identifier=</ese>
+        </metadata>
+
+        <contentServerWrapper>http://localhost:8080/viewer/content/</contentServerWrapper>
+        <download>http://localhost:8080/viewer/download/</download>
+        <rest>http://localhost:8080/viewer/api/v1/</rest>
+        <connectorVersion>http://localhost:8080/oai/tools?action=getVersion</connectorVersion>
+        -->
+    </urls>
+
+    <viewer>
+        <!--<theme mainTheme="reference" discriminatorField="">
+            &lt;!&ndash; <rootPath>/opt/digiverso/viewer/themes/goobi-viewer-theme-mytheme/goobi-viewer-theme-mytheme/WebContent/resources/themes/</rootPath> &ndash;&gt;
+        </theme>-->
+    </viewer>
+
+    <rss>
+        <numberOfItems>50</numberOfItems>
+        <title>Goobi viewer RSS Feed</title>
+        <description>new items</description>
+        <copyright>(c) Goobi viewer using institution </copyright>
+    </rss>
+
+    <webapi>
+        <authorization>
+            <!--<token>test</token>-->
+        </authorization>
+    </webapi>
+
+    <performance>
+        <databaseConnectionAttempts>100</databaseConnectionAttempts>
+    </performance>
+</config>

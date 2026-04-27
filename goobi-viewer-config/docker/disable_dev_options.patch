@@ -1,0 +1,11 @@
+--- context.xml	2025-02-27 15:01:06.865323378 +0100
++++ context.xml.new	2025-02-27 15:00:14.283876846 +0100
+@@ -32,8 +32,4 @@
+     <!-- Set mode for the JSESSONID cookie. Google authentication needs "lax" -->
+     <CookieProcessor sameSiteCookies="${TOMCAT_SAMESITECOOKIES}" />
+-
+-    <!-- JSF developer options -->
+-    <Parameter name="jakarta.faces.PROJECT_STAGE" value="Development"/>
+-    <Parameter name="jakarta.faces.FACELETS_REFRESH_PERIOD" value="0"/>
+
+ </Context>

@@ -1,0 +1,55 @@
+--- server.xml	2025-02-27 15:05:19.417267776 +0100
++++ server.xml.new	2025-02-27 15:05:04.423113360 +0100
+@@ -67,11 +67,13 @@
+          AJP  Connector: /docs/config/ajp.html
+          Define a non-SSL/TLS HTTP/1.1 Connector on port 8080
+     -->
++    <!--
+     <Connector port="8080" protocol="HTTP/1.1"
+                connectionTimeout="20000"
+                redirectPort="8443"
+                maxParameterCount="1000"
+                />
++    -->
+     <!-- A "Connector" using the shared thread pool-->
+     <!--
+     <Connector executor="tomcatThreadPool"
+@@ -111,6 +113,22 @@
+                />
+     -->
+ 
++    <Connector address="0.0.0.0" port="8080" protocol="HTTP/1.1"
++               server=" "
++               connectionTimeout="20000"
++               maxThreads="400"
++               URIEncoding="UTF-8"
++               enableLookups="false"
++               disableUploadTimeout="true"
++               proxyName="${VIEWER_DOMAIN}"
++               proxyPort="80" />
++
++    <Connector address="0.0.0.0" port="8009" protocol="AJP/1.3"
++               secretRequired="false"
++               connectionTimeout="20000"
++               maxThreads="400"
++               URIEncoding="UTF-8" />
++
+     <!-- An Engine represents the entry point (within Catalina) that processes
+          every request.  The Engine implementation for Tomcat stand alone
+          analyzes the HTTP headers included with the request, and passes them
+@@ -152,10 +170,15 @@
+         <!-- Access log processes all example.
+              Documentation at: /docs/config/valve.html
+              Note: The pattern used is equivalent to using pattern="common" -->
++        <!--
+         <Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs"
+                prefix="localhost_access_log" suffix=".txt"
+                pattern="%h %l %u %t &quot;%r&quot; %s %b" />
++        -->
+ 
++        <Valve className="org.apache.catalina.valves.CrawlerSessionManagerValve"
++               crawlerUserAgents=".*[bB]ot.*|.*Yahoo! Slurp.*|.*Feedfetcher-Google.*|.*Apache-HttpClient.*|.*[Ss]pider.*|.*[Cc]rawler.*|.*nagios.*|.*Yandex.*|.*facebookexternalhit.*|.*bytedance.com.*|.*Turnitin.*|.*GoogleOther.*|.*python-requests.*|.*check_http.*"
++               sessionInactiveInterval="60"/>
+       </Host>
+     </Engine>
+   </Service>

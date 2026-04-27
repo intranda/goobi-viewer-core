@@ -1,0 +1,2538 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- Goobi viewer configuration file -->
+<!-- It is important that the encoding of the file is UTF-8, otherwise there
+     might be problems with german umlauts in the rss feed section -->
+
+
+<config>
+    <!-- configFolder: contains local configuration files, i.e. this file with local modifications that override the global one -->
+    <configFolder>/opt/digiverso/viewer/config/</configFolder>
+
+    <!-- viewerHome: root path of (usually) all viewer data -->
+    <viewerHome>/opt/digiverso/viewer/</viewerHome>
+
+    <!-- dataRepositoriesHome: root folder for data repositories -->
+    <dataRepositoriesHome>/opt/digiverso/viewer/data/</dataRepositoriesHome>
+
+    <!-- indexedMetsFolder: contains indexed mets files (used by the METS resolver) -->
+    <indexedMetsFolder>indexed_mets</indexedMetsFolder>
+
+    <!-- indexedLidoFolder: contains indexed lido files (used by the LIDO resolver) -->
+    <indexedLidoFolder>indexed_lido</indexedLidoFolder>
+
+    <!-- indexedDenkxwebFolder: contains indexed DenkXweb files (used by the DenkXweb resolver) -->
+    <indexedDenkxwebFolder>indexed_denkxweb</indexedDenkxwebFolder>
+
+    <!--indexedDublinCore: contains indexed dublin core files -->
+    <indexedDublinCoreFolder>indexed_dublincore</indexedDublinCoreFolder>
+
+    <!-- mediaFolder: contains media files that are displayed in the Goobi viewer (images, audio, video) -->
+    <mediaFolder>media</mediaFolder>
+
+    <!-- sourceContentFolder: contains born-digital material that was uploaded in the Goobi viewer (see <sidebar/sidebarWidgetAdditionalFiles> also) -->
+    <origContentFolder>source</origContentFolder>
+
+    <!-- pdfFolder: contains pre-generated PDFs -->
+    <pdfFolder>pdf</pdfFolder>
+
+    <!-- cmsMediaFolder: contains media files uploaded for CMS -->
+    <cmsMediaFolder>cms_media</cmsMediaFolder>
+
+    <!-- cmsTextFolder: contains extracted CMS page texts for indexing -->
+    <cmsTextFolder>cms</cmsTextFolder>
+
+    <!-- altoFolder: contains ALTO files -->
+    <altoFolder>alto</altoFolder>
+
+    <!-- altoCrowdsourcingFolder: contains ALTO files from crowdsourcing -->
+    <altoCrowdsourcingFolder>alto_crowd</altoCrowdsourcingFolder>
+
+    <!-- abbyyFolder: contains ABBYY XML files -->
+    <abbyyFolder>abbyy</abbyyFolder>
+
+    <!-- fulltextFolder: contains plain full-text files -->
+    <fulltextFolder>fulltext</fulltextFolder>
+
+    <!-- fulltextCrowdsourcingFolder: contains plain full-text files from crowdsourcing -->
+    <fulltextCrowdsourcingFolder>fulltext_crowd</fulltextCrowdsourcingFolder>
+
+    <!-- teiFolder: contains TEI metadata/fulltext files -->
+    <teiFolder>tei</teiFolder>
+
+    <!-- cmdiFolder: contains CMDI metadata/fulltext files -->
+    <cmdiFolder>cmdi</cmdiFolder>
+
+    <!-- annotationFolder: contains JSON files of annotations for indexing -->
+    <annotationFolder>annotations</annotationFolder>
+
+    <!-- hotfolder: defines the hotfolder from the Goobi viewer Indexer -->
+    <hotfolder>/opt/digiverso/viewer/hotfolder/</hotfolder>
+
+    <!-- stopwordsFile: location of the stopword.txt file used in Solr -->
+    <stopwordsFile>/opt/digiverso/viewer/config/stopwords.txt</stopwordsFile>
+
+    <urls>
+        <metadata>
+            <!-- sourcefile: Path to source file via the internal resolver  -->
+            <sourcefile>http://localhost:8080/viewer/sourcefile?id=</sourcefile>
+            <!-- marc: Path to MarcXML-record via OAI for linking in bibliographic data -->
+            <marc>http://localhost:8080/viewer/oai?verb=GetRecord&amp;metadataPrefix=marcxml&amp;identifier=</marc>
+            <!-- dc: Path to DublinCore record via OAI for linking in bibliographic data -->
+            <dc>http://localhost:8080/viewer/oai?verb=GetRecord&amp;metadataPrefix=oai_dc&amp;identifier=</dc>
+            <!-- ese: Path to ESE record via OAI for linking in bibliographic data -->
+            <ese>http://localhost:8080/viewer/oai?verb=GetRecord&amp;metadataPrefix=europeana&amp;identifier=</ese>
+        </metadata>
+
+        <!-- solr: URL to the Solr index core -->
+        <solr>http://localhost:8983/solr/collection1</solr>
+
+        <!-- dfg-viewer: absolute path to DFG-Viewer for linking in bibliographic data.
+            @sourcefileField can contain an optional Solr index field containing a custom record file URL -->
+        <dfg-viewer sourcefileField="">https://dfg-viewer.de/show?set[mets]=</dfg-viewer>
+
+        <!-- rest: REST service URL from which internal Goobi viewer resources are requested -->
+        <rest>http://localhost:8080/viewer/api/v1/</rest>
+
+        <!-- workflow: REST service URL of Goobi workflow -->
+        <workflow>https://workflow.example.org/goobi/api/</workflow>
+
+        <!-- DEVELOPERS ONLY.
+             SHOULD BE COMMENTED OUT ON CUSTOMER SYSTEMS.
+
+             Rest endpoint for content data. Requests images from records via iiif image api.
+             This is needed if developers use remote images in their local running Goobi viewer development environment
+        <iiif useForCmsMedia="true">http://localhost:8080/viewer/api/v1/</iiif>
+        -->
+
+        <!-- download: Base URLss to access download pages for PDF and ePub downloads -->
+        <download>http://localhost:8080/viewer/download/</download>
+
+        <!-- urnResolver: The default internal URN resolver can be replaced with an external URL (to be used for canonical URLs) -->
+        <!-- <urnResolver>http://nbn-resolving.de/</urnResolver> -->
+    </urls>
+
+
+    <user>
+        <!-- registration/@enabled: If true, widgets for user registration / password retrieval are displayed. Default is true. -->
+        <registration enabled="true" />
+
+        <!-- securityQuestions: Configure the is-it-human questions and possible answers. Used when registering new user accounts and within the feedback form -->
+        <securityQuestions>
+            <question key="user__security_question__1">
+                <allowedAnswer>blau</allowedAnswer>
+                <allowedAnswer>blue</allowedAnswer>
+            </question>
+            <question key="user__security_question__2">
+                <allowedAnswer>6</allowedAnswer>
+                <allowedAnswer>sechs</allowedAnswer>
+                <allowedAnswer>six</allowedAnswer>
+            </question>
+            <question key="user__security_question__3">
+                <allowedAnswer>b</allowedAnswer>
+                <allowedAnswer>t</allowedAnswer>
+            </question>
+            <question key="user__security_question__4">
+                <allowedAnswer>Mai</allowedAnswer>
+                <allowedAnswer>May</allowedAnswer>
+            </question>
+            <question key="user__security_question__5">
+                <allowedAnswer>1000</allowedAnswer>
+            </question>
+            <question key="user__security_question__6">
+                <allowedAnswer>5</allowedAnswer>
+                <allowedAnswer>fünf</allowedAnswer>
+                <allowedAnswer>five</allowedAnswer>
+                <allowedAnswer>cinco</allowedAnswer>
+            </question>
+            <question key="user__security_question__7">
+                <allowedAnswer>3</allowedAnswer>
+                <allowedAnswer>drei</allowedAnswer>
+                <allowedAnswer>three</allowedAnswer>
+                <allowedAnswer>tres</allowedAnswer>
+            </question>
+            <question key="user__security_question__8">
+                <allowedAnswer>grün</allowedAnswer>
+                <allowedAnswer>green</allowedAnswer>
+            </question>
+        </securityQuestions>
+
+        <!-- List of authentication providers. Each <provider> element defines an authentication provider.
+             Possible attributes for providers are: type, enabled, name, label, endpoint (auth URL), tokenEndpoint (defaults to @endpoint/token), redirectionEndpoint (defaults to currentUrl/oauth), scope, parameterType, parameterName, image, timeout. -->
+        <authenticationProviders>
+            <provider type="local" enabled="true" name="Goobi viewer" />
+            <provider type="openId" enabled="true" name="Google" endpoint="https://accounts.google.com/o/oauth2/auth" clientId="CHANGEME" clientSecret="CHANGEME" image="google.png" />
+            <provider type="openId" enabled="false" name="Facebook" label="CHANGEME" endpoint="https://www.facebook.com/dialog/oauth" clientId="" clientSecret="" image="facebook.png" />
+            <provider type="openId" enabled="false" name="OIDC" endpoint="https://idp.example.org/oauth20/authorize" tokenEndpoint="https://m2m.example.org/oauth20/token" redirectionEndpoint="https://viewer-admin.example.org/oauth/" scope="openid email" clientId="CHANGEME" clientSecret="CHANGEME" />
+            <provider type="userPassword" enabled="false" name="VuFind" label="CHANGEME" endpoint="https://vuFind.example/Api/User/Auth" image="vufind.png" timeout="7000" />
+            <provider type="httpHeader" enabled="false" name="Shibboleth" parameterType="attribute" parameterName="shib-email" endpoint="https://viewer.example.org/api/v1/auth/header" />
+            <!-- Whitelist of hosts allowed for redirect after HTTP header login. If empty, only the application's own URL is allowed. -->
+            <redirectWhitelist>
+                <!-- <host>sso.example.org</host> -->
+            </redirectWhitelist>
+        </authenticationProviders>
+
+        <!-- SMTP configuration. 'smtpSenderName' (defaults to the value of 'smtpSenderAddress'),
+             'smtpPort' (defaults to 25 for NONE and STARTTLS and 465 for SSL) as well as
+             'smtpSecurity' (defaults to NONE, possible other values are SSL and STARTTLS) are optional,
+             all others are mandatory and have no default value. -->
+        <smtpServer>localhost</smtpServer>
+        <!-- <smtpPort>25</smtpPort> -->
+        <smtpUser></smtpUser>
+        <smtpPassword></smtpPassword>
+        <smtpSenderAddress>do-not-reply@viewer.example.org</smtpSenderAddress>
+        <smtpSenderName>Goobi viewer</smtpSenderName>
+        <smtpSecurity>NONE</smtpSecurity>
+        <feedbackEmailAddressList>
+            <address id="default" label="Contact" default="true">feedback@example.org</address>
+            <!--address id="unicorn" label="Rainbow Unicorn">unicorn@example.org</address-->
+        </feedbackEmailAddressList>
+    </user>
+
+
+    <performance>
+        <!-- pageLoaderThreshold: number of pages a record has to have to switch to a lean page loading strategy that limit memory usage. Default is 1000. -->
+        <pageLoaderThreshold>1000</pageLoaderThreshold>
+
+        <!-- preventProxyCaching: If true, all HTTP responses will contain attributes preventing proxies etc. from caching contents. Default is false. -->
+        <preventProxyCaching>false</preventProxyCaching>
+        
+        <!-- databaseConnectonAttempts: Number of times JPADAO will attempt to establish a connection before failing. -->
+        <databaseConnectionAttempts>5</databaseConnectionAttempts>
+    </performance>
+
+
+    <accessConditions>
+        <!-- thumbnailImageAccessMaxWidth: Images up to this size are regarded as 'thumbnails'. Access conditions for viewing images are not applied -->
+        <thumbnailImageAccessMaxWidth>400</thumbnailImageAccessMaxWidth>
+        <!-- unzoomedImageAccessMaxWidth: Images up to this size are regarded as 'unzoomed'. Access conditions for zooming images are not applied -->
+        <unzoomedImageAccessMaxWidth>0</unzoomedImageAccessMaxWidth>
+        <!-- fullAccessForLocalhost: If true, users on localhost will be granted superuser access. Default is false. -->
+        <fullAccessForLocalhost>false</fullAccessForLocalhost>
+    </accessConditions>
+
+
+    <!-- reCaptcha/@enabled: if true, reCaptcha integration is enabled. This is only used in the download modal when using the intranda Taskmanager for PDF creation. Default is false. -->
+    <reCaptcha enabled="false">
+        <provider name="Google" siteKey="CHANGEME" />
+    </reCaptcha>
+
+
+
+    <pdf>
+        <!-- generateInMessageQueue: if true, PDFs are generated in the queue of background tasks.
+        When requesting a PDF, the user must confirm the request in a dialog and is then redirected to a download page
+        where the status of the request within the queue is displayed and where the actual download may be started.
+        Default is false. -->
+        <generateInMessageQueue>false</generateInMessageQueue>
+
+        <!-- pdfApiDisabled: if true, the content servlet will reject PDF queries. Default is false. -->
+        <pdfApiDisabled>false</pdfApiDisabled>
+
+        <!-- titlePdfEnabled: if true, PDF a download link for the entire record is displayed in the title bar (where enabled in the XHTML). Ddefault is true. -->
+        <titlePdfEnabled>true</titlePdfEnabled>
+
+        <!-- tocPdfEnabled: if true, PDF download links for each structural element is displayed in the TOC. Ddefault is true. -->
+        <tocPdfEnabled>true</tocPdfEnabled>
+
+        <!-- metadataPdfEnabled: if true, a PDF download link for the entire record is displayed on the metadata page. Ddefault is true. -->
+        <metadataPdfEnabled>true</metadataPdfEnabled>
+
+        <!-- pagePdfEnabled: if true, a special icon allows PDF download of single pages in the image view. Default is false. -->
+        <pagePdfEnabled>true</pagePdfEnabled>
+
+        <!-- downloadFolder: Folder for generated download files -->
+        <downloadFolder>/opt/digiverso/viewer/download_pdf</downloadFolder>
+
+        <!-- expireAfter: Time after which generated PDF files are deleted from the download folder.
+             Default is 14 DAYS. The @unit attribute accepts SECONDS, MINUTES, HOURS, DAYS, WEEKS, MONTHS, YEARS. -->
+        <!-- <expireAfter unit="DAYS">14</expireAfter> -->
+
+        <!-- docHierarchyPdfEnabled: if true, an icon to generate a PDF out of the Table of Contents is displayed. Default is false. -->
+        <docHierarchyPdfEnabled>true</docHierarchyPdfEnabled>
+    </pdf>
+
+
+    <epub>
+        <!-- titleEpubEnabled: if true, a Epub download link for the entire record is displayed in the title bar (where enabled in the XHTML). Default is true. -->
+        <titleEpubEnabled>true</titleEpubEnabled>
+
+        <!-- tocEpubEnabled: if true, Epub download links for each structural element is displayed in the TOC. Default is true. -->
+        <tocEpubEnabled>true</tocEpubEnabled>
+
+        <!-- metadataEpubEnabled: if true, an Epub download link for the entire record is displayed on the metadata page. Default is true -->
+        <metadataEpubEnabled>true</metadataEpubEnabled>
+
+         <!-- Folder for generated download files -->
+        <downloadFolder>/opt/digiverso/viewer/download_epub</downloadFolder>
+    </epub>
+
+
+    <viewer>
+        <!-- pageBrowse/@enabled: if true, page browsing through the record in different steps is allowed. Default is false. -->
+        <pageBrowse enabled="false">
+            <pageBrowseStep>1</pageBrowseStep>
+            <pageBrowseStep>5</pageBrowseStep>
+            <pageBrowseStep>10</pageBrowseStep>
+        </pageBrowse>
+
+        <!-- pageSelectDropdownDisplayMinPages: Minimum number of pages a record needs to possess in order for the drop-down to be displayed. Default is 3. -->
+        <pageSelectDropdownDisplayMinPages>3</pageSelectDropdownDisplayMinPages>
+
+        <!-- docstructNavigation/@enabled: if true, browsing to the next and previous docstruct for the configured docstruct types in fullscreen view is displayed. Default is false. -->
+        <docstructNavigation enabled="false">
+            <template name="_DEFAULT">
+                <docstruct>folder</docstruct>
+            </template>
+        </docstructNavigation>
+
+        <!-- additional css styleclass for the '#viewObject' element in the browser.
+            This expression may contain variables of the form '{record.<solr-field>}',
+         where '<solr-field>' is the name of any SOLR field. The css-class will the be the given expression with the
+         variables replaced by the solr field values if they exist, cast to lower case and all non-word characters replaced by '_' -->
+        <viewStyleClass>docstructtype__{record.DOCSTRCT}</viewStyleClass>
+
+		<!-- Settings for viewing images in a record. More than one <zoomImageView> configurations may exist. The configuration to use for a specific view is specified in the <condition> element.
+		The configurations are tested from top to bottom and the last element should have no condition block so it is always used as fallback -->
+		<!-- "type" may have one of the values "default" to display a single image in the view, and "sequence" to display all images in  a vertically scrollable single view  -->
+		<!-- If "tileImage" is true, the image view is composed of individual tiles for smoother loading, otherwise it is composed of a image pyramid  -->
+		<!-- "footerheight" sets the pixel height of the image footer shown below the image if a footer is configured. A footerheight of 0 removes any footer -->
+
+		<!-- Settings for png images: Deliver entire, untiled image -->
+		<zoomImageView tileImage="false" footerHeight="50">
+			<condition>
+				<mimeType>image/png</mimeType>
+			</condition>
+			<scale>max</scale>
+		</zoomImageView>
+
+        <!-- Default settings for fullscreen mode -->
+        <zoomImageView type="default" tileImage="true" footerHeight="50">
+            <condition>
+                <view>fullscreen</view>
+            </condition>
+            <scale>900</scale>
+            <scale>1800</scale>
+            <scale>3600</scale>
+            <tileSize>
+                <scaleFactors>1;32</scaleFactors>
+                <size>1024</size>
+            </tileSize>
+            <navigator enabled="false" />
+            <thumbnailGallery enabled="false" />
+            <doublePageNavigation enabled="true" default="false"/>
+        </zoomImageView>
+
+        <!-- Default settings for image view -->
+        <zoomImageView type="default" tileImage="true" footerHeight="50">
+            <scale>600</scale>
+            <scale>900</scale>
+            <scale>1800</scale>
+            <tileSize>
+                <scaleFactors>1;32</scaleFactors>
+                <size>512</size>
+            </tileSize>
+            <thumbnailGallery enabled="false" />
+            <doublePageNavigation enabled="true" default="false"/>
+        </zoomImageView>
+
+        <!-- limitImageHeight: If true, the image width is divided by the
+             image hight and if the result is below the lowerRatioThreshold or above the upperRatioThreshold,
+             the default image view will set the OpenSeadragon canvas to a
+             hight of 1200px. Default is true with a lowerRatioThreshold of 0,3 and an upperRatioThreshold of 3.0 -->
+        <limitImageHeight lowerRatioThreshold="0.3" upperRatioThreshold="3.0">true</limitImageHeight>
+
+        <!-- rememberImageZoom/@enabled: if true, the image zoom is saved in the user session and persistent during browsing -->
+        <rememberImageZoom enabled="false" />
+
+        <!-- rememberImageRotation/@enabled: if true, the image rotation is saved in the user session and persistent during browsing -->
+        <rememberImageRotation enabled="false" />
+
+        <!-- URL patterns for external image urls which should be served via the contentServner
+             All image urls (= page filenames in SOLR) which match one of the externalContent.restrictedUrls.urls
+             Will not be delivered to the client directly, but rather embedded within a contentServer IIIF url, so the actual image
+             is requested by the viewer/contentServer and not the client -->
+        <externalContent>
+            <restrictedUrls>
+                <url>https?://external/restricted/.*</url>
+                <url>https?://external/noaccess/.*\.tif</url>
+            </restrictedUrls>
+        </externalContent>
+
+        <!-- max. allowed values for ContentServer arguments, higher values than these will be reduced to the values defined here -->
+        <maxImageWidth>10000</maxImageWidth>
+        <maxImageHeight>10000</maxImageHeight>
+        <maxImageScale>500</maxImageScale>
+
+        <!-- thumbnailsPerPage: number of thumbnails to show on one page. Default is 30. -->
+        <thumbnailsPerPage>30</thumbnailsPerPage>
+
+        <!-- Optional: ThumbnailWidth und ThumbnailHeight. Default ist 100x120. -->
+        <thumbnailsWidth>400</thumbnailsWidth>
+        <thumbnailsHeight>400</thumbnailsHeight>
+
+        <!-- anchorThumbnailMode: Determines what kind of thumbnail to use for anchors.
+             Possible values are GENERIC (generic multivolume image), FIRSTVOLUME (representative thumbnail of the first attached volume). Default is GENERIC. -->
+        <anchorThumbnailMode>FIRSTVOLUME</anchorThumbnailMode>
+
+        <!-- watermarkTextConfiguration: Watermark text source. The order of <text> elements is the order in which each source will be checked. "URN" and "PURL"
+             are reserved keywords for URN and PURL, items starting with "SOLR:" must be followed by an existing Solr field name, all other text will be written
+             as is. Only used when enabled="true" (default is true). -->
+        <watermarkTextConfiguration enabled="true">
+            <text>solr:MD_ACCESSCONDITIONCOPYRIGHT</text>
+            <text>urn</text>
+            <text>purl</text>
+        </watermarkTextConfiguration>
+
+        <!-- watermarkIdField: Defines solr field that is used to define different watermark configuration ids -->
+        <watermarkIdField>MD_GEIFOOTERID</watermarkIdField>
+
+        <!-- pageSelectionFormat: Format for the page selection drop-down menu items.
+             Values that are not among the following allowed variables will be displayed as-is.
+             Allowed variables: {order},{orderlabel},{numpages},{msg.xx} (xx being a message key) -->
+        <pageSelectionFormat>{order}:{orderlabel}</pageSelectionFormat>
+
+        <!-- pageTypes: Sub-elements of this element can override the URL names in the PageType enum. Sub-elements must have the same names as the enum values.
+             Custom URL names must be mapped in the faces config, too.
+
+             The @exit attribute defines a view to which #{navigationHelper.exitUrl} redirects for the view.
+             The value can either be
+             * "pretty:<pretty-mapping-id>" to navigate to that pretty mapping
+             * "previousView" to navigate to the previous view
+             * Any viewer url without the context path (e.g. "/" or "/index/" for the start page) -->
+        <pageTypes>
+            <viewObject>image</viewObject>
+            <!-- <search>suche</search> -->
+            <!-- <viewToc></viewToc> -->
+            <!-- <viewThumbs></viewThumbs> -->
+            <!-- <viewMetadata></viewMetadata> -->
+            <!-- <viewFulltext></viewFulltext> -->
+            <!-- <term></term> -->
+            <!-- <browse></browse> -->
+            <viewFullscreen exit="pretty:image3">fullscreen</viewFullscreen>
+            <!-- <sites></sites> -->
+        </pageTypes>
+
+        <!-- recordTargetPageTypes: Overrides the default target view URL for given publication types.
+             An optional _DEFAULT configuration can be used for all publication types without an explicit configuration.
+             These targets are also used for PURL generation. -->
+        <recordTargetPageTypes>
+            <!-- <_DEFAULT>metadata</_DEFAULT> -->
+            <MultiVolumeWork>toc</MultiVolumeWork>
+            <Periodical>toc</Periodical>
+            <newspaper>toc</newspaper>
+        </recordTargetPageTypes>
+
+        <!-- fulltextPercentageWarningThreshold: If a record's percentage of pages having full-Text/ALTO documents
+             falls below the configured value, a hint is displayed in page preview and image view for that record. Default is 30. -->
+        <fulltextPercentageWarningThreshold>30</fulltextPercentageWarningThreshold>
+
+       <!-- formats/date: Explicitly set the date format for the given language. You can use the format pattern from the Java SimpleDateFormat
+              The language must be a valid IDO 639-1 code. -->
+        <formats>
+            <date>
+                <de>dd.MM.yyyy</de>
+                <en>MM/dd/yyyy</en>
+                <es>dd/MM/yyyy</es>
+                <fr>dd/MM/yyyy</fr>
+            </date>
+        </formats>
+
+        <!-- fallbackDefaultLanguage: Language that shall be used for locales in case FacesContext is unavailable. Default is 'en'. -->
+        <fallbackDefaultLanguage>en</fallbackDefaultLanguage>
+
+        <!-- theme: The attribute @mainTheme defines the theme name and @discriminatorField defines the field in the solr index that contain the subtheme names if the functionallity is used -->
+        <theme mainTheme="reference" discriminatorField="">
+            <!-- rootPath: If the theme is located externally, the CMS template loading
+                 mechanism needs the root path of the theme. The path must be defined down
+                 to the /themes folder, just above the folder named like the theme. -->
+            <!-- <rootPath>/opt/digiverso/viewer/themes/goobi-viewer-theme-mytheme/goobi-viewer-theme-mytheme/WebContent/resources/themes/</rootPath> -->
+        </theme>
+
+        <!-- name: Name of the Goobi viewer instance. This is shown in the OpenSearch description file and in the title of the web pages -->
+        <name>Goobi viewer</name>
+
+        <!-- description: Goobi viewer instance description. This is shown in the OpenSearch description file -->
+        <description>Open source software for presenting your digital library or digital heritage online</description>
+    </viewer>
+
+
+    <search>
+        <!-- hitsPerPage: defines selectabled numbers of hits that are shown in a search hit list or when opening a collection -->
+        <hitsPerPage>
+            <value default="true">10</value>
+            <value>25</value>
+            <value>50</value>
+            <value>100</value>
+        </hitsPerPage>
+
+        <childHits>
+            <!-- Only expand child hits of a search hit if the number of child hits doesn't exceed this number -->
+            <initialLoadLimit>5</initialLoadLimit>
+            <!-- How many (additional) child hits to load when clicking to open/expand child hits of a search hit -->
+            <loadOnExpand>20</loadOnExpand>
+        </childHits>
+
+        <!-- displayHitNumbers/@enabled: If true, individual numbers of search hits within the current result set will be displayed. Default is false. -->
+        <displayHitNumbers enabled="false" />
+
+        <!-- fulltextFragmentLength: Approximate length of the full-text fragment displayed in search hits. Default is 200. -->
+        <fulltextFragmentLength>120</fulltextFragmentLength>
+
+        <!-- each search hit may get an additional css styleclass in the browser determined by this expression.
+        The expression may contain variables of the form '{record.<solr-field>}',
+         where '<solr-field>' is the name of any SOLR field. The css-class will the be the given expression with the
+         variables replaced by the solr field values if they exist, cast to lower case and all non-word characters replaced by '_' -->
+        <hitStyleClass>docstructtype__{record.DOCSTRCT}</hitStyleClass>
+
+        <!-- filters: Filter definitions for the regular search. Each definition will be rendered as a radio button. Syntax is "filter_" + Solr field name (so that individual labels can be added). -->
+        <filters>
+            <filter default="true">filter_ALL</filter>
+            <filter>filter_DEFAULT</filter>
+            <filter>filter_FULLTEXT</filter>
+            <!-- <filter>filter_NORMDATATERMS</filter> -->
+            <!-- <filter>filter_UGCTERMS</filter> -->
+            <!-- <filter>filter_SEARCHTERMS_ARCHIVE</filter> -->
+            <!-- <filter>filter_CMS_TEXT_ALL</filter> -->
+        </filters>
+
+        <!-- sorting/@enabled: if true, the option to sort search results is shown. Default is true. -->
+        <sorting enabled="true">
+            <!-- field: Fields used for sorting. Fields must be configured as 'multiValued="false"' in the Solr schema. Multiple (escaped) semicolon-separated
+                fields can be used for hierarchical sorting (e.g. <field>SORT_FIELD1\;SORT_FIELD2\;SORT_FIELD3</field>). -->
+            <field>RANDOM</field>
+            <field default="true">RELEVANCE</field>
+            <field>SORT_CREATOR</field>
+            <field dropDownAscMessageKey="searchSortingDropdown_az" dropDownDescMessageKey="searchSortingDropdown_za">SORT_TITLE</field>
+            <field>DATECREATED</field>
+            <field>SORT_YEARPUBLISH</field>
+
+            <!-- static: Sorting fields defined here will always used silently prior to the visible sorting fields. These fields can be used to always place
+                 certain records on top, for example. -->
+            <static>
+                <!-- <field></field> -->
+            </static>
+        </sorting>
+
+        <!-- facets: Contains a list of fields that are available for faceting in a search result list -->
+        <!-- each facets.field element may have a 'type' attribute which determines how the data is interpreted and displayed -->
+        <!-- Allowed values for 'type' are -->
+        <!-- range: the values of this field are interpreted as dates within a timeline or some other number range. -->
+        <!--         These fields may also have a 'style' attribute which determines how the values are displayed in the viewer.-->
+        <!--          'style' may habe a value of either 'slider', which is the default, or 'graph' -->
+        <!-- geo: the field contains geographical coordinates which are displayed on a map -->
+        <!-- hierarchical: The field contains hierarchical values, usually a type of digital collection -->
+        <facets>
+            <field type="range">YEAR</field>
+            <!-- <field type="range" style="graph">MDNUM_YEARPUBLISH</field> -->
+            <field type="geo" predicate="IsWithin" displayResultsOnMap="true">WKT_COORDS</field>
+            <!-- HINT: We always need a facet for DC, otherwise the facet query when opening collections will not
+                       automatically search in subcollections, too. FACET_DC:foo only, FACET_DC:foo.* is missing.
+                       If you want to hide faceting for DC from the default options, specify it locally and add
+                       the skipInWidget="true" attribute. -->
+            <field type="hierarchical" initialElementNumber="4">DC</field>
+            <field initialElementNumber="3">DOCSTRCT_TOP</field>
+            <field initialElementNumber="3">DOCSTRCT_SUB</field>
+            <field initialElementNumber="3" sortOrder="alphabetical_raw_asc">MD_CREATOR</field>
+            <field initialElementNumber="3" sortOrder="alphabetical_raw_asc">MD_PLACEPUBLISH</field>
+            <!-- <field initialElementNumber="3" sortOrder="alphabetical_asc" displayValueFilter="false">FULLTEXTAVAILABLE</field> -->
+            <!-- <field initialElementNumber="3" sortOrder="alphabetical_asc" displayValueFilter="false">BOOL_IMAGEAVAILABLE</field> -->
+            <!-- <field labelField="MD_LABEL">MD_VALUE</field> -->
+            <!-- <field translateLabels="false">MD_OTHERVALUE</field> -->
+            <!-- <field sortOrder="alphabetical" groupToLength="1" alwaysApplyToUnfilteredHits="true" skipInWidget="true">MD_TITLE</field> -->
+            <!-- <field multiValueOperator="OR">MD_LANGUAGE</field> -->
+        </facets>
+
+        <!-- advanced/@enabled: If true, the advanced search is enabled. Default is true. -->
+        <advanced enabled="true">
+
+            <!-- advancedSearchFields: index fields to be used in advanced search -->
+            <searchFields>
+                <template name="_DEFAULT">
+                    <field visible="true">MD_TITLE</field>
+                    <field visible="true">MD_AUTHOR</field>
+                    <field visible="true" untokenizeForPhraseSearch="true">MD_SHELFMARK</field>
+                    <field visible="true" hierarchical="true">DC</field>
+                    <field visible="true" range="true">YEAR</field>
+                    <field>PI_TOPSTRUCT</field>
+                    <field>DOCSTRCT_TOP</field>
+                    <field>DOCSTRCT_SUB</field>
+                    <field>MD_PUBLISHER</field>
+                    <field displaySelectItemsThreshold="100">MD_PLACEPUBLISH</field>
+                    <field>BOOKMARKS</field>
+                </template>
+            </searchFields>
+        </advanced>
+
+        <!-- timeline/@enabled: If true, the time matrix is displayed. Default is true. -->
+        <timeline enabled="true">
+            <!-- Possible values for startyear and endyear are whole years (also minus)
+                 as well as the value MIN for startyear and the value MAX for endyear.
+                 For MIN, the smallest available year from the index is taken as the
+                 start value; for MAX, the largest available year is taken as the end year. -->
+            <startyear>MIN</startyear>
+            <endyear>MAX</endyear>
+
+            <!-- hits: Hits to fetch for the time matrix. The value 'MAX' will be the
+                 maximum number defined in SolrSearchIndex.MAX_HITS. Default is 108. -->
+            <hits>36</hits>
+        </timeline>
+
+        <!-- calendar/@enabled: if true, the calendar search is displaed. Default is true. -->
+        <calendar enabled="true" />
+
+        <!-- searchSaving/@enabled: if true, users are allowed to save searches to a list for later re-use. Default is true. -->
+        <searchSaving enabled="true" />
+
+        <!-- displayAdditionalMetadata/@enabled: if true, relevant metadata fields and values are added to the search results if they contain requested search terms. Default is true. -->
+        <displayAdditionalMetadata enabled="true">
+            <!-- field type="ignore": Fields that add no value to the search hits but take up space (e.g. PI_TOPSTRUCT, DOCSTRCT)
+                 can be configured to not be added as additional metadata. This element can be repeated. -->
+            <field type="ignore">DC</field>
+            <field type="ignore">DOCTYPE</field>
+            <field type="ignore">ISANCHOR</field>
+            <field type="ignore">ISWORK</field>
+            <field type="ignore">MD_FIRSTNAME</field>
+            <field type="ignore">MD_LASTNAME</field>
+            <field type="ignore">MD_VALUE</field>
+            <field type="ignore">MONTHDAY</field>
+            <field type="ignore">NORMDATATERMS</field>
+            <field type="ignore">PI_ANCHOR</field>
+            <field type="ignore">PI_TOPSTRUCT</field>
+            <field type="ignore">UGCTERMS</field>
+            <field type="ignore">YEARMONTH</field>
+            <!-- Ignoring YEARMONTHDAY will prevent issue child hit listing in calendar search! <field type="ignore">YEARMONTHDAY</field> -->
+            <field type="ignore">MD_DV_LINK</field>
+            <field type="ignore">MD_DV_OWNERSITEURL</field>
+            <!-- field type="nohighlight": No highlighting will be applied to the value to avoid formatting issues, etc. -->
+            <field type="nohighlight">YEARMONTHDAY</field>
+            <!-- field type="translate": Fields in this list will be highlighted with their translated value rather than raw. -->
+            <field type="translate">DC</field>
+            <field type="translate">DOCSTRCT</field>
+            <field type="translate">DOCSTRCT_TOP</field>
+            <field type="translate">DOCSTRCT_SUB</field>
+            <!-- field type="oneline": Fields in this list will have multiple values written into a single string, without line breaks. -->
+            <field type="oneline">MD_ACCESSLOCATIONS</field>
+            <!-- field type="snippet": Values from fields in this list will be shortened to the amount of characters, that is configured in the <fulltextFragmentLength /> setting -->
+            <field type="snippet">MD_LONGINFORMATIONTEXT</field>
+        </displayAdditionalMetadata>
+
+        <!-- staticQuerySuffix: Solr query suffix added to all search/list queries (e.g. for permanent filtering) -->
+        <staticQuerySuffix>-BOOL_HIDE:true</staticQuerySuffix>
+
+        <!-- docstrctWhitelistFilterQuery: Filter query for including or excluding document types
+             (for collection listings, etc.). Default is "all records and anchors but no volumes". -->
+        <!-- Example query for also including periodical volumes:
+             ((ISWORK:true ISANCHOR:true) -IDDOC_PARENT:*) (+DOCTYPE:DOCSTRCT +DOCSTRCT:PeriodicalVolume) -->
+        <docstrctWhitelistFilterQuery>(ISWORK:true ISANCHOR:true) -IDDOC_PARENT:*</docstrctWhitelistFilterQuery>
+
+        <!-- versioning -->
+        <versioning>
+            <!-- previousVersionIdentifierField' defines the Solr field that contains the identifier for the preceding version -->
+            <previousVersionIdentifierField>MD_PREVIOUS_VERSION</previousVersionIdentifierField>
+            <!-- nextVersionIdentifierField: defines the Solr field that contains the identifier for the succeeding version -->
+            <nextVersionIdentifierField>MD_NEXT_VERSION</nextVersionIdentifierField>
+            <!-- versionLabelField: Optional field containing the pre-definied version label; if no value found "PI (MD_YEARPUBLISH)" will be used -->
+            <versionLabelField>MD_VERSIONLABEL</versionLabelField>
+        </versioning>
+
+        <!-- Search export settings -->
+        <export>
+            <!-- excel/@enabled: if true, an Excel export is enabled. XSLX files are generated. Default is false. -->
+            <excel enabled="false">
+                <!-- field: Solr fields to put into the export sheet. One element per field. -->
+                <field>PI_TOPSTRUCT</field>
+                <field>LABEL</field>
+                <field>DOCSTRCT_TOP</field>
+                <field>DOCSTRCT_SUB</field>
+                <field>DOCTYPE</field>
+                <field>ORDER</field>
+            </excel>
+            <!-- ris/@enabled: If true, RIS text file export of search hits will be available in the search options. Default is false. -->
+            <ris enabled="false" />
+        </export>
+
+        <!-- useFacetsAsExpandQuery/@enabled: If true, currently active facets will be used to build the expand query to produce child hits,
+            even if no search terms were given. Default is false. -->
+        <useFacetsAsExpandQuery enabled="false">
+            <!-- facetQuery: (0-n); If at least one facet query is configured here, only active queries that match those listed here
+                will be used for constructing the expand query. -->
+            <!-- <facetQuery>(FACET_DC:"varia" OR FACET_DC:varia.*)</facetQuery> -->
+        </useFacetsAsExpandQuery>
+
+        <metadata>
+            <!-- displayStructType: if false, the structtype is hidden -->
+            <displayStructType>true</displayStructType>
+
+            <!-- valueNumber: defines the maximum number of found values to display for each field type [since 2.0] -->
+            <valueNumber>3</valueNumber>
+
+            <!-- valueLength: defines the maximum length in characters for each value, longer values are truncated [since 2.0] -->
+            <valueLength>4000</valueLength>
+        </metadata>
+
+        <resultGroups enabled="false">
+            <group name="lido_objects" query="SOURCEDOCFORMAT:LIDO" previewHitCount="12" />
+            <group name="monographs" query="+DOCSTRCT:monograph" previewHitCount="12" />
+            <group name="stories" query="+DOCSTRCT:cms_page +MD_CATEGORY:Stories" previewHitCount="12" />
+            <group name="exhibitions" query="+DOCSTRCT:cms_page +MD_CATEGORY:Exhibitions" previewHitCount="12" />
+        </resultGroups>
+    </search>
+
+
+    <collections>
+        <collection field="DC">
+            <!-- splitingCharacter: defines symbol that splits collections into subcollections -->
+            <splittingCharacter>.</splittingCharacter>
+
+            <!-- defaultSortields: Define solr fields that are used for default sorting when opening a collection. Only non-multivalued fields may be used! -->
+            <defaultSortFields>
+                <field collection="varia">SORT_TITLE</field>
+            </defaultSortFields>
+
+            <!-- sorting: Collection names listed here will be listed first and in the given order; unlisted collections will be listed afterwards -->
+            <sorting>
+                <!-- <sortingList sortAfter="bibliotheken.100universitaetsbibliothek.200realkatalog"> -->
+                    <!-- <collection>zeitschriften</collection> -->
+                    <!--
+                    <sortOrder collections="zeitschriften">alphanumerical_desc</sortOrder>
+                    <sortOrder collections="zeitungen\..*">alphanumerical_asc</sortOrder>
+                    <sortOrder collections="jahrbuecher">numerical_desc</sortOrder>
+                    -->
+                <!-- </sortingList-->
+            </sorting>
+
+            <!-- blacklist: Collection names listed here are hidden in the collection view. It is not consistent used in RSS feed, search, tag clouds etc. and results from
+                 this collection may appear there as well. -->
+            <blacklist>
+                <!-- <collection>varia</collection> -->
+            </blacklist>
+
+            <!-- displayNumberOfVolumesLevel: The highest level of the collection tree at which the number of items for that (sub-)collection shall be displayed. Default is 0. -->
+            <displayNumberOfVolumesLevel>0</displayNumberOfVolumesLevel>
+
+            <!-- displayDepthForSearch: The highest level of the collection hierarchy which will be displayed in the displayed in advanced search
+                 0 is the first (lowest) level; a value of -1 means all levels are being displayed. Default is -1. -->
+            <displayDepthForSearch>-1</displayDepthForSearch>
+
+            <!-- addHierarchyToBreadcrumbs: If true, the value hierarchy of this field will be added to breadcrumbs (if not multivalued). Default is false. -->
+            <addHierarchyToBreadcrumbs>true</addHierarchyToBreadcrumbs>
+        </collection>
+
+        <!-- redirectToWork: if true, opening a collection containing only a single work should redirects directly to that record. Default is true. -->
+        <redirectToWork>true</redirectToWork>
+    </collections>
+
+
+    <metadata>
+        <!-- metadataView: Each metadata view creates a metadata view for a record.
+             Each view contains a whitelist with metadata fields, that are displayed
+             in the Goobi viewer. The order of this files defines the order of the
+             fields in the bibliographic data as well.
+             The first metadataView element will have an implicit index of 0, all subsequent
+             elements must defined an index attribute (the value 0 must be assigned, though).
+             An optional label attribute is allowed and will be used for the link and page title.
+             The "url" attibute adds a suffix for the url pattern of the given view (after
+             "metadata"). If more than one view is configured, each entry must have a unique
+             url value.
+             The optional location attribute specifies where the metadata view is rendered. Possible
+             values are "sidebar" and "objectview". The value "sidebar" is the default option and renderes
+             the link to the dedicated page in the sidebar. The value "objectview" renderes the metadata
+             below the image.
+
+             Examples are:
+             <metadataView index="1" label="label_metadata_codicological" url="_codicological" condition="MD_CODICOLOGICAL_UNIQUEIDENTIFIER">
+             <metadataView index="2" label="label_metadata_special" url="_special" condition="MD_SPECIAL_FIELD:value">
+        -->
+        <metadataView index="0" location="sidebar">
+            <template name="_DEFAULT">
+                <!-- <metadata> </metadata> defines a single metadata element label=""
+                    defines a label-key that needs to be translated in the messages_XYZ.properties
+                    file value="" defines a string in a messages_XYZ.properties file where the
+                    parameter can be embedded. <param /> defines the parameter that are passed
+                    to the messages file. There is no parameter limit. type="" defins the type
+                    of the parameter. Possible values are: - field: the content of the index
+                    fields is passed through 1:1 - wikifield: the content of the index field
+                    is modified to create Wikipedia valid links (additional info in brackets
+                    remove, spaces replaced through underscores etc.) - wikipersonfield: in addition
+                    to the modification from 'wikifield', first+ and surename are swapped (if
+                    there is a comma in the string) - ppnfield: the first three characters of
+                    the content of the index fields are cut. This is necesarry if you would like
+                    to create an OPAC PPN link based on an index field - entityfield: interprets
+                    the string as an aggregated list of the following values: Surename;Firstname;Lifedata;Wikilink
+                    (static) key="" defines the index field All parameters can be used in the
+                    messages_XYZ.properties file using {0}, {1}, etc. This are a few exampled: -->
+                <metadata label="PI">
+                    <param type="field" key="PI" />
+                </metadata>
+                <metadata label="URN">
+                    <param type="field" key="URN" />
+                </metadata>
+                <metadata label="MD_TITLE" hideIfOnlyMetadataField="true">
+                    <param type="field" key="MD_TITLE" />
+                </metadata>
+                <metadata label="MD_NEWLOCATION">
+                    <param type="field" key="MD_NEWLOCATION" />
+                </metadata>
+                <metadata label="MD_SHELFMARK">
+                    <param type="field" key="MD_SHELFMARK" />
+                </metadata>
+                <metadata label="MD_OLDSHELFMARK">
+                    <param type="field" key="MD_OLDSHELFMARK" />
+                </metadata>
+                <metadata label="MD_INVENTORY_NUMBER">
+                    <param type="field" key="MD_INVENTORY_NUMBER" />
+                </metadata>
+                <metadata label="MD_OWNERINSTITUTION">
+                    <param type="field" key="MD_OWNERINSTITUTION" />
+                </metadata>
+                <metadata label="MD_OTHEROWNERINSTITUTION">
+                    <param type="field" key="MD_OTHEROWNERINSTITUTION" />
+                </metadata>
+                <metadata label="MD_AUTHOR" value="MASTERVALUE_WIKINORM" group="true">
+                    <param type="field" key="MD_VALUE" />
+                    <param type="wikipersonfield" key="MD_VALUE" />
+                    <param type="normdatauri" key="NORM_URI" />
+                </metadata>
+                <metadata label="MD_COMPILER" value="MASTERVALUE_WIKINORM" group="true">
+                    <param type="field" key="MD_VALUE" />
+                    <param type="wikipersonfield" key="MD_VALUE" />
+                    <param type="normdatauri" key="NORM_URI" />
+                </metadata>
+                <metadata label="MD_COMPOSER" value="MASTERVALUE_WIKINORM" group="true">
+                    <param type="field" key="MD_VALUE" />
+                    <param type="wikipersonfield" key="MD_VALUE" />
+                    <param type="normdatauri" key="NORM_URI" />
+                </metadata>
+                <metadata label="MD_CONTRIBUTOR" value="MASTERVALUE_WIKINORM" group="true">
+                    <param type="field" key="MD_VALUE" />
+                    <param type="wikipersonfield" key="MD_VALUE" />
+                    <param type="normdatauri" key="NORM_URI" />
+                </metadata>
+                <metadata label="MD_CREATOR" value="MASTERVALUE_WIKINORM" group="true">
+                    <param type="field" key="MD_VALUE" />
+                    <param type="wikipersonfield" key="MD_VALUE" />
+                    <param type="normdatauri" key="NORM_URI" />
+                </metadata>
+                <metadata label="MD_PHOTOGRAPHER" value="MASTERVALUE_WIKINORM" group="true">
+                    <param type="field" key="MD_VALUE" />
+                    <param type="wikipersonfield" key="MD_VALUE" />
+                    <param type="normdatauri" key="NORM_URI" />
+                </metadata>
+                <metadata label="MD_EDITOR" value="MASTERVALUE_WIKINORM" group="true">
+                    <param type="field" key="MD_VALUE" />
+                    <param type="wikipersonfield" key="MD_VALUE" />
+                    <param type="normdatauri" key="NORM_URI" />
+                </metadata>
+                <metadata label="MD_ILLUSTRATOR" value="MASTERVALUE_WIKINORM" group="true">
+                    <param type="field" key="MD_VALUE" />
+                    <param type="wikipersonfield" key="MD_VALUE" />
+                    <param type="normdatauri" key="NORM_URI" />
+                </metadata>
+                <metadata label="MD_EDITORCORPORATION">
+                    <param type="field" key="MD_EDITORCORPORATION" />
+                </metadata>
+                <metadata label="MD_PRINTER" value="MASTERVALUE_WIKINORM" group="true">
+                    <param type="field" key="MD_VALUE" />
+                    <param type="wikipersonfield" key="MD_VALUE" />
+                    <param type="normdatauri" key="NORM_URI" />
+                </metadata>
+                <metadata label="MD_TRANSLATOR" value="MASTERVALUE_WIKINORM" group="true">
+                    <param type="field" key="MD_VALUE" />
+                    <param type="wikipersonfield" key="MD_VALUE" />
+                    <param type="normdatauri" key="NORM_URI" />
+                </metadata>
+                <metadata label="MD_SENDER" value="MASTERVALUE_WIKINORM" group="true">
+                    <param type="field" key="MD_VALUE" />
+                    <param type="wikipersonfield" key="MD_VALUE" />
+                    <param type="normdatauri" key="NORM_URI" />
+                </metadata>
+                <metadata label="MD_RECIPIENT" value="MASTERVALUE_WIKINORM" group="true">
+                    <param type="field" key="MD_VALUE" />
+                    <param type="wikipersonfield" key="MD_VALUE" />
+                    <param type="normdatauri" key="NORM_URI" />
+                </metadata>
+                <metadata label="CURRENTNO">
+                    <param type="field" key="CURRENTNO" />
+                </metadata>
+                <metadata label="MD_PLACEOFORIGIN">
+                    <param type="field" key="MD_PLACEOFORIGIN" />
+                </metadata>
+                <metadata label="MD_DATEOTHER">
+                    <param type="field" key="MD_DATEOTHER" />
+                </metadata>
+                <metadata label="MD_DESTINATION">
+                    <param type="field" key="MD_DESTINATION" />
+                </metadata>
+                <metadata label="MD_LOCATION" value="LINK_WIKIPEDIA">
+                    <param type="field" key="MD_LOCATION" />
+                    <param type="wikipersonfield" key="MD_LOCATION" />
+                </metadata>
+                <metadata label="MD_PLACEPUBLISH" value="LINK_MAPS">
+                    <param type="field" key="MD_PLACEPUBLISH" />
+                </metadata>
+                <metadata label="MD_PUBLISHER">
+                    <param type="field" key="MD_PUBLISHER" />
+                </metadata>
+                <metadata label="DOCSTRCT_TOP">
+                    <param type="translatedfield" key="DOCSTRCT_TOP" />
+                </metadata>
+                <metadata label="DOCSTRCT_SUB" hideIfOnlyMetadataField="true">
+                    <param type="translatedfield" key="DOCSTRCT_SUB" />
+                </metadata>
+                <metadata label="DC" topstructOnly="true">
+                    <param type="translatedfield" key="DC" />
+                </metadata>
+                <metadata label="MD_YEARPUBLISH">
+                    <param type="field" key="MD_YEARPUBLISH" />
+                </metadata>
+                <metadata label="MD_EDITION">
+                    <param type="field" key="MD_EDITION" />
+                </metadata>
+                <metadata label="MD_DATERECORDED">
+                    <param type="field" key="MD_DATERECORDED" />
+                </metadata>
+                <metadata label="MD_FORMATDDC">
+                    <param type="field" key="MD_FORMATDDC" />
+                </metadata>
+                <metadata label="MD_SIZESOURCEPRINT">
+                    <param type="field" key="MD_SIZESOURCEPRINT" />
+                </metadata>
+                <metadata label="MD_FORMATSOURCEPRINT">
+                    <param type="field" key="MD_FORMATSOURCEPRINT" />
+                </metadata>
+                <metadata label="MD_SCALE">
+                    <param type="field" key="MD_SCALE" />
+                </metadata>
+                <metadata label="MD_TECHNIQUE">
+                    <param type="field" key="MD_TECHNIQUE" />
+                </metadata>
+                <metadata label="MD_FORMTECHNIQUE">
+                    <param type="field" key="MD_FORMTECHNIQUE" />
+                </metadata>
+                <metadata label="MD_DESCRIPTION">
+                    <param type="field" key="MD_DESCRIPTION" />
+                </metadata>
+                <metadata label="MD_DRAWINGDESCRIPTION">
+                    <param type="field" key="MD_DRAWINGDESCRIPTION" />
+                </metadata>
+                <metadata label="MD_MATERIAL_DESCRIPTION">
+                    <param type="field" key="MD_MATERIAL_DESCRIPTION" />
+                </metadata>
+                <metadata label="MD_MOTIF_DESCRIPTION">
+                    <param type="field" key="MD_MOTIF_DESCRIPTION" />
+                </metadata>
+                <metadata label="MD_CONDITION">
+                    <param type="field" key="MD_CONDITION" />
+                </metadata>
+                <metadata label="MD_DRAWINGINFORMATION">
+                    <param type="field" key="MD_DRAWINGINFORMATION" />
+                </metadata>
+                <metadata label="MD_OWNERSHIP">
+                    <param type="field" key="MD_OWNERSHIP" />
+                </metadata>
+                <metadata label="MD_DDC">
+                    <param type="field" key="MD_DDC" />
+                </metadata>
+                <metadata label="MD_TAXONOMY">
+                    <param type="field" key="MD_TAXONOMY" />
+                </metadata>
+                <metadata label="MD_REFERENCE">
+                    <param type="field" key="MD_REFERENCE" />
+                </metadata>
+                <metadata label="MD_WATERMARK">
+                    <param type="field" key="MD_WATERMARK" />
+                </metadata>
+                <metadata label="MD_TOCPARTIALCONTENTS">
+                    <param type="field" key="MD_TOCPARTIALCONTENTS" />
+                </metadata>
+                <metadata label="MD_CATEGORY">
+                    <param type="field" key="MD_CATEGORY" />
+                </metadata>
+                <metadata label="MD_PURPOSE">
+                    <param type="field" key="MD_PURPOSE" />
+                </metadata>
+                <metadata label="MD_ILLUSTRATIONTYPE">
+                    <param type="field" key="MD_ILLUSTRATIONTYPE" />
+                </metadata>
+                <metadata label="MD_ACCESSCONDITIONCOPYRIGHT">
+                    <param type="field" key="MD_ACCESSCONDITIONCOPYRIGHT" />
+                </metadata>
+                <metadata label="MD_METAREMARK">
+                    <param type="field" key="MD_METAREMARK" />
+                </metadata>
+                <metadata label="MD_INFORMATION">
+                    <param type="field" key="MD_INFORMATION" />
+                </metadata>
+                <metadata label="MD_LANGUAGE">
+                    <param type="translatedfield" key="MD_LANGUAGE" />
+                </metadata>
+                <metadata label="MD_ALTERNATETITLE">
+                    <param type="field" key="MD_ALTERNATETITLE" />
+                </metadata>
+                <metadata label="MD_SUBTITLE">
+                    <param type="field" key="MD_SUBTITLE" />
+                </metadata>
+                <metadata label="MD_SHELFMARKSOURCE">
+                    <param type="field" key="MD_SHELFMARKSOURCE" />
+                </metadata>
+                <metadata label="MD_ISSN">
+                    <param type="field" key="MD_ISSN" />
+                </metadata>
+                <metadata label="MD_ISBN">
+                    <param type="field" key="MD_ISBN" />
+                </metadata>
+                <metadata label="MD_DOCLANGUAGE">
+                    <param type="field" key="MD_DOCLANGUAGE" />
+                </metadata>
+                <metadata label="MD_PERSONKEYWORD">
+                    <param type="field" key="MD_PERSONKEYWORD" />
+                </metadata>
+                <metadata label="MD_RELATEDSERIES">
+                    <param type="field" key="MD_RELATEDSERIES" />
+                </metadata>
+                <metadata label="MD_WORKKEYWORD">
+                    <param type="field" key="MD_WORKKEYWORD" />
+                </metadata>
+                <metadata label="MD_RISMSEAL">
+                    <param type="field" key="MD_RISMSEAL" />
+                </metadata>
+                <!--
+                <metadata label="label__citation_style_apa-6th-edition" citationTemplate="apa-6th-edition">
+                    <param type="citeproc" dest="title" key="MD_TITLE" />
+                    <param type="citeproc" dest="author" key="MD_AUTHOR" />
+                    <param type="citeproc" dest="publisher" key="MD_PUBLISHER" />
+                    <param type="citeproc" dest="placepublish" key="MD_PLACEPUBLISH" />
+                    <param type="citeproc" dest="issued" key="MD_YEARPUBLISH" />
+                    <param type="citeproc" dest="isbn" key="MD_ISBN" />
+                </metadata>
+                -->
+                <!--
+                <metadata label="DATECREATED">
+                    <param type="millisfield" key="DATECREATED" />
+                </metadata>
+                <metadata label="MD_DATESTART">
+                    <param type="datefield" pattern="dd/MM/yyyy" key="MD_DATESTART" />
+                </metadata>
+                -->
+               <metadata label="MD_PROVENIENCE">
+                    <param type="field" key="MD_PROVENIENCE" />
+                </metadata>
+                <metadata label="MD_STATEMENTOFRESPONSIBILITY">
+                    <param type="field" key="MD_STATEMENTOFRESPONSIBILITY" />
+                </metadata>
+                <metadata label="MD_NODEID">
+                    <param type="field" key="MD_NODEID" />
+                </metadata>
+                <metadata label="MD_EADID">
+                    <param type="field" key="MD_EADID" />
+                </metadata>
+                <metadata label="MD_RECORDID">
+                    <param type="field" key="MD_RECORDID" />
+                </metadata>
+                <metadata label="MD_UNITID">
+                    <param type="field" key="MD_UNITID" />
+                </metadata>
+                <metadata label="MD_BIOGRAPHICALINFORMATION">
+                    <param type="field" key="MD_BIOGRAPHICALINFORMATION" />
+                </metadata>
+                <metadata label="MD_INVENTORYHISTORY">
+                    <param type="field" key="MD_INVENTORYHISTORY" />
+                </metadata>
+                <metadata label="MD_AQUISITIONINFORMATION">
+                    <param type="field" key="MD_AQUISITIONINFORMATION" />
+                </metadata>
+                <metadata label="MD_APPRAISALINFORMATION">
+                    <param type="field" key="MD_APPRAISALINFORMATION" />
+                </metadata>
+                <metadata label="MD_ADDITIONS">
+                    <param type="field" key="MD_ADDITIONS" />
+                </metadata>
+                <metadata label="MD_ARRANGEMENT">
+                    <param type="field" key="MD_ARRANGEMENT" />
+                </metadata>
+                <metadata label="MD_USERESTRICTION">
+                    <param type="field" key="MD_USERESTRICTION" />
+                </metadata>
+                <metadata label="MD_FONTTYPE">
+                    <param type="field" key="MD_FONTTYPE" />
+                </metadata>
+                <metadata label="MD_PHYSTECH">
+                    <param type="field" key="MD_PHYSTECH" />
+                </metadata>
+                <metadata label="MD_OTHERFINDAID">
+                    <param type="field" key="MD_OTHERFINDAID" />
+                </metadata>
+                <metadata label="MD_ORIGINALSLOCATION">
+                    <param type="field" key="MD_ORIGINALSLOCATION" />
+                </metadata>
+                <metadata label="MD_ALTERNATIVEFORMAVAILABLE">
+                    <param type="field" key="MD_ALTERNATIVEFORMAVAILABLE" />
+                </metadata>
+                <metadata label="MD_SEPARATEDMATERIAL">
+                    <param type="field" key="MD_SEPARATEDMATERIAL" />
+                </metadata>
+                <metadata label="MD_DIDNOTE">
+                    <param type="field" key="MD_DIDNOTE" />
+                </metadata>
+                <metadata label="MD_ODD">
+                    <param type="field" key="MD_ODD" />
+                </metadata>
+                <metadata label="MD_CONVENTIONDECLARATION">
+                    <param type="field" key="MD_CONVENTIONDECLARATION" />
+                </metadata>
+                <!--metadata label="wurde erschaffen von" key="MD_RELATIONSHIP" value="MASTERVALUE_RELATIONSHIP" group="true">
+                    <param key="MD_VALUE" type="field" />
+                    <param key="MD_IDENTIFIER" type="field" />
+                    <filterQuery>MD_TYPE:"wurde erschaffen von"</filterQuery>
+                </metadata>
+                <metadata label="hat erschaffen" key="MD_RELATIONSHIP" value="MASTERVALUE_RELATIONSHIP" group="true">
+                    <param key="MD_VALUE" type="field" />
+                    <param key="MD_IDENTIFIER" type="field" />
+                    <filterQuery>MD_TYPE:"hat erschaffen"</filterQuery>
+                </metadata-->
+            </template>
+            <template name="record">
+                <metadata label="PI">
+                    <param type="field" key="PI" />
+                </metadata>
+                <metadata label="MD_TITLE">
+                    <param type="field" key="MD_TITLE" />
+                </metadata>
+                <metadata label="MD_RECORDDESCRIPTION">
+                    <param type="field" key="MD_RECORDDESCRIPTION" />
+                </metadata>
+                <metadata label="MD_LANGUAGE">
+                    <param type="translatedfield" key="MD_LANGUAGE" />
+                </metadata>
+                <metadata label="MD_CREATOR" value="MASTERVALUE_SIMPLE_GROUP" group="true">
+                    <param type="field" key="MD_VALUE" />
+                    <param type="field" key="NORM_WIKIPEDIAURL" value="LINK_WIKIPEDIA_FULL" />
+                    <param type="normdatauri" key="NORM_URI" />
+                    <param type="normdatasearch" key="NORM_IDENTIFIER" />
+                </metadata>
+                <metadata label="DC">
+                    <param type="translatedfield" key="DC" />
+                </metadata>
+                <metadata label="MD_DATEOTHER">
+                    <param type="field" key="MD_DATECREATED" />
+                </metadata>
+                <metadata label="MD_LICENSE" value="MASTERVALUE_ACCESSLICENSE">
+                    <param type="field" key="MD_ACCESSLICENSE" />
+                    <param type="translatedfield" key="MD_ACCESSLICENSE" />
+                </metadata>
+            </template>
+        </metadataView>
+
+        <!-- metadataList[@type="search"]: defines metadata that is displayed in the search hit list. The syntax is the same as in metadataView -->
+        <metadataList type="searchHit">
+            <template name="_DEFAULT">
+                <!-- add the following attribute to separate the multiple entries with semikolon and whitespace instead of a new line:
+                     separator=";&#160;"
+                     -->
+                <metadata label="MD_CREATOR">
+                    <param type="field" key="MD_CREATOR" />
+                </metadata>
+                <metadata label="MD_YEARPUBLISH">
+                    <param type="field" key="MD_YEARPUBLISH" />
+                </metadata>
+                <metadata label="MD_PLACEPUBLISH">
+                    <param type="field" key="MD_PLACEPUBLISH" />
+                </metadata>
+                <metadata label="MD_SHELFMARK">
+                    <param type="field" key="MD_SHELFMARK" />
+                </metadata>
+
+                <!-- LIDO events -->
+                <metadata label="EVENTTYPE">
+                    <param type="translatedfield" key="EVENTTYPE" />
+                </metadata>
+                <metadata label="EVENTDATE">
+                    <param type="field" key="EVENTDATE" />
+                 </metadata>
+
+                <!-- User generated content -->
+                <metadata label="UGCTERMS">
+                    <param type="field" key="UGCTERMS" />
+                </metadata>
+
+                <!-- Number of volumes for anchors -->
+                <metadata label="numVolumes">
+                    <param type="field" key="NUMVOLUMES" />
+                </metadata>
+            </template>
+        </metadataList>
+
+        <!-- metadataList[@type="sidebar"]: defines metadata that are displayed in the sidebar. -->
+        <metadataList type="sideBar">
+            <!-- _DEFAULT: metadata defined in the _DEFAULT template is displayed on all struct elements that have no explicit definition -->
+            <template name="_DEFAULT">
+                <metadata label="MD_TITLE">
+                    <param type="field" key="MD_TITLE" />
+                </metadata>
+                <metadata label="MD_CREATOR" value="LINK_WIKIPEDIA">
+                    <param type="field" key="MD_CREATOR" />
+                    <param type="wikipersonfield" key="MD_CREATOR" />
+                </metadata>
+                <metadata label="MD_SHELFMARK">
+                    <param type="field" key="MD_SHELFMARK" topstructValueFallback="true" />
+                </metadata>
+                <metadata label="URN">
+                    <param type="field" key="URN" />
+                </metadata>
+            </template>
+            <!-- _GROUPS: Group documents -->
+            <template name="_GROUPS">
+                <metadata label="MD_TITLE">
+                    <param type="field" key="MD_TITLE" />
+                </metadata>
+                <metadata label="MD_PUBLISHER">
+                    <param type="field" key="MD_PUBLISHER" />
+                </metadata>
+                <metadata label="MD_PLACEPUBLISH">
+                    <param type="field" key="MD_PLACEPUBLISH" />
+                </metadata>
+            </template>
+            <!-- Map: sample definition of metadata for a special struct element -->
+            <template name="Map">
+                <metadata label="MD_TITLE">
+                    <param type="field" key="MD_TITLE" />
+                </metadata>
+                <metadata label="MD_CREATOR" value="LINK_WIKIPEDIA">
+                    <param type="field" key="MD_CREATOR" />
+                    <param type="wikipersonfield" key="MD_CREATOR" />
+                </metadata>
+                <metadata label="MD_SHELFMARK">
+                    <param type="field" key="MD_SHELFMARK" />
+                </metadata>
+                <metadata label="MD_COORDINATES">
+                    <param type="field" key="MD_COORDINATES" />
+                </metadata>
+                <metadata label="URN">
+                    <param type="field" key="URN" />
+                </metadata>
+            </template>
+        </metadataList>
+
+        <!-- metadataList[@type="archive"]: defines metadata that is displayed for the nodes in the archive view. Indexed EAD data. -->
+        <metadataList type="archive">
+            <template name="_DEFAULT">
+                <!-- Identity Statement Area -->
+                <metadata label="eadid" type="1">
+                    <param key="MD_EADID" type="field" />
+                </metadata>
+                <metadata label="recordid" type="1">
+                    <param key="MD_RECORDID" type="field" />
+                </metadata>
+                <metadata label="MD_UNITID" type="1">
+                    <param key="MD_UNITID" type="field" />
+                </metadata>
+                <metadata label="Number" type="1">
+                    <param key="MD_UNITID_NUMBER" type="field" />
+                </metadata>
+                <metadata label="MD_SHELFMARK" type="1">
+                    <param key="MD_SHELFMARK" type="field" />
+                </metadata>
+                <metadata label="unittitle" type="1">
+                    <param key="MD_TITLE" type="field" />
+                </metadata>
+                <metadata label="unitdate" type="1">
+                    <param key="MD_DATECREATED" type="field" />
+                </metadata>
+                <metadata label="physdesc" type="1">
+                    <param key="MD_PHYSICALDESCRIPTIONEXTENT" type="field" />
+                </metadata>
+                <!-- Context Area -->
+                <metadata label="origination" type="2">
+                    <param key="MD_PROVENIENCE" type="field" />
+                </metadata>
+                <metadata label="role" type="2">
+                    <param key="MD_ODD_HEAD" type="field" />
+                </metadata>
+                <metadata label="person" type="2">
+                    <param key="MD_ODD_P" type="field" />
+                </metadata>
+                <metadata label="bioghist" type="2">
+                    <param key="MD_BIOGRAPHICALINFORMATION" type="field" />
+                </metadata>
+                <metadata label="custodhist" type="2">
+                    <param key="MD_INVENTORYHISTORY" type="field" />
+                </metadata>
+                <metadata label="acqinfo" type="2">
+                    <param key="MD_AQUISITIONINFORMATION" type="field" />
+                </metadata>
+                <!-- Content and Structure Area -->
+                <metadata label="scopecontent" type="3">
+                    <param key="MD_SCOPECONTENT" type="field" />
+                </metadata>
+                <metadata label="appraisal" type="3">
+                    <param key="MD_APPRAISALINFORMATION" type="field" />
+                </metadata>
+                <metadata label="accruals" type="3">
+                    <param key="MD_ADDITIONS" type="field" />
+                </metadata>
+                <metadata label="arrangement" type="3">
+                    <param key="MD_ARRANGEMENT" type="field" />
+                </metadata>
+                <!-- Condition of Access and Use Area -->
+                <metadata label="accessrestrict" type="4">
+                    <param key="ACCESSCONDITION" type="field" />
+                </metadata>
+                <metadata label="userestrict" type="4">
+                    <param key="MD_USERESTRICTION" type="field" />
+                </metadata>
+                <metadata label="langmaterial" type="4">
+                    <param key="MD_LANGUAGE" type="field" />
+                </metadata>
+                <metadata label="font" type="4">
+                    <param key="MD_FONTTYPE" type="field" />
+                </metadata>
+                <metadata label="phystech" type="4">
+                    <param key="MD_PHYSTECH" type="field" />
+                </metadata>
+                <metadata label="otherfindaid" type="4">
+                    <param key="MD_OTHERFINDAID" type="field" />
+                </metadata>
+                <!-- Allied Materials Area -->
+                <metadata label="originalsloc" type="5">
+                    <param key="MD_ORIGINALSLOCATION" type="field" />
+                </metadata>
+                <metadata label="altformavail" type="5">
+                    <param key="MD_ALTERNATIVEFORMAVAILABLE" type="field" />
+                </metadata>
+                <metadata label="separatedmaterial" type="5">
+                    <param key="MD_SEPARATEDMATERIAL" type="field" />
+                </metadata>
+                <metadata label="bibliography" type="5" />
+                <!-- Note Area -->
+                <metadata label="didnote" type="6">
+                    <param key="MD_DIDNOTE" type="field" />
+                </metadata>
+                <metadata label="oddnote" type="6">
+                    <param key="MD_ODD" type="field" />
+                </metadata>
+                <!-- Description Control Area -->
+                <metadata label="conventiondeclaration" type="7">
+                    <param key="MD_CONVENTIONDECLARATION" type="field" />
+                </metadata>
+            </template>
+        </metadataList>
+
+        <!-- metadataList[@type="page"]: defines technical metadata from images that is displayed in an extra widget within the records view. Indexed MIX data. -->
+        <metadataList type="page">
+            <template name="_DEFAULT">
+                <metadata label="MD_TECH_FORMAT_NAME">
+                    <param key="MD_TECH_FORMAT_NAME" type="field" />
+                </metadata>
+                <metadata label="MD_TECH_BASIC_IMAGE_INFO" value="{1}{3}" group="true">
+                    <param key="MD_VALUE" type="field" />
+                    <param key="MD_TECH_IMAGE_COLOR_SPACE" type="field" prefix=",_SPACE_" />
+                </metadata>
+                <metadata label="MD_TECH_BYTE_ORDER">
+                    <param key="MD_TECH_BYTE_ORDER" type="field" />
+                </metadata>
+                <metadata label="MD_TECH_IMAGE_DATETIME_CREATED">
+                    <param key="MD_TECH_IMAGE_DATETIME_CREATED" type="datefield" pattern="yyyy-MM-dd'T'HH:mm:ss" />
+                </metadata>
+            </template>
+        </metadataList>
+        
+        <metadataList type="geomaps_location">
+            <template name="_DEFAULT">
+                <metadata label="" value="{NORM_NAME}">
+                    <param type="field" key="NORM_NAME" altKey="LABEL" />
+                </metadata>
+            </template>
+        </metadataList>
+        <metadataList type="geomaps_metadata">
+            <template name="_DEFAULT">
+                <metadata label="" value="{MD_VALUE}">
+                    <param type="field" key="MD_VALUE" altKey="LABEL" />
+                </metadata>
+            </template>
+        </metadataList>
+
+        <!-- normdataList: List of NORM_ fields to display in the norm data pop-up box -->
+        <normdataList>
+            <!-- This template is used when displaying authority information in the annotations overview -->
+            <template name="ANNOTATION">
+                <field>NORM_NAME</field>
+                <field>NORM_ALTNAME</field>
+                <field>NORM_LIFEPERIOD</field>
+                <field>NORM_LIFEPERIODEXACT</field>
+                <field>NORM_PROFESSION</field>
+                <field>NORM_EDUCATION</field>
+                <field>NORM_FUNCTION</field>
+                <field>NORM_PLACEOFBIRTH</field>
+                <field>NORM_PLACEOFDEATH</field>
+                <field>NORM_SEX</field>
+                <field>NORM_LOCATION</field>
+                <field>NORM_FATHER</field>
+                <field>NORM_MOTHER</field>
+                <field>NORM_SON</field>
+                <field>NORM_SOURCE</field>
+                <field>NORM_IDENTIFIER</field>
+            </template>
+            <template name="CORPORATION">
+                <field>NORM_IDENTIFIER</field>
+                <field>NORM_ORGANIZATION</field>
+                <field>NORM_ALTNAME</field>
+                <field>NORM_EXPLANATORYTEXT</field>
+                <field>NORM_PERIOD</field>
+                <field>NORM_PARENTINSTITUTION</field>
+                <field>URI</field>
+            </template>
+            <template name="PERSON">
+                <field>NORM_IDENTIFIER</field>
+                <field>NORM_NAME</field>
+                <field>NORM_LIFEPERIOD</field>
+                <field>NORM_LIFEPERIODEXACT</field>
+                <field>NORM_PROFESSION</field>
+                <field>NORM_EDUCATION</field>
+                <field>NORM_FUNCTION</field>
+                <field>NORM_PLACEOFBIRTH</field>
+                <field>NORM_PLACEOFDEATH</field>
+                <field>NORM_SEX</field>
+                <field>NORM_LOCATION</field>
+                <field>NORM_FATHER</field>
+                <field>NORM_MOTHER</field>
+                <field>NORM_SON</field>
+                <field>NORM_ALTNAME</field>
+                <field>NORM_SOURCE</field>
+                <field>URI</field>
+            </template>
+            <template name="RECORD">
+                <field>NORM_IDENTIFIER</field>
+                <field>NORM_TITLE</field>
+                <field>NORM_OTHERTITLE</field>
+                <field>NORM_EXPLANATORYTEXT</field>
+                <field>NORM_PERIOD</field>
+                <field>NORM_PRODUCTIONPERIOD</field>
+                <field>NORM_CONTRIBUTOR</field>
+                <field>NORM_OWNER</field>
+                <field>NORM_COLLECTOR</field>
+                <field>NORM_WORK</field>
+                <field>NORM_RELATIONSHIP</field>
+                <field>URI</field>
+            </template>
+        </normdataList>
+
+        <!-- browsingMenu/@enabled: if true, the browsing section is displayed. Default is true. -->
+        <browsingMenu enabled="true">
+            <!-- hitsPerPage: defines the maximum number of hits that are displayed per page. Default is 70 -->
+            <hitsPerPage>70</hitsPerPage>
+
+            <!-- indexSizeThreshold: If the number of relevant Solr docs exceeds the configured number, faceting will be used for term browsing
+                (which may break correct sorting but improve performance). Default is 100k. -->
+            <indexSizeThreshold>100000</indexSizeThreshold>
+
+            <sorting>
+                <!-- ignoreLeadingChars: All leading characters to be ignored when comparing browsing terms.
+                     If empty, only the first non-alphanumeric char will be removed. -->
+                <ignoreLeadingChars>.[]</ignoreLeadingChars>
+            </sorting>
+
+            <!-- field: defines index fields that are available for browsing. Only untokenized fields should be used. -->
+            <field recordsAndAnchorsOnly="true" alwaysApplyFilter="true" sortField="SORT_AUTHOR">MD_AUTHOR_UNTOKENIZED</field>
+            <field recordsAndAnchorsOnly="true" sortField="SORT_TITLE">MD_TITLE_UNTOKENIZED</field>
+            <!-- <field sortField="SORT_TITLE" recordsAndAnchorsOnly="true" docstructFilters="Monograph;Volume;PeriodicalVolume">MD_TITLE_UNTOKENIZED</field> -->
+            <!-- <field recordsAndAnchorsOnly="true" >MD_SHELFMARK</field> -->
+        </browsingMenu>
+
+        <!-- licenses: Used to associate license urls with a label and possibly an icon. Also provides a list of available license types when a user is asked to select a license -->
+        <licenses>
+            <!-- Creative Commons Public Domain Tools -->
+            <license label="Creative Commons: CC0 1.0" url="https://creativecommons.org/publicdomain/zero/1.0/" />
+            <license label="Creative Commons: Public Domain Mark" url="http://creativecommons.org/publicdomain/mark/1.0/" />
+
+            <!-- Creative Commons Licenses -->
+            <license label="Creative Commons: CC BY" url="https://creativecommons.org/licenses/by/4.0/" />
+            <license label="Creative Commons: CC BY-SA" url="https://creativecommons.org/licenses/by-sa/4.0/" />
+            <license label="Creative Commons: CC BY-ND" url="https://creativecommons.org/licenses/by-nd/4.0/" />
+            <license label="Creative Commons: CC BY-NC" url="https://creativecommons.org/licenses/by-nc/4.0/" />
+            <license label="Creative Commons: CC BY-NC-SA" url="https://creativecommons.org/licenses/by-nc-sa/4.0/" />
+            <license label="Creative Commons: CC BY-NC-ND" url="https://creativecommons.org/licenses/by-nc-nd/4.0/" />
+
+            <!-- Rights Statements -->
+            <license label="Rights Statements: IN COPYRIGHT" url="http://rightsstatements.org/vocab/InC/1.0/" />
+            <license label="Rights Statements: IN COPYRIGHT - NON-COMMERCIAL USE PERMITTED" url="http://rightsstatements.org/vocab/InC-NC/1.0/" />
+            <license label="Rights Statements: IN COPYRIGHT - EDUCATIONAL USE PERMITTED" url="http://rightsstatements.org/vocab/InC-EDU/1.0/" />
+            <license label="Rights Statements: IN COPYRIGHT - RIGHTS-HOLDER(S) UNLOCATABLE OR UNIDENTIFIABLE" url="http://rightsstatements.org/vocab/InC-RUU/1.0/" />
+            <license label="Rights Statements: IN COPYRIGHT - EU ORPHAN WORK" url="https://rightsstatements.org/page/InC-OW-EU/1.0/" />
+
+            <license label="Rights Statements: NO COPYRIGHT - OTHER KNOWN LEGAL RESTRICTIONS" url="https://rightsstatements.org/page/NoC-OKLR/1.0/" />
+            <license label="Rights Statements: NO COPYRIGHT - UNITED STATES" url="https://rightsstatements.org/page/NoC-US/1.0/" />
+            <license label="Rights Statements: NO COPYRIGHT - CONTRACTUAL RESTRICTIONS" url="https://rightsstatements.org/page/NoC-CR/1.0/" />
+            <license label="Rights Statements: NO COPYRIGHT - NON-COMMERCIAL USE ONLY" url="https://rightsstatements.org/page/NoC-NC/1.0/" />
+
+            <license label="Rights Statements: NO KNOWN COPYRIGHT" url="https://rightsstatements.org/page/NKC/1.0/" />
+            <license label="Rights Statements: COPYRIGHT NOT EVALUATED" url="https://rightsstatements.org/page/CNE/1.0/" />
+            <license label="Rights Statements: COPYRIGHT UNDETERMINED" url="https://rightsstatements.org/page/UND/1.0/" />
+        </licenses>
+    </metadata>
+
+
+    <toc>
+        <!-- volumeSortFields: Solr fields by which the volumes in an anchor TOC
+             shall be sorted. Custom templates can be defined for anchor docstruc types,
+             otherwise "_DEFAULT" is used. Optional "order" attribute (default is "asc").
+             Optional attribute "groupBy" by which the volumes in an anchor
+             TOC shall be grouped. If sorting of the groups is desired, the field should
+             also be defined as the first <field> entry. -->
+        <volumeSortFields>
+            <template name="_DEFAULT">
+                <field order="asc">CURRENTNOSORT</field>
+            </template>
+        </volumeSortFields>
+
+        <!-- labelConfig: Layout configuration for the label of TOC elements. The configuration is analogous to a metadata template. -->
+        <labelConfig>
+            <template name="_DEFAULT">
+                <metadata label="" value="{MD_TITLE}{CURRENTNO}">
+                    <param type="field" key="MD_TITLE" altKey="LABEL" />
+                    <param type="field" key="CURRENTNO" prefix="_SPACE_(" suffix=")" />
+                </metadata>
+            </template>
+            <template name="_GROUPS">
+                <metadata label="" value="{MD_TITLE}{MD_SERIESDISPLAYORDER}">
+                    <param type="field" key="MD_TITLE" altKey="LABEL" />
+                    <param type="field" key="MD_SERIESDISPLAYORDER" prefix="_SPACE_(" suffix=")" />
+                </metadata>
+            </template>
+        </labelConfig>
+        
+        <!-- Set the layout of the listing of child records in the TOC of an anchor record. Possible values are 'list' and 'grid' -->
+        <tocAnchorLayout>list</tocAnchorLayout>
+
+        <!-- tocAnchorGroupElementsPerPage: Number of elements displayed per page in anchor/group TOCs. Values below 1 disable pagination. Default is 50. -->
+        <tocAnchorGroupElementsPerPage>50</tocAnchorGroupElementsPerPage>
+
+        <!-- recordGroupIdentifierFields: Contains definitions of GROUPID_ fields used in the index.
+             This is needed so the fields can be added to the whitelist of fields to return. -->
+        <recordGroupIdentifierFields>
+            <field>GROUPID_SERIES</field>
+            <field>GROUPID_NEWSPAPER</field>
+        </recordGroupIdentifierFields>
+
+        <!-- ancestorIdentifierFields: Contains definitions of Solr fields that contain hierarchical parent document identifiers (such as PI_PARENT containing anchor identifiers. -->
+        <ancestorIdentifierFields listSiblingRecords="false">
+            <field>PI_PARENT</field>
+        </ancestorIdentifierFields>
+
+        <!-- useTreeView: if true, the toc is displayed as an interactive tree view. Default is false. -->
+        <useTreeView showDocStructs="_ALL">false</useTreeView>
+
+        <!-- tocIndentation: Number of pixels used as padding for child element indentation in the tree view. Default is 20. -->
+        <tocIndentation>20</tocIndentation>
+
+        <!-- Config for the Main object title derived from the toc labels emplate is resolved like metadata templates by DocStructType
+             if displayAnchorTitle is true and the current object has an anchor; the label of the anchor toc element will pre displayed before the actual document label
+             prefix and suffix are strings brefore and after the anchor label in the title.
+             Both strings are translated and _SPACE_ is converted to a simple whitespace -->
+        <titleBarLabel>
+            <template name="PeriodicalVolume">
+                <displayAnchorTitle prefix="" suffix="_SPACE_">false</displayAnchorTitle>
+            </template>
+            <template name="_DEFAULT">
+                <displayAnchorTitle>false</displayAnchorTitle>
+            </template>
+        </titleBarLabel>
+    </toc>
+
+
+    <tagclouds>
+        <!-- sampleSizes: Large numbers of records can significantly reduce the performance of tag cloud generations. The sample size for individual fields can be reduced
+             here. Default value is INT_MAX. -->
+        <sampleSizes>
+            <MD_TITLE>5000</MD_TITLE>
+        </sampleSizes>
+    </tagclouds>
+
+
+    <urnresolver>
+        <!-- field: Multiple URN fields can be defined here, which will be queried in that order. Default is 'URN'. -->
+        <field>URN</field>
+        <!-- doRedirectInsteadOfForward: defines whether an identifier request
+             or URN request gets redirected or forwarded. Allowed values are true (Redirect)
+             and false (Forward). -->
+        <!-- Forward: a forward is performed internally by the servlet the browser
+             is completely unaware that it has taken place, so its original URL remains
+             intact any browser reload of the resulting page will simple repeat the original
+             request, with the original URL Redirect: a redirect is a two step process,
+             where the web application instructs the browser to fetch a second URL, which
+             differs from the original a browser reload of the second URL will not repeat
+             the original request, but will rather fetch the second URL redirect is marginally
+             slower than a forward, since it requires two browser requests, not one objects
+             placed in the original request scope are not available to the second request -->
+        <doRedirectInsteadofForward>true</doRedirectInsteadofForward>
+    </urnresolver>
+
+
+    <!-- Show or hide sections in the sidebar globally -->
+    <sidebar>
+    
+        <!-- views: Widget display configurations for individual record views. -->
+        <!--  Not every widget is available in every view, some functions are linked to certain views, based on the widget type. This needs to be reviewed manually on request. -->
+        <views>
+            <view name="calendar">
+                <displayWidget name="views" />
+                <displayWidget name="copyright" />
+                <displayWidget name="search-result-navigation" />
+                <displayWidget name="search-in-current-item" />
+                <displayWidget name="archives" />
+                <displayWidget name="named-entities" />
+                <displayWidget name="metadata" />
+                <displayWidget name="geomap" />
+                <displayWidget name="annotations" />
+                <displayWidget name="record-notes" />
+                <displayWidget name="downloads" />
+                <displayWidget name="citation" />
+                <displayWidget name="related-groups" />
+                <displayWidget name="toc" />
+                <displayWidget name="version-history" />
+                <displayWidget name="user-interactions" />
+            </view>
+            <view name="fulltext">
+                <displayWidget name="views" />
+                <displayWidget name="copyright" />
+                <displayWidget name="search-result-navigation" />
+                <displayWidget name="search-in-current-item" />
+                <displayWidget name="geomap" />
+                <displayWidget name="annotations" />
+                <displayWidget name="record-notes" />
+                <displayWidget name="downloads" />
+                <displayWidget name="version-history" />
+            </view>
+            <view name="metadata">
+                <displayWidget name="views" collapsible="false" collapsedByDefault="false" />
+                <displayWidget name="copyright" />
+                <displayWidget name="search-result-navigation" />
+                <displayWidget name="search-in-current-item" />
+                <displayWidget name="statistics-usage" />
+                <displayWidget name="named-entities" />
+                <displayWidget name="geomap" />
+                <displayWidget name="annotations" />
+                <displayWidget name="record-notes" />
+                <displayWidget name="downloads" collapsible="false" collapsedByDefault="false" />
+                <displayWidget name="formats-links" collapsible="false" collapsedByDefault="false" />
+                <displayWidget name="citation" collapsible="false" collapsedByDefault="false" /> 
+                <displayWidget name="version-history" />
+            </view>
+            <view name="named-entities">
+                <displayWidget name="views" />
+                <displayWidget name="search-result-navigation" />
+                <displayWidget name="geomap" />
+                <displayWidget name="annotations" />
+                <displayWidget name="record-notes" />
+                <displayWidget name="version-history" />
+            </view>
+            <view name="object">
+                <displayWidget name="views" collapsible="false" collapsedByDefault="false" /> 
+                <displayWidget name="copyright" />
+                <displayWidget name="search-result-navigation" />
+		<displayWidget name="search-in-current-item" />
+		<displayWidget name="calendar" />
+                <displayWidget name="named-entities" />
+                <displayWidget name="metadata" collapsible="false" collapsedByDefault="false" />
+                <displayWidget name="metadata-tech" collapsible="false" collapsedByDefault="false" />
+                <displayWidget name="geomap" />
+                <displayWidget name="archives" />
+                <displayWidget name="statistics-usage" collapsible="false" collapsedByDefault="false" />
+                <displayWidget name="annotations" />
+                <displayWidget name="record-notes" />
+                <displayWidget name="downloads" collapsible="true" collapsedByDefault="true" />
+                <displayWidget name="citation" collapsible="true" collapsedByDefault="true" />
+                <displayWidget name="related-groups" />
+                <displayWidget name="toc" />
+                <displayWidget name="version-history" />
+            </view>
+            <view name="thumbs">
+                <displayWidget name="views" />
+                <displayWidget name="copyright" />
+                <displayWidget name="search-result-navigation" />
+                <displayWidget name="version-history" />
+            </view>
+            <view name="toc">
+                <displayWidget name="views" />
+                <displayWidget name="copyright" />
+                <displayWidget name="search-result-navigation" />
+                <displayWidget name="search-in-current-item" />
+                <displayWidget name="geomap" />
+                <displayWidget name="annotations" />
+                <displayWidget name="record-notes" />
+                <displayWidget name="formats-links" />
+                <displayWidget name="version-history" />
+            </view>
+            <view name="mei">
+                <displayWidget name="views" collapsible="false" collapsedByDefault="false" /> 
+                <displayWidget name="copyright" />
+                <displayWidget name="search-result-navigation" />
+                <displayWidget name="search-in-current-item" />
+                <displayWidget name="named-entities" />
+                <displayWidget name="metadata" collapsible="false" collapsedByDefault="false" />
+                <displayWidget name="metadata-tech" collapsible="false" collapsedByDefault="false" />
+                <displayWidget name="geomap" />
+                <displayWidget name="archives" />
+                <displayWidget name="statistics-usage" collapsible="false" collapsedByDefault="false" />
+                <displayWidget name="annotations" />
+                <displayWidget name="record-notes" />
+                <displayWidget name="downloads" collapsible="true" collapsedByDefault="true" />
+                <displayWidget name="citation" collapsible="true" collapsedByDefault="true" />
+                <displayWidget name="related-groups" />
+                <displayWidget name="toc" />
+                <displayWidget name="version-history" />
+            </view>
+        </views>
+    
+        <widgets>
+            <!-- RECORD VIEW WIDGETS -->
+            <!-- views: Widget display configurations for individual record views. -->
+            <widget name="views">
+                <calendar enabled="true" />
+                <!-- fulltext/@enabled: if true, the link to the fulltext page is displayed. Default is true. -->
+                <fulltext enabled="true" />
+                <!-- metadata/@enabled: if true, the link to the bibliographic data page is displayed. Default is true. -->
+                <metadata enabled="true" />
+                <!-- object/@enabled: if true, the link to the media view page is displayed. Default is true. -->
+                <object enabled="true" />
+                <!-- opac/@enabled: if true, the link to the OPAC will be displayed. Default is false. -->
+                <opac enabled="false" />
+                <!-- thumbs/@enabled: if true, the link to the thumbnail page is displayed. Default is true. -->
+                <thumbs enabled="true" />
+                <!-- toc/@enabled: if true, the link to the TOC page is displayed. Please note, that this is not the sidebar toc component. Default is true. -->
+                <toc enabled="true" />
+            </widget>
+            
+            <!-- widget[@name="additional-files"]: Download widget within a records view for additional files from the source directory. -->
+            <widget name="additional-files">
+                <!-- Filters against which the filenames of additional files are tested.
+                If the filter's 'action' attribute is 'show', only files are shown which filename matches the regular expression in the 'regex' attribute.
+                If the action is 'hide' filenames matching the expression are excluded. -->
+                <filter action="hide" regex="(EXAMPLE_.*|HIDDEN_.*)" />
+                <!-- These filters utilize a variable system with '{a.B}' expressions. These expressions are replaced with a solr field value of the current record if possible
+                Within the '{...}' expression, the string after the dot is the name of a solr field which value the expression should represent.
+                The string before the dot denounces the document hierarchy level at which to look the for field. Here, 'struct' stands for fields in structures below the record level (article, chapter,...),
+                'record' stands for fields on the record level (book magazine issue,...) and 'anchor' for fields in structures above th record level (multivolume work, newspaper,...)
+                '{struct.MD_SHELFMARK}' thus means the value of the shelfmark field of the current structure element within a book. -->
+                <filter action="show" regex="{struct.MD_SHELFMARK}\..*">
+                    <!-- filters which pose conditions under which the owning filter is applied.
+                        If any of these filters don't apply, the owning filter is not used
+                        These filters contain a 'value' attribute which is tested against the 'regex' attribute. In the example, the record digital collection
+                        must be 'archive.100uaghgw.020volksliedarchiv' or a subcollection thereof -->
+                    <conditions>
+                        <filter action="show"
+                            regex="archive\.100uaghgw\.020volksliedarchiv.*"
+                            value="{record.DC}" />
+                    </conditions>
+                </filter>
+            </widget>
+            
+            <!-- widget[@name="archives"]: Widget containing information about a record's linkage to an archive node. -->
+            <widget name="archives" />
+            
+            <widget name="citation">
+                <citationLinks enabled="true">
+                    <!-- links: Citation link configurations. -->
+                    <links>
+                        <link type="URL" for="record" label="URN" field="URN" pattern="https://nbn-resolving.org/{value}" />
+                        <link type="URL" for="record" label="Handle" field="MD_PI_HANDLE" pattern="https://hdl.handle.net/{value}" />
+                        <link type="URL" for="record" label="DOI" field="MD_PI_DOI" pattern="https://doi.org/{value}" />
+                        <link type="URL" for="record" label="ARK" field="MD_PI_ARK" pattern="https://n2t.net/{value}" />
+                        <link type="URL" for="record" label="PURL" field="MD_PURL_IAI" />
+                        <link type="URL" for="record" label="RIS" action="download" pattern="{rest-api-url}records/{PI}/ris/"/>
+                        <link type="URL" for="image"  label="DOI" field="MD_PI_DOI" pattern="https://doi.org/{value}#?page={page}" />
+                        <link type="URL" for="image"  label="ARK" field="MD_PI_ARK" pattern="https://n2t.net/{value}/{page}/" topstructValueFallback="true" />
+                        <link type="URL" for="image"  label="URN" field="IMAGEURN" pattern="https://nbn-resolving.org/{value}" />
+                        <link type="URL" for="image"  label="URN" field="URN" pattern="https://nbn-resolving.org/{value}/fragment/page={page}" topstructValueFallback="true" />
+                        <link type="INTERNAL" for="record" label="LABEL_VIEWER_PURL" />
+                        <link type="INTERNAL" for="docstruct" label="LABEL_VIEWER_PURL" />
+                        <link type="INTERNAL" for="image" label="LABEL_VIEWER_PURL" />
+                    </links>
+                </citationLinks>
+                <citationRecommendation enabled="true">
+                    <!-- styles: Available citation styles. Please refer to citeproc documentation for available values.
+                        Alternate labels can be added using the schema 'label__citation_style_<style>'. -->
+                    <styles>
+                        <style>modern-language-association</style>
+                        <style>apa</style>
+                        <style>chicago-author-date</style>
+                        <style>harvard-cite-them-right-no-et-al</style>
+                        <style>oscola</style>
+                    </styles>
+                    <!-- Metadata source mapping for citations. Please refer to the citeproc documentation for available "dest" values. -->
+                    <source>
+                        <metadata label="MD_CITATION" value="MASTERVALUE_CITATION">
+                            <param type="citeproc" dest="title" key="MD_TITLE" />
+                            <param type="citeproc" dest="author" key="MD_CREATOR" />
+                            <param type="citeproc" dest="publisher" key="MD_PUBLISHER" />
+                            <param type="citeproc" dest="placepublish" key="MD_PLACEPUBLISH" />
+                            <param type="citeproc" dest="issued" key="MD_YEARPUBLISH" />
+                            <param type="citeproc" dest="isbn" key="MD_ISBN" />
+                        </metadata>
+                    </source>
+                 </citationRecommendation>
+            </widget>
+            
+            <!--  widget[@name="copyright"]/@style: two possible styles: trafficlight or widget. Style widget displays the information
+                as a sidebar widget. Trafficlight displays the information near the record title -->
+            <widget name="copyright" style="widget">
+                <status field="ACCESSCONDITION">
+                    <value content="OPENACCESS" status="OPEN" description="COPYRIGHT_DESCRIPTION_STATUS_OPEN" />
+                    <value content="born_digital_download_disabled" status="PARTIAL" description="COPYRIGHT_DESCRIPTION_STATUS_BORNDIGITAL" />
+                    <!-- <value content="Blocked copyright" status="LOCKED" description="COPYRIGHT_DESCRIPTION_STATUS_LOCKED" /> -->
+                </status>
+                <license field="MD_USEANDREPRODUCTIONLICENSE">
+                    <!-- Creative Commons: CC0 - https://creativecommons.org/publicdomain/zero/1.0/ -->
+                    <value content="CC0 1.0 Universal (CC0 1.0) Public Domain Dedication" description="COPYRIGHT_DESCRIPTION_LICENSE_CC010">
+                        <icon>cc.svg</icon>
+                        <icon>zero.svg</icon>
+                    </value>
+                    <!-- Creative Commons: CC BY - https://creativecommons.org/licenses/by/4.0/ -->
+                    <value content="Attribution 4.0 International (CC BY 4.0)" description="COPYRIGHT_DESCRIPTION_LICENSE_CCBY40">
+                        <icon>cc.svg</icon>
+                        <icon>by.svg</icon>
+                    </value>
+                    <!-- Creative Commons: CC BY-SA - https://creativecommons.org/licenses/by-sa/4.0/ -->
+                    <value content="Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)" description="COPYRIGHT_DESCRIPTION_LICENSE_CCBYSA40">
+                        <icon>cc.svg</icon>
+                        <icon>by.svg</icon>
+                        <icon>sa.svg</icon>
+                    </value>
+                    <!-- Creative Commons: CC BY-ND - https://creativecommons.org/licenses/by-nd/4.0/ -->
+                    <value content="Attribution-NoDerivatives 4.0 International (CC BY-ND 4.0)" description="COPYRIGHT_DESCRIPTION_LICENSE_CCBYND40">
+                        <icon>cc.svg</icon>
+                        <icon>by.svg</icon>
+                        <icon>nd.svg</icon>
+                    </value>
+                    <!-- Creative Commons: CC BY-NC - https://creativecommons.org/licenses/by-nc/4.0/ -->
+                    <value content="Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)" description="COPYRIGHT_DESCRIPTION_LICENSE_CCBYNC40">
+                        <icon>cc.svg</icon>
+                        <icon>by.svg</icon>
+                        <icon>nc.svg</icon>
+                    </value>
+                    <!-- Creative Commons: CC BY-NC-SA - https://creativecommons.org/licenses/by-nc-sa/4.0/ -->
+                    <value content="Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)" description="COPYRIGHT_DESCRIPTION_LICENSE_CCBYNCSA40">
+                        <icon>cc.svg</icon>
+                        <icon>by.svg</icon>
+                        <icon>nc.svg</icon>
+                        <icon>sa.svg</icon>
+                    </value>
+                    <!-- Creative Commons: CC BY-NC-ND - https://creativecommons.org/licenses/by-nc-nd/4.0/ -->
+                    <value content="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)" description="COPYRIGHT_DESCRIPTION_LICENSE_CCBYNCND40">
+                        <icon>cc.svg</icon>
+                        <icon>by.svg</icon>
+                        <icon>nc.svg</icon>
+                        <icon>nd.svg</icon>
+                    </value>
+                    <!-- Creative Commons: Public Domain - https://creativecommons.org/publicdomain/mark/1.0/ -->
+                    <value content="Public Domain Mark 1.0" description="COPYRIGHT_DESCRIPTION_LICENSE_PUBLICDOMAINMARK10">
+                        <icon>pd.svg</icon>
+                    </value>
+                    <!-- RightsStatements: InC (In Copyright 1.0) - https://rightsstatements.org/vocab/InC/1.0/ -->
+                    <value content="In Copyright 1.0" description="COPYRIGHT_DESCRIPTION_LICENSE_RSINC10">
+                        <icon>rs-inc.svg</icon>
+                    </value>
+                    <!-- RightsStatements: InC-OW-EU (Urheberrechtsschutz - Verwaistes Werk EU) - https://rightsstatements.org/vocab/InC-OW-EU/1.0/ -->
+                    <value content="Urheberrechtsschutz - Verwaistes Werk EU" description="COPYRIGHT_DESCRIPTION_LICENSE_RSINCOWEU10">
+                        <icon>rs-inc.svg</icon>
+                    </value>
+                    <!-- Rights reserved - deutsche Urheberrecht -->
+                    <value content="Rights reserved" description="COPYRIGHT_DESCRIPTION_LICENSE_RIGHTSRESERVED">
+                        <icon>paragraphs.svg</icon>
+                    </value>
+                    <!-- Rights reserved - VG Wort -->
+                    <value content="Rights reserved - Rights managed by VG Wort (§ 51 VGG)" description="COPYRIGHT_DESCRIPTION_LICENSE_RIGHTSRESERVEDVGWORT">
+                        <icon>paragraphs.svg</icon>
+                    </value>
+                    <!-- Rights reserved - VG Wort NEW -->
+                    <value content="Rights reserved - Rights managed by VG Wort (§ 52 VGG)" description="COPYRIGHT_DESCRIPTION_LICENSE_RIGHTSRESERVEDVGWORT52">
+                        <icon>paragraphs.svg</icon>
+                    </value>
+                </license>
+            </widget>
+            
+            <!-- widget[@name="downloads"] -->
+            <widget name="downloads">
+                <page>
+                    <downloadOptions enabled="true">
+                    <!-- Each option contains a label and a format. The label is translated via the messages.
+                        The format can take the values supported by the ContentServer, for example "pdf", "tif",
+                        "jpg" or "png". If the static string "MASTER" is used, the format is dynamically set to
+                        the format of the master image. The attribute boxSizeInPixel specifies the size of a box
+                        in pixels into which the image is scaled while maintaining the aspect ratio. -->
+                        <option label="label__download_option_preview_150" format="jpg" boxSizeInPixel="150" />
+                        <option label="label__download_option_small_1024" format="jpg" boxSizeInPixel="1024" />
+                        <option label="label__download_option_medium_2048" format="jpg" boxSizeInPixel="2048" />
+                        <option label="label__download_option_large_4096" format="jpg" boxSizeInPixel="4096" />
+                        <option label="Master" format="MASTER" boxSizeInPixel="max" />
+                    </downloadOptions>
+                </page>
+
+                <pdfPageRange enabled="false" />
+            </widget>
+            
+            <!-- widget[@name="search-in-current-item"]/@onlyIfFullTextAvailable: if true, the widget will only be displayed if current record has full-text. Default is false. -->
+            <widget name="search-in-current-item" onlyIfFullTextAvailable="false" />
+            
+            <!-- widget[@name="toc"] -->
+            <widget name="toc">
+                <!-- visibleInFullscreen: If true, the the sidebar TOC element is displayed in the full-screen sidebar accordion. Default is true. -->
+                <visibleInFullscreen>true</visibleInFullscreen>
+
+                <!-- pageNumbersVisible: if true, page numbers in the sidebar toc are displayed. Default is false. -->
+                <pageNumbersVisible>false</pageNumbersVisible>
+
+                <!-- lengthBeforeCut: defines the number of characters until the string is cut and a "more" link is shown. Default is 60. -->
+                <lengthBeforeCut>60</lengthBeforeCut>
+
+                <!-- useTreeView: if true, the sidebarToc is displayed as an interactive tree view. Default is true. -->
+                <useTreeView>true</useTreeView>
+
+                <!-- initialCollapseLevel: level for initial collapse. Default is 2. -->
+                <initialCollapseLevel>2</initialCollapseLevel>
+
+                <!-- collapseLengthThreshold: max length of level before it gets collapsed -->
+                <collapseLengthThreshold lowestLevelToTest="2">0</collapseLengthThreshold>
+            </widget>
+            
+            <!-- OTHER WIDGETS -->
+            <!-- widget[@name="browsing-terms"]: Term browsing widget. -->
+            <widget name="browsing-terms" enabled="true" />
+            
+            <!-- widget[@name="rss"]/@enabled: If true, the sidebar RSS widget it displayed. Default is true. -->
+            <widget name="rss" enabled="true" />
+            
+        </widgets>
+    </sidebar>
+
+
+    <!-- Various options -->
+    <webGuiDisplay>
+        <!-- collectionBrowsing: if false, the collections section is hidden -->
+        <collectionBrowsing>true</collectionBrowsing>
+
+        <!-- userAccountNavigation: if false, the user section is hidden -->
+        <userAccountNavigation>true</userAccountNavigation>
+
+        <!-- displayTagCloudNavigation: if false, the tag cloud section is hidden -->
+        <displayTagCloudNavigation>true</displayTagCloudNavigation>
+
+        <!-- displayTagCloudStartpage: if false the tag cloud on the start page is hidden -->
+        <displayTagCloudStartpage>true</displayTagCloudStartpage>
+
+        <!-- displaySearchResultNavigation: if false, the box that allows browsing through search hits in the image view is hidden -->
+        <displaySearchResultNavigation>true</displaySearchResultNavigation>
+
+        <!-- displayBreadcrumbs: if false, the breadcrumb navigation is hidden -->
+        <displayBreadcrumbs>true</displayBreadcrumbs>
+
+        <!-- number of letters befor cutting breadcrumb items -->
+        <breadcrumbsClipping>50</breadcrumbsClipping>
+
+        <!-- displayTitleBreadcrumbs: if true, the document structure is displayed in the title component in breadcrumb form. Default is false -->
+        <displayTitleBreadcrumbs maxTitleLength="40" includeAnchor="false">false</displayTitleBreadcrumbs>
+
+        <!-- displayTitlePURL: if true, a PURL to the current page in the title component. Default is true -->
+        <displayTitlePURL>true</displayTitlePURL>
+
+        <!-- displayMetadataPageLinkBlock: if false, the links on the bottom of the metadata view are hidden -->
+        <displayMetadataPageLinkBlock>true</displayMetadataPageLinkBlock>
+
+        <!-- displayStatistics: if true, the statistics link is shown. Default is true -->
+        <displayStatistics>true</displayStatistics>
+
+        <!-- displayTimeline: if true, the time matrix link is shown. Default is false -->
+        <displayTimeMatrix>false</displayTimeMatrix>
+
+        <!-- displayCrowdsourcingModuleLinks: if true, crowdsourcing transcription links that link the the crowdsourcing module are shown. Default is false -->
+        <displayCrowdsourcingModuleLinks>false</displayCrowdsourcingModuleLinks>
+
+        <!-- displaySocialMediaShareLinks: if true, links to share the current page in facebook or twitter are shown in the fullscreen view. Default is false -->
+        <displaySocialMediaShareLinks>false</displaySocialMediaShareLinks>
+
+        <!-- displayUserGeneratedContentBelowImage: if true, the user generated content/annotations for the current page are shown underneath the image
+             and the sidebar widget for annotations is hidden. Default is false -->
+        <displayUserGeneratedContentBelowImage>false</displayUserGeneratedContentBelowImage>
+
+        <!-- displayAnnotationTextInImage: if true, the annotation text is displayed in a box in the image next to the border that marks the annotation. If false the text box is hidden. Default is true -->
+        <displayAnnotationTextInImage>true</displayAnnotationTextInImage>
+    </webGuiDisplay>
+
+
+    <rss>
+        <!-- numberOfItems: defines how many elements the RSS feed containts -->
+        <numberOfItems>50</numberOfItems>
+
+        <!-- title: defines the title of the RSS feed -->
+        <title>Goobi viewer RSS Feed</title>
+
+        <!-- description: defines the description of the RSS feed -->
+        <description>new items</description>
+
+        <!-- copyright: defines the copyright of the displayed material -->
+        <copyright>(c) Goobi viewer using institution </copyright>
+    </rss>
+
+
+    <!-- bookmarks/@enabled: if false, no links to bookmark administration are displayed. Default is true. -->
+    <bookmarks enabled="true" />
+
+
+    <cms>
+        <!-- mediaDisplayWidth: defines the width in pixels that is used for cms media items for example in the tile grids or collection representant -->
+        <mediaDisplayWidth>400</mediaDisplayWidth>
+
+        <!-- mediaDisplayHeight: defines the maximum height in pixels for cms media items. Default is 100000 (effectively unlimited, height is determined by width). -->
+        <!-- <mediaDisplayHeight>400</mediaDisplayHeight> -->
+    </cms>
+
+
+    <!-- transkribus/@enabled: If true transkribus links are shown. Default ist false -->
+    <transkribus enabled="false">
+        <!-- Transkribus user name for this viewer instance -->
+        <userName></userName>
+
+        <!-- Transkribus password for this viewer instance -->
+        <password></password>
+
+        <!-- Transkribus collection name to be added to this viewer's account and user accounts (e.g. the institution's name) -->
+        <defaultCollection>goobi_viewer</defaultCollection>
+
+        <!-- URL of the Transkribus REST API. This can be changed to the test API, if necessary. Default value is the production API URL. -->
+        <restApiUrl>https://transkribus.eu/TrpServer/rest/</restApiUrl>
+
+        <!-- NOT IN USE: allowedDocumentTypes: Document types for which to allow Transkribus injection -->
+        <allowedDocumentTypes>
+            <docstruct>Monograph</docstruct>
+            <docstruct>Manuscript</docstruct>
+        </allowedDocumentTypes>
+    </transkribus>
+
+
+    <!-- piwik/@enabled: If true, a Piwik/Matomo tracking code is insert into the pages. Default is false. -->
+    <piwik enabled="false">
+        <!-- BaseURL of the piwik script without "http://"! -->
+        <baseURL>example.com/</baseURL>
+        <!-- Piwik site ID -->
+        <siteID>1</siteID>
+    </piwik>
+
+
+    <!-- sitelinks/@enabled: If true, the link to the sitelinks page will be displayed. Default is true. -->
+    <sitelinks enabled="true">
+        <!-- sitelinksField: Field for which the sitelinks page will list all available values (similar to term browsing) -->
+        <sitelinksField>YEAR</sitelinksField>
+        <!-- sitelinksFilterQuery: Solr query which will filter the results for each field value (e.g. only top-level dosctructs) -->
+        <sitelinksFilterQuery>ISWORK:true</sitelinksFilterQuery>
+    </sitelinks>
+
+    <!-- Web API configuration -->
+    <webapi>
+        <json>
+            <!-- template: Template containing a custom JSON field configuration. Attribute @query contains a Solr filter query. 
+             Each <field> element must contain the  attributes 'jsonField'  (name of the field for JSON datasets) and 'solrField'
+             (source index field name). An optional attribute 'multivalue' can be set to 'true' to return a list with all found values in JSON. -->
+            <template name="_DEFAULT" query="">
+                <field jsonField="persons" solrField="MD_CREATOR" multivalue="true" />
+                <field jsonField="title" solrField="MD_TITLE" />
+            </template>
+        </json>
+
+        <!-- iiif: configuration of the IIIF presentation API. Supported values for the use-version attribute are "2.1.1" and "3.0"
+             The version has an impact on the links the Goobi viewer provides in the "Cite and reuse" widget. -->
+        <iiif use-version="2.1.1">
+
+            <!-- externalManifests: Configuration to use external manifests instead of internally generated ones.
+                 @enable: Enabled the functionallity. Possible values are `true` and `false`. Default is false
+                 @field: name of a solr field which may contain urls to external manifests. If the field exists for a record and contains a url,
+                         this url is always used in the viewer instead of the internal one. The internal manifest url also redirects to the external url -->
+            <externalManifests enabled="false" field="MD_IIIF_MANIFEST" />
+
+            <!-- metadataFields: A list of all metadata fields which should be included within
+                 the IIIF Presentation response for manifests and ranges representing structural elements -->
+            <metadataFields>
+                <!-- <field>MD_TITLE</field> -->
+                <!-- <field>MD_CREATOR</field> -->
+                <field>MD_*</field>
+                <field>DOCSTRCT_TOP</field>
+            </metadataFields>
+
+            <!-- descriptionFields: A list of solr fieldnames which may serve as manifest description metadata.
+                 The first existing field is used to provide the medatada description -->
+            <descriptionFields>
+                <field>MD_CONTENTDESCRIPTION</field>
+            </descriptionFields>
+
+            <!-- labelFields: A list of solr fieldnames which may serve as manifest label metadata.
+                 The first existing field is used to provide the manifest label. If no matching fields are found,
+                 the default label of the main struct element is used -->
+            <labelFields>
+                  <field>LABEL</field>
+            </labelFields>
+
+            <!-- navDateField: Solr field to use for IIIF Presentation navDate property, if any -->
+            <navDateField>YEAR</navDateField>
+
+            <!-- rendering: Configure 'rendering' links für IIIF Presentation resources. These
+                 are links to the Goobi Viewer page, the PDF, plaintext and ALTO documents.
+                 For each link the visibiliy attribute determines if the link is rendered
+                 at all and the label subnode can be used to configure an individual label
+                 for the link. These labels are translated if translations exist. -->
+            <rendering>
+                <viewer enabled="true">
+                    <label>Goobi viewer</label>
+                </viewer>
+                <pdf enabled="true">
+                    <label>PDF</label>
+                </pdf>
+                <plaintext enabled="true">
+                    <label>Fulltext</label>
+                </plaintext>
+                <alto enabled="true">
+                    <label>ALTO</label>
+                </alto>
+            </rendering>
+
+            <!-- seeAlso: Configure 'seeAlso' links für IIIF Presentation resources. These
+                 are links to the backing metadata files of a record, either in METS/MODS or LIDO format.
+                 For each link the visibiliy attribute determines if the link is rendered
+                 at all and the label subnode can be used to configure an individual label
+                 for the link. These labels are translated if translations exist. -->
+            <seeAlso>
+                <mets enabled="true">
+                    <label>METS/MODS</label>
+                </mets>
+                <lido enabled="true">
+                    <label>LIDO</label>
+                </lido>
+                <!--
+                <metadata label="metadata_dl_opac" format="text/html">
+                    <param type="field" key="OPACURL" />
+                </metadata>
+                -->
+            </seeAlso>
+
+            <!-- translations: A list of locale of language codes for which translations of labels
+                 and metadata fields should be provided. If no locales are configured, all
+                 available locales are used. If only one locale is used, the labels will always
+                 be rendered as a single string -->
+            <translations>
+                <locale>de</locale>
+                <locale>en</locale>
+            </translations>
+
+            <!-- attribution: IIIF 2
+                 Contains a string to provide as attribution in IIIF manifests. If it is a message key,
+                 all translations are provided as attribution values.
+                 The <attribution /> setting is repeatable. The first instance also acts as fallback for <requiredStatement> (IIIF 3 only) -->
+            <attribution>{MD_USEANDREPRODUCTIONLICENSE}</attribution>
+
+            <!-- license: IIIF 2
+                 Contains a string to provide as license in IIIF manifests. If it is a message key,
+                 all translations are provided as license values.
+                 The <license /> setting is repeatable. The first instance also acts as fallback for <rights> (IIIF 3 only)-->
+            <license></license>
+
+            <!-- logo: IIIF 2
+                 URL to an image which should be displayed as logo in IIIF manifests. if the url is a http(s) url,
+                 the url will be used as is. If it is an absolute file url, a contentServer url will be provided, displaying
+                 that file. If it is just a filename or relative filepath, it will be assumed to be a file in the
+                 resources/themes/<theme>/images/ folder and linked appropriately
+                 If no logo is configured, the image footer will be used
+                 The <logo /> setting is repeatable. -->
+            <logo>https://goobi.io/wp-content/uploads/2016/08/logo_goobi_small_xxs.png</logo>
+
+            <!-- requiredStatement: IIIF 3
+                 Replacement for <attribution />. Default-label is "attribution". This field is not repeatable.
+                 ref https://iiif.io/api/presentation/3.0/#requiredstatement -->
+            <requiredStatement>
+                <!-- label+value: both contain message keys and are repeatable -->
+                <label>Use and reproduction license</label>
+                <value>{MD_USEANDREPRODUCTIONLICENSE}</value>
+            </requiredStatement>
+            <!-- rights: IIIF 3
+                 Replacement for <license />. This setting is optional and not repeatable. It must contain a URI
+                 representing the license of the record. As this is typically stored within the metadata you can
+                 configure a Solr field here.
+                 ref https://iiif.io/api/presentation/3.0/#rights -->
+            <rights></rights>
+
+            <!-- provider: IIIF 3
+                 Encapsulates data provider and rights holder information. This section is optional and repeatable.
+                 ref https://iiif.io/api/presentation/3.0/#provider -->
+            <provider>
+                <!-- url: required, non repeatable -->
+                <url>https://goobi.io</url>
+                <!-- label: required, if it is a message key, all translations are used.-->
+                <label>Goobi community</label>
+                <!-- homepage: optional, repeatable -->
+                <homepage>
+                    <!-- url: required, non-repeatable -->
+                    <url>https://goobi.io</url>
+                    <!-- label: required, if it is a message key, all translations are used.-->
+                    <label>Goobi community</label>
+                </homepage>
+                <!-- logo: optional, non-repeatable.
+                     URL to an image which should be displayed as logo in IIIF manifests. if the url is a http(s) url,
+                     the url will be used as is. If it is an absolute file url, a contentServer url will be provided, displaying
+                     that file. If it is just a filename or relative filepath, it will be assumed to be a file in the
+                     resources/themes/<theme>/images/ folder and linked appropriately -->
+                <logo>https://goobi.io/wp-content/uploads/2016/08/logo_goobi_small_xxs.png</logo>
+            </provider>
+            <provider>
+                <!-- url: required, non repeatable -->
+                <url>https://www.intranda.com</url>
+                <!-- label: required, if it is a message key, all translations are used.-->
+                <label>intranda GmbH</label>
+                <!-- homepage: optional, repeatable -->
+                <homepage>
+                    <!-- url: required, non-repeatable -->
+                    <url>https://www.intranda.com</url>
+                    <!-- label: required, if it is a message key, all translations are used.-->
+                    <label>intranda GmbH</label>
+                </homepage>
+                <!-- logo: optional, non-repeatable.
+                     URL to an image which should be displayed as logo in IIIF manifests. if the url is a http(s) url,
+                     the url will be used as is. If it is an absolute file url, a contentServer url will be provided, displaying
+                     that file. If it is just a filename or relative filepath, it will be assumed to be a file in the
+                     resources/themes/<theme>/images/ folder and linked appropriately -->
+                <logo>https://www.intranda.com/wp-content/uploads/2014/07/intranda_logo_blue_2014.png</logo>
+            </provider>
+
+            <!-- discloseContentLocation: Show source file location of image requests in Content-Location HTTP header. Default is true. -->
+            <discloseContentLocation>false</discloseContentLocation>
+        </iiif>
+
+        <!-- Configure a secure token here that can be used to authenticate for secured REST-api endpoints -->
+        <authorization>
+            <token>test</token>
+        </authorization>
+
+        <!-- If @enabled is 'true' add a Access-Control-Allow-Origin Header with this value to all REST-api calls referencing the @CORSBinding annotation -->
+        <cors enabled="false">*</cors>
+    </webapi>
+
+
+    <!-- When generating twitter cards the userName is added in the twitter:site tag -->
+    <embedding>
+        <twitter>
+            <userName>@goobi</userName>
+        </twitter>
+    </embedding>
+
+
+    <!-- Configuration for geo maps -->
+    <maps>
+        <!-- Add a mapbox token here to use their maps. User and styleID are optional for using individual styles -->
+        <mapbox>
+            <token></token>
+            <user></user>
+            <styleId></styleId>
+            <!-- Display an input field to search for places within a map. Default is true. -->
+            <addressSearch enabled="false" />
+        </mapbox>
+
+        <!-- The markers can be configured using the Leaflet.ExtraMarkers plugin
+             Find more about it here: https://github.com/coryasilva/Leaflet.ExtraMarkers -->
+        <markers>
+            <marker useDefaultIcon="true" highlightIcon="marker-icon_red.png">default</marker>
+            <marker icon="fa-info" markerColor="green" shape="circle" extraClasses="fa-2x">maps__marker_1</marker>
+            <marker icon="fa-building" markerColor="orange-dark" shape="square">maps__marker_2</marker>
+            <marker icon="fa-user" markerColor="cyan" shape="penta">maps__marker_3</marker>
+            <marker icon="fa-rocket" markerColor="pink" shape="star">maps__marker_4</marker>
+            <marker icon="fa-spinner" markerColor="yellow" extraClasses="fa-2x fa-spin">maps__marker_5</marker>
+            <marker icon="fa-coffee" markerColor="white" prefix="fa" iconColor="black" iconRotate="270">maps__marker_6</marker>
+            <marker icon="fa-number" markerColor="black" number="42" svg="true">maps__marker_7</marker>
+            <marker type="divIcon" class="marker-circle marker-circle-blue">maps__marker_8</marker>
+            <marker type="divIcon" class="marker-circle marker-circle-red">maps__marker_9</marker>
+        </markers>
+
+        <metadata>
+            <option label="cms__geomaps__popup_content__option__none" name="" />
+            <option label="cms__geomaps__popup_content__option__place" name="NORM_NAME">
+                <marker metadataList="geomaps_location" />
+            </option>
+            <option label="cms__geomaps__popup_content__option__metadata" name="MD_VALUE">
+                <marker metadataList="geomaps_metadata" />
+            </option>
+        </metadata>
+        
+        <filters>
+            <filter>
+                <name>Metadatatypes</name>
+                <field label="Type">METADATA_TYPE</field>
+            </filter>
+            <filter>
+                <name>Doctypes</name>
+                <field label="Type">DOCSTRCT</field>
+            </filter>
+        </filters>
+
+        <!-- List of fields in the Solr index, that contain GeoJSON information -->
+        <coordinateFields>
+            <field>MD_GEOJSON_POINT</field>
+            <field>NORM_COORDS_GEOJSON</field>
+        </coordinateFields>
+        
+        <!-- view: Default map view settings (initial zoom level and center coordinates). -->
+        <view>
+            <zoom>5</zoom>
+            <center>
+                <lng>11.073397</lng>
+                <lat>49.451993</lat>
+            </center>
+        </view>
+
+        <!-- settings for behaviour of marker clusters both in plain maps and heatmaps -->
+        <cluster>
+        	<!-- Increase from 1 to increase the distance away from the center that spiderfied markers are placed. -->
+        	<distanceMultiplier>1.0</distanceMultiplier>
+        	<!-- The maximum radius that a cluster will cover from the central marker (in pixels) -->
+        	<radius>80</radius>
+        	<!-- If set to any number, at this zoom level and below, markers will not be clustered. -->
+        	<disableAtZoom></disableAtZoom>
+        </cluster>
+
+        <!-- Individual settings for map types -->
+        <cms>
+            <heatmap enabled="false" />
+        </cms>
+        <facet>
+            <heatmap enabled="true" />
+            <marker icon="fa-circle" markerColor="red" svg="true" />
+            <selection color="blue" />
+        </facet>
+        <search>
+            <heatmap enabled="false" />
+            <marker icon="fa-circle" markerColor="red" svg="true" />
+            <selection color="blue" />
+        </search>
+        <record>
+            <template name="_DEFAULT">
+                <marker>default</marker>
+                <featureSets>
+                    <featureSet type="docStruct">
+                        <marker metadataList="geomaps_metadata">default</marker>
+                    </featureSet>
+                    <featureSet type="annotations">
+                        <marker>default</marker>
+                      </featureSet>
+                </featureSets>
+            </template>
+        </record>
+    </maps>
+
+
+    <!-- Configuration for the translation section in the backend -->
+    <translations>
+    <!-- There can be any number of translation groups with the following attributes
+         type: Possible values are SOLR_FIELD_NAMES (lists a list of field names that match the given configuration)
+                                   SOLR_FIELD_VALUES (lists the values of the given solr field names)
+                                   CORE_STRINGS (lists the keys and their translations that match the given configuration)
+         name: key for the name of the group
+         introductionText: key for the description of the group -->
+        <group type="SOLR_FIELD_NAMES" name="translation__group_name_solr-fields" description="translation__group_description_solr-fields">
+
+            <!-- Each group of SOLR_FIELD_NAMES and SOLR_FIELD_VALUES can contain a list of <key /> entries that match the field name, or
+                if it is regex="true", it matches all field names based on the given regular expression -->
+            <key>DC</key>
+            <key>ACCESSCONDITION</key>
+            <key>BOOL_IMAGEAVAILABLE</key>
+            <key>FULLTEXTAVAILABLE</key>
+            <key>SOURCEDOCFORMAT</key>
+            <key regex="true">SORT.*</key>
+            <key regex="true">NORM_.*(?&lt;!_UNTOKENIZED)$</key>
+            <key regex="true">MD_.*(?&lt;!_UNTOKENIZED)$</key>
+            <!-- List all MD_ fields except the ones that contain CODICOLOGICAL,
+                 DATE_SEARCH, NAME_SEARCH, PLACE_SEARCH and ent with _UNTOKENIZED
+            <key regex="true">MD_(?!.*CODICOLOGICAL)(?!.*DATE_SEARCH)(?!.*NAME_SEARCH)(?!.*PLACE_SEARCH).*(?&lt;!_UNTOKENIZED)$</key>
+            -->
+        </group>
+        <group type="SOLR_FIELD_VALUES" name="translation__group_name_collections" description="translation__group_description_collections">
+            <key>DC</key>
+        </group>
+        <group type="SOLR_FIELD_VALUES" name="translation__group_name_docstruct-top" description="translation__group_description_docstruct-top">
+            <key>DOCSTRCT_TOP</key>
+        </group>
+        <group type="SOLR_FIELD_VALUES" name="translation__group_name_docstruct-sub" description="translation__group_description_docstruct-sub">
+            <key>DOCSTRCT_SUB</key>
+        </group>
+        <group type="SOLR_FIELD_VALUES" name="translation__group_name_eventtype" description="translation__group_description_eventtype">
+            <key>EVENTTYPE</key>
+        </group>
+        <group type="CORE_STRINGS" name="translation__group_name_email" description="translation__group_description_email">
+
+            <!-- A group of the type CORE_STRINGS can contain a list of <key /> entries that match either the exact key name or, if it is type="regex"
+                it matches all message keys based in the given regular expression -->
+            <key>commentChangedNotificationEmailBody</key>
+            <key>commentChangedNotificationEmailSubject</key>
+            <key regex="true">commentNewNotificationEmail.*</key>
+            <key regex="true">feedbackEmail.*</key>
+            <key regex="true">user_activationEmail.*</key>
+            <key regex="true">user_retrieveAccountConfirmationEmail.*</key>
+            <key regex="true">user_retrieveAccountNewPasswordEmail.*</key>
+        </group>
+        <group type="LOCAL_STRINGS" name="translation__group_name_customer" description="translation__group_description_customer">
+
+            <!-- A group of the type LOCAL_STRINGS can contain a list of <key /> entries that match either the exact key name or, if it is type="regex"
+                it matches all message keys based in the given regular expression -->
+            <key regex="true">customer__.*</key>
+        </group>
+    </translations>
+
+    <!-- EAD / Archive functionallity
+    @enabled: If true the /archives/ section is usable. Default is false.
+    @lazyLoadingThreshold: Total number of archive nodes up to which (exclusively) the entire tree is loaded right at the start. Above this value, only
+                           the sub-elements of the active node are loaded. When expanding, the next ones are loaded etc . During a search, the sub-trees
+                           containing hits are also loaded. Default value ist 1000
+    nodeTypes/node/@name: Value of the c level="" attribute of the EAD structure
+    nodeTypes/node/@icon: Name of the Tabler Icon (see https://tabler.io/icons) rendered via the util:icon component.
+    nodeTypes/node/@default: If not icon was specified, this one is chosen.
+    -->
+    <archives lazyLoadingThreshold="1000">
+        <nodeTypes>
+            <node name="collection" icon="folders" />
+            <node name="folder" icon="folder" />
+            <node name="class" icon="folder-open" default="true" />
+            <node name="file" icon="file" />
+            <node name="image" icon="photo" />
+            <node name="audio" icon="music" />
+            <node name="video" icon="video" />
+            <node name="other" icon="file" />
+        </nodeTypes>
+        <!-- If true, clicking on an archive entry to select it also displays all its child entries. Conversely, clicking on a selected entry to
+            de-select it, hides the children -->
+        <expandOnSelect>true</expandOnSelect>
+    </archives>
+
+    <!-- Configuration for crowdsourcing campaigns -->
+    <campaigns>
+        <!-- Order by which the next editable item of a campaign should be selected. May be "random"
+        or "fixed" (ordered by default SOLR result order). Default is "fixed" -->
+        <itemOrder>fixed</itemOrder>
+        <annotations>
+            <geoCoordinates>
+                <!-- Zoom level of maps depicting the geographical location of an annotation -->
+                <zoom>7</zoom>
+            </geoCoordinates>
+        </annotations>
+        <geoMap>
+            <!-- initial zoom level of maps within crowdsourcing campaigns -->
+            <zoom>5</zoom>
+            <!-- initial center location of maps within crowdsourcing campaigns -->
+            <lngLat>11.073397, 49.451993</lngLat>
+            <!-- The preferred source for map tiles for maps within crowdsourcing campaigns -->
+            <tilesource>mapbox</tilesource>
+        </geoMap>
+    </campaigns>
+
+
+    <!-- upload/@enabled: If true, users are allowed to upload content for processing in Goobi workflow -->
+    <upload enabled="false">
+        <!-- token: Goobi workflow API authorization token. -->
+        <token></token>
+
+        <!-- docstruct: Document type to be used when creating a new process from uploaded data. Default is 'monograph'. -->
+        <docstruct>monograph</docstruct>
+
+        <!-- templateName: Goobi workflow template name for process creation (required). -->
+        <templateName>Sample_workflow</templateName>
+
+        <!-- rejectionPropertyName: Goobi worklow process property name indicating whether the uploaded process was rejected. -->
+        <rejectionPropertyName>uploadRejected</rejectionPropertyName>
+
+        <!-- rejectionReasonPropertyName: Goobi worklow process property name containing the reason for rejection. -->
+        <rejectionReasonPropertyName>uploadRejectedInformation</rejectionReasonPropertyName>
+    </upload>
+
+
+    <!-- Configuration for collecting usage statistics -->
+    <statistics enabled="false">
+        <!-- Web-Crawler requests should not be counted for statistics. Crawler requests are detected by matching
+             their 'User-Agent' request header with the configured regex. The CrawlerSessionManagerValve session
+             attribute can not be used for this purpose since it is applied to the session only after the first request -->
+        <crawlerDetection regex=".*[bB]ot.*|.*Yahoo! Slurp.*|.*Feedfetcher-Google.*|.*Apache-HttpClient.*|.*[Ss]pider.*|.*[Cc]rawler.*|.*nagios.*|.*Yandex.*|.*monitoring-plugins.*|.*node-fetch.*|.*Munin.*|.*SearchHelper.*|.*Qwantify.*|.*feedparser.*|.*Prefetch Proxy.*|.*internal dummy connection.*|.*Go-http-client.*|.*facebookexternalhit.*|^.?$|.*Dataprovider.com.*|.*TYPO3.*|.*python.*|.*curl.*|.*LinkAnalyser.*|.*GuzzleHttp.*|.*Spawning-AI.*|.*Iframely.*|.*ApacheBench.*|.*deadlinkchecker.*|.*Fingerprinter.*|.*Riddler.*|.*Java-http.*" />
+    </statistics>
+
+
+    <!-- configEditor/@enabled: If true, the admin backend file editor will be enabled. Default is true.
+         configEditor/@backupFiles: Maximum number of backup files to keep for each file. Oldest files
+         will be deleted once the maximum is reached. Value 0 means no limit. Default is 0. -->
+    <configEditor enabled="true" backupFiles="100">
+        <!-- directory: Absolute paths that will be scanned for files. Do not enter sensitive locations! -->
+        <directory>/opt/digiverso/viewer/config/</directory>
+        <directory>/opt/digiverso/indexer/</directory>
+    </configEditor>
+
+
+    <!-- proxy/@enabled: If false, the proxy configuration will be ignored; default is false. -->
+    <proxy enabled="false">
+        <!-- proxyUrl: Proxy URL -->
+        <proxyUrl>http://proxy.example.org</proxyUrl>
+        <!-- proxyUrl: Proxy port -->
+        <proxyPort>8080</proxyPort>
+        <!-- whitelist: List of hosts not to be accessed via proxy -->
+        <whitelist>
+            <host>127.0.0.1</host>
+        </whitelist>
+    </proxy>
+
+
+
+    <!-- Enable activeMQ message queue -->
+    <activeMQ enabled="true" numberOfParallelMessages="2">
+        <!-- Time in days to keep completed MessageQueue tasks in database before deleting them -->
+        <deleteCompletedTasksAfterDays>90</deleteCompletedTasksAfterDays>
+    </activeMQ>
+
+
+
+    <!-- settings for the developer backend page, allowing the download of instance-specific data for development purposes
+    and publishing the theme git repository to the viewer instance -->
+    <developer>
+        <!-- these scripts utilize a variable system using '{xyz}' expressions representing values from the viewer configuration file. The following variables are used:
+        {config-folder-path}: The path to the viewer configuration folder, usually '/opt/digiverso/viewer/config/'
+        {theme-path}: The path given by the configuration in viewer/theme/rootPath
+        {base-path}: The base path of the viewer installation, given by the 'viewer/viewerHome' config property. Usually this is '/opt/digiverso/viewer/'
+        {solr-url}: The configured url to the solr, given in viewer/urls/solr. -->
+        <scripts>
+            <!-- bash script to call when the 'pull theme' action is performed on the developer page. The script's output is presented on the page after the operation -->
+            <!-- pullTheme/@enabled: If true, the theme can be update from the Git repository from the admin backend. Default is true. -->
+            <pullTheme enabled="true">{config-folder-path}/script_theme-pull.sh {theme-path}/../../../../</pullTheme>
+            <!-- bash script to call when the 'download' action is performed on the developer page.
+            If the output of the script is a file, it is downloaded to the client and then deleted on the server -->
+            <createDeveloperPackage>{config-folder-path}/script_create_package.sh -d viewer -f {base-path} -s {solr-url} </createDeveloperPackage>
+        </scripts>
+    </developer>
+
+
+    <!-- Settings for displaying additional resources from external URLs. The resources will be available in
+          "bornDigital" records, i.e. records that contain only pages with an 'application/... Mimetype -->
+    <externalResource>
+        <!-- List of URL templates from which to download resources to the viewer server and make available to users
+             These templates may contain placeholders in the form '{<metadatafield>}' where '<metadatafield>' is the
+             name of a SOLR field which first value should be used instead of the placeholder.
+             Only URLs which are reachable and contain any content are listed -->
+        <urls>
+            <!-- Static URLs for testing purposes only -->
+            <!--
+            <template>http://d-nb.info/1308693176/34</template>
+            <template>http://d-nb.info/1063071186/34</template>
+            <template>http://d-nb.info/1308693931/34</template>
+            -->
+            <!-- URL template for a SOLR field named MD_FILEURL -->
+            <template>http://d-nb.info/{MD_FILEURL}/34</template>
+        </urls>
+        <!-- time after which a downloaded external resource is deleted
+             from the viewer server. This is always scheduled in the internal
+             message queue directly after the download is complete -->
+        <deleteAfter>
+            <!-- The number of time units to wait before deleting. Must be a positive integer.
+                 Per default the unit is days-->
+            <value>5</value>
+            <!-- The unit in which the deletion time value is given.
+                 Should be one of 'SECONDS', 'MINUTES', 'HOURS', 'DAYS', 'WEEKS', 'MONTHS', 'YEARS'.
+                 ('FOREVER' is also a valid unit, but untested) -->
+            <unit>minutes</unit>
+        </deleteAfter>
+    </externalResource>
+</config>

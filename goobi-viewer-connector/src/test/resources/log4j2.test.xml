@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+
+	<Appenders>
+		<Console name="stdout">
+			<PatternLayout
+				pattern="%-5level %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %location%n        %msg%n" />
+		</Console>
+		<RollingFile name="rolling" fileName="target/oai.log" filePattern="build/oai.%d{MM-dd-yyyy}.log.gz">
+            <PatternLayout
+                pattern="%-5level %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %location%n        %msg%n" />
+            <SizeBasedTriggeringPolicy size="20 MB" />
+        </RollingFile>
+	</Appenders>
+
+	<Loggers>
+		<Logger name="io.goobi" level="ERROR" additivity="true" />
+		<Logger name="java.net.SocketOutputStream" level="ERROR" additivity="true" />
+		<Logger name="httpclient" level="ERROR" additivity="true" />
+		<Logger name="java.net.SocketOutputStream" level="ERROR"
+			additivity="true" />
+		<Logger name="org.apache" level="ERROR" additivity="true" />
+		<Logger name="ugh" level="ERROR" additivity="true" />
+		<Root level="INFO">
+			<AppenderRef ref="stdout" />
+			<AppenderRef ref="rolling" />
+		</Root>
+	</Loggers>
+
+</Configuration>

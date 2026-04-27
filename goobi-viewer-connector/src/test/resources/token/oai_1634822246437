@@ -1,0 +1,13 @@
+<io.goobi.viewer.connector.oai.model.ResumptionToken>
+  <tokenName>oai_1634822246437</tokenName>
+  <hits>233</hits>
+  <rawHits>233</rawHits>
+  <virtualCursor>10</virtualCursor>
+  <rawCursor>10</rawCursor>
+  <expirationDate>1635081446437</expirationDate>
+  <handler>
+    <verb>ListRecords</verb>
+    <metadataPrefix>oai_dc</metadataPrefix>
+    <until>2021-10-21T13:17:08.461Z</until>
+  </handler>
+</io.goobi.viewer.connector.oai.model.ResumptionToken>
