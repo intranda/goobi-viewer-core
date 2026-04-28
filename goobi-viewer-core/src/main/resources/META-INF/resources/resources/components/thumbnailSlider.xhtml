@@ -48,6 +48,7 @@
 	                        <ui:fragment rendered="#{page != null}">
 	                            <h:outputLink
 	                                styleClass="thumbnail-slider__link"
+	                                aria-label="#{msg.a11y__open_link_to}: #{page.order} #{page.orderLabel}"
 	                                value="#{cc.attrs.thumbsToFullscreen ? request.contextPath.concat('/fullscreen/').concat(activeDocumentBean.viewManager.pi).concat('/').concat(page.order).concat('/') : activeDocumentBean.getPageUrl(page.order)}#topDocAnchor">
 	                                <span class="thumbnail-slider__image-wrapper">
 	                                    <img
@@ -70,7 +71,7 @@
 	        </div>
 			<div id="thumbnail-slider__#{cc.clientId}-btn-next" class="thumbnail-slider__btn-next"><util:icon icon="caret-right" filled="true"/></div>
         </div>
-
+ 
         <script>
             (function() {
                 const el = document.getElementById('#{cc.clientId}-slider');
