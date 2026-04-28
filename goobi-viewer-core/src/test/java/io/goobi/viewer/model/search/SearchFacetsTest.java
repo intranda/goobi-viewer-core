@@ -1015,6 +1015,35 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
         }
     }
 
+    /**
+     * Regression test for the production ArrayIndexOutOfBoundsException ("length -N is negative")
+     * triggered by getAvailableFacetsForField mutating the shared list inside availableFacets.
+     * Repeated calls must leave the underlying list untouched, otherwise concurrent render passes
+     * on the session-scoped bean corrupt the ArrayList's internal state.
+     *
+     * @see SearchFacets#getAvailableFacetsForField(String, boolean)
+     * @verifies not mutate the underlying list when excludeSelected is true
+     */
+    @Test
+    void getAvailableFacetsForField_shouldNotMutateTheUnderlyingListWhenExcludeSelectedIsTrue() {
+        SearchFacets facets = new SearchFacets();
+        List<IFacetItem> items = new ArrayList<>();
+        items.add(new FacetItem("MD_PLACEPUBLISH:cityA", false));
+        items.add(new FacetItem("MD_PLACEPUBLISH:cityB", false));
+        items.add(new FacetItem("MD_PLACEPUBLISH:cityC", false));
+        facets.getAvailableFacets().put("MD_PLACEPUBLISH", items);
+
+        facets.setActiveFacetString("MD_PLACEPUBLISH:cityB;;");
+
+        // Repeated calls used to permanently shrink the stored list (cityB removed each time).
+        for (int i = 0; i < 5; i++) {
+            facets.getAvailableFacetsForField("MD_PLACEPUBLISH", true);
+        }
+
+        Assertions.assertEquals(3, items.size(), "Underlying availableFacets list must not be mutated");
+        Assertions.assertSame(items, facets.getAvailableFacets().get("MD_PLACEPUBLISH"));
+    }
+
     // ====================== isDisplayFacetExpandLink tests ======================
 
     /**
