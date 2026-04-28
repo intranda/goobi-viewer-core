@@ -236,9 +236,9 @@
             to true to use tiled images if possible (only possible when type=openlayers) -->
 		<zoomImageView type="default" tileImage="true"
 			footerHeight="50">
-			<useFor>
+			<condition>
 				<view>viewFullscreen</view>
-			</useFor>
+			</condition>
 			<scale>1000</scale>
 			<scale>2000</scale>
 			<scale>3000</scale>
@@ -251,11 +251,11 @@
 
 		<zoomImageView type="default" tileImage="false"
 			footerHeight="0">
-			<useFor>
+			<condition>
 				<view>editContent</view>
 				<view>editOcr</view>
 				<view>editHistory</view>
-			</useFor>
+			</condition>
 			<scale>200</scale>
 			<scale>300</scale>
 			<scale>400</scale>

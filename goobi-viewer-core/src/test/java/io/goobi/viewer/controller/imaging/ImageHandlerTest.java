@@ -182,14 +182,32 @@ class ImageHandlerTest extends AbstractTest {
         Mockito.when(page.getMimeType()).thenReturn("image/tiff");
         Mockito.when(page.getPi()).thenReturn("PPN1234");
 
-        ImageInformation info = handler.getImageInformation(page, PageType.viewObject);
-        Assertions.assertEquals(TestUtils.APPLICATION_ROOT_URL + "api/v1/records/PPN1234/files/images/00000318.tif", info.getId().toString());
-        Assertions.assertEquals(page.getImageWidth(), info.getWidth());
-        Assertions.assertEquals(page.getImageHeight(), info.getHeight());
-        Assertions.assertEquals(600, info.getSizes().get(0).getWidth());
-        Assertions.assertEquals(900, info.getSizes().get(0).getHeight());
-        Assertions.assertEquals(512, info.getTiles().get(0).getWidth());
-        Assertions.assertEquals(3, info.getTiles().get(0).getScaleFactors().get(2));
+        {
+            //tiled image
+            ImageInformation info = handler.getImageInformation(page, PageType.viewObject);
+            Assertions.assertEquals(TestUtils.APPLICATION_ROOT_URL + "api/v1/records/PPN1234/files/images/00000318.tif", info.getId().toString());
+            Assertions.assertEquals(page.getImageWidth(), info.getWidth());
+            Assertions.assertEquals(page.getImageHeight(), info.getHeight());
+            Assertions.assertEquals(3, info.getSizes().size());
+            Assertions.assertEquals(267, info.getSizes().get(0).getWidth());
+            Assertions.assertEquals(400, info.getSizes().get(1).getWidth());
+            Assertions.assertEquals(800, info.getSizes().get(2).getWidth());
+            Assertions.assertEquals(512, info.getTiles().get(0).getWidth());
+            Assertions.assertEquals(3, info.getTiles().get(0).getScaleFactors().get(2));
+        }
+
+        {
+            //untiled image
+            ImageInformation info = handler.getImageInformation(page, PageType.editOcr);
+            Assertions.assertEquals(TestUtils.APPLICATION_ROOT_URL + "api/v1/records/PPN1234/files/images/00000318.tif", info.getId().toString());
+            Assertions.assertEquals(page.getImageWidth(), info.getWidth());
+            Assertions.assertEquals(page.getImageHeight(), info.getHeight());
+            Assertions.assertEquals(3, info.getSizes().size());
+            Assertions.assertEquals(200, info.getSizes().get(0).getWidth());
+            Assertions.assertEquals(300, info.getSizes().get(1).getWidth());
+            Assertions.assertEquals(400, info.getSizes().get(2).getWidth());
+            Assertions.assertEquals(0, info.getTiles().size());
+        }
     }
 
     /**
