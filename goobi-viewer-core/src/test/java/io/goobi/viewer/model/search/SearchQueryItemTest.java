@@ -432,4 +432,108 @@ class SearchQueryItemTest extends AbstractSolrEnabledTest {
         Assertions.assertEquals(3, seen, "iterator must complete on the original snapshot");
         Assertions.assertEquals(1, item.getLines().size(), "post-iteration list reflects the reset");
     }
+
+    /**
+     * @see SearchQueryItem#convertDatepickerValueToSolrDate(String)
+     * @verifies pass through already converted values silently
+     */
+    @Test
+    void convertDatepickerValueToSolrDate_shouldPassThroughAlreadyConvertedValuesSilently() {
+        // Already in Solr yyyyMMdd format — must be returned unchanged
+        // so bookmarked URLs with correct values keep working.
+        Assertions.assertEquals("19950111", SearchQueryItem.convertDatepickerValueToSolrDate("19950111"));
+        Assertions.assertEquals("20240315", SearchQueryItem.convertDatepickerValueToSolrDate("20240315"));
+    }
+
+    /**
+     * @see SearchQueryItem#generateQuery(Set, boolean, boolean)
+     * @verifies normalize CALENDAR_DAY value to yyyyMMdd when given as locale date
+     */
+    @Test
+    void generateQuery_shouldNormalizeCalendarDayValueToYyyyMMddWhenGivenAsLocaleDate() {
+        // Production regression: YEARMONTHDAY:(11.01.1995) was rejected by Solr as
+        // "Invalid Number". The query item must convert DE/EN date strings to yyyyMMdd
+        // even when the field is not configured as datepicker (e.g. searchInRecord paths).
+        // Emission also includes the IDDOC→IDDOC_OWNER nested join so that pages of the
+        // matching issue are covered as well.
+        String expectedSingleDay = "+(" + SolrConstants.CALENDAR_DAY + ":19950111"
+                + " _query_:\"{!join from=" + SolrConstants.IDDOC + " to=" + SolrConstants.IDDOC_OWNER
+                + "}" + SolrConstants.CALENDAR_DAY + ":19950111\")";
+
+        SearchQueryItem item = new SearchQueryItem();
+        item.setOperator(SearchItemOperator.AND);
+        item.setField(SolrConstants.CALENDAR_DAY);
+        item.setValue("11.01.1995");
+        Assertions.assertEquals(expectedSingleDay, item.generateQuery(new HashSet<>(), true, false));
+
+        // Same for English-formatted dates
+        item = new SearchQueryItem();
+        item.setOperator(SearchItemOperator.AND);
+        item.setField(SolrConstants.CALENDAR_DAY);
+        item.setValue("1/11/1995");
+        Assertions.assertEquals(expectedSingleDay, item.generateQuery(new HashSet<>(), true, false));
+
+        // Already-correct values must pass through unchanged
+        item = new SearchQueryItem();
+        item.setOperator(SearchItemOperator.AND);
+        item.setField(SolrConstants.CALENDAR_DAY);
+        item.setValue("19950111");
+        Assertions.assertEquals(expectedSingleDay, item.generateQuery(new HashSet<>(), true, false));
+    }
+
+    /**
+     * @see SearchQueryItem#generateQuery(Set, boolean, boolean)
+     * @verifies build CALENDAR_DAY range when both values are set even without datepicker config
+     */
+    @Test
+    void generateQuery_shouldBuildCalendarDayRangeWhenBothValuesAreSetEvenWithoutDatepickerConfig() {
+        // searchInRecord(piField, piValue, date1, date2) populates queryItem 2 with
+        // YEARMONTHDAY + value/value2 programmatically. The field config in this scenario
+        // typically has neither range nor datepicker set, so the range query must be built
+        // from the field name alone — otherwise value2 is silently dropped and the user
+        // gets a single-day match instead of the requested range. The nested IDDOC join is
+        // appended so page-level fulltext hits inside the range are not dropped.
+        String expectedRange = "+(" + SolrConstants.CALENDAR_DAY + ":[19950111 TO 19951231]"
+                + " _query_:\"{!join from=" + SolrConstants.IDDOC + " to=" + SolrConstants.IDDOC_OWNER
+                + "}" + SolrConstants.CALENDAR_DAY + ":[19950111 TO 19951231]\")";
+
+        SearchQueryItem item = new SearchQueryItem();
+        item.setOperator(SearchItemOperator.AND);
+        item.setField(SolrConstants.CALENDAR_DAY);
+        item.setValue("11.01.1995");
+        item.setValue2("31.12.1995");
+        Assertions.assertEquals(expectedRange, item.generateQuery(new HashSet<>(), true, false));
+
+        // Already-converted values must pass through unchanged
+        item = new SearchQueryItem();
+        item.setOperator(SearchItemOperator.AND);
+        item.setField(SolrConstants.CALENDAR_DAY);
+        item.setValue("19950111");
+        item.setValue2("19951231");
+        Assertions.assertEquals(expectedRange, item.generateQuery(new HashSet<>(), true, false));
+    }
+
+    /**
+     * @see SearchQueryItem#generateQuery(Set, boolean, boolean)
+     * @verifies emit nested IDDOC join so page fulltext hits honor the CALENDAR_DAY range
+     */
+    @Test
+    void generateQuery_shouldEmitNestedIDDOCJoinSoPageFulltextHitsHonorTheCALENDARDAYRange() {
+        // Newspaper data model: YEARMONTHDAY is only on Issue docs, never on PAGE docs.
+        // Without the nested join, a +(FULLTEXT:vaduz) +(YEARMONTHDAY:[X TO Y]) inner query
+        // cannot match any page (pages have FULLTEXT but no YEARMONTHDAY) and fulltext hits
+        // silently vanish. The emission must contain the {!join from=IDDOC to=IDDOC_OWNER}
+        // subquery so that pages of matching issues are included.
+        SearchQueryItem item = new SearchQueryItem();
+        item.setOperator(SearchItemOperator.AND);
+        item.setField(SolrConstants.CALENDAR_DAY);
+        item.setValue("11.01.1878");
+        item.setValue2("31.12.1878");
+        String query = item.generateQuery(new HashSet<>(), true, false);
+        Assertions.assertTrue(query.contains("_query_:\"{!join from=" + SolrConstants.IDDOC
+                + " to=" + SolrConstants.IDDOC_OWNER + "}"),
+                "Expected nested IDDOC→IDDOC_OWNER join in query: " + query);
+        Assertions.assertTrue(query.contains(SolrConstants.CALENDAR_DAY + ":[18780111 TO 18781231]"),
+                "Expected normalized date range in query: " + query);
+    }
 }
