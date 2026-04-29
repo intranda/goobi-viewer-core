@@ -402,4 +402,34 @@ class SearchQueryItemTest extends AbstractSolrEnabledTest {
         Assertions.assertEquals("", SearchQueryItem.convertDatepickerValueToSolrDate(""));
         Assertions.assertNull(SearchQueryItem.convertDatepickerValueToSolrDate(null));
     }
+
+    /**
+     * Regression test for ConcurrentModificationException during JSF c:forEach iteration
+     * over queryItem.lines on searchAdvanced.xhtml: a concurrent request on the
+     * SessionScoped SearchBean can mutate the lines list while another thread iterates.
+     * With ArrayList this throws CME; with CopyOnWriteArrayList the iterator works on a
+     * snapshot and ignores the change.
+     *
+     * @see SearchQueryItem#getLines()
+     * @verifies allow safe iteration during concurrent modification
+     */
+    @Test
+    void getLines_shouldAllowSafeIterationDuringConcurrentModification() {
+        SearchQueryItem item = new SearchQueryItem();
+        item.addNewLine(0);
+        item.addNewLine(1);
+        Assertions.assertEquals(3, item.getLines().size());
+
+        int seen = 0;
+        for (SearchQueryItemLine line : item.getLines()) {
+            Assertions.assertNotNull(line);
+            if (seen == 0) {
+                // Mutate during iteration to simulate a concurrent request triggering reset().
+                item.reset();
+            }
+            seen++;
+        }
+        Assertions.assertEquals(3, seen, "iterator must complete on the original snapshot");
+        Assertions.assertEquals(1, item.getLines().size(), "post-iteration list reflects the reset");
+    }
 }

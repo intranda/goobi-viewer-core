@@ -87,7 +87,7 @@ public final class BeanUtils {
     // ApplicationBean is @ApplicationScoped — the same instance for the entire application lifetime.
     // Caching it here avoids a full Weld CDI lookup (getBeanByName → BeanManager → StackWalker) on
     // every call to getPersistentStorageBean(). volatile ensures safe publication across threads.
-    private static volatile ApplicationBean cachedApplicationBean = null;
+    private static volatile ApplicationBean cachedApplicationBean = null; //NOSONAR S3077: @ApplicationScoped singleton, assigned once
 
     /**
      * Private constructor.

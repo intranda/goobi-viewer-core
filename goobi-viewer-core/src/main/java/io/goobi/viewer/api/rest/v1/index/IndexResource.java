@@ -101,6 +101,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.InternalServerErrorException;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -335,10 +336,8 @@ public class IndexResource {
             return collectFieldInfo();
         } catch (IndexUnreachableException e) {
             logger.error(e.getMessage());
-            servletResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            throw new InternalServerErrorException(e.getMessage());
         }
-
-        return Collections.emptyList();
     }
 
     /**

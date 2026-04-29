@@ -385,6 +385,7 @@ public class SearchFacets implements Serializable {
      * @param field Solr facet field name to look up in the available facets map
      * @param excludeSelected If true, selected facets will be removed from the list
      * @return List<IFacetItem>
+     * @should not mutate the underlying list when excludeSelected is true
      */
     public List<IFacetItem> getAvailableFacetsForField(String field, boolean excludeSelected) {
         // logger.trace("getAvailableFacetsForField: {}", field); //NOSONAR Debug
@@ -393,20 +394,28 @@ public class SearchFacets implements Serializable {
             return Collections.emptyList();
         }
 
-        // Remove currently used facets (unless boolean type)
+        // Defensive copy: the list inside availableFacets must never be mutated here.
+        // SearchFacets lives on the session-scoped SearchBean, so concurrent JSF render passes
+        // (parallel AJAX requests, multi-tab) hit this method at the same time. Mutating the
+        // shared ArrayList via removeAll() corrupts its internal size counter and surfaces as
+        // ArrayIndexOutOfBoundsException ("length -N is negative") in ArrayList.batchRemove,
+        // and on top of that permanently shrinks the stored list across requests.
+        List<IFacetItem> result = new ArrayList<>(facetItems);
+
+        // Remove currently used facets. Snapshot activeFacets too: it is a plain ArrayList that
+        // other methods (updateFacetItem, setActiveFacetString) write to under the instance lock,
+        // so reading it here without a snapshot risks a ConcurrentModificationException.
         if (excludeSelected) {
-            facetItems.removeAll(activeFacets);
+            result.removeAll(new ArrayList<>(activeFacets));
         }
 
         // Trim to initial number
         int initialNumber = DataManager.getInstance().getConfiguration().getInitialFacetElementNumber(field);
-        if (!isFacetExpanded(field) && initialNumber != -1 && facetItems.size() > initialNumber) {
-            // Return a defensive copy instead of a subList view to prevent ConcurrentModificationException
-            // when this session-scoped bean is accessed concurrently by multiple requests (e.g., AJAX).
-            return new ArrayList<>(facetItems.subList(0, initialNumber));
+        if (!isFacetExpanded(field) && initialNumber != -1 && result.size() > initialNumber) {
+            return new ArrayList<>(result.subList(0, initialNumber));
         }
 
-        return facetItems;
+        return result;
     }
 
     /**

@@ -127,6 +127,7 @@ public class ImageRequestFilter implements ContainerRequestFilter {
      * @param request incoming HTTP request to update with resolved filename
      * @return the redirect URI if a redirect is needed, or null otherwise.
      * @throws java.io.IOException if any.
+     * @should return null and not throw when numeric image order exceeds Integer range
      */
     public String forwardToCanonicalUrl(String pi, String imageName, HttpServletRequest request)
             throws IOException {
@@ -144,8 +145,16 @@ public class ImageRequestFilter implements ContainerRequestFilter {
                         return request.getRequestURI().replace("/" + imageName + "/", "/" + filename.get() + "/");
                     }
                 }
-            } catch (NumberFormatException | PresentationException | IndexUnreachableException e) {
-                logger.error("Unable to resolve image file for image order {} and pi {}", imageName, pi);
+            } catch (NumberFormatException e) {
+                // Malformed numeric page order from the client (e.g. crawler/scanner requests
+                // with values > Integer.MAX_VALUE such as ms-epoch timestamps). The \d+ regex
+                // upstream lets these through but Integer.parseInt overflows. Demoted from
+                // ERROR to DEBUG to stop log spam from bogus public requests.
+                logger.debug("Image order '{}' for pi {} is not a valid page order number", imageName, pi);
+            } catch (PresentationException | IndexUnreachableException e) {
+                // Real backend failure — keep visible but include exception type/message for
+                // diagnostics (previously the cause was swallowed).
+                logger.warn("Unable to resolve image file for image order {} and pi {}: {}", imageName, pi, e.toString());
             }
         }
         return null;

@@ -36,6 +36,7 @@ import org.apache.logging.log4j.Logger;
 import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.controller.DataFileTools;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.MessageQueueException;
@@ -103,11 +104,15 @@ public class Center3DTaskResource {
             java.nio.file.Path mediaDir = DataFileTools.getMediaFolder(pi);
             List<String> gltfFiles = findGltfFiles(mediaDir);
             int queued = queueMessages(gltfFiles, pi, force);
-            logger.info("Queued {} centering task(s) for record {} (force={})", queued, pi, force);
+            // S5145: sanitize user-controlled pi (PathParam) before logging to prevent log injection (CR/LF forging);
+            // force is a strict boolean and rendered via a literal ternary so the static taint flow drops it as well.
+            logger.info("Queued {} centering task(s) for record {} (force={})", queued, StringTools.stripPatternBreakingChars(pi),
+                    force ? "true" : "false");
             return Response.ok(buildResult(pi, queued, force)).build();
 
         } catch (PresentationException | IndexUnreachableException e) {
-            logger.error("Could not resolve media folder for {}: {}", pi, e.toString());
+            // S5145: sanitize user-controlled pi before logging to prevent log injection.
+            logger.error("Could not resolve media folder for {}: {}", StringTools.stripPatternBreakingChars(pi), e.toString());
             return Response.status(Response.Status.NOT_FOUND)
                     .entity("{\"error\":\"Record not found or has no media folder: " + pi + "\"}")
                     .type(MediaType.APPLICATION_JSON)
@@ -149,7 +154,9 @@ public class Center3DTaskResource {
             queued += queueMessages(List.of(record.filename()), record.pi(), force);
         }
 
-        logger.info("Queued {} centering task(s) across all records (force={})", queued, force);
+        // S5145: force is a strict boolean QueryParam and rendered via a literal ternary so the static taint flow does not see
+        // user-controlled data flowing into the logger.
+        logger.info("Queued {} centering task(s) across all records (force={})", queued, force ? "true" : "false");
         return Response.ok(buildResult(null, queued, force)).build();
     }
 

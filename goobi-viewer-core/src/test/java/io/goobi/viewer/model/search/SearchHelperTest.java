@@ -45,6 +45,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.TestUtils;
@@ -938,6 +939,53 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         String suffix = SearchHelper.getAllSuffixes(null, false, false, true, IPrivilegeHolder.PRIV_LIST);
         Assertions.assertNotNull(suffix);
         Assertions.assertTrue(suffix.contains(" -" + SolrConstants.DC + ":collection1 -" + SolrConstants.DC + ":collection2"));
+    }
+
+    /**
+     * Regression test for the security fix preventing AccessCondition bypass on sessionless
+     * REST calls (e.g. POST /api/v1/index/query without a JSESSIONID cookie). Before the fix
+     * getFilterQuerySuffix returned null in this case, which caused getAllSuffixes() to silently
+     * skip the AccessCondition filter, leaking protected records.
+     *
+     * @see SearchHelper#getFilterQuerySuffix(HttpServletRequest, String)
+     * @verifies compute personal filter suffix on the fly when no session is available
+     */
+    @Test
+    void getFilterQuerySuffix_shouldComputePersonalFilterSuffixOnTheFlyWhenNoSessionIsAvailable() {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getSession(false)).thenReturn(null);
+        // Use a non-localhost IP to avoid the local-full-access shortcut in getPersonalFilterQuerySuffix
+        Mockito.when(request.getHeader("x-forwarded-for")).thenReturn("8.8.8.8");
+
+        String suffix = SearchHelper.getFilterQuerySuffix(request, IPrivilegeHolder.PRIV_LIST);
+
+        Assertions.assertNotNull(suffix, "sessionless callers must not bypass the AccessCondition filter");
+        assertTrue(suffix.contains(SolrConstants.ACCESSCONDITION),
+                "expected ACCESSCONDITION filter in sessionless suffix but was: " + suffix);
+        assertTrue(suffix.contains(SolrConstants.OPEN_ACCESS_VALUE),
+                "expected OPENACCESS clause in sessionless suffix but was: " + suffix);
+    }
+
+    /**
+     * Companion regression test verifying the bypass is closed at the higher-level entry point
+     * actually used by REST endpoints (getAllSuffixes), not just the package-private helper.
+     *
+     * @see SearchHelper#getAllSuffixes(HttpServletRequest, boolean, boolean, boolean, String)
+     * @verifies include AccessCondition filter in suffix when request has no session
+     */
+    @Test
+    void getAllSuffixes_shouldIncludeAccessConditionFilterWhenRequestHasNoSession() {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getSession(false)).thenReturn(null);
+        Mockito.when(request.getHeader("x-forwarded-for")).thenReturn("8.8.8.8");
+
+        String suffix = SearchHelper.getAllSuffixes(request, false, false, false, IPrivilegeHolder.PRIV_LIST);
+
+        Assertions.assertNotNull(suffix);
+        assertTrue(suffix.contains(SolrConstants.ACCESSCONDITION),
+                "expected ACCESSCONDITION filter in sessionless getAllSuffixes result but was: " + suffix);
+        assertTrue(suffix.contains(SolrConstants.OPEN_ACCESS_VALUE),
+                "expected OPENACCESS clause in sessionless getAllSuffixes result but was: " + suffix);
     }
 
     //    /**

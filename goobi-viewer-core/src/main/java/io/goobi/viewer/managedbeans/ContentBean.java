@@ -156,8 +156,12 @@ public class ContentBean implements Serializable {
     public void loadUserGeneratedContentsForDisplay(String pi, HttpServletRequest request)
             throws PresentationException, IndexUnreachableException, DAOException {
         logger.trace("loadUserGeneratedContentsForDisplay");
-        if (pi == null) {
-            logger.debug("pi is null, cannot load");
+        // Strengthened from null-only check to isEmpty so blank/whitespace PIs also short-circuit
+        // and do not trigger the downstream SolrSearchIndex warning.
+        // Demoted from DEBUG to TRACE: empty PI here is the normal state for any view without a loaded
+        // record (home, search, CMS pages), so this was firing per-render and adding noise in debug logs.
+        if (StringUtils.isEmpty(pi)) {
+            logger.trace("pi is empty, cannot load");
             return;
         }
         List<CrowdsourcingAnnotation> allAnnotationsForRecord = DataManager.getInstance().getDao().getAnnotationsForWork(pi);

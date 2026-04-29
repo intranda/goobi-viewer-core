@@ -112,14 +112,10 @@ public final class TocMaker {
             for (MetadataParameter param : metadataList.get(0).getParams()) {
                 if (StringUtils.isNotEmpty(param.getKey())) {
                     ret.add(param.getKey());
-                    ret.add(param.getKey() + "_LANG_EN");
-                    ret.add(param.getKey() + "_LANG_DE");
-                    ret.add(param.getKey() + "_LANG_FR");
-                    ret.add(param.getKey() + "_LANG_ES");
-                    ret.add(param.getKey() + "_LANG_PT");
-                    ret.add(param.getKey() + "_LANG_HR");
-                    ret.add(param.getKey() + "_LANG_AR");
-                    // TODO Add all available language versions
+                    // Add language-specific field variants for all configured UI locales
+                    for (java.util.Locale locale : ViewerResourceBundle.getAllLocales()) {
+                        ret.add(param.getKey() + "_LANG_" + locale.getLanguage().toUpperCase());
+                    }
                 }
             }
         }
@@ -243,6 +239,11 @@ public final class TocMaker {
             ancestorFields.add(0, SolrConstants.PI_PARENT);
         }
 
+        // Permission caches shared across all ancestor field iterations to avoid redundant Solr calls
+        // for the same PI (e.g. when the same volume appears in multiple ancestor hierarchies).
+        Map<String, Map<String, AccessPermission>> thumbnailPermissionCache = new HashMap<>();
+        Map<String, Map<String, AccessPermission>> pdfPermissionCache = new HashMap<>();
+
         // int mainRecordLevel = 0; // currently not in use
         for (String ancestorField : ancestorFields) {
             logger.trace("ancestor field: {}", ancestorField);
@@ -265,6 +266,8 @@ public final class TocMaker {
             }
 
             List<TOCElement> tree = new ArrayList<>();
+            // Fresh seen-set per ancestor field so each tree is deduplicated independently
+            Set<TOCElement> seen = new HashSet<>();
             String footerId = getFooterId(structElement, DataManager.getInstance().getConfiguration().getWatermarkIdField());
             if (!ancestorList.isEmpty()) {
                 // Add ancestors, if found
@@ -274,11 +277,12 @@ public final class TocMaker {
                 }
                 //                mainDocumentChain.addAll(ancestorList);
                 SolrDocument topAncestor = ancestorList.get(ancestorList.size() - 1);
-                populateTocTree(tree, mainDocumentChain, topAncestor, level, true, sourceFormatPdfAllowed, mimeType, ancestorField, addAllSiblings,
-                        footerId);
+                populateTocTree(tree, seen, mainDocumentChain, topAncestor, level, true, sourceFormatPdfAllowed, mimeType, ancestorField,
+                        addAllSiblings, footerId, thumbnailPermissionCache, pdfPermissionCache);
             } else {
                 // No ancestors found, just populate the main record TOC
-                populateTocTree(tree, mainDocumentChain, doc, level, true, sourceFormatPdfAllowed, mimeType, ancestorField, addAllSiblings, footerId);
+                populateTocTree(tree, seen, mainDocumentChain, doc, level, true, sourceFormatPdfAllowed, mimeType, ancestorField, addAllSiblings,
+                        footerId, thumbnailPermissionCache, pdfPermissionCache);
             }
             ret.add(tree);
         }
@@ -352,6 +356,31 @@ public final class TocMaker {
         Map<Integer, SolrDocument> docOrderMap = createOrderedGroupDocMap(groupMemberDocs, groupIdFields, groupIdValue);
 
         HttpServletRequest request = BeanUtils.getRequest();
+
+        // Collect PI → logId mapping to enable pre-fetching PDF permissions outside the loop
+        Map<String, String> piToLogId = new LinkedHashMap<>();
+        for (SolrDocument doc : docOrderMap.values()) {
+            String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
+            String logId = (String) doc.getFieldValue(SolrConstants.LOGID);
+            if (pi != null) {
+                piToLogId.put(pi, logId);
+            }
+        }
+
+        // Pre-fetch PDF permissions outside the loop to avoid one Solr call per group member
+        Map<String, AccessPermission> pdfPermissionMap = new HashMap<>();
+        for (Map.Entry<String, String> entry : piToLogId.entrySet()) {
+            String volPi = entry.getKey();
+            String volLogId = entry.getValue();
+            try {
+                pdfPermissionMap.put(volPi,
+                        AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(volPi, volLogId, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request));
+            } catch (RecordNotFoundException e) {
+                logger.error("Record not found in index during permission pre-fetch: {}", volPi);
+                pdfPermissionMap.put(volPi, AccessPermission.denied());
+            }
+        }
+
         for (int order : docOrderMap.keySet()) {
             SolrDocument doc = docOrderMap.get(order);
             // IMetadataValue label = new MultiLanguageMetadataValue(SolrSearchIndex.getMetadataValuesForLanguage(doc, SolrConstants.TITLE));
@@ -382,14 +411,9 @@ public final class TocMaker {
                 thumbnailUrl = thumbs.getThumbnailUrl(struct, ANCHOR_THUMBNAIL_WIDTH, ANCHOR_THUMBNAIL_HEIGHT);
             }
             label.mapEach(StringEscapeUtils::unescapeHtml4);
-            boolean accessPermissionPdf;
-            try {
-                accessPermissionPdf = sourceFormatPdfAllowed && AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi,
-                        logId, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request).isGranted();
-            } catch (RecordNotFoundException e) {
-                logger.error("Record not found in index: {}", topStructPi);
-                continue;
-            }
+            // Use pre-fetched permission map instead of individual Solr call per group member
+            boolean accessPermissionPdf = sourceFormatPdfAllowed
+                    && pdfPermissionMap.getOrDefault(topStructPi, AccessPermission.denied()).isGranted();
             ret.add(new TOCElement(label, "1", null, volumeIddoc, logId, 1, topStructPi, thumbnailUrl, accessPermissionPdf, false,
                     thumbnailUrl != null, mimeType, docStructType, footerId));
         }
@@ -509,17 +533,48 @@ public final class TocMaker {
         if (queryResponse != null) {
             HttpServletRequest request = BeanUtils.getRequest();
             // logger.trace("Volumes found: {}", queryResponse.getResults().size());
+
+            // Collect PI → logId mapping from query results to enable pre-fetching permissions
+            Map<String, String> piToLogId = new LinkedHashMap<>();
+            for (SolrDocument doc : queryResponse.getResults()) {
+                String volPiKey = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
+                String volLogIdValue = (String) doc.getFieldValue(SolrConstants.LOGID);
+                if (volPiKey != null) {
+                    piToLogId.put(volPiKey, volLogIdValue);
+                }
+            }
+
+            // Pre-fetch permissions outside the loop using the same (pi, logId) pairs as in the original code.
+            // This separates data retrieval from data processing and avoids duplicate checks for the same PI.
+            Map<String, Boolean> listPermissionMap = new HashMap<>();
+            Map<String, AccessPermission> pdfPermissionMap = new HashMap<>();
+            Map<String, AccessPermission> thumbnailPermissionMap = new HashMap<>();
+            if (FacesContext.getCurrentInstance() != null) {
+                for (Map.Entry<String, String> entry : piToLogId.entrySet()) {
+                    String volPi = entry.getKey();
+                    String volLogId = entry.getValue();
+                    try {
+                        listPermissionMap.put(volPi,
+                                AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(
+                                        volPi, null, IPrivilegeHolder.PRIV_LIST, request).isGranted());
+                        pdfPermissionMap.put(volPi,
+                                AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(
+                                        volPi, volLogId, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request));
+                        thumbnailPermissionMap.put(volPi,
+                                AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(
+                                        volPi, volLogId, IPrivilegeHolder.PRIV_VIEW_IMAGES, request));
+                    } catch (RecordNotFoundException e) {
+                        logger.error("Record not found in index during permission pre-fetch: {}", volPi);
+                        listPermissionMap.put(volPi, false);
+                    }
+                }
+            }
+
             for (SolrDocument volumeDoc : queryResponse.getResults()) {
                 String topStructPi = (String) volumeDoc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
-                // Skip volumes that may not be listed
-                try {
-                    if (FacesContext.getCurrentInstance() != null
-                            && !AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi, null, IPrivilegeHolder.PRIV_LIST,
-                                    request).isGranted()) {
-                        continue;
-                    }
-                } catch (RecordNotFoundException e) {
-                    logger.error("Record not found in index: {}", topStructPi);
+                // Skip volumes that may not be listed (use pre-fetched map instead of per-volume Solr call)
+                if (FacesContext.getCurrentInstance() != null
+                        && !listPermissionMap.getOrDefault(topStructPi, false)) {
                     continue;
                 }
                 // Determine the TOC group for this volume based on the grouping field, if configured
@@ -554,18 +609,12 @@ public final class TocMaker {
 
                 IMetadataValue volumeLabel = buildLabel(volumeDoc, docStructType);
                 volumeLabel.mapEach(StringEscapeUtils::unescapeHtml4);
-                boolean accessPermissionPdf;
-                AccessPermission accessPermissionThumbnail;
-                try {
-                    accessPermissionPdf = sourceFormatPdfAllowed && AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi,
-                            volumeLogId, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request).isGranted();
-                    accessPermissionThumbnail = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi,
-                            volumeLogId, IPrivilegeHolder.PRIV_VIEW_IMAGES, request);
-                    logger.trace("accessPermissionThumbnail: " + accessPermissionThumbnail.isGranted());
-                } catch (RecordNotFoundException e) {
-                    logger.error("Record not found in index: {}", topStructPi);
-                    continue;
-                }
+                // Use pre-fetched permission maps instead of individual Solr calls per volume
+                boolean accessPermissionPdf = sourceFormatPdfAllowed
+                        && pdfPermissionMap.getOrDefault(topStructPi, AccessPermission.denied()).isGranted();
+                AccessPermission accessPermissionThumbnail =
+                        thumbnailPermissionMap.getOrDefault(topStructPi, AccessPermission.denied());
+                logger.trace("accessPermissionThumbnail: {}", accessPermissionThumbnail.isGranted());
 
                 TOCElement tocElement =
                         new TOCElement(volumeLabel, String.valueOf(thumbPageNo), thumbPageNoLabel, volumeIddoc, volumeLogId, 1, topStructPi,
@@ -634,8 +683,9 @@ public final class TocMaker {
      * @throws IndexUnreachableException
      * @throws DAOException
      */
-    private static void populateTocTree(List<TOCElement> ret, List<String> mainDocumentChain, SolrDocument doc, int level, boolean addChildren,
-            boolean sourceFormatPdfAllowed, String mimeType, String ancestorField, boolean addAllSiblings, String footerId)
+    private static void populateTocTree(List<TOCElement> ret, Set<TOCElement> seen, List<String> mainDocumentChain, SolrDocument doc, int level,
+            boolean addChildren, boolean sourceFormatPdfAllowed, String mimeType, String ancestorField, boolean addAllSiblings, String footerId,
+            Map<String, Map<String, AccessPermission>> thumbnailPermissionCache, Map<String, Map<String, AccessPermission>> pdfPermissionCache)
             throws PresentationException, IndexUnreachableException, DAOException {
         Map<String, List<SolrDocument>> childrenMap = new HashMap<>();
         String pi = (String) doc.getFieldValue(SolrConstants.PI);
@@ -644,14 +694,27 @@ public final class TocMaker {
         }
         logger.trace("populateTocTree: {}; number of items in toc: {}", pi, ret.size());
 
-        // Check PDF download permissions for all docstructs and save into map
-        Map<String, AccessPermission> thumbnailPermissionMap =
-                AccessConditionUtils.checkAccessPermissionByIdentiferForAllLogids(pi, IPrivilegeHolder.PRIV_VIEW_THUMBNAILS,
-                        BeanUtils.getRequest());
+        // Check permissions for all docstructs of this PI, using the cache to avoid repeated Solr calls
+        // when the same PI is encountered in multiple recursive calls (e.g. sibling volumes).
+        Map<String, AccessPermission> thumbnailPermissionMap;
+        if (thumbnailPermissionCache.containsKey(pi)) {
+            thumbnailPermissionMap = thumbnailPermissionCache.get(pi);
+        } else {
+            thumbnailPermissionMap =
+                    AccessConditionUtils.checkAccessPermissionByIdentiferForAllLogids(pi, IPrivilegeHolder.PRIV_VIEW_THUMBNAILS,
+                            BeanUtils.getRequest());
+            thumbnailPermissionCache.put(pi, thumbnailPermissionMap);
+        }
         Map<String, AccessPermission> pdfPermissionMap = null;
         if (sourceFormatPdfAllowed && DataManager.getInstance().getConfiguration().isTocPdfEnabled()) {
-            pdfPermissionMap =
-                    AccessConditionUtils.checkAccessPermissionByIdentiferForAllLogids(pi, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, BeanUtils.getRequest());
+            if (pdfPermissionCache.containsKey(pi)) {
+                pdfPermissionMap = pdfPermissionCache.get(pi);
+            } else {
+                pdfPermissionMap =
+                        AccessConditionUtils.checkAccessPermissionByIdentiferForAllLogids(pi, IPrivilegeHolder.PRIV_DOWNLOAD_PDF,
+                                BeanUtils.getRequest());
+                pdfPermissionCache.put(pi, pdfPermissionMap);
+            }
         }
 
         // Real children (struct elements of the main record)
@@ -691,7 +754,7 @@ public final class TocMaker {
         }
 
         // Add current doc and recursively build the tree from the children map
-        addTocElementsRecusively(ret, childrenMap, doc, level, addChildren, thumbnailPermissionMap, pdfPermissionMap, mimeType, footerId);
+        addTocElementsRecusively(ret, seen, childrenMap, doc, level, addChildren, thumbnailPermissionMap, pdfPermissionMap, mimeType, footerId);
 
         // Loosely referenced children (e.g. anchor volumes)
         if (StringUtils.isNotEmpty(ancestorField)) {
@@ -743,8 +806,9 @@ public final class TocMaker {
                     for (SolrDocument childDoc : childDocs) {
                         // Add child, if either all siblings are requested or the path leads to the main record
                         if (addSiblings || (mainDocumentChain != null && mainDocumentChain.contains(childDoc.getFieldValue(SolrConstants.IDDOC)))) {
-                            populateTocTree(ret, mainDocumentChain, childDoc, level + 1, addChildren, sourceFormatPdfAllowed, mimeType, ancestorField,
-                                    addSiblings, footerId);
+                            // Pass seen and permission caches through to avoid duplicate elements and redundant Solr calls
+                            populateTocTree(ret, seen, mainDocumentChain, childDoc, level + 1, addChildren, sourceFormatPdfAllowed, mimeType,
+                                    ancestorField, addSiblings, footerId, thumbnailPermissionCache, pdfPermissionCache);
                         }
                     }
                 }
@@ -765,9 +829,9 @@ public final class TocMaker {
      * @param footerId watermark footer identifier for access conditions
      * @throws PresentationException
      */
-    private static void addTocElementsRecusively(List<TOCElement> ret, Map<String, List<SolrDocument>> childrenMap, SolrDocument doc, int level,
-            boolean addChildren, Map<String, AccessPermission> thumbnailPermissionMap, Map<String, AccessPermission> pdfPermissionMap,
-            String mimeType, String footerId) throws PresentationException {
+    private static void addTocElementsRecusively(List<TOCElement> ret, Set<TOCElement> seen, Map<String, List<SolrDocument>> childrenMap,
+            SolrDocument doc, int level, boolean addChildren, Map<String, AccessPermission> thumbnailPermissionMap,
+            Map<String, AccessPermission> pdfPermissionMap, String mimeType, String footerId) throws PresentationException {
         String logId = (String) doc.getFieldValue(SolrConstants.LOGID);
         String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
         String docstructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
@@ -798,7 +862,8 @@ public final class TocMaker {
         tocElement.getMetadata().put(SolrConstants.DOCSTRCT, docstructType);
         tocElement.getMetadata().put(SolrConstants.CURRENTNO, (String) doc.getFieldValue(SolrConstants.CURRENTNO));
         tocElement.getMetadata().put("MD_TITLE", (String) doc.getFirstValue("MD_TITLE"));
-        if (!ret.contains(tocElement)) {
+        // Use O(1) HashSet lookup instead of O(n) ArrayList.contains() to detect duplicates
+        if (seen.add(tocElement)) {
             ret.add(tocElement);
             // logger.trace("TOC element added: {}/{}: '{}'; IDDOC:{}", ret.size() - 1, level, label, iddoc); //NOSONAR Debug
 
@@ -806,7 +871,7 @@ public final class TocMaker {
             if (addChildren && childrenMap != null && childrenMap.get(iddoc) != null && !childrenMap.get(iddoc).isEmpty()) {
                 // logger.trace("Adding {} children for {}", childrenMap.get(iddoc).size(), iddoc); //NOSONAR Debug
                 for (SolrDocument childDoc : childrenMap.get(iddoc)) {
-                    addTocElementsRecusively(ret, childrenMap, childDoc, level + 1, true, thumbnailPermissionMap, pdfPermissionMap, mimeType,
+                    addTocElementsRecusively(ret, seen, childrenMap, childDoc, level + 1, true, thumbnailPermissionMap, pdfPermissionMap, mimeType,
                             footerId);
                 }
             }

@@ -21,6 +21,20 @@
  */
 package io.goobi.viewer.api.rest.v1.authentication;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import io.goobi.viewer.api.rest.filters.UserLoggedInFilter;
+import io.goobi.viewer.api.rest.model.CurrentUserResponse;
+import io.goobi.viewer.api.rest.model.UserJsonFacade;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.managedbeans.UserBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.security.user.User;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.Consumes;
@@ -31,21 +45,13 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import io.goobi.viewer.api.rest.model.CurrentUserResponse;
-import io.goobi.viewer.api.rest.model.UserJsonFacade;
-import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.controller.NetTools;
-import io.goobi.viewer.managedbeans.UserBean;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.security.user.User;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-
 /**
  * REST endpoint providing user profile information and preferences for authenticated users.
  */
 @Path(ApiUrls.USERS)
 public class UserEndpoint {
+
+    private static final Logger logger = LogManager.getLogger(UserEndpoint.class);
 
     @Context
     private HttpServletRequest servletRequest;
@@ -74,16 +80,23 @@ public class UserEndpoint {
 
         String ipAddress = NetTools.getIpAddress(servletRequest);
 
-        // Retrieve the currently logged-in user from the session, if any
-        UserJsonFacade userFacade = null;
-        UserBean userBean = BeanUtils.getUserBeanFromSession(servletRequest.getSession(false));
-        if (userBean != null) {
-            User user = userBean.getUser();
-            if (user != null) {
-                userFacade = new UserJsonFacade(user, servletRequest);
+        User user = null;
+        try {
+            user = UserLoggedInFilter.getUserToken(servletRequest)
+                    .filter(token -> !token.isExpired())
+                    .map(token -> token.getUser())
+                    .orElse(null);
+        } catch (DAOException e) {
+            logger.warn("Error getting user from authorization token", e);
+        }
+        if (user == null) {
+            UserBean userBean = BeanUtils.getUserBeanFromSession(servletRequest.getSession(false));
+            if (userBean != null) {
+                user = userBean.getUser();
             }
         }
 
+        UserJsonFacade userFacade = user != null ? new UserJsonFacade(user, servletRequest) : null;
         return Response.ok(new CurrentUserResponse(ipAddress, userFacade)).build();
     }
 }

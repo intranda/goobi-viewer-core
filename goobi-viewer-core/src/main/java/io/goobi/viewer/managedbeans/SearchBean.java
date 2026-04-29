@@ -1299,6 +1299,12 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public void setExactSearchString(final String inSearchString) {
         logger.debug("setExactSearchString: {}", inSearchString);
+        // Diagnostic: capture the caller stack only when trace is enabled, so the double-invocation
+        // per request (observed: PrettyFaces setter-binding plus a second trigger from JSF rendering)
+        // can be pinpointed without spamming normal debug logs
+        if (logger.isTraceEnabled()) {
+            logger.trace("setExactSearchString caller", new Throwable("caller stack"));
+        }
         String tempSearchString = inSearchString;
         if ("-".equals(tempSearchString)) {
             tempSearchString = "";

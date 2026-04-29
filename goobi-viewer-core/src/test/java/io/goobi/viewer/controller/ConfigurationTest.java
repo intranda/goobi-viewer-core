@@ -1933,7 +1933,6 @@ class ConfigurationTest extends AbstractTest {
         assertTrue(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewCollapsedByDefault("object", "copyright"));
     }
 
-
     /**
      * @see Configuration#getAllFacetFields()
      * @verifies return correct order
@@ -4079,5 +4078,15 @@ class ConfigurationTest extends AbstractTest {
         // invalidation tightly scoped so unrelated test setup does not pay the cache-rebuild cost.
         config.overrideValue("viewer.theme.rootPath", "/foo");
         assertEquals(populated, config.getFacetFieldPropertyCacheSize());
+    }
+
+    /**
+     * @see Configuration#getTokenExpirationDays()
+     * @verifies return default value of 30 when not configured
+     */
+
+    @Test
+    void getTokenExpirationDays_shouldReturnDefaultValueOf30WhenNotConfigured() {
+        assertEquals(30, DataManager.getInstance().getConfiguration().getTokenExpirationDays());
     }
 }
