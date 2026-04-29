@@ -42,142 +42,91 @@
 /* ==============================================================
    Related Groups Content Section
    style declarations for relatedGroupsSection.xhtml
-   ==============================================================*/
+   ============================================================== */
 .related-groups-section {
-    margin-top: 40px;
-    padding: 40px;
-    background: @lightgray;
-    border-radius: 6px;
+    margin-top: 30px;
 
     &__heading {
-        position: relative;
-        margin: 0 0 30px 0;
-        padding-top: 15px;
-        font-size: 2.8rem;
-        font-weight: 400;
-        line-height: 1.4;
-        letter-spacing: -0.02em;
-        color: @black;
-
-        &::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 276px;
-            max-width: 40%;
-            height: 3px;
-            background: @blue;
-        }
+        margin: 0 0 20px 0;
     }
     &__heading-link {
-        color: @blue;
-        text-decoration: none;
-
-        &:hover,
-        &:focus {
-            color: @blue;
-            text-decoration: underline;
-        }
+        text-decoration: underline;
     }
     &__grid {
         display: flex;
         flex-wrap: wrap;
         gap: 20px;
-        align-items: stretch;
+        align-items: flex-start;
     }
     &__card {
-        flex: 0 0 210px;
+        flex: 0 0 140px;
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 8px;
         text-decoration: none;
         color: inherit;
-        transition: transform 0.2s ease;
 
         &:hover,
         &:focus {
             text-decoration: none;
             color: inherit;
-            transform: translateY(-2px);
 
-            .related-groups-section__card-image {
-                box-shadow: 0 8px 18px 2px rgba(0, 0, 0, 0.14);
+            .related-groups-section__card-title {
+                text-decoration: underline;
             }
         }
     }
     &__card-image {
-        width: 210px;
-        height: 291px;
+        width: 140px;
+        height: 195px;
         overflow: hidden;
-        background-color: @middlegray;
-        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%236f6f6f' stroke-width='1.25' stroke-linecap='round' stroke-linejoin='round'><path d='M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0'/><path d='M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0'/><path d='M3 6l0 13'/><path d='M12 6l0 13'/><path d='M21 6l0 13'/></svg>");
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: 40%;
-        box-shadow: 0 5px 14px 2px rgba(0, 0, 0, 0.09);
-        transition: box-shadow 0.2s ease;
+        background-color: @neutralgray;
 
         img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-
-            &:not([src]),
-            &[src=''] {
-                display: none;
-            }
         }
     }
     &__card-info {
         display: flex;
         flex-direction: column;
-        gap: 4px;
-        width: 210px;
+        gap: 2px;
+        width: 140px;
     }
     &__card-title {
-        font-size: @fontNormal;
+        font-size: @fontMedium;
         font-weight: 600;
-        line-height: 1.5;
+        line-height: 1.4;
         color: @black;
         display: -webkit-box;
         -webkit-line-clamp: 3;
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
-    &__card-year {
-        font-size: @fontMedium;
-        line-height: 1.5;
-        color: @gray;
-    }
+    &__card-year,
     &__card-creator {
-        font-size: @fontMedium;
-        line-height: 1.5;
+        font-size: @fontSmall;
+        line-height: 1.4;
         color: @gray;
     }
     &__view-all {
-        flex: 0 0 210px;
+        flex: 0 0 140px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 12px;
-        height: 291px;
-        border: 1px solid @blue;
-        border-radius: 6px;
+        gap: 8px;
+        height: 195px;
+        border: 1px solid @middlegray;
         background: transparent;
-        color: @blue;
         text-decoration: none;
-        transition:
-            background-color 0.2s ease,
-            transform 0.2s ease;
+        transition: background-color 0.15s ease;
 
         &:hover,
         &:focus {
-            background-color: fade(@blue, 5%);
-            color: @blue;
+            background-color: @neutralgray;
             text-decoration: none;
-            transform: translateY(-2px);
         }
     }
     &__view-all-icon {
@@ -188,13 +137,33 @@
         height: 24px;
         font-size: 2rem;
         line-height: 1;
-        color: @blue;
     }
     &__view-all-label {
         font-size: @fontMedium;
         font-weight: 600;
-        letter-spacing: 0.04em;
-        color: @blue;
+    }
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+    .related-groups-section {
+        &__grid {
+            gap: 15px;
+        }
+        &__card,
+        &__card-info {
+            flex-basis: calc(50% - 8px);
+            width: 100%;
+        }
+        &__card-image {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 140 / 195;
+        }
+        &__view-all {
+            flex-basis: 100%;
+            height: 120px;
+        }
     }
 }
 
@@ -203,26 +172,21 @@
    hex fallbacks ensure sane defaults in themes that don't set them. */
 .mx-related-groups-dark() {
     .related-groups-section {
-        background: var(--bg-content-box, #253044);
         color: var(--fg-content-box, #e3e4e7);
 
         &__heading,
         &__card-title {
             color: var(--fg-content-box, #e3e4e7);
         }
-        &__heading-link,
-        &__view-all,
-        &__view-all-icon,
-        &__view-all-label {
+        &__heading-link {
             color: var(--lk-content-box, #e3e4e7);
         }
         &__view-all {
-            border-color: var(--lk-content-box, #e3e4e7);
+            border-color: var(--bg-active, #3b4557);
 
             &:hover,
             &:focus {
                 background-color: var(--bg-hover, #5b6473);
-                color: var(--lk-content-box, #e3e4e7);
             }
         }
         &__card-creator,
@@ -241,59 +205,4 @@
 }
 .color-theme-dark {
     .mx-related-groups-dark();
-}
-
-/* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {
-    .related-groups-section {
-        padding: 30px;
-
-        &__heading {
-            font-size: 2.4rem;
-        }
-    }
-}
-
-/* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {
-    .related-groups-section {
-        padding: 25px 20px;
-
-        &__card,
-        &__card-info {
-            flex-basis: 160px;
-            width: 160px;
-        }
-        &__card-image {
-            width: 160px;
-            height: 222px;
-        }
-        &__view-all {
-            flex-basis: 160px;
-            height: 222px;
-        }
-    }
-}
-
-/* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {
-    .related-groups-section {
-        &__grid {
-            gap: 15px;
-        }
-        &__card,
-        &__card-info {
-            flex-basis: calc(50% - 8px);
-            width: 100%;
-        }
-        &__card-image {
-            width: 100%;
-            height: auto;
-            aspect-ratio: 210 / 291;
-        }
-        &__view-all {
-            flex-basis: 100%;
-            height: 120px;
-        }
-    }
 }
