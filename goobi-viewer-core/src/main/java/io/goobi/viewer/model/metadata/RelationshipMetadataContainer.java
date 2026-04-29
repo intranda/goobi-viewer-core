@@ -42,7 +42,6 @@ import org.apache.solr.common.SolrDocumentList;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.model.viewer.ViewManager;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
@@ -61,6 +60,7 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
     public static final String RELATIONSHIP_ID_REFERENCE = "MD_IDENTIFIER";
     private static final List<String> RELATED_RECORD_METADATA_FIELDS =
             List.of(SolrConstants.PI, DOCUMENT_IDENTIFIER, SolrConstants.TITLE, SolrConstants.DOCSTRCT, "MD_*", "NORM_COORDS_GEOJSON");
+    private static final int MAX_BOOLEAN_CLAUSES = 1024;
 
     private final Map<String, MetadataContainer> relatedDocumentMap;
 
@@ -120,13 +120,13 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
                 .filter(StringUtils::isNotBlank) // remove null/empty
                 .distinct() // deduplicate
                 .toList();
-        if (identifiers.size() > 1024) {
+        if (identifiers.size() > MAX_BOOLEAN_CLAUSES) {
             // use your project’s logger here
             logger.warn("Truncating MD_PROCESSID list from {} to 1024 values for Solr query", identifiers.size());
         }
 
         String recordIdentifiers = identifiers.stream()
-                .limit(1024) // enforce Solr/Lucene limit
+                .limit(MAX_BOOLEAN_CLAUSES) // enforce Solr/Lucene limit
                 .collect(Collectors.joining(" "));
         if (StringUtils.isBlank(recordIdentifiers)) {
             return new RelationshipMetadataContainer(container.metadataMap, Collections.emptyMap());
