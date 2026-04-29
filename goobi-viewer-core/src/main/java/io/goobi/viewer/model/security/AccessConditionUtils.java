@@ -766,69 +766,13 @@ public final class AccessConditionUtils {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    @SuppressWarnings("unchecked")
     public static Map<String, AccessPermission> checkAccessPermissionByIdentiferForAllLogids(String identifier, String privilegeName,
             HttpServletRequest request) throws IndexUnreachableException, DAOException {
-        logger.trace("checkAccessPermissionByIdentiferForAllLogids({}, {})", identifier, privilegeName);
-        HttpSession session = request != null ? request.getSession() : null;
-
-        String attributeName = IPrivilegeHolder.PREFIX_PRIV + privilegeName + "_" + identifier;
-        Map<String, AccessPermission> ret = (Map<String, AccessPermission>) getSessionPermission(attributeName, session);
-        if (ret != null) {
-            return ret;
-        }
-
-        ret = new HashMap<>();
-        if (StringUtils.isNotEmpty(identifier)) {
-            String query = new StringBuilder().append('+')
-                    .append(SolrConstants.PI_TOPSTRUCT)
-                    .append(":\"")
-                    .append(identifier)
-                    .append("\" +")
-                    .append(SolrConstants.DOCTYPE)
-                    .append(':')
-                    .append(DocType.DOCSTRCT.name())
-                    .toString();
-            try {
-                logger.trace(query);
-                SolrDocumentList results = DataManager.getInstance()
-                        .getSearchIndex()
-                        .search(query, SolrSearchIndex.MAX_HITS, null,
-                                Arrays.asList(SolrConstants.LOGID, SolrConstants.ACCESSCONDITION));
-                if (results != null) {
-                    User user = retrieveUserFromContext(session);
-
-                    //                    long start = System.nanoTime();
-                    List<LicenseType> nonOpenAccessLicenseTypes = DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes();
-                    for (SolrDocument doc : results) {
-                        Set<String> requiredAccessConditions = new HashSet<>();
-                        Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
-                        if (fieldsAccessConddition != null) {
-                            for (Object accessCondition : fieldsAccessConddition) {
-                                requiredAccessConditions.add((String) accessCondition);
-                                // logger.trace("{}", accessCondition.toString()); //NOSONAR Debug
-                            }
-                        }
-
-                        String logid = (String) doc.getFieldValue(SolrConstants.LOGID);
-                        if (logid != null) {
-                            ret.put(logid, checkAccessPermission(nonOpenAccessLicenseTypes, requiredAccessConditions, privilegeName, user,
-                                    NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query));
-                        }
-                    }
-                    //                    long end = System.nanoTime();
-                }
-
-            } catch (PresentationException e) {
-                logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
-            }
-        }
-
-        // Add permission check outcome to user session
-        addSessionPermission(attributeName, ret, session);
-
-        logger.trace("Found access permisstions for {} elements.", ret.size());
-        return ret;
+        // Delegate to the batch method with a single-privilege set; returns either the resolved submap
+        // or an empty map (never null) to preserve the legacy contract.
+        Map<String, Map<String, AccessPermission>> result = checkAccessPermissionByIdentifierForAllLogidsAndPrivileges(
+                identifier, Collections.singleton(privilegeName), request);
+        return result.getOrDefault(privilegeName, new HashMap<>());
     }
 
     /**
