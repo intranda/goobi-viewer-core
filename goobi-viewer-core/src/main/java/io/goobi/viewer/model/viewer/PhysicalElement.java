@@ -61,6 +61,7 @@ import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileSizeCalculator;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.HtmlSanitizer;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
@@ -460,7 +461,13 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
             AccessDeniedInfoConfig placeholderInfo = accessPermission.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
             if (placeholderInfo != null && StringUtils.isNotEmpty(placeholderInfo.getDescription())) {
                 logger.trace("returning custom description text for {}: {}", privilegeName, placeholderInfo.getDescription());
-                return StringTools.stripJS(placeholderInfo.getDescription());
+                // Switched from regex-based StringTools.stripJS to HtmlSanitizer.cleanRichText.
+                // Sibling read-side of the AdminLicenseBean save path (which writes the same
+                // placeholder description). Rendered with escape="false" in
+                // includes/object/{audio,video,voyager3d,object3d,image}.xhtml — must be
+                // sanitized with the rich-text profile to neutralize event-handler attributes
+                // and javascript:/data: URIs that the old stripJS missed.
+                return HtmlSanitizer.cleanRichText(placeholderInfo.getDescription());
             }
         }
 
@@ -987,6 +994,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
             wordCoordsFormat = CoordsFormat.ALTO;
             String text = ALTOTools.getFulltext(altoText, altoCharset, false);
             if (StringUtils.isNotEmpty(text)) {
+                // TODO(security): Migrate to HtmlSanitizer once a dedicated cleanFulltextSnippet
+                // profile exists. Sibling case to BrowseElement.getFulltextForHtml — both render
+                // Solr-highlighted full-text where <mark>/<em> tags must survive sanitization,
+                // so the existing rich-text and comment allowlists are unsuitable.
                 String cleanText = StringTools.stripJS(text);
                 if (cleanText.length() < text.length()) {
                     text = cleanText;
@@ -1000,6 +1011,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
             try {
                 fullText = loadFullText();
                 if (StringUtils.isNotEmpty(fullText)) {
+                    // TODO(security): Migrate to HtmlSanitizer once a dedicated cleanFulltextSnippet
+                    // profile exists. Sibling case to BrowseElement.getFulltextForHtml — Solr
+                    // highlighter injects <mark>/<em> tags that must be preserved.
                     String cleanText = StringTools.stripJS(fullText);
                     if (cleanText.length() < fullText.length()) {
                         fullText = cleanText;
