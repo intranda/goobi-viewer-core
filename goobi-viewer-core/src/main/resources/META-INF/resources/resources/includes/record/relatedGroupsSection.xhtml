@@ -45,6 +45,11 @@
                                     alt="#{detail.title}"
                                     data-viewer-thumbnail="thumbnail" />
                             </h:panelGroup>
+                            <h:panelGroup rendered="#{empty detail.thumbnailUrl}">
+                                <img
+                                    src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/image_not_found.png"
+                                    alt="#{detail.title}" />
+                            </h:panelGroup>
                         </div>
                         <div class="related-groups-section__card-info">
                             <span class="related-groups-section__card-title">#{detail.title}</span>

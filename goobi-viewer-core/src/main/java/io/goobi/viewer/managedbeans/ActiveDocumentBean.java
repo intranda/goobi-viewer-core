@@ -2678,7 +2678,7 @@ public class ActiveDocumentBean implements Serializable {
     /** Resolves a thumbnail URL for the given doc; tries the primary handler, then a series/anchor fallback. */
     private String resolveThumbnailUrl(SolrDocument doc, String pi) {
         try {
-            String url = imageDelivery.getThumbs().getThumbnailUrl(doc, 200, 260);
+            String url = imageDelivery.getThumbs().getThumbnailUrl(doc);
             if (StringUtils.isNotBlank(url)) {
                 return url;
             }
