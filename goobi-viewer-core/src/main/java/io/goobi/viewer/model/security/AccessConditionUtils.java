@@ -832,6 +832,124 @@ public final class AccessConditionUtils {
     }
 
     /**
+     * Checks whether the current user has the given access permissions for every LOGID of the record with the
+     * given identifier, evaluating multiple privileges in a single Solr roundtrip.
+     *
+     * <p>The Solr index is queried <strong>once</strong> for all DOCSTRCT documents of the given identifier;
+     * the returned access conditions are then evaluated in-memory for each requested privilege. Per-privilege
+     * results are stored in the session cache using the same key scheme as
+     * {@link #checkAccessPermissionByIdentiferForAllLogids(String, String, HttpServletRequest)}, so subsequent
+     * calls (single or batched) for any of the privileges hit the cache.
+     *
+     * @param identifier persistent identifier of the record
+     * @param privilegeNames set of access privilege names to verify; an empty or null set returns an empty map
+     * @param request HTTP servlet request providing session and IP address (may be null)
+     * @return Map keyed by privilege name; each value is a Map keyed by LOGID with the resolved permission
+     * @should return empty map when privileges set is null
+     * @should return empty map when privileges set is empty
+     * @should return empty submap for each privilege when identifier is blank
+     * @should return same result as single-privilege call for each privilege
+     * @should handle three or more privileges in one batch
+     * @should populate session cache per privilege so subsequent calls hit cache
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    @SuppressWarnings("unchecked")
+    public static Map<String, Map<String, AccessPermission>> checkAccessPermissionByIdentifierForAllLogidsAndPrivileges(
+            String identifier, Set<String> privilegeNames, HttpServletRequest request)
+            throws IndexUnreachableException, DAOException {
+        if (privilegeNames == null || privilegeNames.isEmpty()) {
+            return new HashMap<>();
+        }
+        logger.trace("checkAccessPermissionByIdentifierForAllLogidsAndPrivileges({}, {})", identifier, privilegeNames);
+        HttpSession session = request != null ? request.getSession() : null;
+
+        // Try to satisfy ALL requested privileges from the session cache. If every privilege has a cache entry,
+        // we can skip the Solr roundtrip entirely. Otherwise we run one Solr query and evaluate every uncached
+        // privilege from the same docs to keep the result coherent.
+        Map<String, Map<String, AccessPermission>> ret = new HashMap<>();
+        Set<String> uncachedPrivileges = new HashSet<>();
+        for (String privilege : privilegeNames) {
+            String attributeName = IPrivilegeHolder.PREFIX_PRIV + privilege + "_" + identifier;
+            Map<String, AccessPermission> cached = (Map<String, AccessPermission>) getSessionPermission(attributeName, session);
+            if (cached != null) {
+                ret.put(privilege, cached);
+            } else {
+                uncachedPrivileges.add(privilege);
+            }
+        }
+        if (uncachedPrivileges.isEmpty()) {
+            return ret;
+        }
+
+        // Initialize empty submaps for every uncached privilege so the contract (one entry per requested
+        // privilege) holds even when identifier is blank or Solr returns no results.
+        for (String privilege : uncachedPrivileges) {
+            ret.put(privilege, new HashMap<>());
+        }
+
+        if (StringUtils.isNotEmpty(identifier)) {
+            String query = new StringBuilder().append('+')
+                    .append(SolrConstants.PI_TOPSTRUCT)
+                    .append(":\"")
+                    .append(identifier)
+                    .append("\" +")
+                    .append(SolrConstants.DOCTYPE)
+                    .append(':')
+                    .append(DocType.DOCSTRCT.name())
+                    .toString();
+            try {
+                logger.trace(query);
+                SolrDocumentList results = DataManager.getInstance()
+                        .getSearchIndex()
+                        .search(query, SolrSearchIndex.MAX_HITS, null,
+                                Arrays.asList(SolrConstants.LOGID, SolrConstants.ACCESSCONDITION));
+                if (results != null) {
+                    User user = retrieveUserFromContext(session);
+                    List<LicenseType> nonOpenAccessLicenseTypes = DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes();
+
+                    for (SolrDocument doc : results) {
+                        Set<String> requiredAccessConditions = new HashSet<>();
+                        Collection<Object> fieldsAccessCondition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
+                        if (fieldsAccessCondition != null) {
+                            for (Object accessCondition : fieldsAccessCondition) {
+                                requiredAccessConditions.add((String) accessCondition);
+                            }
+                        }
+                        String logid = (String) doc.getFieldValue(SolrConstants.LOGID);
+                        if (logid == null) {
+                            continue;
+                        }
+                        // Resolve IP and client per-doc to preserve the legacy single-privilege method's
+                        // contract verbatim. The lookups are inexpensive but read from the request, and we
+                        // do not want to introduce any behavior drift via this refactoring.
+                        String remoteAddress = NetTools.getIpAddress(request);
+                        Optional<ClientApplication> client = ClientApplicationManager.getClientFromRequest(request);
+                        // Evaluate each uncached privilege against the same access conditions. checkAccessPermission
+                        // is pure Java logic (license types, IP range, user/client checks) — no Solr roundtrip here.
+                        for (String privilege : uncachedPrivileges) {
+                            ret.get(privilege).put(logid, checkAccessPermission(nonOpenAccessLicenseTypes, requiredAccessConditions,
+                                    privilege, user, remoteAddress, client, query));
+                        }
+                    }
+                }
+            } catch (PresentationException e) {
+                logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
+            }
+        }
+
+        // Add per-privilege permission outcomes to user session, mirroring the legacy single-privilege method's cache
+        // contract so callers using either API see consistent state.
+        for (String privilege : uncachedPrivileges) {
+            String attributeName = IPrivilegeHolder.PREFIX_PRIV + privilege + "_" + identifier;
+            addSessionPermission(attributeName, ret.get(privilege), session);
+        }
+
+        logger.trace("Found access permissions for {} privilege(s).", privilegeNames.size());
+        return ret;
+    }
+
+    /**
      * Checks if the record with the given identifier should allow access to the given request.
      *
      * @param identifier The PI of the work to check
