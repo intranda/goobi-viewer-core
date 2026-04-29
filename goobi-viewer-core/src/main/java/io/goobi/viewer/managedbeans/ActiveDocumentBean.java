@@ -44,6 +44,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.jboss.weld.contexts.ContextNotActiveException;
@@ -58,6 +59,7 @@ import com.ocpsoft.pretty.faces.url.URL;
 import de.intranda.api.annotation.wa.TypedResource;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.GeoCoordinateConverter;
@@ -114,6 +116,7 @@ import io.goobi.viewer.model.viewer.PageNavigation;
 import io.goobi.viewer.model.viewer.PageOrientation;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
+import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.ViewManager;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
@@ -222,7 +225,10 @@ public class ActiveDocumentBean implements Serializable {
     /* Next docstruct URL cache. TODO Implement differently once other views beside full-screen are used. */
     private Map<String, String> nextDocstructUrlCache = new HashMap<>();
 
-    private transient List<GroupMemberDetail> groupMembershipDetails;
+    // volatile for double-checked locking in getGroupMembershipDetails()
+    private volatile List<GroupMemberDetail> groupMembershipDetails;
+    // PI tracked alongside the cache so reset()-between-check-and-publish races can be detected
+    private volatile String groupMembershipDetailsPi;
 
     @Inject
     @Push
@@ -318,6 +324,7 @@ public class ActiveDocumentBean implements Serializable {
             pdfSizes = null;
             cachedFullPdfSize = null;
             groupMembershipDetails = null;
+            groupMembershipDetailsPi = null;
 
             // Any cleanup modules need to do when a record is unloaded
             for (IModule module : DataManager.getInstance().getModules()) {
@@ -2444,70 +2451,275 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * Returns detailed information about the current record's group memberships and anchor parent.
-     * Used by the related-groups widget when configured with showDetails="true".
+     * Returns detailed information about related records for the related-groups widget/section.
      *
-     * @return List of GroupMemberDetail objects with title, creator, year for each related record
-     * @throws PresentationException if any
-     * @throws IndexUnreachableException if any
+     * For anchor children, the current record's sibling volumes (other records under the same anchor)
+     * are returned. Otherwise, the group memberships (GROUPID_*) of the current record are returned.
+     * Results are sorted by the configured sort field and capped at {@code maxResults}.
+     *
+     * <p>Thread safety: Uses double-checked locking analogous to {@link #getRecordDataset()}.
+     * Solr I/O runs outside the monitor; the PI at query time is validated against the current PI
+     * on publish so a concurrent {@link #reset()} cannot leave stale data behind.
+     *
+     * <p>Failure policy: Best-effort. Individual card failures are skipped and logged; any fatal
+     * error returns an empty list (never propagates to the view, never crashes the page).
+     *
+     * @return List of GroupMemberDetail objects for each related record; empty if no related records
+     *         exist, the record isn't loaded, or an error occurred
      * @should return empty list if viewManager is null
      * @should return group memberships and anchor details
+     * @should return sibling volumes for anchor children
      */
-    public List<GroupMemberDetail> getGroupMembershipDetails() throws PresentationException, IndexUnreachableException {
-        if (groupMembershipDetails != null) {
-            return groupMembershipDetails;
+    public List<GroupMemberDetail> getGroupMembershipDetails() {
+        ViewManager vm = this.viewManager;
+        if (vm == null) {
+            return Collections.emptyList();
         }
-
-        if (viewManager == null) {
+        String currentPi;
+        try {
+            currentPi = vm.getPi();
+        } catch (IndexUnreachableException e) {
+            logger.warn("Could not read current PI for related-groups cache lookup: {}", e.getMessage());
             return Collections.emptyList();
         }
 
-        StructElement topStruct = viewManager.getTopStructElement();
-        List<String> pis = new ArrayList<>();
-
-        for (String pi : topStruct.getGroupMemberships().values()) {
-            if (!pis.contains(pi)) {
-                pis.add(pi);
-            }
+        // --- Fast path: volatile read, no lock ---
+        List<GroupMemberDetail> cached = this.groupMembershipDetails;
+        if (cached != null && currentPi != null && currentPi.equals(this.groupMembershipDetailsPi)) {
+            return cached;
         }
 
-        if (topStruct.isAnchorChild() && viewManager.getAnchorPi() != null && !pis.contains(viewManager.getAnchorPi())) {
-            pis.add(viewManager.getAnchorPi());
+        // --- Load outside the monitor ---
+        List<GroupMemberDetail> fresh;
+        try {
+            fresh = loadGroupMembershipDetails(vm);
+        } catch (PresentationException | IndexUnreachableException e) {
+            logger.warn("Could not load related-groups details for {}: {}", currentPi, e.getMessage());
+            fresh = Collections.emptyList();
+        } catch (RuntimeException e) {
+            logger.warn("Unexpected error while loading related-groups details for {}: {}", currentPi, e.toString());
+            fresh = Collections.emptyList();
         }
 
-        if (pis.isEmpty()) {
-            groupMembershipDetails = Collections.emptyList();
-            return groupMembershipDetails;
-        }
-
-        String query = SolrConstants.PI + ":(" + String.join(" OR ", pis) + ")";
-        List<String> fields = List.of(SolrConstants.PI, SolrConstants.LABEL, SolrConstants.TITLE,
-                SolrConstants.PERSON_ONEFIELD, SolrConstants.MD_YEARPUBLISH,
-                SolrConstants.THUMBNAIL, SolrConstants.MIMETYPE, SolrConstants.DOCSTRCT,
-                SolrConstants.ISANCHOR, SolrConstants.ISWORK);
-        SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(query, fields);
-
-        groupMembershipDetails = new ArrayList<>();
-        if (docs != null) {
-            for (SolrDocument doc : docs) {
-                String pi = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI);
-                String title = SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL);
-                if (StringUtils.isEmpty(title)) {
-                    title = SolrTools.getSingleFieldStringValue(doc, SolrConstants.TITLE);
-                }
-                String creator = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PERSON_ONEFIELD);
-                String year = SolrTools.getSingleFieldStringValue(doc, SolrConstants.MD_YEARPUBLISH);
-                String thumbnailUrl = null;
+        // --- Publish only if PI hasn't changed in the meantime ---
+        synchronized (this) {
+            ViewManager vmNow = this.viewManager;
+            String nowPi = null;
+            if (vmNow != null) {
                 try {
-                    thumbnailUrl = imageDelivery.getThumbs().getThumbnailUrl(doc, 200, 260);
-                } catch (ViewerConfigurationException e) {
-                    logger.warn("Could not generate thumbnail URL for {}: {}", pi, e.getMessage());
+                    nowPi = vmNow.getPi();
+                } catch (IndexUnreachableException e) {
+                    logger.warn("Could not read current PI when publishing related-groups cache: {}", e.getMessage());
                 }
-                groupMembershipDetails.add(new GroupMemberDetail(pi, title, creator, year, thumbnailUrl));
+            }
+            if (nowPi != null && nowPi.equals(currentPi)) {
+                this.groupMembershipDetails = fresh;
+                this.groupMembershipDetailsPi = currentPi;
             }
         }
+        return fresh;
+    }
 
-        return groupMembershipDetails;
+    /**
+     * @return Related-groups details capped at the configured section maxResults (for the content section template).
+     */
+    public List<GroupMemberDetail> getGroupMembershipDetailsForSection() {
+        int max = DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsMaxResults();
+        List<GroupMemberDetail> all = getGroupMembershipDetails();
+        if (max <= 0 || all.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return all.size() <= max ? all : all.subList(0, max);
+    }
+
+    /**
+     * Executes the Solr query and card construction for {@link #getGroupMembershipDetails()}.
+     * Runs outside any lock; must be idempotent.
+     */
+    private List<GroupMemberDetail> loadGroupMembershipDetails(ViewManager vm) throws PresentationException, IndexUnreachableException {
+        StructElement topStruct = vm.getTopStructElement();
+        if (topStruct == null) {
+            return Collections.emptyList();
+        }
+
+        Configuration config = DataManager.getInstance().getConfiguration();
+        int maxResults = config.getSidebarWidgetRelatedGroupsMaxResults();
+        if (maxResults <= 0) {
+            logger.warn("Related-groups: maxResults ({}) is <= 0 - section will be empty", maxResults);
+            return Collections.emptyList();
+        }
+
+        String titleField = StringUtils.defaultIfBlank(config.getSidebarWidgetRelatedGroupsTitleField(), SolrConstants.TITLE);
+        String subtitleField = StringUtils.defaultIfBlank(config.getSidebarWidgetRelatedGroupsSubtitleField(), SolrConstants.PERSON_ONEFIELD);
+        String sortField = config.getSidebarWidgetRelatedGroupsSortField();
+        String sortOrder = config.getSidebarWidgetRelatedGroupsSortOrder();
+        List<StringPair> sortFields = StringUtils.isNotBlank(sortField)
+                ? Collections.singletonList(new StringPair(sortField, StringUtils.defaultIfBlank(sortOrder, "desc")))
+                : null;
+
+        // Fields needed by both the card (display) and the ThumbnailHandler (URL resolution)
+        List<String> fields = relatedGroupsQueryFields(titleField, subtitleField);
+
+        // Collect GROUPID_* memberships defensively
+        List<String> groupPis = collectGroupMembershipPis(topStruct);
+        String anchorPi = vm.getAnchorPi();
+        boolean hasAnchor = topStruct.isAnchorChild() && StringUtils.isNotEmpty(anchorPi);
+        if (!hasAnchor && groupPis.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        String query = buildRelatedGroupsQuery(hasAnchor, anchorPi, topStruct.getPi(), groupPis);
+        if (StringUtils.isBlank(query)) {
+            return Collections.emptyList();
+        }
+
+        SolrDocumentList docs = searchWithSortFallback(query, maxResults, sortFields, fields);
+        if (docs == null || docs.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<GroupMemberDetail> results = new ArrayList<>(docs.size());
+        for (SolrDocument doc : docs) {
+            GroupMemberDetail detail = buildCardFromDoc(doc, titleField, subtitleField);
+            if (detail != null) {
+                results.add(detail);
+            }
+        }
+        return results;
+    }
+
+    /** Builds the Solr fl list for related-groups queries, covering both card display and ThumbnailHandler needs. */
+    private static List<String> relatedGroupsQueryFields(String titleField, String subtitleField) {
+        List<String> fields = new ArrayList<>(List.of(
+                SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.IDDOC,
+                SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.MD_YEARPUBLISH,
+                SolrConstants.THUMBNAIL, SolrConstants.MIMETYPE, SolrConstants.DOCSTRCT,
+                SolrConstants.DATAREPOSITORY, SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.FILENAME));
+        if (StringUtils.isNotBlank(titleField) && !fields.contains(titleField)) {
+            fields.add(titleField);
+        }
+        if (StringUtils.isNotBlank(subtitleField) && !fields.contains(subtitleField)) {
+            fields.add(subtitleField);
+        }
+        return fields;
+    }
+
+    /** Returns a de-duplicated list of GROUPID_* PIs from the given struct, defensively handling nulls. */
+    private static List<String> collectGroupMembershipPis(StructElement topStruct) {
+        List<String> groupPis = new ArrayList<>();
+        Map<String, String> memberships = topStruct.getGroupMemberships();
+        if (memberships == null || memberships.isEmpty()) {
+            return groupPis;
+        }
+        for (String pi : memberships.values()) {
+            if (StringUtils.isNotBlank(pi) && !groupPis.contains(pi)) {
+                groupPis.add(pi);
+            }
+        }
+        return groupPis;
+    }
+
+    /** Builds the combined OR-query for the anchor-sibling branch and/or the GROUPID-membership branch. */
+    private static String buildRelatedGroupsQuery(boolean hasAnchor, String anchorPi, String currentPi, List<String> groupPis) {
+        List<String> clauses = new ArrayList<>();
+        if (hasAnchor && StringUtils.isNotBlank(currentPi)) {
+            clauses.add("(" + SolrConstants.PI_ANCHOR + ":" + ClientUtils.escapeQueryChars(anchorPi)
+                    + " AND " + SolrConstants.ISWORK + ":true"
+                    + " AND -" + SolrConstants.PI + ":" + ClientUtils.escapeQueryChars(currentPi) + ")");
+        }
+        if (!groupPis.isEmpty()) {
+            List<String> escapedPis = new ArrayList<>(groupPis.size());
+            for (String pi : groupPis) {
+                escapedPis.add(ClientUtils.escapeQueryChars(pi));
+            }
+            clauses.add(SolrConstants.PI + ":(" + String.join(" OR ", escapedPis) + ")");
+        }
+        return String.join(" OR ", clauses);
+    }
+
+    /** Runs the search; if the configured sort field causes a Solr error, retries unsorted (best-effort). */
+    private SolrDocumentList searchWithSortFallback(String query, int rows, List<StringPair> sortFields, List<String> fields)
+            throws PresentationException, IndexUnreachableException {
+        try {
+            return DataManager.getInstance().getSearchIndex().search(query, rows, sortFields, fields);
+        } catch (PresentationException e) {
+            if (sortFields == null) {
+                throw e;
+            }
+            logger.warn("Related-groups sort on '{}' failed, retrying unsorted: {}", sortFields, e.getMessage());
+            return DataManager.getInstance().getSearchIndex().search(query, rows, null, fields);
+        }
+    }
+
+    /** Builds a single GroupMemberDetail; returns null if even the PI is missing (can't be a valid card). */
+    private GroupMemberDetail buildCardFromDoc(SolrDocument doc, String titleField, String subtitleField) {
+        try {
+            String pi = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI);
+            if (StringUtils.isBlank(pi)) {
+                return null;
+            }
+            String title = SolrTools.getSingleFieldStringValue(doc, titleField);
+            if (StringUtils.isBlank(title)) {
+                title = SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL);
+            }
+            if (StringUtils.isBlank(title)) {
+                title = SolrTools.getSingleFieldStringValue(doc, SolrConstants.TITLE);
+            }
+            String subtitle = SolrTools.getSingleFieldStringValue(doc, subtitleField);
+            String year = SolrTools.getSingleFieldStringValue(doc, SolrConstants.MD_YEARPUBLISH);
+            String thumbnailUrl = resolveThumbnailUrl(doc, pi);
+            return new GroupMemberDetail(pi, title, subtitle, year, thumbnailUrl);
+        } catch (RuntimeException e) {
+            logger.warn("Skipping related-groups card due to error: {}", e.toString());
+            return null;
+        }
+    }
+
+    /** Resolves a thumbnail URL for the given doc; tries the primary handler, then a series/anchor fallback. */
+    private String resolveThumbnailUrl(SolrDocument doc, String pi) {
+        try {
+            String url = imageDelivery.getThumbs().getThumbnailUrl(doc, 200, 260);
+            if (StringUtils.isNotBlank(url)) {
+                return url;
+            }
+        } catch (ViewerConfigurationException | RuntimeException e) {
+            logger.debug("Primary thumbnail URL failed for {}: {}", pi, e.getMessage());
+        }
+        if (StringUtils.isNotBlank(pi)) {
+            return findFallbackThumbnailUrl(pi);
+        }
+        return null;
+    }
+
+    /**
+     * Returns a thumbnail URL for a series/anchor record that has no THUMBNAIL field of its own,
+     * by resolving the first indexed child/member that does.
+     *
+     * @param pi PI of the series/anchor record
+     * @return Thumbnail URL or null if none can be resolved
+     */
+    private String findFallbackThumbnailUrl(String pi) {
+        String escapedPi = ClientUtils.escapeQueryChars(pi);
+        String fallbackQuery = "(" + SolrConstants.PI_ANCHOR + ":" + escapedPi
+                + " OR GROUPID_SERIES:" + escapedPi + ")"
+                + " AND " + SolrConstants.THUMBNAIL + ":*";
+        try {
+            SolrDocumentList fallbackDocs = DataManager.getInstance().getSearchIndex()
+                    .search(fallbackQuery, 1, null,
+                            List.of(SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.IDDOC, SolrConstants.THUMBNAIL,
+                                    SolrConstants.MIMETYPE, SolrConstants.DOCSTRCT, SolrConstants.DATAREPOSITORY, SolrConstants.ISANCHOR,
+                                    SolrConstants.ISWORK));
+            if (fallbackDocs != null && !fallbackDocs.isEmpty()) {
+                try {
+                    return imageDelivery.getThumbs().getThumbnailUrl(fallbackDocs.get(0), 200, 260);
+                } catch (RuntimeException re) {
+                    logger.warn("Fallback thumbnail URL generation failed for {}: {}", pi, re.getMessage());
+                }
+            }
+        } catch (PresentationException | IndexUnreachableException | ViewerConfigurationException e) {
+            logger.warn("Fallback thumbnail lookup failed for {}: {}", pi, e.getMessage());
+        }
+        return null;
     }
 
     /**
@@ -3116,14 +3328,14 @@ public class ActiveDocumentBean implements Serializable {
 
         private final String pi;
         private final String title;
-        private final String creator;
+        private final String subtitle;
         private final String yearPublish;
         private final String thumbnailUrl;
 
-        public GroupMemberDetail(String pi, String title, String creator, String yearPublish, String thumbnailUrl) {
+        public GroupMemberDetail(String pi, String title, String subtitle, String yearPublish, String thumbnailUrl) {
             this.pi = pi;
             this.title = title;
-            this.creator = creator;
+            this.subtitle = subtitle;
             this.yearPublish = yearPublish;
             this.thumbnailUrl = thumbnailUrl;
         }
@@ -3136,8 +3348,8 @@ public class ActiveDocumentBean implements Serializable {
             return title;
         }
 
-        public String getCreator() {
-            return creator;
+        public String getSubtitle() {
+            return subtitle;
         }
 
         public String getYearPublish() {

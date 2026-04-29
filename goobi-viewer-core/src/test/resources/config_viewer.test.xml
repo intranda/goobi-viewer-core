@@ -1181,7 +1181,15 @@
                 <!-- max length of level before it gets collapsed -->
                 <collapseLengthThreshold lowestLevelToTest="333">141</collapseLengthThreshold>
             </widget>
-            
+
+            <widget name="related-groups">
+                <maxResults>5</maxResults>
+                <sortField>MD_YEARPUBLISH</sortField>
+                <sortOrder>asc</sortOrder>
+                <titleField>LABEL</titleField>
+                <subtitleField>MD_AUTHOR</subtitleField>
+            </widget>
+
             <!-- OTHER WIDGETS -->
             
             <!-- browsing-terms: Term browsing widget. -->
