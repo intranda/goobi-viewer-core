@@ -1896,10 +1896,11 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getSidebarWidgetsForView_shouldReturnCorrectValues() {
         List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetsForView("object");
-        assertEquals(3, result.size());
+        assertEquals(4, result.size());
         assertEquals("views", result.get(0));
         assertEquals("copyright", result.get(1));
         assertEquals("search-in-current-item", result.get(2));
+        assertEquals("related-groups", result.get(3));
     }
 
     /**
@@ -1942,6 +1943,51 @@ class ConfigurationTest extends AbstractTest {
         assertTrue(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewShowDetails("object", "related-groups"));
         assertFalse(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewShowDetails("object", "copyright"));
         assertFalse(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewShowDetails("object", "nonexistent"));
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetRelatedGroupsMaxResults()
+     * @verifies return correct value
+     */
+    @Test
+    void getSidebarWidgetRelatedGroupsMaxResults_shouldReturnCorrectValue() {
+        assertEquals(5, DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsMaxResults());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetRelatedGroupsSortField()
+     * @verifies return correct value
+     */
+    @Test
+    void getSidebarWidgetRelatedGroupsSortField_shouldReturnCorrectValue() {
+        assertEquals("MD_YEARPUBLISH", DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsSortField());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetRelatedGroupsSortOrder()
+     * @verifies return correct value
+     */
+    @Test
+    void getSidebarWidgetRelatedGroupsSortOrder_shouldReturnCorrectValue() {
+        assertEquals("asc", DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsSortOrder());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetRelatedGroupsTitleField()
+     * @verifies return correct value
+     */
+    @Test
+    void getSidebarWidgetRelatedGroupsTitleField_shouldReturnCorrectValue() {
+        assertEquals("LABEL", DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsTitleField());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetRelatedGroupsSubtitleField()
+     * @verifies return correct value
+     */
+    @Test
+    void getSidebarWidgetRelatedGroupsSubtitleField_shouldReturnCorrectValue() {
+        assertEquals("MD_AUTHOR", DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsSubtitleField());
     }
 
     /**

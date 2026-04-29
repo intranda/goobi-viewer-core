@@ -791,4 +791,90 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         // Page 3 canonical must end with the page number
         assertTrue(canonicalHref.endsWith("/3/"), "Canonical URL for page 3 must end with /3/, got: " + canonicalHref);
     }
+
+    /**
+     * @see ActiveDocumentBean#getGroupMembershipDetails()
+     * @verifies return empty list if viewManager is null
+     */
+    @Test
+    void getGroupMembershipDetails_shouldReturnEmptyListIfViewManagerIsNull() throws Exception {
+        assertNull(adb.getViewManager());
+        assertTrue(adb.getGroupMembershipDetails().isEmpty());
+    }
+
+    /**
+     * @see ActiveDocumentBean#getGroupMembershipDetails()
+     * @verifies return group memberships and anchor details
+     */
+    @Test
+    void getGroupMembershipDetails_shouldReturnGroupMembershipsAndAnchorDetails() throws Exception {
+        adb.setPersistentIdentifier("AC16139576");
+        adb.setImageToShow("1");
+        adb.update();
+        assertTrue(adb.isRecordLoaded());
+
+        java.util.List<ActiveDocumentBean.GroupMemberDetail> details = adb.getGroupMembershipDetails();
+        Assertions.assertNotNull(details);
+        Assertions.assertFalse(details.isEmpty(), "Expected at least one related group member");
+
+        java.util.Set<String> pis = new java.util.HashSet<>();
+        for (ActiveDocumentBean.GroupMemberDetail d : details) {
+            pis.add(d.getPi());
+        }
+        assertTrue(pis.contains("AC01131752"), "Expected series record (GROUPID_SERIES target) in results");
+    }
+
+    /**
+     * @see ActiveDocumentBean#getGroupMembershipDetails()
+     * @verifies return sibling volumes for anchor children
+     */
+    @Test
+    void getGroupMembershipDetails_shouldReturnSiblingVolumesForAnchorChildren() throws Exception {
+        adb.setPersistentIdentifier("168714434_1874");
+        adb.setImageToShow("1");
+        adb.update();
+        assertTrue(adb.isRecordLoaded());
+        assertTrue(adb.getViewManager().getTopStructElement().isAnchorChild());
+
+        java.util.List<ActiveDocumentBean.GroupMemberDetail> details = adb.getGroupMembershipDetails();
+        Assertions.assertNotNull(details);
+        Assertions.assertFalse(details.isEmpty(), "Expected at least one sibling volume");
+        for (ActiveDocumentBean.GroupMemberDetail d : details) {
+            Assertions.assertNotEquals("168714434_1874", d.getPi(),
+                    "Current record must be excluded from its own sibling list");
+            Assertions.assertNotEquals("168714434", d.getPi(),
+                    "Anchor record itself must not be returned as a sibling card");
+        }
+    }
+
+    /**
+     * @see ActiveDocumentBean#getGroupMembershipDetails()
+     * @verifies invalidate cached details when record changes
+     */
+    @Test
+    void getGroupMembershipDetails_shouldInvalidateCacheOnRecordChange() throws Exception {
+        adb.setPersistentIdentifier("AC16139576");
+        adb.setImageToShow("1");
+        adb.update();
+        java.util.List<ActiveDocumentBean.GroupMemberDetail> first = adb.getGroupMembershipDetails();
+        Assertions.assertNotNull(first);
+
+        adb.reset();
+        adb.setPersistentIdentifier("168714434_1874");
+        adb.setImageToShow("1");
+        adb.update();
+
+        java.util.List<ActiveDocumentBean.GroupMemberDetail> second = adb.getGroupMembershipDetails();
+        Assertions.assertNotNull(second);
+        Assertions.assertNotSame(first, second, "Cache must not be reused across different records");
+    }
+
+    /**
+     * @see ActiveDocumentBean#getGroupMembershipDetails()
+     * @verifies never throw when called before update
+     */
+    @Test
+    void getGroupMembershipDetails_shouldNeverThrow() {
+        Assertions.assertDoesNotThrow(() -> adb.getGroupMembershipDetails());
+    }
 }

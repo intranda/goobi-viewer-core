@@ -4,10 +4,17 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
-    <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.groupMember or activeDocumentBean.viewManager.topStructElement.anchorChild}">
+    <ui:param
+        name="showDetails"
+        value="#{configurationBean.isSidebarWidgetForViewShowDetails(navigationHelper.currentView, 'related-groups')}" />
+    <ui:fragment
+        rendered="#{showDetails and not empty activeDocumentBean.groupMembershipDetailsForSection and (activeDocumentBean.viewManager.topStructElement.groupMember or activeDocumentBean.viewManager.topStructElement.anchorChild)}">
+        <ui:param
+            name="anchorReady"
+            value="#{activeDocumentBean.viewManager.topStructElement.anchorChild and not empty activeDocumentBean.viewManager.anchorPi and not empty activeDocumentBean.viewManager.anchorStructElement}" />
         <div class="related-groups-section">
-            <!-- Heading: "Diese Publikation ist Teil des Gesamtwerks [Anchor Name]" -->
-            <h:panelGroup rendered="#{activeDocumentBean.viewManager.topStructElement.anchorChild}">
+            <!-- Heading: "Diese Publikation ist Teil des Gesamtwerks [Anchor Name]" - requires full anchor info -->
+            <h:panelGroup rendered="#{anchorReady}">
                 <h2 class="related-groups-section__heading">
                     #{msg.recordGroupMemberships_partOf}
                     <a
@@ -18,7 +25,8 @@
                 </h2>
             </h:panelGroup>
 
-            <h:panelGroup rendered="#{!activeDocumentBean.viewManager.topStructElement.anchorChild and activeDocumentBean.viewManager.topStructElement.groupMember}">
+            <!-- Fallback heading: anchor info incomplete OR plain group membership -->
+            <h:panelGroup rendered="#{!anchorReady}">
                 <h2 class="related-groups-section__heading">#{msg.recordGroupMemberships}</h2>
             </h:panelGroup>
 
@@ -26,27 +34,32 @@
             <div class="related-groups-section__grid">
                 <ui:repeat
                     var="detail"
-                    value="#{activeDocumentBean.groupMembershipDetails}">
+                    value="#{activeDocumentBean.groupMembershipDetailsForSection}">
                     <a
                         href="#{navigationHelper.tocUrl}/#{detail.pi}/1/"
                         class="related-groups-section__card">
                         <div class="related-groups-section__card-image">
-                            <img
-                                src="#{detail.thumbnailUrl}"
-                                alt="#{detail.title}"
-                                data-viewer-thumbnail="thumbnail" />
+                            <h:panelGroup rendered="#{not empty detail.thumbnailUrl}">
+                                <img
+                                    src="#{detail.thumbnailUrl}"
+                                    alt="#{detail.title}"
+                                    data-viewer-thumbnail="thumbnail" />
+                            </h:panelGroup>
                         </div>
                         <div class="related-groups-section__card-info">
                             <span class="related-groups-section__card-title">#{detail.title}</span>
-                            <h:panelGroup rendered="#{not empty detail.creator}">
-                                <span class="related-groups-section__card-creator">#{detail.creator}</span>
+                            <h:panelGroup rendered="#{not empty detail.yearPublish}">
+                                <span class="related-groups-section__card-year">(#{detail.yearPublish})</span>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{not empty detail.subtitle}">
+                                <span class="related-groups-section__card-creator">#{detail.subtitle}</span>
                             </h:panelGroup>
                         </div>
                     </a>
                 </ui:repeat>
 
-                <!-- "Zum Gesamtwerk" button -->
-                <h:panelGroup rendered="#{activeDocumentBean.viewManager.topStructElement.anchorChild}">
+                <!-- "Zum Gesamtwerk" button - only when full anchor info is available -->
+                <h:panelGroup rendered="#{anchorReady}">
                     <a
                         href="#{navigationHelper.getRecordUrl(activeDocumentBean.viewManager.anchorPi, activeDocumentBean.viewManager.anchorStructElement.docStructType, 1, true, false)}"
                         class="related-groups-section__view-all">

@@ -7,105 +7,71 @@
     <composite:interface />
 
     <composite:implementation>
-        <h:panelGroup rendered="#{activeDocumentBean.viewManager.topStructElement.groupMember or activeDocumentBean.viewManager.topStructElement.anchorChild}">
-            <ui:param
-                name="showDetails"
-                value="#{configurationBean.isSidebarWidgetForViewShowDetails(navigationHelper.currentView, 'related-groups')}" />
+        <ui:param
+            name="showDetails"
+            value="#{configurationBean.isSidebarWidgetForViewShowDetails(navigationHelper.currentView, 'related-groups')}" />
+        <h:panelGroup rendered="#{(activeDocumentBean.viewManager.topStructElement.groupMember or activeDocumentBean.viewManager.topStructElement.anchorChild) and !showDetails}">
             <div
                 id="widgetRelatedGroups"
-                class="widget widget-related-groups">
-                <div class="widget__topbar widget-related-groups__topbar">
-                    <h2 class="widget__title widget-related-groups__title">#{msg.recordGroupMemberships}</h2>
-                </div>
+                class="widget-related-groups">
+                <!-- Group (convolutes, etc.) listing -->
+                <h:outputText rendered="#{activeDocumentBean.viewManager.topStructElement.groupMemberships.size() gt 1}">
+                    <div class="widget widget-related-groups__list">
+                        <div class="widget__topbar widget-related-groups__topbar">
+                            <h2 class="widget__title widget-related-groups__title">#{msg.recordGroupMemberships}</h2>
+                        </div>
 
-                <!-- DETAILED VIEW: cards with thumbnail + metadata -->
-                <h:panelGroup rendered="#{showDetails}">
-                    <div class="widget__body widget-related-groups__body">
-                        <div class="widget-related-groups__cards">
-                            <ui:repeat
-                                var="detail"
-                                value="#{activeDocumentBean.groupMembershipDetails}">
+                        <div class="widget__body widget-related-groups__body">
+                            <ul>
+                                <ui:repeat
+                                    var="groupMembership"
+                                    value="#{activeDocumentBean.viewManager.topStructElement.groupMemberships.entrySet().toArray()}">
+                                    <li>
+                                        <a
+                                            href="#{navigationHelper.tocUrl}/#{groupMembership.value}/1/"
+                                            target="_blank">
+                                            <h:outputText
+                                                value="#{msg[activeDocumentBean.viewManager.topStructElement.getGroupLabel(groupMembership.value, 'label__related_groups')]}" />
+                                        </a>
+                                    </li>
+                                </ui:repeat>
+                            </ul>
+                        </div>
+                    </div>
+                </h:outputText>
+
+                <!-- Group (convolutes, etc.) listing -->
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.topStructElement.groupMemberships.size() eq 1}">
+                    <div class="widget widget-related-groups__series">
+                        <ui:param
+                            name="groupMembership"
+                            value="#{activeDocumentBean.viewManager.topStructElement.groupMemberships.entrySet().iterator().next().value}" />
+                        <div class="widget__topbar widget-related-groups__topbar">
+                            <h2 class="widget__title widget-related-groups__title">
                                 <a
-                                    href="#{navigationHelper.tocUrl}/#{detail.pi}/1/"
-                                    class="widget-related-groups__card"
+                                    href="#{navigationHelper.tocUrl}/#{groupMembership}/1/"
                                     target="_blank">
-                                    <div class="widget-related-groups__card-image">
-                                        <img
-                                            src="#{detail.thumbnailUrl}"
-                                            alt="#{detail.title}"
-                                            data-viewer-thumbnail="thumbnail" />
-                                    </div>
-                                    <div class="widget-related-groups__card-info">
-                                        <span class="widget-related-groups__card-title">#{detail.title}</span>
-                                        <h:panelGroup rendered="#{not empty detail.creator}">
-                                            <span class="widget-related-groups__card-creator">#{detail.creator}</span>
-                                        </h:panelGroup>
-                                        <h:panelGroup rendered="#{not empty detail.yearPublish}">
-                                            <span class="widget-related-groups__card-year">#{detail.yearPublish}</span>
-                                        </h:panelGroup>
-                                    </div>
+                                    <h:outputText value="#{msg[activeDocumentBean.viewManager.topStructElement.getGroupLabel(groupMembership, 'label__related_groups')]}" />
                                 </a>
-                            </ui:repeat>
+                            </h2>
                         </div>
                     </div>
                 </h:panelGroup>
 
-                <!-- SIMPLE VIEW: existing text links -->
-                <h:panelGroup rendered="#{!showDetails}">
-                    <!-- Group (convolutes, etc.) listing -->
-                    <h:outputText rendered="#{activeDocumentBean.viewManager.topStructElement.groupMemberships.size() gt 1}">
-                        <div class="widget-related-groups__list">
-                            <div class="widget__body widget-related-groups__body">
-                                <ul>
-                                    <ui:repeat
-                                        var="groupMembership"
-                                        value="#{activeDocumentBean.viewManager.topStructElement.groupMemberships.entrySet().toArray()}">
-                                        <li>
-                                            <a
-                                                href="#{navigationHelper.tocUrl}/#{groupMembership.value}/1/"
-                                                target="_blank">
-                                                <h:outputText
-                                                    value="#{msg[activeDocumentBean.viewManager.topStructElement.getGroupLabel(groupMembership.value, 'label__related_groups')]}" />
-                                            </a>
-                                        </li>
-                                    </ui:repeat>
-                                </ul>
-                            </div>
+                <!-- Extra link to the anchor, if this is a volume -->
+                <h:panelGroup
+                    rendered="#{activeDocumentBean.viewManager.topStructElement.anchorChild and not empty activeDocumentBean.viewManager.anchorPi and not empty activeDocumentBean.viewManager.anchorStructElement}">
+                    <div class="widget widget-related-groups__anchor">
+                        <div class="widget__topbar widget-related-groups__topbar">
+                            <h2 class="widget__title widget-related-groups__title">
+                                <a
+                                    href="#{navigationHelper.getRecordUrl(activeDocumentBean.viewManager.anchorPi, activeDocumentBean.viewManager.anchorStructElement.docStructType, 1, true, false)}"
+                                    target="_blank">
+                                    #{msg.anchor}
+                                </a>
+                            </h2>
                         </div>
-                    </h:outputText>
-
-                    <!-- Group (convolutes, etc.) listing -->
-                    <h:panelGroup rendered="#{activeDocumentBean.viewManager.topStructElement.groupMemberships.size() eq 1}">
-                        <div class="widget widget-related-groups__series">
-                            <ui:param
-                                name="groupMembership"
-                                value="#{activeDocumentBean.viewManager.topStructElement.groupMemberships.entrySet().iterator().next().value}" />
-                            <div class="widget__topbar widget-related-groups__topbar">
-                                <h2 class="widget__title widget-related-groups__title">
-                                    <a
-                                        href="#{navigationHelper.tocUrl}/#{groupMembership}/1/"
-                                        target="_blank">
-                                        <h:outputText value="#{msg[activeDocumentBean.viewManager.topStructElement.getGroupLabel(groupMembership, 'label__related_groups')]}" />
-                                    </a>
-                                </h2>
-                            </div>
-                        </div>
-                    </h:panelGroup>
-
-                    <!-- Extra link to the anchor, if this is a volume -->
-                    <h:panelGroup rendered="#{activeDocumentBean.viewManager.topStructElement.anchorChild}">
-                        <div class="widget widget-related-groups__anchor">
-                            <div class="widget__topbar widget-related-groups__topbar">
-                                <h2 class="widget__title widget-related-groups__title">
-                                    <a
-                                        href="#{navigationHelper.getRecordUrl(activeDocumentBean.viewManager.anchorPi, activeDocumentBean.viewManager.anchorStructElement.docStructType, 1, true, false)}"
-                                        target="_blank">
-                                        #{msg.anchor}
-                                    </a>
-                                </h2>
-                            </div>
-                        </div>
-                    </h:panelGroup>
+                    </div>
                 </h:panelGroup>
             </div>
         </h:panelGroup>
