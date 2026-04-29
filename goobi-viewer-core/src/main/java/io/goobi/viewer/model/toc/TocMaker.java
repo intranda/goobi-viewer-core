@@ -142,6 +142,7 @@ public final class TocMaker {
      * @should return different volume subsets per page when anchor TOC is paginated
      * @should throw IllegalArgumentException if structElement is null
      * @should throw IllegalArgumentException if toc is null
+     * @should render unique PIs that match the existing anchor structure invariant
      * @return a linked map of view names to their TOC element lists, preserving insertion order
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -239,10 +240,9 @@ public final class TocMaker {
             ancestorFields.add(0, SolrConstants.PI_PARENT);
         }
 
-        // Permission caches shared across all ancestor field iterations to avoid redundant Solr calls
-        // for the same PI (e.g. when the same volume appears in multiple ancestor hierarchies).
-        Map<String, Map<String, AccessPermission>> thumbnailPermissionCache = new HashMap<>();
-        Map<String, Map<String, AccessPermission>> pdfPermissionCache = new HashMap<>();
+        // Pass 1: walk every ancestor-field tree, accumulate every visited PI into collectedPis. Permissions
+        // on TOCElements stay at default values; Pass 3 applies them after Pass 2's batch lookup.
+        Set<String> collectedPis = new HashSet<>();
 
         // int mainRecordLevel = 0; // currently not in use
         for (String ancestorField : ancestorFields) {
@@ -278,14 +278,29 @@ public final class TocMaker {
                 //                mainDocumentChain.addAll(ancestorList);
                 SolrDocument topAncestor = ancestorList.get(ancestorList.size() - 1);
                 populateTocTree(tree, seen, mainDocumentChain, topAncestor, level, true, sourceFormatPdfAllowed, mimeType, ancestorField,
-                        addAllSiblings, footerId, thumbnailPermissionCache, pdfPermissionCache);
+                        addAllSiblings, footerId, collectedPis);
             } else {
                 // No ancestors found, just populate the main record TOC
                 populateTocTree(tree, seen, mainDocumentChain, doc, level, true, sourceFormatPdfAllowed, mimeType, ancestorField, addAllSiblings,
-                        footerId, thumbnailPermissionCache, pdfPermissionCache);
+                        footerId, collectedPis);
             }
             ret.add(tree);
         }
+
+        // Pass 2: ONE batch permission Solr query resolves permissions for all collected PIs at once.
+        boolean pdfNeeded = sourceFormatPdfAllowed && DataManager.getInstance().getConfiguration().isTocPdfEnabled();
+        Set<String> privileges = new HashSet<>();
+        privileges.add(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
+        if (pdfNeeded) {
+            privileges.add(IPrivilegeHolder.PRIV_DOWNLOAD_PDF);
+        }
+        Map<String, Map<String, Map<String, AccessPermission>>> batchPermissions =
+                AccessConditionUtils.checkAccessPermissionsForPisAndPrivileges(collectedPis, privileges, BeanUtils.getRequest());
+
+        // Pass 3: apply resolved permissions onto TOCElements that were built with defaults in Pass 1. Iterates
+        // every tree in `ret`, not only the bestTree picked below — keeping it ahead of the bestTree selection
+        // so a future change of selection logic does not silently leave elements with default permissions.
+        applyPermissionsToTocElements(ret, batchPermissions, pdfNeeded);
 
         // Return the largest TOC tree
         List<TOCElement> bestTree = null;
@@ -668,8 +683,12 @@ public final class TocMaker {
     }
 
     /**
+     * Recursively walks the TOC structure for one ancestor-field hierarchy, building TOCElement skeletons
+     * with default permissions (Pass 1 of the two-pass buildToc flow). Every visited PI is added to
+     * {@code collectedPis} so that Pass 2 can resolve all permissions in a single batch Solr query.
      *
      * @param ret list to which TOC elements are added
+     * @param seen set of already-added elements used for deduplication
      * @param mainDocumentChain IDDOC path from the top ancestor to the loaded record
      * @param doc Solr document of the current node to process
      * @param level current depth level in the TOC tree
@@ -679,52 +698,26 @@ public final class TocMaker {
      * @param ancestorField Solr field used to resolve ancestor/parent relationships
      * @param addAllSiblings whether to include sibling elements in the TOC
      * @param footerId watermark footer identifier for access conditions
+     * @param collectedPis mutable set to which every visited PI is added for batch permission resolution
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
      */
     private static void populateTocTree(List<TOCElement> ret, Set<TOCElement> seen, List<String> mainDocumentChain, SolrDocument doc, int level,
             boolean addChildren, boolean sourceFormatPdfAllowed, String mimeType, String ancestorField, boolean addAllSiblings, String footerId,
-            Map<String, Map<String, AccessPermission>> thumbnailPermissionCache, Map<String, Map<String, AccessPermission>> pdfPermissionCache)
+            Set<String> collectedPis)
             throws PresentationException, IndexUnreachableException, DAOException {
         Map<String, List<SolrDocument>> childrenMap = new HashMap<>();
         String pi = (String) doc.getFieldValue(SolrConstants.PI);
         if (pi == null) {
             logger.error("No PI found for: {}", doc.getFieldValue(SolrConstants.IDDOC));
+        } else {
+            // Pass 1: collect every visited PI so the post-walk batch query covers all of them.
+            // Permissions on TOCElements stay at their default values until applyPermissionsToTocElements
+            // applies them in Pass 3.
+            collectedPis.add(pi);
         }
         logger.trace("populateTocTree: {}; number of items in toc: {}", pi, ret.size());
-
-        // Check permissions for all docstructs of this PI, using the cache to avoid repeated Solr calls
-        // when the same PI is encountered in multiple recursive calls (e.g. sibling volumes). The two cache
-        // maps are created fresh per top-level generateToc() invocation and pdfNeeded is constant within
-        // that invocation, so pdfPermissionCache only ever holds entries when pdfNeeded is true.
-        Map<String, AccessPermission> thumbnailPermissionMap = thumbnailPermissionCache.get(pi);
-        Map<String, AccessPermission> pdfPermissionMap = pdfPermissionCache.get(pi);
-        boolean pdfNeeded = sourceFormatPdfAllowed && DataManager.getInstance().getConfiguration().isTocPdfEnabled();
-
-        // Determine which privilege(s) need to be fetched. Both caches behave coherently per PI: if either is
-        // missing for the current PI, a fresh permission lookup is required. We always include THUMBNAILS, plus
-        // PDF when enabled, in a single batched Solr roundtrip.
-        Set<String> uncachedPrivileges = new HashSet<>();
-        if (thumbnailPermissionMap == null) {
-            uncachedPrivileges.add(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
-        }
-        if (pdfNeeded && pdfPermissionMap == null) {
-            uncachedPrivileges.add(IPrivilegeHolder.PRIV_DOWNLOAD_PDF);
-        }
-        if (!uncachedPrivileges.isEmpty()) {
-            Map<String, Map<String, AccessPermission>> batch =
-                    AccessConditionUtils.checkAccessPermissionByIdentifierForAllLogidsAndPrivileges(pi, uncachedPrivileges,
-                            BeanUtils.getRequest());
-            if (thumbnailPermissionMap == null) {
-                thumbnailPermissionMap = batch.getOrDefault(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, new HashMap<>());
-                thumbnailPermissionCache.put(pi, thumbnailPermissionMap);
-            }
-            if (pdfNeeded && pdfPermissionMap == null) {
-                pdfPermissionMap = batch.getOrDefault(IPrivilegeHolder.PRIV_DOWNLOAD_PDF, new HashMap<>());
-                pdfPermissionCache.put(pi, pdfPermissionMap);
-            }
-        }
 
         // Real children (struct elements of the main record)
         String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
@@ -762,8 +755,10 @@ public final class TocMaker {
             }
         }
 
-        // Add current doc and recursively build the tree from the children map
-        addTocElementsRecusively(ret, seen, childrenMap, doc, level, addChildren, thumbnailPermissionMap, pdfPermissionMap, mimeType, footerId);
+        // Pass 1: build TOCElement skeletons with default permissions. Permissions get applied in Pass 3 by
+        // applyPermissionsToTocElements.
+        addTocElementsRecusively(ret, seen, childrenMap, doc, level, addChildren, Collections.emptyMap(),
+                Collections.emptyMap(), mimeType, footerId);
 
         // Loosely referenced children (e.g. anchor volumes)
         if (StringUtils.isNotEmpty(ancestorField)) {
@@ -815,9 +810,8 @@ public final class TocMaker {
                     for (SolrDocument childDoc : childDocs) {
                         // Add child, if either all siblings are requested or the path leads to the main record
                         if (addSiblings || (mainDocumentChain != null && mainDocumentChain.contains(childDoc.getFieldValue(SolrConstants.IDDOC)))) {
-                            // Pass seen and permission caches through to avoid duplicate elements and redundant Solr calls
                             populateTocTree(ret, seen, mainDocumentChain, childDoc, level + 1, addChildren, sourceFormatPdfAllowed, mimeType,
-                                    ancestorField, addSiblings, footerId, thumbnailPermissionCache, pdfPermissionCache);
+                                    ancestorField, addSiblings, footerId, collectedPis);
                         }
                     }
                 }
@@ -1099,5 +1093,34 @@ public final class TocMaker {
         }
 
         return ret;
+    }
+
+    /**
+     * Applies thumbnail and PDF permissions onto already-constructed TOCElements based on a per-PI batch result.
+     * Used by the two-pass buildToc flow to defer permission resolution until after structure assembly.
+     *
+     * @param trees list of per-ancestor-field TOCElement lists to update in place
+     * @param batch result of AccessConditionUtils.checkAccessPermissionsForPisAndPrivileges keyed
+     *              identifier -&gt; privilege -&gt; LOGID -&gt; permission
+     * @param pdfNeeded whether PDF permissions should be applied
+     */
+    private static void applyPermissionsToTocElements(List<List<TOCElement>> trees,
+            Map<String, Map<String, Map<String, AccessPermission>>> batch, boolean pdfNeeded) {
+        for (List<TOCElement> tree : trees) {
+            for (TOCElement element : tree) {
+                String pi = element.getTopStructPi();
+                String logId = element.getLogId();
+                if (pi == null || logId == null) {
+                    continue;
+                }
+                Map<String, Map<String, AccessPermission>> perPi = batch.getOrDefault(pi, Collections.emptyMap());
+                AccessPermission thumb = perPi.getOrDefault(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, Collections.emptyMap()).get(logId);
+                element.setAccessPermissionThumbnail(thumb);
+                if (pdfNeeded) {
+                    AccessPermission pdf = perPi.getOrDefault(IPrivilegeHolder.PRIV_DOWNLOAD_PDF, Collections.emptyMap()).get(logId);
+                    element.setAccessPermissionPdf(pdf != null && pdf.isGranted());
+                }
+            }
+        }
     }
 }

@@ -23,9 +23,11 @@ package io.goobi.viewer.model.toc;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.solr.common.SolrDocument;
 import org.junit.jupiter.api.Assertions;
@@ -335,5 +337,29 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
                 "Anchor must be at index 0 — the ancestor-containing tree was selected as the largest");
         // Volume elements immediately follow the anchor
         Assertions.assertEquals("306653648_1891", elements.get(1).getTopStructPi());
+    }
+
+    /**
+     * @see TocMaker#generateToc(TOC, StructElement, boolean, String, int, int)
+     * @verifies render unique PIs that match the existing anchor structure invariant
+     */
+    @Test
+    void generateToc_shouldRenderUniquePisThatMatchTheExistingAnchorStructureInvariant() throws Exception {
+        // Anchor 306653648 has 7 volumes (1891/1892/1893/1894/1897/1898/1899). Opening volume 306653648_1891
+        // with addAllSiblings=true renders a TOC containing the volume itself plus the 6 sibling top-elements,
+        // per existing TocMakerTest.generateToc_shouldIncludeAnchorElementFullVolumeTreeAndSiblingVolumeTopElementsInTOC.
+        // The total list has 111 elements (1 anchor + 104 volume struct elements + 6 sibling volume top elements),
+        // referencing 8 unique top-struct PIs (anchor + main volume + 6 siblings).
+        String iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648_1891");
+        Assertions.assertNotNull(iddoc);
+        StructElement structElement = new StructElement(iddoc);
+        Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(new TOC(), structElement, true, "image/tiff", 1, -1);
+
+        Set<String> uniquePis = new HashSet<>();
+        for (TOCElement element : tocElements.get(StringConstants.DEFAULT_NAME)) {
+            if (element.getTopStructPi() != null) uniquePis.add(element.getTopStructPi());
+        }
+        Assertions.assertFalse(uniquePis.isEmpty(), "Rendered TOC has no top-struct PIs at all");
+        Assertions.assertEquals(8, uniquePis.size(), "Rendered TOC should reference exactly 8 unique PIs");
     }
 }
