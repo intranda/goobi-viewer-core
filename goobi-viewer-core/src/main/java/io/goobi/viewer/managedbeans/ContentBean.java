@@ -42,6 +42,7 @@ import org.apache.logging.log4j.Logger;
 
 import de.intranda.api.annotation.ITypedResource;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.HtmlSanitizer;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -254,13 +255,21 @@ public class ContentBean implements Serializable {
     }
 
     /**
-     * Removes script tags from the given string.
+     * Sanitize a user-supplied annotation/comment body before rendering. Used from JSF
+     * templates as {@code #{contentBean.cleanUpValue(value)}}; six of eight call sites
+     * already render the result via JSF's default escape, so this method primarily acts
+     * as defense in depth, plus protects the two {@code escape="false"} sinks in
+     * {@code annotationList.xhtml}.
      *
-     * @param value raw string to strip JavaScript from
-     * @return value sans any script tags
+     * @param value raw string from an annotation or comment body
+     * @return sanitized string with allowlisted inline tags only
+     * @should remove script tags
+     * @should remove img onerror attribute
      */
     public String cleanUpValue(String value) {
-        return StringTools.stripJS(value);
+        // Switched from regex-based StringTools.stripJS to HtmlSanitizer.cleanComment to
+        // also block event-handler attributes and javascript:/data: URI schemes.
+        return HtmlSanitizer.cleanComment(value);
     }
 
     public String getEscapedBodyUrl(DisplayUserGeneratedContent content) {

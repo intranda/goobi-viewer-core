@@ -40,7 +40,7 @@ import org.apache.logging.log4j.Logger;
 
 import de.intranda.api.annotation.wa.Motivation;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.controller.HtmlSanitizer;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -278,24 +278,32 @@ public class CommentManager implements AnnotationLister<Comment> {
     }
 
     /**
+     * Sanitize submitted comment text using the {@link HtmlSanitizer#cleanComment(String)}
+     * allowlist. Logs a WARN entry only when the input actually contained disallowed markup
+     * (detected via {@link HtmlSanitizer#isCleanComment(String)} so Jsoup's harmless
+     * normalizations don't produce false-positive log noise).
      *
      * @param text raw comment text to sanitize
      * @param editor user who submitted the text
      * @param pi persistent identifier of the target record
      * @param page page number the comment is attached to
-     * @return text stripped of any JS
+     * @return text stripped of any disallowed markup
+     * @should return null if text is null
+     * @should return text unchanged if already clean
+     * @should remove script tags and log warning
+     * @should remove onclick attributes and log warning
      */
     public static String checkAndCleanScripts(final String text, User editor, String pi, Integer page) {
-        if (text != null) {
-            String cleanText = StringTools.stripJS(text);
-            if (cleanText.length() < text.length()) {
-                logger.warn("User {} attempted to add a script block into a comment for {}, page {}, which was removed:\n{}",
-                        Optional.ofNullable(editor).map(User::getId).orElse(null), pi, page, text);
-            }
-            return cleanText;
+        if (text == null) {
+            return text;
         }
-
-        return text;
+        // Switched from regex-based StringTools.stripJS to HtmlSanitizer.cleanComment;
+        // detection via isCleanComment avoids false-positive WARN entries.
+        if (!HtmlSanitizer.isCleanComment(text)) {
+            logger.warn("User {} attempted to add a script block into a comment for {}, page {}, which was removed:\n{}",
+                    Optional.ofNullable(editor).map(User::getId).orElse(null), pi, page, text);
+        }
+        return HtmlSanitizer.cleanComment(text);
     }
 
     @Override

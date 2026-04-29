@@ -39,6 +39,7 @@ import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.controller.HtmlSanitizer;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
@@ -293,11 +294,13 @@ public class AdminLicenseBean implements Serializable {
             currentLicenseType.setRedirectUrl(null);
         }
 
-        // Strip any JS from HTML descriptions
+        // Sanitize HTML license-placeholder descriptions before persisting. Switched from
+        // regex-based StringTools.stripJS to HtmlSanitizer.cleanRichText so all event-handler
+        // attributes and javascript:/data: URI schemes are also neutralized.
         for (LicenseTypePlaceholderInfo info : currentLicenseType.getImagePlaceholders()) {
             String desc = currentLicenseType.getPlaceholderDescription(info.getLanguage()).getTranslationValue();
             if (StringUtils.isNotEmpty(desc)) {
-                currentLicenseType.getPlaceholderDescription(info.getLanguage()).setTranslationValue(StringTools.stripJS(desc));
+                currentLicenseType.getPlaceholderDescription(info.getLanguage()).setTranslationValue(HtmlSanitizer.cleanRichText(desc));
             }
         }
 
