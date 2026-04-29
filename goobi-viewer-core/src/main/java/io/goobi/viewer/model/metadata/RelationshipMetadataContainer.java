@@ -34,21 +34,26 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.viewer.ViewManager;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
- * Extends {@link ComplexMetadataContainer} to support relationship metadata whose filter and sort
- * fields can reference fields in externally linked Solr records, loaded on demand from the index.
+ * Extends {@link ComplexMetadataContainer} to support relationship metadata whose filter and sort fields can reference fields in externally linked
+ * Solr records, loaded on demand from the index.
  */
 public class RelationshipMetadataContainer extends ComplexMetadataContainer {
+
+    private static final Logger logger = LogManager.getLogger(RelationshipMetadataContainer.class);
 
     public static final String FIELD_IN_RELATED_DOCUMENT_PREFIX = "related.";
     private static final String RELATED_RECORD_QUERY_FORMAT = "+DOCTYPE:DOCSTRCT +MD_PROCESSID:(%s)";
@@ -109,11 +114,19 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
                 .flatMap(List::stream)
                 //                .filter(md -> md.hasValue(RELATIONSHIP_ID_REFERENCE))
                 .toList();
-        String recordIdentifiers = relationshipMetadata.stream()
+
+        List<String> identifiers = relationshipMetadata.stream()
                 .map(md -> md.getFirstValue(RELATIONSHIP_ID_REFERENCE, null))
-                .filter(StringUtils::isNotBlank)     // remove null/empty
-                .distinct()                          // deduplicate
-                .limit(1024)                         // enforce Solr/Lucene limit
+                .filter(StringUtils::isNotBlank) // remove null/empty
+                .distinct() // deduplicate
+                .toList();
+        if (identifiers.size() > 1024) {
+            // use your project’s logger here
+            logger.warn("Truncating MD_PROCESSID list from {} to 1024 values for Solr query", identifiers.size());
+        }
+
+        String recordIdentifiers = identifiers.stream()
+                .limit(1024) // enforce Solr/Lucene limit
                 .collect(Collectors.joining(" "));
         if (StringUtils.isBlank(recordIdentifiers)) {
             return new RelationshipMetadataContainer(container.metadataMap, Collections.emptyMap());
