@@ -86,9 +86,9 @@ import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.PersistenceException;
 
 /**
- * Central data-access interface for the Goobi viewer, defining all persistence operations for the application's domain objects.
- * Covers users, user groups, roles, licenses, CMS pages and components, crowdsourcing campaigns, bookmarks, annotations, search history,
- * geo-maps, upload jobs, message-queue entries, usage statistics, and more.
+ * Central data-access interface for the Goobi viewer, defining all persistence operations for the application's domain objects. Covers users, user
+ * groups, roles, licenses, CMS pages and components, crowdsourcing campaigns, bookmarks, annotations, search history, geo-maps, upload jobs,
+ * message-queue entries, usage statistics, and more.
  */
 public interface IDAO {
 
@@ -223,6 +223,35 @@ public interface IDAO {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean deleteUser(User user) throws DAOException;
+
+    /**
+     * @param tokenHash SHA-256 hex hash of the plaintext token
+     * @return the matching UserToken, or empty if not found
+     * @throws DAOException
+     */
+    public Optional<io.goobi.viewer.model.security.user.UserToken> getUserTokenByTokenHash(String tokenHash) throws DAOException;
+
+    /**
+     * @param token UserToken to persist
+     * @return true on success
+     * @throws DAOException
+     */
+    public boolean addUserToken(io.goobi.viewer.model.security.user.UserToken token) throws DAOException;
+
+    /**
+     * @param token UserToken to delete
+     * @return true on success
+     * @throws DAOException
+     */
+    public boolean deleteUserToken(io.goobi.viewer.model.security.user.UserToken token) throws DAOException;
+
+    /**
+     * Deletes all expired tokens for the given user.
+     *
+     * @param user
+     * @throws DAOException
+     */
+    public void deleteExpiredUserTokensForUser(io.goobi.viewer.model.security.user.User user) throws DAOException;
 
     // UserGroup
 
@@ -391,7 +420,7 @@ public interface IDAO {
      * @return true if bookmark list was updated successfully; false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean updateBookmarkList(BookmarkList bookmarkList) throws DAOException;
+    public BookmarkList updateBookmarkList(BookmarkList bookmarkList) throws DAOException;
 
     /**
      * deleteBookmarkList.
@@ -2431,7 +2460,7 @@ public interface IDAO {
     /**
      * Get the EntityManagerFactory created when initializing the class. Can be used to explicitly create new EntityManagers.
      *
-
+     * 
      */
     EntityManagerFactory getFactory();
 

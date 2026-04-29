@@ -48,6 +48,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.WebApplicationException;
@@ -145,11 +146,7 @@ public class MediaResource {
                 throw new PresentationException("Error accessing media resource", e);
             }
         } else {
-            try {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND);
-            } catch (IOException e) {
-                throw new WebApplicationException(e);
-            }
+            throw new NotFoundException();
         }
     }
 

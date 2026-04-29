@@ -27,9 +27,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -49,10 +46,12 @@ import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 /**
- * REST resource builder for bookmark lists owned by an authenticated user. Implements bookmark
- * list operations backed by the database, including support for sharing lists with user groups.
+ * REST resource builder for bookmark lists owned by an authenticated user. Implements bookmark list operations backed by the database, including
+ * support for sharing lists with user groups.
  */
 public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder {
 
@@ -123,7 +122,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
      */
     @Override
-    public SuccessMessage addBookmarkToBookmarkList(Long id, String pi, String logId,
+    public Bookmark addBookmarkToBookmarkList(Long id, String pi, String logId,
             String pageString) throws DAOException, IOException, RestApiException {
         Optional<BookmarkList> o = getAllBookmarkLists().stream().filter(bs -> bs.getId().equals(id)).findFirst();
         if (!o.isPresent()) {
@@ -132,9 +131,16 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
 
         try {
             Bookmark item = new Bookmark(pi, "-".equals(logId) ? null : logId, getPageOrder(pageString), false);
-            boolean success = o.get().addItem(item);
-            DataManager.getInstance().getDao().updateBookmarkList(o.get());
-            return new SuccessMessage(success);
+            if (!o.get().addItem(item)) {
+                throw new RestApiException("Bookmark already exists in list", HttpServletResponse.SC_CONFLICT);
+            }
+            BookmarkList storedList = DataManager.getInstance().getDao().updateBookmarkList(o.get());
+            if (storedList != null) {
+                Bookmark storedItem = storedList.getItems().stream().filter(bm -> bm.equals(item)).findAny().orElse(null);
+                return storedItem;
+            } else {
+                throw new DAOException("Bookmark not stored");
+            }
         } catch (IndexUnreachableException | PresentationException e) {
             // Return 404 when the record cannot be found in the index (pi does not exist),
             // which is more semantically correct than 400 for a missing resource.
@@ -145,18 +151,17 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
     }
 
     /**
-     * Adds a new Bookmark with the given pi to the current users bookmark list with the given id. Returns 203 if no matching bookmark list was found
-     * or 400 if the Bookmark could not be created (wrong pi).
+     * Adds a new Bookmark with the given pi to the current users bookmark list with the given id.
      *
      * @param id database ID of the target bookmark list
      * @param pi persistent identifier of the record to bookmark
-     * @return a SuccessMessage indicating whether the bookmark was successfully added
+     * @return the newly created {@link Bookmark}
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
      */
     @Override
-    public SuccessMessage addBookmarkToBookmarkList(Long id, String pi)
+    public Bookmark addBookmarkToBookmarkList(Long id, String pi)
             throws DAOException, IOException, RestApiException {
         return addBookmarkToBookmarkList(id, pi, null, null);
     }
@@ -223,7 +228,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
      */
     @Override
-    public SuccessMessage addBookmarkList(String name) throws DAOException, IOException, RestApiException {
+    public BookmarkList addBookmarkList(String name) throws DAOException, IOException, RestApiException {
 
         if (userHasBookmarkList(user, name)) {
             throw new RestApiException("BookmarkList '" + name + "' already exists for the current user", HttpServletResponse.SC_BAD_REQUEST);
@@ -233,20 +238,22 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
         bookmarkList.setName(name);
         bookmarkList.setOwner(user);
         bookmarkList.setIsPublic(false);
-        boolean success = DataManager.getInstance().getDao().addBookmarkList(bookmarkList);
-        return new SuccessMessage(success);
+        if (!DataManager.getInstance().getDao().addBookmarkList(bookmarkList)) {
+            throw new RestApiException("Failed to persist bookmark list", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+        return bookmarkList;
     }
 
     /**
-     * Adds a new BookmarkList with the given name to the current users bookmark lists.
+     * Adds a new BookmarkList with a generated name to the current users bookmark lists.
      *
-     * @return a SuccessMessage indicating whether the new bookmark list was successfully created
+     * @return the newly created {@link BookmarkList}
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
      */
     @Override
-    public SuccessMessage addBookmarkList() throws DAOException, IOException, RestApiException {
+    public BookmarkList addBookmarkList() throws DAOException, IOException, RestApiException {
         String name = SessionStoreBookmarkManager.generateNewBookmarkListName(getAllBookmarkLists());
         return addBookmarkList(name);
     }

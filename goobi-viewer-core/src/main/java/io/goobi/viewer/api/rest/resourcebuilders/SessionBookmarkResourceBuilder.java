@@ -109,7 +109,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
      */
-    public SuccessMessage addBookmarkToBookmarkList(Long id, String pi) throws DAOException, IOException, RestApiException {
+    public Bookmark addBookmarkToBookmarkList(Long id, String pi) throws DAOException, IOException, RestApiException {
         return addBookmarkToBookmarkList(id, pi, null, null);
     }
 
@@ -120,18 +120,20 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
      * @param pi persistent identifier of the record to bookmark
      * @param logId structural element log ID, or "-" to indicate none
      * @param pageString page order number as string, may be null
-     * @return a SuccessMessage indicating whether the bookmark was successfully added to the session list
+     * @return the newly created {@link Bookmark}
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
      */
-    public SuccessMessage addBookmarkToBookmarkList(Long id, String pi, String logId, String pageString)
+    public Bookmark addBookmarkToBookmarkList(Long id, String pi, String logId, String pageString)
             throws DAOException, IOException, RestApiException {
         try {
             Bookmark item = new Bookmark(pi, "-".equals(logId) ? null : logId, getPageOrder(pageString), false);
             item.setId(System.nanoTime());
-            boolean success = DataManager.getInstance().getBookmarkManager().addToBookmarkList(item, session);
-            return new SuccessMessage(success);
+            if (!DataManager.getInstance().getBookmarkManager().addToBookmarkList(item, session)) {
+                throw new RestApiException("Bookmark already exists in list", HttpServletResponse.SC_CONFLICT);
+            }
+            return item;
         } catch (IndexUnreachableException | PresentationException e) {
             String errorMessage = "Unable to create bookmark for pi = " + pi + ", page = " + pageString + " and logid = " + logId;
             logger.error(errorMessage);
@@ -300,13 +302,13 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
     }
 
     @Override
-    public SuccessMessage addBookmarkList() throws DAOException, IOException, RestApiException, IllegalRequestException {
+    public BookmarkList addBookmarkList() throws DAOException, IOException, RestApiException, IllegalRequestException {
         // Session users may only have one bookmark list; adding another is a conflict, not a bad request
         throw new WebApplicationException("Cannot add additional session bookmark lists", Response.Status.CONFLICT);
     }
 
     @Override
-    public SuccessMessage addBookmarkList(String name) throws DAOException, IOException, RestApiException, IllegalRequestException {
+    public BookmarkList addBookmarkList(String name) throws DAOException, IOException, RestApiException, IllegalRequestException {
         // Session users may only have one bookmark list; adding another is a conflict, not a bad request
         throw new WebApplicationException("Cannot add additional session bookmark lists", Response.Status.CONFLICT);
     }

@@ -22,18 +22,27 @@
 package io.goobi.viewer.api.rest.filters;
 
 import java.io.IOException;
+import java.util.Optional;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.api.rest.bindings.UserLoggedInBinding;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.SecurityManager;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.security.user.UserToken;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
 
 /**
- * Only allow requests from a session with a logged in Goobi viewer user.
+ * Only allow requests from a session with a logged in Goobi viewer user, or with a valid Bearer token.
  *
  * @author Florian Alpers
  */
@@ -41,20 +50,64 @@ import jakarta.ws.rs.ext.Provider;
 @UserLoggedInBinding
 public class UserLoggedInFilter implements ContainerRequestFilter {
 
+    private static final Logger logger = LogManager.getLogger(UserLoggedInFilter.class);
+
     @Context
     private HttpServletRequest servletRequest;
 
+    /**
+     * @param requestContext the JAX-RS request context
+     * @throws IOException
+     * @should pass request through when valid bearer token provided
+     * @should return 401 with token_expired when expired bearer token provided
+     * @should return 401 with invalid_token when unknown bearer token provided
+     * @should return 401 when no bearer token and no session
+     */
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        if (!isUserLoggedIn(servletRequest)) {
-            Response response = Response.status(Response.Status.UNAUTHORIZED)
-                    .entity("You must be logged in to access this resource")
-                    .build();
-            requestContext.abortWith(response);
+        try {
+            Optional<UserToken> tokenOpt = getUserToken(servletRequest);
+
+            tokenOpt.ifPresentOrElse(token -> {
+                if (token.isExpired()) {
+                    //abort: token expired
+                    requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
+                            .type(MediaType.APPLICATION_JSON)
+                            .entity("{\"status\":\"error\",\"message\":\"token_expired\"}")
+                            .build());
+                }
+                //token valid: continue
+            }, () -> {
+                //no token
+                if (!isUserLoggedIn(servletRequest)) {
+                    //abort: no user
+                    requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
+                            .entity("You must be logged in to access this resource")
+                            .build());
+                }
+                //user logged in: continue
+            });
+
+        } catch (DAOException e) {
+            //error reading db: abort
+            logger.error("DAO error validating Bearer token", e);
+            requestContext.abortWith(Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
+            return;
         }
+
     }
 
     public static boolean isUserLoggedIn(HttpServletRequest request) {
         return BeanUtils.getUserFromSession(request.getSession()) != null;
+    }
+
+    public static Optional<UserToken> getUserToken(HttpServletRequest request) throws DAOException {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String plaintext = authHeader.substring(7);
+            String hash = SecurityManager.hashToken(plaintext);
+            return DataManager.getInstance().getDao().getUserTokenByTokenHash(hash);
+        }
+        return Optional.empty();
     }
 }
