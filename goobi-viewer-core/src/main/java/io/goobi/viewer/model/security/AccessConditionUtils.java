@@ -761,6 +761,8 @@ public final class AccessConditionUtils {
      * @param request HTTP servlet request providing session and IP address
      * @return Map with true/false for each LOGID
      * @should fill map completely
+     * @should return empty map when identifier is blank
+     * @should return empty map when identifier is null
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */

@@ -779,4 +779,38 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
         assertTrue(store.containsKey("currentPi"));
         assertTrue(store.containsKey("user"));
     }
+
+    /**
+     * @see AccessConditionUtils#checkAccessPermissionByIdentiferForAllLogids(String, String, jakarta.servlet.http.HttpServletRequest)
+     * @verifies fill map completely
+     */
+    @Test
+    void checkAccessPermissionByIdentiferForAllLogids_shouldFillMapCompletely() throws Exception {
+        // Volume "306653648_1891" exists in the test Solr index with multiple LOGIDs
+        Map<String, AccessPermission> result = AccessConditionUtils.checkAccessPermissionByIdentiferForAllLogids(
+                "306653648_1891", IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, null);
+        assertFalse(result.isEmpty(), "Expected non-empty permission map for PI 306653648_1891");
+    }
+
+    /**
+     * @see AccessConditionUtils#checkAccessPermissionByIdentiferForAllLogids(String, String, jakarta.servlet.http.HttpServletRequest)
+     * @verifies return empty map when identifier is blank
+     */
+    @Test
+    void checkAccessPermissionByIdentiferForAllLogids_shouldReturnEmptyMapWhenIdentifierIsBlank() throws Exception {
+        Map<String, AccessPermission> result = AccessConditionUtils.checkAccessPermissionByIdentiferForAllLogids(
+                "", IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, null);
+        assertTrue(result.isEmpty());
+    }
+
+    /**
+     * @see AccessConditionUtils#checkAccessPermissionByIdentiferForAllLogids(String, String, jakarta.servlet.http.HttpServletRequest)
+     * @verifies return empty map when identifier is null
+     */
+    @Test
+    void checkAccessPermissionByIdentiferForAllLogids_shouldReturnEmptyMapWhenIdentifierIsNull() throws Exception {
+        Map<String, AccessPermission> result = AccessConditionUtils.checkAccessPermissionByIdentiferForAllLogids(
+                null, IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, null);
+        assertTrue(result.isEmpty());
+    }
 }
