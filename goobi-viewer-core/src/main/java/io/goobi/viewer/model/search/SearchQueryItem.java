@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -81,7 +82,15 @@ public class SearchQueryItem implements Serializable {
     /** Index field to search. */
     private String field;
 
-    private List<SearchQueryItemLine> lines = new ArrayList<>();
+    /**
+     * Lines of this query item.
+     *
+     * Uses CopyOnWriteArrayList to avoid ConcurrentModificationException during JSF
+     * c:forEach iteration on searchAdvanced.xhtml: SearchBean is @SessionScoped, so
+     * concurrent requests on the same session can mutate this list while another
+     * thread iterates it. Writes (reset/add/remove) are rare and user-action driven.
+     */
+    private final List<SearchQueryItemLine> lines = new CopyOnWriteArrayList<>();
 
     private volatile boolean displaySelectItems = false;
     /** If >0, proximity search will be applied to phrase searches. */
@@ -389,7 +398,10 @@ public class SearchQueryItem implements Serializable {
         toggleDisplaySelectItems();
     }
 
-    
+    /**
+     * @return the list of {@link SearchQueryItemLine}s for this query item
+     * @should allow safe iteration during concurrent modification
+     */
     public List<SearchQueryItemLine> getLines() {
         return lines;
     }

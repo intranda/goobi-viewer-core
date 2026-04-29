@@ -22,9 +22,9 @@
 package io.goobi.viewer.model.search;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -56,8 +56,17 @@ public class SearchQueryGroup implements Serializable {
         }
     }
 
-    /** List of query items in this group. */
-    private final List<SearchQueryItem> queryItems = new ArrayList<>();
+    /**
+     * List of query items in this group.
+     *
+     * Uses CopyOnWriteArrayList to avoid ConcurrentModificationException during JSF
+     * c:forEach iteration on searchAdvanced.xhtml: SearchBean is @SessionScoped, so
+     * concurrent requests on the same session (e.g. AJAX in flight while a render
+     * thread iterates, or bot prefetching) can mutate this list while another thread
+     * iterates it. Writes (init/inject/add/remove) are user-action driven and rare;
+     * reads happen on every render — COW is the right trade-off here.
+     */
+    private final List<SearchQueryItem> queryItems = new CopyOnWriteArrayList<>();
     private String template;
 
     private SearchQueryGroupOperator operator = SearchQueryGroupOperator.AND;
@@ -171,6 +180,7 @@ public class SearchQueryGroup implements Serializable {
      * Getter for the field <code>queryItems</code>.
      *
      * @return the list of individual search query items within this group
+     * @should allow safe iteration during concurrent modification
      */
     public List<SearchQueryItem> getQueryItems() {
         return queryItems;
