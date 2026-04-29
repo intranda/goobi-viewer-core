@@ -21,6 +21,9 @@
  */
 package io.goobi.viewer.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +32,6 @@ import io.goobi.viewer.AbstractTest;
 class SecurityManagerTest extends AbstractTest {
 
     /**
-     * @see SecurityManager#getDelay(int,long,long)
      * @verifies return zero if attempts zero
      */
     @Test
@@ -53,5 +55,18 @@ class SecurityManagerTest extends AbstractTest {
     @Test
     void getDelay_shouldReturnDelayIfTimeBetweenLastAttemptAndNowSmallerThanDelay() throws Exception {
         Assertions.assertEquals(500, SecurityManager.getDelay(1, 1000, 3500));
+    }
+
+    /**
+     * @see SecurityManager#hashToken(String)
+     * @verifies return consistent 64-char hex for same input
+     */
+    @Test
+    void hashToken_shouldReturnConsistent64CharHexForSameInput() {
+        String hash1 = SecurityManager.hashToken("my-test-token");
+        String hash2 = SecurityManager.hashToken("my-test-token");
+        assertEquals(hash1, hash2);
+        assertEquals(64, hash1.length());
+        assertNotEquals(hash1, SecurityManager.hashToken("other-token"));
     }
 }

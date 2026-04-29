@@ -33,8 +33,11 @@ import org.junit.jupiter.api.Test;
  */
 class PolygonTest {
 
+    /**
+     * @verifies return true for same points and false for different points
+     */
     @Test
-    void test() {
+    void equals_shouldReturnTrueForSamePointsAndFalseForDifferentPoints() {
         Polygon p1 = new Polygon(Arrays.asList(new Point(Double.parseDouble("1"), 2)));
         Polygon p2 = new Polygon(Arrays.asList(new Point(Double.parseDouble("1"), 2)));
         Polygon p3 = new Polygon(Arrays.asList(new Point(2, 2)));

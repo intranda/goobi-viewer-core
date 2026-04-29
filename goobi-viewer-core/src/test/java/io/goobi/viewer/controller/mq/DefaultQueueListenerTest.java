@@ -85,8 +85,11 @@ class DefaultQueueListenerTest extends AbstractDatabaseEnabledTest {
         }
     }
 
+    /**
+     * @verifies deliver message to handler
+     */
     @Test
-    void testStartQueues() throws MessageQueueException {
+    void addToQueue_shouldDeliverMessageToHandler() throws MessageQueueException {
 
         ViewerMessage message = new ViewerMessage(TaskType.DOWNLOAD_PDF.name());
         String messageId = broker.addToQueue(message);

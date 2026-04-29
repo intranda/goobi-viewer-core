@@ -126,6 +126,7 @@ public class CMSStaticPage implements Serializable {
      * Getter for the field <code>pageName</code>.
      *
      * @return the internal page name identifying this static page
+     * @should return test for given input
      */
     public String getPageName() {
         return pageName;
@@ -136,6 +137,7 @@ public class CMSStaticPage implements Serializable {
      *
      * @param locale locale to check for completeness
      * @return true if the associated CMS page is complete for the given locale, false otherwise
+     * @should return false for given input
      */
     public boolean isLanguageComplete(Locale locale) {
         if (getCmsPageOptional().isPresent()) {
@@ -148,6 +150,7 @@ public class CMSStaticPage implements Serializable {
      * isHasCmsPage.
      *
      * @return true only if isUseCmsPage == true and cmsPage != null
+     * @should has cms page
      */
     public boolean isHasCmsPage() {
         return getCmsPageId().isPresent();

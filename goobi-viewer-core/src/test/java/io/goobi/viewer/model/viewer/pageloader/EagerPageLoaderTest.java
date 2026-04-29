@@ -32,7 +32,6 @@ import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
 class EagerPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
-     * @see EagerPageLoader#getNumPages()
      * @verifies return size correctly
      */
     @Test
@@ -44,7 +43,6 @@ class EagerPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see EagerPageLoader#getPage(int)
      * @verifies return correct page
      */
     @Test
@@ -58,7 +56,6 @@ class EagerPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see EagerPageLoader#getPageForFileName(String)
      * @verifies return the correct page
      */
     @Test
@@ -72,7 +69,6 @@ class EagerPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see EagerPageLoader#getPageForFileName(String)
      * @verifies return null if file name not found
      */
     @Test
@@ -85,11 +81,10 @@ class EagerPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see EagerPageLoader#setFirstAndLastPageOrder()
-     * @verifies set first page order correctly
+     * @verifies set first page order to 1 for loaded struct element
      */
     @Test
-    void setFirstAndLastPageOrder_shouldSetFirstPageOrderCorrectly() throws Exception {
+    void setFirstAndLastPageOrder_shouldSetFirstPageOrderTo1ForLoadedStructElement() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
         Assertions.assertNotNull(se);
         EagerPageLoader pageLoader = new EagerPageLoader(se);
@@ -97,11 +92,10 @@ class EagerPageLoaderTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see EagerPageLoader#setFirstAndLastPageOrder()
-     * @verifies set last page order correctly
+     * @verifies set last page order to total number of pages for loaded struct element
      */
     @Test
-    void setFirstAndLastPageOrder_shouldSetLastPageOrderCorrectly() throws Exception {
+    void setFirstAndLastPageOrder_shouldSetLastPageOrderToTotalNumberOfPagesForLoadedStructElement() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
         Assertions.assertNotNull(se);
         EagerPageLoader pageLoader = new EagerPageLoader(se);

@@ -597,6 +597,83 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public Optional<io.goobi.viewer.model.security.user.UserToken> getUserTokenByTokenHash(String tokenHash) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<io.goobi.viewer.model.security.user.UserToken> q = em.createQuery(
+                    "SELECT t FROM UserToken t WHERE t.tokenHash = :tokenHash",
+                    io.goobi.viewer.model.security.user.UserToken.class);
+            q.setParameter("tokenHash", tokenHash);
+            try {
+                return Optional.of(q.getSingleResult());
+            } catch (NoResultException e) {
+                return Optional.empty();
+            }
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean addUserToken(io.goobi.viewer.model.security.user.UserToken token) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.persist(token);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean deleteUserToken(io.goobi.viewer.model.security.user.UserToken token) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            io.goobi.viewer.model.security.user.UserToken managed =
+                    em.getReference(io.goobi.viewer.model.security.user.UserToken.class, token.getId());
+            em.remove(managed);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void deleteExpiredUserTokensForUser(io.goobi.viewer.model.security.user.User user) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.createQuery("DELETE FROM UserToken t WHERE t.user = :user AND t.expirationDate < :now")
+                    .setParameter("user", user)
+                    .setParameter("now", java.time.LocalDateTime.now())
+                    .executeUpdate();
+            commitTransaction(em);
+        } catch (PersistenceException e) {
+            handleException(em);
+        } finally {
+            close(em);
+        }
+    }
+
     // UserGroup
 
     /** {@inheritDoc} */
@@ -728,7 +805,8 @@ public class JPADAO implements IDAO {
      * {@inheritDoc}
      *
      * @see io.goobi.viewer.dao.IDAO#updateUserGroup(io.goobi.viewer.model.security.user.UserGroup)
-     * @should set id on new license
+     * @should persist changed name without altering total count
+     * @should not duplicate licenses and deleting license should not delete group
      */
     @Override
     public boolean updateUserGroup(UserGroup userGroup) throws DAOException {
@@ -920,17 +998,17 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean updateBookmarkList(BookmarkList bookmarkList) throws DAOException {
+    public BookmarkList updateBookmarkList(BookmarkList bookmarkList) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            em.merge(bookmarkList);
+            BookmarkList storedList = em.merge(bookmarkList);
             commitTransaction(em);
-            return true;
+            return storedList;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -1309,9 +1387,37 @@ public class JPADAO implements IDAO {
 
     /**
      * {@inheritDoc}
-     * 
-     * @should filter results correctly
-     * @should sort results correctly
+     *
+     * @should return all license types with overridden license types and image placeholders initialised
+     */
+    // S2201 false positive: Collection.size() on a Hibernate PersistentBag/PersistentSet has the side effect of
+    // triggering a SELECT to hydrate the lazy collection. The return value is intentionally ignored here.
+    @SuppressWarnings({ "unchecked", "java:S2201" })
+    @Override
+    public List<LicenseType> getAllLicenseTypesHydrated() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT lt FROM LicenseType lt");
+            q.setFlushMode(FlushModeType.COMMIT);
+            List<LicenseType> result = q.getResultList();
+            // Touch lazy collections while the EntityManager is still open so the returned entities
+            // can be cached and used after close() without triggering LazyInitializationException.
+            for (LicenseType lt : result) {
+                lt.getOverriddenLicenseTypes().size();
+                lt.getImagePlaceholders().size();
+            }
+            return result;
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @should return only license types matching name and description filter
+     * @should return license types sorted by name in both ascending and descending order
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -1354,8 +1460,8 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      * 
-     * @should sort results correctly
-     * @should filter results correctly
+     * @should return core license types sorted by name for both sort directions
+     * @should return matching core license types when filter matches and empty list when filter has no match
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -1490,7 +1596,11 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @should invalidate the license type cache after a successful add
+     */
     @Override
     public boolean addLicenseType(LicenseType licenseType) throws DAOException {
         preQuery();
@@ -1499,6 +1609,8 @@ public class JPADAO implements IDAO {
             startTransaction(em);
             em.persist(licenseType);
             commitTransaction(em);
+            // Invalidate LicenseTypeCache after successful commit (design doc 2026-04-22).
+            DataManager.getInstance().getLicenseTypeCache().invalidate();
         } catch (PersistenceException e) {
             handleException(em);
             return false;
@@ -1508,7 +1620,11 @@ public class JPADAO implements IDAO {
         return true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @should invalidate the license type cache after a successful update
+     */
     @Override
     public boolean updateLicenseType(LicenseType licenseType) throws DAOException {
         preQuery();
@@ -1517,6 +1633,8 @@ public class JPADAO implements IDAO {
             startTransaction(em);
             em.merge(licenseType);
             commitTransaction(em);
+            // Invalidate LicenseTypeCache after successful commit (design doc 2026-04-22).
+            DataManager.getInstance().getLicenseTypeCache().invalidate();
             return true;
         } catch (PersistenceException e) {
             handleException(em);
@@ -1526,7 +1644,11 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @should invalidate the license type cache after a successful delete
+     */
     @Override
     public boolean deleteLicenseType(LicenseType licenseType) throws DAOException {
         preQuery();
@@ -1536,6 +1658,8 @@ public class JPADAO implements IDAO {
             LicenseType o = em.getReference(LicenseType.class, licenseType.getId());
             em.remove(o);
             commitTransaction(em);
+            // Invalidate LicenseTypeCache after successful commit (design doc 2026-04-22).
+            DataManager.getInstance().getLicenseTypeCache().invalidate();
             return true;
         } catch (PersistenceException e) {
             handleException(em);
@@ -1924,6 +2048,32 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @should return all IP ranges with licenses initialised
+     */
+    // S2201 false positive: see JPADAO.getAllLicenseTypesHydrated() — Collection.size() on a Hibernate PersistentBag
+    // has the side effect of hydrating the lazy collection; the return value is intentionally ignored.
+    @SuppressWarnings({ "unchecked", "java:S2201" })
+    @Override
+    public List<IpRange> getAllIpRangesHydrated() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT ipr FROM IpRange ipr");
+            q.setFlushMode(FlushModeType.COMMIT);
+            List<IpRange> result = q.getResultList();
+            // Touch lazy collections while the EntityManager is still open (see JPADAO.getAllLicenseTypesHydrated).
+            for (IpRange range : result) {
+                range.getLicenses().size();
+            }
+            return result;
+        } finally {
+            close(em);
+        }
+    }
+
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -2000,7 +2150,11 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @should invalidate the IP range cache after a successful add
+     */
     @Override
     public boolean addIpRange(IpRange ipRange) throws DAOException {
         preQuery();
@@ -2009,6 +2163,8 @@ public class JPADAO implements IDAO {
             startTransaction(em);
             em.persist(ipRange);
             commitTransaction(em);
+            // Invalidate IpRangeCache after successful commit (design doc 2026-04-22).
+            DataManager.getInstance().getIpRangeCache().invalidate();
         } catch (PersistenceException e) {
             handleException(em);
             return false;
@@ -2018,7 +2174,11 @@ public class JPADAO implements IDAO {
         return true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @should invalidate the IP range cache after a successful update
+     */
     @Override
     public boolean updateIpRange(IpRange ipRange) throws DAOException {
         preQuery();
@@ -2027,6 +2187,8 @@ public class JPADAO implements IDAO {
             startTransaction(em);
             em.merge(ipRange);
             commitTransaction(em);
+            // Invalidate IpRangeCache after successful commit (design doc 2026-04-22).
+            DataManager.getInstance().getIpRangeCache().invalidate();
             return true;
         } catch (PersistenceException e) {
             handleException(em);
@@ -2036,7 +2198,11 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @should invalidate the IP range cache after a successful delete
+     */
     @Override
     public boolean deleteIpRange(IpRange ipRange) throws DAOException {
         preQuery();
@@ -2046,6 +2212,8 @@ public class JPADAO implements IDAO {
             IpRange o = em.getReference(IpRange.class, ipRange.getId());
             em.remove(o);
             commitTransaction(em);
+            // Invalidate IpRangeCache after successful commit (design doc 2026-04-22).
+            DataManager.getInstance().getIpRangeCache().invalidate();
             return true;
         } catch (PersistenceException e) {
             handleException(em);
@@ -2207,9 +2375,9 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * @should sort results correctly
-     * @should filter results correctly
-     * @should apply target pi filter correctly
+     * @should return comments ordered by body field in descending order
+     * @should return only comments matching combined targetPI and body filter
+     * @should return only comments belonging to given target PI set
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -2258,7 +2426,7 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * @should sort correctly
+     * @should return user comments sorted by dateCreated or dateModified with given limit
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -2405,7 +2573,7 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      * 
-     * @should update rows correctly
+     * @should reassign all comments from old owner to new owner and return updated row count
      */
     @Override
     public int changeCommentsOwner(User fromUser, User toUser) throws DAOException {
@@ -2441,9 +2609,9 @@ public class JPADAO implements IDAO {
      * @return the number of comments deleted
      * @throws DAOException if a database error occurs
      * @see io.goobi.viewer.dao.IDAO#deleteComments(java.lang.String, io.goobi.viewer.model.security.user.User)
-     * @should delete comments for pi correctly
-     * @should delete comments for user correctly
-     * @should delete comments for pi and user correctly
+     * @should remove all comments matching given PI and return deleted count
+     * @should remove only comments owned by given user and leave others intact
+     * @should remove only comments matching both PI and user when both are given
      * @should not delete anything if both pi and creator are null
      */
     @Override
@@ -2488,7 +2656,8 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * <p>Gets all page numbers (order) within a work with the given pi which contain comments
+     * <p>
+     * Gets all page numbers (order) within a work with the given pi which contain comments
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -3881,7 +4050,7 @@ public class JPADAO implements IDAO {
      * @return the total number of database rows deleted across all statistic tables
      * @throws DAOException
      * @see io.goobi.viewer.dao.IDAO#deleteCampaignStatisticsForUser(io.goobi.viewer.model.security.user.User)
-     * @should remove user from creators and reviewers lists correctly
+     * @should remove user from all annotator and reviewer lists across campaign statistics
      */
     @Override
     public int deleteCampaignStatisticsForUser(User user) throws DAOException {
@@ -3929,7 +4098,7 @@ public class JPADAO implements IDAO {
      * @throws DAOException if a database error occurs
      * @see io.goobi.viewer.dao.IDAO#changeCampaignStatisticContributors(io.goobi.viewer.model.security.user.User,
      *      io.goobi.viewer.model.security.user.User)
-     * @should replace user in creators and reviewers lists correctly
+     * @should replace source user with target user in all annotator and reviewer lists
      */
     @Override
     public int changeCampaignStatisticContributors(User fromUser, User toUser) throws DAOException {
@@ -4047,9 +4216,9 @@ public class JPADAO implements IDAO {
      * {@inheritDoc}
      *
      * @should return correct count
-     * @should filter correctly
-     * @should filter for users correctly
-     * @should apply target pi filter correctly
+     * @should return count matching filter when filtering by targetPageOrder
+     * @should return different counts when filtering by different owner users
+     * @should return count restricted to given target PI set
      */
     @Override
     public long getCommentCount(Map<String, String> filters, User owner, Set<String> targetPIs) throws DAOException {
@@ -4607,6 +4776,7 @@ public class JPADAO implements IDAO {
      * @param allowedCategoryIds category IDs the user may view; null means no restriction
      * @return the JPQL WHERE clause fragment restricting CMS page visibility, possibly empty
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
+     * @should return expected value for given input
      */
     public static String createCMSPageFilter(Map<String, Object> params, String pageParameter, List<Long> allowedTemplates,
             List<String> allowedSubthemes, List<String> allowedCategoryIds) throws AccessDeniedException {
@@ -4753,7 +4923,8 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * <p>Persist a new {@link CMSCategory} object
+     * <p>
+     * Persist a new {@link CMSCategory} object
      */
     @Override
     public boolean addCategory(CMSCategory category) throws DAOException {
@@ -4775,7 +4946,8 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * <p>Update an existing {@link CMSCategory} object in the persistence context
+     * <p>
+     * Update an existing {@link CMSCategory} object in the persistence context
      */
     @Override
     public boolean updateCategory(CMSCategory category) throws DAOException {
@@ -4797,7 +4969,8 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * <p>Delete a {@link CMSCategory} object from the persistence context
+     * <p>
+     * Delete a {@link CMSCategory} object from the persistence context
      */
     @Override
     public boolean deleteCategory(CMSCategory category) throws DAOException {
@@ -4820,7 +4993,8 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * <p>Search the persistence context for a {@link CMSCategory} with the given name.
+     * <p>
+     * Search the persistence context for a {@link CMSCategory} with the given name.
      */
     @Override
     public CMSCategory getCategoryByName(String name) throws DAOException {
@@ -4839,7 +5013,8 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * <p>Search the persistence context for a {@link CMSCategory} with the given unique id.
+     * <p>
+     * Search the persistence context for a {@link CMSCategory} with the given unique id.
      */
     @Override
     public CMSCategory getCategory(Long id) throws DAOException {
@@ -4857,7 +5032,8 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * <p>Check if the database contains a table of the given name. Used by backward-compatibility routines
+     * <p>
+     * Check if the database contains a table of the given name. Used by backward-compatibility routines
      *
      * @throws SQLException
      */
@@ -4885,7 +5061,8 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * <p>Check if the database contains a column in a table with the given names. Used by backward-compatibility routines
+     * <p>
+     * Check if the database contains a column in a table with the given names. Used by backward-compatibility routines
      */
     @Override
     public boolean columnsExists(String tableName, String columnName) throws SQLException, DAOException {
@@ -4962,7 +5139,8 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * <p>Get all annotations associated with the work of the given pi
+     * <p>
+     * Get all annotations associated with the work of the given pi
      *
      * @should return correct rows
      */
@@ -4986,7 +5164,7 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      * 
-     * @should sort correctly
+     * @should return annotations in ascending and descending id order based on sort flag
      * @should throw IllegalArgumentException if sortField unknown
      */
     @Override
@@ -5277,7 +5455,7 @@ public class JPADAO implements IDAO {
      * {@inheritDoc}
      *
      * @should return correct rows
-     * @should filter by campaign name correctly
+     * @should return only annotations whose campaign name matches the filter value
      */
     @Override
     public List<CrowdsourcingAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending,

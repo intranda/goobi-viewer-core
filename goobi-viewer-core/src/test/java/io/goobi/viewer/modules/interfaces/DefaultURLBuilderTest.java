@@ -33,7 +33,6 @@ import io.goobi.viewer.model.viewer.PageType;
 class DefaultURLBuilderTest extends AbstractDatabaseEnabledTest {
 
     /**
-     * @see DefaultURLBuilder#generateURL(BrowseElement)
      * @verifies only add page if not topStruct or page greater than one
      */
     @Test
@@ -50,7 +49,6 @@ class DefaultURLBuilderTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see DefaultURLBuilder#generateURL(BrowseElement)
      * @verifies only add logId if not topStruct
      */
     @Test
@@ -68,8 +66,7 @@ class DefaultURLBuilderTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see DefaultURLBuilder#generateURL(BrowseElement)
-     * @verifies ignore page greater than one in toc view
+     * @verifies ignore page greated than one in toc view
      */
     @Test
     void generateURL_shouldIgnorePageGreatedThanOneInTocView() {

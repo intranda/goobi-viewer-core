@@ -103,16 +103,24 @@ class CMSMediaResourceTest extends AbstractDatabaseEnabledTest {
         super.tearDown();
     }
 
+    /**
+     * @verifies get all items
+     * @see CMSMediaResource#getAllMedia
+     */
     @Test
-    void testGetAllItems() throws DAOException {
+    void getAllMedia_shouldGetAllItems() throws DAOException {
         MediaList list = resource.getAllMedia(null, null, null, false);
         assertTrue(numItems < list.getMediaItems().size(),
                 "Expect to get more than " + numItems + " items, but only got " + list.getMediaItems().size());
 
     }
 
+    /**
+     * @verifies get items by category
+     * @see CMSMediaResource#getAllMedia
+     */
     @Test
-    void testGetItemsByCategory() throws DAOException {
+    void getAllMedia_shouldGetItemsByCategory() throws DAOException {
         MediaList list = resource.getAllMedia("unitTest", null, null, false);
         assertEquals(numItems, list.getMediaItems().size());
         assertEquals("1", getLabel(list, 0));
@@ -120,8 +128,12 @@ class CMSMediaResourceTest extends AbstractDatabaseEnabledTest {
         assertEquals("3", getLabel(list, 2));
     }
 
+    /**
+     * @verifies get items random
+     * @see CMSMediaResource#getAllMedia
+     */
     @Test
-    void testGetItemsRandom() throws DAOException {
+    void getAllMedia_shouldGetItemsRandom() throws DAOException {
 
         List<MediaList> resultsOrdered = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
@@ -175,27 +187,43 @@ class CMSMediaResourceTest extends AbstractDatabaseEnabledTest {
 
     }
 
+    /**
+     * @verifies get items limit count
+     * @see CMSMediaResource#getAllMedia
+     */
     @Test
-    void testGetItemsLimitCount() throws DAOException {
+    void getAllMedia_shouldGetItemsLimitCount() throws DAOException {
         MediaList list = resource.getAllMedia("unitTest", 5, null, false);
         assertEquals(5, list.getMediaItems().size());
     }
 
+    /**
+     * @verifies get 2 priority items
+     * @see CMSMediaResource#getAllMedia
+     */
     @Test
-    void testGet2PriorityItems() throws DAOException {
+    void getAllMedia_shouldGet2PriorityItems() throws DAOException {
         MediaList list = resource.getAllMedia("unitTest", 2, 2, false);
         assertEquals(2, list.getMediaItems().stream().filter(MediaItem::isImportant).count());
 
     }
 
+    /**
+     * @verifies get 1 priority item
+     * @see CMSMediaResource#getAllMedia
+     */
     @Test
-    void testGet1PriorityItem() throws DAOException {
+    void getAllMedia_shouldGet1PriorityItem() throws DAOException {
         MediaList list = resource.getAllMedia("unitTest", 2, 1, false);
         assertEquals(1, list.getMediaItems().stream().filter(MediaItem::isImportant).count());
     }
 
+    /**
+     * @verifies display order
+     * @see CMSMediaResource#getAllMedia
+     */
     @Test
-    void testDisplayOrder() throws DAOException {
+    void getAllMedia_shouldDisplayOrder() throws DAOException {
         CMSMediaItem item1 = DataManager.getInstance().getDao().getCMSMediaItemByFilename("3.jpg");
         CMSMediaItem item2 = DataManager.getInstance().getDao().getCMSMediaItemByFilename("7.jpg");
         item1.setDisplayOrder(2);
@@ -223,9 +251,11 @@ class CMSMediaResourceTest extends AbstractDatabaseEnabledTest {
      * Negative maxItems must be rejected with IllegalRequestException (HTTP 400).
      * Before the fix, a negative value was passed to Stream.limit() which throws
      * IllegalArgumentException, ultimately causing HTTP 500.
+     * @verifies throw illegal request when negative max items
+     * @see CMSMediaResource#getMediaOfCategories
      */
     @Test
-    void testGetMediaOfCategories_negativeMaxItems_throwsIllegalRequest() {
+    void getMediaOfCategories_shouldThrowIllegalRequestWhenNegativeMaxItems() {
         assertThrows(IllegalRequestException.class,
                 () -> resource.getMediaOfCategories(category.getName(), -1, null, false),
                 "Negative maxItems should throw IllegalRequestException");
@@ -234,9 +264,11 @@ class CMSMediaResourceTest extends AbstractDatabaseEnabledTest {
     /**
      * Negative prioritySlots must be rejected with IllegalRequestException (HTTP 400).
      * Before the fix, a negative value led to undefined PriorityComparator behaviour.
+     * @verifies throw illegal request when negative priority slots
+     * @see CMSMediaResource#getMediaOfCategories
      */
     @Test
-    void testGetMediaOfCategories_negativePrioritySlots_throwsIllegalRequest() {
+    void getMediaOfCategories_shouldThrowIllegalRequestWhenNegativePrioritySlots() {
         assertThrows(IllegalRequestException.class,
                 () -> resource.getMediaOfCategories(category.getName(), null, -1, false),
                 "Negative prioritySlots should throw IllegalRequestException");
@@ -244,9 +276,11 @@ class CMSMediaResourceTest extends AbstractDatabaseEnabledTest {
 
     /**
      * Zero and positive values must be accepted without throwing.
+     * @verifies valid parameters no exception
+     * @see CMSMediaResource#getMediaOfCategories
      */
     @Test
-    void testGetMediaOfCategories_validParameters_noException() throws DAOException, IllegalRequestException {
+    void getMediaOfCategories_shouldValidParametersNoException() throws DAOException, IllegalRequestException {
         // zero values are valid and should simply return an empty or minimal result
         MediaList list = resource.getMediaOfCategories(category.getName(), 0, 0, false);
         assertEquals(0, list.getMediaItems().size(), "max=0 should return empty list");

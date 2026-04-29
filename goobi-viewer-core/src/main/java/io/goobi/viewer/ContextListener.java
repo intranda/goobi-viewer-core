@@ -33,6 +33,7 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -169,16 +170,45 @@ public class ContextListener implements ServletContextListener {
             logger.info("Solr client closed.");
             // Http2SolrClient uses Jetty threads (h2sc-*) and HttpClient scheduler threads
             // that do not terminate synchronously on close(). Wait briefly so Tomcat does not
-            // report them as memory leaks.
-            Thread.getAllStackTraces().keySet().stream()
+            // report them as memory leaks. The previous implementation granted every single
+            // thread its own 5s budget via t.join(5000); with many lingering threads this
+            // could accumulate well past systemd's 90s stop timeout and end the shutdown in
+            // SIGKILL (observed on 2026-04-17). Enforce an overall budget of 10s instead,
+            // distributed fairly across the threads still pending so one stuck thread cannot
+            // monopolise the whole window.
+            List<Thread> lingering = Thread.getAllStackTraces().keySet().stream()
                     .filter(t -> t.getName().matches("h2sc-.*|HttpClient@[0-9a-f]+-scheduler-.*"))
-                    .forEach(t -> {
-                        try {
-                            t.join(5000);
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                        }
-                    });
+                    .toList();
+            if (!lingering.isEmpty()) {
+                logger.info("Waiting up to 10s for {} Http2SolrClient background thread(s) to terminate...", lingering.size());
+                long deadline = System.currentTimeMillis() + 10_000L;
+                for (int i = 0; i < lingering.size(); i++) {
+                    Thread t = lingering.get(i);
+                    if (!t.isAlive()) {
+                        continue;
+                    }
+                    long remaining = deadline - System.currentTimeMillis();
+                    if (remaining <= 0) {
+                        break;
+                    }
+                    // Spread the remaining budget across the threads still pending; keep a
+                    // 100ms floor so the last few threads still get a reasonable chance.
+                    long perThread = Math.max(100L, remaining / (lingering.size() - i));
+                    try {
+                        t.join(perThread);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
+                }
+                long stillAlive = lingering.stream().filter(Thread::isAlive).count();
+                if (stillAlive > 0) {
+                    logger.warn("{} of {} Http2SolrClient background thread(s) did not terminate within 10s; proceeding with shutdown.",
+                            stillAlive, lingering.size());
+                } else {
+                    logger.info("All {} Http2SolrClient background thread(s) terminated cleanly.", lingering.size());
+                }
+            }
         } catch (IOException e) {
             logger.error("Error closing Solr client", e);
         }

@@ -67,7 +67,6 @@ import io.goobi.viewer.AbstractTest;
     }
 
     /**
-     * @see JPAClassLoader#scanPersistenceXML(String,List)
      * @verifies merge persistence xml files correctly
      */
     @Test
@@ -123,7 +122,6 @@ import io.goobi.viewer.AbstractTest;
     }
 
     /**
-     * @see JPAClassLoader#getResources(String)
      * @verifies write non-empty persistence xml to temp directory
      */
     @Test
@@ -141,7 +139,6 @@ import io.goobi.viewer.AbstractTest;
     }
 
     /**
-     * @see JPAClassLoader#getResources(String)
      * @verifies not produce empty file under concurrent access
      */
     @Test

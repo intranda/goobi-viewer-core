@@ -131,7 +131,7 @@ public class MaintenanceMode implements IPolyglott {
     /**
      * @param language locale for the text translation to retrieve, with fallback to default
      * @return Text value in the given language
-     * @should return translation correctly
+     * @should return set translation for matching locale and fall back to it for other locales
      */
     public String getTextOrDefault(String language) {
         return Translation.getTranslation(translations, language, "text", true);

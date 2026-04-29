@@ -87,10 +87,10 @@ public final class FileTools {
      * getStringFromFilePath.
      *
      * @param filePath absolute or relative path to the file
-     * @should read text file correctly
      * @should throw FileNotFoundException if file not found
      * @return the complete file content as a string
      * @throws java.io.IOException if any.
+     * @should return non blank string when given a valid file path
      */
     public static String getStringFromFilePath(String filePath) throws IOException {
         return getStringFromFile(new File(filePath), null);
@@ -101,10 +101,10 @@ public final class FileTools {
      *
      * @param file text file to read
      * @param encoding The character encoding to use. If null, a standard utf-8 encoding will be used
-     * @should read text file correctly
      * @should throw FileNotFoundException if file not found
      * @return the complete file content as a trimmed string
      * @throws java.io.IOException if any.
+     * @should return non blank string when reading existing text file
      */
     public static String getStringFromFile(File file, String encoding) throws IOException {
         return getStringFromFile(file, encoding, null);
@@ -151,6 +151,7 @@ public final class FileTools {
      * @param file Path to the file whose charset should be detected
      * @return Charset of the given file
      * @throws IOException
+     * @should return UTF-8 for a UTF-8 encoded file input stream
      */
     public static String getCharset(Path file) throws IOException {
         try (InputStream in = Files.newInputStream(file)) {
@@ -208,8 +209,8 @@ public final class FileTools {
      * @param filePath The file path to write to (will be created if it doesn't exist)
      * @param encoding The character encoding to use. If null, a standard utf-8 encoding will be used
      * @param append Whether to append the text to an existing file (true), or to overwrite it (false)
-     * @should write file correctly
-     * @should append to file correctly
+     * @should create file on disk from string content
+     * @should append string to existing file content when append flag is true
      * @return the written file
      * @throws java.io.IOException if any.
      */
@@ -615,7 +616,7 @@ public final class FileTools {
      *
      * @param pathString Path string from which to extract the parent folder name
      * @return The folder name, or an empty String if it could not be determined
-     * @should return folder name correctly
+     * @should return the parent folder name from a file path string
      * @should return empty string if no folder in path
      */
     public static String getBottomFolderFromPathString(String pathString) {
@@ -635,7 +636,7 @@ public final class FileTools {
      * @param pathString Path or URL string from which to extract the file name
      * @return The filename, or an empty String if it could not be determined
      * @throws FileNotFoundException
-     * @should return file name correctly
+     * @should extract filename from a full path string
      */
     public static String getFilenameFromPathString(String pathString) throws FileNotFoundException {
         if (StringUtils.isBlank(pathString)) {

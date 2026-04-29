@@ -226,7 +226,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      * The part of the search url before the page number.
      *
      * @return the URL prefix for the CMS search page, including base URL, context, and query string
-     * @should construct url prefix correctly
+     * @should include active context and URL-encoded query string in prefix
      */
     public String getUrlPrefix() {
         StringBuilder sb = new StringBuilder();

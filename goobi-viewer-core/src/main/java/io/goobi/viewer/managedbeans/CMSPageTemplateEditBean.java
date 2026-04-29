@@ -287,6 +287,7 @@ public class CMSPageTemplateEditBean implements Serializable {
      * @param template CMS page template to delete
      * @return true if template deleted successfully; false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return null for invalid input
      */
     public boolean deleteTemplate(CMSPageTemplate template) throws DAOException {
         if (dao != null && template != null && template.getId() != null) {

@@ -210,6 +210,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
      * Get the {@link #id}.
      * 
      * @return the {@link #id}
+     * @should save
      */
     public Long getId() {
         return id;

@@ -24,6 +24,7 @@ package io.goobi.viewer.model.toc;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -53,6 +54,12 @@ public class TOC implements Serializable {
 
     /** TOC element map. */
     private Map<String, List<TOCElement>> tocElementMap;
+
+    /** Index for O(1) lookup of TOC elements by their IDDOC. Populated by buildTree. */
+    private Map<String, TOCElement> iddocIndex = new HashMap<>();
+
+    /** Index for O(1) lookup of TOC elements by their numeric ID. Populated by buildTree. */
+    private Map<Integer, TOCElement> idIndex = new HashMap<>();
 
     private boolean treeBuilt = false;
 
@@ -126,8 +133,8 @@ public class TOC implements Serializable {
      * getTreeViewForGroup.
      *
      * @param group TOC group name to build the tree for
-     * @should call buildTree and set maxTocDepth correctly
      * @return a list of TOC elements for the given group with tree nesting applied
+     * @should not throw NPE when ViewManager is null
      */
     public List<TOCElement> getTreeViewForGroup(String group) {
         if (!treeBuilt) {
@@ -170,6 +177,9 @@ public class TOC implements Serializable {
      * @param collapseThreshold sibling count above which a level is auto-collapsed
      * @param lowestLevelToCollapse minimum hierarchy level eligible for length-based collapse
      * @param currentElementIdDoc IDDOC of the currently displayed struct element
+     * @should expand ancestors of target element
+     * @should not throw NPE when group not in tocElementMap
+     * @should not throw NPE when group not in map
      */
     protected void buildTree(String group, int visibleLevel, int collapseThreshold, int lowestLevelToCollapse, String currentElementIdDoc) {
         logger.trace("buildTree");
@@ -195,9 +205,9 @@ public class TOC implements Serializable {
                 // long start = System.nanoTime(); //NOSONAR Debug
                 int lastLevel = 0;
                 int lastParent = 0;
+                // Use explicit counter instead of O(n) indexOf call per element
+                int index = 0;
                 for (TOCElement tocElement : groupElements) {
-                    // Current element index
-                    int index = groupElements.indexOf(tocElement);
                     tocElement.setID(index);
                     if (tocElement.getLevel() > maxTocDepth) {
                         maxTocDepth = tocElement.getLevel();
@@ -228,10 +238,20 @@ public class TOC implements Serializable {
                     }
                     lastParent = index;
                     lastLevel = tocElement.getLevel();
+                    index++;
                 }
                 // long end = System.nanoTime(); //NOSONAR Debug
                 // logger.trace("Time for initial collapse: {} ns", (end - start)); //NOSONAR Debug
                 collapseTocForLength(collapseThreshold, lowestLevelToCollapse);
+                // Build O(1) lookup indexes after IDs are assigned
+                iddocIndex = new HashMap<>();
+                idIndex = new HashMap<>();
+                for (TOCElement e : tocElementMap.get(group)) {
+                    if (e.getIddoc() != null) {
+                        iddocIndex.put(e.getIddoc(), e);
+                    }
+                    idIndex.put(e.getID(), e);
+                }
                 treeBuilt = true;
             }
         }
@@ -269,8 +289,9 @@ public class TOC implements Serializable {
      * @param iddoc IDDOC value to search for
      * @return {@link TOCElement}
      */
-    private static TOCElement getElement(List<TOCElement> list, String iddoc) {
-        return list.stream().filter(ele -> ele.getIddoc().equals(iddoc.toString())).findAny().orElse(null);
+    private TOCElement getElement(List<TOCElement> list, String iddoc) {
+        // Use O(1) index map instead of O(n) stream filter
+        return iddocIndex.get(iddoc);
     }
 
     /**
@@ -279,8 +300,9 @@ public class TOC implements Serializable {
      * @param id numeric element ID to search for
      * @return {@link TOCElement}
      */
-    private static TOCElement getElement(List<TOCElement> list, int id) {
-        return list.stream().filter(ele -> ele.getID() == id).findAny().orElse(null);
+    private TOCElement getElement(List<TOCElement> list, int id) {
+        // Use O(1) index map instead of O(n) stream filter
+        return idIndex.get(id);
     }
 
     /**
@@ -319,13 +341,7 @@ public class TOC implements Serializable {
                         levelLength++;
                     }
                 }
-                if (levelLength > collapseThreshold) {
-                    tocElementMap.get(StringConstants.DEFAULT_NAME).get(index - 1).setExpanded(false); //collapse parent
-                    hideLevel = tocElem.getLevel();
-                    hide = true;
-                    tocElem.setExpanded(false);
-                    tocElem.setVisible(false);
-                }
+                // Remove duplicate if-block: the second identical block was a copy-paste bug
                 if (levelLength > collapseThreshold) {
                     tocElementMap.get(StringConstants.DEFAULT_NAME).get(index - 1).setExpanded(false); //collapse parent
                     hideLevel = tocElem.getLevel();
@@ -619,7 +635,7 @@ public class TOC implements Serializable {
     /**
      * Returns the number of paginator pages for the given TOC size and elements per page.
      *
-     * @should calculate number correctly
+     * @should return ceiling division of total TOC size by page size
      * @return a int.
      */
     public int getNumPages() {

@@ -136,6 +136,7 @@ public class LanguageHelper {
      *
      * @param inIsoCode ISO 639-1 or 639-2/B language code to look up
      * @return the Language data for the given ISO code, or null if not found
+     * @should resolve both iso 639-1 and iso 639-2 codes
      */
     public Language getLanguage(final String inIsoCode) {
         if (inIsoCode == null) {

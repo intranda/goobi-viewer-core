@@ -61,8 +61,12 @@ class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest {
 
     }
     
+    /**
+     * @verifies persist and load usage statistics correctly
+     * @see IDAO#addUsageStatistics(DailySessionUsageStatistics)
+     */
     @Test
-    void test_persistence() throws DAOException {
+    void addUsageStatistics_shouldPersistAndLoadCorrectly() throws DAOException {
         
         
         LocalDate date = LocalDate.now();
@@ -79,8 +83,11 @@ class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest {
         dao.deleteUsageStatistics(stats.getId());
     }
     
+    /**
+     * @verifies persist and update session entries correctly
+     */
     @Test
-    void test_persistenceWithEntries() throws DAOException {
+    void addUsageStatistics_shouldPersistAndUpdateSessionEntriesCorrectly() throws DAOException {
         
         LocalDate date = LocalDate.now();
         RequestType type = RequestType.RECORD_VIEW;
@@ -116,8 +123,11 @@ class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest {
         dao.deleteUsageStatistics(stats.getId());
     }
     
+    /**
+     * @verifies delete usage statistics successfully
+     */
     @Test
-    void test_persistenceDelete() throws DAOException {
+    void deleteUsageStatistics_shouldDeleteUsageStatisticsSuccessfully() throws DAOException {
         
         LocalDate date = LocalDate.now();
         RequestType type = RequestType.RECORD_VIEW;
@@ -144,8 +154,12 @@ class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest {
         
     }
     
+    /**
+     * @verifies return correct total and unique request counts per record
+     * @see DailySessionUsageStatistics#getTotalRequestCount(RequestType, String)
+     */
     @Test
-    void test_testCounting() {
+    void getTotalRequestCount_shouldReturnCorrectTotalAndUniqueRequestCountsPerRecord() {
         
         LocalDate date = LocalDate.now();
         DailySessionUsageStatistics stats = new DailySessionUsageStatistics(date, "viewer-test");
@@ -169,8 +183,104 @@ class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest {
         assertEquals(1l, stats.getUniqueRequestCount(type, "PI_03"));
     }
     
+    /**
+     * @see DailySessionUsageStatistics#getSession(String)
+     * @verifies persistence with entries
+     */
     @Test
-    void test_getDateRange() throws DAOException {
+    void getSession_shouldPersistenceWithEntries() throws DAOException {
+        // Verify that getSession returns the correct session after persistence round-trip
+        LocalDate date = LocalDate.now();
+        DailySessionUsageStatistics stats = new DailySessionUsageStatistics(date, "viewer-test");
+
+        SessionUsageStatistics session = new SessionUsageStatistics("SESSION1", "TestAgent", "127.0.0.1");
+        session.setRecordRequectCount(RequestType.RECORD_VIEW, "PI_01", 5);
+        stats.addSession(session);
+
+        dao.addUsageStatistics(stats);
+
+        DailySessionUsageStatistics loaded = dao.getUsageStatistics(date);
+        assertNotNull(loaded);
+        assertNotNull(loaded.getSession("SESSION1"));
+        assertEquals(5, loaded.getSession("SESSION1").getRecordRequestCount(RequestType.RECORD_VIEW, "PI_01"));
+
+        dao.deleteUsageStatistics(stats.getId());
+    }
+
+    /**
+     * @see DailySessionUsageStatistics#getSession(String)
+     * @verifies persistence delete
+     */
+    @Test
+    void getSession_shouldPersistenceDelete() throws DAOException {
+        // Verify that after deleting persisted statistics, getSession returns null on reload
+        LocalDate date = LocalDate.now();
+        DailySessionUsageStatistics stats = new DailySessionUsageStatistics(date, "viewer-test");
+
+        SessionUsageStatistics session = new SessionUsageStatistics("SESS_DEL", "TestAgent", "127.0.0.1");
+        session.setRecordRequectCount(RequestType.RECORD_VIEW, "PI_01", 3);
+        stats.addSession(session);
+
+        dao.addUsageStatistics(stats);
+        assertNotNull(dao.getUsageStatistics(date));
+
+        dao.deleteUsageStatistics(stats.getId());
+        assertNull(dao.getUsageStatistics(date));
+    }
+
+    /**
+     * @see DailySessionUsageStatistics#addSession(SessionUsageStatistics)
+     * @verifies get date range
+     */
+    @Test
+    void addSession_shouldGetDateRange() throws DAOException {
+        // Verify that sessions added to stats for different dates are retrievable by date range
+        LocalDate date1 = LocalDate.of(2023, Month.MARCH, 1);
+        LocalDate date2 = LocalDate.of(2023, Month.MARCH, 15);
+
+        DailySessionUsageStatistics stats1 = new DailySessionUsageStatistics(date1, "viewer-test");
+        stats1.addSession(new SessionUsageStatistics("S1", "Agent1", "10.0.0.1"));
+        dao.addUsageStatistics(stats1);
+
+        DailySessionUsageStatistics stats2 = new DailySessionUsageStatistics(date2, "viewer-test");
+        stats2.addSession(new SessionUsageStatistics("S2", "Agent2", "10.0.0.2"));
+        dao.addUsageStatistics(stats2);
+
+        List<DailySessionUsageStatistics> range = dao.getUsageStatistics(
+                LocalDate.of(2023, Month.MARCH, 1), LocalDate.of(2023, Month.MARCH, 31));
+        assertEquals(2, range.size());
+
+        dao.deleteUsageStatistics(stats1.getId());
+        dao.deleteUsageStatistics(stats2.getId());
+    }
+
+    /**
+     * @see DailySessionUsageStatistics#getTotalRequestCount(RequestType, String)
+     * @verifies test counting
+     */
+    @Test
+    void getTotalRequestCount_shouldTestCounting() {
+        // Verify that getTotalRequestCount sums request counts across multiple sessions
+        LocalDate date = LocalDate.now();
+        DailySessionUsageStatistics stats = new DailySessionUsageStatistics(date, "viewer-test");
+
+        SessionUsageStatistics session1 = new SessionUsageStatistics("A", "Firefox", "10.0.0.1");
+        session1.setRecordRequectCount(RequestType.RECORD_VIEW, "PI_X", 10);
+        stats.addSession(session1);
+
+        SessionUsageStatistics session2 = new SessionUsageStatistics("B", "Chrome", "10.0.0.2");
+        session2.setRecordRequectCount(RequestType.RECORD_VIEW, "PI_X", 20);
+        stats.addSession(session2);
+
+        assertEquals(30L, stats.getTotalRequestCount(RequestType.RECORD_VIEW, "PI_X"));
+        assertEquals(0L, stats.getTotalRequestCount(RequestType.FILE_DOWNLOAD, "PI_X"));
+    }
+
+    /**
+     * @verifies return statistics filtered by date range
+     */
+    @Test
+    void getUsageStatistics_shouldReturnStatisticsFilteredByDateRange() throws DAOException {
 
         RequestType type = RequestType.RECORD_VIEW;
         

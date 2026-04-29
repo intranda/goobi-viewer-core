@@ -139,7 +139,7 @@ public class MessageEntry implements Comparable<MessageEntry> {
     /**
      * {@inheritDoc}
      *
-     * @should compare correctly
+     * @should order entries alphabetically by key
      */
     @Override
     public int compareTo(MessageEntry o) {
@@ -150,9 +150,9 @@ public class MessageEntry implements Comparable<MessageEntry> {
      * Returns the translation status over all languages.
      *
      * @return appropriate {@link TranslationStatus}
-     * @should return none status correctly
-     * @should return partial status correctly
-     * @should return full status correctly
+     * @should return NONE when current value is empty
+     * @should return PARTIAL when current value differs from default value
+     * @should return FULL when current value matches default value
      */
     public TranslationStatus getTranslationStatus() {
         int full = 0;
@@ -186,6 +186,7 @@ public class MessageEntry implements Comparable<MessageEntry> {
      * @param language Requested language
      * @return appropriate {@link TranslationStatus}
      * @should return correct status for language
+     * @should retutrn correct status for language
      */
     public TranslationStatus getTranslationStatusForLanguage(String language) {
         if (language == null) {

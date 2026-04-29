@@ -38,8 +38,11 @@ import io.goobi.viewer.model.cms.widgets.type.WidgetGenerationType;
 
 class CMSSidebarElementDefaultTest extends AbstractDatabaseEnabledTest {
 
+    /**
+     * @verifies set owner generation type and content type
+     */
     @Test
-    void test() throws DAOException {
+    void CMSSidebarElementDefault_shouldSetOwnerGenerationTypeAndContentType() throws DAOException {
         CMSPage owner = DataManager.getInstance().getDao().getCMSPage(1l);
         Assertions.assertNotNull(owner);
 

@@ -129,8 +129,6 @@ public class IdentifierResolver extends HttpServlet {
      * @should return 404 if record not found
      * @should return 400 if record field name bad
      * @should return 400 if record field value bad
-     * @should forward to relative url
-     * @should redirect to full url
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -551,6 +549,12 @@ public class IdentifierResolver extends HttpServlet {
      * @param targetDoc a {@link org.apache.solr.common.SolrDocument} object
      * @param pageResolverUrl a boolean
      * @return Generated URL
+     * @should return object page URL with PI for a regular work document
+     * @should return toc page URL for an anchor document
+     * @should return toc page URL for a GROUP doctype document
+     * @should return object URL with page number and logId when resolving a page document by URN
+     * @should return toc page URL when docstruct type has a preferred view configured
+     * @should return metadata page URL when document has application mime type
      */
     public static String constructUrl(SolrDocument targetDoc, boolean pageResolverUrl) {
         int order = 1;

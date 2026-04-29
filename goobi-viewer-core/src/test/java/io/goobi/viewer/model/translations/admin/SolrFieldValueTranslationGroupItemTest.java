@@ -34,11 +34,10 @@ import io.goobi.viewer.solr.SolrConstants;
 class SolrFieldValueTranslationGroupItemTest extends AbstractSolrEnabledTest {
 
     /**
-     * @see SolrFieldValueTranslationGroupItem#loadEntries()
-     * @verifies load hierarchical entries correctly
+     * @verifies add each hierarchical key only once when loading Solr field values
      */
     @Test
-    void loadEntries_shouldLoadHierarchicalEntriesCorrectly() throws Exception {
+    void loadEntries_shouldAddEachHierarchicalKeyOnlyOnceWhenLoadingSolrFieldValues() throws Exception {
         TranslationGroupItem item = TranslationGroupItem.create(TranslationGroupType.SOLR_FIELD_VALUES, SolrConstants.DC, false);
         item.loadEntries();
         Assertions.assertFalse(item.getEntries().isEmpty());

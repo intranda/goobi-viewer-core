@@ -43,8 +43,11 @@ import io.goobi.viewer.model.security.clients.ClientApplication.AccessStatus;
  */
 class ClientApplicationsResourceTest extends AbstractRestApiTest {
 
+    /**
+     * @verifies return 401 when no auth token provided
+     */
     @Test
-    void test_noAccess() {
+    void scenario_shouldReturn401WhenNoAuthTokenProvided() {
         try (Response response = target()
                 .path(CLIENTS)
                 .request()
@@ -74,8 +77,12 @@ class ClientApplicationsResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies list clients
+     * @see ClientApplicationsResource#request
+     */
     @Test
-    void test_listClients() {
+    void request_shouldListClients() {
         try (Response response = target(CLIENTS)
                 .request()
                 .header("token", "test")
@@ -90,8 +97,12 @@ class ClientApplicationsResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return expected value
+     * @see ClientApplicationsResource#getClient
+     */
     @Test
-    void test_getClient() {
+    void getClient_shouldReturnExpectedValue() {
         try (Response response = target()
                 .path(CLIENTS + CLIENTS_CLIENT.replace("{id}", "1234-abcd-4321"))
                 .request()
@@ -106,8 +117,11 @@ class ClientApplicationsResourceTest extends AbstractRestApiTest {
 
     }
 
+    /**
+     * @verifies update client access status and subnet mask via PUT
+     */
     @Test
-    void test_putClient() throws DAOException {
+    void setClient_shouldUpdateClientAccessStatusAndSubnetMaskViaPut() throws DAOException {
 
         ClientApplication databaseClient = DataManager.getInstance().getDao().getClientApplicationByClientId("1234-abcd-4321");
         assertEquals(AccessStatus.REQUESTED, databaseClient.getAccessStatus());

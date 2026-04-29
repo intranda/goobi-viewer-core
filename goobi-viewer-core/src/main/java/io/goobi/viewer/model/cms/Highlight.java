@@ -177,6 +177,8 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws ViewerConfigurationException
+      * @should get correct image uri for uploaded image
+      * @should get correct image uri for record representative
      */
     public URI getImageURI(int width, int height) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         switch (this.data.getImageMode()) {
@@ -215,6 +217,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
      * alias for {@link #isCurrent()}.
      * 
      * @return true if startTime is before now (or null) and endTime is after now (or null)
+     * @should return true for given input
      */
     public boolean isPresent() {
         return isCurrent();
@@ -243,6 +246,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
      * Check if this object is no longer active. Mutually exclusive with {@link #isCurrent()} and {@link #isFuture()}
      * 
      * @return true if timeEnd is not null and before now
+     * @should return true for given input
      */
     public boolean isPast() {
         return isPast(LocalDateTime.now());
@@ -263,6 +267,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
      * {@link #isPast()}
      * 
      * @return true if startTime is not null and after now and timeEnd is either null or after now
+     * @should return true for given input
      */
     public boolean isFuture() {
         return isFuture(LocalDateTime.now());
@@ -313,6 +318,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
      * @return List<Metadata>
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @should return empty list when solr unreachable
      */
     public List<Metadata> getMetadataList(Locale locale) throws IndexUnreachableException, PresentationException {
         List<Metadata> md = this.metadata.get(locale);

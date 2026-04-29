@@ -85,8 +85,12 @@ class FeedbackBeanTest {
 
     }
 
+    /**
+     * @verifies send feedback email when no user logged in
+     * @see FeedbackBean#submitFeedbackAction
+     */
     @Test
-    void testNoUser() throws UnsupportedEncodingException, MessagingException {
+    void submitFeedbackAction_shouldSendFeedbackEmailWhenNoUserLoggedIn() throws UnsupportedEncodingException, MessagingException {
         bean.init();
         bean.getFeedback().setMessage(FEEDBACK_MESSAGE);
         bean.getFeedback().setName(USER_NAME);
@@ -118,8 +122,12 @@ class FeedbackBeanTest {
         assertEquals(indexMailSender, indexSubjectSender);
     }
 
+    /**
+     * @verifies send feedback email when user logged in
+     * @see FeedbackBean#submitFeedbackAction
+     */
     @Test
-    void testUser() throws UnsupportedEncodingException, MessagingException {
+    void submitFeedbackAction_shouldSendFeedbackEmailWhenUserLoggedIn() throws UnsupportedEncodingException, MessagingException {
         bean.setUserBean(mockUserBean(USER_NAME, SENDER_ADDRESS));
         bean.init();
         bean.getFeedback().setMessage(FEEDBACK_MESSAGE);
@@ -150,8 +158,12 @@ class FeedbackBeanTest {
         assertEquals(indexMailSender, indexSubjectSender);
     }
 
+    /**
+     * @verifies not send email when captcha answer is wrong
+     * @see FeedbackBean#submitFeedbackAction
+     */
     @Test
-    void testWrongCaptcha() throws UnsupportedEncodingException, MessagingException {
+    void submitFeedbackAction_shouldNotSendEmailWhenCaptchaAnswerIsWrong() throws UnsupportedEncodingException, MessagingException {
         bean.setUserBean(mockUserBean(USER_NAME, SENDER_ADDRESS));
         bean.init();
         bean.getFeedback().setMessage(FEEDBACK_MESSAGE);
@@ -164,8 +176,12 @@ class FeedbackBeanTest {
 
     }
 
+    /**
+     * @verifies not send email when honeypot field is filled
+     * @see FeedbackBean#submitFeedbackAction
+     */
     @Test
-    void testFilledHoneypot() throws UnsupportedEncodingException, MessagingException {
+    void submitFeedbackAction_shouldNotSendEmailWhenHoneypotFieldIsFilled() throws UnsupportedEncodingException, MessagingException {
         bean.setUserBean(mockUserBean(USER_NAME, SENDER_ADDRESS));
         bean.init();
         bean.getFeedback().setMessage(FEEDBACK_MESSAGE);

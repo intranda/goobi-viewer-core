@@ -92,6 +92,13 @@ var viewerJS = (function (viewer) {
             $('body').on('click', _defaults.linkSelector, function (event) {
                 _$this = $(this);
 
+                // Only handle buttons that have data-remotecontent (normdata display buttons).
+                // Search buttons share the .normdataLink class but use onclick handlers instead;
+                // intercepting them here would trigger a broken AJAX call to an undefined URL.
+                if (!_$this.attr('data-remotecontent')) {
+                    return;
+                }
+
                 _$this.off('focus');
 
                 _renderPopoverAction(_$this, _defaults.id);

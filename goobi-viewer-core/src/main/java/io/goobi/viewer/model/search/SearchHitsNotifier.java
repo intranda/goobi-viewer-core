@@ -120,6 +120,7 @@ public class SearchHitsNotifier {
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws ViewerConfigurationException
+     * @should return new hits when count exceeds last hits count
      */
     public List<SearchHit> getNewHits(Search search)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {

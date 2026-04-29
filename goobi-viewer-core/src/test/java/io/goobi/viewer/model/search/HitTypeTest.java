@@ -28,10 +28,10 @@ class HitTypeTest {
 
     /**
      * @see HitType#getByName(String)
-     * @verifies return all known types correctly
+     * @verifies resolve known name aliases like OVERVIEWPAGE to the corresponding HitType
      */
     @Test
-    void getByName_shouldReturnAllKnownTypesCorrectly() {
+    void getByName_shouldResolveKnownNameAliasesLikeOVERVIEWPAGEToTheCorrespondingHitType() {
         Assertions.assertEquals(HitType.CMS, HitType.getByName("OVERVIEWPAGE"));
         Assertions.assertEquals(HitType.CMS, HitType.getByName("CMS"));
         Assertions.assertEquals(HitType.PAGE, HitType.getByName("PAGE"));

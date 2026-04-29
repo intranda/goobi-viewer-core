@@ -156,6 +156,8 @@ public class HighlightsBean implements Serializable {
      * Get a {@link TableDataProvider} to all saved {@link Highlight highlights}.
      *
      * @return the TableDataProvider for all saved highlights
+     * @should list objecs
+     * @should filter list
      */
     public TableDataProvider<Highlight> getAllObjectsProvider() {
         return allObjectsProvider;
@@ -176,6 +178,7 @@ public class HighlightsBean implements Serializable {
      *
      * @param object the highlight object
      * @return the URL of the highlighted object, or an empty string if none can be determined
+     * @should highlight url
      */
     public String getUrl(Highlight object) {
         if (object != null) {
@@ -415,6 +418,7 @@ public class HighlightsBean implements Serializable {
      * @return A list of {@link Highlight}s
      * @throws DAOException
      * @should return return all enabled previous highlights
+     * @should return all enabled previous highlights
      */
     public List<Highlight> getHighlightsBefore(LocalDate date) throws DAOException {
         return dao.getPastHighlightsForDate(0, Integer.MAX_VALUE, DAO_FIELD_DATE_START, true, Map.of(), date.atStartOfDay())

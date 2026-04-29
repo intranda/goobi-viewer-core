@@ -72,6 +72,7 @@ public class HtmlSidebarWidget extends CustomSidebarWidget {
     /**
      *
      * @return the html text
+     * @should persist
      */
     public TranslatedText getHtmlText() {
         return htmlText;

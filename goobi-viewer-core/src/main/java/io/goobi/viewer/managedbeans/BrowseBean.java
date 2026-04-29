@@ -103,10 +103,10 @@ public class BrowseBean implements Serializable {
     /** Term list for the current result page (browsing menu). Used for displaying. */
     // volatile: published atomically to prevent ConcurrentModificationException when JSF iterates
     // these lists via c:forEach while another session request replaces or populates them
-    private volatile List<String> browseTermList;
+    private volatile List<String> browseTermList; //NOSONAR S3077: list replaced, never mutated
     /** Escaped term list for the current result page (browsing menu). Used for URL construction. */
-    private volatile List<String> browseTermListEscaped;
-    private volatile List<Long> browseTermHitCountList;
+    private volatile List<String> browseTermListEscaped; //NOSONAR S3077: list replaced, never mutated
+    private volatile List<Long> browseTermHitCountList; //NOSONAR S3077: list replaced, never mutated
     private Map<String, List<String>> availableStringFilters = new HashMap<>();
     /** This is used for filtering term browsing by the starting letter. */
     private String currentStringFilter = "";
@@ -572,6 +572,7 @@ public class BrowseBean implements Serializable {
      * Setter for the field <code>browsingMenuField</code>.
      *
      * @param browsingMenuField Solr field name to use for term browsing, or "-" / null for none
+     * @should normalize field name to uppercase
      */
     public void setBrowsingMenuField(final String browsingMenuField) {
         synchronized (this) {
@@ -580,9 +581,10 @@ public class BrowseBean implements Serializable {
                 useBrowsingMenuField = "";
             }
             try {
-                this.browsingMenuField = URLDecoder.decode(useBrowsingMenuField, SearchBean.URL_ENCODING);
+                // Normalize to uppercase so that lowercase URLs (e.g. from bots) match the configured Solr field names
+                this.browsingMenuField = URLDecoder.decode(useBrowsingMenuField, SearchBean.URL_ENCODING).toUpperCase();
             } catch (UnsupportedEncodingException e) {
-                this.browsingMenuField = useBrowsingMenuField;
+                this.browsingMenuField = useBrowsingMenuField.toUpperCase();
             }
         }
     }
@@ -804,9 +806,9 @@ public class BrowseBean implements Serializable {
      * @param language BCP-47 language code to filter language-specific fields
      * @return List of browsing menu items
      * @should skip items that have skipInWidget true
-     * @should skip items for language-specific fields if no language was given
-     * @should skip items for language-specific fields if they don't match given language
-     * @should return language-specific fields with placeholder
+     * @should skip items for languagespecific fields if no language was given
+     * @should skip items for languagespecific fields if they dont match given language
+     * @should return languagespecific fields with placeholder
      */
     public List<String> getBrowsingMenuItems(final String language) {
         String useLanguage = language;
@@ -996,7 +998,7 @@ public class BrowseBean implements Serializable {
      * @param collectionField Solr field name of the collection
      * @param collectionValue Raw collection value (may be hierarchical)
      * @return {@link String}
-     * @should return hierarchy correctly
+     * @should return slash-separated ancestor chain for dot-delimited collection name
      */
     public String getCollectionHierarchy(String collectionField, String collectionValue) {
         logger.trace("getCollectionHierarchy: {}:{}", collectionField, collectionValue);

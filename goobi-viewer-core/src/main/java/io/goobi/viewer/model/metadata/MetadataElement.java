@@ -451,6 +451,7 @@ public class MetadataElement implements Serializable {
      * Alias for {@link #getMetadataList(boolean) getMetadataList(true)}.
      *
      * @return the list of {@link Metadata} objects that appear before the fold index
+     * @should get fold position
      */
     public List<Metadata> getMetadataListBeforeFold() {
         return getMetadataList(true);

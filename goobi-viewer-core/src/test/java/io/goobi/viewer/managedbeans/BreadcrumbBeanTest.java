@@ -31,10 +31,10 @@ class BreadcrumbBeanTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see BreadcrumbBean#addCollectionHierarchyToBreadcrumb(String,String,String)
-     * @verifies create breadcrumbs correctly
+     * @verifies add one breadcrumb per hierarchy level with encoded collection URLs
      */
     @Test
-    void addCollectionHierarchyToBreadcrumb_shouldCreateBreadcrumbsCorrectly() throws Exception {
+    void addCollectionHierarchyToBreadcrumb_shouldAddOneBreadcrumbPerHierarchyLevelWithEncodedCollectionURLs() throws Exception {
         BreadcrumbBean bb = new BreadcrumbBean();
         Assertions.assertEquals(0, bb.getBreadcrumbs().size());
         bb.addCollectionHierarchyToBreadcrumb("a.b.c.d", "FOO", ".");
@@ -54,7 +54,6 @@ class BreadcrumbBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see BreadcrumbBean#updateBreadcrumbs(LabeledLink)
      * @verifies always remove breadcrumbs coming after the proposed breadcrumb
      */
     @Test

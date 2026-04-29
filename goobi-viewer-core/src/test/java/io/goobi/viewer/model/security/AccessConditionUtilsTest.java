@@ -24,6 +24,10 @@ package io.goobi.viewer.model.security;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,7 +67,6 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#checkAccessPermission(List,Set,String,User,String,String)
      * @verifies return true if required access conditions empty
      */
     @Test
@@ -73,7 +76,6 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#checkAccessPermission(List,Set,String,User,String,String)
      * @verifies return true if ip range allows access
      */
     @Test
@@ -84,7 +86,6 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#checkAccessPermission(List,Set,String,User,String,String)
      * @verifies return true if required access conditions contain only open access
      */
     @Test
@@ -111,7 +112,6 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#checkAccessPermission(List,Set,String,User,String,String)
      * @verifies return true if all license types allow privilege by default
      */
     @Test
@@ -136,7 +136,6 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#checkAccessPermission(List,Set,String,User,String,String)
      * @verifies return false if not all license types allow privilege by default
      */
     @Test
@@ -160,7 +159,6 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#checkAccessPermission(List,Set,String,User,String,String)
      * @verifies return true if ip range allows access to all conditions
      */
     @Test
@@ -191,7 +189,6 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#checkAccessPermission(List,Set,String,User,String,String)
      * @verifies not return true if no ip range matches
      */
     @Test
@@ -211,7 +208,6 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#getRelevantLicenseTypesOnly(List,Set,String)
      * @verifies remove license types whose names do not match access conditions
      */
     @Test
@@ -237,7 +233,6 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see AccessConditionUtils#getRelevantLicenseTypesOnly(List,Set,String,Map)
      * @verifies not remove moving wall license types to open access if condition query excludes given pi
      */
     @Test
@@ -256,7 +251,7 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#generateAccessCheckQuery(String,String)
+     * @see AccessConditionUtils#generateAccessCheckQuery(String,String)
      * @verifies use correct field name for AV files
      */
     @Test
@@ -285,7 +280,7 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#generateAccessCheckQuery(String,String)
+     * @see AccessConditionUtils#generateAccessCheckQuery(String,String)
      * @verifies use correct file name for text files
      */
     @Test
@@ -339,6 +334,9 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":00000001\\ \\(1\\).*", result);
     }
 
+    /**
+     * @verifies use full name for image formats
+     */
     @Test
     void generateAccessCheckQuery_shouldUseFullNameForImageFormats() throws Exception {
         {
@@ -368,6 +366,9 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
         }
     }
 
+    /**
+     * @verifies use full name for 3D object formats
+     */
     @Test
     void generateAccessCheckQuery_shouldUseFullNameFor3dObjectFormats() throws Exception {
         {
@@ -384,6 +385,9 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
         }
     }
 
+    /**
+     * @verifies use base name for formatless files
+     */
     @Test
     void generateAccessCheckQuery_shouldUseBaseNameForFormatlessFiles() throws Exception {
         {
@@ -434,7 +438,6 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see AccessConditionUtils#isConcurrentViewsLimitEnabledForAnyAccessCondition(List)
      * @verifies return false if access conditions null or empty
      */
     @Test
@@ -444,7 +447,6 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see AccessConditionUtils#isConcurrentViewsLimitEnabledForAnyAccessCondition(List)
      * @verifies return true if any license type has limit enabled
      */
     @Test
@@ -453,8 +455,11 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertTrue(AccessConditionUtils.isConcurrentViewsLimitEnabledForAnyAccessCondition(Arrays.asList(licenseTypes)));
     }
 
+    /**
+     * @verifies return empty collection for given input
+     */
     @Test
-    void test_getApplyingLicenses_byIp() throws DAOException {
+    void getApplyingLicenses_shouldReturnEmptyCollectionForGivenInput() throws DAOException {
 
         LicenseType licenseType = new LicenseType();
 
@@ -482,10 +487,10 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see AccessConditionUtils#addSessionPermission(String, Object, HttpSession)
+     * @verifies return false for given input
      */
     @Test
-    void testAddSessionPermission_invalidatedSession() {
+    void addSessionPermission_shouldReturnFalseForGivenInput() {
         jakarta.servlet.http.HttpSession session = Mockito.mock(jakarta.servlet.http.HttpSession.class);
         // Simulate a session that has already been invalidated
         Mockito.doThrow(new IllegalStateException("setAttribute: Session [null] has already been invalidated"))
@@ -497,15 +502,16 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see AccessConditionUtils#addSessionPermission(String, Object, HttpSession)
+     * @verifies return false when session is null
      */
     @Test
-    void testAddSessionPermission_nullSession() {
+    void addSessionPermission_shouldReturnFalseWhenSessionIsNull() {
         assertFalse(AccessConditionUtils.addSessionPermission("PRIV_TEST", "value", null));
     }
 
     /**
-     * @see AccessConditionUtils#retrieveUserFromContext(HttpSession)
      * @verifies return null for null session
+     * @see AccessConditionUtils#retrieveUserFromContext(HttpSession)
      */
     @Test
     void retrieveUserFromContext_shouldReturnNullForNullSession() {
@@ -513,8 +519,7 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see AccessConditionUtils#retrieveUserFromContext(HttpSession)
-     * @verifies return user from standard userBean session attribute
+     * @verifies return user from direct session attribute
      */
     @Test
     void retrieveUserFromContext_shouldReturnUserFromDirectSessionAttribute() {
@@ -529,8 +534,7 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see AccessConditionUtils#retrieveUserFromContext(HttpSession)
-     * @verifies return null without session scan when CDI returns userBean with null user
+     * @verifies return null without session scan when cdi returns null user
      *
      * When CDI is active and returns a UserBean with null user (anonymous visitor), the method must
      * return null directly without falling through to the expensive O(N) session scan.
@@ -553,8 +557,7 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see AccessConditionUtils#retrieveUserFromContext(HttpSession)
-     * @verifies find user via session attribute scan when stored under non-standard key
+     * @verifies return user via session scan when stored under non standard key
      *
      * In CDI/Weld environments, session-scoped beans may be stored under a generated key rather than
      * the EL name "userBean". This test verifies that the fallback scan (findInstanceInSessionAttributes)
@@ -628,8 +631,7 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see AccessConditionUtils#fetchAccessibleFileNames(String,String,String,HttpServletRequest)
-     * @verifies return empty list for restricted record when anonymous
+     * @verifies return empty list for restricted record anonymous
      */
     @Test
     void fetchAccessibleFileNames_shouldReturnEmptyListForRestrictedRecordAnonymous() throws Exception {
@@ -683,8 +685,8 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     // --- fetchPagePermissions ---
 
     /**
-     * @see AccessConditionUtils#fetchPagePermissions(String, jakarta.servlet.http.HttpServletRequest)
-     * @verifies return EMPTY for blank pi
+     * @verifies return empty for blank pi
+     * @see AccessConditionUtils#fetchPagePermissions(String, HttpServletRequest)
      */
     @Test
     void fetchPagePermissions_shouldReturnEmptyForBlankPi() {
@@ -693,8 +695,8 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see AccessConditionUtils#fetchPagePermissions(String, jakarta.servlet.http.HttpServletRequest)
-     * @verifies return EMPTY for null pi
+     * @verifies return empty for null pi
+     * @see AccessConditionUtils#fetchPagePermissions(String, HttpServletRequest)
      */
     @Test
     void fetchPagePermissions_shouldReturnEmptyForNullPi() {
@@ -703,8 +705,8 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see AccessConditionUtils#fetchPagePermissions(String, jakarta.servlet.http.HttpServletRequest)
      * @verifies return granted permissions for open access record
+     * @see AccessConditionUtils#fetchPagePermissions(String, HttpServletRequest)
      */
     @Test
     void fetchPagePermissions_shouldReturnGrantedPermissionsForOpenAccessRecord() {
@@ -717,5 +719,64 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
                 "Expected fulltext access granted for page 1 of open-access record");
         assertTrue(result.isPdfGranted(1),
                 "Expected PDF access granted for page 1 of open-access record");
+    }
+
+    /**
+     * @see AccessConditionUtils#fetchPagePermissions(String, jakarta.servlet.http.HttpServletRequest)
+     * @verifies populate all six privilege maps for open access record
+     */
+    @Test
+    void fetchPagePermissions_shouldPopulateAllSixPrivilegeMapsForOpenAccessRecord() throws Exception {
+        PagePermissions result = AccessConditionUtils.fetchPagePermissions(PI_KLEIUNIV, null);
+        assertFalse(result.isEmpty());
+        assertTrue(result.isImageGranted(1));
+        assertTrue(result.isThumbnailGranted(1));
+        assertTrue(result.isZoomGranted(1));
+        assertTrue(result.isDownloadGranted(1));
+        assertTrue(result.isFulltextGranted(1));
+        assertTrue(result.isPdfGranted(1));
+    }
+
+    /**
+     * @see AccessConditionUtils#removePrivAttributesForPi(HttpSession, String)
+     * @verifies remove only PRIV_ attributes of the given pi
+     */
+    @Test
+    void removePrivAttributesForPi_shouldRemoveOnlyPrivAttributesOfTheGivenPi() {
+        // Stub HttpSession that tracks attribute state in a local map; we mutate the map via the
+        // setAttribute/removeAttribute mocks and enumerate it through getAttributeNames.
+        java.util.Map<String, Object> store = new java.util.concurrent.ConcurrentHashMap<>();
+        HttpSession session = mock(HttpSession.class);
+        when(session.getAttributeNames())
+                .thenAnswer(inv -> Collections.enumeration(new java.util.ArrayList<>(store.keySet())));
+        doAnswer(inv -> {
+            store.remove(inv.getArgument(0));
+            return null;
+        }).when(session).removeAttribute(anyString());
+
+        // PRIV_ entries for OLD_PI — must all be removed. Covers all three key schemes.
+        store.put("PRIV_VIEW_IMAGES_OLD_PI_page1.png", new java.util.HashMap<>());               // fileName scheme
+        store.put("PRIV_DOWNLOAD_PDF_OLD_PI_page1.pdf", new java.util.HashMap<>());              // fileName scheme
+        store.put("PRIV_VIEW_FULLTEXT_OLD_PI", new java.util.HashMap<>());                       // no fileName (suffix match)
+        store.put("PRIV_DOWNLOAD_ORIGINAL_CONTENT_OLD_PI", new Object());                        // no fileName (suffix match)
+        // PRIV_ entries for KEEP_PI — must remain.
+        store.put("PRIV_VIEW_IMAGES_KEEP_PI_page1.png", new java.util.HashMap<>());
+        store.put("PRIV_VIEW_FULLTEXT_KEEP_PI_page1.txt", new java.util.HashMap<>());
+        store.put("PRIV_VIEW_FULLTEXT_KEEP_PI", new java.util.HashMap<>());
+        // non-PRIV attributes must stay untouched.
+        store.put("currentPi", "OLD_PI");
+        store.put("user", new Object());
+
+        AccessConditionUtils.removePrivAttributesForPi(session, "OLD_PI");
+
+        assertFalse(store.containsKey("PRIV_VIEW_IMAGES_OLD_PI_page1.png"));
+        assertFalse(store.containsKey("PRIV_DOWNLOAD_PDF_OLD_PI_page1.pdf"));
+        assertFalse(store.containsKey("PRIV_VIEW_FULLTEXT_OLD_PI"));
+        assertFalse(store.containsKey("PRIV_DOWNLOAD_ORIGINAL_CONTENT_OLD_PI"));
+        assertTrue(store.containsKey("PRIV_VIEW_IMAGES_KEEP_PI_page1.png"));
+        assertTrue(store.containsKey("PRIV_VIEW_FULLTEXT_KEEP_PI_page1.txt"));
+        assertTrue(store.containsKey("PRIV_VIEW_FULLTEXT_KEEP_PI"));
+        assertTrue(store.containsKey("currentPi"));
+        assertTrue(store.containsKey("user"));
     }
 }

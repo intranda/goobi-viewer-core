@@ -27,11 +27,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -93,6 +93,10 @@ public class ImageHandler {
      * @param page physical page providing the image filename and PI
      * @param pageType viewer page type used to select the appropriate URL pattern
      * @return the IIIF image info URL for the given page and page type
+     * @should return expected value for given input
+     * @should encode special characters in pi and filename
+     * @should return external url unmodified when filepath is absolute url with info json
+     * @should proxy external url through internal api when filepath lacks info json
      */
     public String getImageUrl(PhysicalElement page, PageType pageType) {
         if (page == null) {
@@ -175,6 +179,7 @@ public class ImageHandler {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws ViewerConfigurationException
      * @throws DAOException
+     * @should return expected value for given input
      */
     public ImageInformation getImageInformation(PhysicalElement page, PageType pageType)
             throws ContentLibException, ViewerConfigurationException, URISyntaxException, IndexUnreachableException, DAOException {
@@ -196,6 +201,7 @@ public class ImageHandler {
         }
 
         ViewAttributes viewAttributes = new ViewAttributes(page, pageType);
+        boolean useTiles = DataManager.getInstance().getConfiguration().useTiles(viewAttributes);
         Map<Integer, List<Integer>> tileSizes = DataManager.getInstance().getConfiguration().getTileSizes(viewAttributes);
         List<Integer> sizes = DataManager.getInstance()
                 .getConfiguration()
@@ -210,16 +216,30 @@ public class ImageHandler {
                 (Version.v2 == RestApiManager.getVersionToUseForIIIF()) ? new ImageInformation(apiUri) : new ImageInformation3(apiUri);
         info.setWidth(width);
         info.setHeight(height);
-        info.setTiles(tileSizes.entrySet()
-                .stream()
-                .sorted((e1, e2) -> Integer.compare(e1.getKey(), e2.getKey()))
-                .map(entry -> new ImageTile(entry.getKey(), entry.getKey(), entry.getValue()))
-                .toList());
-        info.setSizesFromDimensions(
-                new ArrayList<>(sizes.stream()
-                        .sorted()
-                        .map(scale -> new Dimension(scale, (int) (scale * height / (double) width)))
-                        .toList()));
+
+        //when using tiles, include tileSizes with scaleFactors and matching image sizes 
+        //so OSD doesn't stumble over a bug resulting in illegal tile sizes for some combinations of sizes and scaleFactors
+        if (useTiles) {
+            info.setTiles(tileSizes.entrySet()
+                    .stream()
+                    .sorted((e1, e2) -> Integer.compare(e1.getKey(), e2.getKey()))
+                    .map(entry -> new ImageTile(entry.getKey(), entry.getKey(), entry.getValue()))
+                    .collect(Collectors.toList()));
+            info.setSizesFromDimensions(tileSizes.values()
+                    .stream()
+                    .flatMap(List::stream)
+                    .map(tileSize -> new Dimension((int) Math.ceil((double) width / (double) tileSize),
+                            (int) Math.ceil((double) height / (double) tileSize)))
+                    .collect(Collectors.toList()));
+
+        } else {
+            //otherwise, only pass the configured image sizes and no tile information
+            info.setSizesFromDimensions(
+                    sizes.stream()
+                            .sorted()
+                            .map(scale -> new Dimension(scale, (int) (scale * height / (double) width)))
+                            .collect(Collectors.toList()));
+        }
 
         if (!access) {
             for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getFileName())) {

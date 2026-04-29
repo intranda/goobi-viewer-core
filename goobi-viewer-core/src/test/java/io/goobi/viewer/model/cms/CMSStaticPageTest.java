@@ -38,18 +38,30 @@ class CMSStaticPageTest {
 
     }
 
+    /**
+     * @verifies return test for given input
+     * @see CMSStaticPage#getPageName()
+     */
     @Test
-    void testGetPageName() {
+    void getPageName_shouldReturnTestForGivenInput() {
         Assertions.assertEquals("test", page.getPageName());
     }
 
+    /**
+     * @verifies return false for given input
+     * @see CMSStaticPage#isLanguageComplete(Locale)
+     */
     @Test
-    void testIsLanguageComplete() {
+    void isLanguageComplete_shouldReturnFalseForGivenInput() {
         Assertions.assertFalse(page.isLanguageComplete(Locale.GERMANY));
     }
 
+    /**
+     * @verifies has cms page
+     * @see CMSStaticPage#isHasCmsPage
+     */
     @Test
-    void testHasCmsPage() {
+    void isHasCmsPage_shouldHasCmsPage() {
         Assertions.assertFalse(page.isHasCmsPage());
     }
 

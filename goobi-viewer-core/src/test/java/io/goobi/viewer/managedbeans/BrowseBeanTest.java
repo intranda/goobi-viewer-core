@@ -49,7 +49,7 @@ class BrowseBeanTest extends AbstractTest {
 
     /**
      * @see BrowseBean#getBrowsingMenuItems(String)
-     * @verifies skip items for language-specific fields if no language was given
+     * @verifies skip items for languagespecific fields if no language was given
      */
     @Test
     void getBrowsingMenuItems_shouldSkipItemsForLanguagespecificFieldsIfNoLanguageWasGiven() {
@@ -62,7 +62,7 @@ class BrowseBeanTest extends AbstractTest {
 
     /**
      * @see BrowseBean#getBrowsingMenuItems(String)
-     * @verifies skip items for language-specific fields if they don't match given language
+     * @verifies skip items for languagespecific fields if they dont match given language
      */
     @Test
     void getBrowsingMenuItems_shouldSkipItemsForLanguagespecificFieldsIfTheyDontMatchGivenLanguage() {
@@ -76,7 +76,7 @@ class BrowseBeanTest extends AbstractTest {
 
     /**
      * @see BrowseBean#getBrowsingMenuItems(String)
-     * @verifies return language-specific fields with placeholder
+     * @verifies return languagespecific fields with placeholder
      */
     @Test
     void getBrowsingMenuItems_shouldReturnLanguagespecificFieldsWithPlaceholder() {
@@ -91,10 +91,10 @@ class BrowseBeanTest extends AbstractTest {
 
     /**
      * @see BrowseBean#getCollectionHierarchy(String,String)
-     * @verifies return hierarchy correctly
+     * @verifies return slash-separated ancestor chain for dot-delimited collection name
      */
     @Test
-    void getCollectionHierarchy_shouldReturnHierarchyCorrectly() {
+    void getCollectionHierarchy_shouldReturnSlashSeparatedAncestorChainForDotDelimitedCollectionName() {
         BrowseBean bb = new BrowseBean();
         assertEquals("foo", bb.getCollectionHierarchy("x", "foo"));
         assertEquals("foo / foo.bar", bb.getCollectionHierarchy("x", "foo.bar"));
@@ -108,7 +108,7 @@ class BrowseBeanTest extends AbstractTest {
     void selectRedirectFilter_shouldReturnFirstAvailableAlphabeticalFilterIfAvailable() {
         BrowseBean bb = new BrowseBean();
         bb.setBrowsingMenuField("foo");
-        bb.getAvailableStringFiltersMap().put("foo", new ArrayList<>(4));
+        bb.getAvailableStringFiltersMap().put("FOO", new ArrayList<>(4));
         bb.getAvailableStringFilters().add("!");
         bb.getAvailableStringFilters().add("0-9");
         bb.getAvailableStringFilters().add("A");
@@ -124,7 +124,7 @@ class BrowseBeanTest extends AbstractTest {
     void selectRedirectFilter_shouldReturnNumericalFilterIfAvailable() {
         BrowseBean bb = new BrowseBean();
         bb.setBrowsingMenuField("foo");
-        bb.getAvailableStringFiltersMap().put("foo", new ArrayList<>(2));
+        bb.getAvailableStringFiltersMap().put("FOO", new ArrayList<>(2));
         bb.getAvailableStringFilters().add("!");
         bb.getAvailableStringFilters().add("2");
         assertEquals("2", bb.selectRedirectFilter());
@@ -138,7 +138,7 @@ class BrowseBeanTest extends AbstractTest {
     void selectRedirectFilter_shouldReturnFirstFilterIfNoOtherAvailable() {
         BrowseBean bb = new BrowseBean();
         bb.setBrowsingMenuField("foo");
-        bb.getAvailableStringFiltersMap().put("foo", new ArrayList<>(2));
+        bb.getAvailableStringFiltersMap().put("FOO", new ArrayList<>(2));
         bb.getAvailableStringFilters().add("!");
         bb.getAvailableStringFilters().add("?");
         assertEquals("!", bb.selectRedirectFilter());
@@ -167,6 +167,17 @@ class BrowseBeanTest extends AbstractTest {
     }
 
     /**
+     * @see BrowseBean#setBrowsingMenuField(String)
+     * @verifies normalize field name to uppercase
+     */
+    @Test
+    void setBrowsingMenuField_shouldNormalizeFieldNameToUppercase() {
+        BrowseBean bb = new BrowseBean();
+        bb.setBrowsingMenuField("md_allpersons_untokenized");
+        assertEquals("MD_ALLPERSONS_UNTOKENIZED", bb.getBrowsingMenuField());
+    }
+
+    /**
      * @see BrowseBean#generateFilterQuery()
      * @verifies return empty string if no filterQuery or result groups available
      */
@@ -177,7 +188,6 @@ class BrowseBeanTest extends AbstractTest {
     }
 
     /**
-     * @see BrowseBean#generateFilterQuery()
      * @verifies generate filter query correctly
      */
     @Test

@@ -71,9 +71,11 @@ class CollectionsResourceTest extends AbstractRestApiTest {
      * 
      * @throws JsonProcessingException
      * @throws JsonMappingException
+     * @verifies return non null result
+     * @see CollectionsResource#getAllCollections
      */
     @Test
-    void testGetAllCollections() throws JsonMappingException, JsonProcessingException {
+    void getAllCollections_shouldReturnNonNullResult() throws JsonMappingException, JsonProcessingException {
         String url = urls.path(COLLECTIONS).params(SOLR_FIELD).build();
         try (Response response = target(url)
                 .request()
@@ -90,9 +92,11 @@ class CollectionsResourceTest extends AbstractRestApiTest {
 
     /**
      * Test method for {@link io.goobi.viewer.api.rest.v1.collections.CollectionsResource#getCollection(java.lang.String, java.lang.String)}.
+     * @verifies return non null result
+     * @see CollectionsResource#getCollection
      */
     @Test
-    void testGetCollection() {
+    void getCollection_shouldReturnNonNullResult() {
         String url = urls.path(COLLECTIONS, COLLECTIONS_COLLECTION).params(SOLR_FIELD, COLLECTION).build();
         try (Response response = target(url)
                 .request()

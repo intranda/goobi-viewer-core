@@ -94,6 +94,7 @@ public class AdminClientsBean implements Serializable {
      * Gets the model used for paginated listing configured clients.
      *
      * @return the {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider} used for paginated listing of configured client applications
+     * @should table data provider
      */
     public TableDataProvider<ClientApplication> getConfiguredClientsModel() {
         return configuredClientsModel;

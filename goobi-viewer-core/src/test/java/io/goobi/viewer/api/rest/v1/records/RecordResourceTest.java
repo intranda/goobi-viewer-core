@@ -85,9 +85,11 @@ class RecordResourceTest extends AbstractRestApiTest {
 
     /**
      * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordResource#getRISAsFile()}.
+     * @verifies return non null result
+     * @see RecordResource#getRISAsFile
      */
     @Test
-    void testGetRISAsFile() {
+    void getRISAsFile_shouldReturnNonNullResult() {
         try (Response response = target(urls.path(RECORDS_RECORD, RECORDS_RIS_FILE).params(PI).build())
                 .request()
                 .get()) {
@@ -103,9 +105,11 @@ class RecordResourceTest extends AbstractRestApiTest {
 
     /**
      * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordResource#getRISAsText()}.
+     * @verifies return non null result
+     * @see RecordResource#getRISAsText()
      */
     @Test
-    void testGetRISAsText() {
+    void getRISAsText_shouldReturnNonNullResult() {
         try (Response response = target(urls.path(RECORDS_RECORD, RECORDS_RIS_TEXT).params(PI).build())
                 .request()
                 .accept(MediaType.TEXT_PLAIN)
@@ -120,9 +124,11 @@ class RecordResourceTest extends AbstractRestApiTest {
 
     /**
      * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordResource#getTOCAsText()}.
+     * @verifies return non null result
+     * @see RecordResource#getTOCAsText
      */
     @Test
-    void testGetTOCAsText() {
+    void getTOCAsText_shouldReturnNonNullResult() {
         try (Response response = target(urls.path(RECORDS_RECORD, RECORDS_TOC).params(PI).build())
                 .request()
                 .accept(MediaType.TEXT_PLAIN)
@@ -140,9 +146,11 @@ class RecordResourceTest extends AbstractRestApiTest {
      *
      * @throws JsonProcessingException
      * @throws JsonMappingException
+     * @verifies return non null result
+     * @see RecordResource#getAnnotationsForRecord
      */
     @Test
-    void testGetAnnotationsForRecord() throws JsonMappingException, JsonProcessingException {
+    void getAnnotationsForRecord_shouldReturnNonNullResult() throws JsonMappingException, JsonProcessingException {
         try (Response response = target(urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(PI_ANNOTATIONS).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
@@ -161,9 +169,11 @@ class RecordResourceTest extends AbstractRestApiTest {
      *
      * @throws JsonProcessingException
      * @throws JsonMappingException
+     * @verifies return non null result
+     * @see RecordResource#getCommentPageForRecord
      */
     @Test
-    void testGetCommentPageForRecord() throws JsonMappingException, JsonProcessingException {
+    void getCommentPageForRecord_shouldReturnNonNullResult() throws JsonMappingException, JsonProcessingException {
         try (Response response = target(urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(PI_ANNOTATIONS).build() + "1/")
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
@@ -181,8 +191,12 @@ class RecordResourceTest extends AbstractRestApiTest {
      * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordResource#getSource(java.lang.String)}.
      */
     //TODO: read some actual mets file from test index
+    /**
+     * @verifies return non null result
+     * @see RecordResource#getSource
+     */
     @Test
-    void testGetSource() {
+    void getSource_shouldReturnNonNullResult() {
         try (Response response = target(urls.path(RECORDS_RECORD, RECORDS_METADATA_SOURCE).params(PI).build())
                 .request()
                 .accept(MediaType.TEXT_XML)
@@ -196,8 +210,12 @@ class RecordResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return non null result
+     * @see RecordResource#getManifest
+     */
     @Test
-    void testGetManifest() {
+    void getManifest_shouldReturnNonNullResult() {
         String url = urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(PI).build();
         try (Response response = target(url)
                 .request()
@@ -216,8 +234,12 @@ class RecordResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return non null result
+     * @see RecordResource#getLayer
+     */
     @Test
-    void testGetLayer() throws JsonMappingException, JsonProcessingException {
+    void getLayer_shouldReturnNonNullResult() throws JsonMappingException, JsonProcessingException {
         String url = urls.path(RECORDS_RECORD, RECORDS_LAYER).params(PI, "ALTO").build();
         try (Response response = target(url)
                 .request()
@@ -232,8 +254,12 @@ class RecordResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return non null result
+     * @see RecordResource#getNERTags
+     */
     @Test
-    void testGetNERTags() {
+    void getNERTags_shouldReturnNonNullResult() {
         String url = urls.path(RECORDS_RECORD, RECORDS_NER_TAGS).params(PI_NER).build();
         try (Response response = target(url)
                 .request()
@@ -268,9 +294,11 @@ class RecordResourceTest extends AbstractRestApiTest {
      * Note: some characters like space (%20) or pipe (%7C) are rejected at the HTTP routing
      * level before reaching our constructor; we test characters that are valid in URL paths
      * but in the PI blocklist and do reach the constructor.
+     * @verifies invalid pi returns 400
+     * @see RecordResource#try
      */
     @Test
-    void testInvalidPiReturns400() {
+    void try_shouldInvalidPiReturns400() {
         // exclamation mark - valid URL path character, in PI blocklist
         try (Response response = target("/records/invalid!pi/ris")
                 .request()
@@ -288,18 +316,22 @@ class RecordResourceTest extends AbstractRestApiTest {
     /**
      * Null PI must be rejected with BadRequestException, not silently accepted.
      * This guards the fix that changed the condition from (pi != null && ...) to (pi == null || ...).
+     * @verifies null pi throws bad request
+     * @see RecordResource#validatePi
      */
     @Test
-    void testNullPiThrowsBadRequest() {
+    void validatePi_shouldNullPiThrowsBadRequest() {
         assertThrows(jakarta.ws.rs.BadRequestException.class, () -> RecordResource.validatePi(null),
                 "null PI should throw BadRequestException");
     }
 
     /**
      * Valid PIs must pass validatePi without throwing.
+     * @verifies valid pi accepted
+     * @see RecordResource#validatePi
      */
     @Test
-    void testValidPiAccepted() {
+    void validatePi_shouldValidPiAccepted() {
         assertDoesNotThrow(() -> RecordResource.validatePi("PPN615391702"));
         assertDoesNotThrow(() -> RecordResource.validatePi("valid_pi-1.0"));
     }
@@ -307,9 +339,11 @@ class RecordResourceTest extends AbstractRestApiTest {
     /**
      * getRISAsFile() must return HTTP 404 (not 500) when the PI does not exist in the Solr index.
      * This guards against getFirstDoc() returning null and causing a NullPointerException.
+     * @verifies return 404 when non existent pi
+     * @see RecordResource#getRISAsFile
      */
     @Test
-    void testGetRISAsFile_nonExistentPiReturns404() {
+    void getRISAsFile_shouldReturn404WhenNonExistentPi() {
         try (Response response = target(urls.path(RECORDS_RECORD, RECORDS_RIS_FILE).params("NONEXISTENT_PI_99999").build())
                 .request()
                 .get()) {
@@ -320,9 +354,11 @@ class RecordResourceTest extends AbstractRestApiTest {
     /**
      * getRISAsText() must return HTTP 404 (not 500) when the PI does not exist in the Solr index.
      * This guards against getFirstDoc() returning null and causing a NullPointerException.
+     * @verifies return 404 for given input
+     * @see RecordResource#getRISAsText()
      */
     @Test
-    void testGetRISAsText_nonExistentPiReturns404() {
+    void getRISAsText_shouldReturn404ForGivenInput() {
         try (Response response = target(urls.path(RECORDS_RECORD, RECORDS_RIS_TEXT).params("NONEXISTENT_PI_99999").build())
                 .request()
                 .accept(MediaType.TEXT_PLAIN)

@@ -47,6 +47,7 @@ import io.goobi.viewer.model.administration.legal.Disclaimer;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.user.IpRange;
+import io.goobi.viewer.model.security.user.IpRangeCache;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.solr.SolrSearchIndex;
@@ -116,6 +117,7 @@ public class DisclaimerBean implements Serializable {
      * The configuration object for the disclaimer to be used by the viewerJS.disclaimerModal module.
      * 
      * @return a json object
+     * @should write json
      */
     public String getDisclaimerConfig() {
         if (dao != null) {
@@ -173,7 +175,11 @@ public class DisclaimerBean implements Serializable {
         List<License> licenses = dao.getLicenses(type);
         List<UserGroup> userGroups = user.map(User::getAllUserGroups).orElse(Collections.emptyList());
         String ipAddress = navigationHelper.getSessionIPAddress();
-        List<IpRange> ipRanges = dao.getAllIpRanges().stream().filter(range -> range.matchIp(ipAddress)).collect(Collectors.toList());
+        // Route through cache to avoid repeated DAO round-trips per request;
+        // guard against null IP (e.g. in test contexts where no real session exists)
+        List<IpRange> ipRanges = ipAddress == null ? Collections.emptyList()
+                : DataManager.getInstance().getIpRangeCache().getAllIpRanges().stream()
+                        .filter(range -> range.matchIp(ipAddress)).collect(Collectors.toList());
 
         List<License> applyingLicenses = licenses.stream()
                 .filter(license -> {

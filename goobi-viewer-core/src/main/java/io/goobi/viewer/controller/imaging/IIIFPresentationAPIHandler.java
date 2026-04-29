@@ -69,6 +69,7 @@ public class IIIFPresentationAPIHandler {
      * @param pi persistent identifier of the record
      * @return The IIIF manifest
      * @throws java.net.URISyntaxException if any.
+     * @should return expected value for given input
      */
     public String getManifestUrl(String pi) throws URISyntaxException {
         return builder.getManifestURI(pi).toString();
@@ -79,6 +80,7 @@ public class IIIFPresentationAPIHandler {
      *
      * @return The IIIF collection url
      * @throws java.net.URISyntaxException if any.
+     * @should return expected value for given input
      */
     public String getCollectionUrl() throws URISyntaxException {
         return getCollectionUrl(SolrConstants.DC);
@@ -115,6 +117,7 @@ public class IIIFPresentationAPIHandler {
      * @param annotationType name of the annotation type to filter by
      * @return The IIIF layer url
      * @throws java.net.URISyntaxException if any.
+     * @should return expected value for given input
      */
     public String getLayerUrl(String pi, String annotationType) throws URISyntaxException {
         AnnotationType type = AnnotationType.valueOf(annotationType.toUpperCase());
@@ -132,6 +135,7 @@ public class IIIFPresentationAPIHandler {
      * @param annotationType name of the annotation type to filter by
      * @return The IIIF annotation list
      * @throws java.net.URISyntaxException if any.
+     * @should return expected value for given input
      */
     public String getAnnotationsUrl(String pi, int pageOrder, String annotationType) throws URISyntaxException {
         AnnotationType type = AnnotationType.valueOf(annotationType.toUpperCase());
@@ -148,6 +152,7 @@ public class IIIFPresentationAPIHandler {
      * @param pageOrder physical page order number
      * @return The IIIF canvas url
      * @throws java.net.URISyntaxException if any.
+     * @should return expected value for given input
      */
     public String getCanvasUrl(String pi, int pageOrder) throws URISyntaxException {
         return builder.getCanvasURI(pi, pageOrder).toString();
@@ -161,6 +166,7 @@ public class IIIFPresentationAPIHandler {
      * @param logId logical structure element identifier
      * @return The IIIF range url
      * @throws java.net.URISyntaxException if any.
+     * @should return expected value for given input
      */
     public String getRangeUrl(String pi, String logId) throws URISyntaxException {
         return builder.getRangeURI(pi, logId).toString();

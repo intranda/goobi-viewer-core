@@ -45,6 +45,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.TestUtils;
@@ -83,31 +84,29 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#searchAutosuggestion(String)
-     * @verifies return autosuggestions correctly
+     * @verifies return non empty suggestion list for a matching search prefix
      */
     @Test
-    void searchAutosuggestion_shouldReturnAutosuggestionsCorrectly() throws Exception {
+    void searchAutosuggestion_shouldReturnNonEmptySuggestionListForAMatchingSearchPrefix() throws Exception {
         List<String> values = SearchHelper.searchAutosuggestion("klein", null);
         Assertions.assertFalse(values.isEmpty());
     }
 
     /**
-     * @see SearchHelper#searchAutosuggestion(String,String)
-     * @verifies filter by collection correctly
+     * @verifies return empty list when filtered by a non matching collection facet
      */
     @Test
-    void searchAutosuggestion_shouldFilterByCollectionCorrectly() throws Exception {
+    void searchAutosuggestion_shouldReturnEmptyListWhenFilteredByANonMatchingCollectionFacet() throws Exception {
         FacetItem item = new FacetItem(SolrConstants.FACET_DC + ":varia", true);
         List<String> values = SearchHelper.searchAutosuggestion("kartenundplaene", Collections.singletonList(item));
         Assertions.assertTrue(values.isEmpty());
     }
 
     /**
-     * @see SearchHelper#searchAutosuggestion(String,List,List)
-     * @verifies filter by facet correctly
+     * @verifies return empty list when filtered by a non matching title facet
      */
     @Test
-    void searchAutosuggestion_shouldFilterByFacetCorrectly() throws Exception {
+    void searchAutosuggestion_shouldReturnEmptyListWhenFilteredByANonMatchingTitleFacet() throws Exception {
         FacetItem item = new FacetItem(SolrConstants.TITLE + ":something", false);
         List<String> values = SearchHelper.searchAutosuggestion("kartenundplaene", Collections.singletonList(item));
         Assertions.assertTrue(values.isEmpty());
@@ -125,8 +124,11 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertTrue(collections.size() > 40);
     }
 
+    /**
+     * @verifies group collections by DC field and aggregate their docstruct facet values
+     */
     @Test
-    void findAllCollectionsFromField_shouldGroupCorrectly() throws Exception {
+    void findAllCollectionsFromField_shouldGroupCollectionsByDCFieldAndAggregateTheirDocstructFacetValues() throws Exception {
         // First, make sure the collection blacklist always comes from the same config file;
         Map<String, CollectionResult> collections =
                 SearchHelper.findAllCollectionsFromField(SolrConstants.DC, SolrConstants.DOCSTRCT, null, true, true, ".");
@@ -143,11 +145,10 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#getPersonalFilterQuerySuffix(User,String)
-     * @verifies construct suffix correctly
+     * @verifies construct filter suffix with access conditions including moving wall query
      */
     @Test
-    void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectly() throws Exception {
+    void getPersonalFilterQuerySuffix_shouldConstructFilterSuffixWithAccessConditionsIncludingMovingWallQuery() throws Exception {
         String suffix =
                 SearchHelper.getPersonalFilterQuerySuffix(DataManager.getInstance().getDao().getRecordLicenseTypes(), null, null, Optional.empty(),
                         IPrivilegeHolder.PRIV_LIST);
@@ -159,11 +160,10 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#getPersonalFilterQuerySuffix(User,String)
-     * @verifies construct suffix correctly if user has license privilege
+     * @verifies include access condition for license type when user has listing privilege
      */
     @Test
-    void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectlyIfUserHasLicensePrivilege() throws Exception {
+    void getPersonalFilterQuerySuffix_shouldIncludeAccessConditionForLicenseTypeWhenUserHasListingPrivilege() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(2);
         String suffix =
                 SearchHelper.getPersonalFilterQuerySuffix(DataManager.getInstance().getDao().getRecordLicenseTypes(), user, null, Optional.empty(),
@@ -173,11 +173,10 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#getPersonalFilterQuerySuffix(User,String)
-     * @verifies construct suffix correctly if ip range has license privilege
+     * @verifies return empty suffix for localhost and include access conditions for regular IP range with listing privilege
      */
     @Test
-    void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectlyIfIpRangeHasLicensePrivilege() throws Exception {
+    void getPersonalFilterQuerySuffix_shouldReturnEmptySuffixForLocalhostAndIncludeAccessConditionsForRegularIPRangeWithListingPrivilege() throws Exception {
         {
             // Localhost with full access enabled
             String suffix = SearchHelper.getPersonalFilterQuerySuffix(DataManager.getInstance().getDao().getRecordLicenseTypes(), null, "127.0.0.1",
@@ -198,11 +197,10 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#getPersonalFilterQuerySuffix(User,String)
-     * @verifies construct suffix correctly if moving wall license
+     * @verifies include OPENACCESS and moving wall query in suffix when no user or IP is given
      */
     @Test
-    void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectlyIfMovingWallLicense() throws Exception {
+    void getPersonalFilterQuerySuffix_shouldIncludeOPENACCESSAndMovingWallQueryInSuffixWhenNoUserOrIPIsGiven() throws Exception {
         String suffix =
                 SearchHelper.getPersonalFilterQuerySuffix(DataManager.getInstance().getDao().getRecordLicenseTypes(), null, null, Optional.empty(),
                         IPrivilegeHolder.PRIV_LIST);
@@ -214,7 +212,6 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#getPersonalFilterQuerySuffix(User,String,Optional,String)
      * @verifies add overridden license types from user privilege
      */
     @Test
@@ -228,7 +225,6 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#getPersonalFilterQuerySuffix(User,String,Optional,String)
      * @verifies add overridden license types from license type privilege
      */
     @Test
@@ -250,7 +246,6 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#getPersonalFilterQuerySuffix(User,String,Optional,String)
      * @verifies add overridden license types from open access license
      */
     @Test
@@ -273,11 +268,10 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#getPersonalFilterQuerySuffix(User,String,String)
-     * @verifies construct suffix correctly for alternate privilege
+     * @verifies exclude license type from suffix for LIST privilege but include it for DOWNLOAD_METADATA privilege
      */
     @Test
-    void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectlyForAlternatePrivilege() throws Exception {
+    void getPersonalFilterQuerySuffix_shouldExcludeLicenseTypeFromSuffixForLISTPrivilegeButIncludeItForDOWNLOAD_METADATAPrivilege() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(2);
         // User has metadata download privilege for 'license type 3 name', but not listing
         Assertions.assertFalse(SearchHelper
@@ -291,7 +285,6 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#getPersonalFilterQuerySuffix(User,String,String)
      * @verifies limit to open access if licenseTypes empty
      */
     @Test
@@ -303,7 +296,6 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#truncateFulltext(List,String)
      * @verifies make terms bold if found in text
      */
     @Test
@@ -343,7 +335,6 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#truncateFulltext(List,String)
      * @verifies truncate string to 200 chars if no term has been found
      */
     @Test
@@ -375,11 +366,10 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#truncateFulltext(Set,String,int,boolean)
-     * @verifies return multiple match fragments correctly
+     * @verifies return separate highlighted fragments for each match occurrence in the fulltext
      */
     @Test
-    void truncateFulltext_shouldReturnMultipleMatchFragmentsCorrectly() {
+    void truncateFulltext_shouldReturnSeparateHighlightedFragmentsForEachMatchOccurrenceInTheFulltext() {
         String original = StringConstants.LOREM_IPSUM;
         String[] terms = { "in" };
         List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 50, false, true, 0);
@@ -390,7 +380,6 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#truncateFulltext(Set,String,int,boolean)
      * @verifies replace line breaks with spaces
      */
     @Test
@@ -405,7 +394,6 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#truncateFulltext(Set,String,int,boolean,boolean)
      * @verifies highlight multi word terms while removing stopwords
      */
     @Test
@@ -419,6 +407,9 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         }
     }
 
+    /**
+     * @verifies find fuzzy search terms correctly
+     */
     @Test
     void truncateFulltext_shouldFindFuzzySearchTermsCorrectly() {
         String original = StringConstants.LOREM_IPSUM;
@@ -430,7 +421,6 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#truncateFulltext(Set,String,int,boolean,boolean,int)
      * @verifies not throw on search term with trailing backslash
      */
     @Test
@@ -499,10 +489,10 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#extractSearchTermsFromQuery(String)
-     * @verifies handle multiple phrases in query correctly
+     * @verifies extract separate term sets per field when query contains multiple phrase clauses
      */
     @Test
-    void extractSearchTermsFromQuery_shouldHandleMultiplePhrasesInQueryCorrectly() {
+    void extractSearchTermsFromQuery_shouldExtractSeparateTermSetsPerFieldWhenQueryContainsMultiplePhraseClauses() {
         Map<String, Set<String>> result =
                 SearchHelper.extractSearchTermsFromQuery("(MD_A:(\"value1 value 2\") OR MD_B:\"value1\" OR MD_C:\"value2\" OR MD_D:\"value2\")",
                         null);
@@ -535,10 +525,10 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#extractSearchTermsFromQuery(String)
-     * @verifies handle escaped double quotes correctly
+     * @verifies preserve escaped double quotes within extracted phrase terms
      */
     @Test
-    void extractSearchTermsFromQuery_shouldHandleEscapedDoubleQuotesCorrectly() {
+    void extractSearchTermsFromQuery_shouldPreserveEscapedDoubleQuotesWithinExtractedPhraseTerms() {
         Map<String, Set<String>> result =
                 SearchHelper.extractSearchTermsFromQuery("(MD_A:(\"value1 \\\"value2\\\"\"))",
                         null);
@@ -551,10 +541,10 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#extractSearchTermsFromQuery(String,String)
-     * @verifies handle escaped parentheses in phrase values correctly
+     * @verifies extract a valid closed phrase when value contains escaped parentheses
      */
     @Test
-    void extractSearchTermsFromQuery_shouldHandleEscapedParenthesesInPhraseValuesCorrectly() {
+    void extractSearchTermsFromQuery_shouldExtractAValidClosedPhraseWhenValueContainsEscapedParentheses() {
         // Phrase containing Solr-escaped parentheses: \( and \) must not leave a dangling backslash
         // before the closing quote, which would produce a broken Solr query (\")
         Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery(
@@ -711,20 +701,19 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#generateCollectionBlacklistFilterSuffix()
-     * @verifies construct suffix correctly
+     * @verifies return negated DC filter clauses for each blacklisted collection
      */
     @Test
-    void generateCollectionBlacklistFilterSuffix_shouldConstructSuffixCorrectly() {
+    void generateCollectionBlacklistFilterSuffix_shouldReturnNegatedDCFilterClausesForEachBlacklistedCollection() {
         String suffix = SearchHelper.generateCollectionBlacklistFilterSuffix(SolrConstants.DC);
         Assertions.assertEquals(" -" + SolrConstants.DC + ":collection1 -" + SolrConstants.DC + ":collection2", suffix);
     }
 
     /**
-     * @see SearchHelper#checkCollectionInBlacklist(String,List)
-     * @verifies match simple collections correctly
+     * @verifies return true for exact collection match and false for non matching collection
      */
     @Test
-    void checkCollectionInBlacklist_shouldMatchSimpleCollectionsCorrectly() {
+    void checkCollectionInBlacklist_shouldReturnTrueForExactCollectionMatchAndFalseForNonMatchingCollection() {
         {
             Set<String> blacklist = new HashSet<>(Collections.singletonList("a"));
             Assertions.assertTrue(SearchHelper.checkCollectionInBlacklist("a", blacklist, "."));
@@ -738,18 +727,16 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#checkCollectionInBlacklist(String,List)
-     * @verifies match subcollections correctly
+     * @verifies return true when a parent collection in the blacklist matches the subcollection path
      */
     @Test
-    void checkCollectionInBlacklist_shouldMatchSubcollectionsCorrectly() {
+    void checkCollectionInBlacklist_shouldReturnTrueWhenAParentCollectionInTheBlacklistMatchesTheSubcollectionPath() {
         Set<String> blacklist = new HashSet<>(Collections.singletonList("a.b"));
         Assertions.assertTrue(SearchHelper.checkCollectionInBlacklist("a.b.c.d", blacklist, "."));
         Assertions.assertFalse(SearchHelper.checkCollectionInBlacklist("a.z", blacklist, "."));
     }
 
     /**
-     * @see SearchHelper#checkCollectionInBlacklist(String,List)
      * @verifies throw IllegalArgumentException if dc is null
      */
     @Test
@@ -768,18 +755,16 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#getDiscriminatorFieldFilterSuffix(String)
-     * @verifies construct subquery correctly
+     * @verifies return field value filter suffix when discriminator value is set
      */
     @Test
-    void getDiscriminatorFieldFilterSuffix_shouldConstructSubqueryCorrectly() throws Exception {
+    void getDiscriminatorFieldFilterSuffix_shouldReturnFieldValueFilterSuffixWhenDiscriminatorValueIsSet() throws Exception {
         NavigationHelper nh = new NavigationHelper();
         nh.setSubThemeDiscriminatorValue("val");
         Assertions.assertEquals(" +fie:val", SearchHelper.getDiscriminatorFieldFilterSuffix(nh, "fie"));
     }
 
     /**
-     * @see SearchHelper#getDiscriminatorFieldFilterSuffix(String)
      * @verifies return empty string if discriminator value is empty or hyphen
      */
     @Test
@@ -792,10 +777,10 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#defacetifyField(String)
-     * @verifies defacetify correctly
+     * @verifies strip FACET_ prefix and map to original Solr field names including date fields
      */
     @Test
-    void defacetifyField_shouldDefacetifyCorrectly() {
+    void defacetifyField_shouldStripFACET_PrefixAndMapToOriginalSolrFieldNamesIncludingDateFields() {
         Assertions.assertEquals(SolrConstants.DC, SearchHelper.defacetifyField(SolrConstants.FACET_DC));
         Assertions.assertEquals(SolrConstants.DOCSTRCT, SearchHelper.defacetifyField("FACET_DOCSTRCT"));
         Assertions.assertEquals(SolrConstants.CALENDAR_YEAR, SearchHelper.defacetifyField("FACET_YEAR"));
@@ -806,10 +791,10 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#facetifyField(String)
-     * @verifies facetify correctly
+     * @verifies add FACET_ prefix and strip UNTOKENIZED suffix while leaving MDNUM fields unchanged
      */
     @Test
-    void facetifyField_shouldFacetifyCorrectly() {
+    void facetifyField_shouldAddFACET_PrefixAndStripUNTOKENIZEDSuffixWhileLeavingMDNUMFieldsUnchanged() {
         Assertions.assertEquals(SolrConstants.FACET_DC, SearchHelper.facetifyField(SolrConstants.DC));
         Assertions.assertEquals("FACET_DOCSTRCT", SearchHelper.facetifyField(SolrConstants.DOCSTRCT));
         //        Assertions.assertEquals("FACET_SUPERDOCSTRCT", SearchHelper.facetifyField(SolrConstants.SUPERDOCSTRCT));
@@ -839,11 +824,10 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#facetifyList(List)
-     * @verifies facetify correctly
+     * @verifies convert each field in the list to its FACET_ prefixed equivalent
      */
     @Test
-    void facetifyList_shouldFacetifyCorrectly() {
+    void facetifyList_shouldConvertEachFieldInTheListToItsFACET_PrefixedEquivalent() {
         List<String> result = SearchHelper.facetifyList(Arrays.asList(new String[] { SolrConstants.DC, "MD_TITLE_UNTOKENIZED" }));
         Assertions.assertEquals(2, result.size());
         Assertions.assertEquals(SolrConstants.FACET_DC, result.get(0));
@@ -852,10 +836,10 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#sortifyField(String)
-     * @verifies sortify correctly
+     * @verifies convert field names to SORT_ or SORTNUM_ prefixed equivalents
      */
     @Test
-    void sortifyField_shouldSortifyCorrectly() {
+    void sortifyField_shouldConvertFieldNamesToSORT_OrSORTNUM_PrefixedEquivalents() {
         Assertions.assertEquals("SORT_DC", SearchHelper.sortifyField(SolrConstants.DC));
         Assertions.assertEquals("SORT_DOCSTRCT", SearchHelper.sortifyField(SolrConstants.DOCSTRCT));
         Assertions.assertEquals("SORT_TITLE", SearchHelper.sortifyField("MD_TITLE_UNTOKENIZED"));
@@ -864,11 +848,11 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @verifies strip _UNTOKENIZED suffix from field name
      * @see SearchHelper#normalizeField(String)
-     * @verifies normalize correctly
      */
     @Test
-    void normalizeField_shouldNormalizeCorrectly() {
+    void normalizeField_shouldStrip_UNTOKENIZEDSuffixFromFieldName() {
         Assertions.assertEquals("MD_FOO", SearchHelper.normalizeField("MD_FOO_UNTOKENIZED"));
     }
 
@@ -916,18 +900,17 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#getAllSuffixes(HttpServletRequest,boolean,boolean,boolean,String)
      * @verifies add archive filter suffix
+     * @see SearchHelper#getAllSuffixes
      */
     @Test
-    void getAllSuffixes_shoulAddArchiveFilterSuffix() {
+    void getAllSuffixes_shouldAddArchiveFilterSuffix() {
         String suffix = SearchHelper.getAllSuffixes(null, true, false, false, IPrivilegeHolder.PRIV_LIST);
         Assertions.assertNotNull(suffix);
         assertTrue(suffix.contains(" -DOCTYPE:ARCHIVE"));
     }
 
     /**
-     * @see SearchHelper#getAllSuffixes(HttpServletRequest,boolean,boolean,boolean,String)
      * @verifies add static suffix
      */
     @Test
@@ -938,7 +921,6 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#getAllSuffixes(HttpServletRequest,boolean,boolean,boolean,String)
      * @verifies not add static suffix if not requested
      */
     @Test
@@ -949,14 +931,61 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#getAllSuffixes(HttpServletRequest,boolean,boolean,boolean,String)
      * @verifies add collection blacklist suffix
+     * @see SearchHelper#getAllSuffixes()
      */
     @Test
     void getAllSuffixes_shouldAddCollectionBlacklistSuffix() {
         String suffix = SearchHelper.getAllSuffixes(null, false, false, true, IPrivilegeHolder.PRIV_LIST);
         Assertions.assertNotNull(suffix);
         Assertions.assertTrue(suffix.contains(" -" + SolrConstants.DC + ":collection1 -" + SolrConstants.DC + ":collection2"));
+    }
+
+    /**
+     * Regression test for the security fix preventing AccessCondition bypass on sessionless
+     * REST calls (e.g. POST /api/v1/index/query without a JSESSIONID cookie). Before the fix
+     * getFilterQuerySuffix returned null in this case, which caused getAllSuffixes() to silently
+     * skip the AccessCondition filter, leaking protected records.
+     *
+     * @see SearchHelper#getFilterQuerySuffix(HttpServletRequest, String)
+     * @verifies compute personal filter suffix on the fly when no session is available
+     */
+    @Test
+    void getFilterQuerySuffix_shouldComputePersonalFilterSuffixOnTheFlyWhenNoSessionIsAvailable() {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getSession(false)).thenReturn(null);
+        // Use a non-localhost IP to avoid the local-full-access shortcut in getPersonalFilterQuerySuffix
+        Mockito.when(request.getHeader("x-forwarded-for")).thenReturn("8.8.8.8");
+
+        String suffix = SearchHelper.getFilterQuerySuffix(request, IPrivilegeHolder.PRIV_LIST);
+
+        Assertions.assertNotNull(suffix, "sessionless callers must not bypass the AccessCondition filter");
+        assertTrue(suffix.contains(SolrConstants.ACCESSCONDITION),
+                "expected ACCESSCONDITION filter in sessionless suffix but was: " + suffix);
+        assertTrue(suffix.contains(SolrConstants.OPEN_ACCESS_VALUE),
+                "expected OPENACCESS clause in sessionless suffix but was: " + suffix);
+    }
+
+    /**
+     * Companion regression test verifying the bypass is closed at the higher-level entry point
+     * actually used by REST endpoints (getAllSuffixes), not just the package-private helper.
+     *
+     * @see SearchHelper#getAllSuffixes(HttpServletRequest, boolean, boolean, boolean, String)
+     * @verifies include AccessCondition filter in suffix when request has no session
+     */
+    @Test
+    void getAllSuffixes_shouldIncludeAccessConditionFilterWhenRequestHasNoSession() {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getSession(false)).thenReturn(null);
+        Mockito.when(request.getHeader("x-forwarded-for")).thenReturn("8.8.8.8");
+
+        String suffix = SearchHelper.getAllSuffixes(request, false, false, false, IPrivilegeHolder.PRIV_LIST);
+
+        Assertions.assertNotNull(suffix);
+        assertTrue(suffix.contains(SolrConstants.ACCESSCONDITION),
+                "expected ACCESSCONDITION filter in sessionless getAllSuffixes result but was: " + suffix);
+        assertTrue(suffix.contains(SolrConstants.OPEN_ACCESS_VALUE),
+                "expected OPENACCESS clause in sessionless getAllSuffixes result but was: " + suffix);
     }
 
     //    /**
@@ -990,11 +1019,10 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     //    }
 
     /**
-     * @see SearchHelper#generateExpandQuery(List,Set)
-     * @verifies generate query correctly
+     * @verifies combine search terms from multiple fields with OR into a single expand query string
      */
     @Test
-    void generateExpandQuery_shouldGenerateQueryCorrectly() {
+    void generateExpandQuery_shouldCombineSearchTermsFromMultipleFieldsWithORIntoASingleExpandQueryString() {
         List<String> fields = Arrays.asList(new String[] { SolrConstants.DEFAULT, SolrConstants.FULLTEXT, SolrConstants.NORMDATATERMS,
                 SolrConstants.UGCTERMS, SolrConstants.CMS_TEXT_ALL });
         Map<String, Set<String>> searchTerms = new HashMap<>();
@@ -1010,7 +1038,6 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#generateExpandQuery(List,Map)
      * @verifies return empty string if no fields match
      */
     @Test
@@ -1024,7 +1051,6 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#generateExpandQuery(List,Map)
      * @verifies skip reserved fields
      */
     @Test
@@ -1047,7 +1073,6 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#generateExpandQuery(List,Map)
      * @verifies not escape asterisks
      */
     @Test
@@ -1059,7 +1084,6 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#generateExpandQuery(List,Map,boolean)
      * @verifies not escape truncation
      */
     @Test
@@ -1071,7 +1095,6 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#generateExpandQuery(List,Map)
      * @verifies escape reserved characters
      */
     @Test
@@ -1095,11 +1118,10 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     //    }
 
     /**
-     * @see SearchHelper#generateExpandQuery(List,Map,boolean,int)
-     * @verifies add proximity search token correctly
+     * @verifies append proximity search distance to phrase terms in FULLTEXT field
      */
     @Test
-    void generateExpandQuery_shouldAddProximitySearchTokenCorrectly() {
+    void generateExpandQuery_shouldAppendProximitySearchDistanceToPhraseTermsInFULLTEXTField() {
         List<String> fields =
                 Arrays.asList(new String[] { SolrConstants.DEFAULT, SolrConstants.FULLTEXT, SolrConstants.NORMDATATERMS, SolrConstants.UGCTERMS,
                         SolrConstants.CMS_TEXT_ALL, SolrConstants.PI_TOPSTRUCT, SolrConstants.PI_ANCHOR, SolrConstants.DC, SolrConstants.DOCSTRCT });
@@ -1124,11 +1146,10 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#generateAdvancedExpandQuery(List,int)
-     * @verifies generate query correctly
+     * @verifies generate a n d combined expand query from advanced search group items
      */
     @Test
-    void generateAdvancedExpandQuery_shouldGenerateQueryCorrectly() {
+    void generateAdvancedExpandQuery_shouldGenerateANDCombinedExpandQueryFromAdvancedSearchGroupItems() {
         SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true, "en"), null);
         group.setOperator(SearchQueryGroupOperator.AND);
         group.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
@@ -1142,8 +1163,11 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals(" +(+(MD_FIELD:(val1)) +(MD_TITLE:(foo AND bar)))", result);
     }
 
+    /**
+     * @verifies append fuzzy operator to search terms when fuzzy mode enabled
+     */
     @Test
-    void generateAdvancedExpandQuery_shouldGenerateQueryCorrectly_fuzzySearch() {
+    void generateAdvancedExpandQuery_shouldAppendFuzzyOperatorToSearchTermsWhenFuzzyModeEnabled() {
         SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true, "en"), null);
         group.getQueryItems().get(0).setField("MD_FIELD");
         group.getQueryItems().get(0).setValue("val2");
@@ -1156,7 +1180,6 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#generateAdvancedExpandQuery(List,int)
      * @verifies skip reserved fields
      */
     @Test
@@ -1192,7 +1215,36 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#generateAdvancedExpandQuery(SearchQueryGroup,boolean)
+     * @verifies skip CALENDAR_DAY item so expand does not pick up unrelated pages of date matching parents
+     * @see SearchHelper#generateAdvancedExpandQuery(SearchQueryGroup, boolean)
+     */
+    @Test
+    void generateAdvancedExpandQuery_shouldSkipCalendarDayItem() {
+        // Reproduces the searchInRecord scenario (ALL:abschied + YEARMONTHDAY:[range] within a newspaper):
+        // the date filter is already applied by the parent-level main query, so CALENDAR_DAY must not
+        // end up in the expand.q — otherwise its nested IDDOC->IDDOC_OWNER join would match every page
+        // of every date-matching issue and add spurious sub-hits for pages that don't contain the term.
+        SearchQueryGroup group = new SearchQueryGroup(
+                DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true, "en"), null);
+        group.setOperator(SearchQueryGroupOperator.AND);
+        group.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
+        group.getQueryItems().get(0).setField(SolrConstants.FULLTEXT);
+        group.getQueryItems().get(0).setValue("abschied");
+        group.getQueryItems().get(1).setOperator(SearchItemOperator.AND);
+        group.getQueryItems().get(1).setField(SolrConstants.CALENDAR_DAY);
+        group.getQueryItems().get(1).setValue("01.08.1878");
+        group.getQueryItems().get(1).setValue2("08.09.1878");
+
+        String result = SearchHelper.generateAdvancedExpandQuery(group, false);
+        Assertions.assertFalse(result.contains(SolrConstants.CALENDAR_DAY),
+                "CALENDAR_DAY must be skipped in expand.q but was: " + result);
+        Assertions.assertFalse(result.contains("{!join from=IDDOC to=IDDOC_OWNER}"),
+                "Nested IDDOC join must be skipped in expand.q but was: " + result);
+        Assertions.assertTrue(result.contains("abschied"),
+                "Text term must still be present in expand.q, was: " + result);
+    }
+
+    /**
      * @verifies switch to OR operator on fulltext items
      */
     @Test
@@ -1211,8 +1263,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#generateAdvancedExpandQuery(SearchQueryGroup,boolean)
-     * @verifies put item sequences with the same field into common parentheses
+     * @verifies put item sequences with same field into common parentheses
      */
     @Test
     void generateAdvancedExpandQuery_shouldPutItemSequencesWithSameFieldIntoCommonParentheses() {
@@ -1236,11 +1287,10 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#exportSearchAsExcel(String,List,Map)
-     * @verifies create excel workbook correctly
+     * @verifies create workbook with query header row and PI label columns for matching records
      */
     @Test
-    void exportSearchAsExcel_shouldCreateExcelWorkbookCorrectly() throws Exception {
+    void exportSearchAsExcel_shouldCreateWorkbookWithQueryHeaderRowAndPILabelColumnsForMatchingRecords() throws Exception {
         // TODO makes this more robust against changes to the index
         TestUtils.mockFacesContext();
 
@@ -1273,7 +1323,6 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#getBrowseElement(String,int,List,Map,Set,Locale,boolean)
      * @verifies return correct hit for aggregated search
      */
     @Test
@@ -1339,6 +1388,10 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         }
     }
 
+    /**
+     * @see SearchHelper#applyHighlightingToPhrase(String, Set<String>)
+     * @verifies ignore diacritics for hightlighting
+     */
     @Test
     void applyHighlightingToPhrase_shouldIgnoreDiacriticsForHightlighting() {
         String phrase = "Širvintos";
@@ -1442,19 +1495,19 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#prepareQuery(String,String)
-     * @verifies prepare non-empty queries correctly
+     * @verifies wrap non null query in parentheses
      */
     @Test
-    void prepareQuery_shouldPrepareNonemptyQueriesCorrectly() {
+    void prepareQuery_shouldWrapNonNullQueryInParentheses() {
         Assertions.assertEquals("(FOO:bar)", SearchHelper.prepareQuery("FOO:bar", null));
     }
 
     /**
      * @see SearchHelper#prepareQuery(String,String)
-     * @verifies prepare empty queries correctly
+     * @verifies return discriminator query when input query is null and fall back to default when both are empty
      */
     @Test
-    void prepareQuery_shouldPrepareEmptyQueriesCorrectly() {
+    void prepareQuery_shouldReturnDiscriminatorQueryWhenInputQueryIsNullAndFallBackToDefaultWhenBothAreEmpty() {
         Assertions.assertEquals("(ISWORK:true OR ISANCHOR:true) AND BLA:blup",
                 SearchHelper.prepareQuery(null, "(ISWORK:true OR ISANCHOR:true) AND BLA:blup"));
         Assertions.assertEquals("+(ISWORK:true ISANCHOR:true)", SearchHelper.prepareQuery(null, ""));
@@ -1462,20 +1515,20 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#parseSortString(String,NavigationHelper)
-     * @verifies parse string correctly
+     * @verifies parse semicolon separated sort string into list of sort fields
      */
     @Test
-    void parseSortString_shouldParseStringCorrectly() {
+    void parseSortString_shouldParseSemicolonSeparatedSortStringIntoListOfSortFields() {
         String sortString = "!SORT_1;SORT_2;SORT_3";
         Assertions.assertEquals(3, SearchHelper.parseSortString(sortString, null).size());
     }
 
     /**
      * @see SearchHelper#cleanUpSearchTerm(String)
-     * @verifies remove illegal chars correctly
+     * @verifies strip parentheses from the search term
      */
     @Test
-    void cleanUpSearchTerm_shouldRemoveIllegalCharsCorrectly() {
+    void cleanUpSearchTerm_shouldStripParenthesesFromTheSearchTerm() {
         Assertions.assertEquals("a", SearchHelper.cleanUpSearchTerm("(a)"));
     }
 
@@ -1562,9 +1615,10 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      *
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @verifies return collection with 71 elements
      */
     @Test
-    void testBuildFinalQuery() throws IndexUnreachableException, PresentationException {
+    void buildFinalQuery_shouldReturnCollectionWith71Elements() throws IndexUnreachableException, PresentationException {
         String query = "DC:dctei";
 
         String finalQuery = SearchHelper.buildFinalQuery(query, false, SearchAggregationType.NO_AGGREGATION);
@@ -1579,7 +1633,6 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     /**
      * Checks whether counts for each term equal to the value from the last iteration.
      *
-     * @see SearchHelper#getFilteredTerms(BrowsingMenuFieldConfig,String,String,Comparator,boolean)
      * @verifies be thread safe when counting terms
      */
     @Test
@@ -1603,7 +1656,6 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#getFilteredTermsFromIndex(BrowsingMenuFieldConfig,String,String,List,int,int)
      * @verifies contain facets for the main field
      */
     @Test
@@ -1615,7 +1667,6 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#getFilteredTermsFromIndex(BrowsingMenuFieldConfig,String,String,List,int,int,String)
      * @verifies contain facets for the sort field
      */
     @Test
@@ -1627,11 +1678,23 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#getQueryForAccessCondition(String,boolean)
-     * @verifies build escaped query correctly
+     * @see SearchHelper#getFilteredTermsFromIndex(BrowsingMenuFieldConfig,String,String,java.util.List,int,int,String)
+     * @verifies not throw exception when startsWith contains special solr characters
      */
     @Test
-    void getQueryForAccessCondition_shouldBuildEscapedQueryCorrectly() {
+    void getFilteredTermsFromIndex_shouldNotThrowExceptionWhenStartsWithContainsSpecialSolrCharacters() throws Exception {
+        BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("MD_CREATOR_UNTOKENIZED", null, null);
+        // Parenthesis is a special Solr character that caused SyntaxError before the fix
+        QueryResponse resp = SearchHelper.getFilteredTermsFromIndex(bmfc, "(", null, null, 0, SolrSearchIndex.MAX_HITS, null);
+        Assertions.assertNotNull(resp);
+    }
+
+    /**
+     * @see SearchHelper#getQueryForAccessCondition(String,boolean)
+     * @verifies build query with slash escaped access condition value when escaping is enabled
+     */
+    @Test
+    void getQueryForAccessCondition_shouldBuildQueryWithSlashEscapedAccessConditionValueWhenEscapingIsEnabled() {
         Assertions.assertEquals(
                 "+(ISWORK:true ISANCHOR:true DOCTYPE:(UGC METADATA ARCHIVE)) +" + SolrConstants.ACCESSCONDITION + ":\"foo"
                         + StringTools.SLASH_REPLACEMENT + "bar\"",
@@ -1640,17 +1703,17 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#getQueryForAccessCondition(String,boolean)
-     * @verifies build not escaped query correctly
+     * @verifies build query with unescaped slashes in access condition value when escaping is disabled
      */
     @Test
-    void getQueryForAccessCondition_shouldBuildNotEscapedQueryCorrectly() {
+    void getQueryForAccessCondition_shouldBuildQueryWithUnescapedSlashesInAccessConditionValueWhenEscapingIsDisabled() {
         Assertions.assertEquals("+(ISWORK:true ISANCHOR:true DOCTYPE:(UGC METADATA ARCHIVE)) +" + SolrConstants.ACCESSCONDITION + ":\"foo/bar\"",
                 SearchHelper.getQueryForAccessCondition("foo/bar", false));
     }
 
     /**
-     * @see SearchHelper#buildFinalQuery(String,boolean,HttpServletRequest)
      * @verifies add join statement if aggregateHits true
+     * @see SearchHelper#buildFinalQuery(String, boolean, SearchAggregationType)
      */
     @Test
     void buildFinalQuery_shouldAddJoinStatementIfAggregateHitsTrue() {
@@ -1659,8 +1722,8 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#buildFinalQuery(String,boolean,HttpServletRequest)
      * @verifies not add join statement if aggregateHits false
+     * @see SearchHelper#buildFinalQuery(String, boolean, SearchAggregationType)
      */
     @Test
     void buildFinalQuery_shouldNotAddJoinStatementIfAggregateHitsFalse() {
@@ -1669,8 +1732,8 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#buildFinalQuery(String,boolean,HttpServletRequest)
      * @verifies remove existing join statement
+     * @see SearchHelper#buildFinalQuery(String, boolean, SearchAggregationType)
      */
     @Test
     void buildFinalQuery_shouldRemoveExistingJoinStatement() {
@@ -1680,8 +1743,8 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#buildFinalQuery(String,String,boolean,boolean,HttpServletRequest)
      * @verifies add embedded query template if boostTopLevelDocstructs true
+     * @see SearchHelper#buildFinalQuery(String, boolean, SearchAggregationType)
      */
     @Test
     void buildFinalQuery_shouldAddEmbeddedQueryTemplateIfBoostTopLevelDocstructsTrue() {
@@ -1695,8 +1758,8 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#buildFinalQuery(String,String,boolean,boolean,HttpServletRequest)
      * @verifies escape quotation marks in embedded query
+     * @see SearchHelper#buildFinalQuery(String, boolean, SearchAggregationType)
      */
     @Test
     void buildFinalQuery_shouldEscapeQuotationMarksInEmbeddedQuery() {
@@ -1709,8 +1772,12 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
                 finalQuery);
     }
 
+    /**
+     * @verifies get wildcards
+     * @see SearchHelper#getWildcardsTokens
+     */
     @Test
-    void testGetWildcards() {
+    void getWildcardsTokens_shouldGetWildcards() {
         String prefix = "*term";
         String suffix = "term*";
         String both = "*term*";
@@ -1743,20 +1810,20 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#addProximitySearchToken(String,int)
-     * @verifies add token correctly
+     * @verifies wrap terms in quotes with proximity operator and strip existing quotes
      */
     @Test
-    void addProximitySearchToken_shouldAddTokenCorrectly() {
+    void addProximitySearchToken_shouldWrapTermsInQuotesWithProximityOperatorAndStripExistingQuotes() {
         Assertions.assertEquals("\"foo bar\"~10", SearchHelper.addProximitySearchToken("foo bar", 10));
         Assertions.assertEquals("\"foo bar\"~10", SearchHelper.addProximitySearchToken("\"foo bar\"", 10));
     }
 
     /**
      * @see SearchHelper#removeProximitySearchToken(String)
-     * @verifies remove token correctly
+     * @verifies strip the proximity distance suffix from a quoted phrase
      */
     @Test
-    void removeProximitySearchToken_shouldRemoveTokenCorrectly() {
+    void removeProximitySearchToken_shouldStripTheProximityDistanceSuffixFromAQuotedPhrase() {
         Assertions.assertEquals("\"foo bar\"", SearchHelper.removeProximitySearchToken("\"foo bar\"~10"));
     }
 
@@ -1814,19 +1881,19 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#extractProximitySearchDistanceFromQuery(String)
-     * @verifies extract distance correctly
+     * @verifies return the numeric distance value from a proximity search token
      */
     @Test
-    void extractProximitySearchDistanceFromQuery_shouldExtractDistanceCorrectly() {
+    void extractProximitySearchDistanceFromQuery_shouldReturnTheNumericDistanceValueFromAProximitySearchToken() {
         Assertions.assertEquals(10, SearchHelper.extractProximitySearchDistanceFromQuery("\"foobar\"~10"));
     }
 
     /**
      * @see SearchHelper#isPhrase(String)
-     * @verifies detect phrase correctly
+     * @verifies return true for double quoted strings and false for unquoted strings
      */
     @Test
-    void isPhrase_shouldDetectPhraseCorrectly() {
+    void isPhrase_shouldReturnTrueForDoubleQuotedStringsAndFalseForUnquotedStrings() {
         Assertions.assertFalse(SearchHelper.isPhrase("foo bar"));
         Assertions.assertTrue(SearchHelper.isPhrase("\"foo bar\""));
         Assertions.assertTrue(SearchHelper.isPhrase("\"foo \"bar\"\""));
@@ -1834,16 +1901,15 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#isPhrase(String)
-     * @verifies detect phrase with proximity correctly
+     * @verifies return true for quoted phrase with proximity suffix and false for unquoted text with tilde
      */
     @Test
-    void isPhrase_shouldDetectPhraseWithProximityCorrectly() {
+    void isPhrase_shouldReturnTrueForQuotedPhraseWithProximitySuffixAndFalseForUnquotedTextWithTilde() {
         Assertions.assertFalse(SearchHelper.isPhrase("foo bar~10"));
         Assertions.assertTrue(SearchHelper.isPhrase("\"foo bar\"~10"));
     }
 
     /**
-     * @see SearchHelper#getFacetValues(String,String,String,int,Map)
      * @verifies return correct values via json response
      */
     @Test
@@ -1857,7 +1923,6 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#buildExpandQueryFromFacets(List)
      * @verifies return empty string if list null or empty
      */
     @Test
@@ -1867,11 +1932,10 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#buildExpandQueryFromFacets(List)
-     * @verifies construct query correctly
+     * @verifies combine facet clauses with d o c t y p e d o c s t r c t filter into expand query
      */
     @Test
-    void buildExpandQueryFromFacets_shouldConstructQueryCorrectly() {
+    void buildExpandQueryFromFacets_shouldCombineFacetClausesWithDOCTYPEDOCSTRCTFilterIntoExpandQuery() {
         List<String> facets = new ArrayList<>(2);
         facets.add("FOO:bar");
         facets.add("(FACET_DC:\"foo.bar\" OR FACET_DC:foo.bar.*)");
@@ -1880,7 +1944,6 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#buildExpandQueryFromFacets(List,List)
      * @verifies only use queries that match allowed regex
      */
     @Test
@@ -1909,7 +1972,6 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#buildExpandQueryFromFacets(List,List)
      * @verifies return empty string of no query allowed
      */
     @Test
@@ -1941,10 +2003,10 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#unquoteValue(String)
-     * @verifies unquote value correctly
+     * @verifies remove outer quotes and proximity suffix while preserving inner escaped quotes
      */
     @Test
-    void unquoteValue_shouldUnquoteValueCorrectly() {
+    void unquoteValue_shouldRemoveOuterQuotesAndProximitySuffixWhilePreservingInnerEscapedQuotes() {
         assertEquals("foo bar", SearchHelper.unquoteValue("\"foo bar\"", false));
         assertEquals("foo bar", SearchHelper.unquoteValue("\"foo bar\"~10", false));
         assertEquals("foo \"bar\"", SearchHelper.unquoteValue("\"foo \"bar\"\"", false));
@@ -1954,10 +2016,10 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#parseSearchQueryGroupFromQuery(String,Locale)
-     * @verifies parse phrase search query correctly
+     * @verifies parse phrase search query into group with a n d operator and correct field value pairs
      */
     @Test
-    void parseSearchQueryGroupFromQuery_shouldParsePhraseSearchQueryCorrectly() {
+    void parseSearchQueryGroupFromQuery_shouldParsePhraseSearchQueryIntoGroupWithANDOperatorAndCorrectFieldValuePairs() {
         SearchQueryGroup group = SearchHelper.parseSearchQueryGroupFromQuery(
                 "(+(SUPERDEFAULT:\"foo bar\" SUPERFULLTEXT:\"foo bar\" SUPERUGCTERMS:\"foo bar\" SUPERSEARCHTERMS_ARCHIVE:\"foo bar\""
                         + " DEFAULT:\"foo bar\" FULLTEXT:\"foo bar\" NORMDATATERMS:\"foo bar\" UGCTERMS:\"foo bar\" SEARCHTERMS_ARCHIVE:\"foo bar\""
@@ -1978,10 +2040,10 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#parseSearchQueryGroupFromQuery(String,Locale)
-     * @verifies parse regular search query correctly
+     * @verifies parse regular search query and recognize NOT operator for negated subquery
      */
     @Test
-    void parseSearchQueryGroupFromQuery_shouldParseRegularSearchQueryCorrectly() {
+    void parseSearchQueryGroupFromQuery_shouldParseRegularSearchQueryAndRecognizeNOTOperatorForNegatedSubquery() {
         SearchQueryGroup group = SearchHelper.parseSearchQueryGroupFromQuery(
                 "(+(SUPERDEFAULT:(foo bar) SUPERFULLTEXT:(foo bar) SUPERUGCTERMS:(foo bar) SUPERSEARCHTERMS_ARCHIVE:(foo bar) DEFAULT:(foo bar)"
                         + " FULLTEXT:(foo bar) NORMDATATERMS:(foo bar) UGCTERMS:(foo bar) SEARCHTERMS_ARCHIVE:(foo bar) CMS_TEXT_ALL:(foo bar))"
@@ -2002,10 +2064,10 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#parseSearchQueryGroupFromQuery(String,String,Locale)
-     * @verifies parse range items correctly
+     * @verifies parse range query into item with value and value2 bounds
      */
     @Test
-    void parseSearchQueryGroupFromQuery_shouldParseRangeItemsCorrectly() {
+    void parseSearchQueryGroupFromQuery_shouldParseRangeQueryIntoItemWithValueAndValue2Bounds() {
         SearchQueryGroup group = SearchHelper.parseSearchQueryGroupFromQuery("(MD_YEARPUBLISH:([1900 TO 2000]))", null, null, "en");
         Assertions.assertNotNull(group);
         Assertions.assertEquals(SearchQueryGroupOperator.AND, group.getOperator());
@@ -2019,10 +2081,10 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#parseSearchQueryGroupFromQuery(String,String,Locale)
-     * @verifies parse items from facet string correctly
+     * @verifies parse facet string into query items with correct fields and AND operators
      */
     @Test
-    void parseSearchQueryGroupFromQuery_shouldParseItemsFromFacetStringCorrectly() {
+    void parseSearchQueryGroupFromQuery_shouldParseFacetStringIntoQueryItemsWithCorrectFieldsAndANDOperators() {
         SearchQueryGroup group = SearchHelper.parseSearchQueryGroupFromQuery("", "DC:varia;;MD_CREATOR:bar;;", null, "en");
         Assertions.assertNotNull(group);
         Assertions.assertEquals(SearchQueryGroupOperator.AND, group.getOperator());
@@ -2039,10 +2101,10 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#parseSearchQueryGroupFromQuery(String,Locale)
-     * @verifies parse mixed search query correctly
+     * @verifies parse mixed query with phrase regular range and facet items into six query items
      */
     @Test
-    void parseSearchQueryGroupFromQuery_shouldParseMixedSearchQueryCorrectly() {
+    void parseSearchQueryGroupFromQuery_shouldParseMixedQueryWithPhraseRegularRangeAndFacetItemsIntoSixQueryItems() {
         SearchQueryGroup group = SearchHelper.parseSearchQueryGroupFromQuery(
                 "(+(SUPERDEFAULT:\"foo bar\" SUPERFULLTEXT:\"foo bar\" SUPERUGCTERMS:\"foo bar\" SUPERSEARCHTERMS_ARCHIVE:\"foo bar\""
                         + " DEFAULT:\"foo bar\" FULLTEXT:\"foo bar\" NORMDATATERMS:\"foo bar\" UGCTERMS:\"foo bar\" SEARCHTERMS_ARCHIVE:\"foo bar\""
@@ -2080,10 +2142,221 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#prepareQuery(String)
+     * @verifies wrap field value query in plus paren notation
+     */
+    @Test
+    void prepareQuery_shouldWrapFieldValueQueryInPlusParenNotation() {
+        assertEquals("+(foo:bar)", SearchHelper.prepareQuery("foo:bar"));
+    }
+
+    /**
+     * @see SearchHelper#prepareQuery(String)
      * @verifies wrap query correctly
      */
     @Test
     void prepareQuery_shouldWrapQueryCorrectly() {
-        assertEquals("+(foo:bar)", SearchHelper.prepareQuery("foo:bar"));
+        // Single-arg prepareQuery wraps non-empty query in "+(...)" notation
+        assertEquals("+(ISWORK:true)", SearchHelper.prepareQuery("ISWORK:true"));
+        assertEquals("+(foo AND bar)", SearchHelper.prepareQuery("foo AND bar"));
+    }
+
+    /**
+     * @see SearchHelper#prepareQuery(String)
+     * @verifies wrap field:value query in +() notation
+     */
+    @Test
+    void prepareQuery_shouldWrapFieldValueQueryInPlusParenNotation2() {
+        // Verify that a field:value style query is wrapped in +() notation by the single-arg overload
+        assertEquals("+(MD_TITLE:test)", SearchHelper.prepareQuery("MD_TITLE:test"));
+        assertEquals("+(DC:collection1)", SearchHelper.prepareQuery("DC:collection1"));
+    }
+
+    /**
+     * @see SearchHelper#prepareQuery(String)
+     * @verifies wrap non-null query in parentheses
+     */
+    @Test
+    void prepareQuery_shouldWrapNonNullQueryInParentheses2() {
+        // Single-arg overload wraps non-null queries in "+(...)" which includes parentheses
+        String result = SearchHelper.prepareQuery("some query");
+        assertTrue(result.startsWith("+("));
+        assertTrue(result.endsWith(")"));
+        assertEquals("+(some query)", result);
+    }
+
+    /**
+     * @see SearchHelper#prepareQuery(String,String)
+     * @verifies prepare non-empty queries correctly
+     */
+    @Test
+    void prepareQuery_shouldPrepareNonEmptyQueriesCorrectly() {
+        // Two-arg overload wraps non-empty queries in plain parentheses (no + prefix)
+        assertEquals("(FOO:bar)", SearchHelper.prepareQuery("FOO:bar", null));
+        assertEquals("(ISWORK:true)", SearchHelper.prepareQuery("ISWORK:true", "fallback:query"));
+        assertEquals("(complex AND query)", SearchHelper.prepareQuery("complex AND query", ""));
+    }
+
+    /**
+     * @see SearchHelper#prepareQuery(String,String)
+     * @verifies prepare empty queries correctly
+     */
+    @Test
+    void prepareQuery_shouldPrepareEmptyQueriesCorrectly() {
+        // Two-arg overload falls back to docstructWhitelistFilterQuery when query is empty
+        assertEquals("DOCSTRCT:monograph", SearchHelper.prepareQuery(null, "DOCSTRCT:monograph"));
+        assertEquals("DOCSTRCT:monograph", SearchHelper.prepareQuery("", "DOCSTRCT:monograph"));
+        // When both query and whitelist filter are empty, falls back to ALL_RECORDS_QUERY
+        assertEquals(SearchHelper.ALL_RECORDS_QUERY, SearchHelper.prepareQuery(null, ""));
+        assertEquals(SearchHelper.ALL_RECORDS_QUERY, SearchHelper.prepareQuery("", null));
+    }
+
+    /**
+     * @see SearchHelper#filterChildDocs(SolrDocumentList, String, java.util.Map, SearchHitFactory)
+     * @verifies keep DOCSTRCT child docs when search terms are empty
+     */
+    @Test
+    void filterChildDocs_shouldKeepDOCSTRCTChildDocsWhenSearchTermsAreEmpty() {
+        // Regression scenario: calendar TocView date-range search. Each matching Issue is a
+        // DOCSTRCT child with no text search term to match against — the filter must pass them
+        // through so the user actually sees the date-matched issues as sub-hits.
+        SolrDocumentList docs = new SolrDocumentList();
+        org.apache.solr.common.SolrDocument issue1 = new org.apache.solr.common.SolrDocument();
+        issue1.setField(SolrConstants.IDDOC, "10001");
+        issue1.setField(SolrConstants.DOCTYPE, "DOCSTRCT");
+        issue1.setField(SolrConstants.DOCSTRCT, "Issue");
+        docs.add(issue1);
+        org.apache.solr.common.SolrDocument issue2 = new org.apache.solr.common.SolrDocument();
+        issue2.setField(SolrConstants.IDDOC, "10002");
+        issue2.setField(SolrConstants.DOCTYPE, "DOCSTRCT");
+        issue2.setField(SolrConstants.DOCSTRCT, "Issue");
+        docs.add(issue2);
+
+        SearchHitFactory factory = new SearchHitFactory(Collections.emptyMap(), null, null, 0, null, Locale.GERMAN);
+
+        SolrDocumentList result = SearchHelper.filterChildDocs(docs, "42", new HashMap<>(), factory);
+        Assertions.assertEquals(2, result.size());
+    }
+
+    /**
+     * @see SearchHelper#filterChildDocs(SolrDocumentList, String, java.util.Map, SearchHitFactory)
+     * @verifies keep DOCSTRCT child docs when search terms are null
+     */
+    @Test
+    void filterChildDocs_shouldKeepDOCSTRCTChildDocsWhenSearchTermsAreNull() {
+        SolrDocumentList docs = new SolrDocumentList();
+        org.apache.solr.common.SolrDocument issue = new org.apache.solr.common.SolrDocument();
+        issue.setField(SolrConstants.IDDOC, "10001");
+        issue.setField(SolrConstants.DOCTYPE, "DOCSTRCT");
+        issue.setField(SolrConstants.DOCSTRCT, "Issue");
+        docs.add(issue);
+
+        SearchHitFactory factory = new SearchHitFactory(null, null, null, 0, null, Locale.GERMAN);
+
+        SolrDocumentList result = SearchHelper.filterChildDocs(docs, "42", null, factory);
+        Assertions.assertEquals(1, result.size());
+    }
+
+    /**
+     * @see SearchHelper#filterChildDocs(SolrDocumentList, String, java.util.Map, SearchHitFactory)
+     * @verifies require search term match when search terms are present
+     */
+    @Test
+    void filterChildDocs_shouldRequireSearchTermMatchWhenSearchTermsArePresent() {
+        // Text-search path stays as-is: a DOCSTRCT without any metadata matching the search term
+        // must NOT be added directly to the result list — the ownerDocs round-trip takes over.
+        SolrDocumentList docs = new SolrDocumentList();
+        org.apache.solr.common.SolrDocument issue = new org.apache.solr.common.SolrDocument();
+        issue.setField(SolrConstants.IDDOC, "10001");
+        issue.setField(SolrConstants.DOCTYPE, "DOCSTRCT");
+        issue.setField(SolrConstants.DOCSTRCT, "Issue");
+        // No MD_* fields → containsSearchTerms() returns false
+        docs.add(issue);
+
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put(SolrConstants.DEFAULT, Collections.singleton("vaduz"));
+        SearchHitFactory factory = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.GERMAN);
+
+        SolrDocumentList result = SearchHelper.filterChildDocs(docs, "42", searchTerms, factory);
+        Assertions.assertEquals(0, result.size());
+    }
+
+    /**
+     * @see SearchHelper#filterChildDocs(SolrDocumentList, String, java.util.Map, SearchHitFactory)
+     * @verifies keep DOCSTRCT child docs when search terms only contain structural fields
+     */
+    @Test
+    void filterChildDocs_shouldKeepDOCSTRCTChildDocsWhenSearchTermsOnlyContainStructuralFields() {
+        // Real-world scenario: extractSearchTermsFromQuery always adds PI_ANCHOR / TITLE_TERMS
+        // to searchTerms, even for a pure date-range query. Without the text-term check the
+        // filter would still drop all issues. With it, they must pass through.
+        SolrDocumentList docs = new SolrDocumentList();
+        org.apache.solr.common.SolrDocument issue = new org.apache.solr.common.SolrDocument();
+        issue.setField(SolrConstants.IDDOC, "10001");
+        issue.setField(SolrConstants.DOCTYPE, "DOCSTRCT");
+        issue.setField(SolrConstants.DOCSTRCT, "Issue");
+        docs.add(issue);
+
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put(SolrConstants.PI_ANCHOR, Collections.singleton("000476564"));
+        searchTerms.put("TITLE_TERMS", Collections.singleton("(000476564)"));
+        SearchHitFactory factory = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.GERMAN);
+
+        SolrDocumentList result = SearchHelper.filterChildDocs(docs, "42", searchTerms, factory);
+        Assertions.assertEquals(1, result.size());
+    }
+
+    /**
+     * @see SearchHelper#hasTextSearchTerm(java.util.Map)
+     * @verifies return false for null map
+     */
+    @Test
+    void hasTextSearchTerm_shouldReturnFalseForNullMap() {
+        Assertions.assertFalse(SearchHelper.hasTextSearchTerm(null));
+    }
+
+    /**
+     * @see SearchHelper#hasTextSearchTerm(java.util.Map)
+     * @verifies return false when only structural fields are present
+     */
+    @Test
+    void hasTextSearchTerm_shouldReturnFalseWhenOnlyStructuralFieldsArePresent() {
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put(SolrConstants.PI_ANCHOR, Collections.singleton("000476564"));
+        searchTerms.put(SolrConstants.PI_TOPSTRUCT, Collections.singleton("000476564_2021"));
+        searchTerms.put("TITLE_TERMS", Collections.singleton("(x)"));
+        Assertions.assertFalse(SearchHelper.hasTextSearchTerm(searchTerms));
+    }
+
+    /**
+     * @see SearchHelper#hasTextSearchTerm(java.util.Map)
+     * @verifies return true when DEFAULT field has values
+     */
+    @Test
+    void hasTextSearchTerm_shouldReturnTrueWhenDEFAULTFieldHasValues() {
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put(SolrConstants.DEFAULT, Collections.singleton("vaduz"));
+        Assertions.assertTrue(SearchHelper.hasTextSearchTerm(searchTerms));
+    }
+
+    /**
+     * @see SearchHelper#hasTextSearchTerm(java.util.Map)
+     * @verifies return true when an MD_ field has values
+     */
+    @Test
+    void hasTextSearchTerm_shouldReturnTrueWhenAnMDFieldHasValues() {
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put("MD_TITLE", Collections.singleton("something"));
+        Assertions.assertTrue(SearchHelper.hasTextSearchTerm(searchTerms));
+    }
+
+    /**
+     * @see SearchHelper#hasTextSearchTerm(java.util.Map)
+     * @verifies return false when text field has only empty value set
+     */
+    @Test
+    void hasTextSearchTerm_shouldReturnFalseWhenTextFieldHasOnlyEmptyValueSet() {
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put(SolrConstants.DEFAULT, new HashSet<>());
+        Assertions.assertFalse(SearchHelper.hasTextSearchTerm(searchTerms));
     }
 }

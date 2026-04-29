@@ -89,7 +89,7 @@ public final class XmlTools {
      * readXmlFile.
      *
      * @param filePath absolute path to the XML file to read
-     * @should build document from string correctly
+     * @should return document with root element when given valid xml file path
      * @should throw FileNotFoundException if file not found
      * @return the parsed XML document
      * @throws java.io.FileNotFoundException if any.
@@ -142,7 +142,6 @@ public final class XmlTools {
      * @return the written file
      * @throws java.io.FileNotFoundException if any.
      * @throws java.io.IOException if any.
-     * @should write file correctly
      * @should throw FileSystemException if file is directory
      */
     public static File writeXmlFile(Document doc, String filePath) throws IOException {
@@ -153,7 +152,7 @@ public final class XmlTools {
      * Create a JDOM document from an XML string.
      *
      * @param string the XML content as a string
-     * @should build document correctly
+     * @should parse XML string into Document with root element and child elements preserved
      * @param encoding character encoding to use when converting the string to bytes
      * @return the parsed XML document
      * @throws org.jdom2.JDOMException if any.
@@ -176,8 +175,8 @@ public final class XmlTools {
      *
      * @param element the Document or Element to serialize to a string
      * @param encoding character encoding to apply to the XML output
-     * @should return XML string correctly for documents
-     * @should return XML string correctly for elements
+     * @should serialize Document object to XML string containing root element tags
+     * @should serialize standalone Element to XML string containing element tags
      * @return the XML serialization of the given document or element as a string
      */
     public static String getStringFromElement(Object element, final String encoding) {

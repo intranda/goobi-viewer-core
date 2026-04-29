@@ -155,6 +155,15 @@ public class TableDataProvider<T> implements Serializable {
      *
      * @return a list of entries for the current page according to the current sort order and active filters
      * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
+     * @should get first page
+     * @should change page size
+     * @should goto last page
+     * @should goto first page
+     * @should goto next page
+     * @should goto previous page
+     * @should goto page
+     * @should filter
+     * @should sorting
      */
     public List<T> getPaginatorList() throws TableDataSourceException {
         return loadList().orElse(Collections.emptyList());
@@ -393,6 +402,7 @@ public class TableDataProvider<T> implements Serializable {
      * getSizeOfDataList.
      *
      * @return a long.
+     * @should get total size
      */
     public long getSizeOfDataList() {
         return source.getTotalNumberOfRecords(getAsMap(getFilters()));

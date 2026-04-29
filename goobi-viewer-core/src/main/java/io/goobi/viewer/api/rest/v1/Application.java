@@ -21,15 +21,12 @@
  */
 package io.goobi.viewer.api.rest.v1;
 
-import jakarta.servlet.ServletConfig;
-import jakarta.ws.rs.ApplicationPath;
-import jakarta.ws.rs.core.Context;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.ServerProperties;
 
 import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
@@ -41,10 +38,13 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.storage.ApplicationBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
+import jakarta.servlet.ServletConfig;
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.core.Context;
 
 /**
- * Jersey {@link org.glassfish.jersey.server.ResourceConfig} that bootstraps the JAX-RS v1 API,
- * registering resources, providers, filters, and dependency bindings.
+ * Jersey {@link org.glassfish.jersey.server.ResourceConfig} that bootstraps the JAX-RS v1 API, registering resources, providers, filters, and
+ * dependency bindings.
  */
 @ApplicationPath(ApiUrls.API)
 @ViewerRestServiceBinding
@@ -109,7 +109,9 @@ public class Application extends ResourceConfig {
         packages(true, "io.goobi.viewer.api.rest.filters");
         packages(true, "io.goobi.viewer.api.rest.exceptions");
         packages(true, "io.swagger");
-
+        // Use setStatus() instead of sendError() so the servlet container's <error-page> mapping
+        // does not intercept JAX-RS error responses and replace them with HTML pages.
+        property(ServerProperties.RESPONSE_SET_STATUS_OVER_SEND_ERROR, true);
     }
 
 }

@@ -183,8 +183,29 @@ public class SecurityManager {
     }
 
     /**
+     * Computes a SHA-256 hex digest of the given token string.
+     *
+     * @param token plaintext token
+     * @return 64-character lowercase hex string
+     * @should return consistent 64-char hex for same input
+     */
+    public static String hashToken(String token) {
+        try {
+            java.security.MessageDigest digest = java.security.MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(token.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            StringBuilder hex = new StringBuilder(64);
+            for (byte b : hash) {
+                hex.append(String.format("%02x", b));
+            }
+            return hex.toString();
+        } catch (java.security.NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 not available", e);
+        }
+    }
+
+    /**
      * Removes failed login attempt history for given IP address.
-     * 
+     *
      * @param ipAddress IP address
      */
     public void resetFailedLoginAttemptForIpAddress(String ipAddress) {

@@ -60,11 +60,11 @@ public class PasswordValidator implements Validator<String> {
      *
      * @param password plain-text password to validate for length constraints
      * @should return true if password good
-     * @should return false if password empty
      * @should return false if password blank
      * @should return false if password too short
      * @should return false if password too long
      * @return true if the given password is empty (no update) or meets the length requirements, false otherwise
+     * @should return true if password empty
      */
     public static boolean validatePassword(String password) {
         /**

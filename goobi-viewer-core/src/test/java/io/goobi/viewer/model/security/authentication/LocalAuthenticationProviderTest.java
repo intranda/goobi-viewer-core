@@ -76,8 +76,12 @@ class LocalAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
     public void tearDown() throws Exception {
     }
 
+    /**
+     * @verifies return valid result for active user with correct password
+     * @see LocalAuthenticationProvider#login(String, String)
+     */
     @Test
-    void testLogin_valid() throws AuthenticationProviderException, InterruptedException, ExecutionException {
+    void login_shouldReturnValidResultForActiveUser() throws AuthenticationProviderException, InterruptedException, ExecutionException {
         DataManager.getInstance().getSecurityManager().reset();
         CompletableFuture<LoginResult> future = provider.login(userActive_email, userActive_pwHash);
         Assertions.assertTrue(future.get().getUser().isPresent());
@@ -85,23 +89,35 @@ class LocalAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
         Assertions.assertFalse(future.get().getUser().get().isSuspended());
     }
 
+    /**
+     * @verifies refuse login for wrong password
+     * @see LocalAuthenticationProvider#login(String, String)
+     */
     @Test
-    void testLogin_invalid() throws AuthenticationProviderException, InterruptedException, ExecutionException {
+    void login_shouldRefuseLoginForWrongPassword() throws AuthenticationProviderException, InterruptedException, ExecutionException {
         DataManager.getInstance().getSecurityManager().reset();
         CompletableFuture<LoginResult> future = provider.login(userActive_email, userSuspended_pwHash);
         Assertions.assertTrue(future.get().getUser().isPresent());
         Assertions.assertTrue(future.get().isRefused());
     }
 
+    /**
+     * @verifies return empty user for unknown email
+     * @see LocalAuthenticationProvider#login(String, String)
+     */
     @Test
-    void testLogin_unknown() throws AuthenticationProviderException, InterruptedException, ExecutionException {
+    void login_shouldReturnEmptyUserForUnknownEmail() throws AuthenticationProviderException, InterruptedException, ExecutionException {
         DataManager.getInstance().getSecurityManager().reset();
         CompletableFuture<LoginResult> future = provider.login(userActive_email + "test", userActive_pwHash);
         Assertions.assertFalse(future.get().getUser().isPresent());
     }
 
+    /**
+     * @verifies return suspended user for suspended account
+     * @see LocalAuthenticationProvider#login(String, String)
+     */
     @Test
-    void testLogin_suspended() throws AuthenticationProviderException, InterruptedException, ExecutionException {
+    void login_shouldReturnSuspendedUserForSuspendedAccount() throws AuthenticationProviderException, InterruptedException, ExecutionException {
         DataManager.getInstance().getSecurityManager().reset();
         CompletableFuture<LoginResult> future = provider.login(userSuspended_email, userSuspended_pwHash);
         Assertions.assertTrue(future.get().getUser().isPresent());

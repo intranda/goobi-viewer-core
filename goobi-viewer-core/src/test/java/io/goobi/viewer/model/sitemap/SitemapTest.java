@@ -82,8 +82,12 @@ class SitemapTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals("2018-08-21", eleUrl.getChildText("lastmod", Sitemap.NS_SITEMAP));
     }
 
+    /**
+     * @verifies create sitemap files
+     * @see Sitemap#generate(String, String)
+     */
     @Test
-    void testSitemap() throws IOException, InterruptedException {
+    void generate_shouldCreateSitemapFiles() throws IOException, InterruptedException {
 
         int timeout = 20; //minutes
 

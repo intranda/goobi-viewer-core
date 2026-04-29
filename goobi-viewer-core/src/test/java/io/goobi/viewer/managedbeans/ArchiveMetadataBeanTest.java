@@ -42,8 +42,11 @@ import io.goobi.viewer.solr.SolrConstants;
 
 class ArchiveMetadataBeanTest {
 
+    /**
+     * @verifies load and return metadata for archive entry
+     */
     @Test
-    void test() throws PresentationException, IndexUnreachableException {
+    void getMetadata_shouldLoadAndReturnMetadataForArchiveEntry() throws PresentationException, IndexUnreachableException {
         SolrEADParser parser = new SolrEADParser();
         parser.updateAssociatedRecordMap();
         SolrDocument doc = new SolrDocument(Map.of("MD_TITLE", "Mein Titel", SolrConstants.IDDOC, "0"));

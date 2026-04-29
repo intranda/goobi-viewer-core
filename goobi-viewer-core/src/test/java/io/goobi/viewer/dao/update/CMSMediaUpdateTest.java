@@ -54,13 +54,21 @@ class CMSMediaUpdateTest {
                     + "                            java.net.URI�x.C�I� L stringt Ljava/lang/String;xpt9https://digital.zlb.de/viewer/search/-/%28ISWORK%3Atrue+OR+ISANCHOR%3Atrue%29+AND+%28DOCSTRCT%3Amonograph+OR+DOCSTRCT%3AMonograph+OR+DOCSTRCT%3APeriodical+OR+DOCSTRCT%3APeriodicalVolume+OR+DOCSTRCT%3AMultiVolumeWork+OR+DOCSTRCT%3AOtherDocStrct+OR+DOCSTRCT%3ACartography%29/1/SORT_TITLE/MD_GENRE%3Abiography%3B%3B/x", "https://digital.zlb.de/viewer/search/-/%28ISWORK%3Atrue+OR+ISANCHOR%3Atrue%29+AND+%28DOCSTRCT%3Amonograph+OR+DOCSTRCT%3AMonograph+OR+DOCSTRCT%3APeriodical+OR+DOCSTRCT%3APeriodicalVolume+OR+DOCSTRCT%3AMultiVolumeWork+OR+DOCSTRCT%3AOtherDocStrct+OR+DOCSTRCT%3ACartography%29/1/SORT_TITLE/MD_GENRE%3Abiography%3B%3B/"}
     };
 
+    /**
+     * @verifies read blob
+     * @see CMSMediaUpdate#parseUrl
+     */
     @Test
-    void testReadBlob() {
+    void parseUrl_shouldReadBlob() {
         assertEquals(expected, new CMSMediaUpdate().parseUrl(bytes));
     }
 
+    /**
+     * @verifies read string
+     * @see CMSMediaUpdate#parseUrl
+     */
     @Test
-    void testReadString() {
+    void parseUrl_shouldReadString() {
         for (int sample = 0; sample < stringSamples.length; sample++) {
             String blob = stringSamples[sample][0];
             String expected = stringSamples[sample][1];

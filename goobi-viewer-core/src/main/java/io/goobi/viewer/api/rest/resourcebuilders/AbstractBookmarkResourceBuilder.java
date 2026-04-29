@@ -48,6 +48,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RestApiException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.bookmark.Bookmark;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.ManifestBuilder;
 
@@ -60,9 +61,9 @@ public abstract class AbstractBookmarkResourceBuilder {
 
     public abstract List<BookmarkList> getAllBookmarkLists() throws DAOException, IOException, RestApiException;
 
-    public abstract SuccessMessage addBookmarkList() throws DAOException, IOException, RestApiException, IllegalRequestException;
+    public abstract BookmarkList addBookmarkList() throws DAOException, IOException, RestApiException, IllegalRequestException;
 
-    public abstract SuccessMessage addBookmarkList(String name) throws DAOException, IOException, RestApiException, IllegalRequestException;
+    public abstract BookmarkList addBookmarkList(String name) throws DAOException, IOException, RestApiException, IllegalRequestException;
 
     public abstract BookmarkList getBookmarkListById(Long id) throws DAOException, IOException, RestApiException;
 
@@ -73,10 +74,10 @@ public abstract class AbstractBookmarkResourceBuilder {
     public abstract String getBookmarkListForMirador(Long id, AbstractApiUrlManager urls)
             throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException;
 
-    public abstract SuccessMessage addBookmarkToBookmarkList(Long id, String pi, String logId,
+    public abstract Bookmark addBookmarkToBookmarkList(Long id, String pi, String logId,
             String pageString) throws DAOException, IOException, RestApiException;
 
-    public abstract SuccessMessage addBookmarkToBookmarkList(Long id, String pi) throws DAOException, IOException, RestApiException;
+    public abstract Bookmark addBookmarkToBookmarkList(Long id, String pi) throws DAOException, IOException, RestApiException;
 
     public abstract SuccessMessage deleteBookmarkFromBookmarkList(Long id, String pi, String logId,
             String pageString) throws DAOException, IOException, RestApiException;

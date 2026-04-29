@@ -35,7 +35,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class TaskManagerTest extends AbstractDatabaseEnabledTest {
 
     /**
-     * @see TaskManager#deleteExpiredDownloadTickets()
      * @verifies delete all expired tickets
      */
     @Test
@@ -46,8 +45,8 @@ class TaskManagerTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * @verifies stop executor service
      * @see TaskManager#shutdown()
-     * @verifies stop the executor service
      */
     @Test
     void shutdown_shouldStopExecutorService() throws InterruptedException {

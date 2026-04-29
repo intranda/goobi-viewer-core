@@ -47,23 +47,23 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see TocMaker#getSolrFieldsToFetch()
+     * @see TocMaker#getSolrFieldsToFetch(String)
      * @verifies return both static and configured fields
      */
     @Test
     void getSolrFieldsToFetch_shouldReturnBothStaticAndConfiguredFields() {
         List<?> fields = TocMaker.getSolrFieldsToFetch("_DEFAULT");
         Assertions.assertNotNull(fields);
-        // The fields configured in getTocLabelConfiguration() are counted twice, once  suffixed with _LANG_...
-        Assertions.assertEquals(35, fields.size());
+        // 17 REQUIRED_FIELDS + 1 base param (MD_CREATOR; LABEL is deduped) + 2 params × 2 LANG_ variants (EN, DE) + 3 ancestor/GROUPID_* fields (#27788)
+        Assertions.assertEquals(25, fields.size());
     }
 
     /**
-     * @see TocMaker#generateToc(TOC,StructElement,boolean,String,int,int)
-     * @verifies generate volume TOC with siblings correctly
+     * @see TocMaker#generateToc(TOC, StructElement, boolean, String, int, int)
+     * @verifies include anchor element full volume tree and sibling volume top elements in TOC
      */
     @Test
-    void generateToc_shouldGenerateVolumeTOCWithSiblingsCorrectly() throws Exception {
+    void generateToc_shouldIncludeAnchorElementFullVolumeTreeAndSiblingVolumeTopElementsInTOC() throws Exception {
         String iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648_1891");
         Assertions.assertNotNull(iddoc);
         StructElement structElement = new StructElement(iddoc);
@@ -88,11 +88,11 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see TocMaker#generateToc(TOC,StructElement,boolean,String,int,int)
-     * @verifies generate volume TOC without siblings correctly
+     * @see TocMaker#generateToc(TOC, StructElement, boolean, String, int, int)
+     * @verifies return anchor element followed by all volume elements when siblings excluded
      */
     @Test
-    void generateToc_shouldGenerateVolumeTOCWithoutSiblingsCorrectly() throws Exception {
+    void generateToc_shouldReturnAnchorElementFollowedByAllVolumeElementsWhenSiblingsExcluded() throws Exception {
         String iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648_1891");
         Assertions.assertNotNull(iddoc);
         StructElement structElement = new StructElement(iddoc);
@@ -110,11 +110,11 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see TocMaker#generateToc(TOC,StructElement,boolean,String,int)
-     * @verifies generate anchor TOC correctly
+     * @see TocMaker#generateToc(TOC, StructElement, boolean, String, int, int)
+     * @verifies return anchor plus all child volumes when generating anchor TOC
      */
     @Test
-    void generateToc_shouldGenerateAnchorTOCCorrectly() throws Exception {
+    void generateToc_shouldReturnAnchorPlusAllChildVolumesWhenGeneratingAnchorTOC() throws Exception {
         String iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648");
         Assertions.assertNotNull(iddoc);
         StructElement structElement = new StructElement(iddoc);
@@ -131,11 +131,11 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see TocMaker#generateToc(TOC,StructElement,boolean,String,int,int)
-     * @verifies paginate anchor TOC correctly
+     * @see TocMaker#generateToc(TOC, StructElement, boolean, String, int, int)
+     * @verifies return different volume subsets per page when anchor TOC is paginated
      */
     @Test
-    void generateToc_shouldPaginateAnchorTOCCorrectly() throws Exception {
+    void generateToc_shouldReturnDifferentVolumeSubsetsPerPageWhenAnchorTOCIsPaginated() throws Exception {
         String iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648");
         Assertions.assertNotNull(iddoc);
         StructElement structElement = new StructElement(iddoc);
@@ -177,7 +177,7 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see TocMaker#generateToc(TOC,StructElement,boolean,String,int)
+     * @see TocMaker#generateToc(TOC, StructElement, boolean, String, int, int)
      * @verifies throw IllegalArgumentException if structElement is null
      */
     @Test
@@ -188,7 +188,7 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see TocMaker#generateToc(TOC,StructElement,boolean,String,int)
+     * @see TocMaker#generateToc(TOC, StructElement, boolean, String, int, int)
      * @verifies throw IllegalArgumentException if toc is null
      */
     @Test
@@ -201,7 +201,7 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see TocMaker#buildLabel(SolrDocument)
+     * @see TocMaker#buildLabel(SolrDocument, String)
      * @verifies build configured label correctly
      */
     @Test
@@ -222,7 +222,7 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see TocMaker#buildLabel(SolrDocument,String)
+     * @see TocMaker#buildLabel(SolrDocument, String)
      * @verifies fill remaining parameters correctly if docstruct fallback used
      */
     @Test
@@ -237,7 +237,25 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see TocMaker#createOrderedGroupDocMap(List,List,String)
+     * Test that parseVolumeLabelConfig extracts all brace-delimited field names
+     * from the label configuration string.
+     *
+     * @see TocMaker#parseVolumeLabelConfig(String)
+     * @verifies parse all field names correctly
+     */
+    @Test
+    void parseVolumeLabelConfig_shouldParseAllFieldNamesCorrectly() {
+        // Configuration string with three placeholder fields in braces
+        List<String> fields = TocMaker.parseVolumeLabelConfig("Number {CURRENTNO}: {MD_TITLE} ({YEAR})");
+        Assertions.assertNotNull(fields);
+        Assertions.assertEquals(3, fields.size());
+        Assertions.assertEquals("CURRENTNO", fields.get(0));
+        Assertions.assertEquals("MD_TITLE", fields.get(1));
+        Assertions.assertEquals("YEAR", fields.get(2));
+    }
+
+    /**
+     * @see TocMaker#createOrderedGroupDocMap(List, List, String)
      * @verifies create correctly sorted map
      */
     @Test
@@ -288,5 +306,34 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals("3", result.get(3).getFieldValue(SolrConstants.IDDOC));
         Assertions.assertEquals("2", result.get(4).getFieldValue(SolrConstants.IDDOC));
         Assertions.assertEquals("1", result.get(5).getFieldValue(SolrConstants.IDDOC));
+    }
+
+    /**
+     * @see TocMaker#generateToc(TOC,StructElement,boolean,String,int,int)
+     * @verifies prefer the ancestor-containing tree over a standalone tree
+     *
+     * Safety net for optimizing the tree-selection logic in buildToc:
+     * buildToc builds one TOC tree per configured ancestor field and returns the LARGEST.
+     * For a volume that belongs to an anchor, the tree with the ancestor (N+1 elements)
+     * must win over a hypothetical standalone tree (N elements).
+     * Any optimization that changes "return largest" to "return first non-empty" must
+     * not break this: the ancestor must always appear at index 0.
+     */
+    @Test
+    void generateToc_shouldPreferTreeWithAncestorOverStandaloneTree() throws Exception {
+        String iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648_1891");
+        Assertions.assertNotNull(iddoc);
+        StructElement structElement = new StructElement(iddoc);
+        Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(new TOC(), structElement, false, "image/tiff", 1, -1);
+        Assertions.assertNotNull(tocElements);
+        List<TOCElement> elements = tocElements.get(StringConstants.DEFAULT_NAME);
+        Assertions.assertNotNull(elements);
+        // The tree with the ancestor (anchor) contains more elements than the volume alone.
+        // buildToc must select this larger tree, placing the anchor at index 0.
+        Assertions.assertTrue(elements.size() > 104, "Tree with ancestor must be larger than the volume's own struct tree");
+        Assertions.assertEquals("306653648", elements.get(0).getTopStructPi(),
+                "Anchor must be at index 0 — the ancestor-containing tree was selected as the largest");
+        // Volume elements immediately follow the anchor
+        Assertions.assertEquals("306653648_1891", elements.get(1).getTopStructPi());
     }
 }

@@ -32,6 +32,8 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -104,8 +106,11 @@ public class DownloadBean implements Serializable {
      * @return the message ID of the located download job
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws PresentationException
+     * @should throw download exception when message status is error
+     * @should throw download exception with fallback message when properties message is blank
+     * @should return message id when message status is finish
      */
-    public String openDownloadAction() throws DAOException, PresentationException, RecordNotFoundException {
+    public String openDownloadAction() throws DAOException, PresentationException, RecordNotFoundException, DownloadException {
 
         if (StringUtils.isNotBlank(downloadIdentifier)) {
             //get message after creating file in message queue
@@ -120,12 +125,97 @@ public class DownloadBean implements Serializable {
         }
 
         if (message != null) {
+            // Job failed during background generation: the worker (e.g. CreateDownloadPdfMessageHandler)
+            // stored the cause in properties['message'] and set MessageStatus.ERROR. Route it through
+            // MyExceptionHandler -> error.xhtml (errorType "download") instead of letting the JSF view
+            // render its inline "Warteschleife" card, which would otherwise mislead the user into
+            // believing the job is still queued.
+            //
+            // Caveat for future maintainers: see MyExceptionHandler.handle(), the DownloadException
+            // branch — it inspects this exception's message text. If the string ever contains the
+            // literal substring "DownloadException:" (the simple class name followed by a colon, as
+            // inserted by Throwable.toString() when the underlying cause is itself a DownloadException),
+            // the handler treats it as a wrapped form and keeps only the suffix after the LAST colon —
+            // losing context. Today's worker stores either "Error creating PDF: " + e.getMessage() or
+            // "...: " + e.toString() with non-Download exception types, so the literal substring is
+            // absent and we fall through to the safe pass-through branch. Keep that invariant if you
+            // change the worker's message format.
+            if (MessageStatus.ERROR.equals(message.getMessageStatus())) {
+                // Sanitise the worker-stored detail for the UI (strips absolute paths, rewrites
+                // the most common contentlib failure into a friendly form). The un-sanitised
+                // message remains intact in the worker log.
+                String detail = sanitizeDownloadErrorMessage(
+                        message.getProperties().get("message"),
+                        message.getProperties().get("pi"));
+                throw new DownloadException(StringUtils.isNotBlank(detail) ? detail : "PDF generation failed");
+            }
             return message.getMessageId();
         } else {
             // No download job found for this identifier — show the record-not-found error page
             // instead of a toast, as this is an invalid/unknown URL.
             throw new RecordNotFoundException(downloadIdentifier);
         }
+    }
+
+    /** Matches a "file:///" URI ending in a filename — capture group 1 is the filename. */
+    private static final Pattern FILE_URI_PATH_PATTERN = Pattern.compile("file:///\\S+/([^/\\s]+)");
+
+    /**
+     * Matches an absolute Unix filesystem path (at least two segments) ending in a filename — capture group 1 is the
+     * filename. The negative lookbehind anchors the match to a path boundary (start of string or whitespace) so we
+     * don't accidentally consume parts of arbitrary identifiers that happen to contain slashes.
+     */
+    private static final Pattern ABSOLUTE_PATH_PATTERN =
+            Pattern.compile("(?<!\\S)/[^\\s/]+(?:/[^\\s/]+)*/([^/\\s]+)");
+
+    /**
+     * Matches the contentlib's most common PDF generation failure, e.g.
+     * <code>"Failed to write page 8 to pdf: neither X.tif nor Y.pdf could be resolved"</code>. Run after path
+     * stripping so the captured groups are bare filenames rather than file:/// URIs.
+     */
+    private static final Pattern IMAGE_NOT_FOUND_PATTERN =
+            Pattern.compile("Failed to write page \\d+ to pdf: neither (\\S+\\.tif) nor (\\S+\\.pdf) could be resolved",
+                    Pattern.CASE_INSENSITIVE);
+
+    /**
+     * Sanitises a worker-stored PDF generation error message for display in the UI.
+     *
+     * <p>Two-tier transform: (1) strips absolute filesystem paths and {@code "file:///"} URIs to
+     * filenames so the server-side directory layout is not leaked to end users; (2) when the
+     * contentlib's most common "image not found" failure pattern matches, rewrites the text into a
+     * user-friendly form including the record PI.</p>
+     *
+     * <p>The original (un-sanitised) message remains intact in the worker log — this helper only
+     * affects the user-facing copy passed to {@link DownloadException}.</p>
+     *
+     * @param raw worker-stored message text (may be null/blank)
+     * @param pi record PI to include in the rewritten form (may be null/blank)
+     * @return sanitised, user-safe text; null when raw is blank
+     * @should strip file uri paths to filename only
+     * @should strip absolute filesystem paths to filename only
+     * @should rewrite contentlib image not found pattern into friendly form with pi
+     * @should append pi when not already present and pattern does not match
+     * @should return null when raw is blank
+     */
+    static String sanitizeDownloadErrorMessage(String raw, String pi) {
+        if (StringUtils.isBlank(raw)) {
+            return null;
+        }
+        String stripped = FILE_URI_PATH_PATTERN.matcher(raw).replaceAll("$1");
+        stripped = ABSOLUTE_PATH_PATTERN.matcher(stripped).replaceAll("$1");
+
+        if (StringUtils.isNotBlank(pi)) {
+            Matcher m = IMAGE_NOT_FOUND_PATTERN.matcher(stripped);
+            if (m.find()) {
+                return "Failed to generate PDF: Unable to find image " + m.group(1)
+                        + " or PDF " + m.group(2) + " for PI " + pi + " in the file system.";
+            }
+            // Fallback: append PI for context if the message doesn't already mention it
+            if (!stripped.contains(pi)) {
+                return stripped + " (PI: " + pi + ")";
+            }
+        }
+        return stripped;
     }
 
     /**
@@ -155,6 +245,8 @@ public class DownloadBean implements Serializable {
      *
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.DownloadException if any.
+     * @should throw download exception when unknown task type
+     * @should throw download exception when file not found
      */
     public void downloadFileAction() throws IOException, DownloadException {
         DownloadJob job;
