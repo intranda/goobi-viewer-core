@@ -298,6 +298,7 @@ function getSequenceSettings(viewMode) {
 	switch ((viewMode || '').toLowerCase()) {
         case 'double':
             columns = 2;
+			break;
         case 'sequence':
         case 'single':
         default:

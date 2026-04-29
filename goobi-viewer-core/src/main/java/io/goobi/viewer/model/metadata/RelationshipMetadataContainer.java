@@ -108,9 +108,12 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
                 .map(ComplexMetadataList::getMetadata)
                 .flatMap(List::stream)
                 //                .filter(md -> md.hasValue(RELATIONSHIP_ID_REFERENCE))
-                .collect(Collectors.toList());
+                .toList();
         String recordIdentifiers = relationshipMetadata.stream()
                 .map(md -> md.getFirstValue(RELATIONSHIP_ID_REFERENCE, null))
+                .filter(StringUtils::isNotBlank)     // remove null/empty
+                .distinct()                          // deduplicate
+                .limit(1024)                         // enforce Solr/Lucene limit
                 .collect(Collectors.joining(" "));
         if (StringUtils.isBlank(recordIdentifiers)) {
             return new RelationshipMetadataContainer(container.metadataMap, Collections.emptyMap());
