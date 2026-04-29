@@ -79,6 +79,9 @@ public final class AccessConditionUtils {
 
     private static final Logger logger = LogManager.getLogger(AccessConditionUtils.class);
 
+    /** Maximum number of identifiers per Solr terms query before chunking kicks in. */
+    private static final int PERMISSION_BATCH_CHUNK_SIZE = 500;
+
     /**
      * Private constructor to prevent instantiation.
      */
@@ -891,6 +894,182 @@ public final class AccessConditionUtils {
 
         logger.trace("Found access permissions for {} privilege(s).", privilegeNames.size());
         return ret;
+    }
+
+    /**
+     * Checks access permissions for a set of identifiers and a set of privileges in one Solr roundtrip.
+     *
+     * <p>Issues a single Solr query (or a chunked sequence for large identifier sets) using the
+     * <code>terms</code> query parser to fetch access conditions for all docstructs of all given identifiers,
+     * then evaluates each requested privilege in-memory per identifier. Per-identifier per-privilege results
+     * are stored in the session cache under the same key scheme as the legacy single-PI methods.
+     *
+     * <p><strong>Moving-Wall semantics:</strong> the inner <code>checkAccessPermission</code> receives a
+     * per-identifier query string of the form <code>+PI_TOPSTRUCT:"&lt;id&gt;" +DOCTYPE:DOCSTRCT</code>,
+     * reconstructed inside the doc loop, so that <code>LicenseType.isRestrictionsExpired</code> sees the
+     * same cache key as the legacy single-PI methods would have produced. The cross-PI <code>terms</code>
+     * string is used only for the outer Solr fetch.
+     *
+     * @param identifiers persistent identifiers of records; null or empty returns an empty map
+     * @param privilegeNames access privilege names to verify; null or empty returns an empty map
+     * @param request HTTP servlet request providing session and IP address (may be null)
+     * @return Map keyed by identifier; each value is a Map keyed by privilege name; each inner Map keyed by LOGID
+     * @should return empty map when identifiers is null
+     * @should return empty map when identifiers is empty
+     * @should return empty map when privileges is null
+     * @should return empty map when privileges is empty
+     * @should return same result as per-identifier batch call
+     * @should return same result as Phase B method for singleton identifier
+     * @should populate session cache per identifier and privilege
+     * @should hit session cache on subsequent call without additional Solr roundtrip
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    @SuppressWarnings("unchecked")
+    public static Map<String, Map<String, Map<String, AccessPermission>>> checkAccessPermissionsForPisAndPrivileges(
+            Set<String> identifiers, Set<String> privilegeNames, HttpServletRequest request)
+            throws IndexUnreachableException, DAOException {
+        if (identifiers == null || identifiers.isEmpty() || privilegeNames == null || privilegeNames.isEmpty()) {
+            return new HashMap<>();
+        }
+        // Filter out null/blank identifiers up-front. Avoids polluting cache keys (`_PRIV_<priv>_null`),
+        // breaking the terms parser argument list, and causing behavior drift vs. the legacy methods which
+        // skipped Solr entirely for empty identifiers.
+        Set<String> validIdentifiers = new HashSet<>();
+        for (String id : identifiers) {
+            if (StringUtils.isNotBlank(id)) {
+                validIdentifiers.add(id);
+            }
+        }
+        if (validIdentifiers.isEmpty()) {
+            return new HashMap<>();
+        }
+        logger.trace("checkAccessPermissionsForPisAndPrivileges({} ids, {} privs)", validIdentifiers.size(), privilegeNames.size());
+        HttpSession session = request != null ? request.getSession() : null;
+
+        // Step 1: session-cache lookup per (identifier, privilege)
+        Map<String, Map<String, Map<String, AccessPermission>>> ret = new HashMap<>();
+        Map<String, Set<String>> uncachedPerIdentifier = new HashMap<>();
+        for (String identifier : validIdentifiers) {
+            Map<String, Map<String, AccessPermission>> perPrivResult = new HashMap<>();
+            for (String privilege : privilegeNames) {
+                String attributeName = IPrivilegeHolder.PREFIX_PRIV + privilege + "_" + identifier;
+                Map<String, AccessPermission> cached = (Map<String, AccessPermission>) getSessionPermission(attributeName, session);
+                if (cached != null) {
+                    perPrivResult.put(privilege, cached);
+                } else {
+                    uncachedPerIdentifier.computeIfAbsent(identifier, k -> new HashSet<>()).add(privilege);
+                }
+            }
+            ret.put(identifier, perPrivResult);
+        }
+        if (uncachedPerIdentifier.isEmpty()) {
+            return ret;
+        }
+
+        // Step 2: pre-initialize empty submaps for every uncached (id, priv) so the contract holds even if Solr returns nothing
+        for (Map.Entry<String, Set<String>> entry : uncachedPerIdentifier.entrySet()) {
+            for (String privilege : entry.getValue()) {
+                ret.get(entry.getKey()).put(privilege, new HashMap<>());
+            }
+        }
+
+        // Step 3: chunked Solr fetches via terms parser. Chunked at PERMISSION_BATCH_CHUNK_SIZE to bypass any
+        // per-shard or HTTP limits on large terms-parser argument lists.
+        List<String> uncachedIdentifiers = new ArrayList<>(uncachedPerIdentifier.keySet());
+        List<LicenseType> nonOpenAccessLicenseTypes = DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes();
+        User user = retrieveUserFromContext(session);
+        for (int from = 0; from < uncachedIdentifiers.size(); from += PERMISSION_BATCH_CHUNK_SIZE) {
+            int to = Math.min(from + PERMISSION_BATCH_CHUNK_SIZE, uncachedIdentifiers.size());
+            List<String> chunk = uncachedIdentifiers.subList(from, to);
+            String fetchQuery = buildTermsPermissionQuery(chunk);
+            try {
+                logger.trace(fetchQuery); //NOSONAR Debug
+                SolrDocumentList results = DataManager.getInstance()
+                        .getSearchIndex()
+                        .search(fetchQuery, SolrSearchIndex.MAX_HITS, null,
+                                Arrays.asList(SolrConstants.LOGID, SolrConstants.ACCESSCONDITION, SolrConstants.PI_TOPSTRUCT));
+                if (results == null) {
+                    continue;
+                }
+                for (SolrDocument doc : results) {
+                    String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
+                    if (pi == null) {
+                        continue;
+                    }
+                    Set<String> uncachedForThisPi = uncachedPerIdentifier.get(pi);
+                    if (uncachedForThisPi == null) {
+                        continue;
+                    }
+                    String logid = (String) doc.getFieldValue(SolrConstants.LOGID);
+                    if (logid == null) {
+                        continue;
+                    }
+                    Set<String> requiredAccessConditions = new HashSet<>();
+                    Collection<Object> fieldsAccessCondition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
+                    if (fieldsAccessCondition != null) {
+                        for (Object accessCondition : fieldsAccessCondition) {
+                            requiredAccessConditions.add((String) accessCondition);
+                        }
+                    }
+                    // INVARIANT (Risk #1, Moving-Wall): the `query` parameter passed to checkAccessPermission MUST be
+                    // the per-identifier legacy format produced by buildSinglePiPermissionQuery. LicenseType uses it
+                    // as a Map cache key in restrictionsExpired; the moving-wall hit-count check builds a Solr query
+                    // around it. Passing the cross-PI terms string here would break per-volume embargo evaluation —
+                    // see spec section 2 step 10 and the buildSinglePiPermissionQuery_shouldProduceLegacy... test.
+                    String perIdentifierQuery = buildSinglePiPermissionQuery(pi);
+                    String remoteAddress = NetTools.getIpAddress(request);
+                    Optional<ClientApplication> client = ClientApplicationManager.getClientFromRequest(request);
+                    for (String privilege : uncachedForThisPi) {
+                        ret.get(pi).get(privilege).put(logid, checkAccessPermission(nonOpenAccessLicenseTypes, requiredAccessConditions,
+                                privilege, user, remoteAddress, client, perIdentifierQuery));
+                    }
+                }
+            } catch (PresentationException e) {
+                logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
+            }
+        }
+
+        // Step 4: write per-(identifier, privilege) entries to session cache
+        for (Map.Entry<String, Set<String>> entry : uncachedPerIdentifier.entrySet()) {
+            for (String privilege : entry.getValue()) {
+                String attributeName = IPrivilegeHolder.PREFIX_PRIV + privilege + "_" + entry.getKey();
+                addSessionPermission(attributeName, ret.get(entry.getKey()).get(privilege), session);
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Builds the Solr fetch query using the terms query parser for a chunk of identifiers.
+     * Comma-separated values; PI_TOPSTRUCT values do not contain commas, so no escaping needed.
+     * Caller must guarantee a non-empty {@code identifiers} collection — an empty terms list would yield
+     * a syntactically invalid Solr query.
+     */
+    private static String buildTermsPermissionQuery(Collection<String> identifiers) {
+        return new StringBuilder()
+                .append("+{!terms f=").append(SolrConstants.PI_TOPSTRUCT).append('}')
+                .append(String.join(",", identifiers))
+                .append(" +").append(SolrConstants.DOCTYPE).append(':').append(DocType.DOCSTRCT.name())
+                .toString();
+    }
+
+    /**
+     * Builds the legacy per-identifier query string used as the cache key for LicenseType.isRestrictionsExpired
+     * and as the basis for moving-wall hit-count checks. Format must match the legacy single-PI methods byte-for-byte.
+     * Package-private so tests can verify the format directly.
+     */
+    static String buildSinglePiPermissionQuery(String identifier) {
+        return new StringBuilder().append('+')
+                .append(SolrConstants.PI_TOPSTRUCT)
+                .append(":\"")
+                .append(identifier)
+                .append("\" +")
+                .append(SolrConstants.DOCTYPE)
+                .append(':')
+                .append(DocType.DOCSTRCT.name())
+                .toString();
     }
 
     /**
