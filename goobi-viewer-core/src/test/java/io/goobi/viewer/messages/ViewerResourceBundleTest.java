@@ -25,12 +25,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.jdom2.JDOMException;
@@ -263,5 +265,50 @@ class ViewerResourceBundleTest extends AbstractTest {
         String fileContents = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
         Assertions.assertEquals("foo = foo, bar", fileContents);
 
+    }
+
+    /**
+     * @see ViewerResourceBundle#updateLocalMessageKey(String, String, String)
+     * @verifies preserve non latin1 characters across repeated saves
+     */
+    @Test
+    void updateLocalMessageKey_shouldPreserveNonLatin1CharactersAcrossRepeatedSaves() throws Exception {
+        // Reproduces the production bug observed in customer messages_de.properties files: the
+        // first save writes a value with German umlauts; subsequent saves of unrelated keys
+        // would re-read the whole file and, with a misconfigured encoding, accumulate a
+        // UTF-8 to Latin-1 mojibake layer on every iteration.
+        String origConfigLocalPath = DataManager.getInstance().getConfiguration().getConfigLocalPath();
+        DataManager.getInstance().getConfiguration().overrideValue("configFolder", "target/temp_umlauts");
+        File tempDir = new File("target/temp_umlauts");
+        try {
+            Assertions.assertTrue(tempDir.isDirectory() || tempDir.mkdirs());
+
+            // Use Unicode escapes in the literal so the test source stays pure ASCII and is
+            // not affected by the editor or build encoding.
+            String greeting = "für ä ö ü ß";
+
+            Assertions.assertTrue(ViewerResourceBundle.updateLocalMessageKey("greeting", greeting, "de"));
+            // Two further saves to force re-reading and re-writing of the whole file.
+            Assertions.assertTrue(ViewerResourceBundle.updateLocalMessageKey("other", "x", "de"));
+            Assertions.assertTrue(ViewerResourceBundle.updateLocalMessageKey("third", "y", "de"));
+
+            // java.util.Properties#load(InputStream) is exactly the path used by Java's
+            // ResourceBundle to load a .properties file: ISO-8859-1 with \\uXXXX escapes.
+            // Reading the file through this path is the maximally strict round-trip check.
+            File file = new File(tempDir, "messages_de.properties");
+            Assertions.assertTrue(file.isFile());
+            Properties props = new Properties();
+            try (InputStream in = Files.newInputStream(file.toPath())) {
+                props.load(in);
+            }
+            Assertions.assertEquals(greeting, props.getProperty("greeting"));
+            Assertions.assertEquals("x", props.getProperty("other"));
+            Assertions.assertEquals("y", props.getProperty("third"));
+        } finally {
+            if (tempDir.exists()) {
+                FileUtils.deleteDirectory(tempDir);
+            }
+            DataManager.getInstance().getConfiguration().overrideValue("configFolder", origConfigLocalPath);
+        }
     }
 }
