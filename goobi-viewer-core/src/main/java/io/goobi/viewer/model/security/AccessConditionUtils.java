@@ -801,99 +801,25 @@ public final class AccessConditionUtils {
      * @throws IndexUnreachableException
      * @throws DAOException
      */
-    @SuppressWarnings("unchecked")
     public static Map<String, Map<String, AccessPermission>> checkAccessPermissionByIdentifierForAllLogidsAndPrivileges(
             String identifier, Set<String> privilegeNames, HttpServletRequest request)
             throws IndexUnreachableException, DAOException {
         if (privilegeNames == null || privilegeNames.isEmpty()) {
             return new HashMap<>();
         }
-        logger.trace("checkAccessPermissionByIdentifierForAllLogidsAndPrivileges({}, {})", identifier, privilegeNames);
-        HttpSession session = request != null ? request.getSession() : null;
-
-        // Try to satisfy ALL requested privileges from the session cache. If every privilege has a cache entry,
-        // we can skip the Solr roundtrip entirely. Otherwise we run one Solr query and evaluate every uncached
-        // privilege from the same docs to keep the result coherent.
-        Map<String, Map<String, AccessPermission>> ret = new HashMap<>();
-        Set<String> uncachedPrivileges = new HashSet<>();
-        for (String privilege : privilegeNames) {
-            String attributeName = IPrivilegeHolder.PREFIX_PRIV + privilege + "_" + identifier;
-            Map<String, AccessPermission> cached = (Map<String, AccessPermission>) getSessionPermission(attributeName, session);
-            if (cached != null) {
-                ret.put(privilege, cached);
-            } else {
-                uncachedPrivileges.add(privilege);
+        // Blank identifiers are filtered out by the cross-PI method (they pollute cache keys and break
+        // the terms-query parser). Reproduce the Phase-B contract: return one empty submap per privilege.
+        if (StringUtils.isBlank(identifier)) {
+            Map<String, Map<String, AccessPermission>> empty = new HashMap<>();
+            for (String privilege : privilegeNames) {
+                empty.put(privilege, new HashMap<>());
             }
+            return empty;
         }
-        if (uncachedPrivileges.isEmpty()) {
-            return ret;
-        }
-
-        // Initialize empty submaps for every uncached privilege so the contract (one entry per requested
-        // privilege) holds even when identifier is blank or Solr returns no results.
-        for (String privilege : uncachedPrivileges) {
-            ret.put(privilege, new HashMap<>());
-        }
-
-        if (StringUtils.isNotEmpty(identifier)) {
-            String query = new StringBuilder().append('+')
-                    .append(SolrConstants.PI_TOPSTRUCT)
-                    .append(":\"")
-                    .append(identifier)
-                    .append("\" +")
-                    .append(SolrConstants.DOCTYPE)
-                    .append(':')
-                    .append(DocType.DOCSTRCT.name())
-                    .toString();
-            try {
-                logger.trace(query);
-                SolrDocumentList results = DataManager.getInstance()
-                        .getSearchIndex()
-                        .search(query, SolrSearchIndex.MAX_HITS, null,
-                                Arrays.asList(SolrConstants.LOGID, SolrConstants.ACCESSCONDITION));
-                if (results != null) {
-                    User user = retrieveUserFromContext(session);
-                    List<LicenseType> nonOpenAccessLicenseTypes = DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes();
-
-                    for (SolrDocument doc : results) {
-                        Set<String> requiredAccessConditions = new HashSet<>();
-                        Collection<Object> fieldsAccessCondition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
-                        if (fieldsAccessCondition != null) {
-                            for (Object accessCondition : fieldsAccessCondition) {
-                                requiredAccessConditions.add((String) accessCondition);
-                            }
-                        }
-                        String logid = (String) doc.getFieldValue(SolrConstants.LOGID);
-                        if (logid == null) {
-                            continue;
-                        }
-                        // Resolve IP and client per-doc to preserve the legacy single-privilege method's
-                        // contract verbatim. The lookups are inexpensive but read from the request, and we
-                        // do not want to introduce any behavior drift via this refactoring.
-                        String remoteAddress = NetTools.getIpAddress(request);
-                        Optional<ClientApplication> client = ClientApplicationManager.getClientFromRequest(request);
-                        // Evaluate each uncached privilege against the same access conditions. checkAccessPermission
-                        // is pure Java logic (license types, IP range, user/client checks) — no Solr roundtrip here.
-                        for (String privilege : uncachedPrivileges) {
-                            ret.get(privilege).put(logid, checkAccessPermission(nonOpenAccessLicenseTypes, requiredAccessConditions,
-                                    privilege, user, remoteAddress, client, query));
-                        }
-                    }
-                }
-            } catch (PresentationException e) {
-                logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
-            }
-        }
-
-        // Add per-privilege permission outcomes to user session, mirroring the legacy single-privilege method's cache
-        // contract so callers using either API see consistent state.
-        for (String privilege : uncachedPrivileges) {
-            String attributeName = IPrivilegeHolder.PREFIX_PRIV + privilege + "_" + identifier;
-            addSessionPermission(attributeName, ret.get(privilege), session);
-        }
-
-        logger.trace("Found access permissions for {} privilege(s).", privilegeNames.size());
-        return ret;
+        // Delegate to cross-PI method with a singleton identifier set; preserves Phase B contract.
+        Map<String, Map<String, Map<String, AccessPermission>>> batch =
+                checkAccessPermissionsForPisAndPrivileges(Collections.singleton(identifier), privilegeNames, request);
+        return batch.getOrDefault(identifier, new HashMap<>());
     }
 
     /**
