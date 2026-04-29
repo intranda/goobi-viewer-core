@@ -695,24 +695,33 @@ public final class TocMaker {
         logger.trace("populateTocTree: {}; number of items in toc: {}", pi, ret.size());
 
         // Check permissions for all docstructs of this PI, using the cache to avoid repeated Solr calls
-        // when the same PI is encountered in multiple recursive calls (e.g. sibling volumes).
-        Map<String, AccessPermission> thumbnailPermissionMap;
-        if (thumbnailPermissionCache.containsKey(pi)) {
-            thumbnailPermissionMap = thumbnailPermissionCache.get(pi);
-        } else {
-            thumbnailPermissionMap =
-                    AccessConditionUtils.checkAccessPermissionByIdentiferForAllLogids(pi, IPrivilegeHolder.PRIV_VIEW_THUMBNAILS,
-                            BeanUtils.getRequest());
-            thumbnailPermissionCache.put(pi, thumbnailPermissionMap);
+        // when the same PI is encountered in multiple recursive calls (e.g. sibling volumes). The two cache
+        // maps are created fresh per top-level generateToc() invocation and pdfNeeded is constant within
+        // that invocation, so pdfPermissionCache only ever holds entries when pdfNeeded is true.
+        Map<String, AccessPermission> thumbnailPermissionMap = thumbnailPermissionCache.get(pi);
+        Map<String, AccessPermission> pdfPermissionMap = pdfPermissionCache.get(pi);
+        boolean pdfNeeded = sourceFormatPdfAllowed && DataManager.getInstance().getConfiguration().isTocPdfEnabled();
+
+        // Determine which privilege(s) need to be fetched. Both caches behave coherently per PI: if either is
+        // missing for the current PI, a fresh permission lookup is required. We always include THUMBNAILS, plus
+        // PDF when enabled, in a single batched Solr roundtrip.
+        Set<String> uncachedPrivileges = new HashSet<>();
+        if (thumbnailPermissionMap == null) {
+            uncachedPrivileges.add(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
         }
-        Map<String, AccessPermission> pdfPermissionMap = null;
-        if (sourceFormatPdfAllowed && DataManager.getInstance().getConfiguration().isTocPdfEnabled()) {
-            if (pdfPermissionCache.containsKey(pi)) {
-                pdfPermissionMap = pdfPermissionCache.get(pi);
-            } else {
-                pdfPermissionMap =
-                        AccessConditionUtils.checkAccessPermissionByIdentiferForAllLogids(pi, IPrivilegeHolder.PRIV_DOWNLOAD_PDF,
-                                BeanUtils.getRequest());
+        if (pdfNeeded && pdfPermissionMap == null) {
+            uncachedPrivileges.add(IPrivilegeHolder.PRIV_DOWNLOAD_PDF);
+        }
+        if (!uncachedPrivileges.isEmpty()) {
+            Map<String, Map<String, AccessPermission>> batch =
+                    AccessConditionUtils.checkAccessPermissionByIdentifierForAllLogidsAndPrivileges(pi, uncachedPrivileges,
+                            BeanUtils.getRequest());
+            if (thumbnailPermissionMap == null) {
+                thumbnailPermissionMap = batch.getOrDefault(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, new HashMap<>());
+                thumbnailPermissionCache.put(pi, thumbnailPermissionMap);
+            }
+            if (pdfNeeded && pdfPermissionMap == null) {
+                pdfPermissionMap = batch.getOrDefault(IPrivilegeHolder.PRIV_DOWNLOAD_PDF, new HashMap<>());
                 pdfPermissionCache.put(pi, pdfPermissionMap);
             }
         }
