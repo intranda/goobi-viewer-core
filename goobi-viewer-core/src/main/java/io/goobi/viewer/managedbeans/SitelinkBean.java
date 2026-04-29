@@ -63,7 +63,16 @@ public class SitelinkBean implements Serializable {
     private static final Logger logger = LogManager.getLogger(SitelinkBean.class);
 
     private String value;
-    private List<StringPair> hits;
+    // volatile + single-write publication: SitelinkBean is @SessionScoped, so concurrent requests
+    // within one session (e.g. a crawler fanning out /sitelinks/{value}/ URLs over a single cookie)
+    // share this instance. Building the list locally in searchAction() and assigning the field once
+    // via a volatile write ensures readers (sitelinks.xhtml's <c:forEach items="#{sitelinkBean.hits}">)
+    // never observe a list that another thread is still appending to — which previously caused
+    // ConcurrentModificationException from Mojarra's ForEachHandler during RENDER_RESPONSE.
+    // S3077 false positive: the list is never mutated after publication; new versions are built
+    // locally and atomically replaced via a single volatile write (safe-publication idiom, JCIP §3.5.3).
+    @SuppressWarnings("java:S3077")
+    private volatile List<StringPair> hits;
 
     /**
      * getAvailableValues.
@@ -104,7 +113,10 @@ public class SitelinkBean implements Serializable {
 
         SolrDocumentList docList = DataManager.getInstance().getSearchIndex().search(query, Arrays.asList(fields));
         if (docList != null && !docList.isEmpty()) {
-            hits = new ArrayList<>(docList.size());
+            // Build into a local list and publish once at the end. Do NOT assign `hits = new ArrayList<>(...)`
+            // up front and then mutate it in the loop — concurrent renders in the same session would then
+            // iterate a half-built list and throw ConcurrentModificationException (see field comment above).
+            List<StringPair> localHits = new ArrayList<>(docList.size());
             // Batch-fetch all anchor labels in a single query instead of one query per result.
             // Previously, each result with a PI_PARENT triggered an individual Solr lookup,
             // causing N+1 queries for year views with many volumes (e.g. newspapers).
@@ -137,8 +149,11 @@ public class SitelinkBean implements Serializable {
                 sbLabel.append(label);
                 //                PageType pageType = PageType.determinePageType(docStructType, null, false, hasImages, false, false);
                 PageType pageType = PageType.viewMetadata;
-                hits.add(new StringPair(sbLabel.toString(), pageType.getName() + "/" + pi + "/1/"));
+                localHits.add(new StringPair(sbLabel.toString(), pageType.getName() + "/" + pi + "/1/"));
             }
+            // Single volatile write — once published, this list is never mutated again, so any
+            // <c:forEach> iteration started before or after this point is safe.
+            hits = localHits;
         }
 
         // logger.trace("done"); //NOSONAR Debug

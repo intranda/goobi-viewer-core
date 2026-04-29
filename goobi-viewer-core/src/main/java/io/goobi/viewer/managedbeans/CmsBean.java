@@ -1792,7 +1792,11 @@ public class CmsBean implements Serializable {
                         .filter(item -> (StringUtils.isBlank(item.getAssociatedTheme()) && mainTheme.equalsIgnoreCase(currentTheme))
                                 || currentTheme.equalsIgnoreCase(item.getAssociatedTheme()))
                         .toList();
+                // Track whether we fell back to main-theme items because the active (sub)theme had none,
+                // so the log line can mark this explicitly for debugging theme-specific menu issues
+                boolean usedMainThemeFallback = false;
                 if (navigationMenuItems.isEmpty()) {
+                    usedMainThemeFallback = true;
                     navigationMenuItems = DataManager.getInstance()
                             .getDao()
                             .getAllTopCMSNavigationItems()
@@ -1802,7 +1806,14 @@ public class CmsBean implements Serializable {
                                     || item.getAssociatedTheme().equalsIgnoreCase(mainTheme)))
                             .toList();
                 }
-                logger.info("returning {} items", navigationMenuItems.size());
+                // Lowered to debug (cached menu load); include current theme and mark main-theme fallback
+                // to make multi-theme/subtheme navigation issues traceable
+                if (usedMainThemeFallback) {
+                    logger.debug("Loaded {} navigation menu items for theme '{}' (main-theme fallback)",
+                            navigationMenuItems.size(), currentTheme);
+                } else {
+                    logger.debug("Loaded {} navigation menu items for theme '{}'", navigationMenuItems.size(), currentTheme);
+                }
             } catch (DAOException e) {
                 navigationMenuItems = Collections.emptyList();
             }

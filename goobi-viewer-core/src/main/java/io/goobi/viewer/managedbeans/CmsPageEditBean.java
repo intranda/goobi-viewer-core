@@ -685,7 +685,10 @@ public class CmsPageEditBean implements Serializable {
                     Messages.error(null, "cms__create_page__error_unknown_component_name", componentFilename);
                 }
             } else {
-                logger.error("Cannot add component: No component filename given");
+                // Lowered from error to warn: this branch is triggered by routine user input validation
+                // (clicking "Add component" without selecting one). The user is already informed via
+                // Messages.error(...) below; ERROR-level logs were misleading. Page id added for context.
+                logger.warn("Cannot add component to page {}: No component filename given", page.getId());
                 Messages.error("cms__create_page__error_no_component_name_given");
             }
         } else {

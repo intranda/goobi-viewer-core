@@ -90,6 +90,7 @@ import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.LicenseType;
+import io.goobi.viewer.model.security.LicenseTypeCache;
 import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.model.security.user.User;
@@ -1196,7 +1197,8 @@ public final class SearchHelper {
     public static void updateFilterQuerySuffix(HttpServletRequest request, String privilege)
             throws IndexUnreachableException, PresentationException, DAOException {
         String filterQuerySuffix =
-                getPersonalFilterQuerySuffix(DataManager.getInstance().getDao().getRecordLicenseTypes(),
+                // Route through cache to avoid repeated DAO round-trips per request
+                getPersonalFilterQuerySuffix(DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes(),
                         (User) Optional.ofNullable(request)
                                 .map(HttpServletRequest::getSession)
                                 .map(session -> session.getAttribute("user"))
@@ -3441,6 +3443,9 @@ public final class SearchHelper {
      * @param request HTTP servlet request whose session holds the filter query suffix
      * @param privilege Privilege to check (Connector checks a different privilege)
      * @return Filter query suffix string from the HTTP session
+     * @should use BeanUtils request fallback when initiating suffix update
+     * @should compute personal filter suffix on the fly when no session is available
+     * @should fail closed with OPENACCESS-only suffix when sessionless computation fails
      */
     static String getFilterQuerySuffix(final HttpServletRequest request, String privilege) {
         HttpServletRequest req = request;
@@ -3452,14 +3457,41 @@ public final class SearchHelper {
         }
         HttpSession session = req.getSession(false);
         if (session == null) {
-            return null;
+            // The personal filter suffix carries the AccessCondition restrictions that prevent
+            // protected records from being returned. Without a session there is no place to
+            // cache it, but it must still be computed and applied — otherwise sessionless
+            // callers (e.g. REST clients without a JSESSIONID cookie) would see records they
+            // are not allowed to see. The result is computed on the fly and not cached.
+            // If the computation throws, fall back to an OPENACCESS-only suffix so protected
+            // records remain hidden even when the DB or Solr is temporarily unreachable.
+            try {
+                // No session means no client cookie either. Calling
+                // ClientApplicationManager.getClientFromRequest here would invoke
+                // req.getSession() (without 'false') and thereby force-create a session,
+                // which contradicts the whole sessionless path.
+                return getPersonalFilterQuerySuffix(
+                        DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes(),
+                        null,
+                        NetTools.getIpAddress(req),
+                        Optional.empty(),
+                        privilege);
+            } catch (IndexUnreachableException | DAOException e) {
+                logger.error("Failed to compute sessionless filter query suffix, falling back to OPENACCESS-only", e);
+            } catch (PresentationException e) {
+                logger.error("Failed to compute sessionless filter query suffix, falling back to OPENACCESS-only: {}", e.getMessage());
+            }
+            return " +(" + SolrConstants.ACCESSCONDITION + ":\"" + SolrConstants.OPEN_ACCESS_VALUE + "\")";
         }
 
         String ret = (String) session.getAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX);
         // If not suffix generated yet, initiate update
         if (ret == null) {
             try {
-                updateFilterQuerySuffix(request, privilege);
+                // Use the resolved 'req' (which may have been obtained via BeanUtils fallback)
+                // instead of the original 'request' parameter. Previously the original null was
+                // propagated, causing the warning "No HttpServletRequest found, cannot set
+                // filter query." and leaving the personal access filter unset for the session.
+                updateFilterQuerySuffix(req, privilege);
                 ret = (String) session.getAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX);
             } catch (IndexUnreachableException | DAOException e) {
                 logger.error(e.getMessage(), e);

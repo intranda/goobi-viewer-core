@@ -118,9 +118,12 @@ public class MediaDeliveryService {
 
         // If content type is text, then determine whether GZIP content encoding is supported by
         // the browser and expand content type with the one and right character encoding.
+        // GZIP is only applied to full-file responses; HTTP range responses use byte offsets that
+        // refer to unencoded content, so mixing Content-Encoding: gzip with Range / 206 would
+        // misrepresent the offsets to the client.
         if (contentType.startsWith("text")) {
             String acceptEncoding = request.getHeader("Accept-Encoding");
-            acceptsGzip = acceptEncoding != null && accepts(acceptEncoding, "gzip");
+            acceptsGzip = sections.isEmpty() && acceptEncoding != null && accepts(acceptEncoding, "gzip");
             contentType += ";charset=UTF-8";
         }
         // Else, expect for images, determine content disposition. If content type is supported by
@@ -138,9 +141,15 @@ public class MediaDeliveryService {
 
         // Send requested file (part(s)) to client ------------------------------------------------
 
+        // The writable channel is bound to `out` (not directly to response.getOutputStream())
+        // so that data actually flows through the GZIPOutputStream when compression is enabled.
+        // Previously the channel wrapped the raw response stream, which caused the gzip header
+        // from GZIPOutputStream's constructor to be emitted followed by uncompressed payload --
+        // producing a corrupt body. For the non-gzip case `out` equals response.getOutputStream(),
+        // so behaviour is unchanged there.
         try (RandomAccessFile raf = new RandomAccessFile(file.toString(), "r"); FileChannel input = raf.getChannel();
                 OutputStream out = acceptsGzip ? new GZIPOutputStream(response.getOutputStream(), DEFAULT_BUFFER_SIZE) : response.getOutputStream();
-                WritableByteChannel output = Channels.newChannel(response.getOutputStream())) {
+                WritableByteChannel output = Channels.newChannel(out)) {
             // Open streams.
 
             if (sections.isEmpty()) {
@@ -208,15 +217,31 @@ public class MediaDeliveryService {
     }
 
     /**
+     * Sets content-disposition, cache, and range-support headers on the response before the file
+     * payload is streamed.
+     *
      * @param response HTTP response to initialize with caching and content headers
      * @param fileName name of the file being served, used in Content-Disposition header
      * @param lastModified last-modified timestamp of the file in milliseconds
      * @param eTag unique entity tag string for cache validation
      * @param disposition content disposition value, either "inline" or "attachment"
+     * @should not call reset or setBufferSize on the response
+     * @should set content-disposition, accept-ranges, etag, last-modified and expires headers
      */
-    private static void initResponse(HttpServletResponse response, String fileName, long lastModified, String eTag, String disposition) {
-        response.reset();
-        response.setBufferSize(DEFAULT_BUFFER_SIZE);
+    // Visibility widened from private to package-private so the method can be exercised from the
+    // unit test without reflection.
+    static void initResponse(HttpServletResponse response, String fileName, long lastModified, String eTag, String disposition) {
+        // response.reset() and response.setBufferSize() were inherited from the BalusC FileServlet
+        // (net.balusc.webapp.ContentDeliveryServlet, removed 2019-06-12) that this NIO variant was
+        // derived from in 2018. In a plain HttpServlet "clean-slate" context they are safe and
+        // useful. When invoked from a JAX-RS resource, however, the response wrapper chain
+        // (Jersey, RewriteFilter / HttpRewriteWrappedResponse) has already touched the output
+        // buffer before this method runs. setBufferSize() then logs
+        // "Skipping attempt to set buffer size on a committed response" because
+        // outputBuffer.isNew() is already false, and reset() can silently be swallowed by the
+        // wrapper chain when the response is already committed. Neither call can recover a
+        // response that has already been committed further up the filter chain, so the pragmatic
+        // fix is to drop both and let the container manage buffering.
         response.setHeader("Content-Disposition", disposition + ";filename=\"" + fileName + "\"");
         response.setHeader("Accept-Ranges", "bytes");
         response.setHeader("ETag", eTag);

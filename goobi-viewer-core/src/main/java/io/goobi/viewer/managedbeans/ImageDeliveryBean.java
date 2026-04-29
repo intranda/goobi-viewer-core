@@ -315,6 +315,13 @@ public class ImageDeliveryBean implements Serializable {
      */
     public String getIiifManifest() {
         return getCurrentDocumentIfExists().map(doc -> {
+            // Guard against documents without a PI: AbstractBuilder.getManifestURI() throws
+            // IllegalArgumentException for blank PIs by design, which would escalate to an
+            // ELException during JSF rendering (e.g. widget_downloads.xhtml) and abort the
+            // page render. Treat blank PI the same as "no current document" → empty string.
+            if (StringUtils.isBlank(doc.getPi())) {
+                return null;
+            }
             try {
                 return getPresentation().getManifestUrl(doc.getPi());
             } catch (URISyntaxException e) {
@@ -331,6 +338,11 @@ public class ImageDeliveryBean implements Serializable {
      */
     public String getIiifPageManifest() {
         return getCurrentPageIfExists().map(page -> {
+            // Same defensive guard as in getIiifManifest(): blank PI would otherwise cause
+            // IllegalArgumentException → ELException during view rendering.
+            if (StringUtils.isBlank(page.getPi())) {
+                return null;
+            }
             try {
                 return getPresentation().getPageManifestUrl(page.getPi(), page.getOrder());
             } catch (URISyntaxException e) {

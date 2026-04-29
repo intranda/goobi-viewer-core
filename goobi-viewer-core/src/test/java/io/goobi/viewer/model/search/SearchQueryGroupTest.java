@@ -137,4 +137,33 @@ class SearchQueryGroupTest extends AbstractSolrEnabledTest {
         Assertions.assertFalse(group.removeQueryItem(group.getQueryItems().get(0)));
         Assertions.assertEquals(1, group.getQueryItems().size());
     }
+
+    /**
+     * Regression test for ConcurrentModificationException during JSF c:forEach iteration
+     * on searchAdvanced.xhtml when a concurrent request on the SessionScoped SearchBean
+     * mutates queryItems while another thread iterates. With ArrayList this throws CME;
+     * with CopyOnWriteArrayList the iterator works on a snapshot and ignores the change.
+     *
+     * @see SearchQueryGroup#getQueryItems()
+     * @verifies allow safe iteration during concurrent modification
+     */
+    @Test
+    void getQueryItems_shouldAllowSafeIterationDuringConcurrentModification() {
+        SearchQueryGroup group = new SearchQueryGroup(null, null);
+        group.addNewQueryItem("MD_A", -1);
+        group.addNewQueryItem("MD_B", -1);
+        Assertions.assertEquals(3, group.getQueryItems().size());
+
+        int seen = 0;
+        for (SearchQueryItem item : group.getQueryItems()) {
+            Assertions.assertNotNull(item);
+            if (seen == 0) {
+                // Mutate during iteration to simulate a concurrent request.
+                group.injectItems(Collections.singletonList(new SearchQueryItem()));
+            }
+            seen++;
+        }
+        Assertions.assertEquals(3, seen, "iterator must complete on the original snapshot");
+        Assertions.assertEquals(1, group.getQueryItems().size(), "post-iteration list reflects the injected items");
+    }
 }

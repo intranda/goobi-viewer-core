@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.modules;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -32,9 +33,9 @@ import io.goobi.viewer.modules.interfaces.IURLBuilder;
 import io.goobi.viewer.modules.interfaces.IndexAugmenter;
 
 /**
- * Contract that every Goobi viewer extension module must implement.
- * Provides identity and version information, configuration access, UI contribution hooks (sidebar widgets, admin links,
- * CMS menu entries), task-type registration, and lifecycle callbacks for record resets and user-content management.
+ * Contract that every Goobi viewer extension module must implement. Provides identity and version information, configuration access, UI contribution
+ * hooks (sidebar widgets, admin links, CMS menu entries), task-type registration, and lifecycle callbacks for record resets and user-content
+ * management.
  */
 public interface IModule extends IndexAugmenter {
 
@@ -93,11 +94,24 @@ public interface IModule extends IndexAugmenter {
     public List<String> getSidebarContributions();
 
     /**
-     * Contributions widget_usage.xhtml.
+     * Contributions to widget_usage.xhtml (no longer available).
+     *
+     * @return List of HTML component URLs.
+     * @deprecated Widget no longer exists
+     */
+    @Deprecated(since = "26.04", forRemoval = true)
+    default List<String> getWidgetUsageContributions() {
+        return Collections.emptyList();
+    }
+
+    /**
+     * Contributions to widget_downloads.xhtml.
      *
      * @return List of HTML component URLs.
      */
-    public List<String> getWidgetUsageContributions();
+    default List<String> getWidgetDownloadsContributions() {
+        return Collections.emptyList();
+    }
 
     /**
      * URLs to widgets containing admin menu links.

@@ -22,10 +22,12 @@
 package io.goobi.viewer.exceptions;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
@@ -33,6 +35,7 @@ import java.util.Optional;
 import jakarta.faces.FacesException;
 import jakarta.faces.application.NavigationHandler;
 import jakarta.faces.application.ViewExpiredException;
+import jakarta.faces.component.UIComponent;
 import jakarta.faces.context.ExceptionHandler;
 import jakarta.faces.context.ExceptionHandlerWrapper;
 import jakarta.faces.context.ExternalContext;
@@ -40,6 +43,7 @@ import jakarta.faces.context.FacesContext;
 import jakarta.faces.event.ExceptionQueuedEvent;
 import jakarta.faces.event.ExceptionQueuedEventContext;
 import jakarta.faces.event.PhaseId;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
@@ -197,6 +201,18 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                     String msg = getCause(t).getMessage();
                     logger.warn("Invalid URL parameter in PrettyFaces mapping: {}", t.getMessage());
                     handleError(msg, "general_no_url");
+                } else if (isCausedByExceptionType(t, ConcurrentModificationException.class.getName())) {
+                    // CME during JSF view build/render — most commonly thrown by Mojarra's
+                    // ForEachHandler while iterating a collection that another thread structurally
+                    // modified (add/remove/sort) on a shared bean (e.g. @SessionScoped, @ApplicationScoped).
+                    // Mojarra does not wrap this CME in a TagException, so the raw stack trace does
+                    // not reveal which Facelet/<c:forEach> is affected. Log whatever additional
+                    // context is available to narrow down the source on the next occurrence.
+                    logger.error("ConcurrentModificationException during JSF view build/render. {}",
+                            buildDiagnosticContext(t, context, fc), t);
+                    Throwable rootCause = getCause(t);
+                    String msg = rootCause.getClass().getSimpleName() + ": " + rootCause.getMessage();
+                    handleError(msg, "general");
                 } else {
                     // All other exceptions — show root cause class and message for better diagnostics
                     logger.error(t.getMessage(), t);
@@ -373,6 +389,149 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
             cause = cause.getCause();
         }
         return cause;
+    }
+
+    /**
+     * Collects whatever diagnostic context is available for a JSF view-build/render failure:
+     * view id, request URI, queued phase, failing component (class + client id), component source
+     * location from the component attribute map, and the first Facelet location found in the cause
+     * chain.
+     *
+     * <p>The returned string is intended for a single log line accompanying the stack trace and is
+     * primarily aimed at narrowing down {@link ConcurrentModificationException} reports from
+     * Mojarra's {@code ForEachHandler}, where the stack trace alone does not identify which
+     * {@code <c:forEach items="...">} iterated a concurrently-mutated list.</p>
+     *
+     * @param t the throwable that was handled
+     * @param context the JSF exception queued event context (may be null)
+     * @param fc the current FacesContext (must not be null)
+     * @return a single-line space-separated diagnostic summary (possibly empty)
+     */
+    static String buildDiagnosticContext(Throwable t, ExceptionQueuedEventContext context, FacesContext fc) {
+        StringBuilder sb = new StringBuilder();
+        appendViewId(sb, fc);
+        appendRequestUri(sb, fc);
+        if (context != null) {
+            appendPhase(sb, context);
+            appendComponent(sb, context, fc);
+        }
+        String faceletLocation = findFaceletLocation(t);
+        if (faceletLocation != null) {
+            appendField(sb, "faceletLocation", faceletLocation);
+        }
+        return sb.toString();
+    }
+
+    private static void appendViewId(StringBuilder sb, FacesContext fc) {
+        try {
+            if (fc.getViewRoot() != null) {
+                appendField(sb, "viewId", fc.getViewRoot().getViewId());
+            }
+        } catch (IllegalStateException | NullPointerException e) {
+            // Diagnostic only — never let logging fail the error handler.
+            // IllegalStateException can occur if the Faces context has been released during
+            // concurrent error handling; NullPointerException guards against partial mocks in tests.
+        }
+    }
+
+    private static void appendRequestUri(StringBuilder sb, FacesContext fc) {
+        try {
+            Object req = fc.getExternalContext().getRequest();
+            if (req instanceof HttpServletRequest hsr) {
+                String uri = hsr.getRequestURI();
+                String qs = hsr.getQueryString();
+                appendField(sb, "uri", qs != null ? uri + "?" + qs : uri);
+            }
+        } catch (IllegalStateException | NullPointerException e) {
+            // Diagnostic only — ExternalContext may be unavailable if the session/request is
+            // being torn down concurrently.
+        }
+    }
+
+    private static void appendPhase(StringBuilder sb, ExceptionQueuedEventContext context) {
+        PhaseId phase = context.getPhaseId();
+        if (phase != null) {
+            appendField(sb, "phase", phase.toString());
+        }
+    }
+
+    private static void appendComponent(StringBuilder sb, ExceptionQueuedEventContext context, FacesContext fc) {
+        try {
+            UIComponent component = context.getComponent();
+            if (component == null) {
+                return;
+            }
+            StringBuilder cs = new StringBuilder(component.getClass().getSimpleName());
+            try {
+                String clientId = component.getClientId(fc);
+                if (clientId != null) {
+                    cs.append('[').append(clientId).append(']');
+                }
+            } catch (IllegalStateException | NullPointerException ignored) {
+                // Component tree may not yet be fully initialised during view build —
+                // skip clientId silently, class name alone is still useful context.
+            }
+            appendField(sb, "component", cs.toString());
+            // UIComponent.VIEW_LOCATION_KEY marks the Facelet source location where the component
+            // was created. Present on components built via tag handlers — absent on programmatic ones.
+            Object location = component.getAttributes().get(UIComponent.VIEW_LOCATION_KEY);
+            if (location != null) {
+                appendField(sb, "componentLocation", location.toString());
+            }
+        } catch (IllegalStateException | NullPointerException e) {
+            // Diagnostic only.
+        }
+    }
+
+    private static void appendField(StringBuilder sb, String key, String value) {
+        if (value == null) {
+            return;
+        }
+        if (sb.length() > 0) {
+            sb.append(' ');
+        }
+        sb.append(key).append('=').append(value);
+    }
+
+    /**
+     * Walks the exception cause chain for Facelet/TagException types that expose a {@code getLocation()}
+     * method (Mojarra's {@code TagAttributeException}, {@code TagException}, etc.) and returns the
+     * first non-null location as a human-readable string (typically {@code path @ line,column}).
+     *
+     * <p>Access is reflective and matched by package prefix to avoid a hard compile-time dependency
+     * on Mojarra-specific types; returns {@code null} if no such exception is present or no
+     * location could be extracted.</p>
+     *
+     * @param t root throwable
+     * @return the first Facelet location found in the cause chain, or {@code null} if none
+     * @should return location from facelet exception in cause chain
+     * @should return null when no facelet exception present
+     * @should stop at first facelet location found
+     */
+    static String findFaceletLocation(Throwable t) {
+        Throwable current = t;
+        while (current != null) {
+            String cn = current.getClass().getName();
+            // Match by class-name prefix to catch both the Jakarta API types and Mojarra
+            // implementation types without requiring them on the compile classpath.
+            if (cn.startsWith("jakarta.faces.view.facelets.") || cn.startsWith("com.sun.faces.facelets.")) {
+                try {
+                    Method m = current.getClass().getMethod("getLocation");
+                    Object loc = m.invoke(current);
+                    if (loc != null) {
+                        return loc.toString();
+                    }
+                } catch (NoSuchMethodException ignored) {
+                    // Not every Facelet exception carries a Location — keep walking.
+                } catch (ReflectiveOperationException ignored) {
+                    // Reflective access failed (IllegalAccessException, InvocationTargetException
+                    // wrapping any exception thrown by getLocation()) — give up silently, this is
+                    // diagnostic only.
+                }
+            }
+            current = current.getCause();
+        }
+        return null;
     }
 
 }

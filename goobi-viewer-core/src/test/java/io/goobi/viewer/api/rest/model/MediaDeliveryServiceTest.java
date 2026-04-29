@@ -22,8 +22,14 @@
 package io.goobi.viewer.api.rest.model;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 class MediaDeliveryServiceTest {
 
@@ -87,5 +93,41 @@ class MediaDeliveryServiceTest {
             String range = "bytes=-";
             assertFalse(MediaDeliveryService.matchesRangeHeaderPattern(range));
         }
+    }
+
+    /**
+     * @see MediaDeliveryService#initResponse(HttpServletResponse, String, long, String, String)
+     * @verifies not call reset or setBufferSize on the response
+     */
+    @Test
+    void initResponse_shouldNotCallResetOrSetBufferSizeOnTheResponse() {
+        // Regression guard: initResponse previously invoked reset() and setBufferSize() which
+        // triggered "Skipping attempt to set buffer size on a committed response" warnings under
+        // Tomcat/Rewrite wrappers. Both calls have been removed; this test pins that behaviour.
+        HttpServletResponse response = mock(HttpServletResponse.class);
+
+        MediaDeliveryService.initResponse(response, "movie.mp4", 1_700_000_000_000L, "movie.mp4_1234_1700000000000", "inline");
+
+        verify(response, never()).reset();
+        verify(response, never()).setBufferSize(ArgumentMatchers.anyInt());
+    }
+
+    /**
+     * @see MediaDeliveryService#initResponse(HttpServletResponse, String, long, String, String)
+     * @verifies set content-disposition, accept-ranges, etag, last-modified and expires headers
+     */
+    @Test
+    void initResponse_shouldSetContentDispositionAcceptRangesEtagLastModifiedAndExpiresHeaders() {
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        long lastModified = 1_700_000_000_000L;
+        String eTag = "movie.mp4_1234_1700000000000";
+
+        MediaDeliveryService.initResponse(response, "movie.mp4", lastModified, eTag, "inline");
+
+        verify(response).setHeader("Content-Disposition", "inline;filename=\"movie.mp4\"");
+        verify(response).setHeader("Accept-Ranges", "bytes");
+        verify(response).setHeader("ETag", eTag);
+        verify(response).setDateHeader(ArgumentMatchers.eq("Last-Modified"), ArgumentMatchers.eq(lastModified));
+        verify(response).setDateHeader(ArgumentMatchers.eq("Expires"), ArgumentMatchers.anyLong());
     }
 }

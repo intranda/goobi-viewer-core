@@ -24,6 +24,7 @@ package io.goobi.viewer.exceptions;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -37,6 +38,7 @@ import jakarta.faces.convert.ConverterException;
 import com.ocpsoft.pretty.PrettyException;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -220,6 +222,58 @@ class MyExceptionHandlerTest {
         verify(mockSession).setAttribute(eq("errorType"), any());
         // errMsg must be null — this handler calls handleError(null, "general_no_url")
         assertEquals(null, requestMap.get("errMsg"));
+    }
+
+    /**
+     * A ConcurrentModificationException anywhere in the cause chain must be recognised by the
+     * dedicated diagnostic branch: it must still redirect to the generic error page but the
+     * diagnostic context helper must run without throwing.
+     * @verifies handle concurrent modification exception and redirect to error page
+     */
+    @Test
+    void handle_shouldHandleConcurrentModificationExceptionAndRedirectToErrorPage() throws Exception {
+        FacesContext mockFc = ContextMocker.mockFacesContext();
+        ExternalContext mockEc = mockFc.getExternalContext();
+        HttpSession mockSession = mock(HttpSession.class);
+        Application mockApp = mock(Application.class);
+        NavigationHandler mockNav = mock(NavigationHandler.class);
+
+        Map<String, Object> requestMap = new HashMap<>();
+        when(mockFc.getCurrentPhaseId()).thenReturn(PhaseId.RENDER_RESPONSE);
+        when(mockEc.isResponseCommitted()).thenReturn(false);
+        when(mockEc.getRequestMap()).thenReturn(requestMap);
+        when(mockEc.getSession(true)).thenReturn(mockSession);
+        when(mockFc.getApplication()).thenReturn(mockApp);
+        when(mockApp.getNavigationHandler()).thenReturn(mockNav);
+
+        ConcurrentModificationException cme = new ConcurrentModificationException();
+        MyExceptionHandler handler = new MyExceptionHandler(buildWrappedHandlerWith(mockFc, cme));
+        handler.handle();
+
+        verify(mockNav).handleNavigation(eq(mockFc), eq(null), any());
+        verify(mockSession).setAttribute(eq("errorType"), eq("general"));
+        assertEquals("ConcurrentModificationException: null", requestMap.get("errMsg"));
+    }
+
+    /**
+     * When no Facelet-derived exception is present in the cause chain, the helper must return
+     * {@code null} rather than guessing or throwing.
+     *
+     * <p>Note: a positive test is not feasible against the public Jakarta Faces API — neither
+     * {@link jakarta.faces.view.facelets.TagException} nor
+     * {@link jakarta.faces.view.facelets.FaceletException} expose a public {@code getLocation()}
+     * method. The helper targets Mojarra-internal exception types (e.g.
+     * {@code com.sun.faces.facelets.tag.TagAttributeException}) that expose it via reflection;
+     * those live in the runtime artifact, not on the test classpath.</p>
+     *
+     * @verifies return null when no facelet exception present
+     * @see MyExceptionHandler#findFaceletLocation(Throwable)
+     */
+    @Test
+    void findFaceletLocation_shouldReturnNullWhenNoFaceletExceptionPresent() {
+        Throwable chain = new RuntimeException("outer", new IllegalStateException("inner",
+                new ConcurrentModificationException()));
+        assertNull(MyExceptionHandler.findFaceletLocation(chain));
     }
 
     private static ExceptionHandler buildWrappedHandlerWith(FacesContext facesContext, Throwable throwable) {

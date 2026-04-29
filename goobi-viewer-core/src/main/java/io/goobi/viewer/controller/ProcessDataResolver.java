@@ -273,7 +273,7 @@ public class ProcessDataResolver {
     }
 
     /**
-     * Returns the absolute path to the source (METS/LIDO/DENKXWEB/DUBLINCORE) file with the given file name.
+     * Returns the absolute path to the source (METS/LIDO/EAD/DENKXWEB/DUBLINCORE) file with the given file name.
      *
      * @param fileName source file name including extension
      * @param dataRepository path or name of the data repository folder
@@ -281,6 +281,7 @@ public class ProcessDataResolver {
      * @return the absolute file system path to the source file in the resolved data repository
      * @should construct METS file path correctly
      * @should construct LIDO file path correctly
+     * @should construct EAD file path correctly
      * @should construct DenkXweb file path correctly
      * @should throw IllegalArgumentException if fileName is null
      * @should throw IllegalArgumentException if format is unknown
@@ -292,16 +293,20 @@ public class ProcessDataResolver {
         if (StringUtils.isEmpty(format)) {
             throw new IllegalArgumentException("format may not be null or empty (file name: " + fileName + ")");
         }
+        // Accept EAD as a valid source format. This was missing here even though DataFileTools.getSourceFilePath()
+        // already handles EAD; the gap caused IllegalArgumentException when ActiveDocumentBean rendered records of
+        // SOURCEDOCFORMAT=EAD (e.g. via widget_downloads.xhtml -> isAccessPermissionEpub -> getRecordDataset).
         switch (format) {
             case SolrConstants.SOURCEDOCFORMAT_METS:
             case SolrConstants.SOURCEDOCFORMAT_METS_MARC:
             case SolrConstants.SOURCEDOCFORMAT_LIDO:
+            case SolrConstants.SOURCEDOCFORMAT_EAD:
             case SolrConstants.SOURCEDOCFORMAT_DENKXWEB:
             case SolrConstants.SOURCEDOCFORMAT_WORLDVIEWS:
             case SolrConstants.SOURCEDOCFORMAT_DUBLINCORE:
                 break;
             default:
-                throw new IllegalArgumentException("format must be: METS | LIDO | DENKXWEB | DUBLINCORE | WORLDVIEWS");
+                throw new IllegalArgumentException("format must be: METS | LIDO | EAD | DENKXWEB | DUBLINCORE | WORLDVIEWS");
         }
 
         StringBuilder sb = new StringBuilder(getDataRepositoryPath(dataRepository));
@@ -312,6 +317,10 @@ public class ProcessDataResolver {
                 break;
             case SolrConstants.SOURCEDOCFORMAT_LIDO:
                 sb.append(config.getIndexedLidoFolder());
+                break;
+            case SolrConstants.SOURCEDOCFORMAT_EAD:
+                // Mirror DataFileTools: EAD records live under indexedEadFolder (default: indexed_ead)
+                sb.append(config.getIndexedEadFolder());
                 break;
             case SolrConstants.SOURCEDOCFORMAT_DENKXWEB:
                 sb.append(config.getIndexedDenkxwebFolder());

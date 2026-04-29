@@ -31,6 +31,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.json.JSONArray;
@@ -190,8 +191,9 @@ public class RecordsListResource {
      * @param end end year for date range filter (inclusive)
      * @param subtheme subtheme discriminator value for filtering
      * @return Generated query
+     * @should escape solr special chars in subtheme value
      */
-    private String createQuery(String query, final String start, final String end, String subtheme) {
+    String createQuery(String query, final String start, final String end, String subtheme) {
         String finalQuery = "";
         if (StringUtils.isNotBlank(query)) {
             finalQuery += "+(" + query + ")";
@@ -203,7 +205,9 @@ public class RecordsListResource {
         }
         if (StringUtils.isNotBlank(subtheme)) {
             String discriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
-            finalQuery += " +" + discriminatorField + ":" + subtheme;
+            // Escape Solr special characters in the user-supplied subtheme value to prevent Solr query injection
+            // and to handle legitimate field values containing whitespace, colons, parentheses, etc.
+            finalQuery += " +" + discriminatorField + ":" + ClientUtils.escapeQueryChars(subtheme);
         }
         finalQuery += SearchHelper.getAllSuffixes(servletRequest, true, true);
 

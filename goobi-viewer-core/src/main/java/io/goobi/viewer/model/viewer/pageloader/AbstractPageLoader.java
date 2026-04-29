@@ -154,7 +154,8 @@ public abstract class AbstractPageLoader implements IPageLoader {
                 || (pageNosToLoad.isEmpty() && numPages < DataManager.getInstance().getConfiguration().getPageLoaderThreshold())) {
             return new EagerPageLoader(topStructElement);
         }
-        logger.debug("Record has {} pages, using a lean page loader to limit memory usage.", numPages);
+        // Log format adjusted to start with the PI for easier grep/log filtering
+        logger.debug("PI: '{}', {} pages, using LeanPageLoader to limit memory usage.", topStructElement.getPi(), numPages);
         return new LeanPageLoader(topStructElement, numPages);
     }
 

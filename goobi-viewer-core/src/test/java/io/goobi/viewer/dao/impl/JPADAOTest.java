@@ -98,10 +98,12 @@ import io.goobi.viewer.model.search.SearchResultGroup;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
+import io.goobi.viewer.model.security.LicenseTypeCache;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.tickets.AccessTicket;
 import io.goobi.viewer.model.security.tickets.AccessTicket.AccessTicketType;
 import io.goobi.viewer.model.security.user.IpRange;
+import io.goobi.viewer.model.security.user.IpRangeCache;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.security.user.UserRole;
@@ -111,8 +113,6 @@ import io.goobi.viewer.model.security.user.icon.UserAvatarOption;
  * JPADAO test suite using H2 DB.
  */
 class JPADAOTest extends AbstractDatabaseEnabledTest {
-
-    public static final int NUM_LICENSE_TYPES = 6;
 
     String pi = "PI_TEST";
     String title = "TITLE_TEST";
@@ -610,6 +610,21 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * @see JPADAO#getAllIpRangesHydrated()
+     * @verifies return all IP ranges with licenses initialised
+     */
+    @Test
+    void getAllIpRangesHydrated_shouldReturnAllIpRangesWithLicensesInitialised() throws Exception {
+        List<IpRange> ipRanges = DataManager.getInstance().getDao().getAllIpRangesHydrated();
+        assertNotNull(ipRanges);
+        assertEquals(2, ipRanges.size());
+        // Must not throw LazyInitializationException after the DAO closed its EntityManager.
+        for (IpRange range : ipRanges) {
+            range.getLicenses().size();
+        }
+    }
+
+    /**
      * @verifies return ip range with all fields by id
      */
     @Test
@@ -1100,6 +1115,21 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(5, licenseTypes.size());
         assertEquals(Long.valueOf(1), licenseTypes.get(0).getId());
         assertEquals(Long.valueOf(6), licenseTypes.get(4).getId());
+    }
+
+    /**
+     * @see JPADAO#getAllLicenseTypesHydrated()
+     * @verifies return all license types with overridden license types and image placeholders initialised
+     */
+    @Test
+    void getAllLicenseTypesHydrated_shouldReturnAllLicenseTypesWithOverriddenLicenseTypesAndImagePlaceholdersInitialised() throws Exception {
+        List<LicenseType> licenseTypes = DataManager.getInstance().getDao().getAllLicenseTypesHydrated();
+        assertEquals(NUM_LICENSE_TYPES, licenseTypes.size());
+        // Access lazy collections; must not throw LazyInitializationException because the EntityManager is closed.
+        for (LicenseType lt : licenseTypes) {
+            lt.getOverriddenLicenseTypes().size();
+            lt.getImagePlaceholders().size();
+        }
     }
 
     /**
@@ -3579,5 +3609,101 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertFalse(mm2.isEnabled());
         assertEquals(3, mm2.getTranslations().size());
         assertEquals("Maintenance mode EN NEW", mm.getText("en"));
+    }
+
+    /**
+     * @see JPADAO#addLicenseType(LicenseType)
+     * @verifies invalidate the license type cache after a successful add
+     */
+    @Test
+    void addLicenseType_shouldInvalidateLicenseTypeCacheAfterSuccessfulAdd() throws Exception {
+        LicenseTypeCache cache = DataManager.getInstance().getLicenseTypeCache();
+        List<LicenseType> before = cache.getAllLicenseTypes();
+        LicenseType lt = new LicenseType("new-type-" + System.currentTimeMillis());
+        DataManager.getInstance().getDao().addLicenseType(lt);
+        List<LicenseType> after = cache.getAllLicenseTypes();
+        assertNotSame(before, after);
+    }
+
+    /**
+     * @see JPADAO#updateLicenseType(LicenseType)
+     * @verifies invalidate the license type cache after a successful update
+     */
+    @Test
+    void updateLicenseType_shouldInvalidateLicenseTypeCacheAfterSuccessfulUpdate() throws Exception {
+        LicenseTypeCache cache = DataManager.getInstance().getLicenseTypeCache();
+        List<LicenseType> before = cache.getAllLicenseTypes();
+        LicenseType lt = DataManager.getInstance().getDao().getLicenseType(1);
+        lt.setDescription("updated-desc-" + System.currentTimeMillis());
+        DataManager.getInstance().getDao().updateLicenseType(lt);
+        List<LicenseType> after = cache.getAllLicenseTypes();
+        assertNotSame(before, after);
+    }
+
+    /**
+     * @see JPADAO#deleteLicenseType(LicenseType)
+     * @verifies invalidate the license type cache after a successful delete
+     */
+    @Test
+    void deleteLicenseType_shouldInvalidateLicenseTypeCacheAfterSuccessfulDelete() throws Exception {
+        LicenseTypeCache cache = DataManager.getInstance().getLicenseTypeCache();
+        // Use id=2 which has no License FK references in the test fixture (confirmed by existing test).
+        LicenseType lt = DataManager.getInstance().getDao().getLicenseType(2);
+        assertNotNull(lt, "test fixture must contain LicenseType with id 2");
+        List<LicenseType> before = cache.getAllLicenseTypes();
+        assertTrue(DataManager.getInstance().getDao().deleteLicenseType(lt), "delete must succeed for cache invalidation to occur");
+        List<LicenseType> after = cache.getAllLicenseTypes();
+        assertNotSame(before, after);
+    }
+
+    /**
+     * @see JPADAO#addIpRange(IpRange)
+     * @verifies invalidate the IP range cache after a successful add
+     */
+    @Test
+    void addIpRange_shouldInvalidateIpRangeCacheAfterSuccessfulAdd() throws Exception {
+        IpRangeCache cache = DataManager.getInstance().getIpRangeCache();
+        List<IpRange> before = cache.getAllIpRanges();
+        IpRange range = new IpRange();
+        range.setName("test-range-" + System.currentTimeMillis());
+        range.setSubnetMask("10.0.0.0/24");
+        DataManager.getInstance().getDao().addIpRange(range);
+        List<IpRange> after = cache.getAllIpRanges();
+        assertNotSame(before, after);
+    }
+
+    /**
+     * @see JPADAO#updateIpRange(IpRange)
+     * @verifies invalidate the IP range cache after a successful update
+     */
+    @Test
+    void updateIpRange_shouldInvalidateIpRangeCacheAfterSuccessfulUpdate() throws Exception {
+        IpRangeCache cache = DataManager.getInstance().getIpRangeCache();
+        List<IpRange> ranges = DataManager.getInstance().getDao().getAllIpRanges();
+        assertFalse(ranges.isEmpty(), "test fixture must contain at least one IpRange");
+        IpRange range = ranges.get(0);
+        range.setDescription("updated-" + System.currentTimeMillis());
+        List<IpRange> before = cache.getAllIpRanges();
+        DataManager.getInstance().getDao().updateIpRange(range);
+        List<IpRange> after = cache.getAllIpRanges();
+        assertNotSame(before, after);
+    }
+
+    /**
+     * @see JPADAO#deleteIpRange(IpRange)
+     * @verifies invalidate the IP range cache after a successful delete
+     */
+    @Test
+    void deleteIpRange_shouldInvalidateIpRangeCacheAfterSuccessfulDelete() throws Exception {
+        // Create a dedicated test IpRange first (avoids FK entanglements with the fixture).
+        IpRange range = new IpRange();
+        range.setName("delete-test-" + System.currentTimeMillis());
+        range.setSubnetMask("10.0.0.0/24");
+        DataManager.getInstance().getDao().addIpRange(range);
+        IpRangeCache cache = DataManager.getInstance().getIpRangeCache();
+        List<IpRange> before = cache.getAllIpRanges();
+        DataManager.getInstance().getDao().deleteIpRange(range);
+        List<IpRange> after = cache.getAllIpRanges();
+        assertNotSame(before, after);
     }
 }

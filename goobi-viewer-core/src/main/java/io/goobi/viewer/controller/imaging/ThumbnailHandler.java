@@ -347,7 +347,13 @@ public class ThumbnailHandler {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
         if (doc != null) {
             StructElement struct = new StructElement((String) doc.getFirstValue(SolrConstants.IDDOC), doc);
-            IPageLoader pageLoader = AbstractPageLoader.create(struct);
+            // Pass List.of(order) so AbstractPageLoader.create() picks the LeanPageLoader and only
+            // loads the single requested page. The previous create(struct) call passed an empty
+            // pageNosToLoad list, which fell through to EagerPageLoader for any record below the
+            // pageLoaderThreshold (default 1000) and loaded ALL pages of the work just to return
+            // one. On a search results page this multiplied to ~6000 PhysicalElement constructions
+            // and ~50 Solr round-trips per request, blowing up search latency from ~150 ms to 15 s.
+            IPageLoader pageLoader = AbstractPageLoader.create(struct, List.of(order));
             return pageLoader.getPage(order);
         }
 
