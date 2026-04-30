@@ -139,7 +139,9 @@ export default class ZoomableImage {
         if (this.viewer) {
             if (_debug) console.log('load image from', this.tileSources);
             return this.viewer.load(Object.values(this.tileSources), this.getCurrentTileSourceIndex()).then((image) => {
+				if(_debug)console.log("loaded image with tilesources ", this.viewer.tileSources);
                 this.sequence?.initialize(this.getCurrentTileSourceId());
+				if(_debug)console.log("initializes sequence", this.sequence !== undefined);
                 this.overlayGroups.forEach((group) => group.show());
                 this.initWindowResize();
                 return this;
