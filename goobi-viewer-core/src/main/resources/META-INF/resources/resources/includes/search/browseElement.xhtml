@@ -53,14 +53,16 @@
 						<!-- 	                <div class="search-list__thumb-bookmark-wrapper"> -->
 						<button type="button"
 							class="btn btn--icon search-list__thumb-bookmark search-list__hit-options-button bookmark-toggle__button"
-							data-bookmark-list-type="add"
+
 							data-pi="#{browseElement.pi}"
 							aria-label="#{msg.bookmarkList_addToBookmarkList}"
 							role="switch"
 							aria-checked="false"
 							data-target="bookmarkToggle"
+							data-bookmark-list-type="add"
 							data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}"
 							data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}"
+							title="#{msg.bookmarkList_addToBookmarkList}"
 							data-toggle="tooltip">
 							<span class="bookmark-toggle">
 								<util:icon icon="bookmark"
@@ -102,12 +104,36 @@
 					</a>
 
 					<!-- EXPORT FILE FORMAT DROPDOWN/BUTTON -->
-					<a class="btn btn--icon search-list__hit-options-button" href="#"
-						data-toggle="tooltip" data-placement="top"
-						title="#{msg.action__search_hit_export}"
-						aria-label="#{msg.action__search_hit_export}"> <util:icon
-							icon="file-export" />
-					</a>
+					<div class="dropdown">
+						<button type="button"
+							class="btn btn--icon search-list__hit-options-button 
+							search-list__hit-export-dropdown-toggle dropdown-toggle"
+							data-toggle="dropdown"
+							aria-haspopup="true"
+							aria-expanded="false"
+							title="#{msg.action__search_hit_export}"
+							aria-label="#{msg.action__search_hit_export}">
+							<util:icon icon="file-export" />
+						</button>
+						<div class="dropdown-menu dropdown-menu-right">
+							<ui:repeat var="exportFormat" value="#{configurationBean.enabledSearchExportFormats}">
+								<a class="dropdown-item"
+									href="#{request.contextPath}/api/v1/search/export/#{exportFormat.name}?query=PI:&quot;#{browseElement.pi}&quot;"
+									target="_blank">
+									#{msg['search_export_'.concat(exportFormat.name)]}
+								</a>
+							</ui:repeat>
+						</div>
+					</div>
+					<!-- TOGGLE TOOLTIP ON EXPORT BUTTON BY JS -->
+					<script>
+						$('.search-list__hit-export-dropdown-toggle').tooltip({
+							placement: 'top',
+							trigger: 'hover'
+						});
+					</script>
+					
+					
 				</div>
 			</div>
 

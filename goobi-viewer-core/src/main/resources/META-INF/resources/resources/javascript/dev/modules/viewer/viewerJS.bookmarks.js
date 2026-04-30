@@ -96,18 +96,15 @@ var viewerJS = (function (viewer) {
                 let $span = $button;
                 if (added) {
                     $button.addClass('added');
-                    $span
-                        .tooltip('hide')
-                        .attr('data-original-title', $span.attr('data-bookmark-list-title-added'));
+                    $span.attr('data-original-title', $span.attr('data-bookmark-list-title-added'));
                     $button.attr('aria-checked', true);
-                } else {
+                } else { 
                     $button.removeClass('added');
-                    $span
-                        .tooltip('hide')
-                        .attr('data-original-title', $span.attr('data-bookmark-list-title-add'));
+                    $span.attr('data-original-title', $span.attr('data-bookmark-list-title-add'));
                     $button.attr('aria-checked', false);
                 }
             });
+            viewerJS.helper.initBsFeatures();
         },
 
         renderCounter: function () {
@@ -305,7 +302,7 @@ var viewerJS = (function (viewer) {
         prepareBookmarksPopup: function () {
             // render bookmarks popup
             $('[data-bookmark-list-type="add"]')
-                .off()
+                .off('click')
                 .on(
                     'click',
                     function (event) {
