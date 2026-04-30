@@ -57,7 +57,6 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.api.rest.filters.FilterTools;
 import io.goobi.viewer.controller.ALTOTools;
-import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileSizeCalculator;
@@ -98,8 +97,8 @@ import jakarta.servlet.http.HttpServletRequest;
 public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeniedThumbnailOutput, Serializable {
 
     /**
-     * Enumerates the coordinate annotation formats that may be present on a physical page, used to determine how word-level highlight coordinates
-     * are read and applied.
+     * Enumerates the coordinate annotation formats that may be present on a physical page, used to determine how word-level highlight coordinates are
+     * read and applied.
      */
     public enum CoordsFormat {
         UNCHECKED,
@@ -159,13 +158,13 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     private boolean fulltextAvailable = false;
 
     private Boolean fulltextAccessPermission;
-    /** Map containing AccessPermission access check results and custom access denied info.
-     *  ConcurrentHashMap so that concurrent seeding (see {@link #seedAccessPermission})
-     *  and concurrent reads from {@link #getAccessPermission} cannot corrupt the map or
-     *  produce a ConcurrentModificationException. Note: {@link #getAccessPermission} still
-     *  performs a non-atomic check-then-put on a miss — under concurrent tab access two
-     *  readers may both compute the same permission before one of them wins the put. That
-     *  race predates this class and is harmless: the second put overwrites an equal value. */
+    /**
+     * Map containing AccessPermission access check results and custom access denied info. ConcurrentHashMap so that concurrent seeding (see
+     * {@link #seedAccessPermission}) and concurrent reads from {@link #getAccessPermission} cannot corrupt the map or produce a
+     * ConcurrentModificationException. Note: {@link #getAccessPermission} still performs a non-atomic check-then-put on a miss — under concurrent tab
+     * access two readers may both compute the same permission before one of them wins the put. That race predates this class and is harmless: the
+     * second put overwrites an equal value.
+     */
     private final Map<String, AccessPermission> accessPermissionMap = new ConcurrentHashMap<>();
     /** True if a download ticket is required before files may be downloaded. Value is set during the access permission check. */
     private Boolean bornDigitalDownloadTicketRequired = null; // TODO reset when logging in/out or persist in session
@@ -526,19 +525,18 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * Seeds the internal permission cache with an already-evaluated {@link AccessPermission}
-     * for the given privilege. Called by batch prefetch paths (e.g.
-     * {@link io.goobi.viewer.model.viewer.ViewManager#getImageInfos}) so that subsequent
-     * {@link #getAccessPermission(String)} calls can skip the per-page Solr + DAO lookup.
+     * Seeds the internal permission cache with an already-evaluated {@link AccessPermission} for the given privilege. Called by batch prefetch paths
+     * (e.g. {@link io.goobi.viewer.model.viewer.ViewManager#getImageInfos}) so that subsequent {@link #getAccessPermission(String)} calls can skip
+     * the per-page Solr + DAO lookup.
      *
-     * <p>Idempotent: {@code putIfAbsent} guarantees that a previously cached decision is
-     * not overwritten. {@code null} permissions are silently ignored — this matches
-     * {@link io.goobi.viewer.model.security.PagePermissions#getImagePermission(int)}
-     * et al., which return {@code null} for unknown orders; seeding such a miss as
-     * {@link AccessPermission#denied()} would poison the cache for later legitimate lookups.
+     * <p>
+     * Idempotent: {@code putIfAbsent} guarantees that a previously cached decision is not overwritten. {@code null} permissions are silently ignored
+     * — this matches {@link io.goobi.viewer.model.security.PagePermissions#getImagePermission(int)} et al., which return {@code null} for unknown
+     * orders; seeding such a miss as {@link AccessPermission#denied()} would poison the cache for later legitimate lookups.
      *
-     * <p>Intended as an internal performance hook for batch prefetchers — not for general
-     * application code, which should call {@link #getAccessPermission(String)} instead.
+     * <p>
+     * Intended as an internal performance hook for batch prefetchers — not for general application code, which should call
+     * {@link #getAccessPermission(String)} instead.
      *
      * @param privilegeName access privilege name (see {@link io.goobi.viewer.model.security.IPrivilegeHolder})
      * @param permission prefetched permission; {@code null} is ignored (no-op)
@@ -596,7 +594,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         return filePath;
     }
 
-    
     public String getFilePathTiff() {
         return filePathTiff;
     }
@@ -610,7 +607,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         return this;
     }
 
-    
     public String getFilePathJpeg() {
         return filePathJpeg;
     }
@@ -793,33 +789,27 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
                 .isGranted();
     }
 
-    
     public boolean isHasImage() {
         return hasImage;
     }
 
-    
     public void setHasImage(boolean hasImage) {
         this.hasImage = hasImage;
     }
 
-    
     public boolean isDoubleImage() {
         // logger.trace("isDoubleImage: {}", doubleImage); //NOSONAR Debug
         return doubleImage;
     }
 
-    
     public void setDoubleImage(boolean doubleImage) {
         this.doubleImage = doubleImage;
     }
 
-    
     public boolean isFlipRectoVerso() {
         return flipRectoVerso;
     }
 
-    
     public void setFlipRectoVerso(boolean flipRectoVerso) {
         this.flipRectoVerso = flipRectoVerso;
     }
@@ -1527,14 +1517,13 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * Checks whether the current user may zoom this image. Consults
-     * {@link #accessPermissionMap} via {@link #getAccessPermission(String)} so that repeated
-     * calls on the same page avoid hitting Solr/JDBC after a batch seed or a prior lookup.
+     * Checks whether the current user may zoom this image. Consults {@link #accessPermissionMap} via {@link #getAccessPermission(String)} so that
+     * repeated calls on the same page avoid hitting Solr/JDBC after a batch seed or a prior lookup.
      *
-     * <p>Behaviour change (2026-04): previously returned {@code false} when no
-     * {@link jakarta.faces.context.FacesContext} was active. The new implementation runs
-     * the regular (anonymous) access check, consistent with {@link #isAccessPermissionImage()}.
-     * Non-JSF callers therefore see a real access decision instead of a blanket deny.
+     * <p>
+     * Behaviour change (2026-04): previously returned {@code false} when no {@link jakarta.faces.context.FacesContext} was active. The new
+     * implementation runs the regular (anonymous) access check, consistent with {@link #isAccessPermissionImage()}. Non-JSF callers therefore see a
+     * real access decision instead of a blanket deny.
      *
      * @return true if the user has {@link IPrivilegeHolder#PRIV_ZOOM_IMAGES} for this page
      * @throws IndexUnreachableException if any
@@ -1549,12 +1538,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * Checks whether the current user may download this image. Consults
-     * {@link #accessPermissionMap} via {@link #getAccessPermission(String)}.
+     * Checks whether the current user may download this image. Consults {@link #accessPermissionMap} via {@link #getAccessPermission(String)}.
      *
-     * <p>Behaviour change (2026-04): previously returned {@code false} when no
-     * {@link jakarta.faces.context.FacesContext} was active. The new implementation runs
-     * the regular (anonymous) access check, consistent with {@link #isAccessPermissionImage()}.
+     * <p>
+     * Behaviour change (2026-04): previously returned {@code false} when no {@link jakarta.faces.context.FacesContext} was active. The new
+     * implementation runs the regular (anonymous) access check, consistent with {@link #isAccessPermissionImage()}.
      *
      * @return true if the user has {@link IPrivilegeHolder#PRIV_DOWNLOAD_IMAGES} for this page
      * @throws IndexUnreachableException if any
@@ -1569,21 +1557,18 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * Checks whether a page-PDF may be downloaded for this page. Two configuration gates
-     * run first (page-PDF globally enabled + media type supports image view); the access
-     * decision itself is then served from {@link #accessPermissionMap} via
-     * {@link #getAccessPermission(String)}.
+     * Checks whether a page-PDF may be downloaded for this page. Two configuration gates run first (page-PDF globally enabled + media type supports
+     * image view); the access decision itself is then served from {@link #accessPermissionMap} via {@link #getAccessPermission(String)}.
      *
-     * <p>Query-shape change (2026-04) on a cache miss: the previous implementation went via
-     * {@code AccessConditionUtils.checkAccessPermissionForPagePdf} which issued a
-     * {@code PI_TOPSTRUCT + ORDER} Solr query against in-memory access conditions. The new
-     * implementation falls through to a filename-based query for the same page. Equivalent
-     * for standard records but a different Solr query plan. When a batch prefetcher has
-     * seeded {@link #accessPermissionMap} the miss path is skipped entirely.
+     * <p>
+     * Query-shape change (2026-04) on a cache miss: the previous implementation went via {@code AccessConditionUtils.checkAccessPermissionForPagePdf}
+     * which issued a {@code PI_TOPSTRUCT + ORDER} Solr query against in-memory access conditions. The new implementation falls through to a
+     * filename-based query for the same page. Equivalent for standard records but a different Solr query plan. When a batch prefetcher has seeded
+     * {@link #accessPermissionMap} the miss path is skipped entirely.
      *
-     * <p>FacesContext behaviour is unchanged: both the old and new paths ran the regular
-     * access check regardless of whether a {@code FacesContext} was active (the old path
-     * simply passed {@code null} through to {@code checkAccessPermissionForPagePdf}).
+     * <p>
+     * FacesContext behaviour is unchanged: both the old and new paths ran the regular access check regardless of whether a {@code FacesContext} was
+     * active (the old path simply passed {@code null} through to {@code checkAccessPermissionForPagePdf}).
      *
      * @return true if page-PDF download is allowed for this page; false otherwise
      * @should not trigger lookup when pdf permission is seeded
@@ -1660,8 +1645,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      * @return true if user has access permission; false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
-      * @should return true if access allowed for this page
-      * @should return false if access denied for this page
+     * @should return true if access allowed for this page
+     * @should return false if access denied for this page
      */
     public boolean isAccessPermissionFulltext() throws IndexUnreachableException, DAOException {
         HttpServletRequest request = null;
@@ -1679,8 +1664,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
 
     /**
      *
-     * @return true if the current user has permission to view the video content of this page and the
-     *         concurrent view limit is not exceeded, false otherwise
+     * @return true if the current user has permission to view the video content of this page and the concurrent view limit is not exceeded, false
+     *         otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1698,8 +1683,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
 
     /**
      *
-     * @return true if the current user has permission to view the audio content of this page and the
-     *         concurrent view limit is not exceeded, false otherwise
+     * @return true if the current user has permission to view the audio content of this page and the concurrent view limit is not exceeded, false
+     *         otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1804,7 +1789,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         return altoText;
     }
 
-    
     public String getAltoCharset() {
         return altoCharset;
     }
@@ -1958,7 +1942,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         }
     }
 
-    
     public List<Metadata> getMetadata() {
         return metadata;
     }

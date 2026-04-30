@@ -61,7 +61,6 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.model.security.user.IpRange;
-import io.goobi.viewer.model.security.user.IpRangeCache;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.viewer.PhysicalElement;
@@ -374,23 +373,22 @@ public final class AccessConditionUtils {
     }
 
     /**
-     * Fetches and pre-evaluates access permissions for all pages of a record in a single batch
-     * Solr query, avoiding O(n) per-page Solr queries during IIIF manifest generation.
+     * Fetches and pre-evaluates access permissions for all pages of a record in a single batch Solr query, avoiding O(n) per-page Solr queries during
+     * IIIF manifest generation.
      *
-     * <p>Steps:
+     * <p>
+     * Steps:
      * <ol>
-     *   <li>One Solr query: {@code +PI_TOPSTRUCT:pi +DOCTYPE:PAGE} (fields: ORDER, ACCESSCONDITION)</li>
-     *   <li>One cache read: {@code getRecordLicenseTypes()}</li>
-     *   <li>One user + IP resolution from {@code request}</li>
-     *   <li>In-memory evaluation of VIEW_IMAGES, VIEW_THUMBNAILS, ZOOM_IMAGES,
-     *   DOWNLOAD_IMAGES, VIEW_FULLTEXT, DOWNLOAD_PAGE_PDF per page</li>
+     * <li>One Solr query: {@code +PI_TOPSTRUCT:pi +DOCTYPE:PAGE} (fields: ORDER, ACCESSCONDITION)</li>
+     * <li>One cache read: {@code getRecordLicenseTypes()}</li>
+     * <li>One user + IP resolution from {@code request}</li>
+     * <li>In-memory evaluation of VIEW_IMAGES, VIEW_THUMBNAILS, ZOOM_IMAGES, DOWNLOAD_IMAGES, VIEW_FULLTEXT, DOWNLOAD_PAGE_PDF per page</li>
      * </ol>
      *
      * @param pi persistent identifier of the record
      * @param request HTTP servlet request for user and client IP resolution; may be null
-     * @return populated {@link PagePermissions};
-     *         {@link PagePermissions#EMPTY} when pi is blank, when no pages are found,
-     *         or when a Solr/DAO error occurs (logged at WARN)
+     * @return populated {@link PagePermissions}; {@link PagePermissions#EMPTY} when pi is blank, when no pages are found, or when a Solr/DAO error
+     *         occurs (logged at WARN)
      * @should return granted permissions for open access record
      * @should return empty for blank pi
      * @should return empty for null pi
@@ -466,20 +464,21 @@ public final class AccessConditionUtils {
     }
 
     /**
-     * Fetches the list of filenames accessible to the current user for a given record and Solr
-     * filename field, using a single batch Solr query. Permissions are evaluated in memory —
-     * no further Solr queries are issued per file.
+     * Fetches the list of filenames accessible to the current user for a given record and Solr filename field, using a single batch Solr query.
+     * Permissions are evaluated in memory — no further Solr queries are issued per file.
      *
-     * <p>Steps:
+     * <p>
+     * Steps:
      * <ol>
-     *   <li>One Solr query: {@code +PI_TOPSTRUCT:pi +DOCTYPE:PAGE +filenameField:[* TO *]}</li>
-     *   <li>One cache read: {@code getRecordLicenseTypes()}</li>
-     *   <li>One user + IP resolution from {@code request}</li>
-     *   <li>In-memory evaluation of {@code privilegeType} per page document</li>
+     * <li>One Solr query: {@code +PI_TOPSTRUCT:pi +DOCTYPE:PAGE +filenameField:[* TO *]}</li>
+     * <li>One cache read: {@code getRecordLicenseTypes()}</li>
+     * <li>One user + IP resolution from {@code request}</li>
+     * <li>In-memory evaluation of {@code privilegeType} per page document</li>
      * </ol>
      *
-     * <p>Only bare filenames are returned (e.g. {@code 00000001.xml}), not full Solr paths
-     * (e.g. {@code alto/PI/00000001.xml}). Results are ordered by page {@code ORDER}.
+     * <p>
+     * Only bare filenames are returned (e.g. {@code 00000001.xml}), not full Solr paths (e.g. {@code alto/PI/00000001.xml}). Results are ordered by
+     * page {@code ORDER}.
      *
      * @param pi persistent identifier of the record; blank input returns an empty list immediately
      * @param filenameField Solr field to query, e.g. {@code SolrConstants.FILENAME_ALTO}
@@ -1719,17 +1718,16 @@ public final class AccessConditionUtils {
     }
 
     /**
-     * Removes all PRIV_* session attributes whose key references the given pi. The key schemes
-     * used in this class are
+     * Removes all PRIV_* session attributes whose key references the given pi. The key schemes used in this class are
      * <ul>
-     *   <li>{@code PRIV_<privilegeType>_<pi>_<fileName>} (see line 1113),</li>
-     *   <li>{@code PRIV_<privilegeName>_<identifier>} (see line 756),</li>
-     *   <li>{@code PRIV_DOWNLOAD_ORIGINAL_CONTENT_<identifier>} (see line 828).</li>
+     * <li>{@code PRIV_<privilegeType>_<pi>_<fileName>} (see line 1113),</li>
+     * <li>{@code PRIV_<privilegeName>_<identifier>} (see line 756),</li>
+     * <li>{@code PRIV_DOWNLOAD_ORIGINAL_CONTENT_<identifier>} (see line 828).</li>
      * </ul>
      * The middle-match catches the first scheme, the suffix-match catches the other two.
      *
-     * <p>Package-private so the unit test can exercise it in isolation from the Solr/DB-backed
-     * permission pipeline. refs #27880
+     * <p>
+     * Package-private so the unit test can exercise it in isolation from the Solr/DB-backed permission pipeline. refs #27880
      *
      * @param session HTTP session whose attribute table is inspected
      * @param pi persistent identifier whose cached PRIV_* attributes should be removed

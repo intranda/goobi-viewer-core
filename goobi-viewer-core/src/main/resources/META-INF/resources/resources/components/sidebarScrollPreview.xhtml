@@ -21,6 +21,7 @@
                     <ui:repeat
                         var="page"
                         value="#{activeDocumentBean.viewManager.allPages}">
+                                                
                         <div class="sidebar-scroll-preview__item">
                             <ui:fragment rendered="#{page != null}">
                                 <!-- NON SEQUENCE MODE LINKS -->
@@ -160,7 +161,7 @@
             } );
 
             });
-         	// ]]>
+         // ]]>
         </script>
     </composite:implementation>
 </ui:composition>
