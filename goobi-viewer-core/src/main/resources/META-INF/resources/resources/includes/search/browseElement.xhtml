@@ -75,13 +75,55 @@
 					</ui:fragment>
 
 					<!-- DOWNLOAD PDF BUTTON -->
-					<a type="button"
-						class="btn btn--icon search-list__hit-options-button"
-						data-toggle="tooltip" data-placement="top"
-						title="#{msg.action__search_hit_download_pdf}"
-						aria-label="#{msg.action__search_hit_download_pdf}"> <util:icon
-							icon="download" />
-					</a>
+					<ui:fragment rendered="#{browseElement.downloadPdfAllowed}">
+
+						<!-- Direct download — pre-rendered PDFs exist: show small + full links -->
+						<ui:fragment rendered="#{!configurationBean.generatePdfInMessageQueue and browseElement.hasPrerenderedPagePdfs}">
+							<a href="#{browseElement.pdfDownloadLinkSmall}"
+								class="btn btn--icon search-list__hit-options-button"
+								data-toggle="tooltip" data-placement="top"
+								title="#{msg.label__pdf_download_record} (#{msg.label__pdf_download_small})"
+								aria-label="#{msg.label__pdf_download_record} (#{msg.label__pdf_download_small})"
+								target="_blank"
+								rel="nofollow noopener">
+								<util:icon icon="download" />
+							</a>
+							<a href="#{browseElement.pdfDownloadLinkFull}"
+								class="btn btn--icon search-list__hit-options-button"
+								data-toggle="tooltip" data-placement="top"
+								title="#{msg.label__pdf_download_record} (#{msg.label__pdf_download_full})"
+								aria-label="#{msg.label__pdf_download_record} (#{msg.label__pdf_download_full})"
+								target="_blank"
+								rel="nofollow noopener">
+								<util:icon icon="download" />
+							</a>
+						</ui:fragment>
+
+						<!-- Direct download — no pre-rendered PDFs: single link -->
+						<ui:fragment rendered="#{!configurationBean.generatePdfInMessageQueue and !browseElement.hasPrerenderedPagePdfs}">
+							<a href="#{browseElement.pdfDownloadLink}"
+								class="btn btn--icon search-list__hit-options-button"
+								data-toggle="tooltip" data-placement="top"
+								title="#{msg.action__search_hit_download_pdf}"
+								aria-label="#{msg.action__search_hit_download_pdf}"
+								target="_blank"
+								rel="nofollow noopener">
+								<util:icon icon="download" />
+							</a>
+						</ui:fragment>
+
+						<!-- Message queue mode — stub, wired up later -->
+						<ui:fragment rendered="#{configurationBean.generatePdfInMessageQueue}">
+							<a type="button"
+								class="btn btn--icon search-list__hit-options-button"
+								data-toggle="tooltip" data-placement="top"
+								title="#{msg.action__search_hit_download_pdf}"
+								aria-label="#{msg.action__search_hit_download_pdf}">
+								<util:icon icon="download" />
+							</a>
+						</ui:fragment>
+
+					</ui:fragment>
 
 
 
