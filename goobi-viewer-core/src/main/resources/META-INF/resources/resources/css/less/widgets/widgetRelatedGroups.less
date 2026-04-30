@@ -57,6 +57,9 @@
         flex-wrap: wrap;
         gap: 20px;
         align-items: flex-start;
+        padding: 20px;
+        background: @white;
+        border: 1px solid @middlegray;
     }
     &__card {
         flex: 0 0 140px;
@@ -81,6 +84,7 @@
         height: 195px;
         overflow: hidden;
         background-color: @neutralgray;
+        border: 1px solid @middlegray;
 
         img {
             width: 100%;
@@ -174,12 +178,19 @@
     .related-groups-section {
         color: var(--fg-content-box, #e3e4e7);
 
+        &__grid {
+            background: var(--bg-content-box, #253044);
+            border-color: var(--bg-active, #3b4557);
+        }
         &__heading,
         &__card-title {
             color: var(--fg-content-box, #e3e4e7);
         }
         &__heading-link {
             color: var(--lk-content-box, #e3e4e7);
+        }
+        &__card-image {
+            border-color: var(--bg-active, #3b4557);
         }
         &__view-all {
             border-color: var(--bg-active, #3b4557);
