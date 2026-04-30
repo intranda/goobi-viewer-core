@@ -2472,7 +2472,7 @@ public class ActiveDocumentBean implements Serializable {
         } catch (PresentationException | IndexUnreachableException e) {
             logger.warn("Could not load related-groups details for {}: {}", currentPi, e.getMessage());
             fresh = Collections.emptyList();
-        } catch (RuntimeException e) {
+        } catch (NullPointerException | IllegalArgumentException | IllegalStateException e) {
             logger.warn("Unexpected error while loading related-groups details for {}: {}", currentPi, e.toString());
             fresh = Collections.emptyList();
         }

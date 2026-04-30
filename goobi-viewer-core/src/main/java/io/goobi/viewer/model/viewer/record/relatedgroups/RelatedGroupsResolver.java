@@ -213,7 +213,7 @@ public class RelatedGroupsResolver {
             String year = SolrTools.getSingleFieldStringValue(doc, SolrConstants.MD_YEARPUBLISH);
             String thumbnailUrl = resolveThumbnailUrl(doc, pi);
             return new GroupMemberDetail(pi, title, subtitle, year, thumbnailUrl);
-        } catch (RuntimeException e) {
+        } catch (NullPointerException | IllegalArgumentException | IllegalStateException | ClassCastException e) {
             logger.warn("Skipping related-groups card due to error: {}", e.toString());
             return null;
         }
@@ -226,7 +226,7 @@ public class RelatedGroupsResolver {
             if (StringUtils.isNotBlank(url)) {
                 return url;
             }
-        } catch (ViewerConfigurationException | RuntimeException e) {
+        } catch (ViewerConfigurationException | NullPointerException | IllegalArgumentException | IllegalStateException e) {
             logger.debug("Primary thumbnail URL failed for {}: {}", pi, e.getMessage());
         }
         if (StringUtils.isNotBlank(pi)) {
@@ -253,7 +253,7 @@ public class RelatedGroupsResolver {
             if (fallbackDocs != null && !fallbackDocs.isEmpty()) {
                 try {
                     return imageDelivery.getThumbs().getThumbnailUrl(fallbackDocs.get(0));
-                } catch (RuntimeException re) {
+                } catch (NullPointerException | IllegalArgumentException | IllegalStateException re) {
                     logger.warn("Fallback thumbnail URL generation failed for {}: {}", pi, re.getMessage());
                 }
             }
