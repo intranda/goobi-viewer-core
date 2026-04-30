@@ -884,7 +884,6 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         return imageNo;
     }
 
-    
     public void setImageNo(int imageNo) {
         this.imageNo = imageNo;
     }
@@ -911,7 +910,6 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         return structElements.get(structElements.size() - 1);
     }
 
-    
     public List<EventElement> getEvents() {
         return events;
     }
@@ -996,22 +994,18 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         return DocType.ARCHIVE.equals(docType);
     }
 
-    
     public boolean isCmsPage() {
         return cmsPage;
     }
 
-    
     public void setCmsPage(boolean cmsPage) {
         this.cmsPage = cmsPage;
     }
 
-    
     public boolean isWork() {
         return work;
     }
 
-    
     public void setWork(boolean work) {
         this.work = work;
     }
@@ -1052,12 +1046,10 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         this.hasImages = hasImages;
     }
 
-    
     public boolean isHasTeiFiles() {
         return hasTeiFiles;
     }
 
-    
     public void setHasTeiFiles(boolean hasTeiFiles) {
         this.hasTeiFiles = hasTeiFiles;
     }
@@ -1341,7 +1333,6 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         return Collections.emptyList();
     }
 
-    
     public Set<String> getExistingMetadataFields() {
         return existingMetadataFields;
     }
@@ -1389,12 +1380,10 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         return dataRepository;
     }
 
-    
     public AccessPermission getAccessPermissionThumbnail() {
         return accessPermissionThumbnail;
     }
 
-    
     public void setAccessPermissionThumbnail(AccessPermission accessPermissionThumbnail) {
         this.accessPermissionThumbnail = accessPermissionThumbnail;
     }
@@ -1403,7 +1392,8 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         if (downloadPdfAllowed == null) {
             HttpServletRequest request = BeanUtils.getRequest();
             if (request == null) {
-                return downloadPdfAllowed = false;
+                downloadPdfAllowed = false;
+                return downloadPdfAllowed;
             }
             try {
                 downloadPdfAllowed = AccessConditionUtils
@@ -1537,7 +1527,6 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         return logId;
     }
 
-    
     public void setLogId(String logId) {
         this.logId = logId;
     }
