@@ -93,11 +93,7 @@ var viewerJS = (function (viewer) {
 
                 let added = this.contained(pi, page, logid);
                 if (_debug) console.log('set added to ' + added + ' for ', pi, page);
-                // Use a specific selector to avoid accidentally initializing Bootstrap
-                // tooltips (with default hover trigger) on hidden child spans like
-                // .bookmark-toggle__icon--filled, which would cause Bootstrap 4 to
-                // throw "Please use show on visible elements" when _enter fires.
-                let $span = $button.find('.bookmark-toggle');
+                let $span = $button;
                 if (added) {
                     $button.addClass('added');
                     $span

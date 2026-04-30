@@ -51,12 +51,12 @@
                                 aria-label="#{msg.bookmarkList_addToBookmarkList}"
                                 data-bookmark-list-type="add"
                                 data-pi="#{activeDocumentBean.viewManager.pi}"
-                                data-page="#{activeDocumentBean.viewManager.currentImageOrder}">
-                                <span
-                                    class="bookmark-toggle"
-                                    data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}"
-                                    data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}"
-                                    data-toggle="tooltip">
+                                data-page="#{activeDocumentBean.viewManager.currentImageOrder}"
+                                data-target="bookmarkToggle"
+                                data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}"
+                                data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}"
+                                data-toggle="tooltip">
+                                <span class="bookmark-toggle">
                                     <util:icon
                                         icon="bookmark"
                                         svgClass="icon icon-lg"
