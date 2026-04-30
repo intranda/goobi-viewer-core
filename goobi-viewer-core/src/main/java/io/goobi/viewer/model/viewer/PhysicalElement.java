@@ -1904,28 +1904,38 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      * @return List of <code>StructElement</code>s
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @should initialize the list only once
+     * @should be safe against concurrent invocation with getContainedStructElementsAsJson
      */
     public List<StructElement> getContainedStructElements() throws PresentationException, IndexUnreachableException {
-        if (containedStructElements == null) {
-            String query = '+' + SolrConstants.PI_TOPSTRUCT + ':' + pi + " +" + SolrConstants.THUMBPAGENO + ':' + order;
-            SolrDocumentList docstructDocs = DataManager.getInstance().getSearchIndex().search(query);
-            if (docstructDocs.isEmpty()) {
-                containedStructElements = Collections.emptyList();
-            } else {
-                containedStructElements = new ArrayList<>(docstructDocs.size());
-                for (SolrDocument doc : docstructDocs) {
-                    StructElement ele = new StructElement((String) doc.getFieldValue(SolrConstants.IDDOC), doc);
-                    IMetadataValue value = TocMaker.buildTocElementLabel(doc);
-                    String label = value.getValue(BeanUtils.getLocale()).orElse(value.getValue().orElse(""));
-                    if (StringUtils.isNotBlank(label)) {
-                        ele.setLabel(label);
+        // Synchronize on the same lock as getContainedStructElementsAsJson(): both methods read
+        // and the lazy build mutates containedStructElements, and image.xhtml binds to both
+        // (containedStructElementsAsJson on line 39 and containedStructElements on line 340 via
+        // ui:repeat). Without this lock a parallel render of the same PhysicalElement (cached in
+        // the session-scoped ViewManager) could observe a half-built ArrayList during
+        // .stream().toList() and raise ConcurrentModificationException.
+        synchronized (lock) {
+            if (containedStructElements == null) {
+                String query = '+' + SolrConstants.PI_TOPSTRUCT + ':' + pi + " +" + SolrConstants.THUMBPAGENO + ':' + order;
+                SolrDocumentList docstructDocs = DataManager.getInstance().getSearchIndex().search(query);
+                if (docstructDocs.isEmpty()) {
+                    containedStructElements = Collections.emptyList();
+                } else {
+                    containedStructElements = new ArrayList<>(docstructDocs.size());
+                    for (SolrDocument doc : docstructDocs) {
+                        StructElement ele = new StructElement((String) doc.getFieldValue(SolrConstants.IDDOC), doc);
+                        IMetadataValue value = TocMaker.buildTocElementLabel(doc);
+                        String label = value.getValue(BeanUtils.getLocale()).orElse(value.getValue().orElse(""));
+                        if (StringUtils.isNotBlank(label)) {
+                            ele.setLabel(label);
+                        }
+                        containedStructElements.add(ele);
                     }
-                    containedStructElements.add(ele);
                 }
             }
-        }
 
-        return containedStructElements;
+            return containedStructElements;
+        }
     }
 
     /**
