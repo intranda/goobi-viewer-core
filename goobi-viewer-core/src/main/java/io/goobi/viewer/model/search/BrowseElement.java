@@ -1399,6 +1399,10 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
 
     public boolean isDownloadPdfAllowed() {
         if (downloadPdfAllowed == null) {
+            if (anchor || DocType.GROUP.equals(docType)) {
+                downloadPdfAllowed = false;
+                return downloadPdfAllowed;
+            }
             HttpServletRequest request = BeanUtils.getRequest();
             if (request == null) {
                 downloadPdfAllowed = false;
