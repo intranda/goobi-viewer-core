@@ -290,12 +290,16 @@
     <access_tickets ticket_id="2" ticket_type="DOWNLOAD" date_created="2022-07-19 11:40:00.000000000" expiration_date="2032-08-02 11:40:00.000000000"
         email="user1@example.com" password_hash="$2a$10$H580saN37o2P03A5myUCm.V0ac/lO.79AfkiNjVhDzljqS3RGojzO" pi="PPN456" title="Foo Bar" />
     <access_tickets ticket_id="3" ticket_type="DOWNLOAD" date_created="2022-07-19 11:55:00.000000000"
-        email="user2@example.com" pi="PPN123" title="Foo Bar" request_message="Pretty please?" />
+        email="user2@example.com" pi="PPN123" title="Foo Bar" request_message="Pretty please?" />    
+        
+    <!-- empty placeholder so DBUnit cleans up user_tokens before viewer_users (FK) -->
+    <user_tokens token_id="0" user_id="1" token_hash="placeholder" date_created="2024-01-01 00:00:00" expiration_date="2024-01-02 00:00:00"/>
         
     <maintenance_mode maintenance_mode_id="1" enabled="true" />
     
     <maintenance_mode_translations translation_id="1" language="en" tag="text" translation_value="Maintenance mode EN" owner_id="1" />
     <maintenance_mode_translations translation_id="2" language="de" tag="text" translation_value="Maintenance mode DE" owner_id="1" />
-    
+
+
 </dataset>
 

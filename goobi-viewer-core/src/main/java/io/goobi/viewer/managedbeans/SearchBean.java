@@ -1299,6 +1299,12 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public void setExactSearchString(final String inSearchString) {
         logger.debug("setExactSearchString: {}", inSearchString);
+        // Diagnostic: capture the caller stack only when trace is enabled, so the double-invocation
+        // per request (observed: PrettyFaces setter-binding plus a second trigger from JSF rendering)
+        // can be pinpointed without spamming normal debug logs
+        if (logger.isTraceEnabled()) {
+            logger.trace("setExactSearchString caller", new Throwable("caller stack"));
+        }
         String tempSearchString = inSearchString;
         if ("-".equals(tempSearchString)) {
             tempSearchString = "";
@@ -2987,33 +2993,56 @@ public class SearchBean implements SearchInterface, Serializable {
      * @param date1 Start date for the calendar day range filter
      * @param date2 End date for the calendar day range filter
      * @return Navigation outcome
+     * @should reset CALENDAR_DAY query item when no dates are supplied
+     * @should preserve freshly typed search term when no dates are supplied
+     * @should populate CALENDAR_DAY query item when both dates are supplied
+     * @should preserve freshly typed search term when called with dates from the calendar TocView
      */
     public String searchInRecord(String piField, String piValue, String date1, String date2) {
-        logger.trace("searchInRecord: {}:{}", piField, piValue);
+        logger.debug("searchInRecord: piField={}, piValue={}, date1={}, date2={}", piField, piValue, date1, date2);
         // Clear any active facets from the browsing context so they don't pollute the search
         this.facets.resetActiveFacets();
-        // reset all items except those containing values from the search input fields
-        int index = 0;
-        for (SearchQueryItem item : this.advancedSearchQueryGroup.getQueryItems()) {
-            if (index != 1 && index != 2) {
-                item.reset();
-            }
-            index++;
+        // Both entry points (search-in-current-item widget and the calendar TocView) bind an
+        // input field to queryItems[1].value. By the time this action fires, JSF has already
+        // written the current form value back to that property — whatever the user last had in
+        // the text box, whether freshly typed or left as-is. We capture that now and restore it
+        // after the reset so it is not lost by the wipe.
+        List<SearchQueryItem> items = this.advancedSearchQueryGroup.getQueryItems();
+        boolean hasDates = StringUtils.isNotEmpty(date1) && StringUtils.isNotEmpty(date2);
+        String preservedSearchTerm = items.size() > 1 ? items.get(1).getValue() : null;
+        logger.debug("searchInRecord: captured preservedSearchTerm='{}' from queryItems[1] (hasDates={}, items.size={})",
+                preservedSearchTerm, hasDates, items.size());
+        for (SearchQueryItem item : items) {
+            item.reset();
         }
-        this.advancedSearchQueryGroup.getQueryItems().get(0).setField(piField);
+        items.get(0).setField(piField);
         if (StringUtils.isNotBlank(piValue)) {
-            this.advancedSearchQueryGroup.getQueryItems().get(0).setValue(piValue);
+            items.get(0).setValue(piValue);
         }
-        this.advancedSearchQueryGroup.getQueryItems().get(0).getLines().get(0).setOperator(SearchItemOperator.AND);
-        this.advancedSearchQueryGroup.getQueryItems().get(1).setField(SearchHelper.SEARCH_FILTER_ALL.getField());
-        this.advancedSearchQueryGroup.getQueryItems().get(1).setLabel(SearchHelper.SEARCH_FILTER_ALL.getLabel());
-        this.advancedSearchQueryGroup.getQueryItems().get(1).getLines().get(0).setOperator(SearchItemOperator.AND);
-        // Configure queryItems[2] for YEARMONTHDAY date range (range + datepicker derived from field config)
-        if (StringUtils.isNotEmpty(date1) && StringUtils.isNotEmpty(date2)) {
-            this.advancedSearchQueryGroup.getQueryItems().get(2).setField(SolrConstants.CALENDAR_DAY);
-            this.advancedSearchQueryGroup.getQueryItems().get(2).setValue(date1);
-            this.advancedSearchQueryGroup.getQueryItems().get(2).setValue2(date2);
-            this.advancedSearchQueryGroup.getQueryItems().get(2).getLines().get(0).setOperator(SearchItemOperator.AND);
+        items.get(0).getLines().get(0).setOperator(SearchItemOperator.AND);
+        items.get(1).setField(SearchHelper.SEARCH_FILTER_ALL.getField());
+        items.get(1).setLabel(SearchHelper.SEARCH_FILTER_ALL.getLabel());
+        items.get(1).getLines().get(0).setOperator(SearchItemOperator.AND);
+        if (StringUtils.isNotBlank(preservedSearchTerm)) {
+            items.get(1).setValue(preservedSearchTerm);
+        }
+        // Configure queryItems[2] for YEARMONTHDAY date range only when both dates are supplied
+        // (e.g. via the calendar TocView). When called without dates, the explicit reset above
+        // ensures the slot is empty rather than carrying forward a previous range.
+        if (items.size() > 2 && hasDates) {
+            items.get(2).setField(SolrConstants.CALENDAR_DAY);
+            items.get(2).setValue(date1);
+            items.get(2).setValue2(date2);
+            items.get(2).getLines().get(0).setOperator(SearchItemOperator.AND);
+        }
+        if (logger.isDebugEnabled()) {
+            logger.debug("searchInRecord: post-reset state — items[0]={}:{}, items[1]={}:'{}', items[2]={}:'{}'-'{}'",
+                    items.get(0).getField(), items.get(0).getValue(),
+                    items.size() > 1 ? items.get(1).getField() : "-",
+                    items.size() > 1 ? items.get(1).getValue() : "-",
+                    items.size() > 2 ? items.get(2).getField() : "-",
+                    items.size() > 2 ? items.get(2).getValue() : "-",
+                    items.size() > 2 ? items.get(2).getValue2() : "-");
         }
         this.setActiveSearchType(1);
         logger.trace("Searching for: {}", this.advancedSearchQueryGroup.getQueryItems().get(1).getValue());

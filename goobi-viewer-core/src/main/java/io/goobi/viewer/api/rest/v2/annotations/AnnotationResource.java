@@ -32,6 +32,8 @@ import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_RECORD;
 import java.io.IOException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.intranda.api.annotation.AbstractAnnotation;
 import de.intranda.api.annotation.IAnnotation;
@@ -48,6 +50,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedExcep
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.Version;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.filters.UserLoggedInFilter;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -83,6 +86,8 @@ import jakarta.ws.rs.core.MediaType;
 @jakarta.ws.rs.Path(ANNOTATIONS)
 @ViewerRestServiceBinding
 public class AnnotationResource {
+
+    private static final Logger logger = LogManager.getLogger(AnnotationResource.class);
 
     @Context
     private HttpServletRequest servletRequest;
@@ -270,10 +275,20 @@ public class AnnotationResource {
     }
 
     /**
-     *
-     * @return {@link User}
+     * @return User from bearer token or session
      */
     public User getUser() {
+        try {
+            User user = UserLoggedInFilter.getUserToken(servletRequest)
+                    .filter(token -> !token.isExpired())
+                    .map(token -> token.getUser())
+                    .orElse(null);
+            if (user != null) {
+                return user;
+            }
+        } catch (DAOException e) {
+            logger.warn("Error getting user from authorization token", e);
+        }
         UserBean userBean = BeanUtils.getUserBeanFromSession(servletRequest.getSession());
         if (userBean != null) {
             return userBean.getUser();

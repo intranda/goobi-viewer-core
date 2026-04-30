@@ -200,7 +200,7 @@ public class ViewManager implements Serializable {
     private PhysicalElement representativePage;
 
     /** Table of contents object. Volatile so that the post-lock write in ActiveDocumentBean.update() is immediately visible to all threads. */
-    private volatile TOC toc;
+    private volatile TOC toc; //NOSONAR S3077: set once post-lock, safe publication
 
     private int rotate = 0;
     private int zoomSlider;

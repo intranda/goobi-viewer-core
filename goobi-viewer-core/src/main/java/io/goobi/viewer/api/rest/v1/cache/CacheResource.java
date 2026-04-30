@@ -48,6 +48,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -164,8 +165,7 @@ public class CacheResource {
             logger.trace("clearCacheForRecord: {} {}/{}/{}", pi.replaceAll("[\n\r\t]", "_"), content, thumbs, pdf);
         }
         if (StringUtils.isEmpty(pi)) {
-            servletResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "pi is required");
-            return null;
+            throw new BadRequestException("pi is required");
         }
 
         int deleted = new CacheUtils(cacheManager).deleteFromCache(pi, content, thumbs, pdf);

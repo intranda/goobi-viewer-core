@@ -90,6 +90,7 @@ import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.LicenseType;
+import io.goobi.viewer.model.security.LicenseTypeCache;
 import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.model.security.user.User;
@@ -513,11 +514,23 @@ public final class SearchHelper {
      * @param searchTerms map of search terms per field
      * @param factory factory used for search hit creation and term matching
      * @return {@link SolrDocumentList}
+     * @should keep DOCSTRCT child docs when search terms are empty
+     * @should keep DOCSTRCT child docs when search terms are null
+     * @should require search term match when search terms are present
      */
-    private static SolrDocumentList filterChildDocs(SolrDocumentList docs, String mainIdDoc, Map<String, Set<String>> searchTerms,
+    static SolrDocumentList filterChildDocs(SolrDocumentList docs, String mainIdDoc, Map<String, Set<String>> searchTerms,
             SearchHitFactory factory) {
         SolrDocumentList filteredList = new SolrDocumentList();
         Map<String, SolrDocument> ownerDocs = new HashMap<>();
+        // When the search has no text-highlightable term (e.g. a pure YEARMONTHDAY date-range
+        // query from the calendar TocView, whose searchTerms map ends up only carrying structural
+        // fields such as PI_ANCHOR / PI_TOPSTRUCT / TITLE_TERMS extracted from the query), the
+        // term-based containment check can't mark DOCSTRCT children as relevant — they would all
+        // be dropped, leaving the user with zero sub-hits even though the expand already returned
+        // the matching issues. In that situation we trust the expand result and pass them through.
+        boolean noTextSearchTerms = !hasTextSearchTerm(searchTerms);
+        logger.debug("filterChildDocs: {} incoming child docs, noTextSearchTerms={}, searchTerms keys={}",
+                docs.size(), noTextSearchTerms, searchTerms != null ? searchTerms.keySet() : "null");
         for (SolrDocument doc : docs) {
             HitType hitType = getHitType(doc);
             String ownerIDDoc = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC_OWNER);
@@ -544,7 +557,10 @@ public final class SearchHelper {
                     }
                 }
             } else if (hitType == HitType.DOCSTRCT) {
-                if (ownerDocs.containsKey(iddoc)) {
+                if (noTextSearchTerms) {
+                    // Date-range or other non-text expand match: trust the expand result
+                    filteredList.add(doc);
+                } else if (ownerDocs.containsKey(iddoc)) {
                     ownerDocs.remove(iddoc);
                     filteredList.add(doc);
                 } else {
@@ -554,6 +570,7 @@ public final class SearchHelper {
 
         }
         filteredList.setNumFound(filteredList.size());
+        logger.debug("filterChildDocs: {} docs passed the filter (from {} incoming)", filteredList.size(), docs.size());
         return filteredList;
     }
 
@@ -561,6 +578,49 @@ public final class SearchHelper {
         return !factory
                 .findAdditionalMetadataFieldsContainingSearchTerms(SolrTools.getFieldValueMap(doc), searchTerms, Collections.emptySet(), "", "")
                 .isEmpty();
+    }
+
+    /**
+     * Returns true if the given search terms map contains any entry that represents a user-entered
+     * text term worth highlighting (DEFAULT / FULLTEXT / NORMDATATERMS / UGCTERMS / SEARCHTERMS_ARCHIVE
+     * / CMS_TEXT_ALL, or any explicit MD_* field term). Structural-only fields like PI_ANCHOR,
+     * PI_TOPSTRUCT, DC, DOCSTRCT, DOCTYPE, TITLE_TERMS are ignored, because
+     * {@link #extractSearchTermsFromQuery(String, String)} adds those automatically from the
+     * assembled query even when the user did not type anything.
+     *
+     * @param searchTerms map extracted from the current query
+     * @return true if a text-highlightable term is present; false otherwise
+     * @should return false for null map
+     * @should return false when only structural fields are present
+     * @should return true when DEFAULT field has values
+     * @should return true when an MD_ field has values
+     * @should return false when text field has only empty value set
+     */
+    static boolean hasTextSearchTerm(Map<String, Set<String>> searchTerms) {
+        if (searchTerms == null || searchTerms.isEmpty()) {
+            return false;
+        }
+        for (Map.Entry<String, Set<String>> entry : searchTerms.entrySet()) {
+            if (entry.getValue() == null || entry.getValue().isEmpty()) {
+                continue;
+            }
+            String field = entry.getKey();
+            switch (field) {
+                case SolrConstants.DEFAULT:
+                case SolrConstants.FULLTEXT:
+                case SolrConstants.NORMDATATERMS:
+                case SolrConstants.UGCTERMS:
+                case SolrConstants.SEARCHTERMS_ARCHIVE:
+                case SolrConstants.CMS_TEXT_ALL:
+                    return true;
+                default:
+                    if (field != null && field.startsWith("MD_")) {
+                        return true;
+                    }
+                    break;
+            }
+        }
+        return false;
     }
 
     /**
@@ -1196,7 +1256,8 @@ public final class SearchHelper {
     public static void updateFilterQuerySuffix(HttpServletRequest request, String privilege)
             throws IndexUnreachableException, PresentationException, DAOException {
         String filterQuerySuffix =
-                getPersonalFilterQuerySuffix(DataManager.getInstance().getDao().getRecordLicenseTypes(),
+                // Route through cache to avoid repeated DAO round-trips per request
+                getPersonalFilterQuerySuffix(DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes(),
                         (User) Optional.ofNullable(request)
                                 .map(HttpServletRequest::getSession)
                                 .map(session -> session.getAttribute("user"))
@@ -3123,13 +3184,18 @@ public final class SearchHelper {
                 continue;
             }
             // logger.trace("item field: {}", item.getField()); //NOSONAR Debug
-            // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't return every single doc
+            // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't return every single doc.
+            // CALENDAR_DAY (YEARMONTHDAY) is also skipped: the date filter is already enforced on the parent-level search,
+            // and its generateQuery() emits an {!join from=IDDOC to=IDDOC_OWNER} sub-query that — in the OR-mode expand context
+            // used for search-in-record — matches every page of every date-matching issue, producing spurious sub-hits for
+            // pages that don't contain the actual search term.
             switch (item.getField()) {
                 case SolrConstants.PI_TOPSTRUCT:
                 case SolrConstants.PI_ANCHOR:
                 case SolrConstants.DC:
                 case SolrConstants.DOCSTRCT:
                 case SolrConstants.BOOKMARKS:
+                case SolrConstants.CALENDAR_DAY:
                     continue;
                 default:
                     if (item.getField().startsWith(SolrConstants.PREFIX_GROUPID)) {
@@ -3441,6 +3507,9 @@ public final class SearchHelper {
      * @param request HTTP servlet request whose session holds the filter query suffix
      * @param privilege Privilege to check (Connector checks a different privilege)
      * @return Filter query suffix string from the HTTP session
+     * @should use BeanUtils request fallback when initiating suffix update
+     * @should compute personal filter suffix on the fly when no session is available
+     * @should fail closed with OPENACCESS-only suffix when sessionless computation fails
      */
     static String getFilterQuerySuffix(final HttpServletRequest request, String privilege) {
         HttpServletRequest req = request;
@@ -3452,14 +3521,41 @@ public final class SearchHelper {
         }
         HttpSession session = req.getSession(false);
         if (session == null) {
-            return null;
+            // The personal filter suffix carries the AccessCondition restrictions that prevent
+            // protected records from being returned. Without a session there is no place to
+            // cache it, but it must still be computed and applied — otherwise sessionless
+            // callers (e.g. REST clients without a JSESSIONID cookie) would see records they
+            // are not allowed to see. The result is computed on the fly and not cached.
+            // If the computation throws, fall back to an OPENACCESS-only suffix so protected
+            // records remain hidden even when the DB or Solr is temporarily unreachable.
+            try {
+                // No session means no client cookie either. Calling
+                // ClientApplicationManager.getClientFromRequest here would invoke
+                // req.getSession() (without 'false') and thereby force-create a session,
+                // which contradicts the whole sessionless path.
+                return getPersonalFilterQuerySuffix(
+                        DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes(),
+                        null,
+                        NetTools.getIpAddress(req),
+                        Optional.empty(),
+                        privilege);
+            } catch (IndexUnreachableException | DAOException e) {
+                logger.error("Failed to compute sessionless filter query suffix, falling back to OPENACCESS-only", e);
+            } catch (PresentationException e) {
+                logger.error("Failed to compute sessionless filter query suffix, falling back to OPENACCESS-only: {}", e.getMessage());
+            }
+            return " +(" + SolrConstants.ACCESSCONDITION + ":\"" + SolrConstants.OPEN_ACCESS_VALUE + "\")";
         }
 
         String ret = (String) session.getAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX);
         // If not suffix generated yet, initiate update
         if (ret == null) {
             try {
-                updateFilterQuerySuffix(request, privilege);
+                // Use the resolved 'req' (which may have been obtained via BeanUtils fallback)
+                // instead of the original 'request' parameter. Previously the original null was
+                // propagated, causing the warning "No HttpServletRequest found, cannot set
+                // filter query." and leaving the personal access filter unset for the session.
+                updateFilterQuerySuffix(req, privilege);
                 ret = (String) session.getAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX);
             } catch (IndexUnreachableException | DAOException e) {
                 logger.error(e.getMessage(), e);

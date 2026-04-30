@@ -21,11 +21,17 @@
  */
 package io.goobi.viewer.model.toc;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +71,7 @@ class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see TOC#getLabel(String)
      * @verifies return correct label
      */
     @Test
@@ -118,6 +125,460 @@ class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see TOC#getGroupNames()
+     * @verifies return empty list if map is null
+     */
+    @Test
+    void getGroupNames_shouldReturnEmptyListIfMapIsNull() {
+        TOC toc = new TOC();
+        List<String> names = toc.getGroupNames();
+        assertNotNull(names);
+        assertTrue(names.isEmpty());
+    }
+
+    /**
+     * @see TOC#getGroupNames()
+     * @verifies return group names from map
+     */
+    @Test
+    void getGroupNames_shouldReturnGroupNamesFromMap() {
+        TOC toc = new TOC();
+        Map<String, List<TOCElement>> map = new HashMap<>();
+        map.put(StringConstants.DEFAULT_NAME, new ArrayList<>());
+        map.put("group2", new ArrayList<>());
+        toc.setTocElementMap(map);
+        List<String> names = toc.getGroupNames();
+        assertEquals(2, names.size());
+        assertTrue(names.contains(StringConstants.DEFAULT_NAME));
+        assertTrue(names.contains("group2"));
+    }
+
+    /**
+     * @see TOC#getViewForGroup(String)
+     * @verifies return null if map is null
+     */
+    @Test
+    void getViewForGroup_shouldReturnNullIfMapIsNull() {
+        TOC toc = new TOC();
+        assertNull(toc.getViewForGroup(StringConstants.DEFAULT_NAME));
+    }
+
+    /**
+     * @see TOC#getViewForGroup(String)
+     * @verifies return elements for group
+     */
+    @Test
+    void getViewForGroup_shouldReturnElementsForGroup() {
+        TOC toc = new TOC();
+        Map<String, List<TOCElement>> map = new HashMap<>();
+        List<TOCElement> elements = new ArrayList<>();
+        elements.add(new TOCElement(new SimpleMetadataValue("elem"), "1", null, "1", "LOG_0001", 0, null, null, false, false, false, null, null, null));
+        map.put(StringConstants.DEFAULT_NAME, elements);
+        toc.setTocElementMap(map);
+        List<TOCElement> result = toc.getViewForGroup(StringConstants.DEFAULT_NAME);
+        assertNotNull(result);
+        assertEquals(1, result.size());
+    }
+
+    /**
+     * @see TOC#getFlatView()
+     * @verifies return default group elements
+     */
+    @Test
+    void getFlatView_shouldReturnDefaultGroupElements() {
+        TOC toc = new TOC();
+        Map<String, List<TOCElement>> map = new HashMap<>();
+        List<TOCElement> elements = new ArrayList<>();
+        elements.add(new TOCElement(new SimpleMetadataValue("elem"), "1", null, "1", "LOG_0001", 0, null, null, false, false, false, null, null, null));
+        map.put(StringConstants.DEFAULT_NAME, elements);
+        toc.setTocElementMap(map);
+        List<TOCElement> result = toc.getFlatView();
+        assertNotNull(result);
+        assertEquals(1, result.size());
+    }
+
+    /**
+     * @see TOC#getTocElements()
+     * @verifies return empty list if map is null
+     */
+    @Test
+    void getTocElements_shouldReturnEmptyListIfMapIsNull() {
+        TOC toc = new TOC();
+        List<TOCElement> result = toc.getTocElements();
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    /**
+     * @see TOC#findTocElementIndexByIddoc(String)
+     * @verifies return minus one for null or empty iddoc
+     */
+    @Test
+    void findTocElementIndexByIddoc_shouldReturnMinusOneForNullOrEmptyIddoc() {
+        TOC toc = new TOC();
+        toc.setTocElementMap(new HashMap<>());
+        toc.getTocElementMap().put(StringConstants.DEFAULT_NAME, new ArrayList<>());
+        assertEquals(-1, toc.findTocElementIndexByIddoc(null));
+        assertEquals(-1, toc.findTocElementIndexByIddoc(""));
+    }
+
+    /**
+     * @see TOC#findTocElementIndexByIddoc(String)
+     * @verifies return minus one if not found
+     */
+    @Test
+    void findTocElementIndexByIddoc_shouldReturnMinusOneIfNotFound() {
+        TOC toc = new TOC();
+        Map<String, List<TOCElement>> map = new HashMap<>();
+        List<TOCElement> elements = new ArrayList<>();
+        elements.add(new TOCElement(new SimpleMetadataValue("e1"), "1", null, "111", "LOG_0001", 0, null, null, false, false, false, null, null, null));
+        map.put(StringConstants.DEFAULT_NAME, elements);
+        toc.setTocElementMap(map);
+        assertEquals(-1, toc.findTocElementIndexByIddoc("999"));
+    }
+
+    /**
+     * @see TOC#findTocElementIndexByIddoc(String)
+     * @verifies return correct index
+     */
+    @Test
+    void findTocElementIndexByIddoc_shouldReturnCorrectIndex() {
+        TOC toc = new TOC();
+        Map<String, List<TOCElement>> map = new HashMap<>();
+        List<TOCElement> elements = new ArrayList<>();
+        elements.add(new TOCElement(new SimpleMetadataValue("e1"), "1", null, "111", "LOG_0001", 0, null, null, false, false, false, null, null, null));
+        elements.add(new TOCElement(new SimpleMetadataValue("e2"), "1", null, "222", "LOG_0002", 1, null, null, false, false, false, null, null, null));
+        elements.add(new TOCElement(new SimpleMetadataValue("e3"), "1", null, "333", "LOG_0003", 2, null, null, false, false, false, null, null, null));
+        map.put(StringConstants.DEFAULT_NAME, elements);
+        toc.setTocElementMap(map);
+        assertEquals(0, toc.findTocElementIndexByIddoc("111"));
+        assertEquals(1, toc.findTocElementIndexByIddoc("222"));
+        assertEquals(2, toc.findTocElementIndexByIddoc("333"));
+    }
+
+    /**
+     * @see TOC#isHasChildren()
+     * @verifies return false if map is null
+     */
+    @Test
+    void isHasChildren_shouldReturnFalseIfMapIsNull() {
+        TOC toc = new TOC();
+        assertFalse(toc.isHasChildren());
+    }
+
+    /**
+     * @see TOC#isHasChildren()
+     * @verifies return false for single element without children
+     */
+    @Test
+    void isHasChildren_shouldReturnFalseForSingleElementWithoutChildren() {
+        TOC toc = new TOC();
+        Map<String, List<TOCElement>> map = new HashMap<>();
+        TOCElement root = new TOCElement(new SimpleMetadataValue("root"), "1", null, "1", "LOG_0001", 0, null, null, false, false, false, null, null, null);
+        // hasChild defaults to false
+        map.put(StringConstants.DEFAULT_NAME, Collections.singletonList(root));
+        toc.setTocElementMap(map);
+        assertFalse(toc.isHasChildren());
+    }
+
+    /**
+     * @see TOC#isHasChildren()
+     * @verifies return true for multiple elements
+     */
+    @Test
+    void isHasChildren_shouldReturnTrueForMultipleElements() {
+        TOC toc = new TOC();
+        Map<String, List<TOCElement>> map = new HashMap<>();
+        TOCElement root = new TOCElement(new SimpleMetadataValue("root"), "1", null, "1", "LOG_0001", 0, null, null, false, false, false, null, null, null);
+        TOCElement child = new TOCElement(new SimpleMetadataValue("child"), "1", null, "2", "LOG_0002", 1, null, null, false, false, false, null, null, null);
+        map.put(StringConstants.DEFAULT_NAME, Arrays.asList(root, child));
+        toc.setTocElementMap(map);
+        assertTrue(toc.isHasChildren());
+    }
+
+    /**
+     * @see TOC#isHasChildren()
+     * @verifies return true for single element with children flag set
+     */
+    @Test
+    void isHasChildren_shouldReturnTrueForSingleElementWithChildrenFlagSet() {
+        TOC toc = new TOC();
+        Map<String, List<TOCElement>> map = new HashMap<>();
+        TOCElement root = new TOCElement(new SimpleMetadataValue("root"), "1", null, "1", "LOG_0001", 0, null, null, false, false, false, null, null, null);
+        root.setHasChild(true);
+        map.put(StringConstants.DEFAULT_NAME, Collections.singletonList(root));
+        toc.setTocElementMap(map);
+        assertTrue(toc.isHasChildren());
+    }
+
+    /**
+     * @see TOC#expandAll()
+     * @verifies make all elements visible and expand parents
+     */
+    @Test
+    void expandAll_shouldMakeAllElementsVisibleAndExpandParents() {
+        TOC toc = new TOC();
+        Map<String, List<TOCElement>> map = new HashMap<>();
+        TOCElement root = new TOCElement(new SimpleMetadataValue("root"), "1", null, "1", "LOG_0001", 0, null, null, false, false, false, null, null, null);
+        root.setHasChild(true);
+        root.setExpanded(false);
+        TOCElement child = new TOCElement(new SimpleMetadataValue("child"), "1", null, "2", "LOG_0002", 1, null, null, false, false, false, null, null, null);
+        child.setVisible(false);
+        map.put(StringConstants.DEFAULT_NAME, Arrays.asList(root, child));
+        toc.setTocElementMap(map);
+
+        toc.expandAll();
+
+        assertTrue(root.isVisible());
+        assertTrue(root.isExpanded()); // has children -> gets expanded
+        assertTrue(child.isVisible());
+        assertFalse(child.isExpanded()); // no children -> stays collapsed
+    }
+
+    /**
+     * @see TOC#collapseAll()
+     * @verifies keep root visible and hide non-root elements
+     */
+    @Test
+    void collapseAll_shouldKeepRootVisibleAndHideNonRootElements() {
+        TOC toc = new TOC();
+        Map<String, List<TOCElement>> map = new HashMap<>();
+        TOCElement root = new TOCElement(new SimpleMetadataValue("root"), "1", null, "1", "LOG_0001", 0, null, null, false, false, false, null, null, null);
+        root.setExpanded(true);
+        TOCElement child = new TOCElement(new SimpleMetadataValue("child"), "1", null, "2", "LOG_0002", 1, null, null, false, false, false, null, null, null);
+        child.setVisible(true);
+        map.put(StringConstants.DEFAULT_NAME, Arrays.asList(root, child));
+        toc.setTocElementMap(map);
+
+        toc.collapseAll();
+
+        assertTrue(root.isVisible()); // level 0 stays visible
+        assertFalse(root.isExpanded()); // but gets collapsed
+        assertFalse(child.isVisible()); // level 1 becomes invisible
+    }
+
+    /**
+     * @see TOC#buildTree(String, int, int, int, String)
+     * @verifies throw IllegalArgumentException if group is null
+     */
+    @Test
+    void buildTree_shouldThrowIllegalArgumentExceptionIfGroupIsNull() {
+        TOC toc = new TOC();
+        assertThrows(IllegalArgumentException.class, () -> toc.buildTree(null, 1, 5, 0, null));
+    }
+
+    /**
+     * @see TOC#buildTree(String, int, int, int, String)
+     * @verifies collapse children when sibling count exceeds threshold
+     */
+    @Test
+    void buildTree_shouldCollapseChildrenWhenSiblingCountExceedsThreshold() {
+        TOC toc = new TOC();
+        Map<String, List<TOCElement>> map = new HashMap<>();
+        TOCElement root = new TOCElement(null, "1", null, "1", "LOG_0001", 0, null, null, false, false, false, null, null, null);
+        // 6 siblings at level 1, threshold is 5 -> should trigger collapse
+        TOCElement c1 = new TOCElement(null, "1", null, "2", "LOG_0002", 1, null, null, false, false, false, null, null, null);
+        TOCElement c2 = new TOCElement(null, "1", null, "3", "LOG_0003", 1, null, null, false, false, false, null, null, null);
+        TOCElement c3 = new TOCElement(null, "1", null, "4", "LOG_0004", 1, null, null, false, false, false, null, null, null);
+        TOCElement c4 = new TOCElement(null, "1", null, "5", "LOG_0005", 1, null, null, false, false, false, null, null, null);
+        TOCElement c5 = new TOCElement(null, "1", null, "6", "LOG_0006", 1, null, null, false, false, false, null, null, null);
+        TOCElement c6 = new TOCElement(null, "1", null, "7", "LOG_0007", 1, null, null, false, false, false, null, null, null);
+        map.put(StringConstants.DEFAULT_NAME, Arrays.asList(root, c1, c2, c3, c4, c5, c6));
+        toc.setTocElementMap(map);
+
+        toc.buildTree(StringConstants.DEFAULT_NAME, 1, 5, 0, null);
+
+        assertTrue(root.isVisible());
+        assertFalse(root.isExpanded()); // parent collapsed by length threshold
+        assertFalse(c1.isVisible());
+        assertFalse(c2.isVisible());
+        assertFalse(c6.isVisible());
+    }
+
+    /**
+     * @see TOC#buildTree(String, int, int, int, String)
+     * @verifies not collapse children when sibling count is below threshold
+     */
+    @Test
+    void buildTree_shouldNotCollapseChildrenWhenBelowThreshold() {
+        TOC toc = new TOC();
+        Map<String, List<TOCElement>> map = new HashMap<>();
+        TOCElement root = new TOCElement(null, "1", null, "1", "LOG_0001", 0, null, null, false, false, false, null, null, null);
+        // 3 siblings at level 1, threshold is 5 -> no collapse
+        TOCElement c1 = new TOCElement(null, "1", null, "2", "LOG_0002", 1, null, null, false, false, false, null, null, null);
+        TOCElement c2 = new TOCElement(null, "1", null, "3", "LOG_0003", 1, null, null, false, false, false, null, null, null);
+        TOCElement c3 = new TOCElement(null, "1", null, "4", "LOG_0004", 1, null, null, false, false, false, null, null, null);
+        map.put(StringConstants.DEFAULT_NAME, Arrays.asList(root, c1, c2, c3));
+        toc.setTocElementMap(map);
+
+        toc.buildTree(StringConstants.DEFAULT_NAME, 1, 5, 0, null);
+
+        assertTrue(root.isVisible());
+        assertTrue(root.isExpanded()); // not collapsed, level 1 is within visibleLevel
+        assertTrue(c1.isVisible());
+        assertTrue(c2.isVisible());
+        assertTrue(c3.isVisible());
+    }
+
+    /**
+     * @see TOC#getLabel(String)
+     * @verifies return null for empty pi
+     */
+    @Test
+    void getLabel_shouldReturnNullForEmptyPi() {
+        TOC toc = new TOC();
+        assertNull(toc.getLabel(null));
+        assertNull(toc.getLabel(""));
+    }
+
+    /**
+     * @see TOC#getLabel(String)
+     * @verifies return null if pi not found
+     */
+    @Test
+    void getLabel_shouldReturnNullIfPiNotFound() {
+        TOC toc = new TOC();
+        Map<String, List<TOCElement>> map = new HashMap<>();
+        map.put(StringConstants.DEFAULT_NAME, Collections.singletonList(
+                new TOCElement(new SimpleMetadataValue("title"), "1", null, "1", "LOG_0001", 0, "PPN001", null, false, false, false, null, null, null)));
+        toc.setTocElementMap(map);
+        assertNull(toc.getLabel("UNKNOWN_PI"));
+    }
+
+    /**
+     * @see TOC#getActiveElement()
+     * @verifies expand direct children when tocVisible is set
+     */
+    @Test
+    void getActiveElement_shouldExpandChildrenWhenTocVisibleIsSet() {
+        TOC toc = new TOC();
+        Map<String, List<TOCElement>> map = new HashMap<>();
+        // root at index 0, child at index 1 — expandTree(0) will make level-1 children visible
+        TOCElement root = new TOCElement(null, "1", null, "1", "LOG_0001", 0, null, null, false, false, false, null, null, null);
+        root.setHasChild(true);
+        TOCElement child = new TOCElement(null, "1", null, "2", "LOG_0002", 1, null, null, false, false, false, null, null, null);
+        child.setVisible(false);
+        map.put(StringConstants.DEFAULT_NAME, Arrays.asList(root, child));
+        toc.setTocElementMap(map);
+
+        toc.setChildVisible(0); // triggers expandTree(0) on next getActiveElement call
+        TOCElement active = toc.getActiveElement();
+
+        assertSame(root, active); // getActiveElement returns the clicked element
+        assertTrue(root.isExpanded()); // getActiveElement sets expanded=true on the element
+        assertTrue(child.isVisible()); // expandTree made the child visible
+        assertEquals(-1, toc.getTocVisible()); // flag is reset after processing
+    }
+
+    /**
+     * @see TOC#getActiveElement()
+     * @verifies collapse all descendants when tocInvisible is set
+     */
+    @Test
+    void getActiveElement_shouldCollapseChildrenWhenTocInvisibleIsSet() {
+        TOC toc = new TOC();
+        Map<String, List<TOCElement>> map = new HashMap<>();
+        // root at index 0, child at index 1 — collapseTree(0) will hide deeper elements
+        TOCElement root = new TOCElement(null, "1", null, "1", "LOG_0001", 0, null, null, false, false, false, null, null, null);
+        root.setExpanded(true);
+        TOCElement child = new TOCElement(null, "1", null, "2", "LOG_0002", 1, null, null, false, false, false, null, null, null);
+        child.setVisible(true);
+        map.put(StringConstants.DEFAULT_NAME, Arrays.asList(root, child));
+        toc.setTocElementMap(map);
+
+        toc.setChildInvisible(0); // triggers collapseTree(0) on next getActiveElement call
+        TOCElement active = toc.getActiveElement();
+
+        assertSame(root, active); // getActiveElement returns the clicked element
+        assertFalse(root.isExpanded()); // getActiveElement sets expanded=false on the element
+        assertFalse(child.isVisible()); // collapseTree hid all descendants
+        assertEquals(-1, toc.getTocInvisible()); // flag is reset after processing
+    }
+
+    /**
+     * @see TOC#buildTree(String, int, int, int, String)
+     * @verifies assign correct parent ids to elements
+     */
+    @Test
+    void buildTree_shouldAssignCorrectParentIds() {
+        TOC toc = new TOC();
+        Map<String, List<TOCElement>> map = new HashMap<>();
+        // Linear chain: root → child → grandchild
+        TOCElement root = new TOCElement(null, "1", null, "1", "LOG_0001", 0, null, null, false, false, false, null, null, null);
+        TOCElement child = new TOCElement(null, "1", null, "2", "LOG_0002", 1, null, null, false, false, false, null, null, null);
+        TOCElement grandchild = new TOCElement(null, "1", null, "3", "LOG_0003", 2, null, null, false, false, false, null, null, null);
+        map.put(StringConstants.DEFAULT_NAME, Arrays.asList(root, child, grandchild));
+        toc.setTocElementMap(map);
+
+        toc.buildTree(StringConstants.DEFAULT_NAME, 1, 10, 0, null);
+
+        // IDs are assigned based on list position
+        assertEquals(0, root.getID());
+        assertEquals(1, child.getID());
+        assertEquals(2, grandchild.getID());
+        // parentIds reflect the tree hierarchy
+        assertEquals(-1, root.getParentId()); // root has no parent (initial value)
+        assertEquals(0, child.getParentId()); // child's parent is root at index 0
+        assertEquals(1, grandchild.getParentId()); // grandchild's parent is child at index 1
+    }
+
+    /**
+     * @see TOC#buildTree(String, int, int, int, String)
+     * @verifies not collapse elements below lowestLevelToCollapse even when threshold exceeded
+     */
+    @Test
+    void buildTree_shouldNotCollapseElementsBelowLowestLevelToCollapse() {
+        TOC toc = new TOC();
+        Map<String, List<TOCElement>> map = new HashMap<>();
+        // 3 children at level 1 exceed threshold of 2 — but lowestLevelToCollapse=2
+        // protects level-1 elements (1 < 2) from being collapsed by length
+        TOCElement root = new TOCElement(null, "1", null, "1", "LOG_0001", 0, null, null, false, false, false, null, null, null);
+        TOCElement c1 = new TOCElement(null, "1", null, "2", "LOG_0002", 1, null, null, false, false, false, null, null, null);
+        TOCElement c2 = new TOCElement(null, "1", null, "3", "LOG_0003", 1, null, null, false, false, false, null, null, null);
+        TOCElement c3 = new TOCElement(null, "1", null, "4", "LOG_0004", 1, null, null, false, false, false, null, null, null);
+        map.put(StringConstants.DEFAULT_NAME, Arrays.asList(root, c1, c2, c3));
+        toc.setTocElementMap(map);
+
+        toc.buildTree(StringConstants.DEFAULT_NAME, 1, 2, 2, null);
+
+        assertTrue(root.isExpanded()); // root stays expanded — no length-based collapse occurred
+        assertTrue(c1.isVisible());
+        assertTrue(c2.isVisible());
+        assertTrue(c3.isVisible());
+    }
+
+    /**
+     * @see TOC#buildTree(String, int, int, int, String)
+     * @verifies not collapse any elements when threshold is zero or negative
+     */
+    @Test
+    void buildTree_shouldNotCollapseWhenThresholdIsZero() {
+        TOC toc = new TOC();
+        Map<String, List<TOCElement>> map = new HashMap<>();
+        // 6 children would normally exceed any threshold, but threshold=0 disables collapsing
+        TOCElement root = new TOCElement(null, "1", null, "1", "LOG_0001", 0, null, null, false, false, false, null, null, null);
+        TOCElement c1 = new TOCElement(null, "1", null, "2", "LOG_0002", 1, null, null, false, false, false, null, null, null);
+        TOCElement c2 = new TOCElement(null, "1", null, "3", "LOG_0003", 1, null, null, false, false, false, null, null, null);
+        TOCElement c3 = new TOCElement(null, "1", null, "4", "LOG_0004", 1, null, null, false, false, false, null, null, null);
+        TOCElement c4 = new TOCElement(null, "1", null, "5", "LOG_0005", 1, null, null, false, false, false, null, null, null);
+        TOCElement c5 = new TOCElement(null, "1", null, "6", "LOG_0006", 1, null, null, false, false, false, null, null, null);
+        TOCElement c6 = new TOCElement(null, "1", null, "7", "LOG_0007", 1, null, null, false, false, false, null, null, null);
+        map.put(StringConstants.DEFAULT_NAME, Arrays.asList(root, c1, c2, c3, c4, c5, c6));
+        toc.setTocElementMap(map);
+
+        toc.buildTree(StringConstants.DEFAULT_NAME, 1, 0, 0, null); // collapseThreshold=0 → no length-based collapse
+
+        assertTrue(root.isExpanded());
+        assertTrue(c1.isVisible());
+        assertTrue(c2.isVisible());
+        assertTrue(c3.isVisible());
+        assertTrue(c4.isVisible());
+        assertTrue(c5.isVisible());
+        assertTrue(c6.isVisible());
+    }
+
+    /**
+     * @see TOC#buildTree(String, int, int, int, String)
      * @verifies expand ancestors of target element
      */
     @Test
@@ -158,8 +619,8 @@ class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @verifies not throw NPE when group not in map
      * @see TOC#buildTree(String, int, int, int, String)
+     * @verifies not throw NPE when group not in map
      */
     @Test
     void buildTree_shouldNotThrowNPEWhenGroupNotInMap() {
@@ -194,6 +655,7 @@ class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see TOC#getTreeViewForGroup(String)
      * @verifies not throw NPE when ViewManager is null
      */
     @Test
@@ -210,5 +672,54 @@ class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
         // In test context BeanUtils.getActiveDocumentBean() returns null — this must
         // not cause a NullPointerException after the fix.
         Assertions.assertDoesNotThrow(() -> toc.getTreeViewForGroup(StringConstants.DEFAULT_NAME));
+    }
+
+    /**
+     * @see TOC#buildTree(String, int, int, int, String)
+     * @verifies not collapse when sibling count equals threshold exactly
+     */
+    @Test
+    void buildTree_shouldNotCollapseWhenSiblingCountEqualsThreshold() {
+        // collapseTocForLength uses strict '>' — exactly threshold siblings must NOT trigger collapse
+        TOC toc = new TOC();
+        Map<String, List<TOCElement>> map = new HashMap<>();
+        TOCElement root = new TOCElement(null, "1", null, "1", "LOG_0001", 0, null, null, false, false, false, null, null, null);
+        TOCElement c1 = new TOCElement(null, "1", null, "2", "LOG_0002", 1, null, null, false, false, false, null, null, null);
+        TOCElement c2 = new TOCElement(null, "1", null, "3", "LOG_0003", 1, null, null, false, false, false, null, null, null);
+        TOCElement c3 = new TOCElement(null, "1", null, "4", "LOG_0004", 1, null, null, false, false, false, null, null, null);
+        map.put(StringConstants.DEFAULT_NAME, Arrays.asList(root, c1, c2, c3));
+        toc.setTocElementMap(map);
+
+        // 3 siblings at level 1 with collapseThreshold=3: levelLength (3) is NOT > 3, so no collapse
+        toc.buildTree(StringConstants.DEFAULT_NAME, 1, 3, 0, null);
+
+        assertTrue(root.isExpanded()); // parent must not be collapsed
+        assertTrue(c1.isVisible());
+        assertTrue(c2.isVisible());
+        assertTrue(c3.isVisible());
+    }
+
+    /**
+     * @see TOC#buildTree(String, int, int, int, String)
+     * @verifies handle elements with null iddoc gracefully in index
+     */
+    @Test
+    void buildTree_shouldHandleElementsWithNullIddocGracefully() {
+        // Elements with null iddoc must not corrupt the index — other elements with non-null iddoc
+        // must still be findable (tested via uncollapseCurrentElementAncestors with currentElementIdDoc)
+        TOC toc = new TOC();
+        Map<String, List<TOCElement>> map = new HashMap<>();
+        // root has null iddoc, child has a real iddoc
+        TOCElement root = new TOCElement(null, "1", null, null, "LOG_0001", 0, null, null, false, false, false, null, null, null);
+        TOCElement child = new TOCElement(null, "1", null, "42", "LOG_0002", 1, null, null, false, false, false, null, null, null);
+        child.setVisible(false);
+        map.put(StringConstants.DEFAULT_NAME, Arrays.asList(root, child));
+        toc.setTocElementMap(map);
+
+        // Building with currentElementIdDoc="42" triggers uncollapseCurrentElementAncestors,
+        // which uses iddocIndex. If null-iddoc handling is broken, this would throw NPE or silently fail.
+        toc.buildTree(StringConstants.DEFAULT_NAME, 0, 0, 0, "42");
+
+        assertTrue(child.isVisible()); // child must be made visible by ancestor-uncollapse
     }
 }

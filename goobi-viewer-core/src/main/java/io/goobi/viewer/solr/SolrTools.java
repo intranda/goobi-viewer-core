@@ -974,13 +974,24 @@ public final class SolrTools {
      * @should remove brace pairs
      * @should keep join parameter
      * @should keep single braces
+     * @should preserve nested solr local params
+     * @should not double wrap already wrapped join parameter
      */
     public static String cleanUpQuery(String query) {
         if (StringUtils.isBlank(query)) {
             return query;
         }
 
-        return query.replaceAll("\\{(.+)\\}", "$1").replace("!join from=PI_TOPSTRUCT to=PI", "{!join from=PI_TOPSTRUCT to=PI}");
+        // The previous greedy regex "\{(.+)\}" matched from the first "{" to the last "}" in the
+        // entire string, which stripped the closing brace of any inner Solr local params such as
+        // the nested "{!join from=IDDOC to=IDDOC_OWNER}" emitted by SearchQueryItem.generateQuery()
+        // for CALENDAR_DAY ranges and — combined with the unconditional PI_TOPSTRUCT replace below —
+        // produced a "{!join from=PI_TOPSTRUCT to=PI}}" double brace, turning the whole query into
+        // a near-match-all that returned ~the entire index. The refined pattern skips any "{!..."
+        // local param (negative lookahead on the "!") and the wrapping replace now only fires when
+        // the token is not already surrounded by braces, so repeated calls are idempotent.
+        return query.replaceAll("\\{([^!][^}]*)\\}", "$1")
+                .replaceAll("(?<!\\{)!join from=PI_TOPSTRUCT to=PI(?!\\})", "{!join from=PI_TOPSTRUCT to=PI}");
     }
 
     /**
