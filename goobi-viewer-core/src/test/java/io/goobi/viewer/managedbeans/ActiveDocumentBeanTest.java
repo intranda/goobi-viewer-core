@@ -47,6 +47,7 @@ import io.goobi.viewer.model.toc.TOC;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.ViewManager;
+import io.goobi.viewer.model.viewer.record.relatedgroups.GroupMemberDetail;
 
 class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -813,12 +814,12 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         adb.update();
         assertTrue(adb.isRecordLoaded());
 
-        java.util.List<ActiveDocumentBean.GroupMemberDetail> details = adb.getGroupMembershipDetails();
+        java.util.List<GroupMemberDetail> details = adb.getGroupMembershipDetails();
         Assertions.assertNotNull(details);
         Assertions.assertFalse(details.isEmpty(), "Expected at least one related group member");
 
         java.util.Set<String> pis = new java.util.HashSet<>();
-        for (ActiveDocumentBean.GroupMemberDetail d : details) {
+        for (GroupMemberDetail d : details) {
             pis.add(d.getPi());
         }
         assertTrue(pis.contains("AC01131752"), "Expected series record (GROUPID_SERIES target) in results");
@@ -836,10 +837,10 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         assertTrue(adb.isRecordLoaded());
         assertTrue(adb.getViewManager().getTopStructElement().isAnchorChild());
 
-        java.util.List<ActiveDocumentBean.GroupMemberDetail> details = adb.getGroupMembershipDetails();
+        java.util.List<GroupMemberDetail> details = adb.getGroupMembershipDetails();
         Assertions.assertNotNull(details);
         Assertions.assertFalse(details.isEmpty(), "Expected at least one sibling volume");
-        for (ActiveDocumentBean.GroupMemberDetail d : details) {
+        for (GroupMemberDetail d : details) {
             Assertions.assertNotEquals("168714434_1874", d.getPi(),
                     "Current record must be excluded from its own sibling list");
             Assertions.assertNotEquals("168714434", d.getPi(),
@@ -856,7 +857,7 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         adb.setPersistentIdentifier("AC16139576");
         adb.setImageToShow("1");
         adb.update();
-        java.util.List<ActiveDocumentBean.GroupMemberDetail> first = adb.getGroupMembershipDetails();
+        java.util.List<GroupMemberDetail> first = adb.getGroupMembershipDetails();
         Assertions.assertNotNull(first);
 
         adb.reset();
@@ -864,7 +865,7 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         adb.setImageToShow("1");
         adb.update();
 
-        java.util.List<ActiveDocumentBean.GroupMemberDetail> second = adb.getGroupMembershipDetails();
+        java.util.List<GroupMemberDetail> second = adb.getGroupMembershipDetails();
         Assertions.assertNotNull(second);
         Assertions.assertNotSame(first, second, "Cache must not be reused across different records");
     }
