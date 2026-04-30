@@ -49,6 +49,10 @@ import org.jsoup.safety.Safelist;
  *       user-authored snippets (comments, annotation bodies). Allows only minimal inline
  *       formatting; preserves plain-text line breaks by converting them to {@code <br>}
  *       before sanitization.</li>
+ *   <li>{@link #cleanCommentPlainText(String)} — for consumers that must produce plain
+ *       text (no HTML markup) such as IIIF Search hit selectors or other non-HTML JSON
+ *       payloads. Strips all tags and preserves plain-text newlines verbatim (no
+ *       {@code <br>} injection).</li>
  * </ul>
  *
  * <p>
@@ -152,6 +156,45 @@ public final class HtmlSanitizer {
         // Convert plain-text newlines to <br> before sanitization to preserve line breaks,
         // then sanitize using the comment-profile safelist (no images, tables, headings).
         return Jsoup.clean(preprocessPlainTextNewlines(input), "", buildCommentSafelist(),
+                new Document.OutputSettings().prettyPrint(false));
+    }
+
+    /**
+     * Sanitize user-authored content for consumers that must emit plain text (no HTML markup),
+     * for example IIIF Search hit selectors whose {@code prefix}/{@code suffix} fields are
+     * plain text per the W3C Web Annotation spec, or any other non-HTML JSON payload that may
+     * be rendered downstream.
+     *
+     * <p>
+     * Differs from {@link #cleanComment(String)} in two ways: the deny-by-default
+     * {@code Safelist.none()} strips ALL tags (including the inline formatting that
+     * {@code cleanComment} preserves), and plain-text newlines are kept as {@code \n} rather
+     * than rewritten to {@code <br>\n}. Output therefore round-trips a plain-text input
+     * unchanged. {@code prettyPrint(false)} prevents Jsoup from collapsing whitespace in
+     * surviving text nodes.
+     * </p>
+     *
+     * @param input raw string; may be {@code null}
+     * @return plain-text string with all HTML tags removed and {@code \n} preserved;
+     *         {@code null} if input was {@code null}
+     * @should return null when input is null
+     * @should return empty string when input is empty
+     * @should preserve plain text newlines verbatim
+     * @should strip all html tags
+     * @should remove script tags and content
+     * @should strip br tags injected by attackers
+     */
+    public static String cleanCommentPlainText(String input) {
+        if (input == null) {
+            return null;
+        }
+        if (input.isEmpty()) {
+            return input;
+        }
+        // Safelist.none() strips every tag; prettyPrint(false) keeps existing \n in text nodes.
+        // Deliberately skip the cleanComment newline-to-<br> preprocessing so the IIIF Search
+        // selectors and other plain-text consumers receive verbatim newlines.
+        return Jsoup.clean(input, "", Safelist.none(),
                 new Document.OutputSettings().prettyPrint(false));
     }
 

@@ -370,6 +370,77 @@ class HtmlSanitizerTest {
     }
 
     /**
+     * @see HtmlSanitizer#cleanCommentPlainText(String)
+     * @verifies return null when input is null
+     */
+    @Test
+    void cleanCommentPlainText_shouldReturnNullWhenInputIsNull() {
+        assertNull(HtmlSanitizer.cleanCommentPlainText(null));
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanCommentPlainText(String)
+     * @verifies return empty string when input is empty
+     */
+    @Test
+    void cleanCommentPlainText_shouldReturnEmptyStringWhenInputIsEmpty() {
+        assertEquals("", HtmlSanitizer.cleanCommentPlainText(""));
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanCommentPlainText(String)
+     * @verifies preserve plain text newlines verbatim
+     */
+    @Test
+    void cleanCommentPlainText_shouldPreservePlainTextNewlinesVerbatim() {
+        // Plain text input must round-trip unchanged: no <br> injection, newlines preserved.
+        String result = HtmlSanitizer.cleanCommentPlainText("A bird in the hand is worth\ntwo in the bush.");
+        assertEquals("A bird in the hand is worth\ntwo in the bush.", result);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanCommentPlainText(String)
+     * @verifies strip all html tags
+     */
+    @Test
+    void cleanCommentPlainText_shouldStripAllHtmlTags() {
+        // Even allowlisted-by-cleanComment inline tags are removed by the plain-text profile.
+        String result = HtmlSanitizer.cleanCommentPlainText("<p>foo <strong>bar</strong> <em>baz</em></p>");
+        assertFalse(result.toLowerCase().contains("<p"));
+        assertFalse(result.toLowerCase().contains("<strong"));
+        assertFalse(result.toLowerCase().contains("<em"));
+        assertTrue(result.contains("foo"));
+        assertTrue(result.contains("bar"));
+        assertTrue(result.contains("baz"));
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanCommentPlainText(String)
+     * @verifies remove script tags and content
+     */
+    @Test
+    void cleanCommentPlainText_shouldRemoveScriptTagsAndContent() {
+        String result = HtmlSanitizer.cleanCommentPlainText("hello<script>alert(1)</script>world");
+        assertFalse(result.toLowerCase().contains("<script"));
+        assertFalse(result.contains("alert(1)"));
+        assertTrue(result.contains("hello"));
+        assertTrue(result.contains("world"));
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanCommentPlainText(String)
+     * @verifies strip br tags injected by attackers
+     */
+    @Test
+    void cleanCommentPlainText_shouldStripBrTagsInjectedByAttackers() {
+        // No <br> may survive — neither user-supplied nor as a byproduct of sanitization.
+        String result = HtmlSanitizer.cleanCommentPlainText("line1<br>line2");
+        assertFalse(result.toLowerCase().contains("<br"));
+        assertTrue(result.contains("line1"));
+        assertTrue(result.contains("line2"));
+    }
+
+    /**
      * @see HtmlSanitizer#isCleanComment(String)
      * @verifies return true for null input
      */

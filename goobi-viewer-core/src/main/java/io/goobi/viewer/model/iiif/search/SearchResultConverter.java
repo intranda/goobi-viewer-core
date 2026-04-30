@@ -71,6 +71,7 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.Metadata;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.controller.HtmlSanitizer;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
 import io.goobi.viewer.model.annotation.comments.Comment;
@@ -178,7 +179,12 @@ public class SearchResultConverter {
     public SearchHit convertCommentToHit(String queryRegex, String pi, Comment comment) {
         SearchHit hit = new SearchHit();
 
-        String text = comment.getDisplayText();
+        // IIIF TextQuoteSelector prefix/suffix are plain text per the W3C Web Annotation spec.
+        // Comment.getDisplayText() goes through HtmlSanitizer.cleanComment which rewrites \n
+        // to <br>\n for HTML rendering — that markup must not bleed into the IIIF JSON
+        // response. Use the plain-text sanitizer instead: still strips XSS payloads but
+        // preserves verbatim newlines used by selector/regex matching downstream.
+        String text = HtmlSanitizer.cleanCommentPlainText(comment.getText());
         Matcher m = Pattern.compile(AbstractSearchParser.getSingleWordRegex(queryRegex)).matcher(text);
         while (m.find()) {
             String match = m.group(1);
