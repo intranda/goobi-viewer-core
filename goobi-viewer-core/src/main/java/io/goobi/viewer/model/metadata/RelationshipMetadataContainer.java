@@ -45,8 +45,8 @@ import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
- * Extends {@link ComplexMetadataContainer} to support relationship metadata whose filter and sort fields can reference fields in externally linked
- * Solr records, loaded on demand from the index.
+ * Extends {@link ComplexMetadataContainer} to support relationship metadata whose filter and sort
+ * fields can reference fields in externally linked Solr records, loaded on demand from the index.
  */
 public class RelationshipMetadataContainer extends ComplexMetadataContainer {
 
@@ -111,7 +111,6 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
                 .collect(Collectors.toList());
         String recordIdentifiers = relationshipMetadata.stream()
                 .map(md -> md.getFirstValue(RELATIONSHIP_ID_REFERENCE, null))
-                .distinct()
                 .collect(Collectors.joining(" "));
         if (StringUtils.isBlank(recordIdentifiers)) {
             return new RelationshipMetadataContainer(container.metadataMap, Collections.emptyMap());
