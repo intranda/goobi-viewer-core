@@ -138,12 +138,16 @@
 					</button>
 
 					<!-- CITATION RECOMMENDATION BUTTON -->
-					<a class="btn btn--icon search-list__hit-options-button" href="#"
-						data-toggle="tooltip" data-placement="top"
-						title="#{msg.action__search_hit_cite}"
-						aria-label="#{msg.action__search_hit_cite}"> <util:icon
-							icon="quote" />
-					</a>
+					<ui:fragment rendered="#{not empty browseElement.citationStringPlain}">
+						<button type="button"
+							class="btn btn--icon search-list__hit-options-button"
+							data-copy-value="#{browseElement.citationStringPlain}"
+							data-toggle="tooltip" data-placement="top"
+							title="#{msg.action__search_hit_cite}"
+							aria-label="#{msg.action__search_hit_cite}">
+							<util:icon icon="quote" />
+						</button>
+					</ui:fragment>
 
 					<!-- EXPORT FILE FORMAT DROPDOWN/BUTTON -->
 					<div class="dropdown">

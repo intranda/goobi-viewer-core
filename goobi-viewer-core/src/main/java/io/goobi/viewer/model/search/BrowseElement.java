@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.DateTimeException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -47,6 +48,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
+import de.undercouch.citeproc.CSL;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.controller.Configuration;
@@ -66,6 +68,9 @@ import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.citation.Citation;
+import io.goobi.viewer.model.citation.CitationProcessorWrapper;
+import io.goobi.viewer.model.citation.CitationTools;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
@@ -171,6 +176,8 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     private Boolean downloadPdfAllowed = null;
     @JsonIgnore
     private Boolean hasPrerenderedPagePdfs = null;
+    @JsonIgnore
+    private String citationStringPlain;
 
     private List<String> recordLanguages;
 
@@ -278,6 +285,8 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         this.url = generateUrl();
         sidebarPrevUrl = generateSidebarUrl("prevHit");
         sidebarNextUrl = generateSidebarUrl("nextHit");
+
+        initCitationString(hierarchy.top());
 
         Collections.reverse(structElements);
     }
@@ -1234,7 +1243,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
      * @return List of field names in the metadata list
      */
     public Set<String> getMetadataFieldNames() {
-        Set<String> ret = new HashSet<>(getMetadataList().size());
+        Set<String> ret = HashSet.newHashSet(getMetadataList().size());
         for (Metadata md : getMetadataList()) {
             ret.add(md.getLabel());
         }
@@ -1442,6 +1451,47 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
             return url;
         }
         return url + (url.contains("?") ? "&" : "?") + queryParam;
+    }
+
+    private void initCitationString(StructElement topStructElement) {
+        citationStringPlain = "";
+
+        Configuration config = DataManager.getInstance().getConfiguration();
+        if (!config.isDisplaySidebarWidgetCitationCitationRecommendation()) {
+            return;
+        }
+        if (topStructElement == null) {
+            return;
+        }
+        List<String> availableStyles = config.getSidebarWidgetCitationCitationRecommendationStyles();
+        if (availableStyles.isEmpty()) {
+            return;
+        }
+        try {
+            CitationProcessorWrapper wrapper = new CitationProcessorWrapper();
+            CSL processor = wrapper.getCitationProcessor(availableStyles.get(0));
+            Metadata md = config.getSidebarWidgetCitationCitationRecommendationSource();
+            if (md == null) {
+                return;
+            }
+            md.populate(topStructElement, String.valueOf(topStructElement.getLuceneId()), null, locale);
+            for (MetadataValue val : md.getValues()) {
+                if (!val.getCitationValues().isEmpty()) {
+                    Citation citation = new Citation(pi, processor, wrapper.getCitationItemDataProvider(),
+                            CitationTools.getCSLTypeForDocstrct(topStructElement.getDocStructType(),
+                                    topStructElement.getDocStructType()),
+                            val.getCitationValues());
+                    citationStringPlain = citation.getCitationString("text");
+                    return;
+                }
+            }
+        } catch (IOException | IndexUnreachableException | PresentationException | DateTimeException e) {
+            logger.error("Failed to generate citation string for {}: {}", pi, e.getMessage());
+        }
+    }
+
+    public String getCitationStringPlain() {
+        return citationStringPlain != null ? citationStringPlain : "";
     }
 
     /**
