@@ -4203,6 +4203,20 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * Whether the viewer pre-decodes the source image of the currently selected page into the
+     * ContentServer's source image cache while the HTML is rendering, so the OpenSeadragon tile
+     * burst that follows finds the decoded master already cached. Only useful when the
+     * ContentServer's {@code sourceImageCache useCache="true"} is set; otherwise the call is a
+     * no-op. Defaults to {@code true} since the cost (one async decode per page view) is small
+     * compared to the typical 800 ms tile-burst stall on cold first-views.
+     *
+     * @return true if pre-warming the source image cache on page selection is enabled
+     */
+    public boolean isPrewarmSourceImageCache() {
+        return getLocalBoolean("performance.prewarmSourceImageCache[@enabled]", true);
+    }
+
+    /**
      * Returns whether a navigator element should be shown in the OpenSeadragon viewer.
      *
      * @param viewAttributes view context attributes selecting the zoom config

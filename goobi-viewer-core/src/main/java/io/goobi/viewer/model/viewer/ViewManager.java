@@ -94,6 +94,7 @@ import io.goobi.viewer.controller.ProcessDataResolver;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.config.filter.IFilterConfiguration;
+import io.goobi.viewer.controller.imaging.SourceImagePrewarmService;
 import io.goobi.viewer.controller.model.ViewAttributes;
 import io.goobi.viewer.controller.sorting.AlphanumCollatorComparator;
 import io.goobi.viewer.exceptions.AccessDeniedException;
@@ -1425,6 +1426,13 @@ public class ViewManager implements Serializable {
         if (currentStructElement == null || !Objects.equals(currentStructElement.getLuceneId(), currentStructElementIddoc)) {
             setCurrentStructElement(new StructElement(currentStructElementIddoc));
         }
+
+        // Kick off an async pre-decode of the master image. The OpenSeadragon tile burst that
+        // follows HTML render typically arrives ~1-2 s later; by then the SourceImageCache will
+        // hold the decoded BufferedImage and every tile request becomes a cheap getSubimage()
+        // instead of paying source-decode latency. Silent no-op when prewarm or the underlying
+        // cache is disabled.
+        SourceImagePrewarmService.getInstance().prewarm(getPage(useOrder).orElse(null));
     }
 
     public void setPageNavigation(PageNavigation navigation) {
