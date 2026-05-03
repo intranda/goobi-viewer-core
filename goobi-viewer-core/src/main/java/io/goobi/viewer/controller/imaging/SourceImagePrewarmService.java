@@ -330,6 +330,31 @@ public final class SourceImagePrewarmService {
         }
     }
 
+    /**
+     * Stops the prewarm executor cleanly so Tomcat does not report a memory-leak warning at
+     * webapp undeploy. Discards any queued tasks (prewarm is best-effort, so dropping pending
+     * decodes is fine), interrupts in-flight worker threads and waits up to 5 seconds for them
+     * to terminate.
+     *
+     * <p>Called from {@code ContextListener#contextDestroyed} BEFORE the Solr client is closed,
+     * because {@link #resolveAndPrewarm} performs a Solr lookup; shutting down the executor
+     * first guarantees no worker is still running when Solr disappears.
+     */
+    public void shutdown() {
+        // shutdownNow() rather than shutdown(): worker threads are typically parked in
+        // ArrayBlockingQueue.poll() waiting for the next task. shutdown() just stops accepting
+        // new tasks, the polling threads keep blocking until their keep-alive expires (60s) —
+        // far too long for a clean undeploy. shutdownNow() interrupts them immediately.
+        executor.shutdownNow();
+        try {
+            if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
+                logger.warn("SourceImagePrewarmService executor did not terminate within 5 seconds");
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
     /** @return number of prewarm tasks ever submitted to the executor */
     public long getSubmittedCount() {
         return submitted.get();
