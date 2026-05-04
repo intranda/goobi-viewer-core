@@ -1568,7 +1568,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         bl.addItem(item);
         bl.setName("bookmark list 1 new name");
         bl.setDescription("bookmark list 1 new desc");
-        assertTrue(DataManager.getInstance().getDao().updateBookmarkList(bl));
+        assertNotNull(DataManager.getInstance().getDao().updateBookmarkList(bl));
         //        assertNotNull(item.getId());
 
         int numBookmarkLists2 = DataManager.getInstance().getDao().getAllBookmarkLists().size();
@@ -1604,7 +1604,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertNotNull(bl);
         assertEquals(2, bl.getItems().size());
         bl.removeItem(bl.getItems().get(0));
-        assertTrue(DataManager.getInstance().getDao().updateBookmarkList(bl));
+        assertNotNull(DataManager.getInstance().getDao().updateBookmarkList(bl));
 
         BookmarkList bl2 = DataManager.getInstance().getDao().getBookmarkList(1);
         assertNotNull(bl2);

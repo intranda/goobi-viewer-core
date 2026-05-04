@@ -28,6 +28,26 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IllegalUrlParameterException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.Messages;
+import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.bookmark.Bookmark;
+import io.goobi.viewer.model.bookmark.BookmarkList;
+import io.goobi.viewer.model.bookmark.BookmarkTools;
+import io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager;
+import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.security.user.UserGroup;
+import io.goobi.viewer.model.viewer.ViewManager;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
@@ -38,27 +58,6 @@ import jakarta.faces.event.ValueChangeEvent;
 import jakarta.faces.validator.ValidatorException;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.NetTools;
-import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.exceptions.IllegalUrlParameterException;
-import io.goobi.viewer.messages.Messages;
-import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.bookmark.Bookmark;
-import io.goobi.viewer.model.bookmark.BookmarkList;
-import io.goobi.viewer.model.bookmark.BookmarkTools;
-import io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager;
-import io.goobi.viewer.model.security.user.User;
-import io.goobi.viewer.model.security.user.UserGroup;
-import io.goobi.viewer.model.viewer.ViewManager;
 import jakarta.mail.MessagingException;
 
 /**
@@ -179,7 +178,7 @@ public class BookmarkBean implements Serializable {
         } else {
             // Update bookmark list in the DB
             try {
-                if (DataManager.getInstance().getDao().updateBookmarkList(bookmarkList)) {
+                if (DataManager.getInstance().getDao().updateBookmarkList(bookmarkList) != null) {
                     logger.debug("Bookmark list '{}' for user {} updated.", bookmarkList.getName(), userBean.getUser().getId());
                     String msg = ViewerResourceBundle.getTranslation("bookmarkList_updateBookmarkListSuccess", null);
                     Messages.info(msg.replace("{0}", bookmarkList.getName()));
@@ -285,7 +284,7 @@ public class BookmarkBean implements Serializable {
                     Messages.error(msg.replace("{0}", currentBookmarkList.getName()));
                     return "";
                 } else if (currentBookmarkList.addItem(currentBookmark)
-                        && DataManager.getInstance().getDao().updateBookmarkList(currentBookmarkList)) {
+                        && DataManager.getInstance().getDao().updateBookmarkList(currentBookmarkList) != null) {
                     String msg = ViewerResourceBundle.getTranslation("bookmarkList_addToBookmarkListSuccess", null);
                     Messages.info(msg.replace("{0}", currentBookmarkList.getName()));
                     logger.debug("Bookmark '{}' added, ID: {}", currentBookmark.getName(), currentBookmark.getId());
@@ -309,7 +308,7 @@ public class BookmarkBean implements Serializable {
     public void deleteCurrentItemAction(Bookmark bookmark) {
         if (bookmark != null && userBean != null && userBean.getUser() != null && currentBookmarkList != null) {
             try {
-                if (currentBookmarkList.removeItem(bookmark) && DataManager.getInstance().getDao().updateBookmarkList(currentBookmarkList)) {
+                if (currentBookmarkList.removeItem(bookmark) && DataManager.getInstance().getDao().updateBookmarkList(currentBookmarkList) != null) {
                     String msg = ViewerResourceBundle.getTranslation("bookmarkList_removeBookmarkSuccess", null);
                     Messages.info(msg.replace("{0}", bookmark.getPi()));
                     logger.debug("Bookmark '{}' deleted.", bookmark.getName());
@@ -804,12 +803,10 @@ public class BookmarkBean implements Serializable {
                 .orElse(0);
     }
 
-    
     public String getNewBookmarkListName() {
         return newBookmarkListName;
     }
 
-    
     public void setNewBookmarkListName(String newBookmarkListName) {
         this.newBookmarkListName = newBookmarkListName;
     }

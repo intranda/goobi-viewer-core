@@ -25,8 +25,8 @@
                 </ui:fragment>
 
                 <!-- RENDER THE TEXT CONTENT -->
+                <!-- Backend editor for this component is a single-line h:inputText (no HTML), so JSF default escape=true keeps rendering safe against stored XSS. -->
                 <h:outputText
-                    escape="false"
                     value="#{cc.attrs.component.firstContentItem.content.text.textOrDefault}" />
             </div>
         </ui:fragment>

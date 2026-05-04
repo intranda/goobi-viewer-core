@@ -62,6 +62,7 @@ var viewerJS = (function (viewer) {
                 let requestBody = JSON.stringify({
                     query: query,
                     resultFields: fields,
+                    resolveRecordUrl: true,
                 });
 
                 fetch(_defaults.indexResourceUrl, {
@@ -162,7 +163,7 @@ var viewerJS = (function (viewer) {
         workList += '<ul class="list">';
         if (data && data.docs) {
             data.docs.forEach((item) => {
-                workListLink =
+                workListLink = item.url ||
                     config.appUrl + 'image/' + item.PI_TOPSTRUCT + '/' + item.THUMBPAGENO + '/' + item.LOGID + '/';
 
                 workList += '<li>';

@@ -1214,4 +1214,84 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertNull(searchBean.getCurrentSearch());
         Assertions.assertNull(searchBean.getNextElement());
     }
+
+    /**
+     * @see SearchBean#searchInRecord(String, String, String, String)
+     * @verifies reset CALENDAR_DAY query item when no dates are supplied
+     */
+    @Test
+    void searchInRecord_shouldResetCalendarDayQueryItemWhenNoDatesAreSupplied() throws Exception {
+        // Reproduces the leftover-restriction bug: a previous in-record search via the calendar
+        // TocView populated queryItems[2] with a YEARMONTHDAY range. The user then types a word
+        // into the search-in-current-item widget (no dates). Without the fix, the stale date
+        // range would silently survive and restrict the new search.
+        List<SearchQueryItem> items = Arrays.asList(new SearchQueryItem(), new SearchQueryItem(), new SearchQueryItem());
+        searchBean.getAdvancedSearchQueryGroup().injectItems(items);
+        items.get(2).setField(SolrConstants.CALENDAR_DAY);
+        items.get(2).setValue("11.01.1895");
+        items.get(2).setValue2("31.12.1895");
+
+        searchBean.searchInRecord("PI_TOPSTRUCT", "PPN123");
+
+        Assertions.assertNull(items.get(2).getField());
+        Assertions.assertNull(items.get(2).getValue());
+        Assertions.assertNull(items.get(2).getValue2());
+    }
+
+    /**
+     * @see SearchBean#searchInRecord(String, String, String, String)
+     * @verifies preserve freshly typed search term when no dates are supplied
+     */
+    @Test
+    void searchInRecord_shouldPreserveFreshlyTypedSearchTermWhenNoDatesAreSupplied() throws Exception {
+        // The widget's input field is bound to queryItems[1].value, so the freshly typed term
+        // is already there when the action fires. The reset must not wipe it.
+        List<SearchQueryItem> items = Arrays.asList(new SearchQueryItem(), new SearchQueryItem(), new SearchQueryItem());
+        searchBean.getAdvancedSearchQueryGroup().injectItems(items);
+        items.get(1).setValue("vaduz");
+
+        searchBean.searchInRecord("PI_TOPSTRUCT", "PPN789");
+
+        Assertions.assertEquals("vaduz", items.get(1).getValue());
+        Assertions.assertEquals(SearchHelper.SEARCH_FILTER_ALL.getField(), items.get(1).getField());
+    }
+
+    /**
+     * @see SearchBean#searchInRecord(String, String, String, String)
+     * @verifies populate CALENDAR_DAY query item when both dates are supplied
+     */
+    @Test
+    void searchInRecord_shouldPopulateCalendarDayQueryItemWhenBothDatesAreSupplied() throws Exception {
+        // Calendar TocView path: dates are passed explicitly. The reset must not eliminate them
+        // before they are written back into queryItems[2].
+        List<SearchQueryItem> items = Arrays.asList(new SearchQueryItem(), new SearchQueryItem(), new SearchQueryItem());
+        searchBean.getAdvancedSearchQueryGroup().injectItems(items);
+
+        searchBean.searchInRecord("PI_ANCHOR", "PPN456", "11.01.1895", "31.12.1895");
+
+        Assertions.assertEquals(SolrConstants.CALENDAR_DAY, items.get(2).getField());
+        Assertions.assertEquals("11.01.1895", items.get(2).getValue());
+        Assertions.assertEquals("31.12.1895", items.get(2).getValue2());
+        Assertions.assertEquals("PI_ANCHOR", items.get(0).getField());
+        Assertions.assertEquals("PPN456", items.get(0).getValue());
+    }
+
+    /**
+     * @see SearchBean#searchInRecord(String, String, String, String)
+     * @verifies preserve freshly typed search term when called with dates from the calendar TocView
+     */
+    @Test
+    void searchInRecord_shouldPreserveFreshlyTypedSearchTermWhenCalledWithDatesFromTheCalendarTocView() throws Exception {
+        // The calendar TocView DOES have an input field bound to queryItems[1].value
+        // (see calendarTocView.xhtml → newspaperSearchTerm). A user can combine a free-text
+        // term with a date range, so the term must survive the reset just like in the widget path.
+        List<SearchQueryItem> items = Arrays.asList(new SearchQueryItem(), new SearchQueryItem(), new SearchQueryItem());
+        searchBean.getAdvancedSearchQueryGroup().injectItems(items);
+        items.get(1).setValue("vaduz");
+
+        searchBean.searchInRecord("PI_ANCHOR", "PPN456", "11.01.2021", "23.05.2021");
+
+        Assertions.assertEquals("vaduz", items.get(1).getValue());
+        Assertions.assertEquals(SolrConstants.CALENDAR_DAY, items.get(2).getField());
+    }
 }

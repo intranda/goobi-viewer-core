@@ -45,6 +45,11 @@
                             styleClass="form-control -validation-input tinyMCE"
                             required="#{cc.attrs.contentItem.content.isDefaultLocaleSelected() and cc.attrs.contentItem.mandatory}"
                             requiredMessage="#{msg.info__input_required}">
+                            <!-- Sanitize submitted HTML before it reaches TranslatedText.setText to prevent
+                                 stored XSS at the source. Render-path sanitization in the frontend
+                                 component remains as defense in depth. Note: editor input will be
+                                 normalized by Jsoup (tag-case lowercased, attribute order, etc.). -->
+                            <f:converter converterId="htmlSanitizer" />
                             <f:passThroughAttribute
                                 name="aria-label"
                                 value="#{cc.attrs.label}" />

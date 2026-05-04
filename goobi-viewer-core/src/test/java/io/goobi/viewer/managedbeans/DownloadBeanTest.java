@@ -231,4 +231,23 @@ class DownloadBeanTest {
         assertNull(DownloadBean.sanitizeDownloadErrorMessage("", "PPN999"));
         assertNull(DownloadBean.sanitizeDownloadErrorMessage("   ", "PPN999"));
     }
+
+    /**
+     * @verifies not overflow stack on very long paths
+     * @see DownloadBean#sanitizeDownloadErrorMessage(String, String)
+     */
+    @Test
+    void sanitizeDownloadErrorMessage_shouldNotOverflowStackOnVeryLongPaths() {
+        // Regression guard for Sonar S5998: prior pattern used (?:/[^\s/]+)* group
+        // repetition, which recurses per segment in Java's regex engine and overflows
+        // the stack on pathologically long inputs. The rewritten pattern matches
+        // iteratively and must handle thousands of segments without blowing up.
+        StringBuilder path = new StringBuilder("/");
+        for (int i = 0; i < 5000; i++) {
+            path.append("seg").append(i).append('/');
+        }
+        path.append("img.tif");
+        String raw = "I/O error reading " + path;
+        assertEquals("I/O error reading img.tif", DownloadBean.sanitizeDownloadErrorMessage(raw, null));
+    }
 }

@@ -353,12 +353,16 @@ public class RecordResource {
     @Produces({ MediaType.TEXT_PLAIN })
     @Operation(tags = { "records" }, summary = "Get entire plaintext of record within a single text file")
     @ApiResponse(responseCode = "200", description = "Full plaintext of the record")
-    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "400",
+            description = "Invalid record identifier, or aggregate response would exceed the configured size limit"
+                    + " (use /plaintext.zip instead)")
     @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     @CORSBinding
     @IIIFPresentationBinding
-    public String getPlaintext() throws PresentationException, IndexUnreachableException, IOException {
+    public String getPlaintext() throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
+        // Declares ContentLibException so IllegalRequestException raised by the aggregate-size
+        // guard in TextResourceBuilder.getFulltext propagates to ContentExceptionMapper (HTTP 400).
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
@@ -392,7 +396,9 @@ public class RecordResource {
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get entire alto document for record")
     @ApiResponse(responseCode = "200", description = "ALTO XML document for the full record")
-    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "400",
+            description = "Invalid record identifier, or aggregate response would exceed the configured size limit"
+                    + " (use /alto.zip instead)")
     @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public String getAlto() throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
