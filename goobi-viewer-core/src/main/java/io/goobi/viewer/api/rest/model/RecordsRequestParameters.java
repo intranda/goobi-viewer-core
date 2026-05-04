@@ -72,8 +72,10 @@ public class RecordsRequestParameters {
     private boolean boostTopLevelDocstructs = false;
     @Schema(description = "A list of SOLR field names to get facet results for", example = "[\"DC\",\"DOCSTRCT\"]")
     private List<String> facetFields = new ArrayList<>();
+    @Schema(description = "Set to 'true' to include a resolved 'url' field per document, computed server-side via PageType.determinePageType()", example = "false")
+    private boolean resolveRecordUrl = false;
 
-    
+
     public String getQuery() {
         return query;
     }
@@ -188,8 +190,16 @@ public class RecordsRequestParameters {
         return facetFields;
     }
 
-    
+
     public void setFacetFields(List<String> facetFields) {
         this.facetFields = facetFields;
+    }
+
+    public boolean isResolveRecordUrl() {
+        return resolveRecordUrl;
+    }
+
+    public void setResolveRecordUrl(boolean resolveRecordUrl) {
+        this.resolveRecordUrl = resolveRecordUrl;
     }
 }
