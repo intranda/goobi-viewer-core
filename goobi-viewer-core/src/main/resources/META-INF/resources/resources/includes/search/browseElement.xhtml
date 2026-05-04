@@ -52,7 +52,9 @@
 					<ui:fragment rendered="#{configurationBean.bookmarksEnabled}">
 						<!-- 	                <div class="search-list__thumb-bookmark-wrapper"> -->
 						<button type="button"
-							class="btn btn--icon search-list__thumb-bookmark search-list__hit-options-button bookmark-toggle__button"
+							class="btn btn--icon search-list__thumb-bookmark 
+							search-list__hit-options-button bookmark-toggle__button
+							search-list__hit-options-button-bookmark"
 
 							data-pi="#{browseElement.pi}"
 							aria-label="#{msg.bookmarkList_addToBookmarkList}"
@@ -76,7 +78,8 @@
 
 					<!-- DOWNLOAD PDF BUTTON -->
 					<a type="button"
-						class="btn btn--icon search-list__hit-options-button"
+						class="btn btn--icon search-list__hit-options-button
+						search-list__hit-options-button-download"
 						data-toggle="tooltip" data-placement="top"
 						title="#{msg.action__search_hit_download_pdf}"
 						aria-label="#{msg.action__search_hit_download_pdf}"> <util:icon
@@ -84,10 +87,10 @@
 					</a>
 
 
-
 					<!-- COPY LINK TO CLIPBOARD BUTTON -->
 					<button type="button"
-						class="btn btn--icon search-list__hit-options-button"
+						class="btn btn--icon search-list__hit-options-button
+						search-list__hit-options-button-clipboard"
 						data-copy-value="#{navigationHelper.applicationUrl}#{browseElement.url}"
 						data-toggle="tooltip" data-placement="top"
 						title="#{msg.action__search_hit_copy_link}"
@@ -96,7 +99,8 @@
 					</button>
 
 					<!-- CITATION RECOMMENDATION BUTTON -->
-					<a class="btn btn--icon search-list__hit-options-button" href="#"
+					<a class="btn btn--icon search-list__hit-options-button 
+					search-list__hit-options-button-citation" href="#"
 						data-toggle="tooltip" data-placement="top"
 						title="#{msg.action__search_hit_cite}"
 						aria-label="#{msg.action__search_hit_cite}"> <util:icon
@@ -116,6 +120,7 @@
 							<util:icon icon="file-export" />
 						</button>
 						<div class="dropdown-menu dropdown-menu-right">
+						<h6 class="dropdown-header">Export record data</h6>
 							<ui:repeat var="exportFormat" value="#{configurationBean.enabledSearchExportFormats}">
 								<a class="dropdown-item"
 									href="#{request.contextPath}/api/v1/search/export/#{exportFormat.name}?query=PI:&quot;#{browseElement.pi}&quot;"
