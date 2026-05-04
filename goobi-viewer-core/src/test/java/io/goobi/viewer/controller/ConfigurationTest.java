@@ -645,6 +645,24 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getMaxAggregateAltoSize()
+     * @verifies return correct value
+     */
+    @Test
+    void getMaxAggregateAltoSize_shouldReturnCorrectValue() {
+        assertEquals(1024, DataManager.getInstance().getConfiguration().getMaxAggregateAltoSize());
+    }
+
+    /**
+     * @see Configuration#getMaxAggregateFulltextSize()
+     * @verifies return correct value
+     */
+    @Test
+    void getMaxAggregateFulltextSize_shouldReturnCorrectValue() {
+        assertEquals(1024, DataManager.getInstance().getConfiguration().getMaxAggregateFulltextSize());
+    }
+
+    /**
      * @see Configuration#getPageType(PageType)
      * @verifies return the correct value for the given type
      */

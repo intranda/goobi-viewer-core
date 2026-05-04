@@ -4603,6 +4603,35 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * getMaxAggregateAltoSize.
+     *
+     * Aggregate-text REST endpoints (e.g. /api/v1/records/{pi}/alto) build a single concatenated
+     * response in memory. For very large works (e.g. multi-thousand-page newspapers) this can
+     * OOM the JVM; clients should use the streaming /alto.zip endpoint instead. This config
+     * exposes a hard byte cap on the aggregate file size (sum of Files.size() over all page-level
+     * ALTO files) above which the REST layer rejects the request with HTTP 400.
+     *
+     * @return configured limit in bytes; default 50 MB
+     * @should return correct value
+     */
+    public int getMaxAggregateAltoSize() {
+        return getLocalInt("performance.maxAggregateAltoSize", 50_000_000);
+    }
+
+    /**
+     * getMaxAggregateFulltextSize.
+     *
+     * Same as {@link #getMaxAggregateAltoSize()} but for the plain-text aggregate endpoint
+     * (/api/v1/records/{pi}/plaintext). Default 50 MB.
+     *
+     * @return configured limit in bytes; default 50 MB
+     * @should return correct value
+     */
+    public int getMaxAggregateFulltextSize() {
+        return getLocalInt("performance.maxAggregateFulltextSize", 50_000_000);
+    }
+
+    /**
      * @return true if review mode is enabled for comments, false otherwise
      */
     public boolean reviewEnabledForComments() {

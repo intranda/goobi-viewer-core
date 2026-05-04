@@ -167,6 +167,16 @@
         
         <!-- databaseConnectionAttempts: Number of times JPADAO will attempt to establish a connection before failing. -->
         <databaseConnectionAttempts>3</databaseConnectionAttempts>
+
+        <!-- WARNING for future test authors: these caps are intentionally small (1024) so that
+             the limit-exceeded path is exercised by the bundled test fixtures. The ALTO file
+             00000001.xml for PPN517154005 is 7749 bytes; the fulltext folder for the same PI
+             contains 16 .txt files. Any new test that exercises the happy path of
+             TextResourceBuilder.getAltoDocument(pi, request) or getFulltext(pi, request) MUST
+             override these caps with a Configuration spy / a higher local value, otherwise it
+             will trip the guard and fail. -->
+        <maxAggregateAltoSize>1024</maxAggregateAltoSize>
+        <maxAggregateFulltextSize>1024</maxAggregateFulltextSize>
 	</performance>
 
     <accessConditions>
