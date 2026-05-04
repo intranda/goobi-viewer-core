@@ -2676,6 +2676,19 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getCalendarDocStructTypes()
+     * @verifies return all configured values
+     */
+    @Test
+    void getCalendarDocStructTypes_shouldReturnAllConfiguredValues() {
+        List<String> list = DataManager.getInstance().getConfiguration().getCalendarDocStructTypes();
+        assertNotNull(list);
+        assertEquals(2, list.size());
+        assertTrue(list.contains("Newspaper"));
+        assertTrue(list.contains("Periodical"));
+    }
+
+    /**
      * @see Configuration#isTocListSiblingRecords()
      * @verifies return correctValue
      */

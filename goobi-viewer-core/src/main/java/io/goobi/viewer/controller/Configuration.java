@@ -4974,6 +4974,24 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * getCalendarDocStructTypes.
+     *
+     * <p>List of DOCSTRCT names for which the calendar TOC view applies. When the
+     * top struct of an anchor/group record matches one of these types and multiple
+     * calendar years are indexed, the calendar view replaces the issue-list TOC and
+     * the (potentially heavy) issue list is skipped. Records whose docstruct is not
+     * in this list always get the regular TOC build, even when they have multi-year
+     * date metadata. An empty list preserves legacy behavior — defer for any anchor
+     * or group with more than one indexed calendar year.
+     *
+     * @should return all configured values
+     * @return a list of configured docstruct names that use the calendar TOC view
+     */
+    public List<String> getCalendarDocStructTypes() {
+        return getLocalList("toc.calendarDocStructTypes.docstruct");
+    }
+
+    /**
      * isTocListSiblingRecords.
      *
      * @return true if sibling records should be listed in the table of contents, false otherwise

@@ -62,4 +62,18 @@ class CalendarViewTest extends AbstractSolrEnabledTest {
         Assertions.assertEquals(9, years.size());
     }
 
+    /**
+     * @see CalendarView#isDisplay()
+     * @verifies return false when docstruct is not in calendar whitelist
+     */
+    @Test
+    void isDisplay_shouldReturnFalseWhenDocstructIsNotInCalendarWhitelist() throws Exception {
+        // The test config seeds the whitelist with Newspaper/Periodical only — a Podcast
+        // anchor must therefore suppress the calendar view even if the year-count probe
+        // would otherwise admit it, so that viewToc.xhtml falls through to the regular
+        // issue-list TOC instead of rendering an empty calendar grid.
+        CalendarView cv = new CalendarView("168714434_1805", "168714434", null, null, "Podcast");
+        Assertions.assertFalse(cv.isDisplay());
+    }
+
 }

@@ -364,7 +364,8 @@ public class ViewManager implements Serializable {
         }
 
         return new CalendarView(pi, anchorPi, anchorField,
-                topStructElement.isAnchor() ? null : topStructElement.getMetadataValue(SolrConstants.CALENDAR_YEAR));
+                topStructElement.isAnchor() ? null : topStructElement.getMetadataValue(SolrConstants.CALENDAR_YEAR),
+                topStructElement.getDocStructType());
     }
 
     /**

@@ -151,7 +151,6 @@ public final class TocMaker {
      */
     public static Map<String, List<TOCElement>> generateToc(TOC toc, StructElement structElement, boolean addAllSiblings, String mimeType,
             int tocCurrentPage, int hitsPerPage) throws PresentationException, IndexUnreachableException, DAOException {
-        logger.trace("generateToc");
         if (structElement == null) {
             throw new IllegalArgumentException("structElement may not me null");
         }
