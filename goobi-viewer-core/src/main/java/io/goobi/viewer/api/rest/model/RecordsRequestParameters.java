@@ -72,124 +72,101 @@ public class RecordsRequestParameters {
     private boolean boostTopLevelDocstructs = false;
     @Schema(description = "A list of SOLR field names to get facet results for", example = "[\"DC\",\"DOCSTRCT\"]")
     private List<String> facetFields = new ArrayList<>();
-    @Schema(description = "Set to 'true' to include a resolved 'url' field per document, computed server-side via PageType.determinePageType()", example = "false")
+    @Schema(description = "Set to 'true' to include a resolved 'url' field per document, computed server-side via PageType.determinePageType()",
+            example = "false")
     private boolean resolveRecordUrl = false;
-
 
     public String getQuery() {
         return query;
     }
 
-    
     public void setQuery(String query) {
         this.query = query;
     }
 
-    
     public List<String> getResultFields() {
         return resultFields;
     }
 
-    
     public void setResultFields(List<String> resultFields) {
         this.resultFields = resultFields;
     }
 
-    
     public List<String> getSortFields() {
         return sortFields;
     }
 
-    
     public void setSortFields(List<String> sortFields) {
         this.sortFields = sortFields;
     }
 
-    
     public String getSortOrder() {
         return sortOrder;
     }
 
-    
     public void setSortOrder(String sortOrder) {
         this.sortOrder = sortOrder;
     }
 
-    
     public String getJsonFormat() {
         return jsonFormat;
     }
 
-    
     public void setJsonFormat(String jsonFormat) {
         this.jsonFormat = jsonFormat;
     }
 
-    
     public int getCount() {
         return count;
     }
 
-    
     public void setCount(int count) {
         this.count = count;
     }
 
-    
     public int getOffset() {
         return offset;
     }
 
-    
     public void setOffset(int offset) {
         this.offset = offset;
     }
 
-    
     public boolean isRandomize() {
         return randomize;
     }
 
-    
     public void setRandomize(boolean randomize) {
         this.randomize = randomize;
     }
 
-    
     public String getLanguage() {
         return language;
     }
 
-    
     public void setLanguage(String language) {
         this.language = language;
     }
 
-    
     public boolean isIncludeChildHits() {
         return includeChildHits;
     }
 
-    
     public void setIncludeChildHits(boolean includeChildHits) {
         this.includeChildHits = includeChildHits;
     }
 
-    
     public boolean isBoostTopLevelDocstructs() {
         return boostTopLevelDocstructs;
     }
 
-    
     public void setBoostTopLevelDocstructs(boolean boostTopLevelDocstructs) {
         this.boostTopLevelDocstructs = boostTopLevelDocstructs;
     }
 
-    
     public List<String> getFacetFields() {
         return facetFields;
     }
-
 
     public void setFacetFields(List<String> facetFields) {
         this.facetFields = facetFields;
