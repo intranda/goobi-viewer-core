@@ -1009,7 +1009,6 @@ public class SearchFacets implements Serializable {
      * @should remove only the exact matching facet without affecting similarly prefixed entries
      * @should remove facet containing reserved chars
      * @should sanitize triple semicolons to double after removal
-     * @return the navigation outcome string after removing the facet
      */
     public void removeFacetAction(final String facetQuery) {
         logger.trace("removeFacetAction: {}", facetQuery);
