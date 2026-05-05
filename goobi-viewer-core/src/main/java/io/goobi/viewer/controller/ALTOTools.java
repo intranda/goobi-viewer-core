@@ -30,6 +30,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -48,6 +49,7 @@ import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.Tag;
 import de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData;
+import de.intranda.digiverso.ocr.alto.utils.AltoCoords;
 import io.goobi.viewer.api.rest.model.ner.ElementReference;
 import io.goobi.viewer.api.rest.model.ner.NERTag;
 import io.goobi.viewer.api.rest.model.ner.NERTag.Type;
@@ -122,7 +124,7 @@ public final class ALTOTools {
      * @param inCharset character encoding of the ALTO document
      * @param type NER tag type to filter by; null returns all types
      * @return a list of NER TagCount objects extracted from the given ALTO document
-      * @should add identifier to tag count
+     * @should add identifier to tag count
      */
     public static List<TagCount> getNERTags(String alto, final String inCharset, NERTag.Type type) {
         String charset = inCharset;
@@ -444,6 +446,16 @@ public final class ALTOTools {
             int hpos = (int) element.getRect().x;
             int vpos = (int) element.getRect().y;
             int height = (int) element.getRect().height;
+            if (height <= 0) {
+                int parentHeight = (int) Optional.ofNullable(element.getParent())
+                        .filter(p -> p instanceof GeometricData)
+                        .map(p -> (GeometricData) p)
+                        .map(GeometricData::getRect)
+                        .map(AltoCoords::getHeight)
+                        .orElse(0.0)
+                        .intValue();
+                height = parentHeight;
+            }
             int width = (int) element.getRect().width;
             coords = new StringBuilder().append(hpos)
                     .append(",")
