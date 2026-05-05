@@ -28,8 +28,6 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_METADATA_SOURCE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_NER_TAGS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RIS_FILE;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RIS_TEXT;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_TOC;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -81,45 +79,6 @@ class RecordResourceTest extends AbstractRestApiTest {
     @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
-    }
-
-    /**
-     * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordResource#getRISAsFile()}.
-     * @verifies return non null result
-     * @see RecordResource#getRISAsFile
-     */
-    @Test
-    void getRISAsFile_shouldReturnNonNullResult() {
-        try (Response response = target(urls.path(RECORDS_RECORD, RECORDS_RIS_FILE).params(PI).build())
-                .request()
-                .get()) {
-            assertEquals(200, response.getStatus(), "Should return status 200");
-            assertNotNull(response.getEntity(), "Should return user object as JSON");
-            String entity = response.readEntity(String.class);
-            assertTrue(entity.contains("TY  - BOOK"));
-            assertTrue(entity.contains("CN  - 74241"));
-            String fileName = PI + "_LOG_0000.ris";
-            assertEquals("attachment; filename=\"" + fileName + "\"", response.getHeaderString("Content-Disposition"));
-        }
-    }
-
-    /**
-     * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordResource#getRISAsText()}.
-     * @verifies return non null result
-     * @see RecordResource#getRISAsText()
-     */
-    @Test
-    void getRISAsText_shouldReturnNonNullResult() {
-        try (Response response = target(urls.path(RECORDS_RECORD, RECORDS_RIS_TEXT).params(PI).build())
-                .request()
-                .accept(MediaType.TEXT_PLAIN)
-                .get()) {
-            assertEquals(200, response.getStatus(), "Should return status 200");
-            assertNotNull(response.getEntity(), "Should return user object as JSON");
-            String entity = response.readEntity(String.class);
-            assertTrue(entity.contains("TY  - BOOK"));
-            assertTrue(entity.contains("CN  - 74241"));
-        }
     }
 
     /**
@@ -336,34 +295,4 @@ class RecordResourceTest extends AbstractRestApiTest {
         assertDoesNotThrow(() -> RecordResource.validatePi("valid_pi-1.0"));
     }
 
-    /**
-     * getRISAsFile() must return HTTP 404 (not 500) when the PI does not exist in the Solr index.
-     * This guards against getFirstDoc() returning null and causing a NullPointerException.
-     * @verifies return 404 when non existent pi
-     * @see RecordResource#getRISAsFile
-     */
-    @Test
-    void getRISAsFile_shouldReturn404WhenNonExistentPi() {
-        try (Response response = target(urls.path(RECORDS_RECORD, RECORDS_RIS_FILE).params("NONEXISTENT_PI_99999").build())
-                .request()
-                .get()) {
-            assertEquals(404, response.getStatus(), "Non-existent PI should return HTTP 404, not 500");
-        }
-    }
-
-    /**
-     * getRISAsText() must return HTTP 404 (not 500) when the PI does not exist in the Solr index.
-     * This guards against getFirstDoc() returning null and causing a NullPointerException.
-     * @verifies return 404 for given input
-     * @see RecordResource#getRISAsText()
-     */
-    @Test
-    void getRISAsText_shouldReturn404ForGivenInput() {
-        try (Response response = target(urls.path(RECORDS_RECORD, RECORDS_RIS_TEXT).params("NONEXISTENT_PI_99999").build())
-                .request()
-                .accept(MediaType.TEXT_PLAIN)
-                .get()) {
-            assertEquals(404, response.getStatus(), "Non-existent PI should return HTTP 404, not 500");
-        }
-    }
 }

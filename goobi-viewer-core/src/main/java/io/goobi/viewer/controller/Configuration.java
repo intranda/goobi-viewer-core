@@ -80,6 +80,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.cms.Highlight;
 import io.goobi.viewer.model.export.ExportFieldConfiguration;
+import io.goobi.viewer.model.export.ExportFormat;
 import io.goobi.viewer.model.job.ITaskType;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadOption;
@@ -1520,7 +1521,8 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Gets all configured sortOrders for collections in the given field, mapped against a regex matching the collection(s).
      *
-     * <p>Whether subcollections should be sorted according to the sortOrder.
+     * <p>
+     * Whether subcollections should be sorted according to the sortOrder.
      * 
      * @param field the solr fild on which the collection is based
      * @return a map of regular expressions matching collection names and associated sortOrders
@@ -3025,9 +3027,9 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Returns the sidebar view configuration for the given view name.
      *
-     * <p>If no exact match is found, falls back to the prefix before the last underscore
-     * (e.g. "metadata_codicological" → "metadata"), allowing dynamically created metadata
-     * subpages to inherit the sidebar configuration of their base view.
+     * <p>
+     * If no exact match is found, falls back to the prefix before the last underscore (e.g. "metadata_codicological" → "metadata"), allowing
+     * dynamically created metadata subpages to inherit the sidebar configuration of their base view.
      *
      * @param name View name
      * @return HierarchicalConfiguration or null if neither the name nor any prefix matches
@@ -3123,8 +3125,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Checks whether the TOC <strong>link</strong> in the sidebar views widget is enabled. To check whether the sidebar TOC
-     * <strong>widget</strong> is enabled, use <code>isSidebarTocVisible()</code>.
+     * Checks whether the TOC <strong>link</strong> in the sidebar views widget is enabled. To check whether the sidebar TOC <strong>widget</strong>
+     * is enabled, use <code>isSidebarTocVisible()</code>.
      *
      * @should return correct value
      * @return true if the TOC view link in the sidebar views widget is visible, false otherwise
@@ -3184,8 +3186,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Checks whether the TOC <strong>widget</strong> is enabled. To check whether the sidebar TOC <strong>link</strong> in the views
-     * widget is enabled, use <code>isSidebarTocVisible()</code>.
+     * Checks whether the TOC <strong>widget</strong> is enabled. To check whether the sidebar TOC <strong>link</strong> in the views widget is
+     * enabled, use <code>isSidebarTocVisible()</code>.
      *
      * @should return correct value
      * @return true if the sidebar TOC widget is visible in fullscreen mode, false otherwise
@@ -5288,11 +5290,18 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      * @return true if RIS export of search results is enabled, false otherwise
      */
+    @Deprecated(since = "26.04", forRemoval = true)
     public boolean isSearchRisExportEnabled() {
-        return getLocalBoolean("search.export.ris[@enabled]", false);
+        // return getLocalBoolean("search.export.ris[@enabled]", false);
+        List<ExportFormat> allFormats = getSearchExportFormats();
+        Optional<ExportFormat> match = allFormats.stream()
+                .filter(f -> "ris".equals(f.getName()) && f.isEnabled())
+                .findFirst();
+
+        return match.isPresent();
     }
 
-    /**
+    /** 
      * isSearchExcelExportEnabled.
      *
      * @should return correct value
@@ -5333,6 +5342,51 @@ public class Configuration extends AbstractConfiguration {
         }
 
         return ret;
+    }
+
+    /**
+     * Returns all XSLT-based export format definitions configured under {@code <search><export><format>} in {@code config_viewer.xml}.
+     *
+     * <p>
+     * Each {@code <format>} element must have the attributes {@code name}, {@code enabled}, {@code xslt}, {@code contentType} and
+     * {@code fileExtension}.
+     *
+     * @return list of configured export formats (may be empty, never null)
+     * @should return all configured formats
+     */
+    public List<ExportFormat> getSearchExportFormats() {
+        List<HierarchicalConfiguration<ImmutableNode>> nodes = getLocalConfigurationsAt("search.export.format");
+        List<ExportFormat> ret = new ArrayList<>(nodes.size());
+        for (HierarchicalConfiguration<ImmutableNode> node : nodes) {
+            String name = node.getString(XML_PATH_ATTRIBUTE_NAME, "");
+            if (StringUtils.isNotBlank(name)) {
+                boolean enabled = node.getBoolean("[@enabled]", false);
+                String xslt = node.getString("[@xslt]", "");
+                String contentType = node.getString("[@contentType]", "text/plain");
+                String fileExtension = node.getString("[@fileExtension]", "txt");
+                ret.add(new ExportFormat(name, enabled, xslt, contentType, fileExtension));
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * Returns the enabled XSLT-based export format with the given name, or {@link Optional#empty()} if no such format is configured or it is
+     * disabled.
+     *
+     * @param name the format name (e.g. "bibtex", "endnote", "ris")
+     * @return an Optional containing the matching enabled format, or empty
+     * @should return matching format
+     * @should return empty optional for disabled format
+     * @should return empty optional for unknown name
+     */
+    public Optional<ExportFormat> getSearchExportFormat(String name) {
+        if (name == null) {
+            return Optional.empty();
+        }
+        return getSearchExportFormats().stream()
+                .filter(f -> name.equals(f.getName()) && f.isEnabled())
+                .findFirst();
     }
 
     /**

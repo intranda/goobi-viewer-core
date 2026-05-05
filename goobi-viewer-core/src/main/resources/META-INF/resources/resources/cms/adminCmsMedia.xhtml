@@ -95,7 +95,7 @@
     },
 };
 
-viewerJS.clipboard.init('[data-copy]');
+viewerJS.clipboard.init('[data-copy]', null, '#{msg.copied_to_clipboard}');
 cmsJS.media.init(adminMediaConfig);
 riot.mount('adminMediaUpload', adminMediaConfig);
 
