@@ -362,4 +362,46 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertFalse(uniquePis.isEmpty(), "Rendered TOC has no top-struct PIs at all");
         Assertions.assertEquals(8, uniquePis.size(), "Rendered TOC should reference exactly 8 unique PIs");
     }
+
+    /**
+     * @see TocMaker#isCalendarEligibleParent(SolrDocument)
+     * @verifies return false when doc is null
+     */
+    @Test
+    void isCalendarEligibleParent_shouldReturnFalseWhenDocIsNull() throws Exception {
+        Assertions.assertFalse(TocMaker.isCalendarEligibleParent(null));
+    }
+
+    /**
+     * @see TocMaker#isCalendarEligibleParent(SolrDocument)
+     * @verifies return false when doc is neither anchor nor group
+     */
+    @Test
+    void isCalendarEligibleParent_shouldReturnFalseWhenDocIsNeitherAnchorNorGroup() throws Exception {
+        // Plain DOCSTRCT doc (not anchor, not group) — early-out before any Solr access.
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.DOCTYPE, "DOCSTRCT");
+        doc.setField(SolrConstants.DOCSTRCT, "Newspaper");
+        doc.setField(SolrConstants.PI, "test_pi");
+        Assertions.assertFalse(TocMaker.isCalendarEligibleParent(doc));
+    }
+
+    /**
+     * @see TocMaker#isCalendarEligibleParent(SolrDocument)
+     * @verifies return false when docstruct is not in the whitelist
+     */
+    @Test
+    void isCalendarEligibleParent_shouldReturnFalseWhenDocstructIsNotInTheWhitelist() throws Exception {
+        // Test config whitelist is [Newspaper, Periodical]. An anchor with a different docstruct
+        // must NOT trigger the sibling-skip — protects multi-volume monographs etc. from accidental
+        // TOC suppression. Early-out before the multi-year facet query, so no Solr access required.
+        Assertions.assertFalse(DataManager.getInstance().getConfiguration().getCalendarDocStructTypes().isEmpty(),
+                "Test config has unexpectedly an empty calendar docstruct whitelist; this test needs entries");
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.ISANCHOR, Boolean.TRUE);
+        doc.setField(SolrConstants.DOCTYPE, "DOCSTRCT");
+        doc.setField(SolrConstants.DOCSTRCT, "MultiVolumeWork");
+        doc.setField(SolrConstants.PI, "test_pi");
+        Assertions.assertFalse(TocMaker.isCalendarEligibleParent(doc));
+    }
 }
