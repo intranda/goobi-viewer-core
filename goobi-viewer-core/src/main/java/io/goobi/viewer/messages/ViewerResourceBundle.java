@@ -28,10 +28,12 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
@@ -49,6 +51,9 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import org.apache.commons.configuration2.PropertiesConfiguration;
@@ -83,6 +88,14 @@ public class ViewerResourceBundle extends ResourceBundle {
     private static final Logger logger = LogManager.getLogger(ViewerResourceBundle.class);
 
     private static final Object LOCK = new Object();
+
+    // Per-language write locks for messages_xx.properties files.
+    // updateLocalMessageKey() reads, modifies and rewrites the whole file. Without
+    // serialisation, two concurrent edits (e.g. translation editor in two tabs) could
+    // interleave their writes and produce truncated lines or merged keys such as
+    // "MD_DATECREATED=Entstehungsjahrdidnote" (a missing newline glues a value onto
+    // the next key name).
+    private static final ConcurrentMap<String, Lock> MESSAGE_FILE_LOCKS = new ConcurrentHashMap<>();
 
     private static final String BUNDLE_NAME = "messages";
 
@@ -870,6 +883,8 @@ public class ViewerResourceBundle extends ResourceBundle {
      * @param language ISO 639-1 language code
      * @return true if file updated successfully; false otherwise
      * @should preserve spaces
+     * @should preserve non latin1 characters across repeated saves
+     * @should write atomically and not leave partial files on failure
      */
     public static boolean updateLocalMessageKey(String key, String value, String language) {
         if (StringUtils.isEmpty(key)) {
@@ -893,12 +908,21 @@ public class ViewerResourceBundle extends ResourceBundle {
             }
         }
 
+        // Serialise concurrent saves of the same language file. See class field comment.
+        Lock fileLock = MESSAGE_FILE_LOCKS.computeIfAbsent(language, k -> new ReentrantLock());
+        fileLock.lock();
         try {
             ConfigurationBuilder<PropertiesConfiguration> builder =
                     new FileBasedConfigurationBuilder<PropertiesConfiguration>(PropertiesConfiguration.class)
                             .configure(new Parameters().properties()
                                     .setFile(file)
                                     .setListDelimiterHandler(new DisabledListDelimiterHandler())
+                                    // Pin encoding to ISO-8859-1, the canonical Java properties file
+                                    // encoding. Without this, FileHandler falls back to the platform
+                                    // default (UTF-8 on Linux). The resulting raw multi-byte sequences
+                                    // are then misread as Latin-1 by Java's ResourceBundle loader,
+                                    // producing mojibake that compounds with every save.
+                                    .setEncoding(StandardCharsets.ISO_8859_1.name())
                                     .setThrowExceptionOnMissing(false));
 
             PropertiesConfiguration config = builder.getConfiguration();
@@ -915,12 +939,27 @@ public class ViewerResourceBundle extends ResourceBundle {
                 logger.trace("value removed ({}): {}", file.getName(), key);
             }
 
-            FileHandler fh = new FileHandler(config);
-            fh.save(file);
+            // Atomic write: serialise the new content into a sibling temp file first, then
+            // atomic-move it onto the target. Avoids partially written files on JVM crash and
+            // avoids torn writes if another process reads the file mid-save.
+            File parent = file.getParentFile() != null ? file.getParentFile() : new File(".");
+            File tempFile = File.createTempFile(file.getName() + ".", ".tmp", parent);
+            try {
+                FileHandler fh = new FileHandler(config);
+                fh.setEncoding(StandardCharsets.ISO_8859_1.name());
+                fh.save(tempFile);
+                Files.move(tempFile.toPath(), file.toPath(),
+                        StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+            } finally {
+                // If the move succeeded the temp file is gone; otherwise clean up.
+                Files.deleteIfExists(tempFile.toPath());
+            }
             logger.trace("File written: {}", file.getAbsolutePath());
             return true;
-        } catch (ConfigurationException e) {
+        } catch (ConfigurationException | IOException e) {
             logger.error(e.getMessage());
+        } finally {
+            fileLock.unlock();
         }
 
         return false;

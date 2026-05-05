@@ -167,6 +167,16 @@
         
         <!-- databaseConnectionAttempts: Number of times JPADAO will attempt to establish a connection before failing. -->
         <databaseConnectionAttempts>3</databaseConnectionAttempts>
+
+        <!-- WARNING for future test authors: these caps are intentionally small (1024) so that
+             the limit-exceeded path is exercised by the bundled test fixtures. The ALTO file
+             00000001.xml for PPN517154005 is 7749 bytes; the fulltext folder for the same PI
+             contains 16 .txt files. Any new test that exercises the happy path of
+             TextResourceBuilder.getAltoDocument(pi, request) or getFulltext(pi, request) MUST
+             override these caps with a Configuration spy / a higher local value, otherwise it
+             will trip the guard and fail. -->
+        <maxAggregateAltoSize>1024</maxAggregateAltoSize>
+        <maxAggregateFulltextSize>1024</maxAggregateFulltextSize>
 	</performance>
 
     <accessConditions>
@@ -980,14 +990,26 @@
 			<field>GROUPID_2</field>
 		</recordGroupIdentifierFields>
 
-		<!-- ancestorIdentifierFields: Contains definitions of Solr fields that 
-			contain hierarchical parent document identifiers (such as PI_PARENT containing 
+		<!-- ancestorIdentifierFields: Contains definitions of Solr fields that
+			contain hierarchical parent document identifiers (such as PI_PARENT containing
 			anchor identifiers. -->
 		<ancestorIdentifierFields listSiblingRecords="true">
 			<field filterQuery="-DOCSTRCT:year">PI_PARENT</field>
             <field>MD_OTHERANCESTOR</field>
             <field>GROUPID_1</field>
 		</ancestorIdentifierFields>
+
+		<!-- calendarDocStructTypes: DOCSTRCT names for which the calendar TOC view applies.
+			For an anchor/group record whose docstruct matches one of these types AND that
+			has volumes spanning more than one calendar year, the calendar branch in
+			viewToc.xhtml replaces the issue-list TOC and the (potentially heavy) issue-list
+			build is skipped. Records whose docstruct is not listed always get the regular
+			TOC build, even if they have multi-year date metadata. Leave empty to preserve
+			legacy behavior (defer for any multi-year anchor/group). -->
+		<calendarDocStructTypes>
+			<docstruct>Newspaper</docstruct>
+			<docstruct>Periodical</docstruct>
+		</calendarDocStructTypes>
 
 		<!-- display as interactive tree view -->
 		<useTreeView showDocStructs="Monograph;Manuscript;MusicSupplies">true</useTreeView>

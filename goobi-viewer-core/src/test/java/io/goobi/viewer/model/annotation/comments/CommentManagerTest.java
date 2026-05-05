@@ -214,4 +214,45 @@ class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         // Verifies the notification executor shuts down cleanly
         Assertions.assertDoesNotThrow(CommentManager::shutdown);
     }
+
+    /**
+     * @see CommentManager#checkAndCleanScripts(String, User, String, Integer)
+     * @verifies return null if text is null
+     */
+    @Test
+    void checkAndCleanScripts_shouldReturnNullIfTextIsNull() {
+        Assertions.assertNull(CommentManager.checkAndCleanScripts(null, null, "PI_TEST", 1));
+    }
+
+    /**
+     * @see CommentManager#checkAndCleanScripts(String, User, String, Integer)
+     * @verifies return text unchanged if already clean
+     */
+    @Test
+    void checkAndCleanScripts_shouldReturnTextUnchangedIfAlreadyClean() {
+        String plain = "This is a normal comment.";
+        Assertions.assertEquals(plain, CommentManager.checkAndCleanScripts(plain, null, "PI_TEST", 1));
+    }
+
+    /**
+     * @see CommentManager#checkAndCleanScripts(String, User, String, Integer)
+     * @verifies remove script tags and log warning
+     */
+    @Test
+    void checkAndCleanScripts_shouldRemoveScriptTagsAndLogWarning() {
+        String dirty = "Hello <script>alert('xss')</script> world";
+        String result = CommentManager.checkAndCleanScripts(dirty, null, "PI_TEST", 1);
+        Assertions.assertFalse(result.contains("<script"), "script tag must be removed");
+    }
+
+    /**
+     * @see CommentManager#checkAndCleanScripts(String, User, String, Integer)
+     * @verifies remove onclick attributes and log warning
+     */
+    @Test
+    void checkAndCleanScripts_shouldRemoveOnclickAttributesAndLogWarning() {
+        String dirty = "<p onclick=\"alert('xss')\">Click me</p>";
+        String result = CommentManager.checkAndCleanScripts(dirty, null, "PI_TEST", 1);
+        Assertions.assertFalse(result.contains("onclick"), "onclick attribute must be removed");
+    }
 }

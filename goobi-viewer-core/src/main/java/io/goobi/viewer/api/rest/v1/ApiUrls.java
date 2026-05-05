@@ -37,6 +37,8 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String AUTH = "/auth";
     public static final String AUTH_HEADER = "/header";
     public static final String AUTH_OAUTH = "/oauth";
+    public static final String AUTH_LOGIN = "/login";
+    public static final String AUTH_LOGOUT = "/logout";
 
     public static final String CACHE = "/cache";
     public static final String CACHE_RECORD = "/{pi}";
@@ -47,7 +49,6 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String INDEX_FIELDS = "/fields";
     public static final String INDEX_QUERY = "/query";
     public static final String INDEX_SCHEMA_VERSION = "/schemaversion";
-    public static final String INDEX_STREAM = "/stream";
     public static final String INDEX_STATISTICS = "/statistics";
     public static final String INDEX_SPATIAL_HEATMAP = "/spatial/heatmap/{solrField}";
     public static final String INDEX_SPATIAL_SEARCH = "/spatial/search/{solrField}";

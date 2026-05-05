@@ -33,9 +33,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.controller.HtmlSanitizer;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
-import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.viewer.PageType;
@@ -199,17 +199,21 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     }
 
     /**
-     * Removes any script tags from the text value.
+     * Removes any disallowed markup from the text value (script tags, event-handler attributes,
+     * javascript: URIs, image/table tags etc. — see {@link HtmlSanitizer#cleanComment(String)}
+     * for the full allowlist).
      *
      * @should remove scripts correctly
+     * @should also remove event handler attributes
      */
     public void checkAndCleanScripts() {
-        if (text != null) {
-            String cleanText = StringTools.stripJS(text);
-            if (cleanText.length() < text.length()) {
-                logger.warn("User attempted to add a script block into a comment for {}, page {}, which was removed:\n{}", pi, page, text);
-                text = cleanText;
-            }
+        if (text != null && !HtmlSanitizer.isCleanComment(text)) {
+            // Switched from regex-based StringTools.stripJS to HtmlSanitizer.cleanComment.
+            // Detection trigger uses isCleanComment(...) instead of comparing input with the
+            // sanitized output — Jsoup normalizes attribute order, tag case, entity encoding
+            // etc., so a string compare would log false-positive WARN entries on benign input.
+            logger.warn("User attempted to add a script block into a comment for {}, page {}, which was removed:\n{}", pi, page, text);
+            text = HtmlSanitizer.cleanComment(text);
         }
     }
 
@@ -307,12 +311,16 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     }
 
     /**
-     * getDisplayText.
+     * Returns the comment text sanitized for display.
      *
-     * @return the comment text with any JavaScript stripped out
+     * @return sanitized display text
+     * @should remove script tags from display text
      */
     public String getDisplayText() {
-        return StringTools.stripJS(text);
+        // Switched from regex-based StringTools.stripJS to HtmlSanitizer.cleanComment
+        // (Jsoup allowlist) so event-handler attributes and javascript: URIs are
+        // also neutralized.
+        return HtmlSanitizer.cleanComment(text);
     }
 
     /**

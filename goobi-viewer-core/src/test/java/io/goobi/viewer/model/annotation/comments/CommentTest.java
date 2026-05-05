@@ -60,4 +60,18 @@ class CommentTest extends AbstractSolrEnabledTest {
         Comment comment = new Comment();
         Assertions.assertFalse(comment.isTargetPiRecordIndexed());
     }
+
+    /**
+     * @see Comment#getDisplayText()
+     * @verifies remove script tags from display text
+     */
+    @Test
+    void getDisplayText_shouldRemoveScriptTagsFromDisplayText() {
+        Comment c = new Comment();
+        c.setText("hello<script>alert(1)</script>world");
+        String display = c.getDisplayText();
+        Assertions.assertFalse(display.toLowerCase().contains("<script"));
+        Assertions.assertTrue(display.contains("hello"));
+        Assertions.assertTrue(display.contains("world"));
+    }
 }

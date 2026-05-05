@@ -30,6 +30,7 @@ import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.ServerProperties;
 
 import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.EhCacheShutdownListener;
@@ -111,7 +112,9 @@ public class Application extends ResourceConfig {
         packages(true, "io.goobi.viewer.api.rest.filters");
         packages(true, "io.goobi.viewer.api.rest.exceptions");
         packages(true, "io.swagger");
-
+        // Use setStatus() instead of sendError() so the servlet container's <error-page> mapping
+        // does not intercept JAX-RS error responses and replace them with HTML pages.
+        property(ServerProperties.RESPONSE_SET_STATUS_OVER_SEND_ERROR, true);
     }
 
 }

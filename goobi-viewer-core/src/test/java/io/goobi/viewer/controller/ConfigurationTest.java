@@ -647,6 +647,24 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getMaxAggregateAltoSize()
+     * @verifies return correct value
+     */
+    @Test
+    void getMaxAggregateAltoSize_shouldReturnCorrectValue() {
+        assertEquals(1024, DataManager.getInstance().getConfiguration().getMaxAggregateAltoSize());
+    }
+
+    /**
+     * @see Configuration#getMaxAggregateFulltextSize()
+     * @verifies return correct value
+     */
+    @Test
+    void getMaxAggregateFulltextSize_shouldReturnCorrectValue() {
+        assertEquals(1024, DataManager.getInstance().getConfiguration().getMaxAggregateFulltextSize());
+    }
+
+    /**
      * @see Configuration#getPageType(PageType)
      * @verifies return the correct value for the given type
      */
@@ -1935,7 +1953,6 @@ class ConfigurationTest extends AbstractTest {
         assertTrue(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewCollapsedByDefault("object", "copyright"));
     }
 
-
     /**
      * @see Configuration#getAllFacetFields()
      * @verifies return correct order
@@ -2658,6 +2675,19 @@ class ConfigurationTest extends AbstractTest {
         assertEquals(3, list.size());
         assertEquals(SolrConstants.PI_PARENT, list.get(0));
         assertEquals("MD_OTHERANCESTOR", list.get(1));
+    }
+
+    /**
+     * @see Configuration#getCalendarDocStructTypes()
+     * @verifies return all configured values
+     */
+    @Test
+    void getCalendarDocStructTypes_shouldReturnAllConfiguredValues() {
+        List<String> list = DataManager.getInstance().getConfiguration().getCalendarDocStructTypes();
+        assertNotNull(list);
+        assertEquals(2, list.size());
+        assertTrue(list.contains("Newspaper"));
+        assertTrue(list.contains("Periodical"));
     }
 
     /**
@@ -4138,5 +4168,15 @@ class ConfigurationTest extends AbstractTest {
         // invalidation tightly scoped so unrelated test setup does not pay the cache-rebuild cost.
         config.overrideValue("viewer.theme.rootPath", "/foo");
         assertEquals(populated, config.getFacetFieldPropertyCacheSize());
+    }
+
+    /**
+     * @see Configuration#getTokenExpirationDays()
+     * @verifies return default value of 30 when not configured
+     */
+
+    @Test
+    void getTokenExpirationDays_shouldReturnDefaultValueOf30WhenNotConfigured() {
+        assertEquals(30, DataManager.getInstance().getConfiguration().getTokenExpirationDays());
     }
 }

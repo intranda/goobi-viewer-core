@@ -1215,6 +1215,36 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @verifies skip CALENDAR_DAY item so expand does not pick up unrelated pages of date matching parents
+     * @see SearchHelper#generateAdvancedExpandQuery(SearchQueryGroup, boolean)
+     */
+    @Test
+    void generateAdvancedExpandQuery_shouldSkipCalendarDayItem() {
+        // Reproduces the searchInRecord scenario (ALL:abschied + YEARMONTHDAY:[range] within a newspaper):
+        // the date filter is already applied by the parent-level main query, so CALENDAR_DAY must not
+        // end up in the expand.q — otherwise its nested IDDOC->IDDOC_OWNER join would match every page
+        // of every date-matching issue and add spurious sub-hits for pages that don't contain the term.
+        SearchQueryGroup group = new SearchQueryGroup(
+                DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true, "en"), null);
+        group.setOperator(SearchQueryGroupOperator.AND);
+        group.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
+        group.getQueryItems().get(0).setField(SolrConstants.FULLTEXT);
+        group.getQueryItems().get(0).setValue("abschied");
+        group.getQueryItems().get(1).setOperator(SearchItemOperator.AND);
+        group.getQueryItems().get(1).setField(SolrConstants.CALENDAR_DAY);
+        group.getQueryItems().get(1).setValue("01.08.1878");
+        group.getQueryItems().get(1).setValue2("08.09.1878");
+
+        String result = SearchHelper.generateAdvancedExpandQuery(group, false);
+        Assertions.assertFalse(result.contains(SolrConstants.CALENDAR_DAY),
+                "CALENDAR_DAY must be skipped in expand.q but was: " + result);
+        Assertions.assertFalse(result.contains("{!join from=IDDOC to=IDDOC_OWNER}"),
+                "Nested IDDOC join must be skipped in expand.q but was: " + result);
+        Assertions.assertTrue(result.contains("abschied"),
+                "Text term must still be present in expand.q, was: " + result);
+    }
+
+    /**
      * @verifies switch to OR operator on fulltext items
      */
     @Test
@@ -2178,5 +2208,155 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         // When both query and whitelist filter are empty, falls back to ALL_RECORDS_QUERY
         assertEquals(SearchHelper.ALL_RECORDS_QUERY, SearchHelper.prepareQuery(null, ""));
         assertEquals(SearchHelper.ALL_RECORDS_QUERY, SearchHelper.prepareQuery("", null));
+    }
+
+    /**
+     * @see SearchHelper#filterChildDocs(SolrDocumentList, String, java.util.Map, SearchHitFactory)
+     * @verifies keep DOCSTRCT child docs when search terms are empty
+     */
+    @Test
+    void filterChildDocs_shouldKeepDOCSTRCTChildDocsWhenSearchTermsAreEmpty() {
+        // Regression scenario: calendar TocView date-range search. Each matching Issue is a
+        // DOCSTRCT child with no text search term to match against — the filter must pass them
+        // through so the user actually sees the date-matched issues as sub-hits.
+        SolrDocumentList docs = new SolrDocumentList();
+        org.apache.solr.common.SolrDocument issue1 = new org.apache.solr.common.SolrDocument();
+        issue1.setField(SolrConstants.IDDOC, "10001");
+        issue1.setField(SolrConstants.DOCTYPE, "DOCSTRCT");
+        issue1.setField(SolrConstants.DOCSTRCT, "Issue");
+        docs.add(issue1);
+        org.apache.solr.common.SolrDocument issue2 = new org.apache.solr.common.SolrDocument();
+        issue2.setField(SolrConstants.IDDOC, "10002");
+        issue2.setField(SolrConstants.DOCTYPE, "DOCSTRCT");
+        issue2.setField(SolrConstants.DOCSTRCT, "Issue");
+        docs.add(issue2);
+
+        SearchHitFactory factory = new SearchHitFactory(Collections.emptyMap(), null, null, 0, null, Locale.GERMAN);
+
+        SolrDocumentList result = SearchHelper.filterChildDocs(docs, "42", new HashMap<>(), factory);
+        Assertions.assertEquals(2, result.size());
+    }
+
+    /**
+     * @see SearchHelper#filterChildDocs(SolrDocumentList, String, java.util.Map, SearchHitFactory)
+     * @verifies keep DOCSTRCT child docs when search terms are null
+     */
+    @Test
+    void filterChildDocs_shouldKeepDOCSTRCTChildDocsWhenSearchTermsAreNull() {
+        SolrDocumentList docs = new SolrDocumentList();
+        org.apache.solr.common.SolrDocument issue = new org.apache.solr.common.SolrDocument();
+        issue.setField(SolrConstants.IDDOC, "10001");
+        issue.setField(SolrConstants.DOCTYPE, "DOCSTRCT");
+        issue.setField(SolrConstants.DOCSTRCT, "Issue");
+        docs.add(issue);
+
+        SearchHitFactory factory = new SearchHitFactory(null, null, null, 0, null, Locale.GERMAN);
+
+        SolrDocumentList result = SearchHelper.filterChildDocs(docs, "42", null, factory);
+        Assertions.assertEquals(1, result.size());
+    }
+
+    /**
+     * @see SearchHelper#filterChildDocs(SolrDocumentList, String, java.util.Map, SearchHitFactory)
+     * @verifies require search term match when search terms are present
+     */
+    @Test
+    void filterChildDocs_shouldRequireSearchTermMatchWhenSearchTermsArePresent() {
+        // Text-search path stays as-is: a DOCSTRCT without any metadata matching the search term
+        // must NOT be added directly to the result list — the ownerDocs round-trip takes over.
+        SolrDocumentList docs = new SolrDocumentList();
+        org.apache.solr.common.SolrDocument issue = new org.apache.solr.common.SolrDocument();
+        issue.setField(SolrConstants.IDDOC, "10001");
+        issue.setField(SolrConstants.DOCTYPE, "DOCSTRCT");
+        issue.setField(SolrConstants.DOCSTRCT, "Issue");
+        // No MD_* fields → containsSearchTerms() returns false
+        docs.add(issue);
+
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put(SolrConstants.DEFAULT, Collections.singleton("vaduz"));
+        SearchHitFactory factory = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.GERMAN);
+
+        SolrDocumentList result = SearchHelper.filterChildDocs(docs, "42", searchTerms, factory);
+        Assertions.assertEquals(0, result.size());
+    }
+
+    /**
+     * @see SearchHelper#filterChildDocs(SolrDocumentList, String, java.util.Map, SearchHitFactory)
+     * @verifies keep DOCSTRCT child docs when search terms only contain structural fields
+     */
+    @Test
+    void filterChildDocs_shouldKeepDOCSTRCTChildDocsWhenSearchTermsOnlyContainStructuralFields() {
+        // Real-world scenario: extractSearchTermsFromQuery always adds PI_ANCHOR / TITLE_TERMS
+        // to searchTerms, even for a pure date-range query. Without the text-term check the
+        // filter would still drop all issues. With it, they must pass through.
+        SolrDocumentList docs = new SolrDocumentList();
+        org.apache.solr.common.SolrDocument issue = new org.apache.solr.common.SolrDocument();
+        issue.setField(SolrConstants.IDDOC, "10001");
+        issue.setField(SolrConstants.DOCTYPE, "DOCSTRCT");
+        issue.setField(SolrConstants.DOCSTRCT, "Issue");
+        docs.add(issue);
+
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put(SolrConstants.PI_ANCHOR, Collections.singleton("000476564"));
+        searchTerms.put("TITLE_TERMS", Collections.singleton("(000476564)"));
+        SearchHitFactory factory = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.GERMAN);
+
+        SolrDocumentList result = SearchHelper.filterChildDocs(docs, "42", searchTerms, factory);
+        Assertions.assertEquals(1, result.size());
+    }
+
+    /**
+     * @see SearchHelper#hasTextSearchTerm(java.util.Map)
+     * @verifies return false for null map
+     */
+    @Test
+    void hasTextSearchTerm_shouldReturnFalseForNullMap() {
+        Assertions.assertFalse(SearchHelper.hasTextSearchTerm(null));
+    }
+
+    /**
+     * @see SearchHelper#hasTextSearchTerm(java.util.Map)
+     * @verifies return false when only structural fields are present
+     */
+    @Test
+    void hasTextSearchTerm_shouldReturnFalseWhenOnlyStructuralFieldsArePresent() {
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put(SolrConstants.PI_ANCHOR, Collections.singleton("000476564"));
+        searchTerms.put(SolrConstants.PI_TOPSTRUCT, Collections.singleton("000476564_2021"));
+        searchTerms.put("TITLE_TERMS", Collections.singleton("(x)"));
+        Assertions.assertFalse(SearchHelper.hasTextSearchTerm(searchTerms));
+    }
+
+    /**
+     * @see SearchHelper#hasTextSearchTerm(java.util.Map)
+     * @verifies return true when DEFAULT field has values
+     */
+    @Test
+    void hasTextSearchTerm_shouldReturnTrueWhenDEFAULTFieldHasValues() {
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put(SolrConstants.DEFAULT, Collections.singleton("vaduz"));
+        Assertions.assertTrue(SearchHelper.hasTextSearchTerm(searchTerms));
+    }
+
+    /**
+     * @see SearchHelper#hasTextSearchTerm(java.util.Map)
+     * @verifies return true when an MD_ field has values
+     */
+    @Test
+    void hasTextSearchTerm_shouldReturnTrueWhenAnMDFieldHasValues() {
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put("MD_TITLE", Collections.singleton("something"));
+        Assertions.assertTrue(SearchHelper.hasTextSearchTerm(searchTerms));
+    }
+
+    /**
+     * @see SearchHelper#hasTextSearchTerm(java.util.Map)
+     * @verifies return false when text field has only empty value set
+     */
+    @Test
+    void hasTextSearchTerm_shouldReturnFalseWhenTextFieldHasOnlyEmptyValueSet() {
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put(SolrConstants.DEFAULT, new HashSet<>());
+        Assertions.assertFalse(SearchHelper.hasTextSearchTerm(searchTerms));
     }
 }

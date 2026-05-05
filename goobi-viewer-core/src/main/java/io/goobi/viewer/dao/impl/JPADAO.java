@@ -597,6 +597,83 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public Optional<io.goobi.viewer.model.security.user.UserToken> getUserTokenByTokenHash(String tokenHash) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<io.goobi.viewer.model.security.user.UserToken> q = em.createQuery(
+                    "SELECT t FROM UserToken t WHERE t.tokenHash = :tokenHash",
+                    io.goobi.viewer.model.security.user.UserToken.class);
+            q.setParameter("tokenHash", tokenHash);
+            try {
+                return Optional.of(q.getSingleResult());
+            } catch (NoResultException e) {
+                return Optional.empty();
+            }
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean addUserToken(io.goobi.viewer.model.security.user.UserToken token) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.persist(token);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean deleteUserToken(io.goobi.viewer.model.security.user.UserToken token) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            io.goobi.viewer.model.security.user.UserToken managed =
+                    em.getReference(io.goobi.viewer.model.security.user.UserToken.class, token.getId());
+            em.remove(managed);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void deleteExpiredUserTokensForUser(io.goobi.viewer.model.security.user.User user) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.createQuery("DELETE FROM UserToken t WHERE t.user = :user AND t.expirationDate < :now")
+                    .setParameter("user", user)
+                    .setParameter("now", java.time.LocalDateTime.now())
+                    .executeUpdate();
+            commitTransaction(em);
+        } catch (PersistenceException e) {
+            handleException(em);
+        } finally {
+            close(em);
+        }
+    }
+
     // UserGroup
 
     /** {@inheritDoc} */
@@ -921,17 +998,17 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean updateBookmarkList(BookmarkList bookmarkList) throws DAOException {
+    public BookmarkList updateBookmarkList(BookmarkList bookmarkList) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            em.merge(bookmarkList);
+            BookmarkList storedList = em.merge(bookmarkList);
             commitTransaction(em);
-            return true;
+            return storedList;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -2579,7 +2656,8 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * <p>Gets all page numbers (order) within a work with the given pi which contain comments
+     * <p>
+     * Gets all page numbers (order) within a work with the given pi which contain comments
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -4845,7 +4923,8 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * <p>Persist a new {@link CMSCategory} object
+     * <p>
+     * Persist a new {@link CMSCategory} object
      */
     @Override
     public boolean addCategory(CMSCategory category) throws DAOException {
@@ -4867,7 +4946,8 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * <p>Update an existing {@link CMSCategory} object in the persistence context
+     * <p>
+     * Update an existing {@link CMSCategory} object in the persistence context
      */
     @Override
     public boolean updateCategory(CMSCategory category) throws DAOException {
@@ -4889,7 +4969,8 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * <p>Delete a {@link CMSCategory} object from the persistence context
+     * <p>
+     * Delete a {@link CMSCategory} object from the persistence context
      */
     @Override
     public boolean deleteCategory(CMSCategory category) throws DAOException {
@@ -4912,7 +4993,8 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * <p>Search the persistence context for a {@link CMSCategory} with the given name.
+     * <p>
+     * Search the persistence context for a {@link CMSCategory} with the given name.
      */
     @Override
     public CMSCategory getCategoryByName(String name) throws DAOException {
@@ -4931,7 +5013,8 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * <p>Search the persistence context for a {@link CMSCategory} with the given unique id.
+     * <p>
+     * Search the persistence context for a {@link CMSCategory} with the given unique id.
      */
     @Override
     public CMSCategory getCategory(Long id) throws DAOException {
@@ -4949,7 +5032,8 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * <p>Check if the database contains a table of the given name. Used by backward-compatibility routines
+     * <p>
+     * Check if the database contains a table of the given name. Used by backward-compatibility routines
      *
      * @throws SQLException
      */
@@ -4977,7 +5061,8 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * <p>Check if the database contains a column in a table with the given names. Used by backward-compatibility routines
+     * <p>
+     * Check if the database contains a column in a table with the given names. Used by backward-compatibility routines
      */
     @Override
     public boolean columnsExists(String tableName, String columnName) throws SQLException, DAOException {
@@ -5054,7 +5139,8 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * <p>Get all annotations associated with the work of the given pi
+     * <p>
+     * Get all annotations associated with the work of the given pi
      *
      * @should return correct rows
      */

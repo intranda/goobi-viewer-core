@@ -83,6 +83,7 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.PublicationStatus;
 import io.goobi.viewer.model.annotation.comments.CommentGroup;
+import io.goobi.viewer.model.calendar.CalendarView;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent.ContentType;
@@ -695,6 +696,16 @@ public class ActiveDocumentBean implements Serializable {
         // acquire its monitor, so it provided no thread safety.
         ViewManager vm = this.viewManager;
         if (vm != null) {
+            // Skip the heavy issue-list TOC build when the calendar TOC view will render
+            // instead. For records covering many calendar years (e.g. newspapers with
+            // hundreds of thousands of dated issues) building the flat issue list would
+            // block the request thread for minutes or run out of memory; the calendar
+            // view in viewToc.xhtml does not consume TOC data — it issues its own
+            // per-year facet queries. See refs #27905 follow-up.
+            if (shouldDeferTocToCalendar(vm)) {
+                logger.trace("Deferring to calendar");
+                return toc;
+            }
             toc.generate(vm.getTopStructElement(), vm.isListAllVolumesInTOC(), vm.getMimeType(), tocCurrentPage);
             // The TOC object will correct values that are too high, so update the local value, if necessary
             if (toc.getCurrentPage() != this.tocCurrentPage) {
@@ -702,6 +713,51 @@ public class ActiveDocumentBean implements Serializable {
             }
         }
         return toc;
+    }
+
+    /**
+     * Decides whether building the issue-list TOC can be skipped because the calendar TOC
+     * view will be rendered instead.
+     *
+     * <p>Used as a cheap probe in {@link #createTOC()} to avoid loading hundreds of
+     * thousands of issue documents for newspaper-style group records. The calendar
+     * branch in {@code viewToc.xhtml} renders independently of TOC data and issues
+     * its own per-year calendar facet queries.
+     *
+     * <p>The probe is "the record's docstruct is configured for the calendar view AND
+     * more than one calendar year is present in the index". The year-count condition is
+     * a sufficient condition for {@link CalendarView#isDisplay()} that does not require
+     * populating an entire year's day grid. The docstruct gate
+     * ({@link io.goobi.viewer.controller.Configuration#getCalendarDocStructTypes()})
+     * ensures the deferral fires only for record types where the calendar view actually
+     * applies — multi-year date metadata alone (e.g. on a podcast anchor) is not enough
+     * to warrant skipping the issue-list build, because nothing else would render in its
+     * place. An empty whitelist preserves legacy behavior (defer for any multi-year
+     * anchor/group).
+     *
+     * @param vm the active view manager; must not be null
+     * @return true if the calendar TOC view will render and the issue-list TOC build can be skipped
+     * @throws IndexUnreachableException if the volume-years probe query fails
+     * @throws PresentationException if the volume-years probe query fails
+     * @should return false for non-anchor and non-group records
+     * @should return false when only a single calendar year is indexed
+     * @should return true when more than one calendar year is indexed for an anchor or group
+     * @should return false when docstruct is not in calendar whitelist
+     * @should return true when docstruct is in calendar whitelist and multiple years indexed
+     */
+    static boolean shouldDeferTocToCalendar(ViewManager vm) throws IndexUnreachableException, PresentationException {
+        StructElement top = vm.getTopStructElement();
+        if (top == null || (!top.isAnchor() && !top.isGroup())) {
+            return false;
+        }
+        List<String> calendarDocStructs = DataManager.getInstance().getConfiguration().getCalendarDocStructTypes();
+        if (!calendarDocStructs.isEmpty()) {
+            String docStruct = top.getDocStructType();
+            if (docStruct == null || !calendarDocStructs.contains(docStruct)) {
+                return false;
+            }
+        }
+        return vm.getCalendarView().getVolumeYears().size() > 1;
     }
 
     /**
