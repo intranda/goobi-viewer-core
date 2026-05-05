@@ -27,13 +27,7 @@ var viewerJS = (function (viewer) {
     // -- Private helpers ------------------------------------------------------
 
     function _toISODate(d) {
-        return (
-            d.getFullYear() +
-            '-' +
-            String(d.getMonth() + 1).padStart(2, '0') +
-            '-' +
-            String(d.getDate()).padStart(2, '0')
-        );
+        return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
     }
 
     function _parseISODate(isoStr) {
@@ -104,20 +98,7 @@ var viewerJS = (function (viewer) {
                 days: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
                 daysShort: ['Son', 'Mon', 'Die', 'Mit', 'Don', 'Fre', 'Sam'],
                 daysMin: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
-                months: [
-                    'Januar',
-                    'Februar',
-                    'März',
-                    'April',
-                    'Mai',
-                    'Juni',
-                    'Juli',
-                    'August',
-                    'September',
-                    'Oktober',
-                    'November',
-                    'Dezember',
-                ],
+                months: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
                 monthsShort: ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
                 today: 'Heute',
                 clear: 'Löschen',
@@ -129,20 +110,7 @@ var viewerJS = (function (viewer) {
                 days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
                 daysShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
                 daysMin: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
-                months: [
-                    'January',
-                    'February',
-                    'March',
-                    'April',
-                    'May',
-                    'June',
-                    'July',
-                    'August',
-                    'September',
-                    'October',
-                    'November',
-                    'December',
-                ],
+                months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
                 monthsShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
                 today: 'Today',
                 clear: 'Clear',
@@ -248,11 +216,7 @@ var viewerJS = (function (viewer) {
             }
 
             if (el.tagName === 'INPUT' && el.value && !config.defaultDate && !config.selectedDates) {
-                var parseFmt =
-                    javaFormat ||
-                    (resolvedLocale && resolvedLocale.dateFormat
-                        ? _convertByMap(resolvedLocale.dateFormat, _fpToLuxon)
-                        : null);
+                var parseFmt = javaFormat || (resolvedLocale && resolvedLocale.dateFormat ? _convertByMap(resolvedLocale.dateFormat, _fpToLuxon) : null);
                 if (parseFmt) {
                     var existingDate = this._parseExistingDate(el.value, { dateFormat: parseFmt });
                     if (existingDate) {
@@ -411,9 +375,7 @@ var viewerJS = (function (viewer) {
                     var dateStr = _toISODate(selectedDates[0]);
 
                     if (hasDataDates.indexOf(dateStr) !== -1 && onDayClickCb) {
-                        var dayElem = fp.days.querySelector(
-                            '.flatpickr-day.selected:not(.prevMonthDay):not(.nextMonthDay)'
-                        );
+                        var dayElem = fp.days.querySelector('.flatpickr-day.selected:not(.prevMonthDay):not(.nextMonthDay)');
                         onDayClickCb(dateStr, selectedDates[0], dayElem);
                     }
                 },
@@ -430,37 +392,31 @@ var viewerJS = (function (viewer) {
         init: function () {
             var self = this;
 
-            document
-                .querySelectorAll('[data-datepicker="true"]:not([data-datepicker-initialized])')
-                .forEach(function (el) {
-                    self.create(el);
-                    el.setAttribute('data-datepicker-initialized', 'true');
-                });
+            document.querySelectorAll('[data-datepicker="true"]:not([data-datepicker-initialized])').forEach(function (el) {
+                self.create(el);
+                el.setAttribute('data-datepicker-initialized', 'true');
+            });
 
-            document
-                .querySelectorAll('[data-datepicker-range-group]:not([data-datepicker-initialized])')
-                .forEach(function (startEl) {
-                    var group = startEl.dataset.datepickerRangeGroup;
-                    var endEl = document.querySelector('[data-datepicker-range-end="' + group + '"]');
-                    if (endEl) {
-                        self.createRange(startEl, endEl);
-                        startEl.setAttribute('data-datepicker-initialized', 'true');
-                        endEl.setAttribute('data-datepicker-initialized', 'true');
-                    }
-                });
+            document.querySelectorAll('[data-datepicker-range-group]:not([data-datepicker-initialized])').forEach(function (startEl) {
+                var group = startEl.dataset.datepickerRangeGroup;
+                var endEl = document.querySelector('[data-datepicker-range-end="' + group + '"]');
+                if (endEl) {
+                    self.createRange(startEl, endEl);
+                    startEl.setAttribute('data-datepicker-initialized', 'true');
+                    endEl.setAttribute('data-datepicker-initialized', 'true');
+                }
+            });
 
-            document
-                .querySelectorAll('[data-datepicker-inline="true"]:not([data-datepicker-initialized])')
-                .forEach(function (el) {
-                    self.createInlineCalendar(el, {
-                        locale: self._resolveLocale(el.dataset.datepickerLocale || 'de'),
-                        hasDataDates: [],
-                        currentIssueDate: el.dataset.datepickerCurrentDate || null,
-                        onDayClick: function (dateStr) {},
-                        onMonthChange: function (selectedDates, dateStr, instance) {},
-                    });
-                    el.setAttribute('data-datepicker-initialized', 'true');
+            document.querySelectorAll('[data-datepicker-inline="true"]:not([data-datepicker-initialized])').forEach(function (el) {
+                self.createInlineCalendar(el, {
+                    locale: self._resolveLocale(el.dataset.datepickerLocale || 'de'),
+                    hasDataDates: [],
+                    currentIssueDate: el.dataset.datepickerCurrentDate || null,
+                    onDayClick: function (dateStr) {},
+                    onMonthChange: function (selectedDates, dateStr, instance) {},
                 });
+                el.setAttribute('data-datepicker-initialized', 'true');
+            });
         },
 
         // -- Lifecycle --------------------------------------------------------

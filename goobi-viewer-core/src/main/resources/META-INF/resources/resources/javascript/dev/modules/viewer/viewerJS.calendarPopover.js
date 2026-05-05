@@ -83,7 +83,7 @@ var viewerJS = (function (viewer) {
                                 selector: _defaults.calendarWrapperSelector,
                             },
                             html: true,
-                        }; 
+                        };
 
                         $(_defaults.popoverTriggerSelector).popover('dispose');
                         _this.popover(_popoverConfig);
@@ -100,7 +100,7 @@ var viewerJS = (function (viewer) {
                             $popover.trigger('focus');
 
                             $popover.on('keydown.calendarPopover', function (e) {
-                                if (e.key === 'Escape') { 
+                                if (e.key === 'Escape') {
                                     // Escape: close popover, return focus to trigger
                                     $trigger.popover('dispose');
                                     $trigger.trigger('focus');

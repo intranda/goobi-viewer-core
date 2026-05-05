@@ -205,7 +205,8 @@ class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies associate cms collection info with element
      */
     @Test
-    void getCollection_shouldAssociateCmsCollectionInfoWithElement() throws PresentationException, IndexUnreachableException, IllegalRequestException, DAOException {
+    void getCollection_shouldAssociateCmsCollectionInfoWithElement()
+            throws PresentationException, IndexUnreachableException, IllegalRequestException, DAOException {
         CMSPage page = new CMSPage();
         page.setId(1l);
         PersistentCMSComponent component = new PersistentCMSComponent();
@@ -338,15 +339,15 @@ class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
 
     }
 
-
     /**
-     * @throws PresentationException 
-     * @verifies return browse url for collection with special characters
+     * @throws PresentationException
+     * @see Configuration#getFirstRecordUrl(HierarchicalBrowseDcElement,String)
+     * @verifies escape url encode collection name
      */
     @Test
     void getFirstRecordUrl_shouldReturnBrowseUrlForCollectionWithSpecialCharacters() throws PresentationException {
         HierarchicalBrowseDcElement collection = new HierarchicalBrowseDcElement("Foo (2025-2026)", 1, "MD_FOO", null, ".", 0);
-        String url = CollectionView.getFirstRecordUrl(collection, "MD_FOO");
+        String url = CollectionView.getFirstRecordUrl(collection, "MD_FOO", "");
         Assertions.assertEquals("/browse/MD_FOO/Foo+%282025-2026%29/record/", url);
     }
 }

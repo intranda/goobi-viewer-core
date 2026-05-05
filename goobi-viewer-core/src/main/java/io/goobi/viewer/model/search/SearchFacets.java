@@ -1009,10 +1009,9 @@ public class SearchFacets implements Serializable {
      * @should remove only the exact matching facet without affecting similarly prefixed entries
      * @should remove facet containing reserved chars
      * @should sanitize triple semicolons to double after removal
-     * @param ret navigation outcome string to return after removal
      * @return the navigation outcome string after removing the facet
      */
-    public String removeFacetAction(final String facetQuery, final String ret) {
+    public void removeFacetAction(final String facetQuery) {
         logger.trace("removeFacetAction: {}", facetQuery);
         String currentFacetString = generateFacetPrefix(getActiveFacetsCopy(), null, false);
         if (currentFacetString.contains(facetQuery)) {
@@ -1025,7 +1024,6 @@ public class SearchFacets implements Serializable {
             setActiveFacetString(currentFacetString);
         }
 
-        return ret;
     }
 
     /**
@@ -1043,7 +1041,7 @@ public class SearchFacets implements Serializable {
     /**
      * Getter for unit tests.
      * 
-
+     * 
      */
     Map<String, String> getMinValues() {
         return minValues;
@@ -1052,7 +1050,7 @@ public class SearchFacets implements Serializable {
     /**
      * Getter for unit tests.
      * 
-
+     * 
      */
     Map<String, String> getMaxValues() {
         return maxValues;
@@ -1267,8 +1265,8 @@ public class SearchFacets implements Serializable {
      * @should return false if language code same
      * @should return false if no language code
      * @should return false if language code different but active facet selected
-     * @return true if the field has a language code suffix that does not match the given language and
-     *         no active facet is selected for it, false otherwise
+     * @return true if the field has a language code suffix that does not match the given language and no active facet is selected for it, false
+     *         otherwise
      */
     public boolean isHasWrongLanguageCode(String field, String language) {
         if (SolrTools.isHasWrongLanguageCode(field, language)) {
@@ -1350,12 +1348,10 @@ public class SearchFacets implements Serializable {
         return facet.getValue();
     }
 
-    
     public Map<String, String> getLabelMap() {
         return labelMap;
     }
 
-    
     public GeoFacetItem getGeoFacetting() {
         synchronized (lock) {
             List<String> geoFacetFields = DataManager.getInstance().getConfiguration().getGeoFacetFields();
