@@ -52,9 +52,9 @@
 		<sonar.java.target>21</sonar.java.target>
 
 		<!-- Shared dependency versions (later of the previous drifts preferred) -->
-		<checkstyle.version>13.4.0</checkstyle.version>
+		<checkstyle.version>13.4.1</checkstyle.version>
 		<commons-configuration2.version>2.14.0</commons-configuration2.version>
-		<commons-io.version>2.21.0</commons-io.version>
+		<commons-io.version>2.22.0</commons-io.version>
 		<commons-jxpath.version>1.4.0</commons-jxpath.version>
 		<commons-lang3.version>3.20.0</commons-lang3.version>
 		<epubconvert.version>1.1.2</epubconvert.version>
@@ -62,12 +62,13 @@
 		<httpcore.version>4.4.16</httpcore.version>
 		<jakarta.servlet-api.version>6.0.0</jakarta.servlet-api.version>
 		<jakarta.transaction-api.version>2.0.1</jakarta.transaction-api.version>
-		<jackson.version>2.21.2</jackson.version>
+		<jackson.version>2.21.3</jackson.version>
 		<jdom2.version>2.0.6.1</jdom2.version>
+		<!-- https://github.com/stleary/JSON-java -->
 		<json.version>20251224</json.version>
 		<junit.version>6.0.3</junit.version>
 		<log4j.version>2.25.4</log4j.version>
-		<netty.version>4.1.119.Final</netty.version>
+		<netty.version>4.1.132.Final</netty.version>
 		<solr.version>9.10.1</solr.version>
 
 		<!-- Shared plugin versions -->
@@ -84,7 +85,7 @@
 		<buildnumber-maven-plugin.version>3.3.0</buildnumber-maven-plugin.version>
 		<jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
 		<versions-maven-plugin.version>2.21.0</versions-maven-plugin.version>
-		<dependency-check-maven.version>12.2.0</dependency-check-maven.version>
+		<dependency-check-maven.version>12.2.1</dependency-check-maven.version>
 		<flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
 	</properties>
 
