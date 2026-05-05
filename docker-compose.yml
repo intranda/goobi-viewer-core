@@ -16,6 +16,7 @@ services:
       DB_PASSWORD: CHANGEME
       SOLR_HOST: solr
       VIEWER_DOMAIN: localhost:8080
+      VIEWER_BASE_PATH: /viewer
       USE_SSL: false
       TOMCAT_SAMESITECOOKIES: strict
       STOPWORDS_LANG: "de"

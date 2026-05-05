@@ -51,10 +51,6 @@ RUN --mount=type=bind,source=goobi-viewer-config/docker,target=/tmp/patches,read
     patch --output=${CATALINA_HOME}/conf/server.xml.template ${CATALINA_HOME}/conf/server.xml < /tmp/patches/server.xml.patch && \
     patch --output=${CATALINA_HOME}/conf/context.xml.template ${CATALINA_HOME}/conf/context.xml < /tmp/patches/context.xml.patch
 
-# redirect / to /viewer/
-RUN mkdir ${CATALINA_HOME}/webapps/ROOT && \
-    echo '<% response.sendRedirect("/viewer/"); %>' > ${CATALINA_HOME}/webapps/ROOT/index.jsp
-
 COPY --from=build-stage  /viewer/goobi-viewer-theme-reference/target/viewer.war /
 
 RUN unzip /viewer.war -d ${CATALINA_HOME}/webapps/viewer && rm /viewer.war
