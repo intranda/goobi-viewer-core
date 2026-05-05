@@ -22,7 +22,7 @@
 package io.goobi.viewer;
 
 import org.apache.solr.client.solrj.SolrClient;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,19 +37,18 @@ public abstract class AbstractSolrEnabledTest extends AbstractTest {
 
     protected static String iddocKleiuniv = null;
 
-    private SolrClient client;
+    private static SolrClient client;
 
     @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractTest.setUpClass();
-
+        client = SolrSearchIndex.getNewSolrClient();
     }
 
     @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        client = SolrSearchIndex.getNewSolrClient();
         DataManager.getInstance().injectSearchIndex(new SolrSearchIndex(client));
 
         // Load current IDDOC for PPN517154005, which is used in many tests
@@ -59,8 +58,11 @@ public abstract class AbstractSolrEnabledTest extends AbstractTest {
         Assertions.assertNotNull(iddocKleiuniv);
     }
 
-    @AfterEach
-    public void tearDown() throws Exception {
-        client.close();
+    @AfterAll
+    public static void tearDownClass() throws Exception {
+        if (client != null) {
+            client.close();
+            client = null;
+        }
     }
 }
