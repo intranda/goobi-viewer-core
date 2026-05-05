@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,7 +48,6 @@ import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrRequest.METHOD;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.BaseHttpSolrClient.RemoteSolrException;
-import org.apache.solr.client.solrj.impl.BinaryRequestWriter;
 import org.apache.solr.client.solrj.impl.Http2SolrClient;
 import org.apache.solr.client.solrj.request.LukeRequest;
 import org.apache.solr.client.solrj.request.json.HeatmapFacetMap;
@@ -201,13 +199,7 @@ public class SolrSearchIndex implements java.io.Closeable {
     }
 
     static Http2SolrClient getNewHttp2SolrClient(String solrUrl) {
-        return new Http2SolrClient.Builder(solrUrl)
-                .withIdleTimeout(TIMEOUT_SO, TimeUnit.MILLISECONDS)
-                .withConnectionTimeout(TIMEOUT_CONNECTION, TimeUnit.MILLISECONDS)
-                .withFollowRedirects(false)
-                .withRequestWriter(new BinaryRequestWriter())
-                // .allowCompression(DataManager.getInstance().getConfiguration().isSolrCompressionEnabled())
-                .build();
+        return (Http2SolrClient) SolrTools.newSolrClient(solrUrl, TIMEOUT_SO);
     }
 
     /**
