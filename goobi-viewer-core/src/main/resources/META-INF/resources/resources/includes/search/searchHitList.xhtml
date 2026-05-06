@@ -432,6 +432,27 @@
             data-dismiss="modal" />
     </div>
 
+    <!-- SHARED PDF DOWNLOAD MODAL (message queue mode, one instance for all search hits) -->
+
+        <viewerComponent:modalDownload
+            modalId="searchHitDownloadModal"
+            pi="#{downloadBean.currentPi}"
+            title=""
+            fileSize="" />
+
+        <script type="text/javascript">
+            //<![CDATA[
+            $('#searchHitDownloadModal').on('show.bs.modal', function(e) {
+                var $btn = $(e.relatedTarget);
+                var title = $btn.data('title');
+                $(this).find('.modal-title').text(title);
+                $(this).find('dd.col-sm-9').first().text(title);
+                $(this).find('input[type="hidden"][id$="__pi"]').val($btn.data('pi'));
+            });
+            //]]>
+        </script>
+
+
     <script type="text/javascript">
         var cmsPageId = '#{cmsPage.id}';
 
