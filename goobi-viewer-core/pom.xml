@@ -79,7 +79,7 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.8.0</alto.version>
-		<ics.version>4.3.0-SNAPSHOT</ics.version>
+		<ics.version>4.3.1</ics.version>
 		<tei-conversion.version>1.4.0</tei-conversion.version>
 		<intranda-content-view.version>0.5.1</intranda-content-view.version>
 		<iiif-api-model.version>3.2.0</iiif-api-model.version>
