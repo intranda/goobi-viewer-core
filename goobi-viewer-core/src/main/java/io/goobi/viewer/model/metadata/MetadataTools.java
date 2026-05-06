@@ -23,8 +23,11 @@ package io.goobi.viewer.model.metadata;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -310,6 +313,168 @@ public final class MetadataTools {
         }
 
         return result.toString();
+    }
+
+    /**
+     * generateRIS.
+     *
+     * @param se structural element to generate RIS output for.
+     * @return the RIS-formatted bibliographic reference string for the given structure element, or null if se is null
+     */
+    public static String generateRIS(StructElement se) {
+        if (se == null) {
+            return null;
+        }
+
+        return generateRIS(se.getDocStructType(), se.getMetadataFields());
+    }
+
+    /**
+     * 
+     * @param docstructType logical document structure type (e.g. "monograph", "article")
+     * @param metadataFields map of metadata field names to their values
+     * @return Generated RIS string; null of no docstructType given
+     */
+    public static String generateRIS(String docstructType, Map<String, List<String>> metadataFields) {
+        if (docstructType == null) {
+            return null;
+        }
+
+        StringBuilder result = new StringBuilder(100);
+        result.append("TY  - ").append(getRISTypeMapping(docstructType)).append("\r\n");
+        for (Entry<String, List<String>> entry : metadataFields.entrySet()) {
+            List<String> values = entry.getValue();
+            if (values == null || values.isEmpty()) {
+                continue;
+            }
+            String risTag = null;
+            switch (entry.getKey()) {
+                case "CURRENTNO":
+                    risTag = "VL";
+                    break;
+                case "MD_ABSTRACT":
+                case FIELD_MD_INFORMATION:
+                    risTag = "AB";
+                    break;
+                case "MD_ALTERNATETITLE":
+                    risTag = "J2";
+                    break;
+                case "MD_AUTHOR":
+                    risTag = "AU";
+                    break;
+                case "MD_EDITION":
+                    risTag = "ET";
+                    break;
+                case "MD_EDITOR":
+                    risTag = "ED";
+                    break;
+                case "MD_GEOKEYWORD":
+                case "MD_PERSONKEYWORD":
+                case "MD_WORKKEYWORD":
+                    risTag = "KW";
+                    break;
+                case "MD_ISBN":
+                case "MD_ISSN":
+                    risTag = "SN";
+                    break;
+                case FIELD_MD_LANGUAGE:
+                    risTag = "LA";
+                    break;
+                case "MD_NOTE":
+                    risTag = "N1";
+                    break;
+                case SolrConstants.PLACEPUBLISH:
+                    risTag = "CY";
+                    break;
+                case SolrConstants.PUBLISHER:
+                    risTag = "PB";
+                    break;
+                case SolrConstants.TITLE:
+                    risTag = "TI";
+                    break;
+                case SolrConstants.MD_YEARPUBLISH:
+                    risTag = "PY";
+                    break;
+                case "NUMPAGES":
+                    risTag = "SP";
+                    break;
+                case "NUMVOLUMES":
+                    risTag = "NV";
+                    break;
+                case "PI_TOPSTRUCT":
+                    risTag = "CN";
+                    break;
+                default:
+                    break;
+            }
+            if (risTag == null) {
+                continue;
+            }
+            int count = 1;
+            Set<String> usedValues = new HashSet<>(values.size());
+            for (String value : values) {
+                if (usedValues.contains(value) || StringConstants.ACCESSCONDITION_METADATA_ACCESS_RESTRICTED.equals(value)) {
+                    continue;
+                }
+                String useRisTag = risTag;
+                if (useRisTag.length() == 1) {
+                    useRisTag += count;
+                    count++;
+                }
+                result.append(useRisTag).append("  - ").append(value).append("\r\n");
+                usedValues.add(value);
+            }
+
+        }
+
+        result.append("ER  - \r\n");
+
+        return result.toString();
+    }
+
+    /**
+     *
+     * @param docstructType logical document structure type to map to a RIS type
+     * @return Mapped RIS type or default value "GEN"
+     */
+    static String getRISTypeMapping(String docstructType) {
+        if (docstructType == null) {
+            return null;
+        }
+
+        switch (docstructType.toLowerCase()) {
+            case "abstract":
+                return "ABST";
+            case "article":
+                return "MGZN";
+            case "audio":
+                return "AUDIO";
+            case "chapter":
+                return "CHAP";
+            case "figure":
+            case "picture":
+                return "FIGURE";
+            case "manuscript":
+                return "MANSCPT";
+            case "monograph":
+                return "BOOK";
+            case "map":
+                return "MAP";
+            case "mutivolumework":
+            case "multivolume_work":
+                return "SER";
+            case "periodical":
+                return "JFULL";
+            case "periodicalvolume":
+            case "periodical_volume":
+                return "JOUR";
+            case "sheetmusic":
+                return "MUSIC";
+            case "video":
+                return "VIDEO";
+            default:
+                return "GEN";
+        }
     }
 
     /**

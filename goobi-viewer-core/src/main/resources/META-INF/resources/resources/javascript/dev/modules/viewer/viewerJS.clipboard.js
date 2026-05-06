@@ -28,7 +28,7 @@ var viewerJS = (function (viewer) {
     const _defaultSelector = '[data-copy-value]';
 
     viewer.clipboard = {
-        init: function (selector, dataTarget, copyDoneMsg) {
+        init: function (selector, dataTarget) {
             /* SYNTAX TO DEFINE NON STANDARD TARGET SELECTOR/VALUE:
 				viewerJS.clipboard.init("[data-copy-special-selector]", "data-copy-special-value");
 				first the data attribute as selector for the tooltip + then the data attribute for the value
@@ -106,7 +106,8 @@ var viewerJS = (function (viewer) {
 
                 // IF NO COPY DONE MSG FOUND JUST USE STANDARD TEXT
                 if (!$(this).data('copy-done-msg')) {
-                    var copyDoneMessage = copyDoneMsg || 'Copied to clipboard';
+                    // TO DO: TRANSLATE MSG KEY
+                    var copyDoneMessage = 'Copied to clipboard';
                 } else {
                     var copyDoneMessage = $(thisCopyButton).data('copy-done-msg');
                 }

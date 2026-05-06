@@ -36,6 +36,8 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_NER_TAGS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PLAINTEXT;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PLAINTEXT_ZIP;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RIS_FILE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RIS_TEXT;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_TEI;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_TEI_LANG;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_TEI_ZIP;
@@ -78,6 +80,7 @@ import io.goobi.viewer.api.rest.model.ner.DocumentReference;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentation2ResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.NERBuilder;
+import io.goobi.viewer.api.rest.resourcebuilders.RisResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.TocResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -158,6 +161,50 @@ public class RecordResource {
         validatePi(pi);
         this.pi = pi;
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
+    }
+
+    @GET
+    @jakarta.ws.rs.Path(RECORDS_RIS_FILE)
+    @Produces({ MediaType.TEXT_PLAIN })
+    @Operation(tags = { "records" }, summary = "Download ris as file")
+    @ApiResponse(responseCode = "200", description = "RIS citation downloaded as plain text file")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
+    @AccessConditionBinding
+    public String getRISAsFile()
+            throws PresentationException, IndexUnreachableException, DAOException, ContentLibException {
+
+        StructElement se = getStructElement(pi);
+        String fileName = se.getPi() + "_" + se.getLogid() + ".ris";
+        servletResponse.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + fileName + "\"");
+        return new RisResourceBuilder(servletRequest, servletResponse).getRIS(se);
+    }
+
+    /**
+     * getRISAsText.
+     *
+     * @return the RIS citation for the record as plain text
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return non null result
+     * @should return 404 for given input
+     */
+    @GET
+    @jakarta.ws.rs.Path(RECORDS_RIS_TEXT)
+    @Produces({ MediaType.TEXT_PLAIN })
+    @Operation(tags = { "records" }, summary = "Get ris as text")
+    @ApiResponse(responseCode = "200", description = "RIS citation as plain text")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
+    public String getRISAsText()
+            throws PresentationException, IndexUnreachableException, ContentNotFoundException, DAOException {
+        if (servletResponse != null) {
+            servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
+        }
+        StructElement se = getStructElement(pi);
+        return new RisResourceBuilder(servletRequest, servletResponse).getRIS(se);
     }
 
     @GET
