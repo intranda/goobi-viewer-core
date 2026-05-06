@@ -28,7 +28,7 @@ pipeline {
         }
       }
       steps {
-              sh 'mvn -f goobi-viewer-core/pom.xml -DskipTests=false -DskipDependencyCheck=false -DskipCheckstyle=false clean verify -U'
+              sh 'mvn -f pom.xml -DskipTests=false -DskipDependencyCheck=false -DskipCheckstyle=false clean verify -U'
       }
     }
     stage('build release') {
@@ -64,14 +64,6 @@ pipeline {
       }
       steps {
         sh 'mvn -f goobi-viewer-core/pom.xml deploy'
-      }
-    }
-    stage('trigger reference theme build (develop)') {
-      when {
-        branch 'develop'
-      }
-      steps {
-        build wait: false, job: 'goobi-viewer/goobi-viewer-theme-reference/develop'
       }
     }
   }
