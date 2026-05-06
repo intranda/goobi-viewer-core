@@ -161,7 +161,22 @@ public class JPADAO implements IDAO {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public JPADAO() throws DAOException {
-        this(null);
+        this((String) null);
+    }
+
+    /**
+     * Creates a new JPADAO instance using an existing EntityManagerFactory.
+     * Intended for tests that share a single factory across test classes.
+     *
+     * @param existingFactory pre-built EntityManagerFactory to reuse
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public JPADAO(EntityManagerFactory existingFactory) throws DAOException {
+        logger.trace("JPADAO(EntityManagerFactory)");
+        this.factory = existingFactory;
+        if (!init()) {
+            throw new DAOException("DB connection failed.");
+        }
     }
 
     /**
