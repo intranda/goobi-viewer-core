@@ -86,7 +86,7 @@ public final class DataManager {
     // separate LanguageHelper. Each instance owns its own ScheduledExecutorService and
     // PeriodicReloadingTrigger; an orphaned instance would never be shut down by ContextListener
     // and Tomcat would report its scheduler thread as a memory leak at undeploy.
-    private volatile LanguageHelper languageHelper;
+    private volatile LanguageHelper languageHelper; //NOSONAR S3077 — DCL safe publication, see comment above
 
     private SolrSearchIndex searchIndex;
 

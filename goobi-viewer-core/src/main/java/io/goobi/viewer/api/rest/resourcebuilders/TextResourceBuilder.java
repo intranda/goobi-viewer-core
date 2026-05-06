@@ -121,7 +121,11 @@ public class TextResourceBuilder {
         long limit = DataManager.getInstance().getConfiguration().getMaxAggregateFulltextSize();
         long total = sumStringSizesOrThrow(pi, map.values(), limit, "plaintext.zip");
 
-        StringBuilder sb = new StringBuilder((int) Math.min(total, Integer.MAX_VALUE - 16));
+        // 16L (not 16): keep the subtraction in long arithmetic so Math.min has two long operands.
+        // Result never overflows numerically (MAX_VALUE - 16 fits in int), but the long literal
+        // silences Sonar S2184 without changing semantics — the surrounding (int) cast is safe
+        // because Math.min caps the value at Integer.MAX_VALUE - 16L.
+        StringBuilder sb = new StringBuilder((int) Math.min(total, Integer.MAX_VALUE - 16L));
         for (String pageText : map.values()) {
             sb.append(pageText).append("\n\n");
         }
@@ -260,7 +264,10 @@ public class TextResourceBuilder {
 
         // Pre-size the StringBuilder so it doesn't grow & copy. +files.size() reserves room for
         // the per-file '\n' separators.
-        StringBuilder sb = new StringBuilder((int) Math.min(total + files.size(), Integer.MAX_VALUE - 16));
+        // 16L (not 16): keep the subtraction in long arithmetic so all Math.min operands are
+        // long-typed. Numerically the constant subtraction never overflows; the suffix exists to
+        // silence Sonar S2184 without semantic change.
+        StringBuilder sb = new StringBuilder((int) Math.min(total + files.size(), Integer.MAX_VALUE - 16L));
         for (Path path : files) {
             String xmlString = FileTools.getStringFromFile(path.toFile(), StringTools.DEFAULT_ENCODING);
             sb.append(xmlString).append("\n");
