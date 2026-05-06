@@ -186,11 +186,16 @@
                                     return this[0] ? this[0].checkValidity() : true;
                                 };
 
-                                $('[data-target="buttonLoaderClickEvent"]').on('click', function (e) {
+                                $('##{cc.attrs.modalId} [data-target="buttonLoaderClickEvent"]').on('click', function (e) {
                                     if ($('[data-target="emailValidatorCheck"]').isValid()) {
                                         $('[data-target="buttonLoader"]').fadeIn('fast');
-                                        $('[data-target="buttonLoaderClickEvent').css('opacity', '0.5');
+                                        $(this).css('opacity', '0.5');
                                     }
+                                });
+
+                                $('##{cc.attrs.modalId}').on('hidden.bs.modal', function () {
+                                    $('[data-target="buttonLoader"]').fadeOut('fast');
+                                    $('[data-target="buttonLoaderClickEvent"]').css('opacity', '1');
                                 });
                             </script>
 
