@@ -21,6 +21,8 @@
  */
 package io.goobi.viewer.model.viewer;
 
+import java.util.Map;
+
 import jakarta.faces.component.UIViewRoot;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
@@ -120,6 +122,49 @@ class StructElementTest extends AbstractSolrEnabledTest {
     void isAnchorChild_shouldReturnFalseIfCurrentRecordIsNotVolume() throws Exception {
         StructElement element = new StructElement(iddocKleiuniv);
         Assertions.assertFalse(element.isAnchorChild());
+    }
+
+    /**
+     * @see StructElement#getGroupMembershipsExcludingAnchor()
+     * @verifies remove entries whose value equals the anchor pi
+     */
+    @Test
+    void getGroupMembershipsExcludingAnchor_shouldRemoveEntriesWhoseValueEqualsTheAnchorPi() throws Exception {
+        // Indexer pipelines sometimes emit a GROUPID_* field with the same value as
+        // PI_ANCHOR / PI_PARENT (e.g. GROUPID_NEWSPAPER on a record that already has a
+        // PI_PARENT-based anchor relationship). The raw map is preserved for callers that
+        // depend on it; the deduped getter must drop the redundant entry so widgets that
+        // render both a "group" listing and an "anchor" link don't show the same target twice.
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.IDDOC, "test-iddoc");
+        doc.setField(SolrConstants.PI, "test_volume");
+        doc.setField(SolrConstants.DOCSTRCT, "volume");
+        doc.setField(SolrConstants.PI_PARENT, "test_anchor");
+        doc.setField("GROUPID_NEWSPAPER", "test_anchor");
+
+        StructElement element = new StructElement("test-iddoc", doc);
+        Assertions.assertEquals(1, element.getGroupMemberships().size(), "raw map keeps the entry");
+        Assertions.assertTrue(element.getGroupMembershipsExcludingAnchor().isEmpty(), "deduped map drops anchor-equal entry");
+    }
+
+    /**
+     * @see StructElement#getGroupMembershipsExcludingAnchor()
+     * @verifies return all entries when no anchor pi is known
+     */
+    @Test
+    void getGroupMembershipsExcludingAnchor_shouldReturnAllEntriesWhenNoAnchorPiIsKnown() throws Exception {
+        // A standalone group member (no PI_PARENT/PI_ANCHOR) must still expose its
+        // GROUPID_* entries through the deduped getter — there's nothing to filter against.
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.IDDOC, "test-iddoc");
+        doc.setField(SolrConstants.PI, "test_volume");
+        doc.setField(SolrConstants.DOCSTRCT, "volume");
+        doc.setField("GROUPID_SERIES", "test_series");
+
+        StructElement element = new StructElement("test-iddoc", doc);
+        Map<String, String> deduped = element.getGroupMembershipsExcludingAnchor();
+        Assertions.assertEquals(1, deduped.size());
+        Assertions.assertEquals("test_series", deduped.get("GROUPID_SERIES"));
     }
 
     /**
