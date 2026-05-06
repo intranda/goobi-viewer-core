@@ -1255,7 +1255,8 @@
 					<dependency>
 						<groupId>com.puppycrawl.tools</groupId>
 						<artifactId>checkstyle</artifactId>
-                    </dependency>
+						<version>${checkstyle.version}</version>
+					</dependency>
 				</dependencies>
 				<executions>
 					<execution>
