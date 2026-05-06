@@ -59,7 +59,9 @@
                                             <!-- Metadata value -->
                                             <h:panelGroup rendered="#{metadata.singleString}">
                                                 <ui:fragment rendered="#{val.accessRestricted}">
-                                                    <util:icon icon="lock-open-2" svgClass="widget__body-icon-svg widget-metadata-tech__body-icon-svg" />
+                                                    <util:icon
+                                                        icon="lock-open-2"
+                                                        svgClass="widget__body-icon-svg widget-metadata-tech__body-icon-svg" />
                                                 </ui:fragment>
                                                 <h:outputFormat
                                                     value="#{val.getDisplayValue(navigationHelper.locale, true)}"
@@ -106,7 +108,9 @@
                                             </dt>
                                             <dd>
                                                 <ui:fragment rendered="#{val.accessRestricted}">
-                                                    <util:icon icon="lock-open-2" svgClass="widget__body-icon-svg widget-metadata-tech__body-icon-svg" />
+                                                    <util:icon
+                                                        icon="lock-open-2"
+                                                        svgClass="widget__body-icon-svg widget-metadata-tech__body-icon-svg" />
                                                 </ui:fragment>
                                                 <h:outputText
                                                     value="#{val.getDisplayParamValue(ind0)}"

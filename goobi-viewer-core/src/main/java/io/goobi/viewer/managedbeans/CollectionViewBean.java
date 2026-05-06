@@ -39,7 +39,6 @@ import org.apache.logging.log4j.Logger;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.CmsElementNotFoundException;
-import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -220,22 +219,9 @@ public class CollectionViewBean implements Serializable {
             }
         };
 
-        CollectionView collection = new CollectionView(content.getSolrField(), provider);
         String subtheme = Optional.ofNullable(content.getOwningPage()).map(CMSPage::getSubTheme).orElse("");
-        if (StringUtils.isNotBlank(subtheme)) {
-            try {
-                Optional<CMSPage> searchPage = DataManager.getInstance()
-                        .getDao()
-                        .getCMSPagesForSubtheme(subtheme)
-                        .stream()
-                        .filter(CMSPage::isPublished)
-                        .filter(CMSPage::hasSearchFunctionality)
-                        .findFirst();
-                searchPage.ifPresent(p -> collection.setSearchUrl(p.getPageUrl()));
-            } catch (DAOException e) {
-                logger.debug("Error getting subtheme search page: {}", e.toString());
-            }
-        }
+        CollectionView collection = new CollectionView(content.getSolrField(), provider);
+        collection.setSubtheme(subtheme);
         return collection;
     }
 
@@ -301,7 +287,8 @@ public class CollectionViewBean implements Serializable {
     /**
      * Counts the hierarchy level difference between the given collections. Positive return values mean the the second collection has a higher level.
      *
-     * <p>Does not consider whether one collection is a child of the other
+     * <p>
+     * Does not consider whether one collection is a child of the other
      * 
      * @param collection1 first collection name as the reference level
      * @param collection2 second collection name whose level is compared against collection1

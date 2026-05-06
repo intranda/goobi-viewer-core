@@ -127,37 +127,19 @@ var viewerJS = (function (viewer) {
             $.extend(true, _defaults, config);
             var modal = '';
 
-            modal +=
-                '<div class="modal fade" id="' +
-                _defaults.id +
-                '" tabindex="-1" role="dialog" aria-labelledby="' +
-                _defaults.label +
-                '">';
+            modal += '<div class="modal fade" id="' + _defaults.id + '" tabindex="-1" role="dialog" aria-labelledby="' + _defaults.label + '">';
             modal += '<div class="modal-dialog" role="document">';
             modal += '<div class="modal-content">';
             modal += '<div class="modal-header">';
             modal += '<h3 class="modal-title" id="' + _defaults.label + '">' + _defaults.string.title + '</h3>';
-            modal +=
-                '<button type="button" class="fancy-close" data-dismiss="modal" aria-label="' +
-                _defaults.string.closeBtn +
-                '">';
+            modal += '<button type="button" class="fancy-close" data-dismiss="modal" aria-label="' + _defaults.string.closeBtn + '">';
             modal += '<span aria-hidden="true">x</span>';
             modal += '</button>';
             modal += '</div>';
             modal += '<div class="modal-body">' + _defaults.string.body + '</div>';
             modal += '<div class="modal-footer">';
-            modal +=
-                '<button type="button" id="' +
-                _defaults.closeId +
-                '"  class="btn" data-dismiss="modal">' +
-                _defaults.string.closeBtn +
-                '</button>';
-            modal +=
-                '<button type="button" id="' +
-                _defaults.submitId +
-                '" class="btn btn--success">' +
-                _defaults.string.saveBtn +
-                '</button>';
+            modal += '<button type="button" id="' + _defaults.closeId + '"  class="btn" data-dismiss="modal">' + _defaults.string.closeBtn + '</button>';
+            modal += '<button type="button" id="' + _defaults.submitId + '" class="btn btn--success">' + _defaults.string.saveBtn + '</button>';
             modal += '</div></div></div></div>';
 
             return modal;
@@ -183,8 +165,7 @@ var viewerJS = (function (viewer) {
 
             bsAlert += '<div role="alert" class="alert ' + type + ' alert-dismissible fade in show">';
             if (dismissable) {
-                bsAlert +=
-                    '<button aria-label="Close" data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>';
+                bsAlert += '<button aria-label="Close" data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>';
             }
             bsAlert += content;
             bsAlert += '</div>';
@@ -315,7 +296,7 @@ var viewerJS = (function (viewer) {
              */
             $('[data-toggle="tooltip"]')
                 .tooltip({ trigger: 'manual' })
-                .off('mouseenter.tooltip mouseleave.tooltip')  // prevent accumulation
+                .off('mouseenter.tooltip mouseleave.tooltip') // prevent accumulation
                 .on('mouseenter.tooltip', (event) => {
                     $('[data-toggle="tooltip"]').tooltip('hide');
                     $(event.currentTarget).tooltip('show');
@@ -361,9 +342,7 @@ var viewerJS = (function (viewer) {
 
             // remove tooltips for deactivated admin cms move order buttons
             $(document).ready(function () {
-                $(
-                    'button[class^="admin__content-component-order-arrow"][disabled="disabled"][data-toggle="tooltip"]'
-                ).tooltip('dispose');
+                $('button[class^="admin__content-component-order-arrow"][disabled="disabled"][data-toggle="tooltip"]').tooltip('dispose');
             });
         },
 
@@ -623,14 +602,7 @@ var viewerJS = (function (viewer) {
      */
     viewer.helper.repeatPromise = (promise, delay) => {
         const cancelSubject = new rxjs.Subject();
-        const observable = rxjs
-            .of(null)
-            .pipe(
-                rxjs.operators.flatMap(promise),
-                rxjs.operators.delay(delay),
-                rxjs.operators.repeat(),
-                rxjs.operators.takeUntil(cancelSubject)
-            );
+        const observable = rxjs.of(null).pipe(rxjs.operators.flatMap(promise), rxjs.operators.delay(delay), rxjs.operators.repeat(), rxjs.operators.takeUntil(cancelSubject));
         return {
             /**
              * Cancels the repeating promise, preventing further repetitions.

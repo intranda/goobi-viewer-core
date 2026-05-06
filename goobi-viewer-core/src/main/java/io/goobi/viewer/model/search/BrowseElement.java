@@ -936,6 +936,12 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     public String getFulltextForHtml() {
         if (fulltextForHtml == null) {
             if (fulltext != null) {
+                // TODO(security): Migrate to HtmlSanitizer once a dedicated cleanFulltextSnippet
+                // profile exists. The current StringTools.stripJS only removes <script>/<svg>
+                // blocks and is bypassable by event-handler attributes and javascript: URIs.
+                // The Solr highlighter injects <mark> / <em> tags that must be preserved, so
+                // the existing rich-text and comment allowlists are unsuitable here. Tracked
+                // alongside HIGH 5 (CMS XSS) in the security audit memo.
                 fulltextForHtml = StringTools.stripJS(fulltext).replace("\n", " ");
             } else {
                 fulltextForHtml = "";

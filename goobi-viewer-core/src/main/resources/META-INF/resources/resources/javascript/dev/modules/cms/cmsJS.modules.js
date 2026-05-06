@@ -147,9 +147,7 @@ var cmsJS = (function (cms) {
                         $input = $('#' + forId);
                         $input.toggleClass('in');
                     } else {
-                        $input = $(this)
-                            .closest('.cms-module__option-group')
-                            .find('.cms-module__option-control, .cms-module__option-dropdown');
+                        $input = $(this).closest('.cms-module__option-group').find('.cms-module__option-control, .cms-module__option-dropdown');
                         $input.toggleClass('in');
                         $input.find('.cms-module__option-control-helptext').toggleClass('in');
                     }
@@ -180,10 +178,7 @@ var cmsJS = (function (cms) {
                             .find('.cms-menu__available-items-toggle')
                             .slideToggle('fast', function () {
                                 // focus first input if available
-                                $('.cms-menu__available-items-toggle .cms-module__option-group')
-                                    .first()
-                                    .find('.form-control')
-                                    .focus();
+                                $('.cms-menu__available-items-toggle .cms-module__option-group').first().find('.form-control').focus();
                             });
                     }
                 });

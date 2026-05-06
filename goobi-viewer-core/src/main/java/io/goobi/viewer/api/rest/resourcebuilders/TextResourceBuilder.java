@@ -63,8 +63,10 @@ import de.intranda.digiverso.ocr.tei.header.Title;
 import de.intranda.digiverso.ocr.xml.DocumentReader;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import io.goobi.viewer.controller.ALTOTools;
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
@@ -102,14 +104,61 @@ public class TextResourceBuilder {
         //
     }
 
+    /**
+     * Aggregate plain-text endpoint: concatenates the plain-text representation of every page of
+     * a record. Guarded against OOM via {@link Configuration#getMaxAggregateFulltextSize()}.
+     *
+     * @should throw IllegalRequestException if aggregate fulltext size exceeds limit
+     */
     public String getFulltext(String pi, HttpServletRequest request)
-            throws IOException, PresentationException, IndexUnreachableException {
+            throws IOException, PresentationException, IndexUnreachableException, IllegalRequestException {
         Map<Path, String> map = this.getFulltextMap(pi, request);
-        StringBuilder sb = new StringBuilder();
+
+        // Cap aggregate response size to avoid OOM on very large works (same failure mode as
+        // getAltoDocument). We use length()*2 as a conservative UTF-16 byte upper bound for the
+        // in-heap cost (Java compact-strings may store as Latin-1, but the OOM-relevant peak is
+        // the UTF-16 size).
+        long limit = DataManager.getInstance().getConfiguration().getMaxAggregateFulltextSize();
+        long total = sumStringSizesOrThrow(pi, map.values(), limit, "plaintext.zip");
+
+        StringBuilder sb = new StringBuilder((int) Math.min(total, Integer.MAX_VALUE - 16));
         for (String pageText : map.values()) {
             sb.append(pageText).append("\n\n");
         }
-        return sb.toString().trim();
+        // .trim() removed (peak-heap doubler on multi-MB strings).
+        return sb.toString();
+    }
+
+    /**
+     * String-list counterpart to {@link #sumFileSizesOrThrow(String, List, long, String)}: sums
+     * an UTF-16 byte upper bound (length() * 2 + 4 for the {@code "\n\n"} separator) and throws
+     * if the running total exceeds the limit.
+     *
+     * Package-private for direct unit testing.
+     *
+     * @param pi persistent identifier (used only in the error message)
+     * @param pages page-text Strings to sum
+     * @param limit maximum allowed total bytes
+     * @param zipFallback short suffix of the streaming alternative endpoint, e.g.
+     *            {@code "plaintext.zip"}
+     * @return total in bytes if the limit was not exceeded
+     * @throws IllegalRequestException if the running total exceeds {@code limit}
+     * @should throw IllegalRequestException when sum exceeds limit
+     * @should return total when sum stays within limit
+     */
+    static long sumStringSizesOrThrow(String pi, java.util.Collection<String> pages, long limit, String zipFallback)
+            throws IllegalRequestException {
+        long total = 0;
+        for (String page : pages) {
+            total += (long) page.length() * 2 + 4;   // *2 for UTF-16, +4 for "\n\n" separator
+            if (total > limit) {
+                throw new IllegalRequestException(String.format(
+                        "Aggregate text size for record %s exceeds the configured limit of %d bytes (%d pages)."
+                                + " Use /api/v1/records/%s/%s instead.",
+                        pi, limit, pages.size(), pi, zipFallback));
+            }
+        }
+        return total;
     }
 
     /**
@@ -183,20 +232,78 @@ public class TextResourceBuilder {
         return writeZipFile(files, zipFileName);
     }
 
+    /**
+     * Aggregate ALTO endpoint: returns concatenated ALTO XML for all pages of a record. Note: the
+     * result is NOT well-formed XML (multiple XML declarations and root <code>&lt;alto&gt;</code>
+     * elements). Use {@link #getAltoAsZip(String, HttpServletRequest)} for parsable output.
+     *
+     * Guarded against OOM via {@link Configuration#getMaxAggregateAltoSize()}: rejects requests
+     * whose summed page-file size exceeds the configured cap with HTTP 400 (via
+     * {@link IllegalRequestException}).
+     *
+     * @should throw IllegalRequestException if aggregate ALTO size exceeds limit
+     */
     public String getAltoDocument(String pi, HttpServletRequest request)
-            throws IOException, PresentationException, IndexUnreachableException {
+            throws IOException, PresentationException, IndexUnreachableException, IllegalRequestException {
         String foldername = DataManager.getInstance().getConfiguration().getAltoFolder();
         String crowdsourcingFolderName = DataManager.getInstance().getConfiguration().getAltoCrowdsourcingFolder();
         // Replaced filesystem iteration with single Solr batch query (see getAltoAsZip).
         List<Path> files = getFilesFromSolr(pi, SolrConstants.FILENAME_ALTO, foldername, crowdsourcingFolderName, request);
 
-        StringBuilder sb = new StringBuilder();
+        // Reject requests whose aggregate response would exceed the configured cap. Background:
+        // a single concatenated String for a multi-thousand-page work allocates several hundred
+        // MB of UTF-16 in the JVM heap and was previously doubled by .trim(). We've seen this
+        // OOM Tomcat in production with a 419 MB / 2129-page ALTO set. Clients should use
+        // /api/v1/records/{pi}/alto.zip for large works.
+        long limit = DataManager.getInstance().getConfiguration().getMaxAggregateAltoSize();
+        long total = sumFileSizesOrThrow(pi, files, limit, "alto.zip");
+
+        // Pre-size the StringBuilder so it doesn't grow & copy. +files.size() reserves room for
+        // the per-file '\n' separators.
+        StringBuilder sb = new StringBuilder((int) Math.min(total + files.size(), Integer.MAX_VALUE - 16));
         for (Path path : files) {
             String xmlString = FileTools.getStringFromFile(path.toFile(), StringTools.DEFAULT_ENCODING);
             sb.append(xmlString).append("\n");
         }
-        return sb.toString().trim();
+        // .trim() removed: on a multi-MB String it allocates a second copy of the same size and
+        // was unnecessary here — page-level ALTO content does not have leading or trailing
+        // whitespace that needs trimming at the aggregate level.
+        return sb.toString();
+    }
 
+    /**
+     * Sums the on-disk size of the given file paths and throws as soon as the running total
+     * exceeds the limit. Used by the aggregate ALTO endpoint to fail fast before allocating
+     * the concatenated response.
+     *
+     * Package-private for direct unit testing — exercising this path through the public method
+     * requires Solr fixtures with FILENAME_ALTO entries that the embedded test index does not
+     * carry for the bundled records.
+     *
+     * @param pi persistent identifier (used only in the error message)
+     * @param files files to sum
+     * @param limit maximum allowed total bytes
+     * @param zipFallback short suffix of the streaming alternative endpoint, e.g.
+     *            {@code "alto.zip"} or {@code "plaintext.zip"}
+     * @return total size in bytes if the limit was not exceeded
+     * @throws IOException on IO failure reading file metadata
+     * @throws IllegalRequestException if the running total exceeds {@code limit}
+     * @should throw IllegalRequestException when sum exceeds limit
+     * @should return total when sum stays within limit
+     */
+    static long sumFileSizesOrThrow(String pi, List<Path> files, long limit, String zipFallback)
+            throws IOException, IllegalRequestException {
+        long total = 0;
+        for (Path p : files) {
+            total += Files.size(p);
+            if (total > limit) {
+                throw new IllegalRequestException(String.format(
+                        "Aggregate text size for record %s exceeds the configured limit of %d bytes (%d files)."
+                                + " Use /api/v1/records/%s/%s instead.",
+                        pi, limit, files.size(), pi, zipFallback));
+            }
+        }
+        return total;
     }
 
     /**

@@ -40,6 +40,7 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
@@ -47,6 +48,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.impl.BinaryRequestWriter;
+import org.apache.solr.client.solrj.impl.Http2SolrClient;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -100,6 +104,22 @@ public final class SolrTools {
      */
     private SolrTools() {
         //
+    }
+
+    /**
+     * Creates a new {@link Http2SolrClient} for the given URL with the specified timeout.
+     *
+     * @param solrUrl Solr base URL
+     * @param timeoutMillis idle and connection timeout in milliseconds
+     * @return configured {@link SolrClient}
+     */
+    public static SolrClient newSolrClient(String solrUrl, int timeoutMillis) {
+        return new Http2SolrClient.Builder(solrUrl)
+                .withIdleTimeout(timeoutMillis, TimeUnit.MILLISECONDS)
+                .withConnectionTimeout(timeoutMillis, TimeUnit.MILLISECONDS)
+                .withFollowRedirects(false)
+                .withRequestWriter(new BinaryRequestWriter())
+                .build();
     }
 
     /**

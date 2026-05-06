@@ -4203,6 +4203,20 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * Whether the viewer pre-decodes the source image of the currently selected page into the
+     * ContentServer's source image cache while the HTML is rendering, so the OpenSeadragon tile
+     * burst that follows finds the decoded master already cached. Only useful when the
+     * ContentServer's {@code sourceImageCache useCache="true"} is set; otherwise the call is a
+     * no-op. Defaults to {@code true} since the cost (one async decode per page view) is small
+     * compared to the typical 800 ms tile-burst stall on cold first-views.
+     *
+     * @return true if pre-warming the source image cache on page selection is enabled
+     */
+    public boolean isPrewarmSourceImageCache() {
+        return getLocalBoolean("performance.prewarmSourceImageCache[@enabled]", true);
+    }
+
+    /**
      * Returns whether a navigator element should be shown in the OpenSeadragon viewer.
      *
      * @param viewAttributes view context attributes selecting the zoom config
@@ -4589,6 +4603,35 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * getMaxAggregateAltoSize.
+     *
+     * Aggregate-text REST endpoints (e.g. /api/v1/records/{pi}/alto) build a single concatenated
+     * response in memory. For very large works (e.g. multi-thousand-page newspapers) this can
+     * OOM the JVM; clients should use the streaming /alto.zip endpoint instead. This config
+     * exposes a hard byte cap on the aggregate file size (sum of Files.size() over all page-level
+     * ALTO files) above which the REST layer rejects the request with HTTP 400.
+     *
+     * @return configured limit in bytes; default 50 MB
+     * @should return correct value
+     */
+    public int getMaxAggregateAltoSize() {
+        return getLocalInt("performance.maxAggregateAltoSize", 50_000_000);
+    }
+
+    /**
+     * getMaxAggregateFulltextSize.
+     *
+     * Same as {@link #getMaxAggregateAltoSize()} but for the plain-text aggregate endpoint
+     * (/api/v1/records/{pi}/plaintext). Default 50 MB.
+     *
+     * @return configured limit in bytes; default 50 MB
+     * @should return correct value
+     */
+    public int getMaxAggregateFulltextSize() {
+        return getLocalInt("performance.maxAggregateFulltextSize", 50_000_000);
+    }
+
+    /**
      * @return true if review mode is enabled for comments, false otherwise
      */
     public boolean reviewEnabledForComments() {
@@ -4928,6 +4971,24 @@ public class Configuration extends AbstractConfiguration {
      */
     public List<String> getAncestorIdentifierFields() {
         return getLocalList("toc.ancestorIdentifierFields.field");
+    }
+
+    /**
+     * getCalendarDocStructTypes.
+     *
+     * <p>List of DOCSTRCT names for which the calendar TOC view applies. When the
+     * top struct of an anchor/group record matches one of these types and multiple
+     * calendar years are indexed, the calendar view replaces the issue-list TOC and
+     * the (potentially heavy) issue list is skipped. Records whose docstruct is not
+     * in this list always get the regular TOC build, even when they have multi-year
+     * date metadata. An empty list preserves legacy behavior — defer for any anchor
+     * or group with more than one indexed calendar year.
+     *
+     * @should return all configured values
+     * @return a list of configured docstruct names that use the calendar TOC view
+     */
+    public List<String> getCalendarDocStructTypes() {
+        return getLocalList("toc.calendarDocStructTypes.docstruct");
     }
 
     /**

@@ -147,13 +147,21 @@ public class ClientApplicationManager {
 
     /**
      * Gets the client stored in the given request calling {@link #getClientFromSession(HttpSession)} on the requests session, if any.
-     * 
+     *
      * @param request the request from which to get the client. If null, an empty Optional will be returned
      * @return An optional containing the client if one exists
+     * @should return empty optional when request is null
+     * @should return empty optional when no session exists on the request
+     * @should not create a new session when none exists
      */
     public static Optional<ClientApplication> getClientFromRequest(HttpServletRequest request) {
         if (request != null) {
-            return getClientFromSession(request.getSession());
+            // Use getSession(false) so we never create a new HTTP session here. Creating a session
+            // after the response has been committed (which can happen during JSF render of EL
+            // expressions like #{activeDocumentBean.titleBarLabel} that resolve through TocMaker
+            // -> AccessConditionUtils -> here) raises IllegalStateException in Tomcat. If no
+            // session exists, no client can be stored either, so returning empty is correct.
+            return getClientFromSession(request.getSession(false));
         }
         return Optional.empty();
     }

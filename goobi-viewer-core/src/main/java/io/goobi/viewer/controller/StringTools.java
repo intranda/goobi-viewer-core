@@ -316,12 +316,19 @@ public final class StringTools {
     }
 
     /**
-     * stripJS.
+     * Regex-based removal of {@code <script>} and {@code <svg>} blocks. Bypassable by any
+     * other XSS vector (event-handler attributes, {@code javascript:} URIs, alternative tags
+     * like {@code <iframe>} or {@code <details ontoggle>}). Retained only for non-XSS-sink
+     * call sites (URL hygiene, REST-input detection, filename helpers).
      *
      * @param s String to strip of JavaScript blocks
      * @return String sans any script-tag blocks
      * @should remove script tags, self-closing scripts, and SVG event handler elements regardless of case
+     * @deprecated For HTML rendering sinks use {@link HtmlSanitizer#cleanRichText(String)} or
+     *             {@link HtmlSanitizer#cleanComment(String)} instead. This method only catches
+     *             {@code <script>}/{@code <svg>} and is unsuitable as XSS protection.
      */
+    @Deprecated
     public static String stripJS(String s) {
         if (StringUtils.isBlank(s)) {
             return s;

@@ -23,6 +23,8 @@ package io.goobi.viewer.model.security;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
@@ -32,11 +34,14 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -778,5 +783,329 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
         assertTrue(store.containsKey("PRIV_VIEW_FULLTEXT_KEEP_PI"));
         assertTrue(store.containsKey("currentPi"));
         assertTrue(store.containsKey("user"));
+    }
+
+    /**
+     * @see AccessConditionUtils#checkAccessPermissionByIdentiferForAllLogids(String, String, jakarta.servlet.http.HttpServletRequest)
+     * @verifies fill map completely
+     */
+    @Test
+    void checkAccessPermissionByIdentiferForAllLogids_shouldFillMapCompletely() throws Exception {
+        // Volume "306653648_1891" exists in the test Solr index with multiple LOGIDs
+        Map<String, AccessPermission> result = AccessConditionUtils.checkAccessPermissionByIdentiferForAllLogids(
+                "306653648_1891", IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, null);
+        assertFalse(result.isEmpty(), "Expected non-empty permission map for PI 306653648_1891");
+    }
+
+    /**
+     * @see AccessConditionUtils#checkAccessPermissionByIdentiferForAllLogids(String, String, jakarta.servlet.http.HttpServletRequest)
+     * @verifies return empty map when identifier is blank
+     */
+    @Test
+    void checkAccessPermissionByIdentiferForAllLogids_shouldReturnEmptyMapWhenIdentifierIsBlank() throws Exception {
+        Map<String, AccessPermission> result = AccessConditionUtils.checkAccessPermissionByIdentiferForAllLogids(
+                "", IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, null);
+        assertTrue(result.isEmpty());
+    }
+
+    /**
+     * @see AccessConditionUtils#checkAccessPermissionByIdentiferForAllLogids(String, String, jakarta.servlet.http.HttpServletRequest)
+     * @verifies return empty map when identifier is null
+     */
+    @Test
+    void checkAccessPermissionByIdentiferForAllLogids_shouldReturnEmptyMapWhenIdentifierIsNull() throws Exception {
+        Map<String, AccessPermission> result = AccessConditionUtils.checkAccessPermissionByIdentiferForAllLogids(
+                null, IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, null);
+        assertTrue(result.isEmpty());
+    }
+
+    /**
+     * @see AccessConditionUtils#checkAccessPermissionByIdentifierForAllLogidsAndPrivileges(String, java.util.Set, jakarta.servlet.http.HttpServletRequest)
+     * @verifies return empty map when privileges set is null
+     */
+    @Test
+    void checkAccessPermissionByIdentifierForAllLogidsAndPrivileges_shouldReturnEmptyMapWhenPrivilegesSetIsNull() throws Exception {
+        Map<String, Map<String, AccessPermission>> result =
+                AccessConditionUtils.checkAccessPermissionByIdentifierForAllLogidsAndPrivileges("306653648_1891", null, null);
+        assertTrue(result.isEmpty());
+    }
+
+    /**
+     * @see AccessConditionUtils#checkAccessPermissionByIdentifierForAllLogidsAndPrivileges(String, java.util.Set, jakarta.servlet.http.HttpServletRequest)
+     * @verifies return empty map when privileges set is empty
+     */
+    @Test
+    void checkAccessPermissionByIdentifierForAllLogidsAndPrivileges_shouldReturnEmptyMapWhenPrivilegesSetIsEmpty() throws Exception {
+        Map<String, Map<String, AccessPermission>> result =
+                AccessConditionUtils.checkAccessPermissionByIdentifierForAllLogidsAndPrivileges("306653648_1891", new HashSet<>(), null);
+        assertTrue(result.isEmpty());
+    }
+
+    /**
+     * @see AccessConditionUtils#checkAccessPermissionByIdentifierForAllLogidsAndPrivileges(String, java.util.Set, jakarta.servlet.http.HttpServletRequest)
+     * @verifies return empty submap for each privilege when identifier is blank
+     */
+    @Test
+    void checkAccessPermissionByIdentifierForAllLogidsAndPrivileges_shouldReturnEmptySubmapForEachPrivilegeWhenIdentifierIsBlank() throws Exception {
+        Set<String> privileges = new HashSet<>(Arrays.asList(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, IPrivilegeHolder.PRIV_DOWNLOAD_PDF));
+        Map<String, Map<String, AccessPermission>> result =
+                AccessConditionUtils.checkAccessPermissionByIdentifierForAllLogidsAndPrivileges("", privileges, null);
+        assertEquals(2, result.size());
+        assertTrue(result.get(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS).isEmpty());
+        assertTrue(result.get(IPrivilegeHolder.PRIV_DOWNLOAD_PDF).isEmpty());
+    }
+
+    /**
+     * @see AccessConditionUtils#checkAccessPermissionByIdentifierForAllLogidsAndPrivileges(String, java.util.Set, jakarta.servlet.http.HttpServletRequest)
+     * @verifies return same result as single-privilege call for each privilege
+     */
+    @Test
+    void checkAccessPermissionByIdentifierForAllLogidsAndPrivileges_shouldReturnSameResultAsSinglePrivilegeCallForEachPrivilege() throws Exception {
+        String pi = "306653648_1891";
+        Set<String> privileges = new HashSet<>(Arrays.asList(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, IPrivilegeHolder.PRIV_DOWNLOAD_PDF));
+
+        // Reference: single-privilege calls (legacy path)
+        Map<String, AccessPermission> singleThumb =
+                AccessConditionUtils.checkAccessPermissionByIdentiferForAllLogids(pi, IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, null);
+        Map<String, AccessPermission> singlePdf =
+                AccessConditionUtils.checkAccessPermissionByIdentiferForAllLogids(pi, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, null);
+
+        // Subject: batch call
+        Map<String, Map<String, AccessPermission>> batch =
+                AccessConditionUtils.checkAccessPermissionByIdentifierForAllLogidsAndPrivileges(pi, privileges, null);
+
+        // Equivalence per privilege: same set of LOGIDs and same isGranted() outcome
+        assertPermissionMapsEqual(singleThumb, batch.get(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS));
+        assertPermissionMapsEqual(singlePdf, batch.get(IPrivilegeHolder.PRIV_DOWNLOAD_PDF));
+    }
+
+    private static void assertPermissionMapsEqual(Map<String, AccessPermission> expected, Map<String, AccessPermission> actual) {
+        assertNotNull(actual);
+        assertEquals(expected.keySet(), actual.keySet(), "LOGID sets differ");
+        for (Map.Entry<String, AccessPermission> e : expected.entrySet()) {
+            AccessPermission a = actual.get(e.getKey());
+            assertEquals(e.getValue().isGranted(), a.isGranted(),
+                    "isGranted() differs for LOGID " + e.getKey());
+        }
+    }
+
+    /**
+     * @see AccessConditionUtils#checkAccessPermissionByIdentifierForAllLogidsAndPrivileges(String, java.util.Set, jakarta.servlet.http.HttpServletRequest)
+     * @verifies handle three or more privileges in one batch
+     */
+    @Test
+    void checkAccessPermissionByIdentifierForAllLogidsAndPrivileges_shouldHandleThreeOrMorePrivilegesInOneBatch() throws Exception {
+        String pi = "306653648_1891";
+        Set<String> privileges = new HashSet<>(Arrays.asList(
+                IPrivilegeHolder.PRIV_VIEW_THUMBNAILS,
+                IPrivilegeHolder.PRIV_DOWNLOAD_PDF,
+                IPrivilegeHolder.PRIV_VIEW_IMAGES));
+        Map<String, Map<String, AccessPermission>> result =
+                AccessConditionUtils.checkAccessPermissionByIdentifierForAllLogidsAndPrivileges(pi, privileges, null);
+
+        assertEquals(privileges, result.keySet(), "Result must contain exactly the requested privileges");
+        Set<String> logIdsOfFirst = result.get(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS).keySet();
+        assertFalse(logIdsOfFirst.isEmpty(), "Expected non-empty LOGID set for PI " + pi);
+        assertEquals(logIdsOfFirst, result.get(IPrivilegeHolder.PRIV_DOWNLOAD_PDF).keySet());
+        assertEquals(logIdsOfFirst, result.get(IPrivilegeHolder.PRIV_VIEW_IMAGES).keySet());
+    }
+
+    /**
+     * @see AccessConditionUtils#checkAccessPermissionByIdentifierForAllLogidsAndPrivileges(String, java.util.Set, jakarta.servlet.http.HttpServletRequest)
+     * @verifies populate session cache per privilege so subsequent calls hit cache
+     */
+    @Test
+    void checkAccessPermissionByIdentifierForAllLogidsAndPrivileges_shouldPopulateSessionCachePerPrivilegeSoSubsequentCallsHitCache() throws Exception {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpSession session = mock(HttpSession.class);
+        when(request.getSession()).thenReturn(session);
+        Map<String, Object> sessionAttrs = new HashMap<>();
+        doAnswer(inv -> sessionAttrs.get(inv.getArgument(0, String.class))).when(session).getAttribute(anyString());
+        doAnswer(inv -> { sessionAttrs.put(inv.getArgument(0, String.class), inv.getArgument(1)); return null; })
+                .when(session).setAttribute(anyString(), Mockito.any());
+        // retrieveUserFromContext scans session attributes via getAttributeNames(); return empty enumeration
+        // since no user is stored in this test session.
+        when(session.getAttributeNames()).thenReturn(Collections.enumeration(new ArrayList<>()));
+
+        Set<String> privileges = new HashSet<>(Arrays.asList(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, IPrivilegeHolder.PRIV_DOWNLOAD_PDF));
+        AccessConditionUtils.checkAccessPermissionByIdentifierForAllLogidsAndPrivileges("306653648_1891", privileges, request);
+
+        // Two cache entries expected, one per privilege, each keyed PREFIX_PRIV + privilege + "_" + identifier
+        assertTrue(sessionAttrs.containsKey(IPrivilegeHolder.PREFIX_PRIV + IPrivilegeHolder.PRIV_VIEW_THUMBNAILS + "_306653648_1891"));
+        assertTrue(sessionAttrs.containsKey(IPrivilegeHolder.PREFIX_PRIV + IPrivilegeHolder.PRIV_DOWNLOAD_PDF + "_306653648_1891"));
+
+        // A subsequent single-privilege call must hit cache (return same map reference)
+        Map<String, AccessPermission> cached =
+                AccessConditionUtils.checkAccessPermissionByIdentiferForAllLogids("306653648_1891", IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, request);
+        assertSame(sessionAttrs.get(IPrivilegeHolder.PREFIX_PRIV + IPrivilegeHolder.PRIV_VIEW_THUMBNAILS + "_306653648_1891"), cached);
+    }
+
+    /**
+     * @see AccessConditionUtils#checkAccessPermissionsForPisAndPrivileges(java.util.Set, java.util.Set, jakarta.servlet.http.HttpServletRequest)
+     * @verifies return empty map when identifiers is null
+     */
+    @Test
+    void checkAccessPermissionsForPisAndPrivileges_shouldReturnEmptyMapWhenIdentifiersIsNull() throws Exception {
+        Set<String> privileges = new HashSet<>(Arrays.asList(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS));
+        Map<String, Map<String, Map<String, AccessPermission>>> result =
+                AccessConditionUtils.checkAccessPermissionsForPisAndPrivileges(null, privileges, null);
+        assertTrue(result.isEmpty());
+    }
+
+    /**
+     * @see AccessConditionUtils#checkAccessPermissionsForPisAndPrivileges(java.util.Set, java.util.Set, jakarta.servlet.http.HttpServletRequest)
+     * @verifies return empty map when identifiers is empty
+     */
+    @Test
+    void checkAccessPermissionsForPisAndPrivileges_shouldReturnEmptyMapWhenIdentifiersIsEmpty() throws Exception {
+        Set<String> privileges = new HashSet<>(Arrays.asList(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS));
+        Map<String, Map<String, Map<String, AccessPermission>>> result =
+                AccessConditionUtils.checkAccessPermissionsForPisAndPrivileges(new HashSet<>(), privileges, null);
+        assertTrue(result.isEmpty());
+    }
+
+    /**
+     * @see AccessConditionUtils#checkAccessPermissionsForPisAndPrivileges(java.util.Set, java.util.Set, jakarta.servlet.http.HttpServletRequest)
+     * @verifies return empty map when privileges is null
+     */
+    @Test
+    void checkAccessPermissionsForPisAndPrivileges_shouldReturnEmptyMapWhenPrivilegesIsNull() throws Exception {
+        Set<String> identifiers = new HashSet<>(Arrays.asList("306653648_1891"));
+        Map<String, Map<String, Map<String, AccessPermission>>> result =
+                AccessConditionUtils.checkAccessPermissionsForPisAndPrivileges(identifiers, null, null);
+        assertTrue(result.isEmpty());
+    }
+
+    /**
+     * @see AccessConditionUtils#checkAccessPermissionsForPisAndPrivileges(java.util.Set, java.util.Set, jakarta.servlet.http.HttpServletRequest)
+     * @verifies return empty map when privileges is empty
+     */
+    @Test
+    void checkAccessPermissionsForPisAndPrivileges_shouldReturnEmptyMapWhenPrivilegesIsEmpty() throws Exception {
+        Set<String> identifiers = new HashSet<>(Arrays.asList("306653648_1891"));
+        Map<String, Map<String, Map<String, AccessPermission>>> result =
+                AccessConditionUtils.checkAccessPermissionsForPisAndPrivileges(identifiers, new HashSet<>(), null);
+        assertTrue(result.isEmpty());
+    }
+
+    /**
+     * @see AccessConditionUtils#checkAccessPermissionsForPisAndPrivileges(java.util.Set, java.util.Set, jakarta.servlet.http.HttpServletRequest)
+     * @verifies return same result as per-identifier batch call
+     */
+    @Test
+    void checkAccessPermissionsForPisAndPrivileges_shouldReturnSameResultAsPerIdentifierBatchCall() throws Exception {
+        Set<String> identifiers = new HashSet<>(Arrays.asList("306653648_1891", "306653648_1892"));
+        Set<String> privileges = new HashSet<>(Arrays.asList(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, IPrivilegeHolder.PRIV_DOWNLOAD_PDF));
+
+        // Reference: call Phase B method per identifier
+        Map<String, Map<String, AccessPermission>> ref1891 =
+                AccessConditionUtils.checkAccessPermissionByIdentifierForAllLogidsAndPrivileges("306653648_1891", privileges, null);
+        Map<String, Map<String, AccessPermission>> ref1892 =
+                AccessConditionUtils.checkAccessPermissionByIdentifierForAllLogidsAndPrivileges("306653648_1892", privileges, null);
+
+        // Subject: cross-PI call
+        Map<String, Map<String, Map<String, AccessPermission>>> subject =
+                AccessConditionUtils.checkAccessPermissionsForPisAndPrivileges(identifiers, privileges, null);
+
+        assertEquals(2, subject.size(), "Expected exactly 2 identifier entries");
+        assertEquals(ref1891.keySet(), subject.get("306653648_1891").keySet());
+        assertEquals(ref1892.keySet(), subject.get("306653648_1892").keySet());
+        for (String privilege : privileges) {
+            assertPermissionMapsEqual(ref1891.get(privilege), subject.get("306653648_1891").get(privilege));
+            assertPermissionMapsEqual(ref1892.get(privilege), subject.get("306653648_1892").get(privilege));
+        }
+    }
+
+    /**
+     * @see AccessConditionUtils#checkAccessPermissionsForPisAndPrivileges(java.util.Set, java.util.Set, jakarta.servlet.http.HttpServletRequest)
+     * @verifies return same result as Phase B method for singleton identifier
+     */
+    @Test
+    void checkAccessPermissionsForPisAndPrivileges_shouldReturnSameResultAsPhaseBMethodForSingletonIdentifier() throws Exception {
+        String pi = "306653648_1891";
+        Set<String> privileges = new HashSet<>(Arrays.asList(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS));
+
+        Map<String, Map<String, AccessPermission>> ref =
+                AccessConditionUtils.checkAccessPermissionByIdentifierForAllLogidsAndPrivileges(pi, privileges, null);
+        Map<String, Map<String, Map<String, AccessPermission>>> subject =
+                AccessConditionUtils.checkAccessPermissionsForPisAndPrivileges(Collections.singleton(pi), privileges, null);
+
+        assertEquals(1, subject.size());
+        assertPermissionMapsEqual(ref.get(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS),
+                subject.get(pi).get(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS));
+    }
+
+    /**
+     * @see AccessConditionUtils#checkAccessPermissionsForPisAndPrivileges(java.util.Set, java.util.Set, jakarta.servlet.http.HttpServletRequest)
+     * @verifies populate session cache per identifier and privilege
+     */
+    @Test
+    void checkAccessPermissionsForPisAndPrivileges_shouldPopulateSessionCachePerIdentifierAndPrivilege() throws Exception {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpSession session = mock(HttpSession.class);
+        when(request.getSession()).thenReturn(session);
+        Map<String, Object> sessionAttrs = new HashMap<>();
+        doAnswer(inv -> sessionAttrs.get(inv.getArgument(0, String.class))).when(session).getAttribute(anyString());
+        doAnswer(inv -> {
+            sessionAttrs.put(inv.getArgument(0, String.class), inv.getArgument(1));
+            return null;
+        }).when(session).setAttribute(anyString(), Mockito.any());
+        when(session.getAttributeNames()).thenReturn(Collections.emptyEnumeration());
+
+        Set<String> identifiers = new HashSet<>(Arrays.asList("306653648_1891", "306653648_1892"));
+        Set<String> privileges = new HashSet<>(Arrays.asList(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, IPrivilegeHolder.PRIV_DOWNLOAD_PDF));
+        AccessConditionUtils.checkAccessPermissionsForPisAndPrivileges(identifiers, privileges, request);
+
+        assertTrue(sessionAttrs.containsKey(IPrivilegeHolder.PREFIX_PRIV + IPrivilegeHolder.PRIV_VIEW_THUMBNAILS + "_306653648_1891"));
+        assertTrue(sessionAttrs.containsKey(IPrivilegeHolder.PREFIX_PRIV + IPrivilegeHolder.PRIV_VIEW_THUMBNAILS + "_306653648_1892"));
+        assertTrue(sessionAttrs.containsKey(IPrivilegeHolder.PREFIX_PRIV + IPrivilegeHolder.PRIV_DOWNLOAD_PDF + "_306653648_1891"));
+        assertTrue(sessionAttrs.containsKey(IPrivilegeHolder.PREFIX_PRIV + IPrivilegeHolder.PRIV_DOWNLOAD_PDF + "_306653648_1892"));
+    }
+
+    /**
+     * @see AccessConditionUtils#checkAccessPermissionsForPisAndPrivileges(java.util.Set, java.util.Set, jakarta.servlet.http.HttpServletRequest)
+     * @verifies hit session cache on subsequent call without additional Solr roundtrip
+     */
+    @Test
+    void checkAccessPermissionsForPisAndPrivileges_shouldHitSessionCacheOnSubsequentCallWithoutAdditionalSolrRoundtrip() throws Exception {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpSession session = mock(HttpSession.class);
+        when(request.getSession()).thenReturn(session);
+        Map<String, Object> sessionAttrs = new HashMap<>();
+        doAnswer(inv -> sessionAttrs.get(inv.getArgument(0, String.class))).when(session).getAttribute(anyString());
+        doAnswer(inv -> {
+            sessionAttrs.put(inv.getArgument(0, String.class), inv.getArgument(1));
+            return null;
+        }).when(session).setAttribute(anyString(), Mockito.any());
+        when(session.getAttributeNames()).thenReturn(Collections.emptyEnumeration());
+
+        Set<String> identifiers = new HashSet<>(Arrays.asList("306653648_1891"));
+        Set<String> privileges = new HashSet<>(Arrays.asList(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS));
+
+        Map<String, Map<String, Map<String, AccessPermission>>> first =
+                AccessConditionUtils.checkAccessPermissionsForPisAndPrivileges(identifiers, privileges, request);
+        Map<String, AccessPermission> firstThumb = first.get("306653648_1891").get(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
+
+        Map<String, Map<String, Map<String, AccessPermission>>> second =
+                AccessConditionUtils.checkAccessPermissionsForPisAndPrivileges(identifiers, privileges, request);
+        Map<String, AccessPermission> secondThumb = second.get("306653648_1891").get(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
+
+        assertSame(firstThumb, secondThumb, "Second call must return cached map reference");
+    }
+
+    /**
+     * @see AccessConditionUtils#buildSinglePiPermissionQuery(String)
+     * @verifies produce legacy single-pi format byte-for-byte for moving-wall cache key compatibility
+     */
+    @Test
+    void buildSinglePiPermissionQuery_shouldProduceLegacySinglePiFormatByteForByteForMovingWallCacheKeyCompatibility() {
+        // The string format MUST match the legacy single-PI methods byte-for-byte. LicenseType.isRestrictionsExpired
+        // uses this string as a Map key in `restrictionsExpired`; the moving-wall hit-count check builds a Solr query
+        // around it. Any drift in this string (whitespace, quoting, field order) breaks moving-wall semantics across
+        // all cross-PI permission paths.
+        assertEquals("+PI_TOPSTRUCT:\"306653648_1891\" +DOCTYPE:DOCSTRCT",
+                AccessConditionUtils.buildSinglePiPermissionQuery("306653648_1891"));
+        assertEquals("+PI_TOPSTRUCT:\"34994703_2021_06_09\" +DOCTYPE:DOCSTRCT",
+                AccessConditionUtils.buildSinglePiPermissionQuery("34994703_2021_06_09"));
     }
 }

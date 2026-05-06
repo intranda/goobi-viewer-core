@@ -300,4 +300,17 @@ class TOCElementTest extends AbstractDatabaseAndSolrEnabledTest {
         TOCElement tef = new TOCElement(new SimpleMetadataValue("Label"), "1", null, "123", "LOG_0001", 0, "PPN123", null, false, false, false, null, null, null);
         Assertions.assertNull(tef.getMetadataValue("UNKNOWN_FIELD"));
     }
+
+    /**
+     * @see TOCElement#setAccessPermissionPdf(boolean)
+     * @verifies update accessPermissionPdf field
+     */
+    @Test
+    void setAccessPermissionPdf_shouldUpdateAccessPermissionPdfField() {
+        TOCElement element = new TOCElement(new SimpleMetadataValue("label"), null, null, "iddoc", "LOG_0001",
+                0, "PI", null, false, false, false, "image/tiff", "Monograph", null);
+        Assertions.assertFalse(element.isAccessPermissionPdf());
+        element.setAccessPermissionPdf(true);
+        Assertions.assertTrue(element.isAccessPermissionPdf());
+    }
 }

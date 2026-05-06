@@ -75,6 +75,8 @@ public class SolrEADParser extends ArchiveParser {
     private Map<String, String> parentIddocMap = new HashMap<>();
     /** Map of IDDOCs and loaded ArchiveEntry nodes. */
     private Map<String, ArchiveEntry> loadedNodeMap = new HashMap<>();
+    /** Tracks EAD_NODE_ID values seen during the current loadDatabase() call to detect duplicates. */
+    private final Set<String> seenNodeIds = new HashSet<>();
 
     /**
      * Gets the database names.
@@ -148,6 +150,7 @@ public class SolrEADParser extends ArchiveParser {
         }
 
         logger.trace("loadDatabase: {}", database.getResourceId());
+        seenNodeIds.clear();
         List<String> solrFields = getSolrFields();
         SolrDocument topDoc =
                 DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":\"" + database.getResourceId() + '"', solrFields);
@@ -208,6 +211,12 @@ public class SolrEADParser extends ArchiveParser {
 
         String id = SolrTools.getSingleFieldStringValue(doc, SolrConstants.EAD_NODE_ID);
         if (StringUtils.isNotEmpty(id)) {
+            if (!seenNodeIds.add(id)) {
+                logger.warn("Duplicate EAD node ID '{}' encountered while loading archive '{}'. "
+                        + "Archive tree rendering and node lookups may be unreliable. "
+                        + "Please ensure node IDs are unique in the source EAD document.",
+                        id, doc.getFieldValue(SolrConstants.PI_TOPSTRUCT));
+            }
             entry.setId(id);
         }
 
