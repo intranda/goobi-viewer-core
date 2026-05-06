@@ -364,9 +364,16 @@ public class ViewManager implements Serializable {
             anchorPi = groupEntry.getValue();
         }
 
+        // Calendar applicability is determined by the anchor's docstruct (e.g. "Newspaper"),
+        // not the issue/volume's own docstruct ("NewspaperIssue" etc.). For anchors the top
+        // struct is itself the anchor; for issues/volumes anchorStructElement is populated by
+        // ViewManager's constructor when topDocument.isAnchorChild() is true.
+        String calendarDocStructType = anchorStructElement != null
+                ? anchorStructElement.getDocStructType()
+                : topStructElement.getDocStructType();
         return new CalendarView(pi, anchorPi, anchorField,
                 topStructElement.isAnchor() ? null : topStructElement.getMetadataValue(SolrConstants.CALENDAR_YEAR),
-                topStructElement.getDocStructType());
+                calendarDocStructType);
     }
 
     /**
