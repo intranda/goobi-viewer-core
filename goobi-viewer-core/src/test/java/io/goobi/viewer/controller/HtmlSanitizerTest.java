@@ -198,6 +198,55 @@ class HtmlSanitizerTest {
 
     /**
      * @see HtmlSanitizer#cleanRichText(String)
+     * @verifies preserve root relative anchor href
+     */
+    @Test
+    void cleanRichText_shouldPreserveRootRelativeAnchorHref() {
+        // Regression: with the default Jsoup safelist (no preserveRelativeLinks) and an empty
+        // baseUri, root-relative hrefs were resolved to "" and then dropped by the protocol
+        // allowlist, leaving CMS-internal links like "/viewer/image/..." stripped to bare anchors.
+        String result = HtmlSanitizer.cleanRichText(
+                "<a class=\"link\" href=\"/viewer/image/10089470_1919/1/LOG_0003/\""
+                        + " target=\"_blank\" rel=\"noopener noreferrer\">1919</a>");
+        assertTrue(result.contains("href=\"/viewer/image/10089470_1919/1/LOG_0003/\""),
+                "root-relative href must survive sanitization, got: " + result);
+        assertTrue(result.contains("target=\"_blank\""));
+        assertTrue(result.contains("1919"));
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanRichText(String)
+     * @verifies preserve path relative anchor href
+     */
+    @Test
+    void cleanRichText_shouldPreservePathRelativeAnchorHref() {
+        // Path-relative hrefs (no leading slash) must also survive sanitization.
+        String result = HtmlSanitizer.cleanRichText(
+                "<a href=\"viewer/image/10089470_1919/1/LOG_0003/\">1919</a>");
+        assertTrue(result.contains("href=\"viewer/image/10089470_1919/1/LOG_0003/\""),
+                "path-relative href must survive sanitization, got: " + result);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanRichText(String)
+     * @verifies still remove javascript URI when relative links are preserved
+     */
+    @Test
+    void cleanRichText_shouldStillRemoveJavascriptUriWhenRelativeLinksArePreserved() {
+        // Security regression guard: enabling preserveRelativeLinks must NOT weaken the
+        // protocol allowlist for absolute URIs. javascript: still has a scheme and must be
+        // dropped — preserveRelativeLinks only affects strings without a resolvable scheme.
+        String result = HtmlSanitizer.cleanRichText(
+                "<a href=\"javascript:alert(1)\">click</a>"
+                        + "<a href=\"/safe/relative\">ok</a>");
+        assertFalse(result.toLowerCase().contains("javascript:"),
+                "javascript: URI must still be stripped, got: " + result);
+        assertTrue(result.contains("href=\"/safe/relative\""),
+                "relative href must survive in the same document, got: " + result);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanRichText(String)
      * @verifies preserve table markup
      */
     @Test
@@ -265,6 +314,18 @@ class HtmlSanitizerTest {
     @Test
     void isCleanRichText_shouldReturnFalseForScriptInjection() {
         assertFalse(HtmlSanitizer.isCleanRichText("<p>hi</p><script>alert(1)</script>"));
+    }
+
+    /**
+     * @see HtmlSanitizer#isCleanRichText(String)
+     * @verifies return true for relative anchor href
+     */
+    @Test
+    void isCleanRichText_shouldReturnTrueForRelativeAnchorHref() {
+        // CMS rich-text content commonly contains internal relative links; they must be
+        // accepted as clean so the save-pipeline does not flag them as suspect.
+        assertTrue(HtmlSanitizer.isCleanRichText(
+                "<p><a href=\"/viewer/image/10089470_1919/1/LOG_0003/\">1919</a></p>"));
     }
 
     /**
@@ -339,6 +400,34 @@ class HtmlSanitizerTest {
     void cleanComment_shouldRemoveJavascriptUriFromAnchorHref() {
         String result = HtmlSanitizer.cleanComment("<a href=\"javascript:alert(1)\">x</a>");
         assertFalse(result.toLowerCase().contains("javascript:"));
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanComment(String)
+     * @verifies preserve relative anchor href
+     */
+    @Test
+    void cleanComment_shouldPreserveRelativeAnchorHref() {
+        // Same regression as cleanRichText: relative hrefs in user comments must not be
+        // dropped by the protocol allowlist when no baseUri is provided.
+        String result = HtmlSanitizer.cleanComment(
+                "<a href=\"/viewer/image/10089470_1919/1/LOG_0003/\">1919</a>");
+        assertTrue(result.contains("href=\"/viewer/image/10089470_1919/1/LOG_0003/\""),
+                "root-relative href must survive comment sanitization, got: " + result);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanComment(String)
+     * @verifies still remove javascript URI when relative links are preserved
+     */
+    @Test
+    void cleanComment_shouldStillRemoveJavascriptUriWhenRelativeLinksArePreserved() {
+        String result = HtmlSanitizer.cleanComment(
+                "<a href=\"javascript:alert(1)\">x</a><a href=\"/ok\">y</a>");
+        assertFalse(result.toLowerCase().contains("javascript:"),
+                "javascript: URI must still be stripped from comments, got: " + result);
+        assertTrue(result.contains("href=\"/ok\""),
+                "relative href must survive in the same comment, got: " + result);
     }
 
     /**
@@ -474,5 +563,15 @@ class HtmlSanitizerTest {
     @Test
     void isCleanComment_shouldReturnFalseForImgTagInComment() {
         assertFalse(HtmlSanitizer.isCleanComment("hello<img src=\"x\">"));
+    }
+
+    /**
+     * @see HtmlSanitizer#isCleanComment(String)
+     * @verifies return true for relative anchor href
+     */
+    @Test
+    void isCleanComment_shouldReturnTrueForRelativeAnchorHref() {
+        assertTrue(HtmlSanitizer.isCleanComment(
+                "<a href=\"/viewer/image/10089470_1919/1/LOG_0003/\">1919</a>"));
     }
 }

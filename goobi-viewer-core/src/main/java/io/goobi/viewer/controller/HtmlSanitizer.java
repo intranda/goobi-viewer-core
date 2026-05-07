@@ -63,6 +63,18 @@ import org.jsoup.safety.Safelist;
  */
 public final class HtmlSanitizer {
 
+    /**
+     * Synthetic base URI used when resolving relative hrefs during sanitization. Jsoup's cleaner
+     * resolves every URL attribute against the document base URI before applying the protocol
+     * allowlist; with an empty base, relative URLs resolve to {@code ""} and are then dropped
+     * because the empty string does not match any allowed scheme. Pairing a non-empty base URI
+     * with {@link Safelist#preserveRelativeLinks(boolean)} keeps the original (relative) form
+     * in the output while still letting the protocol filter block {@code javascript:},
+     * {@code data:} and other absolute-URL attacks. The {@code .invalid} TLD is reserved by
+     * RFC 2606 and never collides with real content.
+     */
+    private static final String SANITIZER_BASE_URI = "https://placeholder.invalid/";
+
     private HtmlSanitizer() {
         // Utility class
     }
@@ -94,6 +106,9 @@ public final class HtmlSanitizer {
      * @should preserve table markup
      * @should remove data URI from img src
      * @should preserve newlines without collapsing whitespace
+     * @should preserve root relative anchor href
+     * @should preserve path relative anchor href
+     * @should still remove javascript URI when relative links are preserved
      */
     public static String cleanRichText(String input) {
         if (input == null) {
@@ -102,8 +117,10 @@ public final class HtmlSanitizer {
         if (input.isEmpty()) {
             return input;
         }
-        // Use prettyPrint(false) so whitespace and newlines inside elements are not collapsed
-        return Jsoup.clean(input, "", buildRichTextSafelist(),
+        // Use prettyPrint(false) so whitespace and newlines inside elements are not collapsed.
+        // SANITIZER_BASE_URI is required for preserveRelativeLinks(true) to keep relative hrefs
+        // such as "/viewer/image/..." (the placeholder is never written to output).
+        return Jsoup.clean(input, SANITIZER_BASE_URI, buildRichTextSafelist(),
                 new Document.OutputSettings().prettyPrint(false));
     }
 
@@ -120,6 +137,7 @@ public final class HtmlSanitizer {
      * @should return true for empty input
      * @should return true for legitimate markup
      * @should return false for script injection
+     * @should return true for relative anchor href
      */
     public static boolean isCleanRichText(String input) {
         if (input == null || input.isEmpty()) {
@@ -145,6 +163,8 @@ public final class HtmlSanitizer {
      * @should preserve safe anchor tags
      * @should remove javascript URI from anchor href
      * @should preserve plain text line breaks as br tags
+     * @should preserve relative anchor href
+     * @should still remove javascript URI when relative links are preserved
      */
     public static String cleanComment(String input) {
         if (input == null) {
@@ -155,7 +175,9 @@ public final class HtmlSanitizer {
         }
         // Convert plain-text newlines to <br> before sanitization to preserve line breaks,
         // then sanitize using the comment-profile safelist (no images, tables, headings).
-        return Jsoup.clean(preprocessPlainTextNewlines(input), "", buildCommentSafelist(),
+        // SANITIZER_BASE_URI: see field javadoc — required so relative hrefs survive
+        // preserveRelativeLinks(true) without weakening the protocol filter.
+        return Jsoup.clean(preprocessPlainTextNewlines(input), SANITIZER_BASE_URI, buildCommentSafelist(),
                 new Document.OutputSettings().prettyPrint(false));
     }
 
@@ -210,6 +232,7 @@ public final class HtmlSanitizer {
      * @should return true for plain text with newlines
      * @should return false for script injection
      * @should return false for img tag in comment
+     * @should return true for relative anchor href
      */
     public static boolean isCleanComment(String input) {
         if (input == null || input.isEmpty()) {
@@ -229,10 +252,16 @@ public final class HtmlSanitizer {
         // Safelist.relaxed() already permits a/href with http, https, ftp, mailto. We add:
         //   - figure/figcaption: TinyMCE default markup for captioned images
         //   - target, rel on a: required for target="_blank" rel="noopener" patterns
+        //   - preserveRelativeLinks(true): keep CMS-internal hrefs like "/viewer/image/..."
+        //     intact. Without this, Jsoup resolves relative hrefs against the (empty) baseUri
+        //     to "" and the protocol allowlist then drops them, leaving anchors stripped of
+        //     their href. The protocol allowlist still applies to absolute URIs, so
+        //     javascript: / data: stay blocked.
         // We intentionally do NOT add data: scheme — would allow data:image/svg+xml XSS.
         return Safelist.relaxed()
                 .addTags("figure", "figcaption")
-                .addAttributes("a", "target", "rel");
+                .addAttributes("a", "target", "rel")
+                .preserveRelativeLinks(true);
     }
 
     /**
@@ -253,10 +282,14 @@ public final class HtmlSanitizer {
      * </p>
      */
     private static Safelist buildCommentSafelist() {
+        // preserveRelativeLinks(true): same rationale as in buildRichTextSafelist() —
+        // viewer-internal links in comments must survive sanitization; the protocol allowlist
+        // continues to block javascript:/data: because those are absolute URIs with a scheme.
         return new Safelist()
                 .addTags("p", "br", "b", "i", "em", "strong", "u", "span", "a")
                 .addAttributes("a", "href", "title", "target", "rel")
-                .addProtocols("a", "href", "http", "https", "mailto");
+                .addProtocols("a", "href", "http", "https", "mailto")
+                .preserveRelativeLinks(true);
     }
 
     /**
