@@ -21,10 +21,14 @@
  */
 package io.goobi.viewer.controller;
 
+import java.util.Locale;
+
 // Added Jsoup imports for the cleanRichText/isCleanRichText implementation (Task 1).
 // Jsoup is encapsulated here — callers must never import org.jsoup.* directly.
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.safety.Safelist;
 
 /**
@@ -109,6 +113,13 @@ public final class HtmlSanitizer {
      * @should preserve root relative anchor href
      * @should preserve path relative anchor href
      * @should still remove javascript URI when relative links are preserved
+     * @should preserve class attribute on any element
+     * @should preserve id attribute on any element
+     * @should preserve role attribute on any element
+     * @should preserve aria attributes on any element
+     * @should preserve data attributes on any element
+     * @should preserve bootstrap tab navigation markup
+     * @should still remove onclick when class is allowed
      */
     public static String cleanRichText(String input) {
         if (input == null) {
@@ -252,15 +263,39 @@ public final class HtmlSanitizer {
         // Safelist.relaxed() already permits a/href with http, https, ftp, mailto. We add:
         //   - figure/figcaption: TinyMCE default markup for captioned images
         //   - target, rel on a: required for target="_blank" rel="noopener" patterns
+        //   - class/id/role globally on every tag: required for CSS hooks, in-page anchor
+        //     targets (#fragment links to id="..."), and ARIA roles. None of these are
+        //     attributes Jsoup interprets as URLs, so the protocol allowlist is unaffected.
+        //   - aria-*/data-* via the isSafeAttribute override below: these are open-ended
+        //     attribute families that Jsoup's static enumeration cannot express. Required
+        //     for CMS markup that uses Bootstrap-style data-toggle/data-target hooks and
+        //     ARIA controls (aria-controls, aria-expanded, ...). aria-* carries only
+        //     accessibility semantics; data-* is an HTML5 storage hook that is not a
+        //     URL attribute, so neither widens the XSS attack surface.
         //   - preserveRelativeLinks(true): keep CMS-internal hrefs like "/viewer/image/..."
         //     intact. Without this, Jsoup resolves relative hrefs against the (empty) baseUri
         //     to "" and the protocol allowlist then drops them, leaving anchors stripped of
         //     their href. The protocol allowlist still applies to absolute URIs, so
         //     javascript: / data: stay blocked.
-        // We intentionally do NOT add data: scheme — would allow data:image/svg+xml XSS.
-        return Safelist.relaxed()
+        // We intentionally do NOT add the data: scheme on src/href — would allow
+        // data:image/svg+xml XSS. We intentionally do NOT add the style attribute —
+        // CSS expression()/url(javascript:) bypasses are subtle and Jsoup does not
+        // sanitize CSS.
+        Safelist safelist = new Safelist(Safelist.relaxed()) {
+            @Override
+            public boolean isSafeAttribute(String tagName, Element el, Attribute attr) {
+                // Open-ended ARIA and data-* attribute families — see rationale above.
+                String key = attr.getKey().toLowerCase(Locale.ROOT);
+                if (key.startsWith("aria-") || key.startsWith("data-")) {
+                    return true;
+                }
+                return super.isSafeAttribute(tagName, el, attr);
+            }
+        };
+        return safelist
                 .addTags("figure", "figcaption")
                 .addAttributes("a", "target", "rel")
+                .addAttributes(":all", "class", "id", "role")
                 .preserveRelativeLinks(true);
     }
 

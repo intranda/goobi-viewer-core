@@ -281,6 +281,127 @@ class HtmlSanitizerTest {
     }
 
     /**
+     * @see HtmlSanitizer#cleanRichText(String)
+     * @verifies preserve class attribute on any element
+     */
+    @Test
+    void cleanRichText_shouldPreserveClassAttributeOnAnyElement() {
+        // CMS authors use class attributes as CSS hooks; the rich-text profile must keep
+        // them on arbitrary tags (not only the few Jsoup happens to allow by default).
+        String result = HtmlSanitizer.cleanRichText(
+                "<div class=\"intro\"><p class=\"lead\">hello</p></div>");
+        assertTrue(result.contains("class=\"intro\""), "class on div lost: " + result);
+        assertTrue(result.contains("class=\"lead\""), "class on p lost: " + result);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanRichText(String)
+     * @verifies preserve id attribute on any element
+     */
+    @Test
+    void cleanRichText_shouldPreserveIdAttributeOnAnyElement() {
+        // id is required as the target of in-page anchor hrefs (#fragment) — without it,
+        // Bootstrap tabs / TOC links would link to nothing after sanitization.
+        String result = HtmlSanitizer.cleanRichText("<div id=\"uebersicht\">x</div>");
+        assertTrue(result.contains("id=\"uebersicht\""), "id stripped: " + result);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanRichText(String)
+     * @verifies preserve role attribute on any element
+     */
+    @Test
+    void cleanRichText_shouldPreserveRoleAttributeOnAnyElement() {
+        String result = HtmlSanitizer.cleanRichText(
+                "<ul role=\"tablist\"><li role=\"presentation\">x</li></ul>");
+        assertTrue(result.contains("role=\"tablist\""), "role on ul stripped: " + result);
+        assertTrue(result.contains("role=\"presentation\""), "role on li stripped: " + result);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanRichText(String)
+     * @verifies preserve aria attributes on any element
+     */
+    @Test
+    void cleanRichText_shouldPreserveAriaAttributesOnAnyElement() {
+        // aria-* is an open-ended family; the override in buildRichTextSafelist must let any
+        // aria-prefixed attribute pass — not just an enumerated subset. <span> is used
+        // because it is in the allowlist; <button> would be stripped as a tag.
+        String result = HtmlSanitizer.cleanRichText(
+                "<span aria-controls=\"panel\" aria-expanded=\"false\""
+                        + " aria-label=\"open\" aria-describedby=\"desc\">x</span>");
+        assertTrue(result.contains("aria-controls=\"panel\""), "aria-controls stripped: " + result);
+        assertTrue(result.contains("aria-expanded=\"false\""), "aria-expanded stripped: " + result);
+        assertTrue(result.contains("aria-label=\"open\""), "aria-label stripped: " + result);
+        assertTrue(result.contains("aria-describedby=\"desc\""), "aria-describedby stripped: " + result);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanRichText(String)
+     * @verifies preserve data attributes on any element
+     */
+    @Test
+    void cleanRichText_shouldPreserveDataAttributesOnAnyElement() {
+        // data-* is also open-ended; required for Bootstrap data-toggle / data-target hooks
+        // and arbitrary custom JS bindings that CMS authors add to rich-text components.
+        String result = HtmlSanitizer.cleanRichText(
+                "<a href=\"#x\" data-toggle=\"tab\" data-target=\"#x\""
+                        + " data-bs-toggle=\"modal\">x</a>");
+        assertTrue(result.contains("data-toggle=\"tab\""), "data-toggle stripped: " + result);
+        assertTrue(result.contains("data-target=\"#x\""), "data-target stripped: " + result);
+        assertTrue(result.contains("data-bs-toggle=\"modal\""), "data-bs-toggle stripped: " + result);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanRichText(String)
+     * @verifies preserve bootstrap tab navigation markup
+     */
+    @Test
+    void cleanRichText_shouldPreserveBootstrapTabNavigationMarkup() {
+        // End-to-end regression: the actual CMS author markup (calendar widget tabs) must
+        // round-trip the sanitizer without losing class / role / aria / data hooks, otherwise
+        // the tab JS no longer works after save.
+        String input = "<ul class=\"nav nav-tabs\" role=\"tablist\">"
+                + "<li class=\"active\" role=\"presentation\">"
+                + "<a class=\"nav-link active\" role=\"tab\" href=\"#uebersicht\""
+                + " aria-controls=\"uebersicht\" data-toggle=\"tab\">Jahresübersicht</a>"
+                + "</li>"
+                + "<li role=\"presentation\">"
+                + "<a class=\"nav-link\" role=\"tab\" href=\"#titel\""
+                + " aria-controls=\"Titel\" data-toggle=\"tab\">Titelübersicht</a>"
+                + "</li>"
+                + "</ul>";
+        String result = HtmlSanitizer.cleanRichText(input);
+        assertTrue(result.contains("class=\"nav nav-tabs\""), "ul class lost: " + result);
+        assertTrue(result.contains("role=\"tablist\""), "ul role lost: " + result);
+        assertTrue(result.contains("class=\"active\""), "li class lost: " + result);
+        assertTrue(result.contains("class=\"nav-link active\""), "first a class lost: " + result);
+        assertTrue(result.contains("role=\"tab\""), "a role lost: " + result);
+        assertTrue(result.contains("aria-controls=\"uebersicht\""), "aria-controls lost: " + result);
+        assertTrue(result.contains("data-toggle=\"tab\""), "data-toggle lost: " + result);
+        assertTrue(result.contains("href=\"#uebersicht\""), "fragment href lost: " + result);
+        assertTrue(result.contains("href=\"#titel\""), "second fragment href lost: " + result);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanRichText(String)
+     * @verifies still remove onclick when class is allowed
+     */
+    @Test
+    void cleanRichText_shouldStillRemoveOnclickWhenClassIsAllowed() {
+        // Security regression guard: opening up class/role/aria/data must not accidentally
+        // open up event-handler attributes like onclick / onmouseover. The Safelist override
+        // only relaxes aria-*/data-*, never on*-prefixed attributes.
+        String result = HtmlSanitizer.cleanRichText(
+                "<div class=\"x\" onclick=\"alert(1)\" onmouseover=\"alert(2)\">x</div>");
+        assertTrue(result.contains("class=\"x\""), "class must survive: " + result);
+        assertFalse(result.toLowerCase().contains("onclick"),
+                "onclick must still be stripped: " + result);
+        assertFalse(result.toLowerCase().contains("onmouseover"),
+                "onmouseover must still be stripped: " + result);
+    }
+
+    /**
      * @see HtmlSanitizer#isCleanRichText(String)
      * @verifies return true for null input
      */
