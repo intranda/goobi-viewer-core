@@ -444,7 +444,7 @@
             //<![CDATA[
             $('#searchHitDownloadModal').on('show.bs.modal', function(e) {
                 var $btn = $(e.relatedTarget);
-                var title = $('<textarea/>').html($btn.data('title')).val();
+                var title = $('<div>').html($btn.data('title')).text();
                 $(this).find('.modal-title').text(title);
                 $(this).find('dd.col-sm-9').first().text(title);
                 $(this).find('input[type="hidden"][id$="__pi"]').val($btn.data('pi'));
